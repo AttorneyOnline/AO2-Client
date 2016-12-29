@@ -13,6 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        lobby.cpp
+        lobby.cpp \
+    text_file_functions.cpp \
+    path_functions.cpp
 
-HEADERS  += lobby.h
+HEADERS  += lobby.h \
+    text_file_functions.h \
+    path_functions.h
