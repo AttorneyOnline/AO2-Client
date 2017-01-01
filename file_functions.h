@@ -1,0 +1,4 @@
+#ifndef FILE_FUNCTIONS_H
+#define FILE_FUNCTIONS_H
+
+#endif // FILE_FUNCTIONS_H
