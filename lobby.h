@@ -2,7 +2,8 @@
 #define LOBBY_H
 
 #include <QMainWindow>
-#include <QLabel>
+#include "aoimage.h"
+#include "aobutton.h"
 
 class Lobby : public QMainWindow
 {
@@ -16,7 +17,9 @@ public:
   ~Lobby();
 
 private:
-  QLabel *ui_background;
+  AOImage *ui_background;
+  AOButton *ui_public_servers;
+  AOButton *ui_favorites;
 };
 
 #endif // LOBBY_H
