@@ -4,10 +4,9 @@
 
 #include "aoimage.h"
 
-AOImage::AOImage(QWidget *parent, int x_pos, int y_pos, int x_size, int y_size) : QLabel(parent)
+AOImage::AOImage(QWidget *parent) : QLabel(parent)
 {
-  this->move(x_pos, y_pos);
-  this->resize(x_size, y_size);
+
 }
 
 AOImage::~AOImage()
@@ -18,7 +17,7 @@ AOImage::~AOImage()
 void AOImage::set_image(QString p_image)
 {
   QString theme_image_path = get_theme_path() + p_image;
-  QString default_image_path = get_base_path() + "themes/default/" + p_image;
+  QString default_image_path = get_default_theme_path() + p_image;
 
   if (file_exists(theme_image_path))
     this->setPixmap(theme_image_path);

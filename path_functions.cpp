@@ -14,4 +14,9 @@ QString get_theme_path()
   return get_base_path() + "themes/" + g_user_theme.toLower() + "/";
 }
 
+QString get_default_theme_path()
+{
+  return get_base_path() + "themes/default/";
+}
+
 

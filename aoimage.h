@@ -8,7 +8,7 @@
 class AOImage : public QLabel
 {
 public:
-  AOImage(QWidget *parent, int x_pos, int y_pos, int x_size, int y_size);
+  AOImage(QWidget *parent);
   ~AOImage();
 
   void set_image(QString p_image);
