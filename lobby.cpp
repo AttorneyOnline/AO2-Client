@@ -17,6 +17,8 @@ Lobby::Lobby(QWidget *parent) : QMainWindow(parent)
   ui_refresh = new AOButton(this);
   ui_add_to_fav = new AOButton(this);
   ui_connect = new AOButton(this);
+
+  connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
 }
 
 Lobby::~Lobby()
@@ -34,7 +36,7 @@ void Lobby::set_widgets()
   ui_background->move(0, 0);
   ui_background->resize(m_lobby_width, m_lobby_height);
 
-  ui_public_servers->set_image("publicservers_selected.png");
+  ui_public_servers->set_image("publicservers.png");
   ui_public_servers->move(46, 88);
   ui_public_servers->resize(114, 30);
 
@@ -55,4 +57,49 @@ void Lobby::set_widgets()
   ui_connect->resize(132, 28);
 }
 
+void Lobby::on_public_servers_clicked()
+{
+  ui_public_servers->set_image("publicservers_selected.png");
+
+  //clear server list and show public servers
+}
+
+/*
+void Lobby::on_refresh_pressed()
+{
+  ui->refresh->setStyleSheet(get_stylesheet_path("refresh_pressed.png"));
+}
+
+void Lobby::on_refresh_released()
+{
+  ui->refresh->setStyleSheet(get_stylesheet_path("refresh.png"));
+
+  all_servers_requested();
+}
+
+void Lobby::on_addtofav_pressed()
+{
+  ui->addtofav->setStyleSheet(get_stylesheet_path("addtofav_pressed.png"));
+}
+
+void Lobby::on_addtofav_released()
+{
+  ui->addtofav->setStyleSheet(get_stylesheet_path("addtofav.png"));
+
+  //T0D0, add selected element to serverlist.txt
+
+}
+
+void Lobby::on_connect_pressed()
+{
+  ui->connect->setStyleSheet(get_stylesheet_path("connect_pressed.png"));
+}
+
+void Lobby::on_connect_released()
+{
+  ui->connect->setStyleSheet(get_stylesheet_path("connect.png"));
+
+  enter_server_requested();
+}
+*/
 

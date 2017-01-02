@@ -27,6 +27,9 @@ private:
   AOButton *ui_refresh;
   AOButton *ui_add_to_fav;
   AOButton *ui_connect;
+
+public slots:
+  void on_public_servers_clicked();
 };
 
 #endif // LOBBY_H

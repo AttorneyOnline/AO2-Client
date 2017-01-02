@@ -12,6 +12,11 @@ public:
   ~AOButton();
 
   void set_image(QString p_image);
+
+signals:
+  void clicked();
+  void pressed();
+  void released();
 };
 
 #endif // AOBUTTON_H
