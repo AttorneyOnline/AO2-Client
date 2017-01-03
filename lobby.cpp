@@ -9,7 +9,7 @@
 
 Lobby::Lobby(AOApplication *parent) : QMainWindow()
 {
-  m_parent = parent;
+  ao_app = parent;
 
   this->setWindowTitle("Attorney Online 2");
   this->resize(m_lobby_width, m_lobby_height);

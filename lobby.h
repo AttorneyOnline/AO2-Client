@@ -23,7 +23,7 @@ private:
   const int m_lobby_width = 517;
   const int m_lobby_height = 666;
 
-  AOApplication *m_parent;
+  AOApplication *ao_app;
 
   AOImage *ui_background;
 
