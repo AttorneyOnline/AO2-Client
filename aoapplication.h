@@ -4,7 +4,8 @@
 #include <QApplication>
 #include <QMainWindow>
 
-#include "lobby.h"
+class NetworkManager;
+class Lobby;
 
 class AOApplication : public QApplication
 {
@@ -12,7 +13,9 @@ public:
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
+  NetworkManager *net_manager;
   Lobby *w_lobby;
+  //T0D0: change to custom class "Courtroom"
   QMainWindow *w_courtroom;
 
   bool lobby_constructed = false;

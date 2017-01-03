@@ -1,5 +1,7 @@
 #include <QDebug>
 
+#include "lobby.h"
+
 #include "aoapplication.h"
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
@@ -20,7 +22,7 @@ void AOApplication::construct_lobby()
     return;
   }
 
-  w_lobby = new Lobby();
+  w_lobby = new Lobby(this);
   lobby_constructed = true;
 }
 
@@ -44,7 +46,8 @@ void AOApplication::construct_courtroom()
     return;
   }
 
-  w_courtroom = new QMainWindow();
+  //T0D0, make custom Courtroom class and uncomment
+  //w_courtroom = new QMainWindow(this);
   courtroom_constructed = true;
 }
 

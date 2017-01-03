@@ -34,4 +34,5 @@ HEADERS  += lobby.h \
     global_variables.h \
     debug_functions.h \
     networkmanager.h \
-    aoapplication.h
+    aoapplication.h \
+    datatypes.h

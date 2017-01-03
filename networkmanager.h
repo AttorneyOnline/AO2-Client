@@ -3,12 +3,15 @@
 
 #include <QTcpSocket>
 
+class AOApplication;
+
 class NetworkManager
 {
 public:
-  NetworkManager();
+  NetworkManager(AOApplication *parent);
   ~NetworkManager();
 
+  AOApplication *ao_app;
   QTcpSocket *ms_socket;
   QTcpSocket *server_socket;
 };

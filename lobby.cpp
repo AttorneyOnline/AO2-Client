@@ -3,11 +3,14 @@
 #include "path_functions.h"
 #include "text_file_functions.h"
 #include "global_variables.h"
+#include "debug_functions.h"
 
 #include "lobby.h"
 
-Lobby::Lobby(QWidget *parent) : QMainWindow(parent)
+Lobby::Lobby(AOApplication *parent) : QMainWindow()
 {
+  m_parent = parent;
+
   this->setWindowTitle("Attorney Online 2");
   this->resize(m_lobby_width, m_lobby_height);
 
@@ -17,6 +20,7 @@ Lobby::Lobby(QWidget *parent) : QMainWindow(parent)
   ui_refresh = new AOButton(this);
   ui_add_to_fav = new AOButton(this);
   ui_connect = new AOButton(this);
+  ui_about = new AOButton(this);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
@@ -27,6 +31,8 @@ Lobby::Lobby(QWidget *parent) : QMainWindow(parent)
   connect(ui_add_to_fav, SIGNAL(released()), this, SLOT(on_add_to_fav_released()));
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
+
+  connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
 
   set_widgets();
 }
@@ -65,6 +71,10 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect.png");
   ui_connect->move(332, 381);
   ui_connect->resize(132, 28);
+
+  ui_about->set_image("about.png");
+  ui_about->move(428, 1);
+  ui_about->resize(88, 21);
 }
 
 void Lobby::on_public_servers_clicked()
@@ -117,5 +127,11 @@ void Lobby::on_connect_released()
   ui_connect->set_image("connect.png");
 
   //T0D0: connect to selected server(show loading overlay?)
+}
+
+void Lobby::on_about_clicked()
+{
+  //T0D0: add something real here
+  call_error("YEBOIIII");
 }
 
