@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Attorney_Online_remake
 TEMPLATE = app
 
+VERSION = 2.1.0.0
 
 SOURCES += main.cpp\
         lobby.cpp \
@@ -19,7 +20,10 @@ SOURCES += main.cpp\
     aoimage.cpp \
     file_functions.cpp \
     aobutton.cpp \
-    global_variables.cpp
+    global_variables.cpp \
+    debug_functions.cpp \
+    networkmanager.cpp \
+    aoapplication.cpp
 
 HEADERS  += lobby.h \
     text_file_functions.h \
@@ -27,4 +31,7 @@ HEADERS  += lobby.h \
     aoimage.h \
     file_functions.h \
     aobutton.h \
-    global_variables.h
+    global_variables.h \
+    debug_functions.h \
+    networkmanager.h \
+    aoapplication.h

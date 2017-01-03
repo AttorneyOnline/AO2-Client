@@ -30,6 +30,14 @@ private:
 
 public slots:
   void on_public_servers_clicked();
+  void on_favorites_clicked();
+
+  void on_refresh_pressed();
+  void on_refresh_released();
+  void on_add_to_fav_pressed();
+  void on_add_to_fav_released();
+  void on_connect_pressed();
+  void on_connect_released();
 };
 
 #endif // LOBBY_H

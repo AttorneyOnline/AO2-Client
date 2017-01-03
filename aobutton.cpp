@@ -1,5 +1,6 @@
 #include <QDebug>
 
+#include "debug_functions.h"
 #include "path_functions.h"
 #include "file_functions.h"
 

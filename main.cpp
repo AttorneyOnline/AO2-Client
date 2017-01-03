@@ -1,13 +1,14 @@
-#include <QApplication>
+#include <QDebug>
+
+#include "aoapplication.h"
 
 #include "lobby.h"
 
 int main(int argc, char *argv[])
 {
-  QApplication a(argc, argv);
-  Lobby w;
-  w.set_widgets();
-  w.show();
+  AOApplication main_app(argc, argv);
+  main_app.construct_lobby();
+  main_app.w_lobby->show();
 
-  return a.exec();
+  return main_app.exec();
 }
