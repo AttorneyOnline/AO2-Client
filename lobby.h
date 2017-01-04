@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QLabel>
 #include <QPlainTextEdit>
+#include <QLineEdit>
 
 #include "aoimage.h"
 #include "aobutton.h"
@@ -22,6 +23,8 @@ public:
 
   void set_widgets();
   void list_servers();
+  void list_favorites();
+  void append_chat_message(QString p_message_line);
 
 private:
   AOApplication *ao_app;
@@ -42,10 +45,17 @@ private:
   QLabel *ui_player_count;
   QPlainTextEdit *ui_description;
 
+  QPlainTextEdit *ui_chatbox;
+
+  QLineEdit *ui_chatname;
+  QLineEdit *ui_chatmessage;
+
   const int m_lobby_width = 517;
   const int m_lobby_height = 666;
 
-public slots:
+  bool public_servers_selected = true;
+
+private slots:
   void on_public_servers_clicked();
   void on_favorites_clicked();
 
@@ -55,8 +65,9 @@ public slots:
   void on_add_to_fav_released();
   void on_connect_pressed();
   void on_connect_released();
-
   void on_about_clicked();
+  void on_server_list_clicked(QModelIndex p_model);
+  void on_chatfield_return_pressed();
 };
 
 #endif // LOBBY_H

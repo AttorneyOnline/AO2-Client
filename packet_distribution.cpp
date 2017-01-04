@@ -39,4 +39,27 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       w_lobby->list_servers();
     }
   }
+  else if (header == "CT")
+  {
+    QStringList f_contents = p_packet->get_contents();
+
+    QString message_line;
+
+    if (f_contents.size() == 1)
+      message_line = f_contents.at(0);
+    else if (f_contents.size() >= 2)
+      message_line = f_contents.at(0) + ": " + f_contents.at(1);
+    else
+      return;
+
+    if (lobby_constructed)
+    {
+      w_lobby->append_chat_message(message_line);
+    }
+    if (courtroom_constructed)
+    {
+      //T0D0: uncomment this when it's implemented
+      //w_courtroom->append_chat_message(message_line);
+    }
+  }
 }

@@ -35,14 +35,12 @@ void NetworkManager::send_ms_packet(AOPacket *p_packet)
   QString f_packet = p_packet->to_string();
 
   ms_socket->write(f_packet.toLocal8Bit());
-  //qDebug() << "S(ms):" << f_packet;
+  qDebug() << "S(ms):" << f_packet;
 }
 
 void NetworkManager::send_server_packet(AOPacket *p_packet)
 {
   QString f_packet = p_packet->to_string();
-
-  delete p_packet;
 
   ms_socket->write(f_packet.toLocal8Bit());
   qDebug() << "S(ms):" << f_packet;

@@ -34,6 +34,7 @@ public:
   void destruct_courtroom();
 
   QVector<server_type> server_list;
+  QVector<server_type> favorite_list;
 
   void ms_packet_received(AOPacket *p_packet);
 };

@@ -26,6 +26,9 @@ Lobby::Lobby(AOApplication *parent) : QMainWindow()
   ui_server_list = new QListWidget(this);
   ui_player_count = new QLabel(this);
   ui_description = new QPlainTextEdit(this);
+  ui_chatbox = new QPlainTextEdit(this);
+  ui_chatname = new QLineEdit(this);
+  ui_chatmessage = new QLineEdit(this);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
@@ -35,8 +38,9 @@ Lobby::Lobby(AOApplication *parent) : QMainWindow()
   connect(ui_add_to_fav, SIGNAL(released()), this, SLOT(on_add_to_fav_released()));
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
-
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
+  connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
+  connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
 
   set_widgets();
 }
@@ -94,8 +98,25 @@ void Lobby::set_widgets()
 
   ui_description->move(337, 109);
   ui_description->resize(173, 245);
+  ui_description->setReadOnly(true);
   ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "color: white;");
+
+  ui_chatbox->move(2, 445);
+  ui_chatbox->resize(515, 198);
+  ui_chatbox->setReadOnly(true);
+  ui_chatbox->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+
+  ui_chatname->move(3, 646);
+  ui_chatname->resize(85, 19);
+  ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                             "selection-background-color: rgba(0, 0, 0, 0);");
+
+  ui_chatmessage->move(93, 646);
+  ui_chatmessage->resize(424, 19);
+  ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                "selection-background-color: rgba(0, 0, 0, 0);");
+
 }
 
 void Lobby::on_public_servers_clicked()
@@ -103,7 +124,9 @@ void Lobby::on_public_servers_clicked()
   ui_public_servers->set_image("publicservers_selected.png");
   ui_favorites->set_image("favorites.png");
 
-  //T0D0: clear server list and show public servers
+  list_servers();
+
+  public_servers_selected = true;
 }
 
 void Lobby::on_favorites_clicked()
@@ -111,7 +134,11 @@ void Lobby::on_favorites_clicked()
   ui_favorites->set_image("favorites_selected.png");
   ui_public_servers->set_image("publicservers.png");
 
-  //T0D0: clear server list and show favorites from serverlist.txt
+  ao_app->favorite_list = read_serverlist_txt();
+
+  list_favorites();
+
+  public_servers_selected = false;
 }
 
 void Lobby::on_refresh_pressed()
@@ -139,7 +166,22 @@ void Lobby::on_add_to_fav_released()
 {
   ui_add_to_fav->set_image("addtofav.png");
 
-  //T0D0, add selected element to serverlist.txt
+  //you cant add favorites from favorites m8
+  if (!public_servers_selected)
+    return;
+
+  int n_server = ui_server_list->currentRow();
+
+  if (n_server < 0 || n_server >= ao_app->server_list.size())
+    return;
+
+  server_type fav_server = ao_app->server_list.at(n_server);
+
+  QString str_port = QString::number(fav_server.port);
+
+  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
+
+  write_to_serverlist_txt(server_line);
 }
 
 void Lobby::on_connect_pressed()
@@ -160,6 +202,51 @@ void Lobby::on_about_clicked()
   call_error("YEBOIIII");
 }
 
+void Lobby::on_server_list_clicked(QModelIndex p_model)
+{
+  server_type f_server;
+  int n_server = p_model.row();
+
+  if (n_server < 0)
+    return;
+
+  if (public_servers_selected)
+  {
+    if (n_server >= ao_app->server_list.size())
+      return;
+
+    f_server = ao_app->server_list.at(p_model.row());
+  }
+  else
+  {
+    if (n_server >= ao_app->favorite_list.size())
+      return;
+
+    f_server = ao_app->favorite_list.at(p_model.row());
+  }
+
+  ui_description->clear();
+  ui_description->appendPlainText(f_server.desc);
+
+  ui_description->moveCursor(QTextCursor::Start);
+  ui_description->ensureCursorVisible();
+
+  //T0D0: uncomment when implemented
+  //ao_app->net_manager->connect_to_server(f_server.ip, f_server.port);
+}
+
+void Lobby::on_chatfield_return_pressed()
+{
+  QString raw_packet = "CT#" + ui_chatname->text() + "#" + ui_chatmessage->text() + "#%";
+  AOPacket *f_packet = new AOPacket(raw_packet);
+
+  ao_app->net_manager->send_ms_packet(f_packet);
+
+  ui_chatmessage->clear();
+
+  delete f_packet;
+}
+
 void Lobby::list_servers()
 {
   ui_server_list->clear();
@@ -168,4 +255,19 @@ void Lobby::list_servers()
   {
     ui_server_list->addItem(i_server.name);
   }
+}
+
+void Lobby::list_favorites()
+{
+  ui_server_list->clear();
+
+  for (server_type i_server : ao_app->favorite_list)
+  {
+    ui_server_list->addItem(i_server.name);
+  }
+}
+
+void Lobby::append_chat_message(QString p_message_line)
+{
+  ui_chatbox->appendPlainText(p_message_line);
 }
