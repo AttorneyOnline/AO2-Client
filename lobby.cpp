@@ -162,6 +162,8 @@ void Lobby::on_about_clicked()
 
 void Lobby::list_servers()
 {
+  ui_server_list->clear();
+
   for (server_type i_server : ao_app->server_list)
   {
     ui_server_list->addItem(i_server.name);

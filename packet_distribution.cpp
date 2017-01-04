@@ -13,6 +13,8 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
 
   if (header == "ALL")
   {
+    server_list.clear();
+
     for (QString i_string : p_packet->get_contents())
     {
       server_type f_server;
@@ -21,7 +23,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       if (sub_contents.size() < 4)
       {
         qDebug() << "W: malformed packet!";
-        return;
+        continue;
       }
 
       f_server.name = sub_contents.at(0);
