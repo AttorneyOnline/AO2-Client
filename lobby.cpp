@@ -1,11 +1,13 @@
-#include <QDebug>
+#include "lobby.h"
 
 #include "path_functions.h"
 #include "text_file_functions.h"
 #include "global_variables.h"
 #include "debug_functions.h"
+#include "aoapplication.h"
+#include "networkmanager.h"
 
-#include "lobby.h"
+#include <QDebug>
 
 Lobby::Lobby(AOApplication *parent) : QMainWindow()
 {
@@ -21,10 +23,12 @@ Lobby::Lobby(AOApplication *parent) : QMainWindow()
   ui_add_to_fav = new AOButton(this);
   ui_connect = new AOButton(this);
   ui_about = new AOButton(this);
+  ui_server_list = new QListWidget(this);
+  ui_player_count = new QLabel(this);
+  ui_description = new QPlainTextEdit(this);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
-
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
   connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
   connect(ui_add_to_fav, SIGNAL(pressed()), this, SLOT(on_add_to_fav_pressed()));
@@ -75,6 +79,23 @@ void Lobby::set_widgets()
   ui_about->set_image("about.png");
   ui_about->move(428, 1);
   ui_about->resize(88, 21);
+
+  ui_server_list->move(20, 125);
+  ui_server_list->resize(286, 240);
+  ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                "font: bold;");
+
+  ui_player_count->move(336, 91);
+  ui_player_count->resize(173, 16);
+  ui_player_count->setText("Offline");
+  ui_player_count->setStyleSheet("font: bold;"
+                                 "color: white;"
+                                 "qproperty-alignment: AlignCenter;");
+
+  ui_description->move(337, 109);
+  ui_description->resize(173, 245);
+  ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                "color: white;");
 }
 
 void Lobby::on_public_servers_clicked()
@@ -102,7 +123,11 @@ void Lobby::on_refresh_released()
 {
   ui_refresh->set_image("refresh.png");
 
-  //T0D0: clear serverlist, request new list from MS and show them
+  AOPacket *f_packet = new AOPacket("ALL#%");
+
+  ao_app->net_manager->send_ms_packet(f_packet);
+
+  delete f_packet;
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -126,7 +151,7 @@ void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
 
-  //T0D0: connect to selected server(show loading overlay?)
+  //T0D0: call ao_app to initialize loading sequence
 }
 
 void Lobby::on_about_clicked()
@@ -135,3 +160,10 @@ void Lobby::on_about_clicked()
   call_error("YEBOIIII");
 }
 
+void Lobby::list_servers()
+{
+  for (server_type i_server : ao_app->server_list)
+  {
+    ui_server_list->addItem(i_server.name);
+  }
+}

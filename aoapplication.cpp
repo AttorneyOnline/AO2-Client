@@ -1,12 +1,13 @@
 #include <QDebug>
 
 #include "lobby.h"
+#include "networkmanager.h"
 
 #include "aoapplication.h"
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-
+  net_manager = new NetworkManager(this);
 }
 
 AOApplication::~AOApplication()

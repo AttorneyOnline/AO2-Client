@@ -3,9 +3,12 @@
 
 #include <QMainWindow>
 #include <QListWidget>
+#include <QLabel>
+#include <QPlainTextEdit>
 
 #include "aoimage.h"
 #include "aobutton.h"
+#include "aopacket.h"
 
 class AOApplication;
 
@@ -18,11 +21,9 @@ public:
   ~Lobby();
 
   void set_widgets();
+  void list_servers();
 
 private:
-  const int m_lobby_width = 517;
-  const int m_lobby_height = 666;
-
   AOApplication *ao_app;
 
   AOImage *ui_background;
@@ -37,7 +38,12 @@ private:
   AOButton *ui_about;
 
   QListWidget *ui_server_list;
-//  QListWidget
+
+  QLabel *ui_player_count;
+  QPlainTextEdit *ui_description;
+
+  const int m_lobby_width = 517;
+  const int m_lobby_height = 666;
 
 public slots:
   void on_public_servers_clicked();

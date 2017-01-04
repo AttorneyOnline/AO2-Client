@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     global_variables.cpp \
     debug_functions.cpp \
     networkmanager.cpp \
-    aoapplication.cpp
+    aoapplication.cpp \
+    aopacket.cpp \
+    packet_distribution.cpp
 
 HEADERS  += lobby.h \
     text_file_functions.h \
@@ -35,4 +37,5 @@ HEADERS  += lobby.h \
     debug_functions.h \
     networkmanager.h \
     aoapplication.h \
-    datatypes.h
+    datatypes.h \
+    aopacket.h
