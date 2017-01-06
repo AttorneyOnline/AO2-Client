@@ -37,6 +37,20 @@ public:
   QVector<server_type> favorite_list;
 
   void ms_packet_received(AOPacket *p_packet);
+  void server_packet_received(AOPacket *p_packet);
+
+  void send_ms_packet(AOPacket *p_packet);
+  void send_server_packet(AOPacket *p_packet);
+
+  /////////////////server metadata//////////////////
+
+  unsigned int s_decryptor = 5;
+  bool encryption_needed = true;
+  bool ao2_features = false;
+  //player number, it's hardly used but might be needed for some old servers
+  bool s_pv = 0;
+
+  //////////////////////////////////////////////////
 };
 
 #endif // AOAPPLICATION_H

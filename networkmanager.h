@@ -21,15 +21,18 @@ public:
   QString ms_hostname = "master.aceattorneyonline.com";
   int ms_port = 27016;
 
+  bool ms_partial_packet = false;
+  QString ms_temp_packet = "";
+
   bool partial_packet = false;
   QString temp_packet = "";
 
   void connect_to_master();
+  void connect_to_server(server_type p_server);
 
 public slots:
-  void send_ms_packet(AOPacket *p_packet);
-
-  void send_server_packet(AOPacket *p_packet);
+  void ship_ms_packet(QString p_packet);
+  void ship_server_packet(QString p_packet);
 
 private slots:
   void handle_ms_packet();

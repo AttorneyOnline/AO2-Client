@@ -15,6 +15,7 @@ Lobby::Lobby(AOApplication *parent) : QMainWindow()
 
   this->setWindowTitle("Attorney Online 2");
   this->resize(m_lobby_width, m_lobby_height);
+  this->setFixedSize(m_lobby_width, m_lobby_height);
 
   ui_background = new AOImage(this);
   ui_public_servers = new AOButton(this);
@@ -152,7 +153,7 @@ void Lobby::on_refresh_released()
 
   AOPacket *f_packet = new AOPacket("ALL#%");
 
-  ao_app->net_manager->send_ms_packet(f_packet);
+  ao_app->send_ms_packet(f_packet);
 
   delete f_packet;
 }
@@ -231,16 +232,19 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_description->moveCursor(QTextCursor::Start);
   ui_description->ensureCursorVisible();
 
-  //T0D0: uncomment when implemented
-  //ao_app->net_manager->connect_to_server(f_server.ip, f_server.port);
+  ui_player_count->setText("Offline");
+
+  ao_app->net_manager->connect_to_server(f_server);
 }
 
 void Lobby::on_chatfield_return_pressed()
 {
-  QString raw_packet = "CT#" + ui_chatname->text() + "#" + ui_chatmessage->text() + "#%";
-  AOPacket *f_packet = new AOPacket(raw_packet);
+  QString f_header = "CT";
+  QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
 
-  ao_app->net_manager->send_ms_packet(f_packet);
+  AOPacket *f_packet = new AOPacket(f_header, f_contents);
+
+  ao_app->send_ms_packet(f_packet);
 
   ui_chatmessage->clear();
 
@@ -267,7 +271,13 @@ void Lobby::list_favorites()
   }
 }
 
-void Lobby::append_chat_message(QString p_message_line)
+void Lobby::append_chatmessage(QString p_message_line)
 {
   ui_chatbox->appendPlainText(p_message_line);
+}
+
+void Lobby::set_player_count(int players_online, int max_players)
+{
+  QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
+  ui_player_count->setText(f_string);
 }

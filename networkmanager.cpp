@@ -30,26 +30,64 @@ void NetworkManager::connect_to_master()
   ms_socket->connectToHost(ms_hostname, ms_port);
 }
 
-void NetworkManager::send_ms_packet(AOPacket *p_packet)
+void NetworkManager::connect_to_server(server_type p_server)
 {
-  QString f_packet = p_packet->to_string();
+  server_socket->close();
+  server_socket->abort();
 
-  ms_socket->write(f_packet.toLocal8Bit());
-  qDebug() << "S(ms):" << f_packet;
+  server_socket->connectToHost(p_server.ip, p_server.port);
 }
 
-void NetworkManager::send_server_packet(AOPacket *p_packet)
+void NetworkManager::ship_ms_packet(QString p_packet)
 {
-  QString f_packet = p_packet->to_string();
+  ms_socket->write(p_packet.toLocal8Bit());
+}
 
-  ms_socket->write(f_packet.toLocal8Bit());
-  qDebug() << "S(ms):" << f_packet;
+void NetworkManager::ship_server_packet(QString p_packet)
+{
+  server_socket->write(p_packet.toLocal8Bit());
 }
 
 void NetworkManager::handle_ms_packet()
 {
   char buffer[16384] = {0};
   ms_socket->read(buffer, ms_socket->bytesAvailable());
+
+  QString in_data = buffer;
+
+  if (!in_data.endsWith("%"))
+  {
+    ms_partial_packet = true;
+    ms_temp_packet += in_data;
+    return;
+  }
+
+  else
+  {
+    if (ms_partial_packet)
+    {
+      in_data = ms_temp_packet + in_data;
+      ms_temp_packet = "";
+      ms_partial_packet = false;
+    }
+  }
+
+  QStringList packet_list = in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+
+  for (QString packet : packet_list)
+  {    
+    AOPacket *f_packet = new AOPacket(packet);
+
+    ao_app->ms_packet_received(f_packet);
+
+    delete f_packet;
+  }
+}
+
+void NetworkManager::handle_server_packet()
+{
+  char buffer[16384] = {0};
+  server_socket->read(buffer, server_socket->bytesAvailable());
 
   QString in_data = buffer;
 
@@ -76,14 +114,9 @@ void NetworkManager::handle_ms_packet()
   {
     AOPacket *f_packet = new AOPacket(packet);
 
-    ao_app->ms_packet_received(f_packet);
+    ao_app->server_packet_received(f_packet);
 
     delete f_packet;
   }
-}
-
-void NetworkManager::handle_server_packet()
-{
-
 }
 

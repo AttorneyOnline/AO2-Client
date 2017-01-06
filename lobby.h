@@ -24,7 +24,8 @@ public:
   void set_widgets();
   void list_servers();
   void list_favorites();
-  void append_chat_message(QString p_message_line);
+  void append_chatmessage(QString p_message_line);
+  void set_player_count(int players_online, int max_players);
 
 private:
   AOApplication *ao_app;

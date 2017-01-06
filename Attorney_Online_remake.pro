@@ -25,7 +25,9 @@ SOURCES += main.cpp\
     networkmanager.cpp \
     aoapplication.cpp \
     aopacket.cpp \
-    packet_distribution.cpp
+    packet_distribution.cpp \
+    hex_functions.cpp \
+    encryption_functions.cpp
 
 HEADERS  += lobby.h \
     text_file_functions.h \
@@ -38,4 +40,6 @@ HEADERS  += lobby.h \
     networkmanager.h \
     aoapplication.h \
     datatypes.h \
-    aopacket.h
+    aopacket.h \
+    hex_functions.h \
+    encryption_functions.h
