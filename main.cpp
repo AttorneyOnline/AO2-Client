@@ -8,6 +8,7 @@
 
 int main(int argc, char *argv[])
 {
+  AOApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   AOApplication main_app(argc, argv);
   main_app.construct_lobby();
   main_app.net_manager->connect_to_master();
