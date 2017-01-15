@@ -1,15 +1,15 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
+#include "aoimage.h"
+#include "aobutton.h"
+#include "aopacket.h"
+
 #include <QMainWindow>
 #include <QListWidget>
 #include <QLabel>
 #include <QPlainTextEdit>
 #include <QLineEdit>
-
-#include "aoimage.h"
-#include "aobutton.h"
-#include "aopacket.h"
 
 class AOApplication;
 

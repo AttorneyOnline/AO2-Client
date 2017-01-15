@@ -5,11 +5,11 @@
 #include "datatypes.h"
 
 #include <QApplication>
-#include <QMainWindow>
 #include <QVector>
 
 class NetworkManager;
 class Lobby;
+class Courtroom;
 
 class AOApplication : public QApplication
 {

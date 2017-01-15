@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     aopacket.cpp \
     packet_distribution.cpp \
     hex_functions.cpp \
-    encryption_functions.cpp
+    encryption_functions.cpp \
+    courtroom.cpp
 
 HEADERS  += lobby.h \
     text_file_functions.h \
@@ -42,4 +43,5 @@ HEADERS  += lobby.h \
     datatypes.h \
     aopacket.h \
     hex_functions.h \
-    encryption_functions.h
+    encryption_functions.h \
+    courtroom.h
