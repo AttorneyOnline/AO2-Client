@@ -19,3 +19,13 @@ QString get_default_theme_path()
 {
   return get_base_path() + "themes/default/";
 }
+
+QString get_character_path(QString p_character)
+{
+  return get_base_path() + "characters/" + p_character.toLower() + "/";
+}
+
+QString get_demothings_path()
+{
+  return get_base_path() + "misc/demothings/";
+}

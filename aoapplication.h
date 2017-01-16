@@ -21,8 +21,7 @@ public:
 
   NetworkManager *net_manager;
   Lobby *w_lobby;
-  //T0D0: change to custom class "Courtroom"
-  QMainWindow *w_courtroom;
+  Courtroom *w_courtroom;
 
   bool lobby_constructed = false;
   bool courtroom_constructed = false;

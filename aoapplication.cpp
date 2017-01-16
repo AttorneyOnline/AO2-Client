@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "lobby.h"
+#include "courtroom.h"
 #include "networkmanager.h"
 
 #include "aoapplication.h"
@@ -47,8 +48,7 @@ void AOApplication::construct_courtroom()
     return;
   }
 
-  //T0D0, make custom Courtroom class and uncomment
-  //w_courtroom = new QMainWindow(this);
+  w_courtroom = new Courtroom(this);
   courtroom_constructed = true;
 }
 

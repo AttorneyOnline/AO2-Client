@@ -3,6 +3,7 @@
 
 #include "aoimage.h"
 #include "aobutton.h"
+#include "aobuttongrid.h"
 #include "aopacket.h"
 
 #include <QMainWindow>
@@ -84,17 +85,15 @@ private:
 
   QComboBox *ui_text_color;
 
+  QSlider *ui_music_slider;
+  QSlider *ui_sfx_slider;
+  QSlider *ui_blip_slider;
 
 
   AOImage *ui_muted;
 
-
-
-  //ui_charselect w/ icons
-
-signals:
-
-public slots:
+  AOImage *ui_char_select_background;
+  AOButtonGrid *char_button_grid;
 };
 
 #endif // COURTROOM_H

@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     packet_distribution.cpp \
     hex_functions.cpp \
     encryption_functions.cpp \
-    courtroom.cpp
+    courtroom.cpp \
+    aocharbutton.cpp
 
 HEADERS  += lobby.h \
     text_file_functions.h \
@@ -44,4 +45,5 @@ HEADERS  += lobby.h \
     aopacket.h \
     hex_functions.h \
     encryption_functions.h \
-    courtroom.h
+    courtroom.h \
+    aocharbutton.h
