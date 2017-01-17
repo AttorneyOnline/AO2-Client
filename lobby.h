@@ -19,7 +19,6 @@ class Lobby : public QMainWindow
 
 public:
   Lobby(AOApplication *parent);
-  ~Lobby();
 
   void set_widgets();
   void list_servers();
@@ -27,8 +26,15 @@ public:
   void append_chatmessage(QString p_message_line);
   void set_player_count(int players_online, int max_players);
 
+  ~Lobby();
+
 private:
   AOApplication *ao_app;
+
+  const int m_lobby_width = 517;
+  const int m_lobby_height = 666;
+
+  bool public_servers_selected = true;
 
   AOImage *ui_background;
 
@@ -50,11 +56,6 @@ private:
 
   QLineEdit *ui_chatname;
   QLineEdit *ui_chatmessage;
-
-  const int m_lobby_width = 517;
-  const int m_lobby_height = 666;
-
-  bool public_servers_selected = true;
 
 private slots:
   void on_public_servers_clicked();

@@ -46,11 +46,6 @@ Lobby::Lobby(AOApplication *parent) : QMainWindow()
   set_widgets();
 }
 
-Lobby::~Lobby()
-{
-  delete ui_background;
-}
-
 //sets images, position and size
 void Lobby::set_widgets()
 {
@@ -280,4 +275,21 @@ void Lobby::set_player_count(int players_online, int max_players)
 {
   QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
   ui_player_count->setText(f_string);
+}
+
+Lobby::~Lobby()
+{
+  delete ui_background;
+  delete ui_public_servers;
+  delete ui_favorites;
+  delete ui_refresh;
+  delete ui_add_to_fav;
+  delete ui_connect;
+  delete ui_about;
+  delete ui_server_list;
+  delete ui_player_count;
+  delete ui_description;
+  delete ui_chatbox;
+  delete ui_chatname;
+  delete ui_chatmessage;
 }

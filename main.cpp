@@ -5,6 +5,7 @@
 #include "datatypes.h"
 #include "networkmanager.h"
 #include "lobby.h"
+#include "courtroom.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,11 @@ int main(int argc, char *argv[])
   AOPacket *f_packet = new AOPacket("ALL#%");
   main_app.send_ms_packet(f_packet);
   main_app.w_lobby->show();
+
+  //debug start
+  Courtroom w_courtroom;
+  w_courtroom.show();
+  //debug end
 
   return main_app.exec();
 }
