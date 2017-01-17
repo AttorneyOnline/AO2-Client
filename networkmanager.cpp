@@ -9,8 +9,8 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;
 
-  ms_socket = new QTcpSocket();
-  server_socket = new QTcpSocket();
+  ms_socket = new QTcpSocket(this);
+  server_socket = new QTcpSocket(this);
 
   QObject::connect(ms_socket, SIGNAL(readyRead()), this, SLOT(handle_ms_packet()));
   QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
@@ -18,8 +18,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
 NetworkManager::~NetworkManager()
 {
-  delete ms_socket;
-  delete server_socket;
+
 }
 
 void NetworkManager::connect_to_master()

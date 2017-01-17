@@ -17,10 +17,5 @@ int main(int argc, char *argv[])
   main_app.send_ms_packet(f_packet);
   main_app.w_lobby->show();
 
-  //debug start
-  Courtroom w_courtroom;
-  w_courtroom.show();
-  //debug end
-
   return main_app.exec();
 }

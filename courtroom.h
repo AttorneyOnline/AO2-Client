@@ -14,6 +14,7 @@
 #include <QComboBox>
 #include <QSlider>
 #include <QVector>
+#include <QCloseEvent>
 
 class AOApplication;
 

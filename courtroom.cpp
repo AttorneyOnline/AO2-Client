@@ -2,6 +2,8 @@
 
 #include "aoapplication.h"
 
+#include <QDebug>
+
 Courtroom::Courtroom(AOApplication *parent) : QMainWindow()
 {
   ao_app = parent;
@@ -117,8 +119,9 @@ void Courtroom::set_widgets()
   ui_mute_list->resize(231, 159);
 
   ui_area_list->move(266, 494);
-  ui_area_list->resize();
+  //ui_area_list->resize();
 
+  /*
   QListWidget *ui_music_list;
 
   QLineEdit *ui_ic_chat_message;
@@ -145,7 +148,8 @@ void Courtroom::set_widgets()
   AOButton *ui_objection;
   AOButton *ui_take_that;
 
-  AOButton *ui_ooc_toggle;
+  ui_ooc_toggle->move(100,100);
+
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
 
@@ -156,7 +160,7 @@ void Courtroom::set_widgets()
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
-\
+
   AOButton *ui_custom_objection;
   AOButton *ui_realization;
   AOButton *ui_mute;
@@ -187,87 +191,10 @@ void Courtroom::set_widgets()
   QLineEdit *ui_char_password;
 
   AOButton *ui_spectator;
+  */
 }
 
 Courtroom::~Courtroom()
 {
-  delete ui_background;
 
-  //T0D0: deallocate viewport elements like background, desk, etc.
-
-  delete ui_ic_chatlog;
-
-  delete ui_server_chatlog;
-  delete ui_ms_chatlog;
-
-  delete ui_mute_list;
-  delete ui_area_list;
-  delete ui_music_list;
-
-  delete ui_ic_chat_message;
-
-  delete ui_ooc_chat_message;
-  delete ui_ooc_chat_name;
-
-  delete ui_area_password;
-  delete ui_music_search;
-
-  //T0D0: deallocate emote buttons
-
-  delete ui_emote_left;
-  delete ui_emote_right;
-
-  delete ui_defense_bar;
-  delete ui_prosecution_bar;
-
-  delete ui_music_label;
-  delete ui_sfx_label;
-  delete ui_blip_label;
-
-  delete ui_hold_it;
-  delete ui_objection;
-  delete ui_take_that;
-
-  delete ui_ooc_toggle;
-  delete ui_witness_testimony;
-  delete ui_cross_examination;
-
-  delete ui_change_character;
-  delete ui_reload_theme;
-  delete ui_call_mod;
-
-  delete ui_pre;
-  delete ui_flip;
-  delete ui_guard;
-\
-  delete ui_custom_objection;
-  delete ui_realization;
-  delete ui_mute;
-
-  delete ui_defense_plus;
-  delete ui_defense_minus;
-
-  delete ui_prosecution_plus;
-  delete ui_prosecution_minus;
-
-  delete ui_text_color;
-
-  delete ui_music_slider;
-  delete ui_sfx_slider;
-  delete ui_blip_slider;
-
-  delete ui_muted;
-
-  delete ui_char_select_background;
-
-  //T0D0: deallocate char buttons
-  //QVector<AOCharButton*> ui_char_button_list;
-
-  delete ui_selector;
-
-  delete ui_back_to_lobby;
-
-  delete ui_char_password;
-
-  delete ui_spectator;
 }

@@ -13,7 +13,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
 AOApplication::~AOApplication()
 {
-
+  destruct_lobby();
+  destruct_courtroom();
 }
 
 void AOApplication::construct_lobby()
