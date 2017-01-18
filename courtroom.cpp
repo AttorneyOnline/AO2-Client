@@ -7,11 +7,11 @@
 
 #include <QDebug>
 
-Courtroom::Courtroom(AOApplication *parent) : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
-  ao_app = parent;
+  ao_app = p_ao_app;
 
-  ui_background = new AOImage(this);
+  ui_background = new AOImage(this, ao_app);
 
   //viewport elements like background, desk, etc.
 
@@ -35,41 +35,41 @@ Courtroom::Courtroom(AOApplication *parent) : QMainWindow()
 
   //emote buttons
 
-  ui_emote_left = new AOButton(this);
-  ui_emote_right = new AOButton(this);
+  ui_emote_left = new AOButton(this, ao_app);
+  ui_emote_right = new AOButton(this, ao_app);
 
-  ui_defense_bar = new AOImage(this);
-  ui_prosecution_bar = new  AOImage(this);
+  ui_defense_bar = new AOImage(this, ao_app);
+  ui_prosecution_bar = new  AOImage(this, ao_app);
 
   ui_music_label = new QLabel(this);
   ui_sfx_label = new QLabel(this);
   ui_blip_label = new QLabel(this);
 
-  ui_hold_it = new AOButton(this);
-  ui_objection = new AOButton(this);
-  ui_take_that = new AOButton(this);
+  ui_hold_it = new AOButton(this, ao_app);
+  ui_objection = new AOButton(this, ao_app);
+  ui_take_that = new AOButton(this, ao_app);
 
-  ui_ooc_toggle = new AOButton(this);
-  ui_witness_testimony = new AOButton(this);
-  ui_cross_examination = new AOButton(this);
+  ui_ooc_toggle = new AOButton(this, ao_app);
+  ui_witness_testimony = new AOButton(this, ao_app);
+  ui_cross_examination = new AOButton(this, ao_app);
 
-  ui_change_character = new AOButton(this);
-  ui_reload_theme = new AOButton(this);
-  ui_call_mod = new AOButton(this);
+  ui_change_character = new AOButton(this, ao_app);
+  ui_reload_theme = new AOButton(this, ao_app);
+  ui_call_mod = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
   ui_flip = new QCheckBox(this);
   ui_guard = new QCheckBox(this);
 
-  ui_custom_objection = new AOButton(this);
-  ui_realization = new AOButton(this);
-  ui_mute = new AOButton(this);
+  ui_custom_objection = new AOButton(this, ao_app);
+  ui_realization = new AOButton(this, ao_app);
+  ui_mute = new AOButton(this, ao_app);
 
-  ui_defense_plus = new AOButton(this);
-  ui_defense_minus = new AOButton(this);
+  ui_defense_plus = new AOButton(this, ao_app);
+  ui_defense_minus = new AOButton(this, ao_app);
 
-  ui_prosecution_plus = new AOButton(this);
-  ui_prosecution_minus = new AOButton(this);
+  ui_prosecution_plus = new AOButton(this, ao_app);
+  ui_prosecution_minus = new AOButton(this, ao_app);
 
   ui_text_color = new QComboBox(this);
 
@@ -77,22 +77,22 @@ Courtroom::Courtroom(AOApplication *parent) : QMainWindow()
   ui_sfx_slider = new QSlider(this);
   ui_blip_slider = new QSlider(this);
 
-  ui_muted = new AOImage(this);
+  ui_muted = new AOImage(this, ao_app);
 
   /////////////char select widgets under here///////////////
 
-  ui_char_select_background = new AOImage(this);
+  ui_char_select_background = new AOImage(this, ao_app);
 
   //T0D0: allocate and position charbuttons
   //QVector<AOCharButton*> ui_char_button_list;
 
-  ui_selector = new AOImage(ui_char_select_background);
+  ui_selector = new AOImage(ui_char_select_background, ao_app);
 
-  ui_back_to_lobby = new AOButton(ui_char_select_background);
+  ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
 
   ui_char_password = new QLineEdit(ui_char_select_background);
 
-  ui_spectator = new AOButton(ui_char_select_background);
+  ui_spectator = new AOButton(ui_char_select_background, ao_app);
 
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
 
@@ -203,14 +203,14 @@ void Courtroom::set_widgets()
 
 void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
-  QString design_ini_path = get_theme_path() + "courtroom_design.ini";
-  QString default_ini_path = get_base_path() + "themes/default/courtroom_design.ini";
+  QString design_ini_path = ao_app->get_theme_path() + "courtroom_design.ini";
+  QString default_ini_path = ao_app->get_base_path() + "themes/default/courtroom_design.ini";
 
-  pos_size_type design_ini_result = get_pos_and_size(p_identifier, design_ini_path);
+  pos_size_type design_ini_result = ao_app->get_pos_and_size(p_identifier, design_ini_path);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
-    design_ini_result = get_pos_and_size(p_identifier, default_ini_path);
+    design_ini_result = ao_app->get_pos_and_size(p_identifier, default_ini_path);
 
     if (design_ini_result.width < 0 || design_ini_result.height < 0)
     {
@@ -227,7 +227,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Courtroom::on_reload_theme_clicked()
 {
-  g_user_theme = get_user_theme();
+  ao_app->set_user_theme();
 
   set_widgets();
 }

@@ -1,4 +1,5 @@
 #include "global_variables.h"
+#include "text_file_functions.h"
 
 const int RELEASE = 2;
 const int MAJOR_VERSION = 1;

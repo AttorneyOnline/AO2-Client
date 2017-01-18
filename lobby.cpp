@@ -9,21 +9,21 @@
 
 #include <QDebug>
 
-Lobby::Lobby(AOApplication *parent) : QMainWindow()
+Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
-  ao_app = parent;
+  ao_app = p_ao_app;
 
   this->setWindowTitle("Attorney Online 2");
   this->resize(m_lobby_width, m_lobby_height);
   this->setFixedSize(m_lobby_width, m_lobby_height);
 
-  ui_background = new AOImage(this);
-  ui_public_servers = new AOButton(this);
-  ui_favorites = new AOButton(this);
-  ui_refresh = new AOButton(this);
-  ui_add_to_fav = new AOButton(this);
-  ui_connect = new AOButton(this);
-  ui_about = new AOButton(this);
+  ui_background = new AOImage(this, ao_app);
+  ui_public_servers = new AOButton(this, ao_app);
+  ui_favorites = new AOButton(this, ao_app);
+  ui_refresh = new AOButton(this, ao_app);
+  ui_add_to_fav = new AOButton(this, ao_app);
+  ui_connect = new AOButton(this, ao_app);
+  ui_about = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
   ui_player_count = new QLabel(this);
   ui_description = new QPlainTextEdit(this);
@@ -49,8 +49,7 @@ Lobby::Lobby(AOApplication *parent) : QMainWindow()
 //sets images, position and size
 void Lobby::set_widgets()
 {
-  //global to efficiently set images on button presses
-  g_user_theme = get_user_theme();
+  ao_app->set_user_theme();
 
   ui_background->set_image("lobbybackground.png");
   ui_background->move(0, 0);
@@ -130,7 +129,8 @@ void Lobby::on_favorites_clicked()
   ui_favorites->set_image("favorites_selected.png");
   ui_public_servers->set_image("publicservers.png");
 
-  ao_app->favorite_list = read_serverlist_txt();
+  ao_app->set_favorite_list();
+  //ao_app->favorite_list = read_serverlist_txt();
 
   list_favorites();
 
@@ -166,18 +166,19 @@ void Lobby::on_add_to_fav_released()
   if (!public_servers_selected)
     return;
 
-  int n_server = ui_server_list->currentRow();
-
-  if (n_server < 0 || n_server >= ao_app->server_list.size())
+  ao_app->add_favorite_server(ui_server_list->currentRow());
+  /*
+  if (n_server < 0 || n_server >= ao_app->get_server_list().size())
     return;
 
-  server_type fav_server = ao_app->server_list.at(n_server);
+  server_type fav_server = ao_app->get_server_list().at(n_server);
 
   QString str_port = QString::number(fav_server.port);
 
   QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
 
   write_to_serverlist_txt(server_line);
+  */
 }
 
 void Lobby::on_connect_pressed()
@@ -216,17 +217,17 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 
   if (public_servers_selected)
   {
-    if (n_server >= ao_app->server_list.size())
+    if (n_server >= ao_app->get_server_list().size())
       return;
 
-    f_server = ao_app->server_list.at(p_model.row());
+    f_server = ao_app->get_server_list().at(p_model.row());
   }
   else
   {
-    if (n_server >= ao_app->favorite_list.size())
+    if (n_server >= ao_app->get_favorite_list().size())
       return;
 
-    f_server = ao_app->favorite_list.at(p_model.row());
+    f_server = ao_app->get_favorite_list().at(p_model.row());
   }
 
   ui_description->clear();
@@ -258,7 +259,7 @@ void Lobby::list_servers()
 {
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->server_list)
+  for (server_type i_server : ao_app->get_server_list())
   {
     ui_server_list->addItem(i_server.name);
   }
@@ -268,7 +269,7 @@ void Lobby::list_favorites()
 {
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->favorite_list)
+  for (server_type i_server : ao_app->get_favorite_list())
   {
     ui_server_list->addItem(i_server.name);
   }

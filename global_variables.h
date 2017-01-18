@@ -3,6 +3,6 @@
 
 #include <QString>
 
-extern QString g_user_theme;
+
 
 #endif // GLOBAL_VARIABLES_H

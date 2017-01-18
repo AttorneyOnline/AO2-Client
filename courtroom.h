@@ -23,7 +23,7 @@ class Courtroom : public QMainWindow
 {
   Q_OBJECT
 public:
-  explicit Courtroom(AOApplication *parent = 0);
+  explicit Courtroom(AOApplication *p_ao_app);
   void set_widgets();
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 

@@ -18,7 +18,7 @@ class Lobby : public QMainWindow
   Q_OBJECT
 
 public:
-  Lobby(AOApplication *parent);
+  Lobby(AOApplication *p_ao_app);
 
   void set_widgets();
   void list_servers();

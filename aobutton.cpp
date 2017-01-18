@@ -6,9 +6,9 @@
 
 #include <QDebug>
 
-AOButton::AOButton(QWidget *parent) : QPushButton(parent)
+AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app) : QPushButton(parent)
 {
-
+  ao_app = p_ao_app;
 }
 
 AOButton::~AOButton()
@@ -18,8 +18,8 @@ AOButton::~AOButton()
 
 void AOButton::set_image(QString p_image)
 {
-  QString image_path = get_theme_path() + p_image;
-  QString default_image_path = get_default_theme_path() + p_image;
+  QString image_path = ao_app->get_theme_path() + p_image;
+  QString default_image_path = ao_app->get_default_theme_path() + p_image;
 
   if (file_exists(image_path))
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");

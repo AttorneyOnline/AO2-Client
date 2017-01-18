@@ -1,4 +1,4 @@
-#include "text_file_functions.h"
+#include "aoapplication.h"
 
 #include "path_functions.h"
 #include "file_functions.h"
@@ -8,7 +8,7 @@
 #include <QVector>
 #include <QDebug>
 
-QString get_user_theme(){
+QString AOApplication::read_user_theme(){
   QFile config_file(get_base_path() + "config.ini");
   if (!config_file.open(QIODevice::ReadOnly))
       return "default";
@@ -31,7 +31,7 @@ QString get_user_theme(){
   return "default";
 }
 
-void write_to_serverlist_txt(QString p_line)
+void AOApplication::write_to_serverlist_txt(QString p_line)
 {
   QFile serverlist_txt;
   QString serverlist_txt_path = get_base_path() + "serverlist.txt";
@@ -50,7 +50,7 @@ void write_to_serverlist_txt(QString p_line)
   serverlist_txt.close();
 }
 
-QVector<server_type> read_serverlist_txt()
+QVector<server_type> AOApplication::read_serverlist_txt()
 {
   QVector<server_type> f_server_list;
 
@@ -86,7 +86,7 @@ QVector<server_type> read_serverlist_txt()
   return f_server_list;
 }
 
-pos_size_type get_pos_and_size(QString p_identifier, QString p_design_path)
+pos_size_type AOApplication::get_pos_and_size(QString p_identifier, QString p_design_path)
 {
   QFile design_ini;
 
