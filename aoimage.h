@@ -12,6 +12,7 @@ public:
   ~AOImage();
 
   void set_image(QString p_image);
+  void set_size_and_pos(QString identifier);
 };
 
 #endif // AOIMAGE_H

@@ -51,6 +51,9 @@ void AOApplication::construct_courtroom()
 
   w_courtroom = new Courtroom(this);
   courtroom_constructed = true;
+
+  //D3BUG
+  w_courtroom->show();
 }
 
 void AOApplication::destruct_courtroom()

@@ -5,6 +5,7 @@
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aopacket.h"
+#include "datatypes.h"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -24,6 +25,8 @@ class Courtroom : public QMainWindow
 public:
   explicit Courtroom(AOApplication *parent = 0);
   void set_widgets();
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+
   ~Courtroom();
 
 private:
@@ -117,6 +120,8 @@ private:
   QLineEdit *ui_char_password;
 
   AOButton *ui_spectator;
+private slots:
+  void on_reload_theme_clicked();
 
 };
 

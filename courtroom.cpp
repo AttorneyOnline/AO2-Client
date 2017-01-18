@@ -1,6 +1,8 @@
 #include "courtroom.h"
 
 #include "aoapplication.h"
+#include "text_file_functions.h"
+#include "path_functions.h"
 
 #include <QDebug>
 
@@ -91,6 +93,8 @@ Courtroom::Courtroom(AOApplication *parent) : QMainWindow()
 
   ui_spectator = new AOButton(ui_char_select_background);
 
+  connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
+
   set_widgets();
 }
 
@@ -102,18 +106,16 @@ void Courtroom::set_widgets()
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
 
-  //viewport elements like background, desk, etc.
+  //viewport elements like background, desk, etc. go here
 
-  ui_ic_chatlog->move(231, 319);
-  ui_ic_chatlog->resize(260, 0);
+  set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
 
-  ui_ms_chatlog->move(490, 1);
-  ui_ms_chatlog->move(224, 277);
+  set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
+
+  //T0D0: finish the rest of this using set_size_and_pos
 
   ui_server_chatlog->move(490, 1);
   ui_server_chatlog->resize(224, 277);
-
-
 
   ui_mute_list->move(260, 160);
   ui_mute_list->resize(231, 159);
@@ -121,7 +123,7 @@ void Courtroom::set_widgets()
   ui_area_list->move(266, 494);
   //ui_area_list->resize();
 
-  /*
+
   QListWidget *ui_music_list;
 
   QLineEdit *ui_ic_chat_message;
@@ -148,13 +150,18 @@ void Courtroom::set_widgets()
   AOButton *ui_objection;
   AOButton *ui_take_that;
 
-  ui_ooc_toggle->move(100,100);
+  //ui_ooc_toggle->move(100,100);
 
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
 
   AOButton *ui_change_character;
-  AOButton *ui_reload_theme;
+
+
+  set_size_and_pos(ui_reload_theme, "reload_theme");
+  ui_reload_theme->setText("Reload theme");
+
+
   AOButton *ui_call_mod;
 
   QCheckBox *ui_pre;
@@ -191,7 +198,37 @@ void Courtroom::set_widgets()
   QLineEdit *ui_char_password;
 
   AOButton *ui_spectator;
-  */
+}
+
+void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
+{
+  QString design_ini_path = get_theme_path() + "courtroom_design.ini";
+  QString default_ini_path = get_base_path() + "themes/default/courtroom_design.ini";
+
+  pos_size_type design_ini_result = get_pos_and_size(p_identifier, design_ini_path);
+
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)
+  {
+    design_ini_result = get_pos_and_size(p_identifier, default_ini_path);
+
+    if (design_ini_result.width < 0 || design_ini_result.height < 0)
+    {
+      //at this point it's pretty much game over
+      //T0D0: add message box
+      qDebug() << "CRITICAL ERROR: NO SUITABLE DATA FOR SETTING " << p_identifier;
+      ao_app->quit();
+    }
+  }
+
+  p_widget->move(design_ini_result.x, design_ini_result.y);
+  p_widget->resize(design_ini_result.width, design_ini_result.height);
+}
+
+void Courtroom::on_reload_theme_clicked()
+{
+  get_user_theme() = get_user_theme();
+
+  set_widgets();
 }
 
 Courtroom::~Courtroom()

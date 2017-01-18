@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QVector>
+#include <QDebug>
 
 QString get_user_theme(){
   QFile config_file(get_base_path() + "config.ini");
@@ -84,3 +85,58 @@ QVector<server_type> read_serverlist_txt()
 
   return f_server_list;
 }
+
+pos_size_type get_pos_and_size(QString p_identifier, QString p_design_path)
+{
+  QFile design_ini;
+
+  pos_size_type return_value;
+
+  design_ini.setFileName(p_design_path);
+
+  if (!design_ini.open(QIODevice::ReadOnly))
+  {
+    qDebug() << "W: Could not open or read " << p_design_path;
+    //caller should deal with the result properly(check width and height of output for negatives)
+    return_value.height = -1;
+    return_value.width = -1;
+
+    return return_value;
+  }
+
+  QTextStream in(&design_ini);
+
+  while (!in.atEnd())
+  {
+    QString f_line = in.readLine();
+
+    if (!f_line.startsWith(p_identifier))
+      continue;
+
+    QStringList line_elements = f_line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    QStringList sub_line_elements = line_elements.at(1).split(",");
+
+    if (sub_line_elements.size() < 4)
+      continue;
+
+    //T0D0 check if integer conversion actually succeeded
+    return_value.x = sub_line_elements.at(0).toInt();
+    return_value.y = sub_line_elements.at(1).toInt();
+    return_value.width = sub_line_elements.at(2).toInt();
+    return_value.height = sub_line_elements.at(3).toInt();
+
+    return return_value;
+  }
+
+  qDebug() << "W: Could not find proper " << p_identifier << " in " << p_design_path;
+  //caller should deal with the result properly(check width and height of output for negatives)
+  return_value.height = -1;
+  return_value.width = -1;
+
+  return return_value;
+}
+

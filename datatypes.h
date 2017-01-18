@@ -65,4 +65,12 @@ struct pos_type
   int y;
 };
 
+struct pos_size_type
+{
+  int x = 0;
+  int y = 0;
+  int width = 0;
+  int height = 0;
+};
+
 #endif // DATATYPES_H

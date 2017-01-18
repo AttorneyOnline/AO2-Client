@@ -189,6 +189,14 @@ void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
 
+  //D3BUG START
+
+  ao_app->construct_courtroom();
+
+  ao_app->destruct_lobby();
+
+  //D3BUG END
+
   //T0D0: call ao_app to initialize loading sequence
 }
 
