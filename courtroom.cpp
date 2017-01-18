@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "text_file_functions.h"
 #include "path_functions.h"
+#include "global_variables.h"
 
 #include <QDebug>
 
@@ -226,7 +227,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Courtroom::on_reload_theme_clicked()
 {
-  get_user_theme() = get_user_theme();
+  g_user_theme = get_user_theme();
 
   set_widgets();
 }
