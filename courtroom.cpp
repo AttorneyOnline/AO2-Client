@@ -113,83 +113,77 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
 
-  //T0D0: finish the rest of this using set_size_and_pos
+  set_size_and_pos(ui_server_chatlog, "server_chatlog");
 
-  ui_server_chatlog->move(490, 1);
-  ui_server_chatlog->resize(224, 277);
+  set_size_and_pos(ui_mute_list, "mute_list");
+  set_size_and_pos(ui_area_list, "area_list");
 
-  ui_mute_list->move(260, 160);
-  ui_mute_list->resize(231, 159);
+  set_size_and_pos(ui_music_list, "music_list");
 
-  ui_area_list->move(266, 494);
-  //ui_area_list->resize();
+  set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
 
+  set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
+  set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name");
 
-  QListWidget *ui_music_list;
-
-  QLineEdit *ui_ic_chat_message;
-
-  QLineEdit *ui_ooc_chat_message;
-  QLineEdit *ui_ooc_chat_name;
-
-  QLineEdit *ui_area_password;
-  QLineEdit *ui_music_search;
+  set_size_and_pos(ui_area_password, "area_password");
+  set_size_and_pos(ui_music_search, "music_search");
 
   //emote buttons
 
-  AOButton *ui_emote_left;
-  AOButton *ui_emote_right;
+  set_size_and_pos(ui_emote_left, "emote_left");
+  set_size_and_pos(ui_emote_right, "emote_right");
 
-  AOImage *ui_defense_bar;
-  AOImage *ui_prosecution_bar;
+  set_size_and_pos(ui_defense_bar, "defense_bar");
+  set_size_and_pos(ui_prosecution_bar, "prosecution_bar");
 
-  QLabel *ui_music_label;
-  QLabel *ui_sfx_label;
-  QLabel *ui_blip_label;
+  set_size_and_pos(ui_music_label, "music_label");
+  set_size_and_pos(ui_sfx_label, "sfx_label");
+  set_size_and_pos(ui_blip_label, "blip_label");
 
-  AOButton *ui_hold_it;
-  AOButton *ui_objection;
-  AOButton *ui_take_that;
+  set_size_and_pos(ui_hold_it, "hold_it");
+  set_size_and_pos(ui_objection, "objection");
+  set_size_and_pos(ui_take_that, "take_that");
 
-  //ui_ooc_toggle->move(100,100);
+  set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
 
-  AOButton *ui_witness_testimony;
-  AOButton *ui_cross_examination;
+  set_size_and_pos(ui_witness_testimony, "witness testimony");
+  set_size_and_pos(ui_cross_examination, "cross_examination");
 
-  AOButton *ui_change_character;
-
+  set_size_and_pos(ui_change_character, "change_character";
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
   ui_reload_theme->setText("Reload theme");
 
+  set_size_and_pos(ui_call_mod, "call_mod");
 
-  AOButton *ui_call_mod;
+  set_size_and_pos(ui_pre, "pre");
+  set_size_and_pos(ui_flip, "flip");
+  set_size_and_pos(ui_guard, "guard");
 
-  QCheckBox *ui_pre;
-  QCheckBox *ui_flip;
-  QCheckBox *ui_guard;
+  set_size_and_pos(ui_custom_objection, "custom_objection");
+  set_size_and_pos(ui_realization, "realization");
+  set_size_and_pos(ui_mute, "mute");
 
-  AOButton *ui_custom_objection;
-  AOButton *ui_realization;
-  AOButton *ui_mute;
+  set_size_and_pos(ui_defense_plus, "defense_plus");
+  set_size_and_pos(ui_defense_minus, "defense_minus");
 
-  AOButton *ui_defense_plus;
-  AOButton *ui_defense_minus;
+  set_size_and_pos(ui_prosecution_plus, "prosecution_plus");
+  set_size_and_pos(ui_prosecution_minus, "prosecution_minus");
 
-  AOButton *ui_prosecution_plus;
-  AOButton *ui_prosecution_minus;
+  set_size_and_pos(ui_text_color, "text_color");
 
-  QComboBox *ui_text_color;
+  set_size_and_pos(ui_music_slider, "music_slider");
+  set_size_and_pos(ui_sfx_slider, "sfx_slider");
+  set_size_and_pos(ui_blip_slider, "blip_slider");
 
-  QSlider *ui_music_slider;
-  QSlider *ui_sfx_slider;
-  QSlider *ui_blip_slider;
-
-  AOImage *ui_muted;
+  //T0D0: scale this according to ui_ic_chat_message
+  //set_size_and_pos(ui_muted, "muted");
 
   //char select stuff under here
 
-  AOImage *ui_char_select_background;
+  ui_char_select_background->set_image("charselect_background.png");
+  ui_char_select_background->move(0, 0);
+  ui_char_select_background->resize(m_courtroom_width, m_courtroom_height);
 
   QVector<AOCharButton*> ui_char_button_list;
   AOImage *ui_selector;
