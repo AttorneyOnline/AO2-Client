@@ -193,6 +193,7 @@ void Courtroom::set_widgets()
   QLineEdit *ui_char_password;
 
   AOButton *ui_spectator;
+
 }
 
 void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
