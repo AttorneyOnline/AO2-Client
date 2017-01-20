@@ -14,7 +14,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
 
   this->setWindowTitle("Attorney Online 2");
-  this->resize(m_lobby_width, m_lobby_height);
   this->setFixedSize(m_lobby_width, m_lobby_height);
 
   ui_background = new AOImage(this, ao_app);
@@ -167,18 +166,6 @@ void Lobby::on_add_to_fav_released()
     return;
 
   ao_app->add_favorite_server(ui_server_list->currentRow());
-  /*
-  if (n_server < 0 || n_server >= ao_app->get_server_list().size())
-    return;
-
-  server_type fav_server = ao_app->get_server_list().at(n_server);
-
-  QString str_port = QString::number(fav_server.port);
-
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
-
-  write_to_serverlist_txt(server_line);
-  */
 }
 
 void Lobby::on_connect_pressed()

@@ -5,7 +5,7 @@
 
 #include <QFile>
 
-AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app)
+AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app) : QPushButton(parent)
 {
   m_parent = parent;
 

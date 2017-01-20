@@ -83,8 +83,22 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_char_select_background = new AOImage(this, ao_app);
 
-  //T0D0: allocate and position charbuttons
-  //QVector<AOCharButton*> ui_char_button_list;
+  //setting up the grid and positions
+  const int base_x_pos{25};
+  const int base_y_pos{36};
+
+  const int x_modifier{67};
+  int x_mod_count{0};
+
+  const int y_modifier{67};
+  int y_mod_count{0};
+
+  for (int n = 0 ; n < 90 ; ++n)
+  {
+    ui_char_button_list.append(new AOCharButton(ui_char_select_background, ao_app));
+  }
+
+  ui_char_select_background->hide();
 
   ui_selector = new AOImage(ui_char_select_background, ao_app);
 
@@ -96,12 +110,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
 
+  connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
+
   set_widgets();
 }
 
 void Courtroom::set_widgets()
 {
   this->setFixedSize(m_courtroom_width, m_courtroom_height);
+  this->setWindowTitle("Attorney Online 2: Server name here");
 
   ui_background->set_image("courtroombackground.png");
   ui_background->move(0, 0);
@@ -146,10 +163,10 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
 
-  set_size_and_pos(ui_witness_testimony, "witness testimony");
+  set_size_and_pos(ui_witness_testimony, "witness_testimony");
   set_size_and_pos(ui_cross_examination, "cross_examination");
 
-  set_size_and_pos(ui_change_character, "change_character";
+  set_size_and_pos(ui_change_character, "change_character");
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
   ui_reload_theme->setText("Reload theme");
@@ -185,14 +202,19 @@ void Courtroom::set_widgets()
   ui_char_select_background->move(0, 0);
   ui_char_select_background->resize(m_courtroom_width, m_courtroom_height);
 
-  QVector<AOCharButton*> ui_char_button_list;
-  AOImage *ui_selector;
+  //T0D0: uncomment and set position properly
+  //QVector<AOCharButton*> ui_char_button_list;
 
-  AOButton *ui_back_to_lobby;
+  ui_selector->set_image("selector.png");
+  ui_selector->hide();
 
-  QLineEdit *ui_char_password;
+  ui_back_to_lobby->setText("Back to Lobby");
+  set_size_and_pos(ui_back_to_lobby, "back_to_lobby");
 
-  AOButton *ui_spectator;
+  set_size_and_pos(ui_char_password, "char_password");
+
+  ui_spectator->setText("spectator");
+  set_size_and_pos(ui_spectator, "spectator");
 
 }
 
@@ -225,6 +247,12 @@ void Courtroom::on_reload_theme_clicked()
   ao_app->set_user_theme();
 
   set_widgets();
+}
+
+void Courtroom::on_back_to_lobby_clicked()
+{
+  ao_app->construct_lobby();
+  ao_app->destruct_courtroom();
 }
 
 Courtroom::~Courtroom()
