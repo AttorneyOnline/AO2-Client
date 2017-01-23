@@ -99,7 +99,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       return;
 
-    //T0D0: save server version here, somehow
+    //T0D0: save server version here, somehow(it's in the HI# packet usually)
   }
   else if (header == "CT")
   {

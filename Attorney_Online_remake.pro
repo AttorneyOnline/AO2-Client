@@ -20,7 +20,6 @@ SOURCES += main.cpp\
     aoimage.cpp \
     file_functions.cpp \
     aobutton.cpp \
-    global_variables.cpp \
     debug_functions.cpp \
     networkmanager.cpp \
     aoapplication.cpp \
@@ -38,7 +37,6 @@ HEADERS  += lobby.h \
     aoimage.h \
     file_functions.h \
     aobutton.h \
-    global_variables.h \
     debug_functions.h \
     networkmanager.h \
     aoapplication.h \
