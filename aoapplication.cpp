@@ -28,6 +28,8 @@ void AOApplication::construct_lobby()
 
   w_lobby = new Lobby(this);
   lobby_constructed = true;
+
+  w_lobby->show();
 }
 
 void AOApplication::destruct_lobby()

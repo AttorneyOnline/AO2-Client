@@ -123,6 +123,8 @@ private:
 private slots:
   void on_reload_theme_clicked();
 
+  void on_back_to_lobby_clicked();
+
 };
 
 #endif // COURTROOM_H

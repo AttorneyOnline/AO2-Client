@@ -20,7 +20,6 @@ SOURCES += main.cpp\
     aoimage.cpp \
     file_functions.cpp \
     aobutton.cpp \
-    global_variables.cpp \
     debug_functions.cpp \
     networkmanager.cpp \
     aoapplication.cpp \
@@ -29,7 +28,8 @@ SOURCES += main.cpp\
     hex_functions.cpp \
     encryption_functions.cpp \
     courtroom.cpp \
-    aocharbutton.cpp
+    aocharbutton.cpp \
+    hardware_functions.cpp
 
 HEADERS  += lobby.h \
     text_file_functions.h \
@@ -37,7 +37,6 @@ HEADERS  += lobby.h \
     aoimage.h \
     file_functions.h \
     aobutton.h \
-    global_variables.h \
     debug_functions.h \
     networkmanager.h \
     aoapplication.h \
@@ -46,4 +45,5 @@ HEADERS  += lobby.h \
     hex_functions.h \
     encryption_functions.h \
     courtroom.h \
-    aocharbutton.h
+    aocharbutton.h \
+    hardware_functions.h

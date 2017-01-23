@@ -3,6 +3,7 @@
 #include "lobby.h"
 #include "networkmanager.h"
 #include "encryption_functions.h"
+#include "hardware_functions.h"
 
 #include <QDebug>
 
@@ -85,9 +86,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     //you may ask where 322 comes from. that would be a good question.
     s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
 
-    //T0D0 add an actual HDID here
-    AOPacket *hi_packet = new AOPacket("HI#ao2testinginprogressdontmindme#%");
+    QString f_hdid;
+    f_hdid = get_hdid();
 
+    AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
 
     delete hi_packet;
@@ -97,6 +99,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       return;
 
+    //T0D0: save server version here, somehow(it's in the HI# packet usually)
   }
   else if (header == "CT")
   {
