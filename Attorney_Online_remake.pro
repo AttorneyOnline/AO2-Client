@@ -30,7 +30,7 @@ SOURCES += main.cpp\
     encryption_functions.cpp \
     courtroom.cpp \
     aocharbutton.cpp \
-    win32_functions.cpp
+    hardware_functions.cpp
 
 HEADERS  += lobby.h \
     text_file_functions.h \
@@ -48,4 +48,4 @@ HEADERS  += lobby.h \
     encryption_functions.h \
     courtroom.h \
     aocharbutton.h \
-    win32_functions.h
+    hardware_functions.h

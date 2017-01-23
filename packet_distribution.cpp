@@ -3,7 +3,7 @@
 #include "lobby.h"
 #include "networkmanager.h"
 #include "encryption_functions.h"
-#include "win32_functions.h"
+#include "hardware_functions.h"
 
 #include <QDebug>
 
@@ -87,11 +87,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
 
     QString f_hdid;
-#ifdef Q_OS_WIN32
     f_hdid = get_hdid();
-#else
-    f_hdid = "ao2testinginprogress";
-#endif
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);

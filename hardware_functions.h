@@ -3,7 +3,10 @@
 
 #include <QString>
 
+#ifdef Q_OS_WIN32
 #include <windows.h>
+#endif // Q_OS_WIN32
+
 #include <stdio.h>
 
 QString get_hdid();
