@@ -121,9 +121,12 @@ private:
 
   AOButton *ui_spectator;
 private slots:
+  void on_change_character_clicked();
   void on_reload_theme_clicked();
 
   void on_back_to_lobby_clicked();
+
+  void on_spectator_clicked();
 
 };
 

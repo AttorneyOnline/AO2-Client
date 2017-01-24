@@ -1,6 +1,5 @@
 #include "aoapplication.h"
 
-#include "global_variables.h"
 #include "text_file_functions.h"
 
 #include <QDir>

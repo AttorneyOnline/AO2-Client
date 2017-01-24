@@ -1,9 +1,9 @@
 #include "courtroom.h"
 
 #include "aoapplication.h"
+#include "lobby.h"
 #include "text_file_functions.h"
 #include "path_functions.h"
-#include "global_variables.h"
 
 #include <QDebug>
 
@@ -73,9 +73,17 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_text_color = new QComboBox(this);
 
-  ui_music_slider = new QSlider(this);
-  ui_sfx_slider = new QSlider(this);
-  ui_blip_slider = new QSlider(this);
+  ui_music_slider = new QSlider(Qt::Horizontal, this);
+  ui_music_slider->setRange(0, 100);
+  ui_music_slider->setValue(50);
+
+  ui_sfx_slider = new QSlider(Qt::Horizontal, this);
+  ui_sfx_slider->setRange(0, 100);
+  ui_music_slider->setValue(50);
+
+  ui_blip_slider = new QSlider(Qt::Horizontal, this);
+  ui_blip_slider->setRange(0, 100);
+  ui_music_slider->setValue(50);
 
   ui_muted = new AOImage(this, ao_app);
 
@@ -98,8 +106,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     ui_char_button_list.append(new AOCharButton(ui_char_select_background, ao_app));
   }
 
-  ui_char_select_background->hide();
-
   ui_selector = new AOImage(ui_char_select_background, ao_app);
 
   ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
@@ -108,9 +114,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
 
+  connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
+
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
 
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
+
+  connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
   set_widgets();
 }
@@ -148,7 +158,10 @@ void Courtroom::set_widgets()
   //emote buttons
 
   set_size_and_pos(ui_emote_left, "emote_left");
+  ui_emote_left->set_image("arrow_left.png");
+
   set_size_and_pos(ui_emote_right, "emote_right");
+  ui_emote_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
   set_size_and_pos(ui_prosecution_bar, "prosecution_bar");
@@ -167,25 +180,43 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_cross_examination, "cross_examination");
 
   set_size_and_pos(ui_change_character, "change_character");
+  ui_change_character->setText("Change character");
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
   ui_reload_theme->setText("Reload theme");
 
   set_size_and_pos(ui_call_mod, "call_mod");
+  ui_call_mod->setText("Call mod");
 
   set_size_and_pos(ui_pre, "pre");
+  ui_pre->setText("Pre");
+
   set_size_and_pos(ui_flip, "flip");
+  ui_flip->setText("Flip");
+
   set_size_and_pos(ui_guard, "guard");
+  ui_guard->setText("Guard");
 
   set_size_and_pos(ui_custom_objection, "custom_objection");
+  ui_custom_objection->set_image("custom.png");
+
   set_size_and_pos(ui_realization, "realization");
-  set_size_and_pos(ui_mute, "mute");
+  ui_realization->set_image("realization.png");
+
+  set_size_and_pos(ui_mute, "mute_button");
+  ui_mute->set_image("mute.png");
 
   set_size_and_pos(ui_defense_plus, "defense_plus");
+  ui_defense_plus->set_image("defplus.png");
+
   set_size_and_pos(ui_defense_minus, "defense_minus");
+  ui_defense_minus->set_image("defminus.png");
 
   set_size_and_pos(ui_prosecution_plus, "prosecution_plus");
+  ui_prosecution_plus->set_image("proplus.png");
+
   set_size_and_pos(ui_prosecution_minus, "prosecution_minus");
+  ui_prosecution_minus->set_image("prominus.png");
 
   set_size_and_pos(ui_text_color, "text_color");
 
@@ -213,7 +244,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_char_password, "char_password");
 
-  ui_spectator->setText("spectator");
+  ui_spectator->setText("Spectator");
   set_size_and_pos(ui_spectator, "spectator");
 
 }
@@ -242,6 +273,11 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   p_widget->resize(design_ini_result.width, design_ini_result.height);
 }
 
+void Courtroom::on_change_character_clicked()
+{
+  ui_char_select_background->show();
+}
+
 void Courtroom::on_reload_theme_clicked()
 {
   ao_app->set_user_theme();
@@ -252,7 +288,13 @@ void Courtroom::on_reload_theme_clicked()
 void Courtroom::on_back_to_lobby_clicked()
 {
   ao_app->construct_lobby();
+  ao_app->w_lobby->list_servers();
   ao_app->destruct_courtroom();
+}
+
+void Courtroom::on_spectator_clicked()
+{
+  ui_char_select_background->hide();
 }
 
 Courtroom::~Courtroom()

@@ -1,6 +1,5 @@
 #include "file_functions.h"
 #include "path_functions.h"
-#include "global_variables.h"
 
 #include "aoimage.h"
 

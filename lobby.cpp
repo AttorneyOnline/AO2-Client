@@ -2,7 +2,6 @@
 
 #include "path_functions.h"
 #include "text_file_functions.h"
-#include "global_variables.h"
 #include "debug_functions.h"
 #include "aoapplication.h"
 #include "networkmanager.h"

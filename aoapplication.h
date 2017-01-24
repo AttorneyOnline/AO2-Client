@@ -64,14 +64,14 @@ public:
   void set_user_theme();
   QString get_user_theme() {return user_theme;}
 
-  //path functions
+  //implementation in path_functions.cpp
   QString get_base_path();
   QString get_theme_path();
   QString get_default_theme_path();
   QString get_character_path(QString p_character);
   QString get_demothings_path();
 
-  //text file functions
+  //implementation in text_file_functions.cpp
   QString read_user_theme();
   void write_to_serverlist_txt(QString p_line);
   QVector<server_type> read_serverlist_txt();
