@@ -24,6 +24,11 @@ class Courtroom : public QMainWindow
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+
+  void append_char(char_type p_char){char_list.append(p_char);}
+  void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
+  void append_music(QString f_music){music_list.append(f_music);}
+
   void set_widgets();
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
@@ -40,6 +45,10 @@ private:
 
   const int m_viewport_width = 256;
   const int m_viewport_height = 192;
+
+  QVector<char_type> char_list;
+  QVector<evi_type> evidence_list;
+  QVector<QString> music_list;
 
   AOImage *ui_background;
   //viewport elements like background, desk, etc.

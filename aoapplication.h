@@ -44,10 +44,18 @@ public:
   unsigned int s_decryptor = 5;
   bool encryption_needed = true;
   bool ao2_features = false;
-  //player number, it's hardly used but might be needed for some old servers
-  bool s_pv = 0;
 
-  //////////////////////////////////////////////////
+  ///////////////loading info///////////////////
+
+  //player number, it's hardly used but might be needed for some old servers
+  int s_pv = 0;
+
+  int char_list_size = 0;
+  int loaded_chars = 0;
+  int evidence_list_size = 0;
+  int loaded_evidence = 0;
+  int music_list_size = 0;
+  int loaded_music = 0;
 
   int get_release() {return RELEASE;}
   int get_major_version() {return MAJOR_VERSION;}

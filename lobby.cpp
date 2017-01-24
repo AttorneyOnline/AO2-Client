@@ -176,15 +176,11 @@ void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
 
-  //D3BUG START
+  AOPacket *f_packet = new AOPacket("askchaa#%");
 
-  ao_app->construct_courtroom();
+  ao_app->send_server_packet(f_packet);
 
-  ao_app->destruct_lobby();
-
-  //D3BUG END
-
-  //T0D0: call ao_app to initialize loading sequence
+  delete f_packet;
 }
 
 void Lobby::on_about_clicked()

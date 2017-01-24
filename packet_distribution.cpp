@@ -99,7 +99,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       return;
 
-    //T0D0: save server version here, somehow(it's in the HI# packet usually)
+    s_pv = f_contents.at(0).toInt();
+
+    if (f_contents.size() < 2)
+      return;
+
+    //T0D0: store server version
   }
   else if (header == "CT")
   {
@@ -120,6 +125,37 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       return;
 
     w_lobby->set_player_count(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+  }
+  else if (header == "SI")
+  {
+    if (f_contents.size() > 3)
+      return;
+
+    char_list_size = f_contents.at(0).toInt();
+    loaded_chars = 0;
+    evidence_list_size = f_contents.at(1).toInt();
+    loaded_evidence = 0;
+    music_list_size = f_contents.at(2).toInt();
+    loaded_music = 0;
+
+    destruct_courtroom();
+
+    construct_courtroom();
+
+    AOPacket *f_packet = new AOPacket("askchar2#%");
+    send_server_packet(f_packet);
+    delete f_packet;
+  }
+  else if (header == "CI")
+  {
+    if (!courtroom_constructed)
+      return;
+    AOPacket *f_packet = new AOPacket("AN#1#%");
+    send_server_packet(f_packet);
+    delete f_packet;
+
+    //w_courtroom->append_char();
+
   }
 }
 
@@ -142,7 +178,7 @@ void AOApplication::send_server_packet(AOPacket *p_packet)
 
   if (encryption_needed)
   {
-    qDebug() << "S:(e)" << f_packet;
+    qDebug() << "S(e):" << f_packet;
 
     p_packet->encrypt_header(s_decryptor);
     f_packet = p_packet->to_string();
