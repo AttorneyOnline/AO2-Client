@@ -46,7 +46,6 @@ QString get_hdid()
     }
   }
 
-  qDebug() << "wew";
   return "gxcpz32sa9fnwic92mfbs0";
 }
 
