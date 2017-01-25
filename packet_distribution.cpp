@@ -182,7 +182,21 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       send_server_packet(f_packet);
     }
 
+    else if (loaded_chars >= char_list_size)
+    {
+      if (evidence_list_size == 0)
+        send_server_packet(new AOPacket("AM#0#%"));
+      else
+        send_server_packet(new AOPacket("AE#0#%"));
+    }
 
+
+
+  }
+  else if (header == "EI"){
+
+  }
+  else if (header == "EM"){
 
   }
 }

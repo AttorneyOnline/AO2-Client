@@ -28,6 +28,10 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox = new QPlainTextEdit(this);
   ui_chatname = new QLineEdit(this);
   ui_chatmessage = new QLineEdit(this);
+  ui_loading_background = new AOImage(this, ao_app);
+  ui_loading_label = new QLabel(ui_loading_background);
+  ui_progress_bar = new QProgressBar(ui_loading_background);
+  ui_cancel = new AOButton(ui_loading_background, ao_app);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
@@ -96,6 +100,16 @@ void Lobby::set_widgets()
   set_size_and_pos(ui_chatmessage, "chatmessage");
   ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "selection-background-color: rgba(0, 0, 0, 0);");
+
+  ui_loading_background->set_image("loadingbackground.png");
+  ui_loading_background->resize(m_lobby_width, m_lobby_height);
+
+  set_size_and_pos(ui_loading_label, "loading_label");
+  set_size_and_pos(ui_progress_bar, "progress_bar");
+  set_size_and_pos(ui_cancel, "cancel");
+  ui_cancel->setText("Cancel");
+
+  ui_loading_background->hide();
 
 }
 
@@ -185,11 +199,8 @@ void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
 
-  //D3BUG
-  //AOPacket *f_packet = new AOPacket("askchaa#%");
-  ao_app->construct_courtroom();
-  //ao_app->send_server_packet(f_packet);
-  //D3BUG END
+  AOPacket *f_packet = new AOPacket("askchaa#%");
+  ao_app->send_server_packet(f_packet);
 }
 
 void Lobby::on_about_clicked()

@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QPlainTextEdit>
 #include <QLineEdit>
+#include <QProgressBar>
 
 class AOApplication;
 
@@ -56,6 +57,11 @@ private:
 
   QLineEdit *ui_chatname;
   QLineEdit *ui_chatmessage;
+
+  AOImage *ui_loading_background;
+  QLabel *ui_loading_label;
+  QProgressBar *ui_progress_bar;
+  AOButton *ui_cancel;
 
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 

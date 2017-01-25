@@ -57,6 +57,8 @@ public:
   int music_list_size = 0;
   int loaded_music = 0;
 
+  //////////////////versioning///////////////
+
   int get_release() {return RELEASE;}
   int get_major_version() {return MAJOR_VERSION;}
   int get_minor_version() {return MINOR_VERSION;}
