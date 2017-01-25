@@ -157,6 +157,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (f_contents.at(n_element).toInt() != loaded_chars)
         break;
 
+      //this means we are on the last element and checking n + 1 element will be game over so
       if (n_element == f_contents.size() - 1)
         break;
 
@@ -167,6 +168,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       char_type f_char;
       f_char.name = sub_elements.at(0);
       f_char.description = sub_elements.at(1);
+      //temporary. the CharsCheck packet sets this properly
+      f_char.taken = false;
 
       ++loaded_chars;
 
@@ -177,28 +180,107 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (loaded_chars < char_list_size)
     {
-      qDebug() << "loaded_chars" << loaded_chars;
       QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
-      AOPacket *f_packet = new AOPacket("AN#" + next_packet_number + "#%");
-      send_server_packet(f_packet);
+      send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
     }
 
-    else if (loaded_chars >= char_list_size)
+    else
     {
       if (evidence_list_size == 0)
         send_server_packet(new AOPacket("AM#0#%"));
       else
         send_server_packet(new AOPacket("AE#0#%"));
     }
-
-
-
   }
   else if (header == "EI"){
+    if (!courtroom_constructed)
+      return;
 
+
+    // +1 because evidence starts at 1 rather than 0 for whatever reason
+    //enjoy fanta
+    if (f_contents.at(0).toInt() != loaded_evidence + 1)
+      return;
+
+    if (f_contents.size() < 2)
+      return;
+
+    QStringList sub_elements = f_contents.at(1).split("&");
+    if (sub_elements.size() < 4)
+      return;
+
+    evi_type f_evi;
+    f_evi.name = sub_elements.at(0);
+    f_evi.description = sub_elements.at(1);
+    //no idea what the number at position 2 is. probably an identifier?
+    f_evi.image = sub_elements.at(3);
+
+    ++loaded_evidence;
+
+    w_lobby->set_loading_text("Loading evidence:\n" + QString::number(loaded_evidence) + "/" + QString::number(evidence_list_size));
+
+    w_courtroom->append_evidence(f_evi);
+
+    if (loaded_evidence < evidence_list_size)
+    {
+      qDebug() << "loaded evidence: " << loaded_evidence;
+      QString next_packet_number = QString::number(loaded_evidence);
+      send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
+    }
+    else
+    {
+      send_server_packet(new AOPacket("AM#0#%"));
+    }
   }
-  else if (header == "EM"){
+  else if (header == "EM")
+  {
+    if (!courtroom_constructed)
+      return;
 
+    for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
+    {
+      if (f_contents.at(n_element).toInt() != loaded_music)
+        break;
+
+      if (n_element == f_contents.size() - 1)
+        break;
+
+      QString f_music = f_contents.at(n_element + 1);
+
+      ++loaded_music;
+
+      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
+
+      w_courtroom->append_music(f_music);
+    }
+
+    //apparently we need to intentionally send another AM packet to get onwards in the loading process
+    //in spite of the fact that we actually received all the music
+    //enjoy fanta
+    //if (loaded_music < music_list_size)
+    //{
+      QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
+      send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
+    //}
+  }
+  if (header == "CharsCheck")
+  {
+    for (int n_char = 0 ; n_char < f_contents.size() ; ++n_char)
+    {
+      if (f_contents.at(n_char) == "-1")
+        w_courtroom->set_taken(n_char, true);
+      else
+        w_courtroom->set_taken(n_char, false);
+    }
+  }
+  if (header == "DONE")
+  {
+    if (!courtroom_constructed)
+      return;
+
+    w_courtroom->show();
+
+    destruct_lobby();
   }
 }
 

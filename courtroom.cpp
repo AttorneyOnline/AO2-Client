@@ -296,6 +296,22 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   p_widget->resize(design_ini_result.width, design_ini_result.height);
 }
 
+void Courtroom::set_taken(int n_char, bool p_taken)
+{
+  if (n_char >= char_list.size())
+  {
+    qDebug() << "W: set_taken attempted to set an index bigger than char_list size";
+    return;
+  }
+
+  char_type f_char;
+  f_char.name = char_list.at(0).name;
+  f_char.description = char_list.at(1).description;
+  f_char.taken = p_taken;
+
+  char_list.replace(n_char, f_char);
+}
+
 void Courtroom::on_change_character_clicked()
 {
   ui_char_select_background->show();

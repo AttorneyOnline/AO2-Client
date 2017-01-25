@@ -31,6 +31,7 @@ public:
 
   void set_widgets();
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+  void set_taken(int n_char, bool p_taken);
 
   ~Courtroom();
 
