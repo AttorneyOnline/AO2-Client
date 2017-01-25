@@ -57,6 +57,8 @@ private:
   QLineEdit *ui_chatname;
   QLineEdit *ui_chatmessage;
 
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+
 private slots:
   void on_public_servers_clicked();
   void on_favorites_clicked();

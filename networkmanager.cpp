@@ -78,8 +78,6 @@ void NetworkManager::handle_ms_packet()
     AOPacket *f_packet = new AOPacket(packet);
 
     ao_app->ms_packet_received(f_packet);
-
-    delete f_packet;
   }
 }
 
@@ -114,8 +112,6 @@ void NetworkManager::handle_server_packet()
     AOPacket *f_packet = new AOPacket(packet);
 
     ao_app->server_packet_received(f_packet);
-
-    delete f_packet;
   }
 }
 

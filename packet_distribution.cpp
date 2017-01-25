@@ -1,6 +1,7 @@
 #include "aoapplication.h"
 
 #include "lobby.h"
+#include "courtroom.h"
 #include "networkmanager.h"
 #include "encryption_functions.h"
 #include "hardware_functions.h"
@@ -91,8 +92,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
-
-    delete hi_packet;
   }
   else if (header == "ID")
   {
@@ -128,7 +127,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "SI")
   {
-    if (f_contents.size() > 3)
+    if (f_contents.size() < 3)
       return;
 
     char_list_size = f_contents.at(0).toInt();
@@ -144,17 +143,46 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     AOPacket *f_packet = new AOPacket("askchar2#%");
     send_server_packet(f_packet);
-    delete f_packet;
   }
   else if (header == "CI")
   {
     if (!courtroom_constructed)
       return;
-    AOPacket *f_packet = new AOPacket("AN#1#%");
-    send_server_packet(f_packet);
-    delete f_packet;
 
-    //w_courtroom->append_char();
+    for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
+    {
+      if (f_contents.at(n_element).toInt() != loaded_chars)
+        break;
+
+      if (n_element == f_contents.size() - 1)
+        break;
+
+      QStringList sub_elements = f_contents.at(n_element + 1).split("&");
+      if (sub_elements.size() < 2)
+        break;
+
+      char_type f_char;
+      f_char.name = sub_elements.at(0);
+      f_char.description = sub_elements.at(1);
+
+      ++loaded_chars;
+      qDebug() << "loaded_chars" << loaded_chars;
+
+      w_courtroom->append_char(f_char);
+
+
+      qDebug() << f_contents.at(n_element + 1);
+    }
+
+    if (loaded_chars < char_list_size)
+    {
+      qDebug() << "loaded_chars" << loaded_chars;
+      QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
+      AOPacket *f_packet = new AOPacket("AN#" + next_packet_number + "#%");
+      send_server_packet(f_packet);
+    }
+
+
 
   }
 }
@@ -168,6 +196,8 @@ void AOApplication::send_ms_packet(AOPacket *p_packet)
   net_manager->ship_ms_packet(f_packet);
 
   qDebug() << "S(ms):" << f_packet;
+
+  delete p_packet;
 }
 
 void AOApplication::send_server_packet(AOPacket *p_packet)
@@ -190,4 +220,5 @@ void AOApplication::send_server_packet(AOPacket *p_packet)
 
   net_manager->ship_server_packet(f_packet);
 
+  delete p_packet;
 }

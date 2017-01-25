@@ -50,66 +50,77 @@ void Lobby::set_widgets()
   ao_app->set_user_theme();
 
   ui_background->set_image("lobbybackground.png");
-  ui_background->move(0, 0);
   ui_background->resize(m_lobby_width, m_lobby_height);
 
   ui_public_servers->set_image("publicservers_selected.png");
-  ui_public_servers->move(46, 88);
-  ui_public_servers->resize(114, 30);
+  set_size_and_pos(ui_public_servers, "public_servers");
 
   ui_favorites->set_image("favorites.png");
-  ui_favorites->move(164, 88);
-  ui_favorites->resize(114, 30);
+  set_size_and_pos(ui_favorites, "favorites");
 
   ui_refresh->set_image("refresh.png");
-  ui_refresh->move(56, 381);
-  ui_refresh->resize(132, 28);
+  set_size_and_pos(ui_refresh, "refresh");
 
   ui_add_to_fav->set_image("addtofav.png");
-  ui_add_to_fav->move(194, 381);
-  ui_add_to_fav->resize(132, 28);
+  set_size_and_pos(ui_add_to_fav, "add_to_fav");
 
   ui_connect->set_image("connect.png");
-  ui_connect->move(332, 381);
-  ui_connect->resize(132, 28);
+  set_size_and_pos(ui_connect, "connect");
 
   ui_about->set_image("about.png");
-  ui_about->move(428, 1);
-  ui_about->resize(88, 21);
+  set_size_and_pos(ui_about, "about");
 
-  ui_server_list->move(20, 125);
-  ui_server_list->resize(286, 240);
+  set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                "font: bold;");
+                                  "font: bold;");
 
-  ui_player_count->move(336, 91);
-  ui_player_count->resize(173, 16);
+  set_size_and_pos(ui_player_count, "player_count");
   ui_player_count->setText("Offline");
   ui_player_count->setStyleSheet("font: bold;"
                                  "color: white;"
                                  "qproperty-alignment: AlignCenter;");
 
-  ui_description->move(337, 109);
-  ui_description->resize(173, 245);
+  set_size_and_pos(ui_description, "description");
   ui_description->setReadOnly(true);
   ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "color: white;");
 
-  ui_chatbox->move(2, 445);
-  ui_chatbox->resize(515, 198);
+  set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
   ui_chatbox->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
-  ui_chatname->move(3, 646);
-  ui_chatname->resize(85, 19);
+  set_size_and_pos(ui_chatname, "chatname");
   ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                              "selection-background-color: rgba(0, 0, 0, 0);");
 
-  ui_chatmessage->move(93, 646);
-  ui_chatmessage->resize(424, 19);
+  set_size_and_pos(ui_chatmessage, "chatmessage");
   ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "selection-background-color: rgba(0, 0, 0, 0);");
 
+}
+
+void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
+{
+  QString design_ini_path = ao_app->get_theme_path() + "lobby_design.ini";
+  QString default_ini_path = ao_app->get_base_path() + "themes/default/lobby_design.ini";
+
+  pos_size_type design_ini_result = ao_app->get_pos_and_size(p_identifier, design_ini_path);
+
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)
+  {
+    design_ini_result = ao_app->get_pos_and_size(p_identifier, default_ini_path);
+
+    if (design_ini_result.width < 0 || design_ini_result.height < 0)
+    {
+      //at this point it's pretty much game over
+      //T0D0: add message box
+      qDebug() << "CRITICAL ERROR: NO SUITABLE DATA FOR SETTING " << p_identifier;
+      ao_app->quit();
+    }
+  }
+
+  p_widget->move(design_ini_result.x, design_ini_result.y);
+  p_widget->resize(design_ini_result.width, design_ini_result.height);
 }
 
 void Lobby::on_public_servers_clicked()
@@ -147,8 +158,6 @@ void Lobby::on_refresh_released()
   AOPacket *f_packet = new AOPacket("ALL#%");
 
   ao_app->send_ms_packet(f_packet);
-
-  delete f_packet;
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -179,8 +188,6 @@ void Lobby::on_connect_released()
   AOPacket *f_packet = new AOPacket("askchaa#%");
 
   ao_app->send_server_packet(f_packet);
-
-  delete f_packet;
 }
 
 void Lobby::on_about_clicked()
@@ -233,8 +240,6 @@ void Lobby::on_chatfield_return_pressed()
   ao_app->send_ms_packet(f_packet);
 
   ui_chatmessage->clear();
-
-  delete f_packet;
 }
 
 void Lobby::list_servers()
