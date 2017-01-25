@@ -185,9 +185,11 @@ void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
 
-  AOPacket *f_packet = new AOPacket("askchaa#%");
-
-  ao_app->send_server_packet(f_packet);
+  //D3BUG
+  //AOPacket *f_packet = new AOPacket("askchaa#%");
+  ao_app->construct_courtroom();
+  //ao_app->send_server_packet(f_packet);
+  //D3BUG END
 }
 
 void Lobby::on_about_clicked()
