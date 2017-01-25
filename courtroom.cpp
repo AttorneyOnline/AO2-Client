@@ -79,11 +79,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
-  ui_music_slider->setValue(50);
+  ui_sfx_slider->setValue(50);
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
-  ui_music_slider->setValue(50);
+  ui_blip_slider->setValue(50);
 
   ui_muted = new AOImage(this, ao_app);
 
@@ -164,20 +164,31 @@ void Courtroom::set_widgets()
   ui_emote_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
+  ui_defense_bar->set_image("defensebar10.png");
+
   set_size_and_pos(ui_prosecution_bar, "prosecution_bar");
+  ui_prosecution_bar->set_image("prosecutionbar10.png");
 
   set_size_and_pos(ui_music_label, "music_label");
+  ui_music_label->setText("Music");
   set_size_and_pos(ui_sfx_label, "sfx_label");
+  ui_sfx_label->setText("Sfx");
   set_size_and_pos(ui_blip_label, "blip_label");
+  ui_blip_label->setText("Blips");
 
   set_size_and_pos(ui_hold_it, "hold_it");
+  ui_hold_it->set_image("holdit.png");
   set_size_and_pos(ui_objection, "objection");
+  ui_objection->set_image("objection.png");
   set_size_and_pos(ui_take_that, "take_that");
+  ui_take_that->set_image("takethat.png");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
+  ui_witness_testimony->set_image("witnesstestimony.png");
   set_size_and_pos(ui_cross_examination, "cross_examination");
+  ui_cross_examination->set_image("crossexamination.png");
 
   set_size_and_pos(ui_change_character, "change_character");
   ui_change_character->setText("Change character");
