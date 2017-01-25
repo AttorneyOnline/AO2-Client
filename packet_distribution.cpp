@@ -141,6 +141,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     construct_courtroom();
 
+    w_lobby->show_loading_overlay();
+    w_lobby->set_loading_text("Loading");
+
     AOPacket *f_packet = new AOPacket("askchar2#%");
     send_server_packet(f_packet);
   }
@@ -166,12 +169,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       f_char.description = sub_elements.at(1);
 
       ++loaded_chars;
-      qDebug() << "loaded_chars" << loaded_chars;
+
+      w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
 
       w_courtroom->append_char(f_char);
-
-
-      qDebug() << f_contents.at(n_element + 1);
     }
 
     if (loaded_chars < char_list_size)

@@ -96,6 +96,9 @@ private:
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
+
+public slots:
+  void loading_cancelled();
 };
 
 #endif // AOAPPLICATION_H

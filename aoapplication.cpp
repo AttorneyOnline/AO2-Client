@@ -100,3 +100,10 @@ void AOApplication::add_favorite_server(int p_server)
 
   write_to_serverlist_txt(server_line);
 }
+
+void AOApplication::loading_cancelled()
+{
+  destruct_courtroom();
+
+  w_lobby->hide_loading_overlay();
+}

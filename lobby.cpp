@@ -29,7 +29,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatname = new QLineEdit(this);
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this, ao_app);
-  ui_loading_label = new QLabel(ui_loading_background);
+  ui_loading_text = new QTextEdit(ui_loading_background);
   ui_progress_bar = new QProgressBar(ui_loading_background);
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
@@ -44,6 +44,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
+  connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   set_widgets();
 }
@@ -104,17 +105,19 @@ void Lobby::set_widgets()
   ui_loading_background->set_image("loadingbackground.png");
   ui_loading_background->resize(m_lobby_width, m_lobby_height);
 
-  set_size_and_pos(ui_loading_label, "loading_label");
-  ui_loading_label->setFont(QFont("Arial", 20, QFont::Bold));
-  ui_loading_label->setStyleSheet("color: rgba(255, 128, 0, 255);"
-                                  "qproperty-alignment: AlignCenter;");
-  ui_loading_label->setText("Loading");
+  set_size_and_pos(ui_loading_text, "loading_label");
+  ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
+  ui_loading_text->setReadOnly(true);
+  ui_loading_text->setAlignment(Qt::AlignCenter);
+  ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: rgba(255, 128, 0, 255);");
+  ui_loading_text->append("Loading");
 
   set_size_and_pos(ui_progress_bar, "progress_bar");
   set_size_and_pos(ui_cancel, "cancel");
   ui_cancel->setText("Cancel");
 
-  //ui_loading_background->hide();
+  ui_loading_background->hide();
 
 }
 
@@ -140,6 +143,13 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
   p_widget->move(design_ini_result.x, design_ini_result.y);
   p_widget->resize(design_ini_result.width, design_ini_result.height);
+}
+
+void Lobby::set_loading_text(QString p_text)
+{
+  ui_loading_text->clear();
+  ui_loading_text->setAlignment(Qt::AlignCenter);
+  ui_loading_text->append(p_text);
 }
 
 void Lobby::on_public_servers_clicked()
