@@ -105,11 +105,16 @@ void Lobby::set_widgets()
   ui_loading_background->resize(m_lobby_width, m_lobby_height);
 
   set_size_and_pos(ui_loading_label, "loading_label");
+  ui_loading_label->setFont(QFont("Arial", 20, QFont::Bold));
+  ui_loading_label->setStyleSheet("color: rgba(255, 128, 0, 255);"
+                                  "qproperty-alignment: AlignCenter;");
+  ui_loading_label->setText("Loading");
+
   set_size_and_pos(ui_progress_bar, "progress_bar");
   set_size_and_pos(ui_cancel, "cancel");
   ui_cancel->setText("Cancel");
 
-  ui_loading_background->hide();
+  //ui_loading_background->hide();
 
 }
 
