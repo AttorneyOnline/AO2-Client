@@ -137,20 +137,31 @@ void Courtroom::set_widgets()
   //viewport elements like background, desk, etc. go here
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
+  ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
+  ui_ms_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
+  ui_server_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_mute_list, "mute_list");
+  ui_mute_list->hide();
+
   set_size_and_pos(ui_area_list, "area_list");
+  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_music_list, "music_list");
+  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
+  ui_ic_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
+  ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name");
+  ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_area_password, "area_password");
   set_size_and_pos(ui_music_search, "music_search");
@@ -184,6 +195,7 @@ void Courtroom::set_widgets()
   ui_take_that->set_image("takethat.png");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
+  ui_ooc_toggle->setText("Server");
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
   ui_witness_testimony->set_image("witnesstestimony.png");
