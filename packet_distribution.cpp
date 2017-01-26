@@ -176,6 +176,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
 
       w_courtroom->append_char(f_char);
+      //qDebug() << "appended " << f_char.name << " to char_list";
     }
 
     if (loaded_chars < char_list_size)
@@ -277,6 +278,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (!courtroom_constructed)
       return;
+
+    w_courtroom->set_char_select_page();
 
     w_courtroom->show();
 

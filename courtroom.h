@@ -16,6 +16,7 @@
 #include <QSlider>
 #include <QVector>
 #include <QCloseEvent>
+#include <QSignalMapper>
 
 class AOApplication;
 
@@ -32,6 +33,7 @@ public:
   void set_widgets();
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
   void set_taken(int n_char, bool p_taken);
+  void set_char_select_page();
 
   ~Courtroom();
 
@@ -51,8 +53,15 @@ private:
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
 
+  QSignalMapper *char_button_mapper;
+
+  //0 is the first page, 1 second etc.
+  //makes char arithmetic easier
+  int current_char_page = 0;
+
   AOImage *ui_background;
-  //viewport elements like background, desk, etc.
+
+  //T0D0: add viewport elements like background, desk, etc.
 
   QPlainTextEdit *ui_ic_chatlog;
 
@@ -72,7 +81,7 @@ private:
   QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
 
-  //emote buttons
+  //T0D0: add emote buttons
 
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
@@ -129,6 +138,9 @@ private:
 
   QLineEdit *ui_char_password;
 
+  AOButton *ui_char_select_left;
+  AOButton *ui_char_select_right;
+
   AOButton *ui_spectator;
 private slots:
   void on_change_character_clicked();
@@ -137,6 +149,11 @@ private slots:
   void on_back_to_lobby_clicked();
 
   void on_spectator_clicked();
+
+  void on_char_select_left_clicked();
+  void on_char_select_right_clicked();
+
+  void char_clicked(int n_char);
 
 };
 
