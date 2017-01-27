@@ -115,7 +115,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QString message_line = f_contents.at(0) + ": " + f_contents.at(1);
 
-    w_courtroom->append_server_chatmessage(message_line);
+    if (courtroom_constructed)
+      w_courtroom->append_server_chatmessage(message_line);
   }
   else if (header == "PN")
   {
@@ -262,7 +263,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
     //}
   }
-  if (header == "CharsCheck")
+  else if (header == "CharsCheck")
   {
     for (int n_char = 0 ; n_char < f_contents.size() ; ++n_char)
     {
@@ -272,7 +273,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_courtroom->set_taken(n_char, false);
     }
   }
-  if (header == "DONE")
+  else if (header == "DONE")
   {
     if (!courtroom_constructed)
       return;
@@ -286,13 +287,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     destruct_lobby();
   }
   //server accepting char request(CC) packet
-  if (header == "PV")
+  else if (header == "PV")
   {
     if (f_contents.size() < 3)
       return;
 
     w_courtroom->enter_courtroom(f_contents.at(2).toInt());
   }
+  else if (header == "MS")
+  {
+    if (courtroom_constructed)
+      w_courtroom->handle_chatmessage(&p_packet->get_contents());
+  }
+
+  delete p_packet;
 }
 
 void AOApplication::send_ms_packet(AOPacket *p_packet)

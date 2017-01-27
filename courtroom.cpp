@@ -177,7 +177,8 @@ void Courtroom::set_widgets()
   //viewport elements like background, desk, etc. go here
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
-  ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                               "color: white;");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
   ui_ms_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
@@ -396,9 +397,14 @@ void Courtroom::set_char_select_page()
   for (int n_button = 0 ; n_button < chars_on_page ; ++n_button)
   {
     int n_real_char = n_button + current_char_page * 90;
+    AOCharButton *f_button = ui_char_button_list.at(n_button);
 
-    ui_char_button_list.at(n_button)->set_image(char_list.at(n_real_char).name);
-    ui_char_button_list.at(n_button)->show();
+    f_button->reset();
+    f_button->set_image(char_list.at(n_real_char).name);
+    f_button->show();
+
+    if (char_list.at(n_real_char).taken)
+      f_button->set_taken();
   }
 
 }
@@ -442,6 +448,16 @@ void Courtroom::append_ms_chatmessage(QString f_message)
 void Courtroom::append_server_chatmessage(QString f_message)
 {
   ui_server_chatlog->appendPlainText(f_message);
+}
+
+void Courtroom::handle_chatmessage(QStringList *p_contents)
+{
+  QString f_message = p_contents->at(2) + ": " + p_contents->at(4) + '\n';
+
+  ui_ic_chatlog->moveCursor(QTextCursor::Start);
+  ui_ic_chatlog->insertPlainText(f_message);
+
+  //T0D0: play objection gif->preanimation if there is any
 }
 
 void Courtroom::on_ooc_return_pressed()

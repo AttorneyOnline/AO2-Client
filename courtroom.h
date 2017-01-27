@@ -40,6 +40,8 @@ public:
   void append_ms_chatmessage(QString f_message);
   void append_server_chatmessage(QString f_message);
 
+  void handle_chatmessage(QStringList *p_contents);
+
   ~Courtroom();
 
 private:
