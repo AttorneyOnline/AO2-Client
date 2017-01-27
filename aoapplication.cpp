@@ -1,11 +1,12 @@
-#include <QDebug>
+#include "aoapplication.h"
 
 #include "lobby.h"
 #include "courtroom.h"
 #include "networkmanager.h"
-#include "text_file_functions.h"
 
-#include "aoapplication.h"
+#include <QDebug>
+#include <QRect>
+#include <QDesktopWidget>
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
@@ -28,6 +29,11 @@ void AOApplication::construct_lobby()
 
   w_lobby = new Lobby(this);
   lobby_constructed = true;
+
+  QRect screenGeometry = QApplication::desktop()->screenGeometry();
+  int x = (screenGeometry.width()-w_lobby->width()) / 2;
+  int y = (screenGeometry.height()-w_lobby->height()) / 2;
+  w_lobby->move(x, y);
 
   w_lobby->show();
 }
@@ -54,6 +60,11 @@ void AOApplication::construct_courtroom()
 
   w_courtroom = new Courtroom(this);
   courtroom_constructed = true;
+
+  QRect screenGeometry = QApplication::desktop()->screenGeometry();
+  int x = (screenGeometry.width()-w_courtroom->width()) / 2;
+  int y = (screenGeometry.height()-w_courtroom->height()) / 2;
+  w_courtroom->move(x, y);
 }
 
 void AOApplication::destruct_courtroom()

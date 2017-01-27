@@ -63,8 +63,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     }
     if (courtroom_constructed)
     {
-      //T0D0: uncomment this when it's implemented
-      //w_courtroom->append_ms_chat_message(message_line);
+      w_courtroom->append_ms_chatmessage(message_line);
     }
   }
 }
@@ -77,7 +76,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   QStringList f_contents = p_packet->get_contents();
   QString f_packet = p_packet->to_string();
 
-  qDebug() << "R: " << f_packet;
+  if (header != "checkconnection")
+    qDebug() << "R: " << f_packet;
 
   if (header == "decryptor")
   {
@@ -113,10 +113,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       return;
     }
 
-    //QString message_line = f_contents.at(0) + ": " + f_contents.at(1);
+    QString message_line = f_contents.at(0) + ": " + f_contents.at(1);
 
-    //T0D0, uncomment when implemented
-    //w_courtroom->append_ooc_chatmessage(message_line)
+    w_courtroom->append_server_chatmessage(message_line);
   }
   else if (header == "PN")
   {
@@ -176,7 +175,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
 
       w_courtroom->append_char(f_char);
-      //qDebug() << "appended " << f_char.name << " to char_list";
     }
 
     if (loaded_chars < char_list_size)
@@ -281,9 +279,19 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->set_char_select_page();
 
+    w_courtroom->append_ms_chatmessage(w_lobby->get_chatlog());
+
     w_courtroom->show();
 
     destruct_lobby();
+  }
+  //server accepting char request(CC) packet
+  if (header == "PV")
+  {
+    if (f_contents.size() < 3)
+      return;
+
+    w_courtroom->enter_courtroom(f_contents.at(2).toInt());
   }
 }
 

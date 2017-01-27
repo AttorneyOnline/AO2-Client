@@ -29,6 +29,7 @@ public:
   void set_loading_text(QString p_text);
   void show_loading_overlay(){ui_loading_background->show();}
   void hide_loading_overlay(){ui_loading_background->hide();}
+  QString get_chatlog();
 
   ~Lobby();
 

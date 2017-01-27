@@ -2,8 +2,8 @@
 
 #include "aoapplication.h"
 #include "lobby.h"
-#include "text_file_functions.h"
-#include "path_functions.h"
+#include "hardware_functions.h"
+#include "file_functions.h"
 
 #include <QDebug>
 
@@ -18,22 +18,33 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //viewport elements like background, desk, etc.
 
   ui_ic_chatlog = new QPlainTextEdit(this);
+  ui_ic_chatlog->setReadOnly(true);
 
   ui_ms_chatlog = new QPlainTextEdit(this);
-  ui_server_chatlog = new QPlainTextEdit(this);
+  ui_ms_chatlog->setReadOnly(true);
+  ui_ms_chatlog->hide();
 
+  ui_server_chatlog = new QPlainTextEdit(this);
+  ui_server_chatlog->setReadOnly(true);
 
   ui_mute_list = new QListWidget(this);
   ui_area_list = new QListWidget(this);
   ui_music_list = new QListWidget(this);
 
   ui_ic_chat_message = new QLineEdit(this);
+  ui_ic_chat_message->setFrame(false);
 
   ui_ooc_chat_message = new QLineEdit(this);
+  ui_ooc_chat_message->setFrame(false);
+
   ui_ooc_chat_name = new QLineEdit(this);
+  ui_ooc_chat_name->setFrame(false);
+  ui_ooc_chat_name->setPlaceholderText("Name");
 
   ui_area_password = new QLineEdit(this);
+  ui_area_password->setFrame(false);
   ui_music_search = new QLineEdit(this);
+  ui_music_search->setFrame(false);
 
   //emote buttons
 
@@ -138,6 +149,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
 
+  connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
+  connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
 
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
@@ -390,6 +403,86 @@ void Courtroom::set_char_select_page()
 
 }
 
+void Courtroom::enter_courtroom(int p_cid)
+{
+  m_cid = p_cid;
+  QString f_char = char_list.at(m_cid).name;
+
+  //T0D0: set emote buttons
+
+  QString side = ao_app->get_char_side(f_char);
+
+  if (side == "jud")
+  {
+    ui_witness_testimony->show();
+    ui_cross_examination->show();
+    ui_defense_minus->show();
+    ui_defense_plus->show();
+    ui_prosecution_minus->show();
+    ui_prosecution_plus->show();
+  }
+  else
+  {
+    ui_witness_testimony->hide();
+    ui_cross_examination->hide();
+    ui_defense_minus->hide();
+    ui_defense_plus->hide();
+    ui_prosecution_minus->hide();
+    ui_prosecution_plus->hide();
+  }
+
+  ui_char_select_background->hide();
+}
+
+void Courtroom::append_ms_chatmessage(QString f_message)
+{
+  ui_ms_chatlog->appendPlainText(f_message);
+}
+
+void Courtroom::append_server_chatmessage(QString f_message)
+{
+  ui_server_chatlog->appendPlainText(f_message);
+}
+
+void Courtroom::on_ooc_return_pressed()
+{
+  if (ui_ooc_chat_message->text() == "" || ui_ooc_chat_name->text() == "")
+    return;
+
+  QStringList packet_contents;
+  packet_contents.append(ui_ooc_chat_name->text());
+  packet_contents.append(ui_ooc_chat_message->text());
+
+  AOPacket *f_packet = new AOPacket("CT", packet_contents);
+
+  if (server_ooc)
+    ao_app->send_server_packet(f_packet);
+  else
+    ao_app->send_ms_packet(f_packet);
+
+  ui_ooc_chat_message->clear();
+}
+
+void Courtroom::on_ooc_toggle_clicked()
+{
+  if (server_ooc)
+  {
+    ui_ms_chatlog->show();
+    ui_server_chatlog->hide();
+    ui_ooc_toggle->setText("Master");
+
+    server_ooc = false;
+  }
+  else
+  {
+    ui_ms_chatlog->hide();
+    ui_server_chatlog->show();
+    ui_ooc_toggle->setText("Server");
+
+    server_ooc = true;
+  }
+}
+
 void Courtroom::on_change_character_clicked()
 {
   ui_char_select_background->show();
@@ -428,7 +521,18 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::char_clicked(int n_char)
 {
+  int n_real_char = n_char + current_char_page * 90;
 
+  QString char_ini_path = ao_app->get_character_path(char_list.at(n_real_char).name) + "char.ini";
+
+  if (!file_exists(char_ini_path))
+  {
+    qDebug() << "did not find " << char_ini_path;
+    //T0D0: call error
+    return;
+  }
+
+  ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%"));
 }
 
 Courtroom::~Courtroom()

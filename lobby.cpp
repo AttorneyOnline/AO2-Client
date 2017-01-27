@@ -1,7 +1,5 @@
 #include "lobby.h"
 
-#include "path_functions.h"
-#include "text_file_functions.h"
 #include "debug_functions.h"
 #include "aoapplication.h"
 #include "networkmanager.h"
@@ -27,6 +25,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_description = new QPlainTextEdit(this);
   ui_chatbox = new QPlainTextEdit(this);
   ui_chatname = new QLineEdit(this);
+  ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_text = new QTextEdit(ui_loading_background);
@@ -152,6 +151,13 @@ void Lobby::set_loading_text(QString p_text)
   ui_loading_text->append(p_text);
 }
 
+QString Lobby::get_chatlog()
+{
+  QString return_value = ui_chatbox->toPlainText();
+
+  return return_value;
+}
+
 void Lobby::on_public_servers_clicked()
 {
   ui_public_servers->set_image("publicservers_selected.png");
@@ -260,6 +266,11 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 
 void Lobby::on_chatfield_return_pressed()
 {
+  //no you can't send empty messages
+  if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
+    return;
+
+
   QString f_header = "CT";
   QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
 

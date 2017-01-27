@@ -1,7 +1,5 @@
 #include "aoapplication.h"
 
-#include "text_file_functions.h"
-
 #include <QDir>
 #include <QDebug>
 

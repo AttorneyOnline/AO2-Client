@@ -35,6 +35,11 @@ public:
   void set_taken(int n_char, bool p_taken);
   void set_char_select_page();
 
+  void enter_courtroom(int p_cid);
+
+  void append_ms_chatmessage(QString f_message);
+  void append_server_chatmessage(QString f_message);
+
   ~Courtroom();
 
 private:
@@ -58,6 +63,12 @@ private:
   //0 is the first page, 1 second etc.
   //makes char arithmetic easier
   int current_char_page = 0;
+
+  //character id, which index of the char_list the player is
+  int m_cid = 0;
+
+  //wether the ooc chat is server or master chat, true is server
+  bool server_ooc = true;
 
   AOImage *ui_background;
 
@@ -143,15 +154,18 @@ private:
 
   AOButton *ui_spectator;
 private slots:
+  void on_ooc_return_pressed();
+  void on_ooc_toggle_clicked();
+
   void on_change_character_clicked();
   void on_reload_theme_clicked();
 
   void on_back_to_lobby_clicked();
 
-  void on_spectator_clicked();
-
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
+
+  void on_spectator_clicked();
 
   void char_clicked(int n_char);
 

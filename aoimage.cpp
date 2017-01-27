@@ -1,5 +1,4 @@
 #include "file_functions.h"
-#include "path_functions.h"
 
 #include "aoimage.h"
 
