@@ -32,8 +32,6 @@ SOURCES += main.cpp\
     hardware_functions.cpp
 
 HEADERS  += lobby.h \
-    text_file_functions.h \
-    path_functions.h \
     aoimage.h \
     file_functions.h \
     aobutton.h \

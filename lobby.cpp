@@ -1,8 +1,5 @@
 #include "lobby.h"
 
-#include "path_functions.h"
-#include "text_file_functions.h"
-#include "global_variables.h"
 #include "debug_functions.h"
 #include "aoapplication.h"
 #include "networkmanager.h"
@@ -28,7 +25,12 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_description = new QPlainTextEdit(this);
   ui_chatbox = new QPlainTextEdit(this);
   ui_chatname = new QLineEdit(this);
+  ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
+  ui_loading_background = new AOImage(this, ao_app);
+  ui_loading_text = new QTextEdit(ui_loading_background);
+  ui_progress_bar = new QProgressBar(ui_loading_background);
+  ui_cancel = new AOButton(ui_loading_background, ao_app);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
@@ -41,6 +43,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
+  connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   set_widgets();
 }
@@ -51,66 +54,108 @@ void Lobby::set_widgets()
   ao_app->set_user_theme();
 
   ui_background->set_image("lobbybackground.png");
-  ui_background->move(0, 0);
   ui_background->resize(m_lobby_width, m_lobby_height);
 
   ui_public_servers->set_image("publicservers_selected.png");
-  ui_public_servers->move(46, 88);
-  ui_public_servers->resize(114, 30);
+  set_size_and_pos(ui_public_servers, "public_servers");
 
   ui_favorites->set_image("favorites.png");
-  ui_favorites->move(164, 88);
-  ui_favorites->resize(114, 30);
+  set_size_and_pos(ui_favorites, "favorites");
 
   ui_refresh->set_image("refresh.png");
-  ui_refresh->move(56, 381);
-  ui_refresh->resize(132, 28);
+  set_size_and_pos(ui_refresh, "refresh");
 
   ui_add_to_fav->set_image("addtofav.png");
-  ui_add_to_fav->move(194, 381);
-  ui_add_to_fav->resize(132, 28);
+  set_size_and_pos(ui_add_to_fav, "add_to_fav");
 
   ui_connect->set_image("connect.png");
-  ui_connect->move(332, 381);
-  ui_connect->resize(132, 28);
+  set_size_and_pos(ui_connect, "connect");
 
   ui_about->set_image("about.png");
-  ui_about->move(428, 1);
-  ui_about->resize(88, 21);
+  set_size_and_pos(ui_about, "about");
 
-  ui_server_list->move(20, 125);
-  ui_server_list->resize(286, 240);
+  set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                "font: bold;");
+                                  "font: bold;");
 
-  ui_player_count->move(336, 91);
-  ui_player_count->resize(173, 16);
+  set_size_and_pos(ui_player_count, "player_count");
   ui_player_count->setText("Offline");
   ui_player_count->setStyleSheet("font: bold;"
                                  "color: white;"
                                  "qproperty-alignment: AlignCenter;");
 
-  ui_description->move(337, 109);
-  ui_description->resize(173, 245);
+  set_size_and_pos(ui_description, "description");
   ui_description->setReadOnly(true);
   ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "color: white;");
 
-  ui_chatbox->move(2, 445);
-  ui_chatbox->resize(515, 198);
+  set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
   ui_chatbox->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
-  ui_chatname->move(3, 646);
-  ui_chatname->resize(85, 19);
+  set_size_and_pos(ui_chatname, "chatname");
   ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                              "selection-background-color: rgba(0, 0, 0, 0);");
 
-  ui_chatmessage->move(93, 646);
-  ui_chatmessage->resize(424, 19);
+  set_size_and_pos(ui_chatmessage, "chatmessage");
   ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "selection-background-color: rgba(0, 0, 0, 0);");
 
+  ui_loading_background->set_image("loadingbackground.png");
+  ui_loading_background->resize(m_lobby_width, m_lobby_height);
+
+  set_size_and_pos(ui_loading_text, "loading_label");
+  ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
+  ui_loading_text->setReadOnly(true);
+  ui_loading_text->setAlignment(Qt::AlignCenter);
+  ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: rgba(255, 128, 0, 255);");
+  ui_loading_text->append("Loading");
+
+  set_size_and_pos(ui_progress_bar, "progress_bar");
+  set_size_and_pos(ui_cancel, "cancel");
+  ui_cancel->setText("Cancel");
+
+  ui_loading_background->hide();
+
+}
+
+void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
+{
+  QString design_ini_path = ao_app->get_theme_path() + "lobby_design.ini";
+  QString default_ini_path = ao_app->get_base_path() + "themes/default/lobby_design.ini";
+
+  pos_size_type design_ini_result = ao_app->get_pos_and_size(p_identifier, design_ini_path);
+
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)
+  {
+    design_ini_result = ao_app->get_pos_and_size(p_identifier, default_ini_path);
+
+    if (design_ini_result.width < 0 || design_ini_result.height < 0)
+    {
+      //at this point it's pretty much game over
+      //T0D0: add message box
+      qDebug() << "CRITICAL ERROR: NO SUITABLE DATA FOR SETTING " << p_identifier;
+      ao_app->quit();
+    }
+  }
+
+  p_widget->move(design_ini_result.x, design_ini_result.y);
+  p_widget->resize(design_ini_result.width, design_ini_result.height);
+}
+
+void Lobby::set_loading_text(QString p_text)
+{
+  ui_loading_text->clear();
+  ui_loading_text->setAlignment(Qt::AlignCenter);
+  ui_loading_text->append(p_text);
+}
+
+QString Lobby::get_chatlog()
+{
+  QString return_value = ui_chatbox->toPlainText();
+
+  return return_value;
 }
 
 void Lobby::on_public_servers_clicked()
@@ -148,8 +193,6 @@ void Lobby::on_refresh_released()
   AOPacket *f_packet = new AOPacket("ALL#%");
 
   ao_app->send_ms_packet(f_packet);
-
-  delete f_packet;
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -177,15 +220,8 @@ void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
 
-  //D3BUG START
-
-  ao_app->construct_courtroom();
-
-  ao_app->destruct_lobby();
-
-  //D3BUG END
-
-  //T0D0: call ao_app to initialize loading sequence
+  AOPacket *f_packet = new AOPacket("askchaa#%");
+  ao_app->send_server_packet(f_packet);
 }
 
 void Lobby::on_about_clicked()
@@ -230,6 +266,11 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 
 void Lobby::on_chatfield_return_pressed()
 {
+  //no you can't send empty messages
+  if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
+    return;
+
+
   QString f_header = "CT";
   QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
 
@@ -238,8 +279,6 @@ void Lobby::on_chatfield_return_pressed()
   ao_app->send_ms_packet(f_packet);
 
   ui_chatmessage->clear();
-
-  delete f_packet;
 }
 
 void Lobby::list_servers()

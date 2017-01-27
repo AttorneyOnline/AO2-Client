@@ -44,10 +44,20 @@ public:
   unsigned int s_decryptor = 5;
   bool encryption_needed = true;
   bool ao2_features = false;
-  //player number, it's hardly used but might be needed for some old servers
-  bool s_pv = 0;
 
-  //////////////////////////////////////////////////
+  ///////////////loading info///////////////////
+
+  //player number, it's hardly used but might be needed for some old servers
+  int s_pv = 0;
+
+  int char_list_size = 0;
+  int loaded_chars = 0;
+  int evidence_list_size = 0;
+  int loaded_evidence = 0;
+  int music_list_size = 0;
+  int loaded_music = 0;
+
+  //////////////////versioning///////////////
 
   int get_release() {return RELEASE;}
   int get_major_version() {return MAJOR_VERSION;}
@@ -64,18 +74,19 @@ public:
   void set_user_theme();
   QString get_user_theme() {return user_theme;}
 
-  //path functions
+  //implementation in path_functions.cpp
   QString get_base_path();
   QString get_theme_path();
   QString get_default_theme_path();
   QString get_character_path(QString p_character);
   QString get_demothings_path();
 
-  //text file functions
+  //implementation in text_file_functions.cpp
   QString read_user_theme();
   void write_to_serverlist_txt(QString p_line);
   QVector<server_type> read_serverlist_txt();
   pos_size_type get_pos_and_size(QString p_identifier, QString p_design_path);
+  QString get_char_side(QString p_char);
 
 private:
   const int RELEASE = 2;
@@ -86,6 +97,9 @@ private:
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
+
+public slots:
+  void loading_cancelled();
 };
 
 #endif // AOAPPLICATION_H

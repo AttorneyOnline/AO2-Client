@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QPlainTextEdit>
 #include <QLineEdit>
+#include <QProgressBar>
 
 class AOApplication;
 
@@ -25,6 +26,10 @@ public:
   void list_favorites();
   void append_chatmessage(QString p_message_line);
   void set_player_count(int players_online, int max_players);
+  void set_loading_text(QString p_text);
+  void show_loading_overlay(){ui_loading_background->show();}
+  void hide_loading_overlay(){ui_loading_background->hide();}
+  QString get_chatlog();
 
   ~Lobby();
 
@@ -56,6 +61,13 @@ private:
 
   QLineEdit *ui_chatname;
   QLineEdit *ui_chatmessage;
+
+  AOImage *ui_loading_background;
+  QTextEdit *ui_loading_text;
+  QProgressBar *ui_progress_bar;
+  AOButton *ui_cancel;
+
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
 private slots:
   void on_public_servers_clicked();

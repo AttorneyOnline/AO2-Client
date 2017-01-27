@@ -1,6 +1,10 @@
 #include "hardware_functions.h"
 
+#include <QDebug>
+
 #if (defined (_WIN32) || defined (_WIN64))
+#include <windows.h>
+
 DWORD dwVolSerial;
 BOOL bIsRetrieved;
 
@@ -11,24 +15,43 @@ QString get_hdid()
     if (bIsRetrieved)
         return QString::number(dwVolSerial, 16);
     else
-        return "invalid_windows_hd"; //what could possibly go wrong
+        return "gxsps32sa9fnwic92mfbs0"; //what could possibly go wrong
 
 }
 
 #elif (defined (LINUX) || defined (__linux__))
 
+#include <QFile>
+#include <QTextStream>
+
 QString get_hdid()
 {
-  //T0D0: add linux implementation
-  return "linux_os_hdid";
+  QFile fstab_file("/etc/fstab");
+  if (!fstab_file.open(QIODevice::ReadOnly))
+    //literally a random string.... what else are we supposed to do?
+    return "gxcps32sa9fnwic92mfbs0";
+
+  QTextStream in(&fstab_file);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("UUID"))
+    {
+      QStringList line_elements = line.split("=");
+
+      if (line_elements.size() > 1)
+        return line_elements.at(1).left(23).trimmed();
+    }
+  }
+
+  return "gxcpz32sa9fnwic92mfbs0";
 }
 
 #else
 
-QString get_hdid()
-{
-  //T0D0: find a sane way to handle this
-  return "unknown_os_hdid";
-}
+//throwing compile-time errors professionally
+fhasdfuifhidfhasjkfasdkfahsdj
 
 #endif

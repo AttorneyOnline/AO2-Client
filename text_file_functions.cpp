@@ -1,6 +1,5 @@
 #include "aoapplication.h"
 
-#include "path_functions.h"
 #include "file_functions.h"
 
 #include <QTextStream>
@@ -138,5 +137,40 @@ pos_size_type AOApplication::get_pos_and_size(QString p_identifier, QString p_de
   return_value.width = -1;
 
   return return_value;
+}
+
+QString AOApplication::get_char_side(QString p_char)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+
+  QFile char_ini;
+
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    //default to wit and don't make a big deal about it
+    return "wit";
+  }
+
+  QTextStream in(&char_ini);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (!line.startsWith("side"))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    //note that we do not validate if this is a valid side or not. that's up to the caller
+    return line_elements.at(1).trimmed().toLower();
+  }
+
+  return "wit";
 }
 

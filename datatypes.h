@@ -26,12 +26,14 @@ struct char_type
 {
   QString name;
   QString description;
+  bool taken;
 };
 
 struct evi_type
 {
   QString name;
   QString description;
+  QString image;
 };
 
 struct chatmessage_type
