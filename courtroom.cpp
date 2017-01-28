@@ -162,6 +162,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
+  connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
+
   set_widgets();
 }
 
@@ -538,6 +540,11 @@ void Courtroom::on_char_select_right_clicked()
 void Courtroom::on_spectator_clicked()
 {
   ui_char_select_background->hide();
+}
+
+void Courtroom::on_call_mod_clicked()
+{
+  ao_app->send_server_packet(new AOPacket("ZZ#%"));
 }
 
 void Courtroom::char_clicked(int n_char)
