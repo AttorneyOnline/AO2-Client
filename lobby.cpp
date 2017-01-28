@@ -133,10 +133,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
     if (design_ini_result.width < 0 || design_ini_result.height < 0)
     {
-      //at this point it's pretty much game over
-      //T0D0: add message box
-      qDebug() << "CRITICAL ERROR: NO SUITABLE DATA FOR SETTING " << p_identifier;
-      ao_app->quit();
+      call_error(" could not find \"" + p_identifier + "\" in lobby_design.ini");
     }
   }
 
@@ -156,6 +153,11 @@ QString Lobby::get_chatlog()
   QString return_value = ui_chatbox->toPlainText();
 
   return return_value;
+}
+
+int Lobby::get_selected_server()
+{
+  return ui_server_list->currentRow();
 }
 
 void Lobby::on_public_servers_clicked()
@@ -283,6 +285,10 @@ void Lobby::on_chatfield_return_pressed()
 
 void Lobby::list_servers()
 {
+  public_servers_selected = true;
+  ui_favorites->set_image("favorites.png");
+  ui_public_servers->set_image("publicservers_selected.png");
+
   ui_server_list->clear();
 
   for (server_type i_server : ao_app->get_server_list())

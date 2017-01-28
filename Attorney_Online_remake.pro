@@ -8,6 +8,8 @@ QT       += core gui multimedia network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+RC_ICONS = logo.ico
+
 TARGET = Attorney_Online_remake
 TEMPLATE = app
 

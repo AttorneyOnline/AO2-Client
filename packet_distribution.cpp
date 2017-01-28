@@ -115,7 +115,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QString message_line = f_contents.at(0) + ": " + f_contents.at(1);
 
-    w_courtroom->append_server_chatmessage(message_line);
+    if (courtroom_constructed)
+      w_courtroom->append_server_chatmessage(message_line);
   }
   else if (header == "PN")
   {
@@ -137,8 +138,24 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     loaded_music = 0;
 
     destruct_courtroom();
-
     construct_courtroom();
+
+    QString window_title = "Attorney Online 2";
+    int selected_server = w_lobby->get_selected_server();
+
+
+    if (w_lobby->public_servers_selected)
+    {
+      if (selected_server >= 0 && selected_server < server_list.size())
+        window_title += ": " + server_list.at(selected_server).name;
+    }
+    else
+    {
+      if (selected_server >= 0 && selected_server < favorite_list.size())
+        window_title += ": " + favorite_list.at(selected_server).name;
+    }
+
+    w_courtroom->set_window_title(window_title);
 
     w_lobby->show_loading_overlay();
     w_lobby->set_loading_text("Loading");
@@ -177,19 +194,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_char(f_char);
     }
 
-    if (loaded_chars < char_list_size)
-    {
-      QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
-      send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
-    }
+    QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
+    send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
 
-    else
-    {
-      if (evidence_list_size == 0)
-        send_server_packet(new AOPacket("AM#0#%"));
-      else
-        send_server_packet(new AOPacket("AE#0#%"));
-    }
   }
   else if (header == "EI"){
     if (!courtroom_constructed)
@@ -220,16 +227,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->append_evidence(f_evi);
 
-    if (loaded_evidence < evidence_list_size)
-    {
-      qDebug() << "loaded evidence: " << loaded_evidence;
-      QString next_packet_number = QString::number(loaded_evidence);
-      send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
-    }
-    else
-    {
-      send_server_packet(new AOPacket("AM#0#%"));
-    }
+    QString next_packet_number = QString::number(loaded_evidence);
+    send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
+
   }
   else if (header == "EM")
   {
@@ -253,16 +253,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_music(f_music);
     }
 
-    //apparently we need to intentionally send another AM packet to get onwards in the loading process
-    //in spite of the fact that we actually received all the music
-    //enjoy fanta
-    //if (loaded_music < music_list_size)
-    //{
-      QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
-      send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
-    //}
+    QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
+    send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
   }
-  if (header == "CharsCheck")
+  else if (header == "CharsCheck")
   {
     for (int n_char = 0 ; n_char < f_contents.size() ; ++n_char)
     {
@@ -272,7 +266,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_courtroom->set_taken(n_char, false);
     }
   }
-  if (header == "DONE")
+  else if (header == "DONE")
   {
     if (!courtroom_constructed)
       return;
@@ -286,13 +280,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     destruct_lobby();
   }
   //server accepting char request(CC) packet
-  if (header == "PV")
+  else if (header == "PV")
   {
     if (f_contents.size() < 3)
       return;
 
     w_courtroom->enter_courtroom(f_contents.at(2).toInt());
   }
+  else if (header == "MS")
+  {
+    if (courtroom_constructed)
+      w_courtroom->handle_chatmessage(&p_packet->get_contents());
+  }
+
+  delete p_packet;
 }
 
 void AOApplication::send_ms_packet(AOPacket *p_packet)

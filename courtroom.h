@@ -31,6 +31,7 @@ public:
   void append_music(QString f_music){music_list.append(f_music);}
 
   void set_widgets();
+  void set_window_title(QString p_title);
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
   void set_taken(int n_char, bool p_taken);
   void set_char_select_page();
@@ -39,6 +40,8 @@ public:
 
   void append_ms_chatmessage(QString f_message);
   void append_server_chatmessage(QString f_message);
+
+  void handle_chatmessage(QStringList *p_contents);
 
   ~Courtroom();
 

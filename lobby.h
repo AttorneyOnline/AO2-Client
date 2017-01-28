@@ -30,6 +30,9 @@ public:
   void show_loading_overlay(){ui_loading_background->show();}
   void hide_loading_overlay(){ui_loading_background->hide();}
   QString get_chatlog();
+  int get_selected_server();
+
+  bool public_servers_selected = true;
 
   ~Lobby();
 
@@ -38,8 +41,6 @@ private:
 
   const int m_lobby_width = 517;
   const int m_lobby_height = 666;
-
-  bool public_servers_selected = true;
 
   AOImage *ui_background;
 
