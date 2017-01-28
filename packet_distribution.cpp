@@ -185,19 +185,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_char(f_char);
     }
 
-    if (loaded_chars < char_list_size)
-    {
-      QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
-      send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
-    }
+    QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
+    send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
 
-    else
-    {
-      if (evidence_list_size == 0)
-        send_server_packet(new AOPacket("AM#0#%"));
-      else
-        send_server_packet(new AOPacket("AE#0#%"));
-    }
   }
   else if (header == "EI"){
     if (!courtroom_constructed)
@@ -228,16 +218,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->append_evidence(f_evi);
 
-    if (loaded_evidence < evidence_list_size)
-    {
-      qDebug() << "loaded evidence: " << loaded_evidence;
-      QString next_packet_number = QString::number(loaded_evidence);
-      send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
-    }
-    else
-    {
-      send_server_packet(new AOPacket("AM#0#%"));
-    }
+    QString next_packet_number = QString::number(loaded_evidence);
+    send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
+
   }
   else if (header == "EM")
   {
@@ -261,14 +244,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_music(f_music);
     }
 
-    //apparently we need to intentionally send another AM packet to get onwards in the loading process
-    //in spite of the fact that we actually received all the music
-    //enjoy fanta
-    //if (loaded_music < music_list_size)
-    //{
-      QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
-      send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
-    //}
+    QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
+    send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
   }
   else if (header == "CharsCheck")
   {
