@@ -10,6 +10,6 @@ void call_error(QString p_message)
   msgBox->setWindowTitle("Error");
 
 
-  msgBox->setWindowModality(Qt::NonModal);
+  //msgBox->setWindowModality(Qt::NonModal);
   msgBox->show();
 }

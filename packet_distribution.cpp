@@ -143,8 +143,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString window_title = "Attorney Online 2";
     int selected_server = w_lobby->get_selected_server();
 
-    if (selected_server >= 0 && selected_server < server_list.size())
-      window_title += ": " + server_list.at(selected_server).name;
+
+    if (w_lobby->public_servers_selected)
+    {
+      if (selected_server >= 0 && selected_server < server_list.size())
+        window_title += ": " + server_list.at(selected_server).name;
+    }
+    else
+    {
+      if (selected_server >= 0 && selected_server < favorite_list.size())
+        window_title += ": " + favorite_list.at(selected_server).name;
+    }
 
     w_courtroom->set_window_title(window_title);
 

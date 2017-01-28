@@ -32,6 +32,8 @@ public:
   QString get_chatlog();
   int get_selected_server();
 
+  bool public_servers_selected = true;
+
   ~Lobby();
 
 private:
@@ -39,8 +41,6 @@ private:
 
   const int m_lobby_width = 517;
   const int m_lobby_height = 666;
-
-  bool public_servers_selected = true;
 
   AOImage *ui_background;
 
