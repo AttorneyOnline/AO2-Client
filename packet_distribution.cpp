@@ -138,8 +138,15 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     loaded_music = 0;
 
     destruct_courtroom();
-
     construct_courtroom();
+
+    QString window_title = "Attorney Online 2";
+    int selected_server = w_lobby->get_selected_server();
+
+    if (selected_server >= 0 && selected_server < server_list.size())
+      window_title += ": " + server_list.at(selected_server).name;
+
+    w_courtroom->set_window_title(window_title);
 
     w_lobby->show_loading_overlay();
     w_lobby->set_loading_text("Loading");

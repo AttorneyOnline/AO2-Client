@@ -320,6 +320,11 @@ void Courtroom::set_widgets()
 
 }
 
+void Courtroom::set_window_title(QString p_title)
+{
+  this->setWindowTitle(p_title);
+}
+
 void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString design_ini_path = ao_app->get_theme_path() + "courtroom_design.ini";

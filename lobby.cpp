@@ -158,6 +158,11 @@ QString Lobby::get_chatlog()
   return return_value;
 }
 
+int Lobby::get_selected_server()
+{
+  return ui_server_list->currentRow();
+}
+
 void Lobby::on_public_servers_clicked()
 {
   ui_public_servers->set_image("publicservers_selected.png");
