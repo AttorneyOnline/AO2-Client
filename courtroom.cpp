@@ -6,6 +6,7 @@
 #include "file_functions.h"
 
 #include <QDebug>
+#include <QScrollBar>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -459,8 +460,30 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   QString f_message = p_contents->at(2) + ": " + p_contents->at(4) + '\n';
 
+  //ui_ic_chatlog->moveCursor(QTextCursor::Start);
+  //ui_ic_chatlog->insertPlainText(f_message);
+
+  const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
+  const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
+  const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
+
   ui_ic_chatlog->moveCursor(QTextCursor::Start);
-  ui_ic_chatlog->insertPlainText(f_message);
+
+  ui_ic_chatlog->textCursor().insertText(f_message);
+
+  if (old_cursor.hasSelection() || !is_scrolled_up)
+  {
+      // The user has selected text or scrolled away from the bottom: maintain position.
+      ui_ic_chatlog->setTextCursor(old_cursor);
+      ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
+  }
+  else
+  {
+      // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
+      ui_ic_chatlog->moveCursor(QTextCursor::Start);
+      //ui_ic_chatlog->verticalScrollBar()->setValue(verticalScrollBar()->minimum());
+      ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
+  }
 
   //T0D0: play objection gif->preanimation if there is any
 }
