@@ -80,6 +80,8 @@ public:
   QString get_default_theme_path();
   QString get_character_path(QString p_character);
   QString get_demothings_path();
+  QString get_sounds_path();
+  QString get_music_path();
 
   //implementation in text_file_functions.cpp
   QString read_user_theme();

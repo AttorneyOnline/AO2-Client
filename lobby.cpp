@@ -5,6 +5,7 @@
 #include "networkmanager.h"
 
 #include <QDebug>
+#include <QScrollBar>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -307,9 +308,28 @@ void Lobby::list_favorites()
   }
 }
 
-void Lobby::append_chatmessage(QString p_message_line)
+void Lobby::append_chatmessage(QString f_message)
 {
-  ui_chatbox->appendPlainText(p_message_line);
+  const QTextCursor old_cursor = ui_chatbox->textCursor();
+  const int old_scrollbar_value = ui_chatbox->verticalScrollBar()->value();
+  const bool is_scrolled_down = old_scrollbar_value == ui_chatbox->verticalScrollBar()->maximum();
+
+  ui_chatbox->moveCursor(QTextCursor::End);
+
+  ui_chatbox->appendPlainText(f_message);
+
+  if (old_cursor.hasSelection() || !is_scrolled_down)
+  {
+      // The user has selected text or scrolled away from the bottom: maintain position.
+      ui_chatbox->setTextCursor(old_cursor);
+      ui_chatbox->verticalScrollBar()->setValue(old_scrollbar_value);
+  }
+  else
+  {
+      // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
+      ui_chatbox->moveCursor(QTextCursor::End);
+      ui_chatbox->verticalScrollBar()->setValue(ui_chatbox->verticalScrollBar()->maximum());
+  }
 }
 
 void Lobby::set_player_count(int players_online, int max_players)

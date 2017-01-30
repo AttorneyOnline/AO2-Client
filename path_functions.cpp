@@ -33,6 +33,14 @@ QString AOApplication::get_demothings_path()
 {
   return get_base_path() + "misc/demothings/";
 }
+QString AOApplication::get_sounds_path()
+{
+  return get_base_path() + "sounds/general/";
+}
+QString AOApplication::get_music_path()
+{
+  return get_base_path() + "sounds/music/";
+}
 
 QString Courtroom::get_background_path()
 {

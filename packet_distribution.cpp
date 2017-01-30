@@ -55,7 +55,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     else if (f_contents.size() >= 2)
       message_line = f_contents.at(0) + ": " + f_contents.at(1);
     else
-      return;
+      goto end;
 
     if (lobby_constructed)
     {
@@ -66,6 +66,10 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       w_courtroom->append_ms_chatmessage(message_line);
     }
   }
+
+  end:
+
+  delete p_packet;
 }
 
 void AOApplication::server_packet_received(AOPacket *p_packet)
@@ -82,7 +86,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   if (header == "decryptor")
   {
     if (f_contents.size() == 0)
-      return;
+      goto end;
 
     //you may ask where 322 comes from. that would be a good question.
     s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
@@ -96,12 +100,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "ID")
   {
     if (f_contents.size() < 1)
-      return;
+      goto end;
 
     s_pv = f_contents.at(0).toInt();
 
     if (f_contents.size() < 2)
-      return;
+      goto end;
 
     //T0D0: store server version
   }
@@ -110,7 +114,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 2)
     {
       qDebug() << "W: malformed packet!";
-      return;
+      goto end;
     }
 
     QString message_line = f_contents.at(0) + ": " + f_contents.at(1);
@@ -121,14 +125,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "PN")
   {
     if (f_contents.size() < 2)
-      return;
+      goto end;
 
     w_lobby->set_player_count(f_contents.at(0).toInt(), f_contents.at(1).toInt());
   }
   else if (header == "SI")
   {
     if (f_contents.size() < 3)
-      return;
+      goto end;
 
     char_list_size = f_contents.at(0).toInt();
     loaded_chars = 0;
@@ -166,7 +170,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "CI")
   {
     if (!courtroom_constructed)
-      return;
+      goto end;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
     {
@@ -200,20 +204,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "EI"){
     if (!courtroom_constructed)
-      return;
+      goto end;
 
 
     // +1 because evidence starts at 1 rather than 0 for whatever reason
     //enjoy fanta
     if (f_contents.at(0).toInt() != loaded_evidence + 1)
-      return;
+      goto end;
 
     if (f_contents.size() < 2)
-      return;
+      goto end;
 
     QStringList sub_elements = f_contents.at(1).split("&");
     if (sub_elements.size() < 4)
-      return;
+      goto end;
 
     evi_type f_evi;
     f_evi.name = sub_elements.at(0);
@@ -234,7 +238,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "EM")
   {
     if (!courtroom_constructed)
-      return;
+      goto end;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
     {
@@ -269,7 +273,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "DONE")
   {
     if (!courtroom_constructed)
-      return;
+      goto end;
 
     w_courtroom->set_char_select_page();
 
@@ -282,7 +286,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "BN")
   {
     if (f_contents.size() < 1)
-      return;
+      goto end;
 
     if (courtroom_constructed)
       w_courtroom->set_background(f_contents.at(0));
@@ -291,7 +295,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "PV")
   {
     if (f_contents.size() < 3)
-      return;
+      goto end;
 
     w_courtroom->enter_courtroom(f_contents.at(2).toInt());
   }
@@ -300,6 +304,15 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed)
       w_courtroom->handle_chatmessage(&p_packet->get_contents());
   }
+  else if (header == "RT")
+  {
+    if (f_contents.size() < 1)
+      goto end;
+
+    w_courtroom->handle_wtce(f_contents.at(0));
+  }
+
+  end:
 
   delete p_packet;
 }

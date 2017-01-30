@@ -6,6 +6,7 @@
 #include "aocharbutton.h"
 #include "aopacket.h"
 #include "aoscene.h"
+#include "aomovie.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -18,6 +19,7 @@
 #include <QVector>
 #include <QCloseEvent>
 #include <QSignalMapper>
+#include <QSoundEffect>
 
 class AOApplication;
 
@@ -48,20 +50,21 @@ public:
   void append_server_chatmessage(QString f_message);
 
   void handle_chatmessage(QStringList *p_contents);
+  void handle_wtce(QString p_wtce);
 
   ~Courtroom();
 
 private:
   AOApplication *ao_app;
 
-  const int m_courtroom_width = 714;
-  const int m_courtroom_height = 668;
+  int m_courtroom_width = 714;
+  int m_courtroom_height = 668;
 
-  const int m_viewport_x = 0;
-  const int m_viewport_y = 0;
+  int m_viewport_x = 0;
+  int m_viewport_y = 0;
 
-  const int m_viewport_width = 256;
-  const int m_viewport_height = 192;
+  int m_viewport_width = 256;
+  int m_viewport_height = 192;
 
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
@@ -81,17 +84,25 @@ private:
 
   QString current_background = "gs4";
 
+  QSoundEffect *sfx_player;
+
   AOImage *ui_background;
 
-  //T0D0: add viewport elements like background, desk, etc.
-
   AOScene *ui_vp_background;
+  AOMovie *ui_vp_player_char;
+  AOScene *ui_vp_desk;
+  AOImage *ui_vp_chatbox;
+  QLabel *ui_vp_showname;
+  QPlainTextEdit *ui_vp_message;
+  AOImage *ui_vp_testimony;
+  AOImage *ui_vp_realization;
+  AOMovie *ui_vp_wtce;
+  AOMovie *ui_vp_objection;
 
   QPlainTextEdit *ui_ic_chatlog;
 
   QPlainTextEdit *ui_ms_chatlog;
   QPlainTextEdit *ui_server_chatlog;
-
 
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
@@ -122,6 +133,7 @@ private:
   AOButton *ui_take_that;
 
   AOButton *ui_ooc_toggle;
+
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
 
@@ -166,9 +178,16 @@ private:
   AOButton *ui_char_select_right;
 
   AOButton *ui_spectator;
+
+public slots:
+  void objection_done();
+
 private slots:
   void on_ooc_return_pressed();
   void on_ooc_toggle_clicked();
+
+  void on_witness_testimony_clicked();
+  void on_cross_examination_clicked();
 
   void on_change_character_clicked();
   void on_reload_theme_clicked();

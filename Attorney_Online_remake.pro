@@ -32,7 +32,10 @@ SOURCES += main.cpp\
     courtroom.cpp \
     aocharbutton.cpp \
     hardware_functions.cpp \
-    aoscene.cpp
+    aoscene.cpp \
+    aomovie.cpp \
+    aocharselect.cpp \
+    misc_functions.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -48,4 +51,7 @@ HEADERS  += lobby.h \
     courtroom.h \
     aocharbutton.h \
     hardware_functions.h \
-    aoscene.h
+    aoscene.h \
+    aomovie.h \
+    aocharselect.h \
+    misc_functions.h

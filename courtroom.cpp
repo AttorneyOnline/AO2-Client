@@ -15,13 +15,20 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   char_button_mapper = new QSignalMapper(this);
 
+  sfx_player = new QSoundEffect(this);
+
   ui_background = new AOImage(this, ao_app);
 
-  //viewport elements like background, desk, etc.
-
   ui_vp_background = new AOScene(this);
-  ui_vp_background->move(m_viewport_x, m_viewport_y);
-  ui_vp_background->resize(m_viewport_width, m_viewport_height);
+  ui_vp_player_char = new AOMovie(this, ao_app);
+  ui_vp_desk = new AOScene(this);
+  ui_vp_chatbox = new AOImage(this, ao_app);
+  ui_vp_showname = new QLabel(this);
+  ui_vp_message = new QPlainTextEdit(this);
+  ui_vp_testimony = new AOImage(this, ao_app);
+  ui_vp_realization = new AOImage(this, ao_app);
+  ui_vp_wtce = new AOMovie(this, ao_app);
+  ui_vp_objection = new AOMovie(this, ao_app);
 
   ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -155,13 +162,19 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
 
+  connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
+
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
-  connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
 
+  connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_witness_testimony_clicked()));
+  connect(ui_cross_examination, SIGNAL(clicked()), this, SLOT(on_cross_examination_clicked()));
+
+  connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
-  connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
+
+  connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
   connect(ui_char_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
   connect(ui_char_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
@@ -173,14 +186,83 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
 void Courtroom::set_widgets()
 {
+  QString design_ini_path = ao_app->get_theme_path() + "courtroom_design.ini";
+  QString default_ini_path = ao_app->get_base_path() + "themes/default/courtroom_design.ini";
+
+  pos_size_type f_courtroom = ao_app->get_pos_and_size("courtroom", design_ini_path);
+  pos_size_type f_viewport = ao_app->get_pos_and_size("viewport", design_ini_path);
+
+  if (f_courtroom.width < 0 || f_courtroom.height < 0)
+  {
+    f_courtroom = ao_app->get_pos_and_size("courtroom", default_ini_path);
+    if (f_courtroom.width < 0 || f_courtroom.height < 0)
+    {
+      qDebug() << "ERROR: did not find courtroom width or height in courtroom_design.ini!";
+      //T0D0: add error box then quit application, this is not recoverable
+    }
+  }
+
+
+
+  if (f_viewport.width < 0 || f_viewport.height < 0)
+  {
+    f_viewport = ao_app->get_pos_and_size("viewport", default_ini_path);
+    if (f_viewport.width < 0 || f_viewport.height < 0)
+    {
+      qDebug() << "ERROR: did not find viewport width or height in courtroom_design.ini!";
+      //T0D0: same, critical error
+    }
+  }
+
+  m_courtroom_width = f_courtroom.width;
+  m_courtroom_height = f_courtroom.height;
+
+  m_viewport_x = f_viewport.x;
+  m_viewport_y = f_viewport.y;
+  m_viewport_width = f_viewport.width;
+  m_viewport_height = f_viewport.height;
+
   this->setFixedSize(m_courtroom_width, m_courtroom_height);
-  this->setWindowTitle("Attorney Online 2: Server name here");
 
   ui_background->set_image("courtroombackground.png");
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
 
-  //viewport elements like background, desk, etc. go here
+  ui_vp_background->move(m_viewport_x, m_viewport_y);
+  ui_vp_background->resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_player_char->move(m_viewport_x, m_viewport_y);
+  ui_vp_player_char->combo_resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_desk->move(m_viewport_x, m_viewport_y);
+  ui_vp_desk->resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_chatbox->move(m_viewport_x, m_viewport_y);
+  ui_vp_chatbox->resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_showname->move(m_viewport_x, m_viewport_y);
+  ui_vp_showname->resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_message->move(m_viewport_x, m_viewport_y);
+  ui_vp_message->resize(m_viewport_width, m_viewport_height);
+
+  //T0D0: resize it properly
+  //D3BUG START
+  //obscures some things
+  ui_vp_message->hide();
+  //D3BUG END
+
+  ui_vp_testimony->move(m_viewport_x, m_viewport_y);
+  ui_vp_testimony->resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_realization->move(m_viewport_x, m_viewport_y);
+  ui_vp_realization->resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_wtce->move(m_viewport_x, m_viewport_y);
+  ui_vp_wtce->combo_resize(m_viewport_width, m_viewport_height);
+
+  ui_vp_objection->move(m_viewport_x, m_viewport_y);
+  ui_vp_objection->combo_resize(m_viewport_width, m_viewport_height);
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -453,12 +535,50 @@ void Courtroom::enter_courtroom(int p_cid)
 
 void Courtroom::append_ms_chatmessage(QString f_message)
 {
+  const QTextCursor old_cursor = ui_ms_chatlog->textCursor();
+  const int old_scrollbar_value = ui_ms_chatlog->verticalScrollBar()->value();
+  const bool is_scrolled_down = old_scrollbar_value == ui_ms_chatlog->verticalScrollBar()->maximum();
+
+  ui_ms_chatlog->moveCursor(QTextCursor::End);
+
   ui_ms_chatlog->appendPlainText(f_message);
+
+  if (old_cursor.hasSelection() || !is_scrolled_down)
+  {
+      // The user has selected text or scrolled away from the bottom: maintain position.
+      ui_ms_chatlog->setTextCursor(old_cursor);
+      ui_ms_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
+  }
+  else
+  {
+      // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
+      ui_ms_chatlog->moveCursor(QTextCursor::End);
+      ui_ms_chatlog->verticalScrollBar()->setValue(ui_ms_chatlog->verticalScrollBar()->maximum());
+  }
 }
 
 void Courtroom::append_server_chatmessage(QString f_message)
 {
+  const QTextCursor old_cursor = ui_server_chatlog->textCursor();
+  const int old_scrollbar_value = ui_server_chatlog->verticalScrollBar()->value();
+  const bool is_scrolled_down = old_scrollbar_value == ui_server_chatlog->verticalScrollBar()->maximum();
+
+  ui_server_chatlog->moveCursor(QTextCursor::End);
+
   ui_server_chatlog->appendPlainText(f_message);
+
+  if (old_cursor.hasSelection() || !is_scrolled_down)
+  {
+      // The user has selected text or scrolled away from the bottom: maintain position.
+      ui_server_chatlog->setTextCursor(old_cursor);
+      ui_server_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
+  }
+  else
+  {
+      // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
+      ui_server_chatlog->moveCursor(QTextCursor::End);
+      ui_server_chatlog->verticalScrollBar()->setValue(ui_server_chatlog->verticalScrollBar()->maximum());
+  }
 }
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
@@ -492,9 +612,44 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   //D3BUG START
 
-  //ui_vp_background->set_image("defenseempty.png");
+  ui_vp_background->set_image("defenseempty.png");
 
   //D3BUG END
+}
+
+void Courtroom::objection_done()
+{
+  //T0D0: play preanim, advance to step 2 in chat message handling
+}
+
+void Courtroom::handle_wtce(QString p_wtce)
+{
+  //witness testimony
+  if (p_wtce == "testimony1")
+  {
+    QString wt_path = ao_app->get_sounds_path() + "sfx-testimony2.wav";
+    QUrl wt_sfx(QUrl::fromLocalFile(wt_path));
+
+    sfx_player->stop();
+    ui_vp_wtce->stop();
+    sfx_player->setSource(wt_sfx);
+
+    sfx_player->play();
+    ui_vp_wtce->play("witnesstestimony.gif");
+  }
+  //cross examination
+  else if (p_wtce == "testimony2")
+  {
+    QString ce_path = ao_app->get_sounds_path() + "sfx-testimony.wav";
+    QUrl ce_sfx(QUrl::fromLocalFile(ce_path));
+
+    sfx_player->stop();
+    ui_vp_wtce->stop();
+    sfx_player->setSource(ce_sfx);
+
+    sfx_player->play();
+    ui_vp_wtce->play("crossexamination.gif");
+  }
 }
 
 void Courtroom::on_ooc_return_pressed()
@@ -534,6 +689,16 @@ void Courtroom::on_ooc_toggle_clicked()
 
     server_ooc = true;
   }
+}
+
+void Courtroom::on_witness_testimony_clicked()
+{
+  ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
+}
+
+void Courtroom::on_cross_examination_clicked()
+{
+  ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
 }
 
 void Courtroom::on_change_character_clicked()
