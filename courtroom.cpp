@@ -4,6 +4,7 @@
 #include "lobby.h"
 #include "hardware_functions.h"
 #include "file_functions.h"
+#include "datatypes.h"
 
 #include <QDebug>
 #include <QScrollBar>

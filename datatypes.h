@@ -75,4 +75,23 @@ struct pos_size_type
   int height = 0;
 };
 
+enum CHAT_MESSAGE
+{
+  CHAT = 0,
+  PRE_EMOTE,
+  CHAR_NAME,
+  EMOTE,
+  MESSAGE,
+  SIDE,
+  SFX_NAME,
+  EMOTE_MOD,
+  CHAR_ID,
+  SFX_DELAY,
+  OBJECTION_MOD,
+  EVIDENCE_ID,
+  FLIP,
+  REALIZATION,
+  TEXT_COLOR
+};
+
 #endif // DATATYPES_H
