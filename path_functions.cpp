@@ -1,4 +1,5 @@
 #include "aoapplication.h"
+#include "courtroom.h"
 
 #include <QDir>
 #include <QDebug>
@@ -31,4 +32,14 @@ QString AOApplication::get_character_path(QString p_character)
 QString AOApplication::get_demothings_path()
 {
   return get_base_path() + "misc/demothings/";
+}
+
+QString Courtroom::get_background_path()
+{
+  return ao_app->get_base_path() + "background/" + current_background.toLower() + "/";
+}
+
+QString Courtroom::get_default_background_path()
+{
+  return ao_app->get_base_path() + "background/gs4/";
 }

@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     encryption_functions.cpp \
     courtroom.cpp \
     aocharbutton.cpp \
-    hardware_functions.cpp
+    hardware_functions.cpp \
+    aoscene.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -46,4 +47,5 @@ HEADERS  += lobby.h \
     encryption_functions.h \
     courtroom.h \
     aocharbutton.h \
-    hardware_functions.h
+    hardware_functions.h \
+    aoscene.h

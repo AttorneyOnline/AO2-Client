@@ -279,6 +279,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     destruct_lobby();
   }
+  else if (header == "BN")
+  {
+    if (f_contents.size() < 1)
+      return;
+
+    w_courtroom->set_background(f_contents.at(0));
+  }
   //server accepting char request(CC) packet
   else if (header == "PV")
   {

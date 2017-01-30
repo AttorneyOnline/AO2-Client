@@ -18,6 +18,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   //viewport elements like background, desk, etc.
 
+  ui_vp_background = new AOScene(this);
+  ui_vp_background->move(m_viewport_x, m_viewport_y);
+  ui_vp_background->resize(m_viewport_width, m_viewport_height);
+
   ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
@@ -482,6 +486,12 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   //T0D0: play objection gif->preanimation if there is any
+
+  //D3BUG START
+
+  ui_vp_background->set_image("defenseempty.png");
+
+  //D3BUG END
 }
 
 void Courtroom::on_ooc_return_pressed()

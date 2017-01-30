@@ -5,6 +5,7 @@
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aopacket.h"
+#include "aoscene.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -35,6 +36,11 @@ public:
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
   void set_taken(int n_char, bool p_taken);
   void set_char_select_page();
+  void set_background(QString p_background){current_background = p_background;}
+
+  //implementations in path_functions.cpp
+  QString get_background_path();
+  QString get_default_background_path();
 
   void enter_courtroom(int p_cid);
 
@@ -73,9 +79,13 @@ private:
   //wether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
+  QString current_background = "gs4";
+
   AOImage *ui_background;
 
   //T0D0: add viewport elements like background, desk, etc.
+
+  AOScene *ui_vp_background;
 
   QPlainTextEdit *ui_ic_chatlog;
 
