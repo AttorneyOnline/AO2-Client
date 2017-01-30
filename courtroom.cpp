@@ -485,11 +485,13 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
   }
 
+
+
   //T0D0: play objection gif->preanimation if there is any
 
   //D3BUG START
 
-  ui_vp_background->set_image("defenseempty.png");
+  //ui_vp_background->set_image("defenseempty.png");
 
   //D3BUG END
 }

@@ -284,7 +284,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       return;
 
-    w_courtroom->set_background(f_contents.at(0));
+    if (courtroom_constructed)
+      w_courtroom->set_background(f_contents.at(0));
   }
   //server accepting char request(CC) packet
   else if (header == "PV")
