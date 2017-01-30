@@ -155,15 +155,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
 
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
-
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
+  connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
 
   connect(ui_char_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
   connect(ui_char_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
-
-  connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
 
   set_widgets();
 }
