@@ -606,9 +606,26 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
   }
 
+  int objection_mod = p_contents->at(OBJECTION_MOD);
 
+  switch (objection_mod)
+  {
+  case 1:
+    ui_vp_objection->play("holdit");
+    break;
+  case 2:
+    ui_vp_objection->play("objection");
+    break;
+  case 3:
+    ui_vp_objection->play("takethat");
+    break;
+  //AO2 only
+  case 4:
+    //T0D0: add custom.gif here
+  default:
+    //T0D0: continue program flow
 
-  //T0D0: play objection gif->preanimation if there is any
+  }
 
   //D3BUG START
 

@@ -19,8 +19,8 @@ void AOMovie::play(QString p_gif)
 {
   m_movie->stop();
 
-  QString gif_path = ao_app->get_theme_path() + p_gif;
-  QString default_path = ao_app->get_default_theme_path() + p_gif;
+  QString gif_path = ao_app->get_theme_path() + p_gif + ".gif";
+  QString default_path = ao_app->get_default_theme_path() + p_gif + ".gif";
 
   if (file_exists(gif_path))
     m_movie->setFileName(gif_path);

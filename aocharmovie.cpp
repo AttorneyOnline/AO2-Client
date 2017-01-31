@@ -86,7 +86,7 @@ void AOCharMovie::combo_resize(int w, int h)
 
 void AOCharMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1))
+  if (n_frame == (m_movie->frameCount() - 1) && play_once)
   {
     //we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());

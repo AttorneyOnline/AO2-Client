@@ -3,6 +3,7 @@
 
 #include <QMovie>
 #include <QLabel>
+#include <QTimer>
 
 class AOApplication;
 
@@ -26,7 +27,10 @@ public:
 private:
   AOApplication *ao_app;
 
+  bool play_once = true;
+
   QMovie *m_movie;
+  QTimer *m_timer;
 
   QString m_char = "null";
   QString m_pre;
