@@ -7,6 +7,7 @@
 #include "aopacket.h"
 #include "aoscene.h"
 #include "aomovie.h"
+#include "aocharmovie.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -89,8 +90,9 @@ private:
   AOImage *ui_background;
 
   AOScene *ui_vp_background;
-  AOMovie *ui_vp_player_char;
+  AOCharMovie *ui_vp_player_char;
   AOScene *ui_vp_desk;
+  AOScene *ui_vp_legacy_desk;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QPlainTextEdit *ui_vp_message;

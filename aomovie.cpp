@@ -17,6 +17,8 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 
 void AOMovie::play(QString p_gif)
 {
+  m_movie->stop();
+
   QString gif_path = ao_app->get_theme_path() + p_gif;
   QString default_path = ao_app->get_default_theme_path() + p_gif;
 

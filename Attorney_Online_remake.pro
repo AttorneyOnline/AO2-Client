@@ -34,8 +34,8 @@ SOURCES += main.cpp\
     hardware_functions.cpp \
     aoscene.cpp \
     aomovie.cpp \
-    aocharselect.cpp \
-    misc_functions.cpp
+    misc_functions.cpp \
+    aocharmovie.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -53,5 +53,5 @@ HEADERS  += lobby.h \
     hardware_functions.h \
     aoscene.h \
     aomovie.h \
-    aocharselect.h \
-    misc_functions.h
+    misc_functions.h \
+    aocharmovie.h

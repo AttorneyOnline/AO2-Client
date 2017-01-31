@@ -5,6 +5,7 @@
 #include "hardware_functions.h"
 #include "file_functions.h"
 #include "datatypes.h"
+#include "debug_functions.h"
 
 #include <QDebug>
 #include <QScrollBar>
@@ -20,8 +21,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_background = new AOImage(this, ao_app);
 
   ui_vp_background = new AOScene(this);
-  ui_vp_player_char = new AOMovie(this, ao_app);
+  ui_vp_player_char = new AOCharMovie(this, ao_app);
   ui_vp_desk = new AOScene(this);
+  ui_vp_legacy_desk = new AOScene(this);
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(this);
   ui_vp_message = new QPlainTextEdit(this);
@@ -427,9 +429,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
     if (design_ini_result.width < 0 || design_ini_result.height < 0)
     {
       //at this point it's pretty much game over
-      //T0D0: add message box
-      qDebug() << "CRITICAL ERROR: NO SUITABLE DATA FOR SETTING " << p_identifier;
-      ao_app->quit();
+      call_error(" could not find \"" + p_identifier + "\" in courtroom_design.ini");
     }
   }
 
@@ -583,7 +583,7 @@ void Courtroom::append_server_chatmessage(QString f_message)
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
-  QString f_message = p_contents->at(2) + ": " + p_contents->at(4) + '\n';
+  QString f_message = p_contents->at(CHAR_NAME) + ": " + p_contents->at(MESSAGE) + '\n';
 
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
@@ -614,6 +614,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   ui_vp_background->set_image("defenseempty.png");
 
+  ui_vp_player_char->set(p_contents->at(CHAR_NAME), p_contents->at(EMOTE), p_contents->at(PRE_EMOTE));
+  ui_vp_player_char->play_talking();
+
   //D3BUG END
 }
 
@@ -631,7 +634,6 @@ void Courtroom::handle_wtce(QString p_wtce)
     QUrl wt_sfx(QUrl::fromLocalFile(wt_path));
 
     sfx_player->stop();
-    ui_vp_wtce->stop();
     sfx_player->setSource(wt_sfx);
 
     sfx_player->play();
@@ -644,7 +646,6 @@ void Courtroom::handle_wtce(QString p_wtce)
     QUrl ce_sfx(QUrl::fromLocalFile(ce_path));
 
     sfx_player->stop();
-    ui_vp_wtce->stop();
     sfx_player->setSource(ce_sfx);
 
     sfx_player->play();
