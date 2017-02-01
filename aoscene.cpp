@@ -20,9 +20,13 @@ void AOScene::set_image(QString p_image)
   int w = this->width();
   int h = this->height();
 
-
   if (file_exists(background_path))
     this->setPixmap(background.scaled(w, h));
   else
     this->setPixmap(default_bg.scaled(w, h));
+}
+
+void AOScene::set_legacy_desk(QString p_image)
+{
+
 }

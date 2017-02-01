@@ -39,11 +39,19 @@ public:
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
   void set_taken(int n_char, bool p_taken);
   void set_char_select_page();
-  void set_background(QString p_background){current_background = p_background;}
+  void set_background(QString p_background);
+
+  //sets desk and bg based on pos in chatmessage
+  void set_scene();
+
+  //sets text color based on text color in chatmessage
+  void set_text_color();
 
   //implementations in path_functions.cpp
   QString get_background_path();
   QString get_default_background_path();
+
+  int get_cid() {return m_cid;}
 
   void enter_courtroom(int p_cid);
 
@@ -51,6 +59,8 @@ public:
   void append_server_chatmessage(QString f_message);
 
   void handle_chatmessage(QStringList *p_contents);
+  void handle_chatmessage_2();
+
   void handle_wtce(QString p_wtce);
 
   ~Courtroom();
@@ -73,12 +83,37 @@ private:
 
   QSignalMapper *char_button_mapper;
 
+  //determines how fast messages tick onto screen
+  QTimer *chat_tick_timer;
+  int chat_tick_interval = 60;
+  //which tick position(character in chat message) we are at
+  int tick_pos = 0;
+
+  //delay before chat messages starts ticking
+  QTimer *text_delay;
+
+  //delay before sfx plays
+  QTimer *sfx_delay;
+
+  static const int chatmessage_size = 15;
+  QString m_chatmessage[chatmessage_size];
+  bool chatmessage_is_empty = false;
+
+  //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
+  int anim_state = 0;
+
+  //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
+  int text_state = 0;
+
   //0 is the first page, 1 second etc.
   //makes char arithmetic easier
   int current_char_page = 0;
 
   //character id, which index of the char_list the player is
   int m_cid = 0;
+
+  //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
+  bool is_ao2_bg = false;
 
   //wether the ooc chat is server or master chat, true is server
   bool server_ooc = true;

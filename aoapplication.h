@@ -89,6 +89,7 @@ public:
   QVector<server_type> read_serverlist_txt();
   pos_size_type get_pos_and_size(QString p_identifier, QString p_design_path);
   QString get_char_side(QString p_char);
+  QString get_showname(QString p_char);
 
 private:
   const int RELEASE = 2;

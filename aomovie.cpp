@@ -15,12 +15,18 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
 
-void AOMovie::play(QString p_gif)
+void AOMovie::play(QString p_gif, QString p_char)
 {
   m_movie->stop();
 
-  QString gif_path = ao_app->get_theme_path() + p_gif + ".gif";
   QString default_path = ao_app->get_default_theme_path() + p_gif + ".gif";
+  QString gif_path;
+
+  if (p_gif == "custom")
+    gif_path = ao_app->get_character_path(p_char) + "custom.gif";
+  else
+    gif_path = ao_app->get_theme_path() + p_gif + ".gif";
+
 
   if (file_exists(gif_path))
     m_movie->setFileName(gif_path);

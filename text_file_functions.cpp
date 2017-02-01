@@ -174,3 +174,37 @@ QString AOApplication::get_char_side(QString p_char)
   return "wit";
 }
 
+QString AOApplication::get_showname(QString p_char)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+
+  QFile char_ini;
+
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    //default to empty string
+    return "";
+  }
+
+  QTextStream in(&char_ini);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (!line.startsWith("showname"))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    return line_elements.at(1).trimmed().toLower();
+  }
+
+  return "";
+}
+

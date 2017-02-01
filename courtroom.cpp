@@ -14,6 +14,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
+  chat_tick_timer = new QTimer(this);
+
+  text_delay = new QTimer(this);
+  text_delay->setSingleShot(true);
+
+  sfx_delay = new QTimer(this);
+  sfx_delay->setSingleShot(true);
+
   char_button_mapper = new QSignalMapper(this);
 
   sfx_player = new QSoundEffect(this);
@@ -25,8 +33,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_desk = new AOScene(this);
   ui_vp_legacy_desk = new AOScene(this);
   ui_vp_chatbox = new AOImage(this, ao_app);
-  ui_vp_showname = new QLabel(this);
-  ui_vp_message = new QPlainTextEdit(this);
+  ui_vp_showname = new QLabel(ui_vp_chatbox);
+  ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
   ui_vp_testimony = new AOImage(this, ao_app);
   ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
@@ -502,6 +510,16 @@ void Courtroom::set_char_select_page()
 
 }
 
+void Courtroom::set_background(QString p_background)
+{
+  current_background = p_background;
+  QString bg_path = get_background_path();
+
+  is_ao2_bg = file_exists(bg_path + "defensedesk.png") &&
+              file_exists(bg_path + "prosecutiondesk.png") &&
+              file_exists(bg_path + "stand.png");
+}
+
 void Courtroom::enter_courtroom(int p_cid)
 {
   m_cid = p_cid;
@@ -583,7 +601,14 @@ void Courtroom::append_server_chatmessage(QString f_message)
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
-  QString f_message = p_contents->at(CHAR_NAME) + ": " + p_contents->at(MESSAGE) + '\n';
+  text_state = 0;
+
+  for (int n_string = 0 ; n_string < chatmessage_size ; ++n_string)
+  {
+    m_chatmessage[n_string] = p_contents->at(n_string);
+  }
+
+  QString f_message = m_chatmessage[CHAR_NAME] + ": " + m_chatmessage[MESSAGE] + '\n';
 
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
@@ -606,40 +631,102 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
   }
 
-  int objection_mod = p_contents->at(OBJECTION_MOD);
+  int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
 
-  switch (objection_mod)
+  //if an objection is used
+  if (objection_mod <= 4 && objection_mod >= 1)
   {
-  case 1:
-    ui_vp_objection->play("holdit");
-    break;
-  case 2:
-    ui_vp_objection->play("objection");
-    break;
-  case 3:
-    ui_vp_objection->play("takethat");
-    break;
-  //AO2 only
-  case 4:
-    //T0D0: add custom.gif here
-  default:
-    //T0D0: continue program flow
+    switch (objection_mod)
+    {
+    case 1:
+      ui_vp_objection->play("holdit");
+      break;
+    case 2:
+      ui_vp_objection->play("objection");
+      break;
+    case 3:
+      ui_vp_objection->play("takethat");
+      break;
+    //case 4 is AO2 only
+    case 4:
+      ui_vp_objection->play("custom", m_chatmessage[CHAR_NAME]);
+      break;
+    default:
+      qDebug() << "W: Logic error in objection switch statement!";
+    }
 
+    //means we are in a state of objecting
+    anim_state = 0;
+
+    int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+
+    switch (emote_mod)
+    {
+    //we change the chatmessage from no preanim to preanim, see documentation
+    case 0: case 2:
+      m_chatmessage[EMOTE_MOD] = QString::number(++emote_mod);
+      break;
+    case 5:
+      m_chatmessage[EMOTE_MOD] = QString::number(--emote_mod);
+      break;
+    }
   }
 
-  //D3BUG START
 
-  ui_vp_background->set_image("defenseempty.png");
-
-  ui_vp_player_char->set(p_contents->at(CHAR_NAME), p_contents->at(EMOTE), p_contents->at(PRE_EMOTE));
-  ui_vp_player_char->play_talking();
-
-  //D3BUG END
+  else
+    handle_chatmessage_2();
 }
 
 void Courtroom::objection_done()
 {
-  //T0D0: play preanim, advance to step 2 in chat message handling
+  handle_chatmessage_2();
+}
+
+void Courtroom::handle_chatmessage_2()
+{
+  ui_vp_player_char->stop();
+
+  QString remote_name = m_chatmessage[CHAR_NAME];
+  QString local_showname = ao_app->get_showname(remote_name);
+
+  //empty string means we couldnt find showname in char ini
+  if (local_showname == "")
+    ui_vp_showname->remote_name;
+  else
+    ui_vp_showname->local_showname;
+
+  ui_vp_message->clear();
+  ui_vp_chatbox->hide();
+
+  set_scene();
+  set_text_color();
+
+
+  //ui_vp_player_char->set(m_chatmessage[CHAR_NAME], m_chatmessage[PRE_EMOTE], m_chatmessage[EMOTE]);
+  //ui_vp_player_char->play_pre();
+}
+
+void Courtroom::set_scene()
+{
+  //witness is default if pos is invalid
+  QString f_image = "witnessempty.png";
+
+  QString f_side = m_chatmessage[SIDE];
+
+  if (f_side == "def")
+    f_image = "defenseempty.png";
+  else if (f_side == "pro")
+    f_image = "prosecutionempty.png";
+  else if (f_side == "jud")
+    f_image = "judgestand.png";
+  else if (f_side == "hld")
+    f_image = "helperstand.png";
+  else if (f_side == "hlp")
+    f_image = "prohelperstand.png";
+
+  ui_vp_background->set_image(f_image);
+
+  //now for the hard part: desks
 }
 
 void Courtroom::handle_wtce(QString p_wtce)

@@ -12,6 +12,7 @@ public:
   explicit AOScene(Courtroom *parent);
 
   void set_image(QString p_image);
+  void set_legacy_desk(QString p_image);
 
 private:
   Courtroom *m_courtroom;
