@@ -42,6 +42,19 @@ QString AOApplication::get_music_path()
   return get_base_path() + "sounds/music/";
 }
 
+QString AOApplication::get_background_path()
+{
+  if (courtroom_constructed)
+    return w_courtroom->get_background_path();
+  //this function being called when the courtroom isn't constructed makes no sense
+  return "";
+}
+
+QString AOApplication::get_default_background_path()
+{
+  return get_base_path() + "background/gs4/";
+}
+
 QString Courtroom::get_background_path()
 {
   return ao_app->get_base_path() + "background/" + current_background.toLower() + "/";

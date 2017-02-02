@@ -52,11 +52,6 @@ public:
   QString get_default_background_path();
 
   int get_cid() {return m_cid;}
-  int get_vp_x(){return m_viewport_x;}
-  int get_vp_y(){return m_viewport_y;}
-  int get_vp_w(){return m_viewport_width;}
-  int get_vp_h(){return m_viewport_height;}
-
 
   void enter_courtroom(int p_cid);
 
@@ -87,6 +82,9 @@ private:
   QVector<QString> music_list;
 
   QSignalMapper *char_button_mapper;
+
+  //triggers ping_server() every 60 seconds
+  QTimer *keepalive_timer;
 
   //determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
@@ -129,10 +127,13 @@ private:
 
   AOImage *ui_background;
 
+  //ui_viewport is the parent of all the viewport widgets
+  QWidget *ui_viewport;
   AOScene *ui_vp_background;
   AOCharMovie *ui_vp_player_char;
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
+  //AOImage *ui_vp_legacy_padding;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QPlainTextEdit *ui_vp_message;
@@ -243,6 +244,8 @@ private slots:
   void on_spectator_clicked();
 
   void char_clicked(int n_char);
+
+  void ping_server();
 
 };
 

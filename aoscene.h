@@ -4,18 +4,20 @@
 #include <QLabel>
 
 class Courtroom;
+class AOApplication;
 
 class AOScene : public QLabel
 {
   Q_OBJECT
 public:
-  explicit AOScene(Courtroom *parent);
+  explicit AOScene(QWidget *parent, AOApplication *p_ao_app);
 
   void set_image(QString p_image);
   void set_legacy_desk(QString p_image);
 
 private:
-  Courtroom *m_courtroom;
+  QWidget *m_parent;
+  AOApplication *ao_app;
 
 };
 

@@ -14,6 +14,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
+  keepalive_timer = new QTimer(this);
+  keepalive_timer->start(60000);
+
   chat_tick_timer = new QTimer(this);
 
   text_delay = new QTimer(this);
@@ -28,17 +31,19 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_background = new AOImage(this, ao_app);
 
-  ui_vp_background = new AOScene(this);
-  ui_vp_player_char = new AOCharMovie(this, ao_app);
-  ui_vp_desk = new AOScene(this);
-  ui_vp_legacy_desk = new AOScene(this);
-  ui_vp_chatbox = new AOImage(this, ao_app);
+  ui_viewport = new QWidget(this);
+  ui_vp_background = new AOScene(ui_viewport, ao_app);
+  ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
+  ui_vp_desk = new AOScene(ui_viewport, ao_app);
+  ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
+  //ui_vp_legacy_padding = new AOImage(ui_viewport, ao_app);
+  ui_vp_chatbox = new AOImage(ui_viewport, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
-  ui_vp_testimony = new AOImage(this, ao_app);
-  ui_vp_realization = new AOImage(this, ao_app);
-  ui_vp_wtce = new AOMovie(this, ao_app);
-  ui_vp_objection = new AOMovie(this, ao_app);
+  ui_vp_testimony = new AOImage(ui_viewport, ao_app);
+  ui_vp_realization = new AOImage(ui_viewport, ao_app);
+  ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
+  ui_vp_objection = new AOMovie(ui_viewport, ao_app);
 
   ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -172,6 +177,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
 
+  connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
+
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
 
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
@@ -200,7 +207,6 @@ void Courtroom::set_widgets()
   QString default_ini_path = ao_app->get_base_path() + "themes/default/courtroom_design.ini";
 
   pos_size_type f_courtroom = ao_app->get_pos_and_size("courtroom", design_ini_path);
-  pos_size_type f_viewport = ao_app->get_pos_and_size("viewport", design_ini_path);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
   {
@@ -212,25 +218,8 @@ void Courtroom::set_widgets()
     }
   }
 
-
-
-  if (f_viewport.width < 0 || f_viewport.height < 0)
-  {
-    f_viewport = ao_app->get_pos_and_size("viewport", default_ini_path);
-    if (f_viewport.width < 0 || f_viewport.height < 0)
-    {
-      qDebug() << "ERROR: did not find viewport width or height in courtroom_design.ini!";
-      //T0D0: same, critical error
-    }
-  }
-
   m_courtroom_width = f_courtroom.width;
   m_courtroom_height = f_courtroom.height;
-
-  m_viewport_x = f_viewport.x;
-  m_viewport_y = f_viewport.y;
-  m_viewport_width = f_viewport.width;
-  m_viewport_height = f_viewport.height;
 
   this->setFixedSize(m_courtroom_width, m_courtroom_height);
 
@@ -238,42 +227,50 @@ void Courtroom::set_widgets()
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
 
-  ui_vp_background->move(m_viewport_x, m_viewport_y);
-  ui_vp_background->resize(m_viewport_width, m_viewport_height);
+  set_size_and_pos(ui_viewport, "viewport");
 
-  ui_vp_player_char->move(m_viewport_x, m_viewport_y);
-  ui_vp_player_char->combo_resize(m_viewport_width, m_viewport_height);
+  ui_vp_background->move(0, 0);
+  ui_vp_background->resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_desk->move(m_viewport_x, m_viewport_y);
-  ui_vp_desk->resize(m_viewport_width, m_viewport_height);
-  qDebug() << "resized ui_vp_desk to " << m_viewport_width << " and " << m_viewport_height;
+  ui_vp_player_char->move(0, 0);
+  ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_chatbox->move(m_viewport_x, m_viewport_y);
-  ui_vp_chatbox->resize(m_viewport_width, m_viewport_height);
+  //the AO2 desk element
+  ui_vp_desk->move(0, 0);
+  ui_vp_desk->resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_showname->move(m_viewport_x, m_viewport_y);
-  ui_vp_showname->resize(m_viewport_width, m_viewport_height);
+  //the size of the ui_vp_legacy_desk element relies on various factors and is set in set_scene()
 
-  ui_vp_message->move(m_viewport_x, m_viewport_y);
-  ui_vp_message->resize(m_viewport_width, m_viewport_height);
+  double y_modifier = 147.0 / 192.0;
+  int final_y = y_modifier * ui_viewport->height();
+  ui_vp_legacy_desk->move(0, final_y);
+  ui_vp_legacy_desk->hide();
 
-  //T0D0: resize it properly
-  //D3BUG START
-  //obscures some things
-  ui_vp_message->hide();
-  //D3BUG END
+  //set_size_and_pos(ui_vp_legacy_padding, "legacy_padding");
+  //ui_vp_legacy_padding->setStyleSheet("background-color: rgba(89, 89, 89, 255);");
 
-  ui_vp_testimony->move(m_viewport_x, m_viewport_y);
-  ui_vp_testimony->resize(m_viewport_width, m_viewport_height);
+  set_size_and_pos(ui_vp_chatbox, "chatbox");
+  ui_vp_chatbox->set_scaled_image("chatmed.png");
 
-  ui_vp_realization->move(m_viewport_x, m_viewport_y);
-  ui_vp_realization->resize(m_viewport_width, m_viewport_height);
+  set_size_and_pos(ui_vp_showname, "showname");
+  ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                               "color: white;");
 
-  ui_vp_wtce->move(m_viewport_x, m_viewport_y);
-  ui_vp_wtce->combo_resize(m_viewport_width, m_viewport_height);
+  set_size_and_pos(ui_vp_message, "message");
+  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                               "color: white;");
 
-  ui_vp_objection->move(m_viewport_x, m_viewport_y);
-  ui_vp_objection->combo_resize(m_viewport_width, m_viewport_height);
+  ui_vp_testimony->move(0, 0);
+  ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
+
+  ui_vp_realization->move(0, 0);
+  ui_vp_realization->resize(ui_viewport->x(), ui_viewport->y());
+
+  ui_vp_wtce->move(0, 0);
+  ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
+
+  ui_vp_objection->move(0, 0);
+  ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -295,7 +292,7 @@ void Courtroom::set_widgets()
   ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-  ui_ic_chat_message->setStyleSheet("background-color: rgba(89, 89, 89, 0);");
+  ui_ic_chat_message->setStyleSheet("background-color: rgba(89, 89, 89, 255);");
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
   ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
@@ -520,7 +517,16 @@ void Courtroom::set_background(QString p_background)
               file_exists(bg_path + "prosecutiondesk.png") &&
               file_exists(bg_path + "stand.png");
 
-  //T0D0: find some way to compensate for legacy resolution
+  if (is_ao2_bg)
+  {
+    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
+    set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
+  }
+  else
+  {
+    set_size_and_pos(ui_vp_chatbox, "chatbox");
+    set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
+  }
 }
 
 void Courtroom::enter_courtroom(int p_cid)
@@ -701,6 +707,13 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
 
+  //D3BUG START
+
+  ui_vp_chatbox->show();
+  ui_vp_message->appendPlainText(m_chatmessage[MESSAGE]);
+
+  //D3BUG END
+
   set_scene();
   set_text_color();
 }
@@ -744,7 +757,6 @@ void Courtroom::set_scene()
 
   if (is_ao2_bg)
   {
-    qDebug() << "found is_ao2_bg to be true";
     QString desk_image = "stand.png";
 
     if (f_side == "def")
@@ -817,7 +829,7 @@ void Courtroom::handle_wtce(QString p_wtce)
     sfx_player->setSource(wt_sfx);
 
     sfx_player->play();
-    ui_vp_wtce->play("witnesstestimony.gif");
+    ui_vp_wtce->play("witnesstestimony");
   }
   //cross examination
   else if (p_wtce == "testimony2")
@@ -829,7 +841,7 @@ void Courtroom::handle_wtce(QString p_wtce)
     sfx_player->setSource(ce_sfx);
 
     sfx_player->play();
-    ui_vp_wtce->play("crossexamination.gif");
+    ui_vp_wtce->play("crossexamination");
   }
 }
 
@@ -939,6 +951,11 @@ void Courtroom::char_clicked(int n_char)
   }
 
   ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%"));
+}
+
+void Courtroom::ping_server()
+{
+  ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
 }
 
 Courtroom::~Courtroom()

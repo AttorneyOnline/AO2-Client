@@ -83,6 +83,9 @@ public:
   QString get_sounds_path();
   QString get_music_path();
 
+  QString get_background_path();
+  QString get_default_background_path();
+
   //implementation in text_file_functions.cpp
   QString read_user_theme();
   void write_to_serverlist_txt(QString p_line);
