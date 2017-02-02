@@ -52,6 +52,11 @@ public:
   QString get_default_background_path();
 
   int get_cid() {return m_cid;}
+  int get_vp_x(){return m_viewport_x;}
+  int get_vp_y(){return m_viewport_y;}
+  int get_vp_w(){return m_viewport_width;}
+  int get_vp_h(){return m_viewport_height;}
+
 
   void enter_courtroom(int p_cid);
 

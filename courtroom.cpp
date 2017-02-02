@@ -246,6 +246,7 @@ void Courtroom::set_widgets()
 
   ui_vp_desk->move(m_viewport_x, m_viewport_y);
   ui_vp_desk->resize(m_viewport_width, m_viewport_height);
+  qDebug() << "resized ui_vp_desk to " << m_viewport_width << " and " << m_viewport_height;
 
   ui_vp_chatbox->move(m_viewport_x, m_viewport_y);
   ui_vp_chatbox->resize(m_viewport_width, m_viewport_height);
@@ -294,7 +295,7 @@ void Courtroom::set_widgets()
   ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-  ui_ic_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ic_chat_message->setStyleSheet("background-color: rgba(89, 89, 89, 0);");
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
   ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
@@ -518,6 +519,8 @@ void Courtroom::set_background(QString p_background)
   is_ao2_bg = file_exists(bg_path + "defensedesk.png") &&
               file_exists(bg_path + "prosecutiondesk.png") &&
               file_exists(bg_path + "stand.png");
+
+  //T0D0: find some way to compensate for legacy resolution
 }
 
 void Courtroom::enter_courtroom(int p_cid)
@@ -603,6 +606,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   text_state = 0;
 
+  chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
+
   for (int n_string = 0 ; n_string < chatmessage_size ; ++n_string)
   {
     m_chatmessage[n_string] = p_contents->at(n_string);
@@ -671,8 +676,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       break;
     }
   }
-
-
   else
     handle_chatmessage_2();
 }
@@ -691,19 +694,15 @@ void Courtroom::handle_chatmessage_2()
 
   //empty string means we couldnt find showname in char ini
   if (local_showname == "")
-    ui_vp_showname->remote_name;
+    ui_vp_showname->setText(remote_name);
   else
-    ui_vp_showname->local_showname;
+    ui_vp_showname->setText(local_showname);
 
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
 
   set_scene();
   set_text_color();
-
-
-  //ui_vp_player_char->set(m_chatmessage[CHAR_NAME], m_chatmessage[PRE_EMOTE], m_chatmessage[EMOTE]);
-  //ui_vp_player_char->play_pre();
 }
 
 void Courtroom::set_scene()
@@ -716,7 +715,7 @@ void Courtroom::set_scene()
   if (f_side == "def")
     f_image = "defenseempty.png";
   else if (f_side == "pro")
-    f_image = "prosecutionempty.png";
+    f_image = "prosecutorempty.png";
   else if (f_side == "jud")
     f_image = "judgestand.png";
   else if (f_side == "hld")
@@ -727,6 +726,83 @@ void Courtroom::set_scene()
   ui_vp_background->set_image(f_image);
 
   //now for the hard part: desks
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+
+  //desks show on emote modifier 0, 1 and 4, we're done with this function if theyre not any of those
+  //we're also done if one of the non-desk positions is the current one(jud, hlp and hld)
+  if (emote_mod == 2 ||
+      emote_mod == 3 ||
+      emote_mod == 5 ||
+      f_side == "jud" ||
+      f_side == "hlp" ||
+      f_side == "hld")
+  {
+    ui_vp_desk->hide();
+    ui_vp_legacy_desk->hide();
+    return;
+  }
+
+  if (is_ao2_bg)
+  {
+    qDebug() << "found is_ao2_bg to be true";
+    QString desk_image = "stand.png";
+
+    if (f_side == "def")
+      desk_image = "defensedesk.png";
+    else if (f_side == "pro")
+      desk_image = "prosecutiondesk.png";
+
+    ui_vp_desk->set_image(desk_image);
+    ui_vp_legacy_desk->hide();
+    ui_vp_desk->show();
+  }
+  else if (f_side == "def" || f_side == "pro")
+  {
+    QString desk_image;
+
+    if (f_side == "def")
+      desk_image = "bancodefensa.png";
+    else
+      desk_image = "bancoacusacion.png";
+
+    ui_vp_legacy_desk->set_legacy_desk(desk_image);
+    ui_vp_desk->hide();
+    ui_vp_legacy_desk->show();
+  }
+  //assume wit or invalid side
+  else
+  {
+    ui_vp_desk->set_image("estrado.png");
+    ui_vp_legacy_desk->hide();
+    ui_vp_desk->show();
+  }
+}
+
+void Courtroom::set_text_color()
+{
+  switch(m_chatmessage[TEXT_COLOR].toInt())
+  {
+  case 0:
+    ui_vp_message->setStyleSheet("QPlainTextEdit{color: white;}");
+    break;
+  case 1:
+    ui_vp_message->setStyleSheet("QPlainTextEdit{color: rgb(0, 255, 0);}");
+    break;
+  case 2:
+    ui_vp_message->setStyleSheet("QPlainTextEdit{color: red;}");
+    break;
+  case 3:
+    ui_vp_message->setStyleSheet("QPlainTextEdit{color: orange;}");
+    break;
+  case 4:
+    ui_vp_message->setStyleSheet("QPlainTextEdit{color: rgb(45, 150, 255);}");
+    break;
+  case 5:
+    ui_vp_message->setStyleSheet("QPlainTextEdit{color: yellow;}");
+    break;
+  default:
+    ui_vp_message->setStyleSheet("QPlainTextEdit{color: white;}");
+  }
 }
 
 void Courtroom::handle_wtce(QString p_wtce)
@@ -816,6 +892,8 @@ void Courtroom::on_reload_theme_clicked()
   ao_app->set_user_theme();
 
   set_widgets();
+  //to update status on the background
+  set_background(current_background);
 }
 
 void Courtroom::on_back_to_lobby_clicked()
