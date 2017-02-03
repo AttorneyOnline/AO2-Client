@@ -1058,13 +1058,6 @@ void Courtroom::on_ooc_toggle_clicked()
 
 void Courtroom::on_witness_testimony_clicked()
 {
-  //D3BUG
-  //ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-  //                             "color: red");
-
-  set_text_color();
-  //D3BUG
-
   ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
 }
 
