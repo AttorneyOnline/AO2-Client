@@ -94,4 +94,17 @@ enum CHAT_MESSAGE
   TEXT_COLOR
 };
 
+enum COLOR
+{
+  WHITE = 0,
+  GREEN,
+  RED,
+  ORANGE,
+  BLUE,
+  YELLOW,
+  //NYI
+  BLACK,
+  RAINBOW
+};
+
 #endif // DATATYPES_H

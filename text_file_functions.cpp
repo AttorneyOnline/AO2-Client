@@ -202,9 +202,84 @@ QString AOApplication::get_showname(QString p_char)
     if (line_elements.size() < 2)
       continue;
 
-    return line_elements.at(1).trimmed().toLower();
+    return line_elements.at(1).trimmed();
   }
 
   return "";
+}
+
+QString AOApplication::get_chat(QString p_char)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+
+  QFile char_ini;
+
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return "";
+  }
+
+  QTextStream in(&char_ini);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (!line.startsWith("chat"))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    return line_elements.at(1).trimmed().toLower() + ".png";
+  }
+
+  return "";
+}
+
+int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+
+  QFile char_ini;
+
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    //means preanim will finish instantly(i.e. not play)
+    return 0;
+  }
+
+  QTextStream in(&char_ini);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (!line.startsWith(p_emote))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    return line_elements.at(1).trimmed().toInt();
+  }
+
+  return 0;
+}
+
+int AOApplication::get_text_delay(QString p_char, QString p_emote)
+{
+  //T0D0: make a sane format for this and implement function
+  p_char.toLower();
+  p_emote.toLower();
+  return -1;
 }
 

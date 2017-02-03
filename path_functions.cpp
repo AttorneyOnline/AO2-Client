@@ -7,7 +7,7 @@
 QString AOApplication::get_base_path(){
 
 #ifdef OMNI_DEBUG
-  return "/media/omnitroid/Data/winshare/AO/client/4chan_base/";
+  return "/media/omnitroid/Data/winshare/AO/client/base/";
 #else
   return (QDir::currentPath() + "/base/");
 #endif

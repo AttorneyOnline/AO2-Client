@@ -19,11 +19,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   chat_tick_timer = new QTimer(this);
 
-  text_delay = new QTimer(this);
-  text_delay->setSingleShot(true);
+  text_delay_timer = new QTimer(this);
+  text_delay_timer->setSingleShot(true);
 
-  sfx_delay = new QTimer(this);
-  sfx_delay->setSingleShot(true);
+  sfx_delay_timer = new QTimer(this);
+  sfx_delay_timer->setSingleShot(true);
 
   char_button_mapper = new QSignalMapper(this);
 
@@ -33,10 +33,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_viewport = new QWidget(this);
   ui_vp_background = new AOScene(ui_viewport, ao_app);
+  ui_vp_speedlines = new AOMovie(ui_viewport, ao_app);
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
   ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
-  //ui_vp_legacy_padding = new AOImage(ui_viewport, ao_app);
   ui_vp_chatbox = new AOImage(ui_viewport, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
@@ -180,6 +180,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
+  connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
+
+  connect(text_delay_timer, SIGNAL(timeout()), this, SLOT(start_chat_ticking()));
+  connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
+
+  connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
 
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
@@ -232,6 +238,9 @@ void Courtroom::set_widgets()
   ui_vp_background->move(0, 0);
   ui_vp_background->resize(ui_viewport->width(), ui_viewport->height());
 
+  ui_vp_speedlines->move(0, 0);
+  ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
+
   ui_vp_player_char->move(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
@@ -246,19 +255,21 @@ void Courtroom::set_widgets()
   ui_vp_legacy_desk->move(0, final_y);
   ui_vp_legacy_desk->hide();
 
-  //set_size_and_pos(ui_vp_legacy_padding, "legacy_padding");
-  //ui_vp_legacy_padding->setStyleSheet("background-color: rgba(89, 89, 89, 255);");
-
   set_size_and_pos(ui_vp_chatbox, "chatbox");
   ui_vp_chatbox->set_scaled_image("chatmed.png");
+  ui_vp_chatbox->hide();
 
   set_size_and_pos(ui_vp_showname, "showname");
+  QFont f = ui_vp_showname->font();
+  f.setPointSize(8);
+  ui_vp_showname->setFont(f);
   ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white;");
 
   set_size_and_pos(ui_vp_message, "message");
+  ui_vp_message->setReadOnly(true);
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                               "color: white;");
+                               "color: white");
 
   ui_vp_testimony->move(0, 0);
   ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
@@ -611,13 +622,14 @@ void Courtroom::append_server_chatmessage(QString f_message)
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   text_state = 0;
-
-  chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
+  anim_state = 0;
 
   for (int n_string = 0 ; n_string < chatmessage_size ; ++n_string)
   {
     m_chatmessage[n_string] = p_contents->at(n_string);
   }
+
+  chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
   QString f_message = m_chatmessage[CHAR_NAME] + ": " + m_chatmessage[MESSAGE] + '\n';
 
@@ -667,7 +679,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     }
 
     //means we are in a state of objecting
-    anim_state = 0;
+    //anim_state = 0;
 
     int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
@@ -693,6 +705,7 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2()
 {
+  ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
 
   QString remote_name = m_chatmessage[CHAR_NAME];
@@ -707,15 +720,169 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
 
-  //D3BUG START
+  QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
 
-  ui_vp_chatbox->show();
-  ui_vp_message->appendPlainText(m_chatmessage[MESSAGE]);
-
-  //D3BUG END
+  if (chatbox == "")
+    ui_vp_chatbox->set_image("chatmed.png");
+  else
+  {
+    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox;
+    ui_vp_chatbox->set_image_from_path(chatbox_path);
+  }
 
   set_scene();
   set_text_color();
+
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+
+  switch (emote_mod)
+  {
+  case 1: case 3: case 4:
+    play_preanim();
+    break;
+  default:
+    qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
+    //intentional fallthru
+  case 0: case 2: case 5:
+    start_chat_ticking();
+    handle_chatmessage_3();
+  }
+}
+
+void Courtroom::handle_chatmessage_3()
+{
+  start_chat_ticking();
+
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+
+  if (emote_mod == 4 ||
+      emote_mod == 5)
+  {
+    QString side = m_chatmessage[SIDE];
+    ui_vp_desk->hide();
+    ui_vp_legacy_desk->hide();
+
+    if (side == "pro" ||
+        side == "hlp" ||
+        side == "wit")
+      ui_vp_speedlines->play("prosecution_speedlines", false);
+    else
+      ui_vp_speedlines->play("defense_speedlines", false);
+
+  }
+
+  int f_anim_state = 0;
+  //BLUE is from an enum in datatypes.h
+  bool text_is_blue = m_chatmessage[TEXT_COLOR].toInt() == BLUE;
+
+  if (!text_is_blue && text_state == 1)
+    //talking
+    f_anim_state = 2;
+  else
+    //idle
+    f_anim_state = 3;
+
+  if (f_anim_state <= anim_state)
+    return;
+
+  ui_vp_player_char->stop();
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_emote = m_chatmessage[EMOTE];
+
+  switch (f_anim_state)
+  {
+  case 2:
+    ui_vp_player_char->play_talking(f_char, f_emote);
+    anim_state = 2;
+    break;
+  default:
+    qDebug() << "W: invalid anim_state: " << f_anim_state;
+  case 3:
+    ui_vp_player_char->play_idle(f_char, f_emote);
+    anim_state = 3;
+  }
+
+}
+
+void Courtroom::play_preanim()
+{
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_preanim = m_chatmessage[PRE_EMOTE];
+
+  //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
+  int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim) * time_mod;
+  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
+  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
+
+  ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
+  anim_state = 1;
+  if (text_delay >= 0)
+    text_delay_timer->start(text_delay);
+  sfx_delay_timer->start(sfx_delay);
+}
+
+void Courtroom::preanim_done()
+{
+  handle_chatmessage_3();
+}
+
+void Courtroom::start_chat_ticking()
+{
+  //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
+  if (text_state != 0)
+    return;
+
+  if (chatmessage_is_empty)
+  {
+    //since the message is empty, it's technically done ticking
+    text_state = 2;
+    return;
+  }
+
+  ui_vp_chatbox->show();
+
+  tick_pos = 0;
+  chat_tick_timer->start(chat_tick_interval);
+
+  //means text is currently ticking
+  text_state = 1;
+}
+
+void Courtroom::chat_tick()
+{
+  //T0D0: play tick sound based on gender
+  //note: this is called fairly often(every 60 ms when char is talking)
+  //do not perform heavy operations here
+
+  QString f_message = m_chatmessage[MESSAGE];
+
+  if (tick_pos >= f_message.size())
+  {
+    text_state = 2;
+    chat_tick_timer->stop();
+    if (anim_state == 2)
+    {
+      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+      anim_state = 3;
+    }
+  }
+
+  else
+  {
+    ui_vp_message->insertPlainText(f_message.at(tick_pos));
+
+    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
+    scroll->setValue(scroll->maximum());
+    scroll->hide();
+
+    ++tick_pos;
+  }
+}
+
+void Courtroom::play_sfx()
+{
+  //T0D0: add audio implementation
+  //QString sfx_name = m_chatmessage[SFX_NAME];
 }
 
 void Courtroom::set_scene()
@@ -792,28 +959,33 @@ void Courtroom::set_scene()
 
 void Courtroom::set_text_color()
 {
-  switch(m_chatmessage[TEXT_COLOR].toInt())
+  switch (m_chatmessage[TEXT_COLOR].toInt())
   {
-  case 0:
-    ui_vp_message->setStyleSheet("QPlainTextEdit{color: white;}");
+  case GREEN:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: rgb(0, 255, 0)");
     break;
-  case 1:
-    ui_vp_message->setStyleSheet("QPlainTextEdit{color: rgb(0, 255, 0);}");
+  case RED:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: red");
     break;
-  case 2:
-    ui_vp_message->setStyleSheet("QPlainTextEdit{color: red;}");
+  case ORANGE:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: orange");
     break;
-  case 3:
-    ui_vp_message->setStyleSheet("QPlainTextEdit{color: orange;}");
+  case BLUE:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: rgb(45, 150, 255)");
     break;
-  case 4:
-    ui_vp_message->setStyleSheet("QPlainTextEdit{color: rgb(45, 150, 255);}");
-    break;
-  case 5:
-    ui_vp_message->setStyleSheet("QPlainTextEdit{color: yellow;}");
-    break;
+  case YELLOW:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: yellow");
   default:
-    ui_vp_message->setStyleSheet("QPlainTextEdit{color: white;}");
+    qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
+  case WHITE:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: white");
+
   }
 }
 
@@ -886,6 +1058,13 @@ void Courtroom::on_ooc_toggle_clicked()
 
 void Courtroom::on_witness_testimony_clicked()
 {
+  //D3BUG
+  //ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+  //                             "color: red");
+
+  set_text_color();
+  //D3BUG
+
   ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
 }
 

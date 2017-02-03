@@ -60,6 +60,9 @@ public:
 
   void handle_chatmessage(QStringList *p_contents);
   void handle_chatmessage_2();
+  void handle_chatmessage_3();
+
+  void play_preanim();
 
   void handle_wtce(QString p_wtce);
 
@@ -93,10 +96,13 @@ private:
   int tick_pos = 0;
 
   //delay before chat messages starts ticking
-  QTimer *text_delay;
+  QTimer *text_delay_timer;
 
   //delay before sfx plays
-  QTimer *sfx_delay;
+  QTimer *sfx_delay_timer;
+
+  //every time point in char.inis times this equals the final time
+  const int time_mod = 60;
 
   static const int chatmessage_size = 15;
   QString m_chatmessage[chatmessage_size];
@@ -130,6 +136,7 @@ private:
   //ui_viewport is the parent of all the viewport widgets
   QWidget *ui_viewport;
   AOScene *ui_vp_background;
+  AOMovie *ui_vp_speedlines;
   AOCharMovie *ui_vp_player_char;
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
@@ -224,8 +231,14 @@ private:
 
 public slots:
   void objection_done();
+  void preanim_done();
 
 private slots:
+  void start_chat_ticking();
+  void play_sfx();
+
+  void chat_tick();
+
   void on_ooc_return_pressed();
   void on_ooc_toggle_clicked();
 

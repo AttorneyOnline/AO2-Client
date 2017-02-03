@@ -4,29 +4,27 @@
 #include "file_functions.h"
 #include "aoapplication.h"
 
+#include <QDebug>
+
 AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
   m_movie = new QMovie(this);
+  preanim_timer = new QTimer(this);
+  preanim_timer->setSingleShot(true);
 
   this->setMovie(m_movie);
 
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
+  connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
 }
 
-void AOCharMovie::set(QString p_char, QString p_pre, QString p_gif)
-{
-  m_char = p_char;
-  m_pre = p_pre;
-  m_gif = p_gif;
-}
-
-void AOCharMovie::play_pre()
+void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
   m_movie->stop();
 
-  QString pre_path = ao_app->get_character_path(m_char) + m_pre.toLower() + ".gif";
+  QString pre_path = ao_app->get_character_path(p_char) + p_emote.toLower() + ".gif";
   QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
 
   if (file_exists(pre_path))
@@ -36,13 +34,14 @@ void AOCharMovie::play_pre()
 
   this->show();
   m_movie->start();
+  preanim_timer->start(duration);
 }
 
-void AOCharMovie::play_talking()
+void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
   m_movie->stop();
 
-  QString talking_path = ao_app->get_character_path(m_char) + "(b)" + m_gif.toLower() + ".gif";
+  QString talking_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower() + ".gif";
   QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
 
   if (file_exists(talking_path))
@@ -54,11 +53,11 @@ void AOCharMovie::play_talking()
   m_movie->start();
 }
 
-void AOCharMovie::play_idle()
+void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
   m_movie->stop();
 
-  QString idle_path = ao_app->get_character_path(m_char) + "(a)" + m_gif.toLower() + ".gif";
+  QString idle_path = ao_app->get_character_path(p_char) + "(a)" + p_emote.toLower() + ".gif";
   QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
 
   if (file_exists(idle_path))
@@ -86,12 +85,11 @@ void AOCharMovie::combo_resize(int w, int h)
 
 void AOCharMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1) && play_once)
-  {
-    //we need this or else the last frame wont show
-    delay(m_movie->nextFrameDelay());
+  //we'll need this later
+  ++n_frame;
+}
 
-    //signal connected to courtroom object, let it figure out what to do
-    done();
-  }
+void AOCharMovie::preanim_done()
+{
+  done();
 }

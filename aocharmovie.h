@@ -14,11 +14,9 @@ class AOCharMovie : public QLabel
 public:
   AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app);
 
-  void set(QString p_char, QString p_pre, QString p_gif);
-
-  void play_pre();
-  void play_talking();
-  void play_idle();
+  void play_pre(QString p_char, QString p_emote, int duration);
+  void play_talking(QString p_char, QString p_emote);
+  void play_idle(QString p_char, QString p_emote);
 
   void stop();
 
@@ -27,20 +25,15 @@ public:
 private:
   AOApplication *ao_app;
 
-  bool play_once = true;
-
   QMovie *m_movie;
-  QTimer *m_timer;
-
-  QString m_char = "null";
-  QString m_pre;
-  QString m_gif;
+  QTimer *preanim_timer;
 
 signals:
   void done();
 
 private slots:
   void frame_change(int n_frame);
+  void preanim_done();
 };
 
 #endif // AOCHARMOVIE_H

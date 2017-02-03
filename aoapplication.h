@@ -93,6 +93,9 @@ public:
   pos_size_type get_pos_and_size(QString p_identifier, QString p_design_path);
   QString get_char_side(QString p_char);
   QString get_showname(QString p_char);
+  QString get_chat(QString p_char);
+  int get_preanim_duration(QString p_char, QString p_emote);
+  int get_text_delay(QString p_char, QString p_emote);
 
 private:
   const int RELEASE = 2;
