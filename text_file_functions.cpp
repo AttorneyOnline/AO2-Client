@@ -283,9 +283,9 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
   return -1;
 }
 
-QString AOApplication::get_char_name(QString p_name)
+QString AOApplication::get_char_name(QString p_char)
 {
-  QString char_ini_path = get_character_path(p_name) + "char.ini";
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
 
   QFile char_ini;
 
@@ -315,4 +315,247 @@ QString AOApplication::get_char_name(QString p_name)
 
   return "";
 }
+
+int AOApplication::get_emote_number(QString p_char)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QFile char_ini;
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return 0;
+  }
+
+  QTextStream in(&char_ini);
+  bool emotions_found = false;
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[SoundN]"))
+      return 0;
+
+    if (line.startsWith("[Emotions]"))
+      emotions_found = true;
+
+    if (!line.startsWith("number"))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    if (emotions_found)
+      return line_elements.at(1).trimmed().toInt();
+  }
+
+  return 0;
+}
+
+QString AOApplication::get_pre_emote(QString p_char, int p_emote)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QFile char_ini;
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return "normal";
+  }
+
+  QTextStream in(&char_ini);
+  bool emotions_found = false;
+  QString search_line = QString::number(p_emote + 1);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[SoundN]"))
+      return "normal";
+
+    if (line.startsWith("[Emotions]"))
+      emotions_found = true;
+
+    if (!line.startsWith(search_line))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 4)
+      continue;
+
+    if (emotions_found)
+      return line_elements.at(1).trimmed();
+  }
+
+  return "normal";
+}
+
+QString AOApplication::get_emote(QString p_char, int p_emote)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QFile char_ini;
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return "normal";
+  }
+
+  QTextStream in(&char_ini);
+  bool emotions_found = false;
+  QString search_line = QString::number(p_emote + 1);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[SoundN]"))
+      return "normal";
+
+    if (line.startsWith("[Emotions]"))
+      emotions_found = true;
+
+    if (!line.startsWith(search_line))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 4)
+      continue;
+
+    if (emotions_found)
+      return line_elements.at(2).trimmed();
+  }
+
+  return "normal";
+}
+
+QString AOApplication::get_sfx_name(QString p_char, int p_emote)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QFile char_ini;
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return "1";
+  }
+
+  QTextStream in(&char_ini);
+  bool soundn_found = false;
+  QString search_line = QString::number(p_emote + 1);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[SoundT]"))
+      return "1";
+
+    if (line.startsWith("[SoundN]"))
+      soundn_found = true;
+
+    if (!soundn_found)
+      continue;
+
+    if (!line.startsWith(search_line))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+
+    return line_elements.at(1).trimmed();
+  }
+
+  return "1";
+}
+
+
+int AOApplication::get_sfx_delay(QString p_char, int p_emote)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QFile char_ini;
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return 0;
+  }
+
+  QTextStream in(&char_ini);
+  bool soundt_found = false;
+  QString search_line = QString::number(p_emote + 1);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[SoundT]"))
+      soundt_found = true;
+
+    if (!soundt_found)
+      continue;
+
+    if (!line.startsWith(search_line))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    return line_elements.at(1).trimmed().toInt();
+  }
+
+  return 0;
+}
+
+int AOApplication::get_emote_mod(QString p_char, int p_emote)
+{
+  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QFile char_ini;
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return 0;
+  }
+
+  QTextStream in(&char_ini);
+  bool emotions_found = false;
+  QString search_line = QString::number(p_emote + 1);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[SoundN]"))
+      return 0;
+
+    if (line.startsWith("[Emotions]"))
+      emotions_found = true;
+
+    if (!line.startsWith(search_line))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 4)
+      continue;
+
+    if (emotions_found)
+      return line_elements.at(3).trimmed().toInt();
+  }
+
+  return 0;
+}
+
 

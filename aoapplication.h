@@ -97,7 +97,13 @@ public:
   QString get_chat(QString p_char);
   int get_preanim_duration(QString p_char, QString p_emote);
   int get_text_delay(QString p_char, QString p_emote);
-  QString get_char_name(QString p_name);
+  QString get_char_name(QString p_char);
+  int get_emote_number(QString p_char);
+  QString get_emote(QString p_char, int p_emote);
+  QString get_pre_emote(QString p_char, int p_emote);
+  QString get_sfx_name(QString p_char, int p_emote);
+  int get_sfx_delay(QString p_char, int p_emote);
+  int get_emote_mod(QString p_char, int p_emote);
 
 private:
   const int RELEASE = 2;

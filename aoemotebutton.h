@@ -12,9 +12,23 @@ class AOEmoteButton : public QPushButton
 public:
   AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y);
 
+  void set_on(QString p_char, int p_emote);
+  void set_off(QString p_char, int p_emote);
+
+  void set_id(int p_id) {m_id = p_id;}
+  int get_id() {return m_id;}
+
 private:
-  QWidget *m_parent;
-  AOApplication *m_ao_app;
+  QWidget *parent;
+  AOApplication *ao_app;
+
+  int m_id = 0;
+
+signals:
+  void emote_clicked(int p_id);
+
+private slots:
+  void on_clicked();
 };
 
 #endif // AOEMOTEBUTTON_H

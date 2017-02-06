@@ -123,6 +123,10 @@ private:
   //cid and this may differ in cases of ini-editing
   QString current_char = "";
 
+  int objection_state = 0;
+  int realization_state = 0;
+  int text_color = 0;
+
   int current_emote_page = 0;
   int current_emote = 0;
   const int max_emotes_on_page = 10;
@@ -246,7 +250,15 @@ private slots:
 
   void chat_tick();
 
+  void on_chat_return_pressed();
+
   void on_ooc_return_pressed();
+
+  void on_emote_clicked(int p_id);
+
+  void on_emote_left_clicked();
+  void on_emote_right_clicked();
+
   void on_ooc_toggle_clicked();
 
   void on_witness_testimony_clicked();

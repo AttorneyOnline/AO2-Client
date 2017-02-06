@@ -192,8 +192,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
 
+  //emote signals are set in emotes.cpp
+
+  connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_chat_return_pressed()));
+
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
+
+  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
+  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
   connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_witness_testimony_clicked()));
   connect(ui_cross_examination, SIGNAL(clicked()), this, SLOT(on_cross_examination_clicked()));
@@ -503,8 +510,6 @@ void Courtroom::set_char_select_page()
   else
     chars_on_page = 90;
 
-  qDebug() << "chars_on_page: " << chars_on_page;
-
   if (total_pages > current_char_page + 1)
     ui_char_select_right->show();
 
@@ -554,6 +559,7 @@ void Courtroom::enter_courtroom(int p_cid)
   current_char = f_char;
 
   current_emote_page = 0;
+  current_emote = 0;
 
   set_emote_page();
 
@@ -629,6 +635,92 @@ void Courtroom::append_server_chatmessage(QString f_message)
   }
 }
 
+void Courtroom::on_chat_return_pressed()
+{
+  if (ui_ic_chat_message->text() == "")
+    return;
+
+  //MS#chat#
+  //pre-emote#
+  //character#
+  //emote#
+  //message#
+  //side#
+  //sfx-name#
+  //emote_modifier#
+  //char_id#
+  //sfx_delay#
+  //objection_modifier#
+  //evidence#
+  //placeholder#
+  //realization#
+  //text_color#%
+
+  QStringList packet_contents;
+
+  packet_contents.append("chat");
+
+  packet_contents.append(ao_app->get_pre_emote(current_char, current_emote));
+
+  packet_contents.append(current_char);
+
+  packet_contents.append(ao_app->get_emote(current_char, current_emote));
+
+  packet_contents.append(ui_ic_chat_message->text());
+
+  packet_contents.append(ao_app->get_char_side(current_char));
+
+  packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
+
+  packet_contents.append(QString::number(ao_app->get_emote_mod(current_char, current_emote)));
+
+  packet_contents.append(QString::number(m_cid));
+
+  packet_contents.append(QString::number(ao_app->get_sfx_delay(current_char, current_emote)));
+
+  QString f_obj_state;
+
+  if ((objection_state > 3 && !ao_app->ao2_features) ||
+    (objection_state < 0))
+    f_obj_state = "0";
+  else
+    f_obj_state = QString::number(objection_state);
+
+  packet_contents.append(f_obj_state);
+
+  //evidence. 0 for now
+  packet_contents.append("0");
+
+  QString f_flip;
+
+  if (ao_app->ao2_features)
+  {
+    if (ui_flip->isChecked())
+      f_flip = "1";
+    else
+      f_flip = "0";
+  }
+  else
+    f_flip = QString::number(m_cid);
+
+  packet_contents.append(f_flip);
+
+  packet_contents.append(QString::number(realization_state));
+
+  QString f_text_color;
+
+  if (text_color < 0)
+    f_text_color = "0";
+  else if (text_color > 4 && !ao_app->ao2_features)
+    f_text_color = "0";
+  else
+    f_text_color = QString::number(text_color);
+
+  packet_contents.append(f_text_color);
+
+  ao_app->send_server_packet(new AOPacket("MS", packet_contents));
+}
+
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   text_state = 0;
@@ -638,6 +730,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   {
     m_chatmessage[n_string] = p_contents->at(n_string);
   }
+
+  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text())
+    ui_ic_chat_message->clear();
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
