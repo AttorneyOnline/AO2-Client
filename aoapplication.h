@@ -74,6 +74,8 @@ public:
   void set_user_theme();
   QString get_user_theme() {return user_theme;}
 
+  QString get_current_char();
+
   //implementation in path_functions.cpp
   QString get_base_path();
   QString get_theme_path();
@@ -82,7 +84,6 @@ public:
   QString get_demothings_path();
   QString get_sounds_path();
   QString get_music_path();
-
   QString get_background_path();
   QString get_default_background_path();
 
@@ -96,6 +97,7 @@ public:
   QString get_chat(QString p_char);
   int get_preanim_duration(QString p_char, QString p_emote);
   int get_text_delay(QString p_char, QString p_emote);
+  QString get_char_name(QString p_name);
 
 private:
   const int RELEASE = 2;

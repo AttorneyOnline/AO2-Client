@@ -283,3 +283,36 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
   return -1;
 }
 
+QString AOApplication::get_char_name(QString p_name)
+{
+  QString char_ini_path = get_character_path(p_name) + "char.ini";
+
+  QFile char_ini;
+
+  char_ini.setFileName(char_ini_path);
+
+  if (!char_ini.open(QIODevice::ReadOnly))
+  {
+    return "";
+  }
+
+  QTextStream in(&char_ini);
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (!line.startsWith("name"))
+      continue;
+
+    QStringList line_elements = line.split("=");
+
+    if (line_elements.size() < 2)
+      continue;
+
+    return line_elements.at(1).trimmed();
+  }
+
+  return "";
+}
+

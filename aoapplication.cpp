@@ -95,6 +95,14 @@ void AOApplication::set_favorite_list()
   favorite_list = read_serverlist_txt();
 }
 
+QString AOApplication::get_current_char()
+{
+  if (courtroom_constructed)
+    return w_courtroom->get_current_char();
+  else
+    return "";
+}
+
 void AOApplication::add_favorite_server(int p_server)
 {
   if (p_server < 0 || p_server >= server_list.size())

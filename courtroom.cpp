@@ -74,10 +74,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_search = new QLineEdit(this);
   ui_music_search->setFrame(false);
 
-  //emote buttons
+  //////////emotes//////////////////////
 
-  ui_emote_left = new AOButton(this, ao_app);
-  ui_emote_right = new AOButton(this, ao_app);
+  ui_emotes = new QWidget(this);
+
+  //implementation in emotes.cpp
+  construct_emotes();
+
+  ui_emote_left = new AOButton(ui_emotes, ao_app);
+  ui_emote_right = new AOButton(ui_emotes, ao_app);
 
   ui_defense_bar = new AOImage(this, ao_app);
   ui_prosecution_bar = new  AOImage(this, ao_app);
@@ -314,6 +319,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_area_password, "area_password");
   set_size_and_pos(ui_music_search, "music_search");
 
+  set_size_and_pos(ui_emotes, "emotes");
+
   //emote buttons
 
   set_size_and_pos(ui_emote_left, "emote_left");
@@ -543,9 +550,12 @@ void Courtroom::set_background(QString p_background)
 void Courtroom::enter_courtroom(int p_cid)
 {
   m_cid = p_cid;
-  QString f_char = char_list.at(m_cid).name;
+  QString f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+  current_char = f_char;
 
-  //T0D0: set emote buttons
+  current_emote_page = 0;
+
+  set_emote_page();
 
   QString side = ao_app->get_char_side(f_char);
 

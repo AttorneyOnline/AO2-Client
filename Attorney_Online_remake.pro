@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     aoscene.cpp \
     aomovie.cpp \
     misc_functions.cpp \
-    aocharmovie.cpp
+    aocharmovie.cpp \
+    aoemotebutton.cpp \
+    emotes.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -54,4 +56,5 @@ HEADERS  += lobby.h \
     aoscene.h \
     aomovie.h \
     misc_functions.h \
-    aocharmovie.h
+    aocharmovie.h \
+    aoemotebutton.h

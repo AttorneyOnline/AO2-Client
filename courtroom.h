@@ -4,6 +4,7 @@
 #include "aoimage.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
+#include "aoemotebutton.h"
 #include "aopacket.h"
 #include "aoscene.h"
 #include "aomovie.h"
@@ -52,6 +53,7 @@ public:
   QString get_default_background_path();
 
   int get_cid() {return m_cid;}
+  QString get_current_char() {return current_char;}
 
   void enter_courtroom(int p_cid);
 
@@ -114,17 +116,21 @@ private:
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
   int text_state = 0;
 
-  //0 is the first page, 1 second etc.
-  //makes char arithmetic easier
   int current_char_page = 0;
 
   //character id, which index of the char_list the player is
   int m_cid = 0;
+  //cid and this may differ in cases of ini-editing
+  QString current_char = "";
+
+  int current_emote_page = 0;
+  int current_emote = 0;
+  const int max_emotes_on_page = 10;
 
   //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
   bool is_ao2_bg = false;
 
-  //wether the ooc chat is server or master chat, true is server
+  //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
   QString current_background = "gs4";
@@ -133,14 +139,12 @@ private:
 
   AOImage *ui_background;
 
-  //ui_viewport is the parent of all the viewport widgets
   QWidget *ui_viewport;
   AOScene *ui_vp_background;
   AOMovie *ui_vp_speedlines;
   AOCharMovie *ui_vp_player_char;
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
-  //AOImage *ui_vp_legacy_padding;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QPlainTextEdit *ui_vp_message;
@@ -166,8 +170,8 @@ private:
   QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
 
-  //T0D0: add emote buttons
-
+  QWidget *ui_emotes;
+  QVector<AOEmoteButton*> ui_emote_list;
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
 
@@ -213,8 +217,6 @@ private:
 
   AOImage *ui_muted;
 
-  //char select stuff under here
-
   AOImage *ui_char_select_background;
 
   QVector<AOCharButton*> ui_char_button_list;
@@ -228,6 +230,11 @@ private:
   AOButton *ui_char_select_right;
 
   AOButton *ui_spectator;
+
+  void construct_emotes();
+  void set_emote_page();
+
+
 
 public slots:
   void objection_done();
