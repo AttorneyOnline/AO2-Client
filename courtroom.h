@@ -104,7 +104,7 @@ private:
   QTimer *sfx_delay_timer;
 
   //every time point in char.inis times this equals the final time
-  const int time_mod = 60;
+  const int time_mod = 35;
 
   static const int chatmessage_size = 15;
   QString m_chatmessage[chatmessage_size];
