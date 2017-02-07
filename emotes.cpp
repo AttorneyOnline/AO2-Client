@@ -104,7 +104,20 @@ void Courtroom::on_emote_clicked(int p_id)
       f_emote->set_off(current_char, n_real_emote);
   }
 
-  //T0D0: check pre if it's a pre emote
+  qDebug() << "on_emote_clicked with current_emote " << current_emote;
+
+  int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
+
+  qDebug() << "on_emote_clicked called with emote mod " << emote_mod;
+
+  if (emote_mod == 1 ||
+      emote_mod == 3 ||
+      emote_mod == 4)
+    ui_pre->setChecked(true);
+  else
+    ui_pre->setChecked(false);
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_emote_left_clicked()
@@ -112,6 +125,8 @@ void Courtroom::on_emote_left_clicked()
   --current_emote_page;
 
   set_emote_page();
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_emote_right_clicked()
@@ -119,4 +134,6 @@ void Courtroom::on_emote_right_clicked()
   ++current_emote_page;
 
   set_emote_page();
+
+  ui_ic_chat_message->setFocus();
 }

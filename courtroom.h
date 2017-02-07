@@ -259,6 +259,11 @@ private slots:
   void on_emote_left_clicked();
   void on_emote_right_clicked();
 
+  void on_hold_it_clicked();
+  void on_objection_clicked();
+  void on_take_that_clicked();
+  void on_custom_objection_clicked();
+
   void on_ooc_toggle_clicked();
 
   void on_witness_testimony_clicked();

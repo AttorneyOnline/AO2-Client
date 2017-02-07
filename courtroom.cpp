@@ -197,6 +197,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_chat_return_pressed()));
 
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
+
+  connect(ui_hold_it, SIGNAL(clicked()), this, SLOT(on_hold_it_clicked()));
+  connect(ui_objection, SIGNAL(clicked()), this, SLOT(on_objection_clicked()));
+  connect(ui_take_that, SIGNAL(clicked()), this, SLOT(on_take_that_clicked()));
+  connect(ui_custom_objection, SIGNAL(clicked()), this, SLOT(on_custom_objection_clicked()));
+
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
 
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
@@ -378,9 +384,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_flip, "flip");
   ui_flip->setText("Flip");
+  ui_flip->hide();
 
   set_size_and_pos(ui_guard, "guard");
   ui_guard->setText("Guard");
+  ui_guard->hide();
 
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->set_image("custom.png");
@@ -561,6 +569,8 @@ void Courtroom::enter_courtroom(int p_cid)
   current_emote_page = 0;
   current_emote = 0;
 
+  ui_emotes->show();
+
   set_emote_page();
 
   QString side = ao_app->get_char_side(f_char);
@@ -584,7 +594,16 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_prosecution_plus->hide();
   }
 
+  //T0D0: split ao2_features into multiple booleans
+  if (ao_app->ao2_features)
+  {
+    ui_flip->show();
+  }
+
   ui_char_select_background->hide();
+
+  ui_ic_chat_message->setEnabled(true);
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::append_ms_chatmessage(QString f_message)
@@ -732,7 +751,14 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text())
+  {
     ui_ic_chat_message->clear();
+    objection_state = 0;
+    ui_hold_it->set_image("holdit.png");
+    ui_objection->set_image("objection.png");
+    ui_take_that->set_image("takethat.png");
+    ui_custom_objection->set_image("custom.png");
+  }
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
@@ -1139,6 +1165,8 @@ void Courtroom::on_ooc_return_pressed()
     ao_app->send_ms_packet(f_packet);
 
   ui_ooc_chat_message->clear();
+
+  ui_ooc_chat_message->setFocus();
 }
 
 void Courtroom::on_ooc_toggle_clicked()
@@ -1161,14 +1189,98 @@ void Courtroom::on_ooc_toggle_clicked()
   }
 }
 
+void Courtroom::on_hold_it_clicked()
+{
+  if (objection_state == 1)
+  {
+    ui_hold_it->set_image("holdit.png");
+    objection_state = 0;
+  }
+  else
+  {
+    ui_objection->set_image("objection.png");
+    ui_take_that->set_image("takethat.png");
+    ui_custom_objection->set_image("custom.png");
+
+    ui_hold_it->set_image("holdit_selected.png");
+    objection_state = 1;
+  }
+
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_objection_clicked()
+{
+  if (objection_state == 2)
+  {
+    ui_objection->set_image("objection.png");
+    objection_state = 0;
+  }
+  else
+  {
+    ui_hold_it->set_image("holdit.png");
+    ui_take_that->set_image("takethat.png");
+    ui_custom_objection->set_image("custom.png");
+
+    ui_objection->set_image("objection_selected.png");
+    objection_state = 2;
+  }
+
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_take_that_clicked()
+{
+  if (objection_state == 3)
+  {
+    ui_take_that->set_image("takethat.png");
+    objection_state = 0;
+  }
+  else
+  {
+    ui_objection->set_image("objection.png");
+    ui_hold_it->set_image("holdit.png");
+    ui_custom_objection->set_image("custom.png");
+
+    ui_take_that->set_image("takethat_selected.png");
+    objection_state = 3;
+  }
+
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_custom_objection_clicked()
+{
+  if (objection_state == 4)
+  {
+    ui_custom_objection->set_image("custom.png");
+    objection_state = 0;
+  }
+  else
+  {
+    ui_objection->set_image("objection.png");
+    ui_take_that->set_image("takethat.png");
+    ui_hold_it->set_image("holdit.png");
+
+    ui_custom_objection->set_image("custom_selected.png");
+    objection_state = 4;
+  }
+
+  ui_ic_chat_message->setFocus();
+}
+
 void Courtroom::on_witness_testimony_clicked()
 {
   ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_cross_examination_clicked()
 {
   ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_change_character_clicked()
@@ -1183,6 +1295,9 @@ void Courtroom::on_reload_theme_clicked()
   set_widgets();
   //to update status on the background
   set_background(current_background);
+  enter_courtroom(m_cid);
+
+
 }
 
 void Courtroom::on_back_to_lobby_clicked()
@@ -1206,12 +1321,21 @@ void Courtroom::on_char_select_right_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
+  ui_emotes->hide();
+
+  ui_witness_testimony->hide();
+  ui_cross_examination->hide();
+
+  ui_ic_chat_message->setEnabled(false);
+
   ui_char_select_background->hide();
 }
 
 void Courtroom::on_call_mod_clicked()
 {
   ao_app->send_server_packet(new AOPacket("ZZ#%"));
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::char_clicked(int n_char)

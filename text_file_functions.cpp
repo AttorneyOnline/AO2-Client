@@ -383,7 +383,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
     if (!line.startsWith(search_line))
       continue;
 
-    QStringList line_elements = line.split("=");
+    QStringList line_elements = line.split("#");
 
     if (line_elements.size() < 4)
       continue;
@@ -423,7 +423,7 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
     if (!line.startsWith(search_line))
       continue;
 
-    QStringList line_elements = line.split("=");
+    QStringList line_elements = line.split("#");
 
     if (line_elements.size() < 4)
       continue;
@@ -527,6 +527,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
   if (!char_ini.open(QIODevice::ReadOnly))
   {
     return 0;
+    qDebug() << "Could not find " << char_ini_path;
   }
 
   QTextStream in(&char_ini);
@@ -538,7 +539,10 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
     QString line = in.readLine();
 
     if (line.startsWith("[SoundN]"))
+    {
+      qDebug() << "get_emote_mod returned early because soundN was found";
       return 0;
+    }
 
     if (line.startsWith("[Emotions]"))
       emotions_found = true;
@@ -546,7 +550,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
     if (!line.startsWith(search_line))
       continue;
 
-    QStringList line_elements = line.split("=");
+    QStringList line_elements = line.split("#");
 
     if (line_elements.size() < 4)
       continue;
@@ -555,6 +559,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
       return line_elements.at(3).trimmed().toInt();
   }
 
+  qDebug() << "get_emote_mod returned because loop finished";
   return 0;
 }
 
