@@ -600,10 +600,34 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_flip->show();
   }
 
+  list_music();
+
   ui_char_select_background->hide();
 
   ui_ic_chat_message->setEnabled(true);
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::list_music()
+{
+  ui_music_list->clear();
+
+  for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
+  {
+    QString i_song = music_list.at(n_song);
+
+    if (i_song.toLower().contains(ui_music_search->text().toLower()))
+    {
+      ui_music_list->addItem(i_song);
+
+      QString song_path = ao_app->get_base_path() + "sounds/music/" + i_song.toLower();
+
+      if (file_exists(song_path))
+        ui_music_list->item(n_song)->setBackground(Qt::green);
+      else
+        ui_music_list->item(n_song)->setBackground(Qt::red);
+    }
+  }
 }
 
 void Courtroom::append_ms_chatmessage(QString f_message)

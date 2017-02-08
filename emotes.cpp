@@ -104,11 +104,7 @@ void Courtroom::on_emote_clicked(int p_id)
       f_emote->set_off(current_char, n_real_emote);
   }
 
-  qDebug() << "on_emote_clicked with current_emote " << current_emote;
-
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
-
-  qDebug() << "on_emote_clicked called with emote mod " << emote_mod;
 
   if (emote_mod == 1 ||
       emote_mod == 3 ||

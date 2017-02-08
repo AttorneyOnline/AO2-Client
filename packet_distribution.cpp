@@ -297,7 +297,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 3)
       goto end;
 
-    w_courtroom->enter_courtroom(f_contents.at(2).toInt());
+    if (courtroom_constructed)
+      w_courtroom->enter_courtroom(f_contents.at(2).toInt());
   }
   else if (header == "MS")
   {
@@ -308,8 +309,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (f_contents.size() < 1)
       goto end;
-
-    w_courtroom->handle_wtce(f_contents.at(0));
+    if (courtroom_constructed)
+      w_courtroom->handle_wtce(f_contents.at(0));
   }
   else if (header == "checkconnection")
   {

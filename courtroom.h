@@ -56,6 +56,7 @@ public:
   QString get_current_char() {return current_char;}
 
   void enter_courtroom(int p_cid);
+  void list_music();
 
   void append_ms_chatmessage(QString f_message);
   void append_server_chatmessage(QString f_message);
