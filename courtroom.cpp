@@ -120,6 +120,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_prosecution_minus = new AOButton(this, ao_app);
 
   ui_text_color = new QComboBox(this);
+  ui_text_color->addItem("White");
+  ui_text_color->addItem("Green");
+  ui_text_color->addItem("Red");
+  ui_text_color->addItem("Orange");
+  ui_text_color->addItem("Blue");
+  if (ao_app->yellow_text_enabled)
+    ui_text_color->addItem("Yellow");
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -213,6 +220,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_defense_plus, SIGNAL(clicked()), this, SLOT(on_defense_plus_clicked()));
   connect(ui_prosecution_minus, SIGNAL(clicked()), this, SLOT(on_prosecution_minus_clicked()));
   connect(ui_prosecution_plus, SIGNAL(clicked()), this, SLOT(on_prosecution_plus_clicked()));
+
+  connect(ui_text_color, SIGNAL(currentIndexChanged(int)), this, SLOT(on_text_color_changed(int)));
 
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
 
@@ -1413,6 +1422,11 @@ void Courtroom::on_prosecution_plus_clicked()
 
   if (f_state <= 10)
     ao_app->send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+}
+
+void Courtroom::on_text_color_changed(int p_color)
+{
+  text_color = p_color;
 }
 
 void Courtroom::on_witness_testimony_clicked()

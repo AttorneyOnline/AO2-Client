@@ -285,6 +285,8 @@ private slots:
   void on_prosecution_minus_clicked();
   void on_prosecution_plus_clicked();
 
+  void on_text_color_changed(int p_color);
+
   void on_ooc_toggle_clicked();
 
   void on_witness_testimony_clicked();

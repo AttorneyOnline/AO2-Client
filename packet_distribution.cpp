@@ -107,6 +107,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 2)
       goto end;
 
+    ao2_features = false;
+    yellow_text_enabled = false;
+    encryption_needed = true;
+
     //T0D0: store server version
   }
   else if (header == "CT")
