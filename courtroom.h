@@ -72,6 +72,7 @@ public:
   void play_preanim();
 
   void handle_wtce(QString p_wtce);
+  void set_hp_bar(int p_bar, int p_state);
 
   ~Courtroom();
 
@@ -133,6 +134,9 @@ private:
   int objection_state = 0;
   int realization_state = 0;
   int text_color = 0;
+
+  int defense_bar_state = 0;
+  int prosecution_bar_state = 0;
 
   int current_emote_page = 0;
   int current_emote = 0;
@@ -275,6 +279,11 @@ private slots:
   void on_custom_objection_clicked();
 
   void on_realization_clicked();
+
+  void on_defense_minus_clicked();
+  void on_defense_plus_clicked();
+  void on_prosecution_minus_clicked();
+  void on_prosecution_plus_clicked();
 
   void on_ooc_toggle_clicked();
 

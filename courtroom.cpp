@@ -209,6 +209,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_realization, SIGNAL(clicked()), this, SLOT(on_realization_clicked()));
 
+  connect(ui_defense_minus, SIGNAL(clicked()), this, SLOT(on_defense_minus_clicked()));
+  connect(ui_defense_plus, SIGNAL(clicked()), this, SLOT(on_defense_plus_clicked()));
+  connect(ui_prosecution_minus, SIGNAL(clicked()), this, SLOT(on_prosecution_minus_clicked()));
+  connect(ui_prosecution_plus, SIGNAL(clicked()), this, SLOT(on_prosecution_plus_clicked()));
+
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
@@ -1211,6 +1216,23 @@ void Courtroom::handle_wtce(QString p_wtce)
   }
 }
 
+void Courtroom::set_hp_bar(int p_bar, int p_state)
+{
+  if (p_state < 0 || p_state > 10)
+    return;
+
+  if (p_bar == 1)
+  {
+    ui_defense_bar->set_image("defensebar" + QString::number(p_state) + ".png");
+    defense_bar_state = p_state;
+  }
+  else if (p_bar == 2)
+  {
+    ui_prosecution_bar->set_image("prosecutionbar" + QString::number(p_state) + ".png");
+    prosecution_bar_state = p_state;
+  }
+}
+
 void Courtroom::on_ooc_return_pressed()
 {
   if (ui_ooc_chat_message->text() == "" || ui_ooc_chat_name->text() == "")
@@ -1359,6 +1381,38 @@ void Courtroom::on_realization_clicked()
     realization_state = 0;
     ui_realization->set_image("realization.png");
   }
+}
+
+void Courtroom::on_defense_minus_clicked()
+{
+  int f_state = defense_bar_state - 1;
+
+  if (f_state >= 0)
+    ao_app->send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+}
+
+void Courtroom::on_defense_plus_clicked()
+{
+  int f_state = defense_bar_state + 1;
+
+  if (f_state <= 10)
+    ao_app->send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+}
+
+void Courtroom::on_prosecution_minus_clicked()
+{
+  int f_state = prosecution_bar_state - 1;
+
+  if (f_state >= 0)
+    ao_app->send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+}
+
+void Courtroom::on_prosecution_plus_clicked()
+{
+  int f_state = prosecution_bar_state + 1;
+
+  if (f_state <= 10)
+    ao_app->send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_witness_testimony_clicked()

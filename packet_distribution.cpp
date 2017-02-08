@@ -317,6 +317,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed)
       w_courtroom->handle_wtce(f_contents.at(0));
   }
+  else if (header == "HP")
+  {
+    if (courtroom_constructed && f_contents.size() > 1)
+      w_courtroom->set_hp_bar(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+  }
   else if (header == "checkconnection")
   {
     send_server_packet(new AOPacket("CH#" + QString::number(w_courtroom->get_cid()) + "#%"));
