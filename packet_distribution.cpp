@@ -305,6 +305,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed)
       w_courtroom->handle_chatmessage(&p_packet->get_contents());
   }
+  else if (header == "MC")
+  {
+    if (courtroom_constructed)
+      w_courtroom->handle_song(&p_packet->get_contents());
+  }
   else if (header == "RT")
   {
     if (f_contents.size() < 1)

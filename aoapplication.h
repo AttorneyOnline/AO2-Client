@@ -83,7 +83,7 @@ public:
   QString get_character_path(QString p_character);
   QString get_demothings_path();
   QString get_sounds_path();
-  QString get_music_path();
+  QString get_music_path(QString p_song);
   QString get_background_path();
   QString get_default_background_path();
 

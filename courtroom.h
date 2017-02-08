@@ -65,6 +65,10 @@ public:
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
+  void append_ic_text(QString p_text);
+
+  void handle_song(QStringList *p_contents);
+
   void play_preanim();
 
   void handle_wtce(QString p_wtce);
@@ -110,6 +114,8 @@ private:
   static const int chatmessage_size = 15;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
+
+  QString previous_ic_message = "";
 
   //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
   int anim_state = 0;
@@ -172,7 +178,7 @@ private:
   QLineEdit *ui_ooc_chat_message;
   QLineEdit *ui_ooc_chat_name;
 
-  QLineEdit *ui_area_password;
+  //QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
 
   QWidget *ui_emotes;
@@ -255,6 +261,9 @@ private slots:
 
   void on_ooc_return_pressed();
 
+  void on_music_search_edited(QString p_text);
+  void on_music_list_double_clicked(QModelIndex p_model);
+
   void on_emote_clicked(int p_id);
 
   void on_emote_left_clicked();
@@ -264,6 +273,8 @@ private slots:
   void on_objection_clicked();
   void on_take_that_clicked();
   void on_custom_objection_clicked();
+
+  void on_realization_clicked();
 
   void on_ooc_toggle_clicked();
 

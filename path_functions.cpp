@@ -37,9 +37,9 @@ QString AOApplication::get_sounds_path()
 {
   return get_base_path() + "sounds/general/";
 }
-QString AOApplication::get_music_path()
+QString AOApplication::get_music_path(QString p_song)
 {
-  return get_base_path() + "sounds/music/";
+  return get_base_path() + "sounds/music/" + p_song.toLower();
 }
 
 QString AOApplication::get_background_path()
