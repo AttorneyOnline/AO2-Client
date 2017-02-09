@@ -13,3 +13,15 @@ void call_error(QString p_message)
   //msgBox->setWindowModality(Qt::NonModal);
   msgBox->show();
 }
+
+void call_notice(QString p_message)
+{
+  QMessageBox *msgBox = new QMessageBox;
+
+  msgBox->setText(p_message);
+  msgBox->setWindowTitle("Notice");
+
+
+  //msgBox->setWindowModality(Qt::NonModal);
+  msgBox->show();
+}

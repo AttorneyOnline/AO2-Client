@@ -5,6 +5,7 @@
 #include "networkmanager.h"
 #include "encryption_functions.h"
 #include "hardware_functions.h"
+#include "debug_functions.h"
 
 #include <QDebug>
 
@@ -325,6 +326,46 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() > 1)
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+  }
+  else if (header == "IL")
+  {
+    if (courtroom_constructed && f_contents.size() > 0)
+      w_courtroom->set_ip_list(f_contents.at(0));
+  }
+  else if (header == "MU")
+  {
+    if (courtroom_constructed && f_contents.size() > 0)
+      w_courtroom->set_mute(true, f_contents.at(0).toInt());
+  }
+  else if (header == "UM")
+  {
+    if (courtroom_constructed && f_contents.size() > 0)
+      w_courtroom->set_mute(false, f_contents.at(0).toInt());
+  }
+  else if (header == "KK")
+  {
+    if (courtroom_constructed && f_contents.size() > 0)
+    {
+      int f_cid = w_courtroom->get_cid();
+      int remote_cid = f_contents.at(0).toInt();
+
+      if (f_cid != remote_cid && remote_cid != -1)
+        return;
+
+      call_notice("You have been kicked.");
+      construct_lobby();
+      destruct_courtroom();
+    }
+
+  }
+  else if (header == "KB")
+  {
+    if (courtroom_constructed && f_contents.size() > 0)
+      w_courtroom->set_ban(f_contents.at(0).toInt());
+  }
+  else if (header == "BD")
+  {
+    call_notice("You are banned on this server.");
   }
   else if (header == "checkconnection")
   {

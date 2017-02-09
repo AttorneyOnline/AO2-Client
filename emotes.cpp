@@ -91,8 +91,17 @@ void Courtroom::set_emote_page()
 
 void Courtroom::on_emote_clicked(int p_id)
 {
+  int min = current_emote_page * max_emotes_on_page;
+  int max = 9 + current_emote_page * max_emotes_on_page;
+
+  if (current_emote >= min && current_emote <= max)
+    ui_emote_list.at(current_emote % max_emotes_on_page)->set_off(current_char, current_emote);
+
   current_emote = p_id + 10 * current_emote_page;
 
+  ui_emote_list.at(current_emote % max_emotes_on_page)->set_on(current_char, current_emote);
+
+  /*
   for (int n_emote = 0 ; n_emote < 10 ; ++n_emote)
   {
     int n_real_emote = n_emote + current_emote_page * 10;
@@ -100,9 +109,10 @@ void Courtroom::on_emote_clicked(int p_id)
 
     if (n_real_emote == current_emote)
       f_emote->set_on(current_char, n_real_emote);
-    else
-      f_emote->set_off(current_char, n_real_emote);
+    //else
+    //  f_emote->set_off(current_char, n_real_emote);
   }
+  */
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 

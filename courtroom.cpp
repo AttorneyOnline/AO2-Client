@@ -25,6 +25,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
 
+  realization_timer = new QTimer(this);
+  realization_timer->setSingleShot(true);
+
   char_button_mapper = new QSignalMapper(this);
 
   sfx_player = new QSoundEffect(this);
@@ -41,7 +44,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
   ui_vp_testimony = new AOImage(ui_viewport, ao_app);
-  ui_vp_realization = new AOImage(ui_viewport, ao_app);
+  ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
   ui_vp_objection = new AOMovie(ui_viewport, ao_app);
 
@@ -56,11 +59,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_server_chatlog->setReadOnly(true);
 
   ui_mute_list = new QListWidget(this);
-  ui_area_list = new QListWidget(this);
+  //ui_area_list = new QListWidget(this);
   ui_music_list = new QListWidget(this);
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
+
+  ui_muted = new AOImage(ui_ic_chat_message, ao_app);
+  ui_muted->hide();
 
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
@@ -140,8 +146,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_blip_slider->setRange(0, 100);
   ui_blip_slider->setValue(50);
 
-  ui_muted = new AOImage(this, ao_app);
-
   /////////////char select widgets under here///////////////
 
   ui_char_select_background = new AOImage(this, ao_app);
@@ -200,6 +204,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
+
+  connect(realization_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
   //emote signals are set in emotes.cpp
 
@@ -315,7 +321,9 @@ void Courtroom::set_widgets()
   ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_realization->move(0, 0);
-  ui_vp_realization->resize(ui_viewport->x(), ui_viewport->y());
+  ui_vp_realization->resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_realization->set_scaled_image("realizationflash.png");
+  ui_vp_realization->hide();
 
   ui_vp_wtce->move(0, 0);
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -336,14 +344,17 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
 
-  set_size_and_pos(ui_area_list, "area_list");
-  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  //set_size_and_pos(ui_area_list, "area_list");
+  //ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_music_list, "music_list");
-  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_music_list->setStyleSheet("QListWidget{background-color: rgba(0, 0, 0, 0);}");
+  ui_music_list->setFont(f);
 
   set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   ui_ic_chat_message->setStyleSheet("background-color: rgba(89, 89, 89, 255);");
+  ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
+  ui_muted->set_image("muted.png");
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
   ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
@@ -438,9 +449,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
-
-  //T0D0: scale this according to ui_ic_chat_message
-  //set_size_and_pos(ui_muted, "muted");
 
   //char select stuff under here
 
@@ -706,7 +714,7 @@ void Courtroom::append_server_chatmessage(QString f_message)
 
 void Courtroom::on_chat_return_pressed()
 {
-  if (ui_ic_chat_message->text() == "")
+  if (ui_ic_chat_message->text() == "" || is_muted)
     return;
 
   //MS#chat#
@@ -817,6 +825,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_objection->set_image("objection.png");
     ui_take_that->set_image("takethat.png");
     ui_custom_objection->set_image("custom.png");
+    ui_realization->set_image("realization.png");
   }
 
   append_ic_text(f_message);
@@ -879,6 +888,8 @@ void Courtroom::handle_chatmessage_2()
 
   QString remote_name = m_chatmessage[CHAR_NAME];
   QString local_showname = ao_app->get_showname(remote_name);
+
+  qDebug() << "local_showname: " << local_showname;
 
   //empty string means we couldnt find showname in char ini
   if (local_showname == "")
@@ -971,6 +982,13 @@ void Courtroom::handle_chatmessage_3()
     anim_state = 3;
   }
 
+  if (m_chatmessage[REALIZATION] == "1")
+  {
+    realization_timer->start(60);
+    ui_vp_realization->show();
+    //T0D0: add realization sfx
+  }
+
 }
 
 void Courtroom::append_ic_text(QString p_text)
@@ -1017,6 +1035,12 @@ void Courtroom::play_preanim()
 void Courtroom::preanim_done()
 {
   handle_chatmessage_3();
+}
+
+void Courtroom::realization_done()
+{
+  ui_vp_realization->hide();
+  qDebug() << "realization_done called";
 }
 
 void Courtroom::start_chat_ticking()
@@ -1182,6 +1206,44 @@ void Courtroom::set_text_color()
   }
 }
 
+void Courtroom::set_ip_list(QString p_list)
+{
+  QString f_list = p_list.replace("|", ":").replace("*", "\n");
+
+  ui_server_chatlog->appendPlainText(f_list);
+}
+
+void Courtroom::set_mute(bool p_muted, int p_cid)
+{
+  if (p_cid != m_cid && p_cid != -1)
+    return;
+
+  if (p_muted)
+    ui_muted->show();
+  else
+  {
+    ui_muted->hide();
+    ui_ic_chat_message->setFocus();
+  }
+
+  ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
+  ui_muted->set_image("muted.png");
+
+  is_muted = p_muted;
+  ui_ic_chat_message->setEnabled(!p_muted);
+}
+
+void Courtroom::set_ban(int p_cid)
+{
+  if (p_cid != m_cid && p_cid != -1)
+    return;
+
+  call_notice("You have been banned.");
+
+  ao_app->construct_lobby();
+  ao_app->destruct_courtroom();
+}
+
 void Courtroom::handle_song(QStringList *p_contents)
 {
   QStringList f_contents = *p_contents;
@@ -1247,6 +1309,10 @@ void Courtroom::on_ooc_return_pressed()
   if (ui_ooc_chat_message->text() == "" || ui_ooc_chat_name->text() == "")
     return;
 
+  //cheap, but it works
+  if (ui_ooc_chat_message->text().startsWith("/login"))
+    ui_guard->show();
+
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ui_ooc_chat_message->text());
@@ -1293,6 +1359,9 @@ void Courtroom::on_music_search_edited(QString p_text)
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
+  if (is_muted)
+    return;
+
   QString p_song = ui_music_list->item(p_model.row())->text();
 
   ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"));
@@ -1390,6 +1459,8 @@ void Courtroom::on_realization_clicked()
     realization_state = 0;
     ui_realization->set_image("realization.png");
   }
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_defense_minus_clicked()
@@ -1427,10 +1498,14 @@ void Courtroom::on_prosecution_plus_clicked()
 void Courtroom::on_text_color_changed(int p_color)
 {
   text_color = p_color;
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_witness_testimony_clicked()
 {
+  if (is_muted)
+    return;
+
   ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
 
   ui_ic_chat_message->setFocus();
@@ -1438,6 +1513,9 @@ void Courtroom::on_witness_testimony_clicked()
 
 void Courtroom::on_cross_examination_clicked()
 {
+  if (is_muted)
+    return;
+
   ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
 
   ui_ic_chat_message->setFocus();

@@ -48,6 +48,11 @@ public:
   //sets text color based on text color in chatmessage
   void set_text_color();
 
+  void set_ip_list(QString p_list);
+
+  void set_mute(bool p_muted, int p_cid);
+  void set_ban(int p_cid);
+
   //implementations in path_functions.cpp
   QString get_background_path();
   QString get_default_background_path();
@@ -109,6 +114,8 @@ private:
   //delay before sfx plays
   QTimer *sfx_delay_timer;
 
+  QTimer *realization_timer;
+
   //every time point in char.inis times this equals the final time
   const int time_mod = 35;
 
@@ -117,6 +124,8 @@ private:
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
+
+  bool is_muted = false;
 
   //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
   int anim_state = 0;
@@ -254,6 +263,8 @@ private:
 public slots:
   void objection_done();
   void preanim_done();
+
+  void realization_done();
 
 private slots:
   void start_chat_ticking();
