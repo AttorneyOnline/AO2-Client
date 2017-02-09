@@ -291,6 +291,8 @@ private slots:
 
   void on_realization_clicked();
 
+  void on_mute_clicked();
+
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();
   void on_prosecution_minus_clicked();

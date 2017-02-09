@@ -222,6 +222,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_realization, SIGNAL(clicked()), this, SLOT(on_realization_clicked()));
 
+  connect(ui_mute, SIGNAL(clicked()), this, SLOT(on_mute_clicked()));
+
   connect(ui_defense_minus, SIGNAL(clicked()), this, SLOT(on_defense_minus_clicked()));
   connect(ui_defense_plus, SIGNAL(clicked()), this, SLOT(on_defense_plus_clicked()));
   connect(ui_prosecution_minus, SIGNAL(clicked()), this, SLOT(on_prosecution_minus_clicked()));
@@ -749,8 +751,28 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
 
-  packet_contents.append(QString::number(ao_app->get_emote_mod(current_char, current_emote)));
+  int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
+  if (ui_pre->isChecked())
+  {
+    if (f_emote_mod == 0)
+      f_emote_mod = 1;
+    else if (f_emote_mod == 2)
+      f_emote_mod = 3;
+    else if (f_emote_mod == 5)
+      f_emote_mod = 4;
+  }
+  else
+  {
+    if (f_emote_mod == 1)
+      f_emote_mod = 0;
+    else if (f_emote_mod == 3)
+      f_emote_mod = 2;
+    else if (f_emote_mod == 4)
+      f_emote_mod = 5;
+  }
+
+  packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
   packet_contents.append(QString::number(ao_app->get_sfx_delay(current_char, current_emote)));
@@ -1353,7 +1375,6 @@ void Courtroom::on_music_search_edited(QString p_text)
 {
   //preventing compiler warnings
   p_text += "a";
-  qDebug() << "music search edited";
   list_music();
 }
 
@@ -1461,6 +1482,20 @@ void Courtroom::on_realization_clicked()
   }
 
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_mute_clicked()
+{
+  if (ui_mute_list->isHidden())
+  {
+    ui_mute_list->show();
+    ui_mute->set_image("mute_pressed.png");
+  }
+  else
+  {
+    ui_mute_list->hide();
+    ui_mute->set_image("mute.png");
+  }
 }
 
 void Courtroom::on_defense_minus_clicked()
