@@ -136,7 +136,7 @@ private:
   int current_char_page = 0;
 
   //character id, which index of the char_list the player is
-  int m_cid = 0;
+  int m_cid = -1;
   //cid and this may differ in cases of ini-editing
   QString current_char = "";
 

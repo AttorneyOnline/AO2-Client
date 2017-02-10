@@ -47,6 +47,9 @@ public:
   bool ao2_features = false;
 
   bool yellow_text_enabled = false;
+  bool prezoom_enabled = false;
+  bool flipping_enabled = false;
+  bool custom_objection_enabled = false;
 
   ///////////////loading info///////////////////
 

@@ -753,21 +753,20 @@ void Courtroom::on_chat_return_pressed()
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
-  if (ui_pre->isChecked())
+  //needed or else legacy won't understand what we're saying
+  if (objection_state > 0)
+    f_emote_mod = 2;
+  else if (ui_pre->isChecked())
   {
     if (f_emote_mod == 0)
       f_emote_mod = 1;
-    else if (f_emote_mod == 2)
-      f_emote_mod = 3;
-    else if (f_emote_mod == 5)
+    else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
       f_emote_mod = 4;
   }
   else
   {
     if (f_emote_mod == 1)
       f_emote_mod = 0;
-    else if (f_emote_mod == 3)
-      f_emote_mod = 2;
     else if (f_emote_mod == 4)
       f_emote_mod = 5;
   }
@@ -779,7 +778,7 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_obj_state;
 
-  if ((objection_state > 3 && !ao_app->ao2_features) ||
+  if ((objection_state == 4 && !ao_app->custom_objection_enabled) ||
     (objection_state < 0))
     f_obj_state = "0";
   else
@@ -854,6 +853,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   previous_ic_message = f_message;
 
+  qDebug() << "objection_mod of received message: " << m_chatmessage[OBJECTION_MOD];
+
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
 
   //if an objection is used
@@ -878,16 +879,13 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       qDebug() << "W: Logic error in objection switch statement!";
     }
 
-    //means we are in a state of objecting
-    //anim_state = 0;
-
     int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
     switch (emote_mod)
     {
     //we change the chatmessage from no preanim to preanim, see documentation
     case 0: case 2:
-      m_chatmessage[EMOTE_MOD] = QString::number(++emote_mod);
+      m_chatmessage[EMOTE_MOD] = "1";
       break;
     case 5:
       m_chatmessage[EMOTE_MOD] = QString::number(--emote_mod);
@@ -1142,15 +1140,9 @@ void Courtroom::set_scene()
 
   ui_vp_background->set_image(f_image);
 
-  //now for the hard part: desks
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-
-  //desks show on emote modifier 0, 1 and 4, we're done with this function if theyre not any of those
-  //we're also done if one of the non-desk positions is the current one(jud, hlp and hld)
-  if (emote_mod == 2 ||
-      emote_mod == 3 ||
-      emote_mod == 5 ||
-      f_side == "jud" ||
+  //no-desk-emotes have been temporarily reverted
+  //we're done if one of the non-desk positions is the current one(jud, hlp and hld)
+  if (f_side == "jud" ||
       f_side == "hlp" ||
       f_side == "hld")
   {
