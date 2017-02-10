@@ -911,8 +911,6 @@ void Courtroom::handle_chatmessage_2()
   QString remote_name = m_chatmessage[CHAR_NAME];
   QString local_showname = ao_app->get_showname(remote_name);
 
-  qDebug() << "local_showname: " << local_showname;
-
   //empty string means we couldnt find showname in char ini
   if (local_showname == "")
     ui_vp_showname->setText(remote_name);
@@ -1620,11 +1618,14 @@ void Courtroom::char_clicked(int n_char)
   if (!file_exists(char_ini_path))
   {
     qDebug() << "did not find " << char_ini_path;
-    //T0D0: call error
+    call_notice("Could not find " + char_ini_path);
     return;
   }
 
-  ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%"));
+  if (n_real_char == m_cid)
+    enter_courtroom(m_cid);
+  else
+    ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%"));
 }
 
 void Courtroom::ping_server()
