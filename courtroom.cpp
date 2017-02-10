@@ -719,6 +719,9 @@ void Courtroom::on_chat_return_pressed()
   if (ui_ic_chat_message->text() == "" || is_muted)
     return;
 
+  if (anim_state < 3 || text_state < 2)
+    return;
+
   //MS#chat#
   //pre-emote#
   //character#
@@ -826,7 +829,12 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[n_string] = p_contents->at(n_string);
   }
 
-  QString f_message = m_chatmessage[CHAR_NAME] + ": " + m_chatmessage[MESSAGE] + '\n';
+  QString f_showname = ao_app->get_showname(m_chatmessage[CHAR_NAME]);
+
+  if (f_showname == "")
+    f_showname = m_chatmessage[CHAR_NAME];
+
+  QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
   if (f_message == previous_ic_message)
     return;
@@ -953,8 +961,8 @@ void Courtroom::handle_chatmessage_3()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
-  if (emote_mod == 4 ||
-      emote_mod == 5)
+  if (emote_mod == 5 ||
+      emote_mod == 6)
   {
     QString side = m_chatmessage[SIDE];
     ui_vp_desk->hide();

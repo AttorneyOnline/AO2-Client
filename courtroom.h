@@ -128,10 +128,10 @@ private:
   bool is_muted = false;
 
   //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
-  int anim_state = 0;
+  int anim_state = 3;
 
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
-  int text_state = 0;
+  int text_state = 2;
 
   int current_char_page = 0;
 
