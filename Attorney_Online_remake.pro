@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     misc_functions.cpp \
     aocharmovie.cpp \
     aoemotebutton.cpp \
-    emotes.cpp
+    emotes.cpp \
+    aosfxplayer.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -57,4 +58,8 @@ HEADERS  += lobby.h \
     aomovie.h \
     misc_functions.h \
     aocharmovie.h \
-    aoemotebutton.h
+    aoemotebutton.h \
+    bass.h \
+    aosfxplayer.h
+
+unix:LIBS += -L/home/omnitroid/lib/bass_linux -lbass
