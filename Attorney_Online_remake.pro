@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     aocharmovie.cpp \
     aoemotebutton.cpp \
     emotes.cpp \
-    aosfxplayer.cpp
+    aosfxplayer.cpp \
+    aomusicplayer.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -60,6 +61,7 @@ HEADERS  += lobby.h \
     aocharmovie.h \
     aoemotebutton.h \
     bass.h \
-    aosfxplayer.h
+    aosfxplayer.h \
+    aomusicplayer.h
 
-unix:LIBS += -L/home/omnitroid/lib/bass_linux -lbass
+unix:LIBS += -L/home/omnitroid/Project/Attorney_Online_2/src -lbass

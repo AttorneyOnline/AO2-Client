@@ -9,6 +9,7 @@
 #include "aoscene.h"
 #include "aomovie.h"
 #include "aocharmovie.h"
+#include "aomusicplayer.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -160,6 +161,7 @@ private:
   QString current_background = "gs4";
 
   QSoundEffect *sfx_player;
+  AOMusicPlayer *music_player;
 
   AOImage *ui_background;
 

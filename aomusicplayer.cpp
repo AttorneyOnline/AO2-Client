@@ -1,10 +1,10 @@
-#include "aosfxplayer.h"
+#include "aomusicplayer.h"
 
 #include <string.h>
 
 #include <QDebug>
 
-AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
   ao_app = p_ao_app;
@@ -15,12 +15,14 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 
 }
 
-void AOSfxPlayer::play(QString p_path)
+void AOMusicPlayer::play(QString p_song)
 {
 
-  BASS_Stop();
+  BASS_ChannelStop(m_stream);
 
-  m_stream = BASS_StreamCreateFile(FALSE, p_path.toStdString().c_str(), 0, 0, BASS_STREAM_PRESCAN);
+  QString f_path = ao_app->get_music_path(p_song);
+
+  m_stream = BASS_StreamCreateFile(FALSE, f_path.toStdString().c_str(), 0, 0, BASS_STREAM_PRESCAN);
 
   /*
    if ((BASS_StreamPutFileData(
@@ -45,8 +47,6 @@ void AOSfxPlayer::play(QString p_path)
     qDebug() <<"success.";
   else
     qDebug() <<"error";
-
-  BASS_Start();
 
   qDebug() << QString::number(BASS_ErrorGetCode());
 }

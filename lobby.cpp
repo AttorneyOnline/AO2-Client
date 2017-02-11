@@ -3,6 +3,7 @@
 #include "debug_functions.h"
 #include "aoapplication.h"
 #include "networkmanager.h"
+#include "aosfxplayer.h"
 
 #include <QDebug>
 #include <QScrollBar>
@@ -205,13 +206,22 @@ void Lobby::on_add_to_fav_pressed()
 
 void Lobby::on_add_to_fav_released()
 {
-  ui_add_to_fav->set_image("addtofav.png");
+  AOSfxPlayer *sfx = new AOSfxPlayer(this, ao_app);
 
+  QString path = ao_app->get_music_path("Mystery Skulls - Money.mp3");
+
+  qDebug() << "path: " << path;
+
+  sfx->play(path);
+
+  ui_add_to_fav->set_image("addtofav.png");
+  /*
   //you cant add favorites from favorites m8
   if (!public_servers_selected)
     return;
 
   ao_app->add_favorite_server(ui_server_list->currentRow());
+  */
 }
 
 void Lobby::on_connect_pressed()

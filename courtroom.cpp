@@ -31,6 +31,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   char_button_mapper = new QSignalMapper(this);
 
   sfx_player = new QSoundEffect(this);
+  music_player = new AOMusicPlayer(this, ao_app);
 
   ui_background = new AOImage(this, ao_app);
 
@@ -1271,7 +1272,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (f_contents.size() < 2)
     return;
 
-  //T0D0: add audio implementation
+  music_player->play(f_contents.at(0));
 
   int n_char = f_contents.at(1).toInt();
 

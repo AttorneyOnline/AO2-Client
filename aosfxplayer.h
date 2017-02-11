@@ -11,6 +11,8 @@ class AOSfxPlayer
 public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
 
+  void play(QString p_path);
+
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
