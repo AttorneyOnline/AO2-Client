@@ -98,6 +98,7 @@ public:
   void write_to_serverlist_txt(QString p_line);
   QVector<server_type> read_serverlist_txt();
   pos_size_type get_pos_and_size(QString p_identifier, QString p_design_path);
+  QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
   QString get_char_side(QString p_char);
   QString get_showname(QString p_char);
   QString get_chat(QString p_char);
@@ -110,6 +111,7 @@ public:
   QString get_sfx_name(QString p_char, int p_emote);
   int get_sfx_delay(QString p_char, int p_emote);
   int get_emote_mod(QString p_char, int p_emote);
+  QString get_gender(QString p_char);
 
 private:
   const int RELEASE = 2;

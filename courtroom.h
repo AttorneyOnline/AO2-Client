@@ -10,6 +10,8 @@
 #include "aomovie.h"
 #include "aocharmovie.h"
 #include "aomusicplayer.h"
+#include "aosfxplayer.h"
+#include "aoblipplayer.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -160,8 +162,9 @@ private:
 
   QString current_background = "gs4";
 
-  QSoundEffect *sfx_player;
   AOMusicPlayer *music_player;
+  AOSfxPlayer *sfx_player;
+  AOBlipPlayer *blip_player;
 
   AOImage *ui_background;
 
@@ -302,6 +305,10 @@ private slots:
 
   void on_text_color_changed(int p_color);
 
+  void on_music_slider_moved(int p_value);
+  void on_sfx_slider_moved(int p_value);
+  void on_blip_slider_moved(int p_value);
+
   void on_ooc_toggle_clicked();
 
   void on_witness_testimony_clicked();
@@ -310,6 +317,8 @@ private slots:
   void on_change_character_clicked();
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
+
+  void on_pre_clicked();
 
   void on_back_to_lobby_clicked();
 

@@ -8,45 +8,27 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
   ao_app = p_ao_app;
-
-
-  BASS_Init(-1, 44100, BASS_DEVICE_LATENCY, 0, NULL);
-
-
 }
 
-void AOSfxPlayer::play(QString p_path)
+void AOSfxPlayer::play(QString p_sfx, int p_volume)
 {
+  BASS_ChannelStop(m_stream);
 
-  BASS_Stop();
+  QString f_path = ao_app->get_sounds_path() + p_sfx;
 
-  m_stream = BASS_StreamCreateFile(FALSE, p_path.toStdString().c_str(), 0, 0, BASS_STREAM_PRESCAN);
+  qDebug() << "sfx path: " << f_path;
 
-  /*
-   if ((BASS_StreamPutFileData(
-      m_stream,
-      p_path.toStdString().c_str(),
-      BASS_FILEDATA_END
-  ) == -1))
-   {
-       qDebug() << "BASS_StreamPutFileData failllled!";
-       qDebug() << "Error: " << QString::number(BASS_ErrorGetCode());
-   }
+  m_stream = BASS_StreamCreateFile(FALSE, f_path.toStdString().c_str(), 0, 0, BASS_STREAM_AUTOFREE);
 
-  if (m_stream == 0)
-  {
-    qDebug() << "OHSHIT something broke. error code: " << QString::number(BASS_ErrorGetCode());
-  }
-  */
+  set_volume(p_volume);
 
-  //m_stream = BASS_StreamCreateFileUser(STREAMFILE_BUFFERPUSH, BASS_STREAM_AUTOFREE, nullptr, p_path.toStdString().c_str());
+  BASS_ChannelPlay(m_stream, false);
+}
 
-  if (BASS_ChannelPlay(m_stream, true))
-    qDebug() <<"success.";
-  else
-    qDebug() <<"error";
+void AOSfxPlayer::set_volume(int p_value)
+{
+  float volume = p_value / 100.0f;
 
-  BASS_Start();
+  BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
 
-  qDebug() << QString::number(BASS_ErrorGetCode());
 }

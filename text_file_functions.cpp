@@ -139,7 +139,9 @@ pos_size_type AOApplication::get_pos_and_size(QString p_identifier, QString p_de
   return return_value;
 }
 
-QString AOApplication::get_char_side(QString p_char)
+//returns whatever is to the right of "search_line =" within target_tag and terminator_tag, trimmed
+//returns the empty string if the search line couldnt be found
+QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag)
 {
   QString char_ini_path = get_character_path(p_char) + "char.ini";
 
@@ -148,419 +150,186 @@ QString AOApplication::get_char_side(QString p_char)
   char_ini.setFileName(char_ini_path);
 
   if (!char_ini.open(QIODevice::ReadOnly))
-  {
-    //default to wit and don't make a big deal about it
-    return "wit";
-  }
-
-  QTextStream in(&char_ini);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (!line.startsWith("side"))
-      continue;
-
-    QStringList line_elements = line.split("=");
-
-    if (line_elements.size() < 2)
-      continue;
-
-    //note that we do not validate if this is a valid side or not. that's up to the caller
-    return line_elements.at(1).trimmed().toLower();
-  }
-
-  return "wit";
-}
-
-QString AOApplication::get_showname(QString p_char)
-{
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-
-  QFile char_ini;
-
-  char_ini.setFileName(char_ini_path);
-
-  if (!char_ini.open(QIODevice::ReadOnly))
-  {
-    //default to empty string
     return "";
-  }
 
   QTextStream in(&char_ini);
+
+  //because there are char inis that look like [eMoTIonS] for whatever reason
+  target_tag = target_tag.toLower();
+  terminator_tag = terminator_tag.toLower();
+  bool tag_found = false;
 
   while(!in.atEnd())
   {
     QString line = in.readLine();
 
-    if (!line.startsWith("showname"))
+    if (line.toLower().startsWith(terminator_tag))
+      break;
+
+    if (line.toLower().startsWith(target_tag))
+    {
+      tag_found = true;
+      continue;
+    }
+
+    if (!line.startsWith(p_search_line))
       continue;
 
     QStringList line_elements = line.split("=");
 
+    if (line_elements.at(0).trimmed() != p_search_line)
+      continue;
+
     if (line_elements.size() < 2)
       continue;
 
-    return line_elements.at(1).trimmed();
+    if (tag_found)
+    {
+      char_ini.close();
+      return line_elements.at(1).trimmed();
+    }
   }
 
+  char_ini.close();
   return "";
-}
-
-QString AOApplication::get_chat(QString p_char)
-{
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-
-  QFile char_ini;
-
-  char_ini.setFileName(char_ini_path);
-
-  if (!char_ini.open(QIODevice::ReadOnly))
-  {
-    return "";
-  }
-
-  QTextStream in(&char_ini);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (!line.startsWith("chat"))
-      continue;
-
-    QStringList line_elements = line.split("=");
-
-    if (line_elements.size() < 2)
-      continue;
-
-    return line_elements.at(1).trimmed().toLower() + ".png";
-  }
-
-  return "";
-}
-
-int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
-{
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-
-  QFile char_ini;
-
-  char_ini.setFileName(char_ini_path);
-
-  if (!char_ini.open(QIODevice::ReadOnly))
-  {
-    //means preanim will finish instantly(i.e. not play)
-    return 0;
-  }
-
-  QTextStream in(&char_ini);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (!line.startsWith(p_emote))
-      continue;
-
-    QStringList line_elements = line.split("=");
-
-    if (line_elements.size() < 2)
-      continue;
-
-    return line_elements.at(1).trimmed().toInt();
-  }
-
-  return 0;
-}
-
-int AOApplication::get_text_delay(QString p_char, QString p_emote)
-{
-  //T0D0: make a sane format for this and implement function
-  p_char.toLower();
-  p_emote.toLower();
-  return -1;
 }
 
 QString AOApplication::get_char_name(QString p_char)
 {
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QString f_result = read_char_ini(p_char, "name", "[Options]", "[Time]");
 
-  QFile char_ini;
+  if (f_result == "")
+    return p_char;
+  else return f_result;
+}
 
-  char_ini.setFileName(char_ini_path);
+QString AOApplication::get_showname(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "showname", "[Options]", "[Time]");
 
-  if (!char_ini.open(QIODevice::ReadOnly))
-  {
-    return "";
-  }
+  if (f_result == "")
+    return p_char;
+  else return f_result;
+}
 
-  QTextStream in(&char_ini);
+QString AOApplication::get_char_side(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "side", "[Options]", "[Time]");
 
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
+  if (f_result == "")
+    return "wit";
+  else return f_result;
+}
 
-    if (!line.startsWith("name"))
-      continue;
+QString AOApplication::get_gender(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "gender", "[Options]", "[Time]");
 
-    QStringList line_elements = line.split("=");
+  if (f_result == "")
+    return "male";
+  else return f_result;
+}
 
-    if (line_elements.size() < 2)
-      continue;
+QString AOApplication::get_chat(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "chat", "[Options]", "[Time]");
 
-    return line_elements.at(1).trimmed();
-  }
+  //handling the correct order of chat is a bit complicated, we let the caller do it
+  return f_result;
+}
 
-  return "";
+int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
+{
+  QString f_result = read_char_ini(p_char, p_emote, "[Time]", "[Emotions]");
+
+  if (f_result == "")
+    return 0;
+  else return f_result.toInt();
 }
 
 int AOApplication::get_emote_number(QString p_char)
 {
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-  QFile char_ini;
-  char_ini.setFileName(char_ini_path);
+  QString f_result = read_char_ini(p_char, "number", "[Emotions]", "[SoundN]");
 
-  if (!char_ini.open(QIODevice::ReadOnly))
-  {
+  if (f_result == "")
     return 0;
-  }
-
-  QTextStream in(&char_ini);
-  bool emotions_found = false;
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (line.startsWith("[SoundN]"))
-      return 0;
-
-    if (line.startsWith("[Emotions]"))
-      emotions_found = true;
-
-    if (!line.startsWith("number"))
-      continue;
-
-    QStringList line_elements = line.split("=");
-
-    if (line_elements.size() < 2)
-      continue;
-
-    if (emotions_found)
-      return line_elements.at(1).trimmed().toInt();
-  }
-
-  return 0;
+  else return f_result.toInt();
 }
 
 QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 {
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-  QFile char_ini;
-  char_ini.setFileName(char_ini_path);
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
 
-  if (!char_ini.open(QIODevice::ReadOnly))
+  qDebug() << "f_result" << f_result;
+
+  QStringList result_contents = f_result.split("#");
+
+
+
+  if (result_contents.size() < 4)
   {
+    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
-
-  QTextStream in(&char_ini);
-  bool emotions_found = false;
-  QString search_line = QString::number(p_emote + 1);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (line.startsWith("[SoundN]"))
-      return "normal";
-
-    if (line.startsWith("[Emotions]"))
-      emotions_found = true;
-
-    if (!line.startsWith(search_line))
-      continue;
-
-    QStringList line_elements = line.split("#");
-
-    if (line_elements.size() < 4)
-      continue;
-
-    if (emotions_found)
-      return line_elements.at(1).trimmed();
-  }
-
-  return "normal";
+  else return result_contents.at(1);
 }
 
 QString AOApplication::get_emote(QString p_char, int p_emote)
 {
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-  QFile char_ini;
-  char_ini.setFileName(char_ini_path);
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
 
-  if (!char_ini.open(QIODevice::ReadOnly))
+  QStringList result_contents = f_result.split("#");
+
+  if (result_contents.size() < 4)
   {
+    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
-
-  QTextStream in(&char_ini);
-  bool emotions_found = false;
-  QString search_line = QString::number(p_emote + 1);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (line.startsWith("[SoundN]"))
-      return "normal";
-
-    if (line.startsWith("[Emotions]"))
-      emotions_found = true;
-
-    if (!line.startsWith(search_line))
-      continue;
-
-    QStringList line_elements = line.split("#");
-
-    if (line_elements.size() < 4)
-      continue;
-
-    if (emotions_found)
-      return line_elements.at(2).trimmed();
-  }
-
-  return "normal";
-}
-
-QString AOApplication::get_sfx_name(QString p_char, int p_emote)
-{
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-  QFile char_ini;
-  char_ini.setFileName(char_ini_path);
-
-  if (!char_ini.open(QIODevice::ReadOnly))
-  {
-    return "1";
-  }
-
-  QTextStream in(&char_ini);
-  bool soundn_found = false;
-  QString search_line = QString::number(p_emote + 1);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (line.startsWith("[SoundT]"))
-      return "1";
-
-    if (line.startsWith("[SoundN]"))
-      soundn_found = true;
-
-    if (!soundn_found)
-      continue;
-
-    if (!line.startsWith(search_line))
-      continue;
-
-    QStringList line_elements = line.split("=");
-
-    if (line_elements.size() < 2)
-      continue;
-
-
-    return line_elements.at(1).trimmed();
-  }
-
-  return "1";
-}
-
-
-int AOApplication::get_sfx_delay(QString p_char, int p_emote)
-{
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-  QFile char_ini;
-  char_ini.setFileName(char_ini_path);
-
-  if (!char_ini.open(QIODevice::ReadOnly))
-  {
-    return 0;
-  }
-
-  QTextStream in(&char_ini);
-  bool soundt_found = false;
-  QString search_line = QString::number(p_emote + 1);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (line.startsWith("[SoundT]"))
-      soundt_found = true;
-
-    if (!soundt_found)
-      continue;
-
-    if (!line.startsWith(search_line))
-      continue;
-
-    QStringList line_elements = line.split("=");
-
-    if (line_elements.size() < 2)
-      continue;
-
-    return line_elements.at(1).trimmed().toInt();
-  }
-
-  return 0;
+  else return result_contents.at(2);
 }
 
 int AOApplication::get_emote_mod(QString p_char, int p_emote)
 {
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
-  QFile char_ini;
-  char_ini.setFileName(char_ini_path);
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
 
-  if (!char_ini.open(QIODevice::ReadOnly))
+  QStringList result_contents = f_result.split("#");
+
+  if (result_contents.size() < 4)
   {
+    qDebug() << "W: misformatted char.ini: " << p_char << ", " << QString::number(p_emote);
     return 0;
-    qDebug() << "Could not find " << char_ini_path;
   }
-
-  QTextStream in(&char_ini);
-  bool emotions_found = false;
-  QString search_line = QString::number(p_emote + 1);
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (line.startsWith("[SoundN]"))
-    {
-      qDebug() << "get_emote_mod returned early because soundN was found";
-      return 0;
-    }
-
-    if (line.startsWith("[Emotions]"))
-      emotions_found = true;
-
-    if (!line.startsWith(search_line))
-      continue;
-
-    QStringList line_elements = line.split("#");
-
-    if (line_elements.size() < 4)
-      continue;
-
-    if (emotions_found)
-      return line_elements.at(3).trimmed().toInt();
-  }
-
-  qDebug() << "get_emote_mod returned because loop finished";
-  return 0;
+  else return result_contents.at(3).toInt();
 }
+
+QString AOApplication::get_sfx_name(QString p_char, int p_emote)
+{
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[SoundN]", "[SoundT]");
+
+  if (f_result == "")
+    return "1";
+  else return f_result;
+}
+
+int AOApplication::get_sfx_delay(QString p_char, int p_emote)
+{
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[SoundT]", "[TextDelay]");
+
+  if (f_result == "")
+    return 1;
+  else return f_result.toInt();
+}
+
+int AOApplication::get_text_delay(QString p_char, QString p_emote)
+{
+  QString f_result = read_char_ini(p_char, p_emote, "[TextDelay]", "END_OF_FILE");
+
+  if (f_result == "")
+    return -1;
+  else return f_result.toInt();
+}
+
+
+
 
 
