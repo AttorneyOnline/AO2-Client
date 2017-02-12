@@ -51,6 +51,9 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
   this->show();
   m_movie->start();
+
+  //D3bug
+  m_movie->
 }
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)

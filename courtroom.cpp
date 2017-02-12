@@ -510,8 +510,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
     if (design_ini_result.width < 0 || design_ini_result.height < 0)
     {
-      //at this point it's pretty much game over
-      call_error(" could not find \"" + p_identifier + "\" in courtroom_design.ini");
+      qDebug() << "W: could not find \"" << p_identifier << "\" in courtroom_design.ini";
     }
   }
 

@@ -135,7 +135,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
     if (design_ini_result.width < 0 || design_ini_result.height < 0)
     {
-      call_error(" could not find \"" + p_identifier + "\" in lobby_design.ini");
+      qDebug() << "W: could not find " << p_identifier << " in lobby_design.ini";
     }
   }
 
