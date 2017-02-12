@@ -350,7 +350,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       int remote_cid = f_contents.at(0).toInt();
 
       if (f_cid != remote_cid && remote_cid != -1)
-        return;
+        goto end;
 
       call_notice("You have been kicked.");
       construct_lobby();
@@ -366,6 +366,41 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "BD")
   {
     call_notice("You are banned on this server.");
+  }
+  else if (header == "AO2CHECK")
+  {
+    if (f_contents.size() < 1)
+      goto end;
+
+    QStringList version_contents = f_contents.at(0).split(".");
+
+    if (version_contents.size() < 3)
+      goto end;
+
+    int f_release = version_contents.at(0).toInt();
+    int f_major = version_contents.at(1).toInt();
+    int f_minor = version_contents.at(2).toInt();
+
+    //qDebug() << "local version: " << get_version_string();
+    //qDebug() << "remote version: " << QString::number(f_release) << QString::number(f_major) << QString::number(f_minor);
+
+    if (get_release() > f_release)
+      goto end;
+    else if (get_release() == f_release)
+    {
+      if (get_major_version() > f_major)
+        goto end;
+      else if (get_major_version() == f_major)
+      {
+        if (get_minor_version() >= f_minor)
+          goto end;
+      }
+    }
+
+    call_notice("Outdated version! Your version: " + get_version_string()
+                + "\nPlease go to aceattorneyonline.com to update.");
+    destruct_courtroom();
+    destruct_lobby();
   }
   else if (header == "checkconnection")
   {

@@ -11,7 +11,7 @@ void call_error(QString p_message)
 
 
   //msgBox->setWindowModality(Qt::NonModal);
-  msgBox->show();
+  msgBox->exec();
 }
 
 void call_notice(QString p_message)
@@ -23,5 +23,5 @@ void call_notice(QString p_message)
 
 
   //msgBox->setWindowModality(Qt::NonModal);
-  msgBox->show();
+  msgBox->exec();
 }
