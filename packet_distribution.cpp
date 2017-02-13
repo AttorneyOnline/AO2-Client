@@ -297,6 +297,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->append_ms_chatmessage(w_lobby->get_chatlog());
 
+    w_courtroom->set_mute_list();
+
     w_courtroom->show();
 
     destruct_lobby();
@@ -438,9 +440,10 @@ void AOApplication::send_ms_packet(AOPacket *p_packet)
   delete p_packet;
 }
 
-void AOApplication::send_server_packet(AOPacket *p_packet)
+void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
 {
-  p_packet->net_encode();
+  if (encoded)
+    p_packet->net_encode();
 
   QString f_packet = p_packet->to_string();
 

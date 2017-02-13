@@ -208,6 +208,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   //emote signals are set in emotes.cpp
 
+  connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
+
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_chat_return_pressed()));
 
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
@@ -261,6 +263,24 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
+}
+
+void Courtroom::set_mute_list()
+{
+  mute_map.clear();
+
+  QStringList sorted_mute_list;
+
+  for (char_type i_char : char_list)
+    sorted_mute_list.append(i_char.name);
+
+  sorted_mute_list.sort();
+
+  for (QString i_name : sorted_mute_list)
+  {
+    mute_map.insert(i_name, false);
+    ui_mute_list->addItem(i_name);
+  }
 }
 
 void Courtroom::set_widgets()
@@ -827,6 +847,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[n_string] = p_contents->at(n_string);
   }
 
+  if (mute_map.value(m_chatmessage[CHAR_NAME]))
+    return;
+
   QString f_showname = ao_app->get_showname(m_chatmessage[CHAR_NAME]);
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
@@ -1366,6 +1389,30 @@ void Courtroom::on_music_search_edited(QString p_text)
   list_music();
 }
 
+void Courtroom::on_mute_list_clicked(QModelIndex p_index)
+{
+  qDebug() << "mute_list_clicked";
+  QListWidgetItem *f_item = ui_mute_list->item(p_index.row());
+  qDebug() << "item text: " << f_item->text();
+  QString f_char = f_item->text();
+  QString real_char;
+
+  if (f_char.endsWith(" [x]"))
+  {
+    real_char = f_char.left(f_char.size() - 4);
+    mute_map.remove(real_char);
+    mute_map.insert(real_char, false);
+    f_item->setText(real_char);
+  }
+  else
+  {
+    real_char = f_char;
+    mute_map.remove(real_char);
+    mute_map.insert(real_char, true);
+    f_item->setText(real_char + " [x]");
+  }
+}
+
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
   if (is_muted)
@@ -1373,7 +1420,7 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 
   QString p_song = ui_music_list->item(p_model.row())->text();
 
-  ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"));
+  ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
 }
 
 void Courtroom::on_hold_it_clicked()

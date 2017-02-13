@@ -25,6 +25,7 @@
 #include <QCloseEvent>
 #include <QSignalMapper>
 #include <QSoundEffect>
+#include <QMap>
 
 class AOApplication;
 
@@ -44,6 +45,8 @@ public:
   void set_taken(int n_char, bool p_taken);
   void set_char_select_page();
   void set_background(QString p_background);
+
+  void set_mute_list();
 
   //sets desk and bg based on pos in chatmessage
   void set_scene();
@@ -127,6 +130,8 @@ private:
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
+
+  QMap<QString, bool> mute_map;
 
   bool is_muted = false;
 
@@ -278,6 +283,8 @@ private slots:
   void play_sfx();
 
   void chat_tick();
+
+  void on_mute_list_clicked(QModelIndex p_index);
 
   void on_chat_return_pressed();
 

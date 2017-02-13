@@ -67,3 +67,4 @@ HEADERS  += lobby.h \
     aoblipplayer.h
 
 unix:LIBS += -L/home/omnitroid/Project/Attorney_Online_2/src -lbass
+win32:LIBS += "$$PWD/bass.dll"

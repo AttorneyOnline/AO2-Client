@@ -37,7 +37,7 @@ public:
   void server_packet_received(AOPacket *p_packet);
 
   void send_ms_packet(AOPacket *p_packet);
-  void send_server_packet(AOPacket *p_packet);
+  void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
   /////////////////server metadata//////////////////
 
