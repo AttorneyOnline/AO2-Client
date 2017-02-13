@@ -32,7 +32,7 @@ private:
   QVector<QImage> flipped_movie;
   QTimer *preanim_timer;
 
-  bool m_flipped = true;
+  bool m_flipped = false;
 
 signals:
   void done();

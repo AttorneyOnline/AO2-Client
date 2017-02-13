@@ -100,19 +100,34 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "ID")
   {
-    if (f_contents.size() < 1)
+    if (f_contents.size() < 2)
       goto end;
 
     s_pv = f_contents.at(0).toInt();
 
-    if (f_contents.size() < 2)
-      goto end;
+    QString server_version = f_contents.at(1);
 
-    ao2_features = false;
-    yellow_text_enabled = false;
-    encryption_needed = true;
-
-    //T0D0: store server version
+    if (server_version == "v1300.146")
+    {
+      encryption_needed = false;
+      yellow_text_enabled = true;
+      //still needs some tweaking to work
+      prezoom_enabled = false;
+      flipping_enabled = true;
+      custom_objection_enabled = true;
+      //improved loading disabled for now
+      //improved_loading_enabled = true;
+      improved_loading_enabled = false;
+    }
+    else
+    {
+      encryption_needed = true;
+      yellow_text_enabled = false;
+      prezoom_enabled = false;
+      flipping_enabled = false;
+      custom_objection_enabled = false;
+      improved_loading_enabled = false;
+    }
   }
   else if (header == "CT")
   {
@@ -170,7 +185,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_lobby->set_loading_text("Loading");
     w_lobby->set_loading_value(0);
 
-    AOPacket *f_packet = new AOPacket("askchar2#%");
+    AOPacket *f_packet;
+
+    //AO2 loading disabled for now
+    //if(improved_loading_enabled)
+    //  f_packet = new AOPacket("RC#%");
+    //else
+      f_packet = new AOPacket("askchar2#%");
+
     send_server_packet(f_packet);
   }
   else if (header == "CI")
@@ -208,11 +230,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
     w_lobby->set_loading_value(loading_value);
 
-    QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
-    send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
+    if (improved_loading_enabled)
+      send_server_packet(new AOPacket("RE#%"));
+    else
+    {
+      QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
+      send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
+    }
 
   }
-  else if (header == "EI"){
+  else if (header == "EI")
+  {
     if (!courtroom_constructed)
       goto end;
 
@@ -288,6 +316,74 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_courtroom->set_taken(n_char, false);
     }
   }
+  //AO2 loading is temporarily disabled as it needs to be revised altogether
+  /*
+  else if (header == "SC")
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
+    {
+      QStringList sub_elements = f_contents.at(n_element).split("&");
+      if (sub_elements.size() < 2)
+        break;
+
+      char_type f_char;
+      f_char.name = sub_elements.at(0);
+      f_char.description = sub_elements.at(1);
+      //temporary. the TC packet sets this properly
+      f_char.taken = false;
+
+      ++loaded_chars;
+
+      w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
+
+      w_courtroom->append_char(f_char);
+    }
+
+    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+    w_lobby->set_loading_value(loading_value);
+
+    send_server_packet(new AOPacket("RE#%"));
+  }
+  else if (header == "SE")
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    // +1 because evidence starts at 1 rather than 0 for whatever reason
+    //enjoy fanta
+    if (f_contents.at(0).toInt() != loaded_evidence + 1)
+      goto end;
+
+    if (f_contents.size() < 2)
+      goto end;
+
+    QStringList sub_elements = f_contents.at(1).split("&");
+    if (sub_elements.size() < 4)
+      goto end;
+
+    evi_type f_evi;
+    f_evi.name = sub_elements.at(0);
+    f_evi.description = sub_elements.at(1);
+    //no idea what the number at position 2 is. probably an identifier?
+    f_evi.image = sub_elements.at(3);
+
+    ++loaded_evidence;
+
+    w_lobby->set_loading_text("Loading evidence:\n" + QString::number(loaded_evidence) + "/" + QString::number(evidence_list_size));
+
+    w_courtroom->append_evidence(f_evi);
+
+    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    int loading_value = ((loaded_chars + loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
+    w_lobby->set_loading_value(loading_value);
+
+    send_server_packet(new AOPacket("RM#%"));
+  }
+  */
   else if (header == "DONE")
   {
     if (!courtroom_constructed)

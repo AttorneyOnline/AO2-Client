@@ -248,6 +248,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
+  connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
+  connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
 
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
@@ -776,7 +778,12 @@ void Courtroom::on_chat_return_pressed()
 
   //needed or else legacy won't understand what we're saying
   if (objection_state > 0)
-    f_emote_mod = 2;
+  {
+    if (f_emote_mod == 5)
+      f_emote_mod = 6;
+    else
+      f_emote_mod = 2;
+  }
   else if (ui_pre->isChecked())
   {
     if (f_emote_mod == 0)
@@ -905,16 +912,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
     int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
-    switch (emote_mod)
-    {
-    //we change the chatmessage from no preanim to preanim, see documentation
-    case 0: case 2:
-      m_chatmessage[EMOTE_MOD] = "1";
-      break;
-    case 5:
-      m_chatmessage[EMOTE_MOD] = QString::number(--emote_mod);
-      break;
-    }
+    if (emote_mod == 0)
+      m_chatmessage[EMOTE_MOD] = 1;
   }
   else
     handle_chatmessage_2();
@@ -954,13 +953,13 @@ void Courtroom::handle_chatmessage_2()
 
   switch (emote_mod)
   {
-  case 1: case 3: case 4:
+  case 1: case 2: case 3: case 4: case 6:
     play_preanim();
     break;
   default:
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
     //intentional fallthru
-  case 0: case 2: case 5:
+  case 0: case 5:
     start_chat_ticking();
     handle_chatmessage_3();
   }
@@ -1574,16 +1573,19 @@ void Courtroom::on_text_color_changed(int p_color)
 void Courtroom::on_music_slider_moved(int p_value)
 {
   music_player->set_volume(p_value);
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_sfx_slider_moved(int p_value)
 {
   sfx_player->set_volume(p_value);
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_blip_slider_moved(int p_value)
 {
   blip_player->set_volume(p_value);
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_witness_testimony_clicked()
@@ -1662,6 +1664,16 @@ void Courtroom::on_call_mod_clicked()
 }
 
 void Courtroom::on_pre_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_flip_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_guard_clicked()
 {
   ui_ic_chat_message->setFocus();
 }

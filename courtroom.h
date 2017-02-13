@@ -123,7 +123,7 @@ private:
   QTimer *realization_timer;
 
   //every time point in char.inis times this equals the final time
-  const int time_mod = 35;
+  const int time_mod = 40;
 
   static const int chatmessage_size = 15;
   QString m_chatmessage[chatmessage_size];
@@ -328,6 +328,8 @@ private slots:
   void on_call_mod_clicked();
 
   void on_pre_clicked();
+  void on_flip_clicked();
+  void on_guard_clicked();
 
   void on_back_to_lobby_clicked();
 
