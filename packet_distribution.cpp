@@ -167,7 +167,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString window_title = "Attorney Online 2";
     int selected_server = w_lobby->get_selected_server();
 
-
     if (w_lobby->public_servers_selected)
     {
       if (selected_server >= 0 && selected_server < server_list.size())

@@ -1,8 +1,12 @@
 #include "aoapplication.h"
 #include "courtroom.h"
 
+#ifndef OMNI_WIN_DEBUG
+#define OMNI_WIN_DEBUG
+
 #include <QDir>
 #include <QDebug>
+#endif
 
 QString AOApplication::get_base_path(){
 

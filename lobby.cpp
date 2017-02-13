@@ -112,6 +112,7 @@ void Lobby::set_widgets()
   ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
   ui_loading_text->setReadOnly(true);
   ui_loading_text->setAlignment(Qt::AlignCenter);
+  ui_loading_text->setFrameStyle(QFrame::NoFrame);
   ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: rgba(255, 128, 0, 255);");
   ui_loading_text->append("Loading");

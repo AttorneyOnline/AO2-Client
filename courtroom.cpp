@@ -338,14 +338,17 @@ void Courtroom::set_widgets()
   ui_vp_chatbox->hide();
 
   set_size_and_pos(ui_vp_showname, "showname");
-  QFont f = ui_vp_showname->font();
-  f.setPointSize(8);
-  ui_vp_showname->setFont(f);
+  QFont pt_8 = ui_vp_showname->font();
+  QFont pt_10 = ui_vp_showname->font();
+  pt_8.setPointSize(8);
+  pt_10.setPointSize(10);
+  ui_vp_showname->setFont(pt_8);
   ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white;");
 
   set_size_and_pos(ui_vp_message, "message");
   ui_vp_message->setReadOnly(true);
+  ui_vp_message->setFont(pt_10);
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
 
@@ -364,6 +367,7 @@ void Courtroom::set_widgets()
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
+  ui_ic_chatlog->setFont(pt_10);
   ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white;");
 
@@ -381,7 +385,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_music_list, "music_list");
   ui_music_list->setStyleSheet("QListWidget{background-color: rgba(0, 0, 0, 0);}");
-  ui_music_list->setFont(f);
+  ui_music_list->setFont(pt_8);
 
   set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   ui_ic_chat_message->setStyleSheet("background-color: rgba(89, 89, 89, 255);");
@@ -648,6 +652,15 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_prosecution_minus->hide();
     ui_prosecution_plus->hide();
   }
+
+  QString char_path = ao_app->get_character_path(current_char);
+
+  if (ao_app->custom_objection_enabled &&
+      file_exists(char_path + "custom.gif") &&
+      file_exists(char_path + "custom.wav"))
+    ui_custom_objection->show();
+  else
+    ui_custom_objection->hide();
 
   if (ao_app->flipping_enabled)
     ui_flip->show();
