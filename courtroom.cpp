@@ -298,7 +298,6 @@ void Courtroom::set_widgets()
     if (f_courtroom.width < 0 || f_courtroom.height < 0)
     {
       qDebug() << "ERROR: did not find courtroom width or height in courtroom_design.ini!";
-      //T0D0: add error box then quit application, this is not recoverable
     }
   }
 
@@ -1035,7 +1034,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    //T0D0: add realization sfx
+    sfx_player->play("sfx-realization.wav", ui_sfx_slider->value());
   }
 
 }
@@ -1120,7 +1119,6 @@ void Courtroom::start_chat_ticking()
 
 void Courtroom::chat_tick()
 {
-  //T0D0: play tick sound based on gender
   //note: this is called fairly often(every 60 ms when char is talking)
   //do not perform heavy operations here
 
@@ -1160,9 +1158,6 @@ void Courtroom::play_sfx()
     return;
 
   sfx_player->play(sfx_name + ".wav", ui_sfx_slider->value());
-
-  //T0D0: add audio implementation
-  //QString sfx_name = m_chatmessage[SFX_NAME];
 }
 
 void Courtroom::set_scene()
