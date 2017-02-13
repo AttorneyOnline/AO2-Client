@@ -10,11 +10,14 @@
 
 QString AOApplication::get_base_path(){
 
+  return "E:/AO/client/base/";
+    /*
 #ifdef OMNI_DEBUG
   return "/media/omnitroid/Data/winshare/AO/client/base/";
 #else
   return (QDir::currentPath() + "/base/");
 #endif
+*/
 
 }
 

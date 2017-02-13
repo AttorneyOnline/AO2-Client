@@ -111,12 +111,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     {
       encryption_needed = false;
       yellow_text_enabled = true;
-      //still needs some tweaking to work
+      //prezoom still needs some tweaking to work
       prezoom_enabled = false;
-      flipping_enabled = true;
+      //same goes for flipping, sadly
+      flipping_enabled = false;
       custom_objection_enabled = true;
       //improved loading disabled for now
-      //improved_loading_enabled = true;
       improved_loading_enabled = false;
     }
     else
@@ -128,6 +128,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       custom_objection_enabled = false;
       improved_loading_enabled = false;
     }
+
+    send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
   else if (header == "CT")
   {

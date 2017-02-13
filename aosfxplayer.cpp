@@ -10,11 +10,16 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-void AOSfxPlayer::play(QString p_sfx, int p_volume)
+void AOSfxPlayer::play(QString p_sfx, int p_volume, QString p_char)
 {
   BASS_ChannelStop(m_stream);
 
-  QString f_path = ao_app->get_sounds_path() + p_sfx;
+  QString f_path;
+
+  if (p_char != "")
+    f_path = ao_app->get_character_path(p_char) + p_sfx;
+  else
+    f_path = ao_app->get_sounds_path() + p_sfx;
 
   qDebug() << "sfx path: " << f_path;
 

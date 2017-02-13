@@ -34,8 +34,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   char_button_mapper = new QSignalMapper(this);
 
   music_player = new AOMusicPlayer(this, ao_app);
+  music_player->set_volume(0);
   sfx_player = new AOSfxPlayer(this, ao_app);
+  sfx_player->set_volume(0);
   blip_player = new AOBlipPlayer(this, ao_app);
+  blip_player->set_volume(0);
 
   ui_background = new AOImage(this, ao_app);
 
@@ -135,15 +138,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
-  ui_music_slider->setValue(50);
+  ui_music_slider->setValue(0);
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
-  ui_sfx_slider->setValue(50);
+  ui_sfx_slider->setValue(0);
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
-  ui_blip_slider->setValue(50);
+  ui_blip_slider->setValue(0);
 
   /////////////char select widgets under here///////////////
 
@@ -298,6 +301,7 @@ void Courtroom::set_widgets()
     if (f_courtroom.width < 0 || f_courtroom.height < 0)
     {
       qDebug() << "ERROR: did not find courtroom width or height in courtroom_design.ini!";
+      //T0D0: add error box then quit application, this is not recoverable
     }
   }
 
@@ -663,8 +667,14 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (ao_app->flipping_enabled)
     ui_flip->show();
+  else
+    ui_flip->hide();
 
   list_music();
+
+  ui_music_slider->setValue(50);
+  ui_sfx_slider->setValue(50);
+  ui_blip_slider->setValue(50);
 
   ui_char_select_background->hide();
 
@@ -831,7 +841,7 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_flip;
 
-  if (ao_app->ao2_features)
+  if (ao_app->flipping_enabled)
   {
     if (ui_flip->isChecked())
       f_flip = "1";
@@ -907,16 +917,20 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     {
     case 1:
       ui_vp_objection->play("holdit");
+      sfx_player->play("holdit.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
       break;
     case 2:
       ui_vp_objection->play("objection");
+      sfx_player->play("objection.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
       break;
     case 3:
       ui_vp_objection->play("takethat");
+      sfx_player->play("takethat.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
       break;
     //case 4 is AO2 only
     case 4:
       ui_vp_objection->play("custom", m_chatmessage[CHAR_NAME]);
+      sfx_player->play("custom.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
       break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
@@ -1034,7 +1048,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play("sfx-realization.wav", ui_sfx_slider->value());
+    //T0D0: add realization sfx
   }
 
 }
@@ -1119,6 +1133,7 @@ void Courtroom::start_chat_ticking()
 
 void Courtroom::chat_tick()
 {
+  //T0D0: play tick sound based on gender
   //note: this is called fairly often(every 60 ms when char is talking)
   //do not perform heavy operations here
 
@@ -1158,6 +1173,9 @@ void Courtroom::play_sfx()
     return;
 
   sfx_player->play(sfx_name + ".wav", ui_sfx_slider->value());
+
+  //T0D0: add audio implementation
+  //QString sfx_name = m_chatmessage[SFX_NAME];
 }
 
 void Courtroom::set_scene()

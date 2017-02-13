@@ -11,7 +11,7 @@ class AOSfxPlayer
 public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
 
-  void play(QString p_sfx, int p_volume);
+  void play(QString p_sfx, int p_volume, QString p_char = "");
   void set_volume(int p_volume);
 
 private:
