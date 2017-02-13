@@ -152,7 +152,9 @@ private:
 
   int current_emote_page = 0;
   int current_emote = 0;
-  const int max_emotes_on_page = 10;
+  int emote_columns = 5;
+  int emote_rows = 2;
+  int max_emotes_on_page = 10;
 
   //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
   bool is_ao2_bg = false;

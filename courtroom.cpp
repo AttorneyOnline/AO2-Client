@@ -89,12 +89,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_emotes = new QWidget(this);
 
-  //implementation in emotes.cpp
-  construct_emotes();
-
-  ui_emote_left = new AOButton(ui_emotes, ao_app);
-  ui_emote_right = new AOButton(ui_emotes, ao_app);
-
   ///////////////////////////////////////
 
   ui_defense_bar = new AOImage(this, ao_app);
@@ -244,9 +238,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
 
-  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
-  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
-
   connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_witness_testimony_clicked()));
   connect(ui_cross_examination, SIGNAL(clicked()), this, SLOT(on_cross_examination_clicked()));
 
@@ -264,6 +255,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
   set_widgets();
+
+  //implementation in emotes.cpp
+  construct_emotes();
+
+  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
+  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 }
 
 void Courtroom::set_widgets()
@@ -381,12 +378,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_emotes, "emotes");
 
   //emote buttons
-
-  set_size_and_pos(ui_emote_left, "emote_left");
-  ui_emote_left->set_image("arrow_left.png");
-
-  set_size_and_pos(ui_emote_right, "emote_right");
-  ui_emote_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
   ui_defense_bar->set_image("defensebar10.png");
@@ -603,7 +594,7 @@ void Courtroom::set_background(QString p_background)
 }
 
 void Courtroom::enter_courtroom(int p_cid)
-{
+{ 
   m_cid = p_cid;
   QString f_char = ao_app->get_char_name(char_list.at(m_cid).name);
   current_char = f_char;
@@ -636,11 +627,8 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_prosecution_plus->hide();
   }
 
-  //T0D0: split ao2_features into multiple booleans
-  if (ao_app->ao2_features)
-  {
+  if (ao_app->flipping_enabled)
     ui_flip->show();
-  }
 
   list_music();
 
