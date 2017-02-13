@@ -14,9 +14,12 @@ class AOCharMovie : public QLabel
 public:
   AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app);
 
+  void play(QString p_char, QString p_emote, QString emote_prefix);
   void play_pre(QString p_char, QString p_emote, int duration);
   void play_talking(QString p_char, QString p_emote);
   void play_idle(QString p_char, QString p_emote);
+
+  void set_flipped(bool p_flipped) {m_flipped = p_flipped;}
 
   void stop();
 
@@ -26,7 +29,10 @@ private:
   AOApplication *ao_app;
 
   QMovie *m_movie;
+  QVector<QImage> flipped_movie;
   QTimer *preanim_timer;
+
+  bool m_flipped = true;
 
 signals:
   void done();

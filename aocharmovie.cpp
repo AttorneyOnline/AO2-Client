@@ -5,12 +5,14 @@
 #include "aoapplication.h"
 
 #include <QDebug>
+#include <QImageReader>
 
 AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
   m_movie = new QMovie(this);
+
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
 
@@ -20,56 +22,59 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
 }
 
-void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
+void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  m_movie->stop();
-
-  QString pre_path = ao_app->get_character_path(p_char) + p_emote.toLower() + ".gif";
+  QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower() + ".gif";
   QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
+  QString gif_path;
 
-  if (file_exists(pre_path))
-    m_movie->setFileName(pre_path);
+  if (file_exists(original_path))
+    gif_path = original_path;
   else
-    m_movie->setFileName(placeholder_path);
+    gif_path = placeholder_path;
+
+  m_movie->stop();
+  this->clear();
+
+  m_movie->setFileName(gif_path);
+
+  if (m_flipped)
+  {
+    QImageReader *reader = new QImageReader(gif_path);
+
+    flipped_movie.clear();
+    QImage f_image = reader->read();
+    while (!f_image.isNull())
+    {
+      flipped_movie.append(f_image.mirrored(true, false));
+      f_image = reader->read();
+    }
+
+    delete reader;
+  }
+  else
+  {
+    this->setMovie(m_movie);
+  }
 
   this->show();
   m_movie->start();
+}
+
+void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
+{
+  play(p_char, p_emote, "");
   preanim_timer->start(duration);
 }
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  m_movie->stop();
-
-  QString talking_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower() + ".gif";
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
-
-  if (file_exists(talking_path))
-    m_movie->setFileName(talking_path);
-  else
-    m_movie->setFileName(placeholder_path);
-
-  this->show();
-  m_movie->start();
-
-  //D3bug
-  m_movie->
+  play(p_char, p_emote, "(b)");
 }
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
-  m_movie->stop();
-
-  QString idle_path = ao_app->get_character_path(p_char) + "(a)" + p_emote.toLower() + ".gif";
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
-
-  if (file_exists(idle_path))
-    m_movie->setFileName(idle_path);
-  else
-    m_movie->setFileName(placeholder_path);
-
-  this->show();
-  m_movie->start();
+  play(p_char, p_emote, "(a)");
 }
 
 void AOCharMovie::stop()
@@ -88,8 +93,8 @@ void AOCharMovie::combo_resize(int w, int h)
 
 void AOCharMovie::frame_change(int n_frame)
 {
-  //we'll need this later
-  ++n_frame;
+  if (m_flipped && flipped_movie.size() > n_frame)
+    this->setPixmap(QPixmap::fromImage(flipped_movie.at(n_frame)));
 }
 
 void AOCharMovie::preanim_done()
