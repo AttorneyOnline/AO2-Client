@@ -21,11 +21,8 @@ void Courtroom::construct_emotes()
 
   max_emotes_on_page = emote_columns * emote_rows;
 
-  qDebug() << "max_emotes_on_page: " << QString::number(max_emotes_on_page);
-
   for (int n = 0 ; n < max_emotes_on_page ; ++n)
   {
-    qDebug() << "constructed " << QString::number(n) << "th emote button";
     int x_pos = base_x_pos + (x_modifier * x_mod_count);
     int y_pos = base_y_pos + (y_modifier * y_mod_count);
 

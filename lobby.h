@@ -32,6 +32,8 @@ public:
   QString get_chatlog();
   int get_selected_server();
 
+  void set_loading_value(int p_value);
+
   bool public_servers_selected = true;
 
   ~Lobby();

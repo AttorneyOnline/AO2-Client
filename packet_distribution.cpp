@@ -168,6 +168,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_lobby->show_loading_overlay();
     w_lobby->set_loading_text("Loading");
+    w_lobby->set_loading_value(0);
 
     AOPacket *f_packet = new AOPacket("askchar2#%");
     send_server_packet(f_packet);
@@ -203,6 +204,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_char(f_char);
     }
 
+    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+    w_lobby->set_loading_value(loading_value);
+
     QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
     send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
 
@@ -236,6 +241,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->append_evidence(f_evi);
 
+    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    int loading_value = ((loaded_chars + loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
+    w_lobby->set_loading_value(loading_value);
+
     QString next_packet_number = QString::number(loaded_evidence);
     send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
 
@@ -261,6 +270,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_music(f_music);
     }
+
+    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    int loading_value = ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
+    w_lobby->set_loading_value(loading_value);
 
     QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
     send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));

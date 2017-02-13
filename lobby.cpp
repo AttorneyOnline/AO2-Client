@@ -32,6 +32,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_text = new QTextEdit(ui_loading_background);
   ui_progress_bar = new QProgressBar(ui_loading_background);
+  ui_progress_bar->setMinimum(0);
+  ui_progress_bar->setMaximum(100);
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
@@ -160,6 +162,11 @@ QString Lobby::get_chatlog()
 int Lobby::get_selected_server()
 {
   return ui_server_list->currentRow();
+}
+
+void Lobby::set_loading_value(int p_value)
+{
+  ui_progress_bar->setValue(p_value);
 }
 
 void Lobby::on_public_servers_clicked()
