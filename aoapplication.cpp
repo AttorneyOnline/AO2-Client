@@ -3,6 +3,7 @@
 #include "lobby.h"
 #include "courtroom.h"
 #include "networkmanager.h"
+#include "debug_functions.h"
 
 #include <QDebug>
 #include <QRect>
@@ -115,6 +116,16 @@ void AOApplication::add_favorite_server(int p_server)
   QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
 
   write_to_serverlist_txt(server_line);
+}
+
+void AOApplication::server_disconnected()
+{
+  if (courtroom_constructed)
+  {
+    call_notice("Disconnected from server.");
+    construct_lobby();
+    destruct_courtroom();
+  }
 }
 
 void AOApplication::loading_cancelled()

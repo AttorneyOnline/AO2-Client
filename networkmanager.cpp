@@ -14,6 +14,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   QObject::connect(ms_socket, SIGNAL(readyRead()), this, SLOT(handle_ms_packet()));
   QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
+  QObject::connect(server_socket, SIGNAL(disconnected()), ao_app, SLOT(server_disconnected()));
 }
 
 NetworkManager::~NetworkManager()

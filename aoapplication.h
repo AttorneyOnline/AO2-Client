@@ -117,7 +117,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 1;
-  const int MINOR_VERSION = 2;
+  const int MINOR_VERSION = 3;
 
   QString user_theme = "default";
 
@@ -125,6 +125,7 @@ private:
   QVector<server_type> favorite_list;
 
 public slots:
+  void server_disconnected();
   void loading_cancelled();
 };
 
