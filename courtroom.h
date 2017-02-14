@@ -171,6 +171,9 @@ private:
   int emote_rows = 2;
   int max_emotes_on_page = 10;
 
+  int current_evidence_page = 0;
+  //int current_evidence
+
   //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
   bool is_ao2_bg = false;
 
@@ -286,7 +289,8 @@ private:
   void construct_emotes();
   void set_emote_page();
 
-
+  void construct_evidence();
+  void set_evidence_page();
 
 public slots:
   void objection_done();

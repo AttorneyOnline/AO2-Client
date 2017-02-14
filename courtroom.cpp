@@ -287,11 +287,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   set_widgets();
 
+  //in evidence.cpp
+  construct_evidence();
+
   //implementation in emotes.cpp
   construct_emotes();
-
-  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
-  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 }
 
 void Courtroom::set_mute_list()
@@ -1019,7 +1019,7 @@ void Courtroom::handle_chatmessage_2()
     ui_vp_chatbox->set_image("chatmed.png");
   else
   {
-    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox;
+    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 

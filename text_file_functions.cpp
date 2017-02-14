@@ -260,11 +260,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
 
-  qDebug() << "f_result" << f_result;
-
   QStringList result_contents = f_result.split("#");
-
-
 
   if (result_contents.size() < 4)
   {

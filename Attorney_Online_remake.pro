@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     emotes.cpp \
     aosfxplayer.cpp \
     aomusicplayer.cpp \
-    aoblipplayer.cpp
+    aoblipplayer.cpp \
+    evidence.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \

@@ -21,8 +21,6 @@ void AOSfxPlayer::play(QString p_sfx, int p_volume, QString p_char)
   else
     f_path = ao_app->get_sounds_path() + p_sfx;
 
-  qDebug() << "sfx path: " << f_path;
-
   m_stream = BASS_StreamCreateFile(FALSE, f_path.toStdString().c_str(), 0, 0, BASS_STREAM_AUTOFREE);
 
   set_volume(p_volume);

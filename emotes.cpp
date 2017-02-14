@@ -52,6 +52,9 @@ void Courtroom::construct_emotes()
 
   set_size_and_pos(ui_emote_right, "emote_right");
   ui_emote_right->set_image("arrow_right.png");
+
+  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
+  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 }
 
 void Courtroom::set_emote_page()
