@@ -910,7 +910,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (text_color < 0)
     f_text_color = "0";
-  else if (text_color > 4 && !ao_app->ao2_features)
+  else if (text_color > 4 && !ao_app->yellow_text_enabled)
     f_text_color = "0";
   else
     f_text_color = QString::number(text_color);
@@ -1341,6 +1341,7 @@ void Courtroom::set_text_color()
   case YELLOW:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: yellow");
+    break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:

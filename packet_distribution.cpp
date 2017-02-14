@@ -69,6 +69,8 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   }
   else if (header == "AO2CHECK")
   {
+    send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
+
     if (f_contents.size() < 1)
       goto end;
 
@@ -80,9 +82,6 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     int f_release = version_contents.at(0).toInt();
     int f_major = version_contents.at(1).toInt();
     int f_minor = version_contents.at(2).toInt();
-
-    //qDebug() << "local version: " << get_version_string();
-    //qDebug() << "remote version: " << QString::number(f_release) << QString::number(f_major) << QString::number(f_minor);
 
     if (get_release() > f_release)
       goto end;

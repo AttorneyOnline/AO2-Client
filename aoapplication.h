@@ -43,8 +43,6 @@ public:
 
   unsigned int s_decryptor = 5;
   bool encryption_needed = true;
-  //T0D0: make this obsolete and break into smaller bools
-  bool ao2_features = false;
 
   bool yellow_text_enabled = false;
   bool prezoom_enabled = false;
