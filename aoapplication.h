@@ -117,7 +117,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 1;
-  const int MINOR_VERSION = 0;
+  const int MINOR_VERSION = 2;
 
   QString user_theme = "default";
 
