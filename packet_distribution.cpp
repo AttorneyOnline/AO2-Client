@@ -344,6 +344,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "CharsCheck")
   {
+    if (!courtroom_constructed)
+      goto end;
+
     for (int n_char = 0 ; n_char < f_contents.size() ; ++n_char)
     {
       if (f_contents.at(n_char) == "-1")
@@ -425,13 +428,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    w_courtroom->set_char_select_page();
+    if (lobby_constructed)
+      w_courtroom->append_ms_chatmessage(w_lobby->get_chatlog());
 
-    w_courtroom->append_ms_chatmessage(w_lobby->get_chatlog());
-
-    w_courtroom->set_mute_list();
-
-    w_courtroom->show();
+    w_courtroom->done_received();
 
     destruct_lobby();
   }

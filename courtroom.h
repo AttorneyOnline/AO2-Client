@@ -46,6 +46,8 @@ public:
   void set_char_select_page();
   void set_background(QString p_background);
 
+  void done_received();
+
   void set_mute_list();
 
   //sets desk and bg based on pos in chatmessage

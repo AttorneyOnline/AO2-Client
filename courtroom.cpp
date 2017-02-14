@@ -354,8 +354,10 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_showname, "showname");
   QFont pt_8 = ui_vp_showname->font();
+  QFont pt_9 = ui_vp_showname->font();
   QFont pt_10 = ui_vp_showname->font();
   pt_8.setPointSize(8);
+  pt_9.setPointSize(9);
   pt_10.setPointSize(10);
   ui_vp_showname->setFont(pt_8);
   ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -363,7 +365,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_message, "message");
   ui_vp_message->setReadOnly(true);
+  #if (defined (_WIN32) || defined (_WIN64))
   ui_vp_message->setFont(pt_10);
+  #else
+  ui_vp_message->setFont(pt_9);
+  #endif
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
 
@@ -384,7 +390,11 @@ void Courtroom::set_widgets()
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
+  #if (defined (_WIN32) || defined (_WIN64))
   ui_ic_chatlog->setFont(pt_10);
+  #else
+  ui_ic_chatlog->setFont(pt_9);
+  #endif
   ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white;");
 
@@ -554,7 +564,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Courtroom::set_taken(int n_char, bool p_taken)
 {
-  if (n_char >= char_list.size())
+  if (n_char > char_list.size())
   {
     qDebug() << "W: set_taken attempted to set an index bigger than char_list size";
     return;
@@ -566,6 +576,17 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   f_char.taken = p_taken;
 
   char_list.replace(n_char, f_char);
+}
+
+void Courtroom::done_received()
+{
+  m_cid = -1;
+
+  set_char_select_page();
+
+  set_mute_list();
+
+  show();
 }
 
 void Courtroom::set_char_select_page()
