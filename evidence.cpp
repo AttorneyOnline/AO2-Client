@@ -1,39 +1,44 @@
 #include "courtroom.h"
 
+#include <QDebug>
+
 void Courtroom::construct_evidence()
 {
   //constructing evidence button grid
-  const int base_x_pos{10};
-  const int base_y_pos{0};
+  const int base_x_pos{28};
+  const int base_y_pos{27};
 
-  const int x_modifier{49};
+  const int x_modifier{72};
   int x_mod_count{0};
 
-  const int y_modifier{49};
+  const int y_modifier{73};
   int y_mod_count{0};
 
   evidence_columns = ui_evidence->width() / x_modifier;
+  qDebug() << "columns: " << evidence_columns;
   evidence_rows = ui_evidence->height() / y_modifier;
+  qDebug() << "rows: " << evidence_rows;
 
   max_evidence_on_page = evidence_columns * evidence_rows;
 
-  for (int n = 0 ; n < max_emotes_on_page ; ++n)
+  qDebug() << "max_evidence_on_page: " << max_evidence_on_page;
+
+  for (int n = 0 ; n < max_evidence_on_page ; ++n)
   {
     int x_pos = base_x_pos + (x_modifier * x_mod_count);
     int y_pos = base_y_pos + (y_modifier * y_mod_count);
 
-    AOEmoteButton *f_emote = new AOEmoteButton(ui_emotes, ao_app, x_pos, y_pos);
+    AOEvidenceButton *f_evidence = new AOEvidenceButton(ui_evidence, ao_app, x_pos, y_pos);
 
-    ui_emote_list.append(f_emote);
+    ui_evidence_list.append(f_evidence);
 
-    f_emote->set_id(n);
+    f_evidence->set_id(n);
 
-    connect(f_emote, SIGNAL(emote_clicked(int)), this, SLOT(on_emote_clicked(int)));
+    //connect(f_evidence, SIGNAL(evidence_clicked(int)), this, SLOT(on_evidence_clicked(int)));
 
     ++x_mod_count;
 
-    //if emote number is divisible by columns with rest columns -1 then the next emote button should start on a new line
-    if ((n % emote_columns) == (emote_columns - 1) && (n != 0))
+    if (x_mod_count == evidence_columns)
     {
       ++y_mod_count;
       x_mod_count = 0;
