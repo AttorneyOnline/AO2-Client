@@ -181,6 +181,8 @@ private:
   AOSfxPlayer *sfx_player;
   AOBlipPlayer *blip_player;
 
+  AOSfxPlayer *modcall_player;
+
   AOImage *ui_background;
 
   QWidget *ui_viewport;
@@ -242,7 +244,7 @@ private:
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
-\
+
   AOButton *ui_custom_objection;
   AOButton *ui_realization;
   AOButton *ui_mute;
@@ -288,6 +290,8 @@ public slots:
 
   void show_testimony();
   void hide_testimony();
+
+  void mod_called(QString p_ip);
 
 private slots:
   void start_chat_ticking();

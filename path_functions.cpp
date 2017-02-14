@@ -8,14 +8,13 @@
 #include <QDebug>
 #endif
 
-QString AOApplication::get_base_path(){
-
+QString AOApplication::get_base_path()
+{
 #ifdef OMNI_DEBUG
   return "/media/omnitroid/Data/winshare/AO/client/base/";
 #else
   return (QDir::currentPath() + "/base/");
 #endif
-
 }
 
 QString AOApplication::get_theme_path()

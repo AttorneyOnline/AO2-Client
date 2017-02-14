@@ -46,6 +46,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   blip_player = new AOBlipPlayer(this, ao_app);
   blip_player->set_volume(0);
 
+  modcall_player = new AOSfxPlayer(this, ao_app);
+  modcall_player->set_volume(50);
+
   ui_background = new AOImage(this, ao_app);
 
   ui_viewport = new QWidget(this);
@@ -57,6 +60,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_chatbox = new AOImage(ui_viewport, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
+  ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_testimony = new AOImage(ui_viewport, ao_app);
   ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
@@ -401,7 +405,7 @@ void Courtroom::set_widgets()
   ui_music_list->setFont(pt_8);
 
   set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-  ui_ic_chat_message->setStyleSheet("background-color: rgba(89, 89, 89, 255);");
+  ui_ic_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
   ui_muted->set_image("muted.png");
 
@@ -1398,6 +1402,13 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
     ui_prosecution_bar->set_image("prosecutionbar" + QString::number(p_state) + ".png");
     prosecution_bar_state = p_state;
   }
+}
+
+void Courtroom::mod_called(QString p_ip)
+{
+  ui_server_chatlog->appendPlainText(p_ip);
+  if (ui_guard->isChecked())
+    modcall_player->play("sfx-gallery.wav", 50);
 }
 
 void Courtroom::on_ooc_return_pressed()
