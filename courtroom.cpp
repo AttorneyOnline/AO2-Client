@@ -124,8 +124,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_call_mod = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
+  ui_pre->setText("Pre");
   ui_flip = new QCheckBox(this);
+  ui_flip->setText("Flip");
+  ui_flip->hide();
   ui_guard = new QCheckBox(this);
+  ui_guard->setText("Guard");
+  ui_guard->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_realization = new AOButton(this, ao_app);
@@ -157,6 +162,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
   ui_blip_slider->setValue(50);
+
+  ui_evidence_button = new AOButton(this, ao_app);
+
+  ui_evidence = new AOImage(this, ao_app);
+  ui_evidence->hide();
 
   /////////////char select widgets under here///////////////
 
@@ -265,6 +275,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
+
+  connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
@@ -473,12 +485,8 @@ void Courtroom::set_widgets()
   ui_pre->setText("Pre");
 
   set_size_and_pos(ui_flip, "flip");
-  ui_flip->setText("Flip");
-  ui_flip->hide();
 
   set_size_and_pos(ui_guard, "guard");
-  ui_guard->setText("Guard");
-  ui_guard->hide();
 
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->set_image("custom.png");
@@ -506,6 +514,12 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
+
+  set_size_and_pos(ui_evidence_button, "evidence_button");
+  //ui_evidence_button->set_image("evidencebutton.png");
+
+  set_size_and_pos(ui_evidence, "evidence_background");
+  ui_evidence->set_image("evidencebackground.png");
 
   //char select stuff under here
 
@@ -1776,6 +1790,18 @@ void Courtroom::on_flip_clicked()
 void Courtroom::on_guard_clicked()
 {
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_evidence_button_clicked()
+{
+  if (ui_evidence->isHidden())
+  {
+    ui_evidence->show();
+  }
+  else
+  {
+    ui_evidence->hide();
+  }
 }
 
 void Courtroom::char_clicked(int n_char)

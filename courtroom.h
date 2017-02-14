@@ -265,6 +265,10 @@ private:
 
   AOImage *ui_muted;
 
+  AOButton *ui_evidence_button;
+
+  AOImage *ui_evidence;
+
   AOImage *ui_char_select_background;
 
   QVector<AOCharButton*> ui_char_button_list;
@@ -347,6 +351,8 @@ private slots:
   void on_pre_clicked();
   void on_flip_clicked();
   void on_guard_clicked();
+
+  void on_evidence_button_clicked();
 
   void on_back_to_lobby_clicked();
 
