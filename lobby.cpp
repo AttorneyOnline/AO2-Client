@@ -240,8 +240,19 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-  //T0D0: add something real here
-  call_error("YEBOIIII");
+  call_notice("Attorney Online 2 is built using Qt 5.7\n\n"
+              "Lead development:\n"
+              "OmniTroid\n\n"
+              "Supporting development:\n"
+              "stonedDiscord\n"
+              "Fiercy\n\n"
+              "UI design:\n"
+              "Ruekasu\n"
+              "Draxirch\n\n"
+              "Special thanks:\n"
+              "Unishred\n"
+              "Argoneus\n"
+              "Cronnicossy");
 }
 
 void Lobby::on_server_list_clicked(QModelIndex p_model)
