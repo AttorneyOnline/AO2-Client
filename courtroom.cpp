@@ -148,15 +148,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
-  ui_music_slider->setValue(0);
+  ui_music_slider->setValue(50);
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
-  ui_sfx_slider->setValue(0);
+  ui_sfx_slider->setValue(50);
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
-  ui_blip_slider->setValue(0);
+  ui_blip_slider->setValue(50);
 
   /////////////char select widgets under here///////////////
 
@@ -354,8 +354,10 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_showname, "showname");
   QFont pt_8 = ui_vp_showname->font();
+  QFont pt_9 = ui_vp_showname->font();
   QFont pt_10 = ui_vp_showname->font();
   pt_8.setPointSize(8);
+  pt_9.setPointSize(9);
   pt_10.setPointSize(10);
   ui_vp_showname->setFont(pt_8);
   ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -363,7 +365,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_message, "message");
   ui_vp_message->setReadOnly(true);
+  #if (defined (_WIN32) || defined (_WIN64))
   ui_vp_message->setFont(pt_10);
+  #else
+  ui_vp_message->setFont(pt_9);
+  #endif
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
 
@@ -384,7 +390,11 @@ void Courtroom::set_widgets()
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
+  #if (defined (_WIN32) || defined (_WIN64))
   ui_ic_chatlog->setFont(pt_10);
+  #else
+  ui_ic_chatlog->setFont(pt_9);
+  #endif
   ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white;");
 
@@ -568,6 +578,17 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   char_list.replace(n_char, f_char);
 }
 
+void Courtroom::done_received()
+{
+  m_cid = -1;
+
+  set_char_select_page();
+
+  set_mute_list();
+
+  show();
+}
+
 void Courtroom::set_char_select_page()
 {
   ui_char_select_background->show();
@@ -686,9 +707,9 @@ void Courtroom::enter_courtroom(int p_cid)
 
   list_music();
 
-  ui_music_slider->setValue(50);
-  ui_sfx_slider->setValue(50);
-  ui_blip_slider->setValue(50);
+  music_player->set_volume(ui_music_slider->value());
+  sfx_player->set_volume(ui_sfx_slider->value());
+  blip_player->set_volume(ui_blip_slider->value());
 
   testimony_in_progress = false;
 
@@ -1685,6 +1706,10 @@ void Courtroom::on_cross_examination_clicked()
 
 void Courtroom::on_change_character_clicked()
 {
+  music_player->set_volume(0);
+  sfx_player->set_volume(0);
+  blip_player->set_volume(0);
+
   ui_char_select_background->show();
 }
 
