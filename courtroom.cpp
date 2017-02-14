@@ -31,6 +31,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   realization_timer = new QTimer(this);
   realization_timer->setSingleShot(true);
 
+  testimony_show_timer = new QTimer(this);
+  testimony_show_timer->setSingleShot(true);
+
+  testimony_hide_timer = new QTimer(this);
+  testimony_hide_timer->setSingleShot(true);
+
   char_button_mapper = new QSignalMapper(this);
 
   music_player = new AOMusicPlayer(this, ao_app);
@@ -209,6 +215,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(realization_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
+  connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
+  connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
   //emote signals are set in emotes.cpp
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
@@ -357,6 +365,8 @@ void Courtroom::set_widgets()
 
   ui_vp_testimony->move(0, 0);
   ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_testimony->set_image("testimony.png");
+  ui_vp_testimony->hide();
 
   ui_vp_realization->move(0, 0);
   ui_vp_realization->resize(ui_viewport->width(), ui_viewport->height());
@@ -675,6 +685,8 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_music_slider->setValue(50);
   ui_sfx_slider->setValue(50);
   ui_blip_slider->setValue(50);
+
+  testimony_in_progress = false;
 
   ui_char_select_background->hide();
 
@@ -1048,7 +1060,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    //T0D0: add realization sfx
+    sfx_player->play("sfx-realization.wav", ui_sfx_slider->value());
   }
 
 }
@@ -1165,6 +1177,26 @@ void Courtroom::chat_tick()
   }
 }
 
+void Courtroom::show_testimony()
+{
+  if (!testimony_in_progress || m_chatmessage[SIDE] != "wit")
+    return;
+
+  ui_vp_testimony->show();
+
+  testimony_show_timer->start(testimony_show_time);
+}
+
+void Courtroom::hide_testimony()
+{
+  ui_vp_testimony->hide();
+
+  if (!testimony_in_progress)
+    return;
+
+  testimony_hide_timer->start(testimony_hide_time);
+}
+
 void Courtroom::play_sfx()
 {
   QString sfx_name = m_chatmessage[SFX_NAME];
@@ -1180,6 +1212,9 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_scene()
 {
+  if (testimony_in_progress)
+    show_testimony();
+
   //witness is default if pos is invalid
   QString f_image = "witnessempty.png";
 
@@ -1336,12 +1371,15 @@ void Courtroom::handle_wtce(QString p_wtce)
   {
     sfx_player->play("sfx-testimony2.wav", ui_sfx_slider->value());
     ui_vp_wtce->play("witnesstestimony");
+    testimony_in_progress = true;
+    show_testimony();
   }
   //cross examination
   else if (p_wtce == "testimony2")
   {
     sfx_player->play("sfx-testimony.wav", ui_sfx_slider->value());
     ui_vp_wtce->play("crossexamination");
+    testimony_in_progress = false;
   }
 }
 

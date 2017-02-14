@@ -122,6 +122,9 @@ private:
 
   QTimer *realization_timer;
 
+  QTimer *testimony_show_timer;
+  QTimer *testimony_hide_timer;
+
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
@@ -130,6 +133,11 @@ private:
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
+
+  bool testimony_in_progress = false;
+
+  const int testimony_show_time = 1500;
+  const int testimony_hide_time = 500;
 
   QMap<QString, bool> mute_map;
 
@@ -277,6 +285,9 @@ public slots:
   void preanim_done();
 
   void realization_done();
+
+  void show_testimony();
+  void hide_testimony();
 
 private slots:
   void start_chat_ticking();
