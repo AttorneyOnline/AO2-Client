@@ -12,13 +12,14 @@ public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   ~AOMusicPlayer();
 
-  void play(QString p_song, int p_volume);
+  void play(QString p_song);
   void set_volume(int p_value);
 
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
 
+  int m_volume = 0;
   HSTREAM m_stream;
 };
 

@@ -10,7 +10,7 @@ AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-void AOBlipPlayer::set_blips(QString p_sfx, int p_volume)
+void AOBlipPlayer::set_blips(QString p_sfx)
 {
   QString f_path = ao_app->get_sounds_path() + p_sfx;
 
@@ -21,7 +21,7 @@ void AOBlipPlayer::set_blips(QString p_sfx, int p_volume)
     m_stream_list[n_stream] = BASS_StreamCreateFile(FALSE, f_path.toStdString().c_str(), 0, 0, 0);
   }
 
-  set_volume(p_volume);
+  set_volume(m_volume);
 }
 
 void AOBlipPlayer::blip_tick()
@@ -38,6 +38,8 @@ void AOBlipPlayer::blip_tick()
 
 void AOBlipPlayer::set_volume(int p_value)
 {
+  m_volume = p_value;
+
   float volume = p_value / 100.0f;
 
   for (int n_stream = 0 ; n_stream < 5 ; ++n_stream)

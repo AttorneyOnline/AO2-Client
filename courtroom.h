@@ -326,6 +326,7 @@ private slots:
   void on_music_list_double_clicked(QModelIndex p_model);
 
   void on_emote_clicked(int p_id);
+  void on_evidence_clicked(int p_id);
 
   void on_emote_left_clicked();
   void on_emote_right_clicked();

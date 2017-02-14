@@ -15,7 +15,7 @@ AOMusicPlayer::~AOMusicPlayer()
   BASS_ChannelStop(m_stream);
 }
 
-void AOMusicPlayer::play(QString p_song, int p_volume)
+void AOMusicPlayer::play(QString p_song)
 {
   BASS_ChannelStop(m_stream);
 
@@ -23,14 +23,16 @@ void AOMusicPlayer::play(QString p_song, int p_volume)
 
   m_stream = BASS_StreamCreateFile(FALSE, f_path.toStdString().c_str(), 0, 0, BASS_STREAM_AUTOFREE);
 
-  this->set_volume(p_volume);
+  this->set_volume(m_volume);
 
   BASS_ChannelPlay(m_stream, false);
 }
 
 void AOMusicPlayer::set_volume(int p_value)
 {
-  float volume = p_value / 100.0f;
+  m_volume = p_value;
+
+  float volume = m_volume / 100.0f;
 
   BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
 

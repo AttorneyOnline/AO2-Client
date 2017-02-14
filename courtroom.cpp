@@ -599,6 +599,10 @@ void Courtroom::done_received()
 {
   m_cid = -1;
 
+  music_player->set_volume(0);
+  sfx_player->set_volume(0);
+  blip_player->set_volume(0);
+
   set_char_select_page();
 
   set_mute_list();
@@ -971,20 +975,20 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     {
     case 1:
       ui_vp_objection->play("holdit");
-      sfx_player->play("holdit.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
+      sfx_player->play("holdit.wav", m_chatmessage[CHAR_NAME]);
       break;
     case 2:
       ui_vp_objection->play("objection");
-      sfx_player->play("objection.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
+      sfx_player->play("objection.wav", m_chatmessage[CHAR_NAME]);
       break;
     case 3:
       ui_vp_objection->play("takethat");
-      sfx_player->play("takethat.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
+      sfx_player->play("takethat.wav", m_chatmessage[CHAR_NAME]);
       break;
     //case 4 is AO2 only
     case 4:
       ui_vp_objection->play("custom", m_chatmessage[CHAR_NAME]);
-      sfx_player->play("custom.wav", ui_sfx_slider->value(), m_chatmessage[CHAR_NAME]);
+      sfx_player->play("custom.wav", m_chatmessage[CHAR_NAME]);
       break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
@@ -1102,7 +1106,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play("sfx-realization.wav", ui_sfx_slider->value());
+    sfx_player->play("sfx-realization.wav");
   }
 
 }
@@ -1179,7 +1183,7 @@ void Courtroom::start_chat_ticking()
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
-  blip_player->set_blips("sfx-blip" + f_gender + ".wav", ui_blip_slider->value());
+  blip_player->set_blips("sfx-blip" + f_gender + ".wav");
 
   //means text is currently ticking
   text_state = 1;
@@ -1246,7 +1250,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  sfx_player->play(sfx_name + ".wav", ui_sfx_slider->value());
+  sfx_player->play(sfx_name + ".wav");
 
   //T0D0: add audio implementation
   //QString sfx_name = m_chatmessage[SFX_NAME];
@@ -1399,7 +1403,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (f_contents.size() < 2)
     return;
 
-  music_player->play(f_contents.at(0), ui_music_slider->value());
+  music_player->play(f_contents.at(0));
 
   int n_char = f_contents.at(1).toInt();
 
@@ -1412,7 +1416,7 @@ void Courtroom::handle_wtce(QString p_wtce)
   //witness testimony
   if (p_wtce == "testimony1")
   {
-    sfx_player->play("sfx-testimony2.wav", ui_sfx_slider->value());
+    sfx_player->play("sfx-testimony2.wav");
     ui_vp_wtce->play("witnesstestimony");
     testimony_in_progress = true;
     show_testimony();
@@ -1420,7 +1424,7 @@ void Courtroom::handle_wtce(QString p_wtce)
   //cross examination
   else if (p_wtce == "testimony2")
   {
-    sfx_player->play("sfx-testimony.wav", ui_sfx_slider->value());
+    sfx_player->play("sfx-testimony.wav");
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
   }
@@ -1447,7 +1451,7 @@ void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->appendPlainText(p_ip);
   if (ui_guard->isChecked())
-    modcall_player->play("sfx-gallery.wav", 50);
+    modcall_player->play("sfx-gallery.wav");
 }
 
 void Courtroom::on_ooc_return_pressed()

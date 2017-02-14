@@ -34,7 +34,7 @@ void Courtroom::construct_evidence()
 
     f_evidence->set_id(n);
 
-    //connect(f_evidence, SIGNAL(evidence_clicked(int)), this, SLOT(on_evidence_clicked(int)));
+    connect(f_evidence, SIGNAL(evidence_clicked(int)), this, SLOT(on_evidence_clicked(int)));
 
     ++x_mod_count;
 
@@ -45,3 +45,10 @@ void Courtroom::construct_evidence()
     }
   }
 }
+
+void Courtroom::on_evidence_clicked(int p_id)
+{
+
+}
+
+

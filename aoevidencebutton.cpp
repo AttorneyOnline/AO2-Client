@@ -25,3 +25,8 @@ void AOEvidenceButton::set_image(QString p_image)
     this->setStyleSheet("");
   }
 }
+
+void AOEvidenceButton::on_clicked()
+{
+  evidence_clicked(m_id);
+}

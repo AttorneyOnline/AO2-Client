@@ -20,6 +20,12 @@ private:
   AOApplication *ao_app;
 
   int m_id;
+
+signals:
+  void evidence_clicked(int p_id);
+
+private slots:
+  void on_clicked();
 };
 
 #endif // AOEVIDENCEBUTTON_H

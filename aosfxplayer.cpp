@@ -10,7 +10,7 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-void AOSfxPlayer::play(QString p_sfx, int p_volume, QString p_char)
+void AOSfxPlayer::play(QString p_sfx, QString p_char)
 {
   BASS_ChannelStop(m_stream);
 
@@ -23,13 +23,15 @@ void AOSfxPlayer::play(QString p_sfx, int p_volume, QString p_char)
 
   m_stream = BASS_StreamCreateFile(FALSE, f_path.toStdString().c_str(), 0, 0, BASS_STREAM_AUTOFREE);
 
-  set_volume(p_volume);
+  set_volume(m_volume);
 
   BASS_ChannelPlay(m_stream, false);
 }
 
 void AOSfxPlayer::set_volume(int p_value)
 {
+  m_volume = p_value;
+
   float volume = p_value / 100.0f;
 
   BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
