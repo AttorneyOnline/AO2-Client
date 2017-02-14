@@ -95,7 +95,7 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
-  ui_chatbox->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_chatbox->setStyleSheet("QPlainTextEdit{background-color: rgba(0, 0, 0, 0);}");
 
   set_size_and_pos(ui_chatname, "chatname");
   ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"

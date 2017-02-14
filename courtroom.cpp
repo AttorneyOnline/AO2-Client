@@ -148,15 +148,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
-  ui_music_slider->setValue(0);
+  ui_music_slider->setValue(50);
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
-  ui_sfx_slider->setValue(0);
+  ui_sfx_slider->setValue(50);
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
-  ui_blip_slider->setValue(0);
+  ui_blip_slider->setValue(50);
 
   /////////////char select widgets under here///////////////
 
@@ -564,7 +564,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Courtroom::set_taken(int n_char, bool p_taken)
 {
-  if (n_char > char_list.size())
+  if (n_char >= char_list.size())
   {
     qDebug() << "W: set_taken attempted to set an index bigger than char_list size";
     return;
@@ -707,9 +707,9 @@ void Courtroom::enter_courtroom(int p_cid)
 
   list_music();
 
-  ui_music_slider->setValue(50);
-  ui_sfx_slider->setValue(50);
-  ui_blip_slider->setValue(50);
+  music_player->set_volume(ui_music_slider->value());
+  sfx_player->set_volume(ui_sfx_slider->value());
+  blip_player->set_volume(ui_blip_slider->value());
 
   testimony_in_progress = false;
 
@@ -1706,6 +1706,10 @@ void Courtroom::on_cross_examination_clicked()
 
 void Courtroom::on_change_character_clicked()
 {
+  music_player->set_volume(0);
+  sfx_player->set_volume(0);
+  blip_player->set_volume(0);
+
   ui_char_select_background->show();
 }
 
