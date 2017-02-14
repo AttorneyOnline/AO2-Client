@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     aosfxplayer.cpp \
     aomusicplayer.cpp \
     aoblipplayer.cpp \
-    evidence.cpp
+    evidence.cpp \
+    aoevidencebutton.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -65,7 +66,8 @@ HEADERS  += lobby.h \
     bass.h \
     aosfxplayer.h \
     aomusicplayer.h \
-    aoblipplayer.h
+    aoblipplayer.h \
+    aoevidencebutton.h
 
 unix:LIBS += -L/home/omnitroid/Project/Attorney_Online_2/src -lbass
 win32:LIBS += "$$PWD/bass.dll"

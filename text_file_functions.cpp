@@ -256,6 +256,20 @@ int AOApplication::get_emote_number(QString p_char)
   else return f_result.toInt();
 }
 
+QString AOApplication::get_emote_comment(QString p_char, int p_emote)
+{
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
+
+  QStringList result_contents = f_result.split("#");
+
+  if (result_contents.size() < 4)
+  {
+    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    return "normal";
+  }
+  else return result_contents.at(0);
+}
+
 QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");

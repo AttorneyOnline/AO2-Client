@@ -1,6 +1,7 @@
 #include "aoemotebutton.h"
 
 #include "file_functions.h"
+#include <QDebug>
 
 AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
 {
@@ -26,7 +27,7 @@ void AOEmoteButton::set_on(QString p_char, int p_emote)
   }
   else
   {
-    this->setText(emotion_number);
+    this->setText(ao_app->get_emote_comment(p_char, p_emote));
     this->setStyleSheet("border-image:url(\"\")");
   }
 }
@@ -43,7 +44,7 @@ void AOEmoteButton::set_off(QString p_char, int p_emote)
   }
   else
   {
-    this->setText(emotion_number);
+    this->setText(ao_app->get_emote_comment(p_char, p_emote));
     this->setStyleSheet("border-image:url(\"\")");
   }
 }

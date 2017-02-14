@@ -61,6 +61,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
+  ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_testimony = new AOImage(ui_viewport, ao_app);
   ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
@@ -332,6 +334,7 @@ void Courtroom::set_widgets()
   m_courtroom_width = f_courtroom.width;
   m_courtroom_height = f_courtroom.height;
 
+  this->resize(m_courtroom_width, m_courtroom_height);
   this->setFixedSize(m_courtroom_width, m_courtroom_height);
 
   ui_background->set_image("courtroombackground.png");
@@ -1184,7 +1187,6 @@ void Courtroom::start_chat_ticking()
 
 void Courtroom::chat_tick()
 {
-  //T0D0: play tick sound based on gender
   //note: this is called fairly often(every 60 ms when char is talking)
   //do not perform heavy operations here
 
@@ -1204,6 +1206,7 @@ void Courtroom::chat_tick()
   else
   {
     ui_vp_message->insertPlainText(f_message.at(tick_pos));
+    //ui_vp_message->app
 
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());

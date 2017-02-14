@@ -12,6 +12,7 @@
 #include "aomusicplayer.h"
 #include "aosfxplayer.h"
 #include "aoblipplayer.h"
+#include "aoevidencebutton.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -172,7 +173,10 @@ private:
   int max_emotes_on_page = 10;
 
   int current_evidence_page = 0;
-  //int current_evidence
+  int current_evidence = 0;
+  int evidence_columns = 6;
+  int evidence_rows = 3;
+  int max_evidence_on_page = 18;
 
   //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
   bool is_ao2_bg = false;
@@ -269,6 +273,9 @@ private:
   AOImage *ui_muted;
 
   AOButton *ui_evidence_button;
+  QVector<AOEvidenceButton*> ui_evidence_list;
+  AOImage *ui_evidence_left;
+  AOImage *ui_evidence_right;
 
   AOImage *ui_evidence;
 

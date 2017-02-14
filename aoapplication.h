@@ -91,6 +91,7 @@ public:
   QString get_music_path(QString p_song);
   QString get_background_path();
   QString get_default_background_path();
+  QString get_evidence_path();
 
   //implementation in text_file_functions.cpp
   QString read_user_theme();
@@ -105,6 +106,7 @@ public:
   int get_text_delay(QString p_char, QString p_emote);
   QString get_char_name(QString p_char);
   int get_emote_number(QString p_char);
+  QString get_emote_comment(QString p_char, int p_emote);
   QString get_emote(QString p_char, int p_emote);
   QString get_pre_emote(QString p_char, int p_emote);
   QString get_sfx_name(QString p_char, int p_emote);
