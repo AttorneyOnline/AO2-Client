@@ -53,6 +53,7 @@ private:
   AOButton *ui_add_to_fav;
   AOButton *ui_connect;
 
+  QLabel *ui_version;
   AOButton *ui_about;
 
   QListWidget *ui_server_list;

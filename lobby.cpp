@@ -21,6 +21,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_refresh = new AOButton(this, ao_app);
   ui_add_to_fav = new AOButton(this, ao_app);
   ui_connect = new AOButton(this, ao_app);
+  ui_version = new QLabel(this);
   ui_about = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
   ui_player_count = new QLabel(this);
@@ -74,6 +75,9 @@ void Lobby::set_widgets()
 
   ui_connect->set_image("connect.png");
   set_size_and_pos(ui_connect, "connect");
+
+  ui_version->setText("Version: " + ao_app->get_version_string());
+  set_size_and_pos(ui_version, "version");
 
   ui_about->set_image("about.png");
   set_size_and_pos(ui_about, "about");
