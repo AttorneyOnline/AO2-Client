@@ -1048,7 +1048,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    //T0D0: add realization sfx
+    sfx_player->play("sfx-realization.wav", ui_sfx_slider->value());
   }
 
 }
