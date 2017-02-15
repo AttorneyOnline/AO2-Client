@@ -30,10 +30,16 @@ void AOImage::set_image_from_path(QString p_path)
 {
   QString default_path = ao_app->get_default_theme_path() + "chatmed.png";
 
+  QString final_path;
+
   if (file_exists(p_path))
-    this->setPixmap(p_path);
+    final_path = p_path;
   else
-    this->setPixmap(default_path);
+    final_path = default_path;
+
+  QPixmap f_pixmap(final_path);
+
+  this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
 }
 
 void AOImage::set_scaled_image(QString p_image)

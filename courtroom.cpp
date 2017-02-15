@@ -109,6 +109,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_emotes = new QWidget(this);
 
+  ui_emote_left = new AOButton(this, ao_app);
+  ui_emote_right = new AOButton(this, ao_app);
+
   ///////////////////////////////////////
 
   ui_defense_bar = new AOImage(this, ao_app);
@@ -297,6 +300,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   //implementation in emotes.cpp
   construct_emotes();
+
+  set_char_select();
 }
 
 void Courtroom::set_mute_list()
@@ -340,9 +345,9 @@ void Courtroom::set_widgets()
   this->resize(m_courtroom_width, m_courtroom_height);
   this->setFixedSize(m_courtroom_width, m_courtroom_height);
 
-  ui_background->set_image("courtroombackground.png");
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
+  ui_background->set_scaled_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport");
 
@@ -447,6 +452,12 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_search, "music_search");
 
   set_size_and_pos(ui_emotes, "emotes");
+
+  set_size_and_pos(ui_emote_left, "emote_left");
+  ui_emote_left->set_image("arrow_left.png");
+
+  set_size_and_pos(ui_emote_right, "emote_right");
+  ui_emote_right->set_image("arrow_right.png");
 
   //emote buttons
 
@@ -613,9 +624,37 @@ void Courtroom::done_received()
 
   set_mute_list();
 
+  set_char_select();
+
   show();
 
   ui_spectator->show();
+}
+
+void Courtroom::set_char_select()
+{
+  QString design_ini_path = ao_app->get_theme_path() + "courtroom_design.ini";
+  QString default_ini_path = ao_app->get_base_path() + "themes/default/courtroom_design.ini";
+
+  pos_size_type f_charselect = ao_app->get_pos_and_size("char_select", design_ini_path);
+
+  if (f_charselect.width < 0 || f_charselect.height < 0)
+  {
+    f_charselect = ao_app->get_pos_and_size("char_select", default_ini_path);
+    if (f_charselect.width < 0 || f_charselect.height < 0)
+    {
+      qDebug() << "W: did not find courtroom width or height in courtroom_design.ini!";
+    }
+  }
+
+  this->resize(f_charselect.width, f_charselect.height);
+  this->setFixedSize(f_charselect.width, f_charselect.height);
+
+  ui_char_select_background->resize(f_charselect.width, f_charselect.height);
+
+  ui_char_select_background->set_image("charselect_background.png");
+  ui_char_select_background->move(0, 0);
+
 }
 
 void Courtroom::set_char_select_page()
@@ -757,6 +796,8 @@ void Courtroom::enter_courtroom(int p_cid)
   blip_player->set_volume(ui_blip_slider->value());
 
   testimony_in_progress = false;
+
+  set_widgets();
 
   ui_char_select_background->hide();
 
@@ -1047,7 +1088,7 @@ void Courtroom::handle_chatmessage_2()
   QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
 
   if (chatbox == "")
-    ui_vp_chatbox->set_image("chatmed.png");
+    ui_vp_chatbox->set_scaled_image("chatmed.png");
   else
   {
     QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
@@ -1765,6 +1806,8 @@ void Courtroom::on_change_character_clicked()
   sfx_player->set_volume(0);
   sfx_player->set_volume(0);
   blip_player->set_volume(0);
+
+  set_char_select();
 
   ui_char_select_background->show();
   ui_spectator->hide();

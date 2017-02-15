@@ -7,7 +7,7 @@
 void Courtroom::construct_emotes()
 {
   //constructing emote button grid
-  const int base_x_pos{10};
+  const int base_x_pos{0};
   const int base_y_pos{0};
 
   const int x_modifier{49};
@@ -43,15 +43,6 @@ void Courtroom::construct_emotes()
       x_mod_count = 0;
     }
   }
-
-  ui_emote_left = new AOButton(ui_emotes, ao_app);
-  ui_emote_right = new AOButton(ui_emotes, ao_app);
-
-  set_size_and_pos(ui_emote_left, "emote_left");
-  ui_emote_left->set_image("arrow_left.png");
-
-  set_size_and_pos(ui_emote_right, "emote_right");
-  ui_emote_right->set_image("arrow_right.png");
 
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));

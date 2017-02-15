@@ -55,6 +55,8 @@ void AOScene::set_legacy_desk(QString p_image)
   int final_w = w_modifier * f_desk.width();
   int final_h = h_modifier * f_desk.height();
 
-  this->resize(final_w, final_h);
-  this->setPixmap(f_desk.scaled(final_w, final_h));
+  //this->resize(final_w, final_h);
+  //this->setPixmap(f_desk.scaled(final_w, final_h));
+  this->resize(vp_width, final_h);
+  this->setPixmap(f_desk.scaled(vp_width, final_h));
 }

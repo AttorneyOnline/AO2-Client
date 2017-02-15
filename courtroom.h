@@ -47,6 +47,8 @@ public:
   void set_char_select_page();
   void set_background(QString p_background);
 
+  void set_char_select();
+
   void done_received();
 
   void set_mute_list();
