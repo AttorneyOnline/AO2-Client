@@ -14,6 +14,8 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char)
 {
   BASS_ChannelStop(m_stream);
 
+  p_sfx = p_sfx.toLower();
+
   QString f_path;
 
   if (p_char != "")
