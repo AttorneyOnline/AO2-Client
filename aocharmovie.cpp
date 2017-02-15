@@ -76,11 +76,13 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
+  play_once = false;
   play(p_char, p_emote, "(b)");
 }
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
+  play_once = false;
   play(p_char, p_emote, "(a)");
 }
 

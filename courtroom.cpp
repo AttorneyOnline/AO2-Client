@@ -839,6 +839,8 @@ void Courtroom::append_server_chatmessage(QString f_message)
 
 void Courtroom::on_chat_return_pressed()
 {
+  qDebug() << "anim_state: " << anim_state;
+
   if (ui_ic_chat_message->text() == "" || is_muted)
     return;
 
@@ -1233,8 +1235,8 @@ void Courtroom::chat_tick()
     chat_tick_timer->stop();
     if (anim_state == 2)
     {
-      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
       anim_state = 3;
+      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
     }
   }
 
