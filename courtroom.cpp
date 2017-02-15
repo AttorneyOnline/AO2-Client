@@ -840,8 +840,6 @@ void Courtroom::append_server_chatmessage(QString f_message)
 
 void Courtroom::on_chat_return_pressed()
 {
-  qDebug() << "anim_state: " << anim_state;
-
   if (ui_ic_chat_message->text() == "" || is_muted)
     return;
 
