@@ -190,6 +190,7 @@ private:
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
+  AOSfxPlayer *objection_player;
   AOBlipPlayer *blip_player;
 
   AOSfxPlayer *modcall_player;

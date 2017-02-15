@@ -103,6 +103,7 @@ public:
   QString get_showname(QString p_char);
   QString get_chat(QString p_char);
   int get_preanim_duration(QString p_char, QString p_emote);
+  int get_ao2_preanim_duration(QString p_char, QString p_emote);
   int get_text_delay(QString p_char, QString p_emote);
   QString get_char_name(QString p_char);
   int get_emote_number(QString p_char);
@@ -117,7 +118,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 1;
-  const int MINOR_VERSION = 3;
+  const int MINOR_VERSION = 4;
 
   QString user_theme = "default";
 

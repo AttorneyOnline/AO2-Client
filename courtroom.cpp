@@ -43,6 +43,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   music_player->set_volume(0);
   sfx_player = new AOSfxPlayer(this, ao_app);
   sfx_player->set_volume(0);
+  objection_player = new AOSfxPlayer(this, ao_app);
+  sfx_player->set_volume(0);
   blip_player = new AOBlipPlayer(this, ao_app);
   blip_player->set_volume(0);
 
@@ -57,17 +59,18 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
   ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
-  ui_vp_chatbox = new AOImage(ui_viewport, ao_app);
+  ui_vp_testimony = new AOImage(ui_viewport, ao_app);
+  ui_vp_realization = new AOImage(this, ao_app);
+  ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
+  ui_vp_objection = new AOMovie(ui_viewport, ao_app);
+
+  ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
-  ui_vp_testimony = new AOImage(ui_viewport, ao_app);
-  ui_vp_realization = new AOImage(this, ao_app);
-  ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
-  ui_vp_objection = new AOMovie(ui_viewport, ao_app);
 
   ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -378,6 +381,7 @@ void Courtroom::set_widgets()
                                "color: white;");
 
   set_size_and_pos(ui_vp_message, "message");
+  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
   #if (defined (_WIN32) || defined (_WIN64))
   ui_vp_message->setFont(pt_10);
   #else
@@ -408,14 +412,14 @@ void Courtroom::set_widgets()
   #else
   ui_ic_chatlog->setFont(pt_9);
   #endif
-  ui_ic_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                               "color: white;");
+  ui_ic_chatlog->setStyleSheet("QPlainTextEdit{ background-color: rgba(0, 0, 0, 0);"
+                               "color: white; }");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
-  ui_ms_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ms_chatlog->setStyleSheet("QPlainTextEdit{ background-color: rgba(0, 0, 0, 0); }");
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
-  ui_server_chatlog->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_server_chatlog->setStyleSheet("QPlainTextEdit{ background-color: rgba(0, 0, 0, 0); }");
 
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
@@ -601,6 +605,7 @@ void Courtroom::done_received()
 
   music_player->set_volume(0);
   sfx_player->set_volume(0);
+  objection_player->set_volume(0);
   blip_player->set_volume(0);
 
   set_char_select_page();
@@ -747,6 +752,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   music_player->set_volume(ui_music_slider->value());
   sfx_player->set_volume(ui_sfx_slider->value());
+  objection_player->set_volume(ui_sfx_slider->value());
   blip_player->set_volume(ui_blip_slider->value());
 
   testimony_in_progress = false;
@@ -954,7 +960,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (mute_map.value(m_chatmessage[CHAR_NAME]))
     return;
 
-  QString f_showname = ao_app->get_showname(m_chatmessage[CHAR_NAME]);
+  QString f_showname = ao_app->get_showname(char_list.at(m_chatmessage[CHAR_ID].toInt()).name);
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
@@ -992,20 +998,20 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     {
     case 1:
       ui_vp_objection->play("holdit");
-      sfx_player->play("holdit.wav", m_chatmessage[CHAR_NAME]);
+      objection_player->play("holdit.wav", m_chatmessage[CHAR_NAME]);
       break;
     case 2:
       ui_vp_objection->play("objection");
-      sfx_player->play("objection.wav", m_chatmessage[CHAR_NAME]);
+      objection_player->play("objection.wav", m_chatmessage[CHAR_NAME]);
       break;
     case 3:
       ui_vp_objection->play("takethat");
-      sfx_player->play("takethat.wav", m_chatmessage[CHAR_NAME]);
+      objection_player->play("takethat.wav", m_chatmessage[CHAR_NAME]);
       break;
     //case 4 is AO2 only
     case 4:
       ui_vp_objection->play("custom", m_chatmessage[CHAR_NAME]);
-      sfx_player->play("custom.wav", m_chatmessage[CHAR_NAME]);
+      objection_player->play("custom.wav", m_chatmessage[CHAR_NAME]);
       break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
@@ -1030,7 +1036,7 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
 
-  QString f_showname = ao_app->get_showname(m_chatmessage[CHAR_NAME]);
+  QString f_showname = ao_app->get_showname(char_list.at(m_chatmessage[CHAR_ID].toInt()).name);
 
   ui_vp_showname->setText(f_showname);
 
@@ -1157,14 +1163,15 @@ void Courtroom::play_preanim()
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
-  if (!file_exists(ao_app->get_character_path(f_char) + ".gif"))
+  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif"))
   {
     preanim_done();
+    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim + ".gif";
     return;
   }
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim) * time_mod;
+  int preanim_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim) * time_mod;
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
 
@@ -1720,6 +1727,7 @@ void Courtroom::on_music_slider_moved(int p_value)
 void Courtroom::on_sfx_slider_moved(int p_value)
 {
   sfx_player->set_volume(p_value);
+  objection_player->set_volume(p_value);
   ui_ic_chat_message->setFocus();
 }
 
@@ -1752,6 +1760,7 @@ void Courtroom::on_cross_examination_clicked()
 void Courtroom::on_change_character_clicked()
 {
   music_player->set_volume(0);
+  sfx_player->set_volume(0);
   sfx_player->set_volume(0);
   blip_player->set_volume(0);
 
@@ -1862,4 +1871,6 @@ Courtroom::~Courtroom()
 {
   delete music_player;
   delete sfx_player;
+  delete objection_player;
+  delete blip_player;
 }

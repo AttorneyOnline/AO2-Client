@@ -12,7 +12,7 @@ AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
 
 void AOBlipPlayer::set_blips(QString p_sfx)
 {
-  QString f_path = ao_app->get_sounds_path() + p_sfx;
+  QString f_path = ao_app->get_sounds_path() + p_sfx.toLower();
 
   for (int n_stream = 0 ; n_stream < 5 ; ++n_stream)
   {

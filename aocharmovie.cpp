@@ -19,7 +19,8 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   this->setMovie(m_movie);
 
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
-  connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
+  connect(m_movie, SIGNAL(finished()), this, SLOT(movie_done()));
+  connect(preanim_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
@@ -63,8 +64,15 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
+  if (duration == 0)
+    play_once = true;
+
+  else
+  {
+    play_once = false;
+    preanim_timer->start(duration);
+  }
   play(p_char, p_emote, "");
-  preanim_timer->start(duration);
 }
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
@@ -95,9 +103,15 @@ void AOCharMovie::frame_change(int n_frame)
 {
   if (m_flipped && flipped_movie.size() > n_frame)
     this->setPixmap(QPixmap::fromImage(flipped_movie.at(n_frame)));
+
+  if (m_movie->frameCount() - 1 == n_frame && play_once)
+  {
+    delay(m_movie->nextFrameDelay());
+    done();
+  }
 }
 
-void AOCharMovie::preanim_done()
+void AOCharMovie::timer_done()
 {
   done();
 }

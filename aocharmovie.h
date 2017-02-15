@@ -34,12 +34,14 @@ private:
 
   bool m_flipped = false;
 
+  bool play_once = true;
+
 signals:
   void done();
 
 private slots:
   void frame_change(int n_frame);
-  void preanim_done();
+  void timer_done();
 };
 
 #endif // AOCHARMOVIE_H

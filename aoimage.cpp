@@ -50,5 +50,8 @@ void AOImage::set_scaled_image(QString p_image)
 
   QPixmap f_pixmap(final_image_path);
 
-  this->setPixmap(f_pixmap.scaled(this->width(), this->height()));
+  qDebug() << "aoimage width" << this->width();
+  qDebug() << "aoimage height" << this->height();
+
+  this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
 }
