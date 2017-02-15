@@ -62,6 +62,8 @@ public:
   int music_list_size = 0;
   int loaded_music = 0;
 
+  bool courtroom_loaded = false;
+
   //////////////////versioning///////////////
 
   int get_release() {return RELEASE;}
@@ -118,7 +120,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 1;
-  const int MINOR_VERSION = 4;
+  const int MINOR_VERSION = 5;
 
   QString user_theme = "default";
 

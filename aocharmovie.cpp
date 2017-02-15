@@ -19,7 +19,6 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   this->setMovie(m_movie);
 
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
-  connect(m_movie, SIGNAL(finished()), this, SLOT(movie_done()));
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 

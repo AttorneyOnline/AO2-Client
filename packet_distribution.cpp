@@ -62,7 +62,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     {
       w_lobby->append_chatmessage(message_line);
     }
-    if (courtroom_constructed)
+    if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->append_ms_chatmessage(message_line);
     }
@@ -128,6 +128,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QString f_hdid;
     f_hdid = get_hdid();
+
+    encryption_needed = true;
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
@@ -199,6 +201,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     destruct_courtroom();
     construct_courtroom();
+
+    courtroom_loaded = false;
 
     QString window_title = "Attorney Online 2";
     int selected_server = w_lobby->get_selected_server();
@@ -433,6 +437,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->done_received();
 
+    courtroom_loaded = true;
+
     destruct_lobby();
   }
   else if (header == "BN")
@@ -454,7 +460,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "MS")
   {
-    if (courtroom_constructed)
+    if (courtroom_constructed && courtroom_loaded)
       w_courtroom->handle_chatmessage(&p_packet->get_contents());
   }
   else if (header == "MC")

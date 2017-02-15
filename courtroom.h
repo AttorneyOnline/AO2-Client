@@ -186,6 +186,8 @@ private:
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
+
+
   QString current_background = "gs4";
 
   AOMusicPlayer *music_player;
