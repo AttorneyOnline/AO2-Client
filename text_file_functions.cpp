@@ -130,8 +130,6 @@ pos_size_type AOApplication::get_pos_and_size(QString p_identifier, QString p_de
 
     return return_value;
   }
-
-  qDebug() << "W: Could not find proper " << p_identifier << " in " << p_design_path;
   //caller should deal with the result properly(check width and height of output for negatives)
   return_value.height = -1;
   return_value.width = -1;

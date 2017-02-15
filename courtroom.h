@@ -25,7 +25,6 @@
 #include <QVector>
 #include <QCloseEvent>
 #include <QSignalMapper>
-#include <QSoundEffect>
 #include <QMap>
 
 class AOApplication;
