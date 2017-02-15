@@ -63,6 +63,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_vp_message->setReadOnly(true);
   ui_vp_testimony = new AOImage(ui_viewport, ao_app);
   ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
@@ -168,7 +169,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_evidence_button = new AOButton(this, ao_app);
 
   ui_evidence = new AOImage(this, ao_app);
-  ui_evidence->hide();
 
   /////////////char select widgets under here///////////////
 
@@ -289,7 +289,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   set_widgets();
 
-  //in evidence.cpp
   construct_evidence();
 
   //implementation in emotes.cpp
@@ -379,7 +378,6 @@ void Courtroom::set_widgets()
                                "color: white;");
 
   set_size_and_pos(ui_vp_message, "message");
-  ui_vp_message->setReadOnly(true);
   #if (defined (_WIN32) || defined (_WIN64))
   ui_vp_message->setFont(pt_10);
   #else
@@ -520,6 +518,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_evidence_button, "evidence_button");
   //ui_evidence_button->set_image("evidencebutton.png");
+  ui_evidence_button->setText("Evidence");
 
   set_size_and_pos(ui_evidence, "evidence_background");
   ui_evidence->set_image("evidencebackground.png");
@@ -591,6 +590,7 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   f_char.name = char_list.at(n_char).name;
   f_char.description = char_list.at(n_char).description;
   f_char.taken = p_taken;
+  f_char.evidence_string = char_list.at(n_char).evidence_string;
 
   char_list.replace(n_char, f_char);
 }
@@ -690,6 +690,13 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_emotes->show();
 
   set_emote_page();
+
+  current_evidence_page = 0;
+  current_evidence = 0;
+
+  qDebug() << "setting evidence page";
+  set_evidence_page();
+  qDebug() << "evidence page set";
 
   QString side = ao_app->get_char_side(f_char);
 
@@ -1805,6 +1812,7 @@ void Courtroom::on_evidence_button_clicked()
   if (ui_evidence->isHidden())
   {
     ui_evidence->show();
+    ui_evidence_overlay->hide();
   }
   else
   {

@@ -26,6 +26,7 @@ struct char_type
 {
   QString name;
   QString description;
+  QString evidence_string;
   bool taken;
 };
 

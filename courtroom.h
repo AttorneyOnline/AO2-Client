@@ -172,6 +172,8 @@ private:
   int emote_rows = 2;
   int max_emotes_on_page = 10;
 
+  QVector<evi_type> local_evidence_list;
+
   int current_evidence_page = 0;
   int current_evidence = 0;
   int evidence_columns = 6;
@@ -273,11 +275,14 @@ private:
   AOImage *ui_muted;
 
   AOButton *ui_evidence_button;
+  AOImage *ui_evidence;
+  QLabel *ui_evidence_name;
   QVector<AOEvidenceButton*> ui_evidence_list;
   AOImage *ui_evidence_left;
   AOImage *ui_evidence_right;
-
-  AOImage *ui_evidence;
+  AOImage *ui_evidence_overlay;
+  AOButton *ui_evidence_x;
+  QPlainTextEdit *ui_evidence_description;
 
   AOImage *ui_char_select_background;
 
@@ -326,10 +331,16 @@ private slots:
   void on_music_list_double_clicked(QModelIndex p_model);
 
   void on_emote_clicked(int p_id);
-  void on_evidence_clicked(int p_id);
 
   void on_emote_left_clicked();
   void on_emote_right_clicked();
+
+  void on_evidence_clicked(int p_id);
+
+  void on_evidence_hover(int p_id, bool p_state);
+
+  void on_evidence_left_clicked();
+  void on_evidence_right_clicked();
 
   void on_hold_it_clicked();
   void on_objection_clicked();
@@ -365,6 +376,8 @@ private slots:
   void on_guard_clicked();
 
   void on_evidence_button_clicked();
+
+  void on_evidence_x_clicked();
 
   void on_back_to_lobby_clicked();
 
