@@ -59,6 +59,9 @@ void Courtroom::construct_emotes()
 
 void Courtroom::set_emote_page()
 {
+  if (m_cid == -1)
+    return;
+
   int total_emotes = ao_app->get_emote_number(current_char);
 
   ui_emote_left->hide();

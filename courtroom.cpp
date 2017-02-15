@@ -608,6 +608,8 @@ void Courtroom::done_received()
   set_mute_list();
 
   show();
+
+  ui_spectator->show();
 }
 
 void Courtroom::set_char_select_page()
@@ -681,22 +683,30 @@ void Courtroom::set_background(QString p_background)
 void Courtroom::enter_courtroom(int p_cid)
 { 
   m_cid = p_cid;
-  QString f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+
+  QString f_char;
+
+  if (m_cid == -1)
+    f_char = "";
+  else
+    f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+
   current_char = f_char;
 
   current_emote_page = 0;
   current_emote = 0;
 
-  ui_emotes->show();
+  if (m_cid == -1)
+    ui_emotes->hide();
+  else
+    ui_emotes->show();
 
   set_emote_page();
 
   current_evidence_page = 0;
   current_evidence = 0;
 
-  qDebug() << "setting evidence page";
   set_evidence_page();
-  qDebug() << "evidence page set";
 
   QString side = ao_app->get_char_side(f_char);
 
@@ -743,7 +753,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   ui_char_select_background->hide();
 
-  ui_ic_chat_message->setEnabled(true);
+  ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
 }
 
@@ -1146,6 +1156,12 @@ void Courtroom::play_preanim()
 {
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_preanim = m_chatmessage[PRE_EMOTE];
+
+  if (!file_exists(ao_app->get_character_path(f_char) + ".gif"))
+  {
+    preanim_done();
+    return;
+  }
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
   int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim) * time_mod;
@@ -1740,6 +1756,7 @@ void Courtroom::on_change_character_clicked()
   blip_player->set_volume(0);
 
   ui_char_select_background->show();
+  ui_spectator->hide();
 }
 
 void Courtroom::on_reload_theme_clicked()
@@ -1775,12 +1792,9 @@ void Courtroom::on_char_select_right_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
+  enter_courtroom(-1);
+
   ui_emotes->hide();
-
-  ui_witness_testimony->hide();
-  ui_cross_examination->hide();
-
-  ui_ic_chat_message->setEnabled(false);
 
   ui_char_select_background->hide();
 }

@@ -83,6 +83,9 @@ void Courtroom::construct_evidence()
 
 void Courtroom::set_evidence_page()
 {
+  if (m_cid == -1)
+    return;
+
   local_evidence_list.clear();
 
   QString evi_string = char_list.at(m_cid).evidence_string;
@@ -101,28 +104,18 @@ void Courtroom::set_evidence_page()
 
   int total_evidence = local_evidence_list.size();
 
-  qDebug() << "total_evidence: " << total_evidence;
-
   ui_evidence_left->hide();
   ui_evidence_right->hide();
-
-  qDebug() << "hid evidence left and right";
 
   for (AOEvidenceButton *i_button : ui_evidence_list)
   {
     i_button->hide();
   }
 
-  qDebug() << "hid all evidence buttons";
-
   if (total_evidence == 0)
     return;
 
-  qDebug() << "max_evi_on_page =" << max_evidence_on_page;
-
   int total_pages = total_evidence / max_evidence_on_page;
-
-  qDebug() << "total_pages: " << total_pages;
 
   int evidence_on_page = 0;
 
