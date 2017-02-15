@@ -1205,6 +1205,13 @@ void Courtroom::play_preanim()
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
+  //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
+  int preanim_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim) * time_mod;
+  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
+  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
+
+  sfx_delay_timer->start(sfx_delay);
+
   if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif"))
   {
     anim_state = 1;
@@ -1213,16 +1220,11 @@ void Courtroom::play_preanim()
     return;
   }
 
-  //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int preanim_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim) * time_mod;
-  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
-  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
-
   ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
   anim_state = 1;
   if (text_delay >= 0)
     text_delay_timer->start(text_delay);
-  sfx_delay_timer->start(sfx_delay);
+
 }
 
 void Courtroom::preanim_done()
