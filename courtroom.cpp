@@ -59,10 +59,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
   ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
-  ui_vp_testimony = new AOImage(ui_viewport, ao_app);
-  ui_vp_realization = new AOImage(this, ao_app);
-  ui_vp_wtce = new AOMovie(ui_viewport, ao_app);
-  ui_vp_objection = new AOMovie(ui_viewport, ao_app);
 
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
@@ -71,6 +67,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
+
+  ui_vp_testimony = new AOImage(this, ao_app);
+  ui_vp_realization = new AOImage(this, ao_app);
+  ui_vp_wtce = new AOMovie(this, ao_app);
+  ui_vp_objection = new AOMovie(this, ao_app);
 
   ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -390,20 +391,20 @@ void Courtroom::set_widgets()
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
 
-  ui_vp_testimony->move(0, 0);
+  ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
   ui_vp_testimony->set_image("testimony.png");
   ui_vp_testimony->hide();
 
-  ui_vp_realization->move(0, 0);
+  ui_vp_realization->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_realization->resize(ui_viewport->width(), ui_viewport->height());
   ui_vp_realization->set_scaled_image("realizationflash.png");
   ui_vp_realization->hide();
 
-  ui_vp_wtce->move(0, 0);
+  ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_objection->move(0, 0);
+  ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
