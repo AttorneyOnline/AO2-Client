@@ -1,17 +1,16 @@
 #include "aoapplication.h"
 #include "courtroom.h"
 
-#ifndef OMNI_WIN_DEBUG
-#define OMNI_WIN_DEBUG
-
 #include <QDir>
 #include <QDebug>
-#endif
 
 QString AOApplication::get_base_path()
 {
+
 #ifdef OMNI_DEBUG
   return "/media/omnitroid/Data/winshare/AO/client/base/";
+#elif defined(OMNI_WIN_DEBUG)
+  return "E:/AO/client/base/";
 #else
   return (QDir::currentPath() + "/base/");
 #endif

@@ -1010,6 +1010,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   text_state = 0;
+  qDebug() << "anim_state set to 0 in handle_chatmessage";
   anim_state = 0;
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
@@ -1075,6 +1076,7 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2()
 {
+  qDebug() << "handle_chatmessage_2 called";
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
 
@@ -1102,14 +1104,13 @@ void Courtroom::handle_chatmessage_2()
 
   switch (emote_mod)
   {
-  case 1: case 2: case 3: case 4: case 6:
+  case 1: case 2: case 6:
     play_preanim();
     break;
   default:
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
     //intentional fallthru
   case 0: case 5:
-    start_chat_ticking();
     handle_chatmessage_3();
   }
 }
@@ -1229,6 +1230,7 @@ void Courtroom::play_preanim()
 
 void Courtroom::preanim_done()
 {
+  qDebug() << "preanim_done called";
   handle_chatmessage_3();
 }
 
@@ -1275,11 +1277,8 @@ void Courtroom::chat_tick()
   {
     text_state = 2;
     chat_tick_timer->stop();
-    if (anim_state == 2)
-    {
-      anim_state = 3;
-      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
-    }
+    anim_state = 3;
+    ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
   }
 
   else
@@ -1816,7 +1815,7 @@ void Courtroom::on_change_character_clicked()
 }
 
 void Courtroom::on_reload_theme_clicked()
-{
+{ 
   ao_app->set_user_theme();
 
   set_widgets();
@@ -1824,7 +1823,8 @@ void Courtroom::on_reload_theme_clicked()
   set_background(current_background);
   enter_courtroom(m_cid);
 
-
+  anim_state = 4;
+  text_state = 3;
 }
 
 void Courtroom::on_back_to_lobby_clicked()
