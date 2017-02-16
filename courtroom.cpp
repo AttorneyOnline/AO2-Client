@@ -1010,7 +1010,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   text_state = 0;
-  qDebug() << "anim_state set to 0 in handle_chatmessage";
   anim_state = 0;
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
@@ -1076,7 +1075,6 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2()
 {
-  qDebug() << "handle_chatmessage_2 called";
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
 
@@ -1230,7 +1228,6 @@ void Courtroom::play_preanim()
 
 void Courtroom::preanim_done()
 {
-  qDebug() << "preanim_done called";
   handle_chatmessage_3();
 }
 
