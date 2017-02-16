@@ -286,7 +286,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
   if (result_contents.size() < 4)
   {
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
-    return "normal";
+    return "";
   }
   else return result_contents.at(1);
 }

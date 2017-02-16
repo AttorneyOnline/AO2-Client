@@ -111,7 +111,7 @@ void AOCharMovie::frame_change(int n_frame)
 
   if (m_movie->frameCount() - 1 == n_frame && play_once)
   {
-    delay(m_movie->nextFrameDelay());
+    preanim_timer->start(m_movie->nextFrameDelay());
     done();
   }
 }

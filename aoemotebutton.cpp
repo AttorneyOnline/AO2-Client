@@ -14,6 +14,7 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x
   connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
 }
 
+/*
 void AOEmoteButton::set_on(QString p_char, int p_emote)
 {
   //+1 because programmatical emotes start on 0, while filesystem ones start on 1
@@ -31,16 +32,23 @@ void AOEmoteButton::set_on(QString p_char, int p_emote)
     this->setStyleSheet("border-image:url(\"\")");
   }
 }
+*/
 
-void AOEmoteButton::set_off(QString p_char, int p_emote)
+void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
 {
   QString emotion_number = QString::number(p_emote + 1);
-  QString image_path = ao_app->get_character_path(p_char) + "emotions/button" + emotion_number + "_off.png";
+  QString image_path = ao_app->get_character_path(p_char) + "emotions/button" + emotion_number + suffix;
+  QString alt_path = ao_app->get_character_path(p_char) + "emotions/ao2/button" + emotion_number + suffix;
 
   if (file_exists(image_path))
   {
     this->setText("");
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
+  }
+  else if (file_exists(alt_path))
+  {
+    this->setText("");
+    this->setStyleSheet("border-image:url(\"" + alt_path + "\")");
   }
   else
   {

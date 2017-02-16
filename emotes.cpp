@@ -91,9 +91,9 @@ void Courtroom::set_emote_page()
     AOEmoteButton *f_emote = ui_emote_list.at(n_emote);
 
     if (n_real_emote == current_emote)
-      f_emote->set_on(current_char, n_real_emote);
+      f_emote->set_image(current_char, n_real_emote, "_on.png");
     else
-      f_emote->set_off(current_char, n_real_emote);
+      f_emote->set_image(current_char, n_real_emote, "_off.png");
 
     f_emote->show();
   }
@@ -106,17 +106,15 @@ void Courtroom::on_emote_clicked(int p_id)
   int max = (max_emotes_on_page - 1) + current_emote_page * max_emotes_on_page;
 
   if (current_emote >= min && current_emote <= max)
-    ui_emote_list.at(current_emote % max_emotes_on_page)->set_off(current_char, current_emote);
+    ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_off.png");
 
   current_emote = p_id + max_emotes_on_page * current_emote_page;
 
-  ui_emote_list.at(current_emote % max_emotes_on_page)->set_on(current_char, current_emote);
+  ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_on.png");
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
-  if (emote_mod == 1 ||
-      emote_mod == 3 ||
-      emote_mod == 4)
+  if (emote_mod == 1)
     ui_pre->setChecked(true);
   else
     ui_pre->setChecked(false);
