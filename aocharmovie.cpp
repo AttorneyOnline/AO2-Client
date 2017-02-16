@@ -37,10 +37,9 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
     gif_path = placeholder_default_path;
 
   m_movie->stop();
-  this->clear();
-
-  qDebug() << "gif_path: " << gif_path;
   m_movie->setFileName(gif_path);
+
+  qDebug() << "framecount: " << m_movie->frameCount();
 
   if (m_flipped)
   {
@@ -67,26 +66,61 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
-  if (duration == 0)
-    play_once = true;
+  QString gif_path = ao_app->get_character_path(p_char) + p_emote.toLower();
 
-  else
+  m_movie->stop();
+  this->clear();
+  m_movie->setFileName(gif_path);
+
+  int real_duration = 0;
+
+  play_once = false;
+
+  for (int n_frame = 0 ; n_frame < m_movie->frameCount() ; ++n_frame)
   {
-    play_once = false;
-    preanim_timer->start(duration);
+
+    real_duration += m_movie->nextFrameDelay();
+    m_movie->jumpToFrame(n_frame);
   }
+  qDebug() << "real_duration: " << real_duration;
+  qDebug() << "duration: " << duration;
+
+  double percentage_modifier = 100.0;
+
+  if (real_duration != 0 && duration != 0)
+  {
+    percentage_modifier = (duration / static_cast<double>(real_duration)) * 100.0;
+  }
+  qDebug() << "% mod: " << percentage_modifier;
+  play_once = true;
+  //m_movie->jumpToFrame(m_movie->frameCount() - 1);
+  m_movie->setSpeed(static_cast<int>(percentage_modifier));
   play(p_char, p_emote, "");
 }
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
+  QString gif_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower();
+
+  m_movie->stop();
+  this->clear();
+  m_movie->setFileName(gif_path);
+
   play_once = false;
+  m_movie->setSpeed(100);
   play(p_char, p_emote, "(b)");
 }
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
+  QString gif_path = ao_app->get_character_path(p_char) + "(a)" + p_emote.toLower();
+
+  m_movie->stop();
+  this->clear();
+  m_movie->setFileName(gif_path);
+
   play_once = false;
+  m_movie->setSpeed(100);
   play(p_char, p_emote, "(a)");
 }
 
@@ -112,11 +146,12 @@ void AOCharMovie::frame_change(int n_frame)
   if (m_movie->frameCount() - 1 == n_frame && play_once)
   {
     preanim_timer->start(m_movie->nextFrameDelay());
-    done();
+    //done();
   }
 }
 
 void AOCharMovie::timer_done()
 {
+  qDebug() << "timer done called";
   done();
 }

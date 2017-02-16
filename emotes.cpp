@@ -108,13 +108,19 @@ void Courtroom::on_emote_clicked(int p_id)
   if (current_emote >= min && current_emote <= max)
     ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_off.png");
 
+  int old_emote = current_emote;
+
   current_emote = p_id + max_emotes_on_page * current_emote_page;
 
   ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_on.png");
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
-  if (emote_mod == 1)
+  if (old_emote == current_emote)
+  {
+    ui_pre->setChecked(!ui_pre->isChecked());
+  }
+  else if (emote_mod == 1)
     ui_pre->setChecked(true);
   else
     ui_pre->setChecked(false);

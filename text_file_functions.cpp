@@ -233,7 +233,7 @@ QString AOApplication::get_chat(QString p_char)
   QString f_result = read_char_ini(p_char, "chat", "[Options]", "[Time]");
 
   //handling the correct order of chat is a bit complicated, we let the caller do it
-  return f_result;
+  return f_result.toLower();
 }
 
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
@@ -241,7 +241,7 @@ int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
   QString f_result = read_char_ini(p_char, p_emote, "[Time]", "[Emotions]");
 
   if (f_result == "")
-    return 0;
+    return -1;
   else return f_result.toInt();
 }
 
@@ -250,7 +250,7 @@ int AOApplication::get_ao2_preanim_duration(QString p_char, QString p_emote)
   QString f_result = read_char_ini(p_char, "%" + p_emote, "[Time]", "[Emotions]");
 
   if (f_result == "")
-    return 0;
+    return -1;
   else return f_result.toInt();
 }
 

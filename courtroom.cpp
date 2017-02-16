@@ -343,7 +343,6 @@ void Courtroom::set_widgets()
   m_courtroom_height = f_courtroom.height;
 
   this->resize(m_courtroom_width, m_courtroom_height);
-  this->setFixedSize(m_courtroom_width, m_courtroom_height);
 
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
@@ -648,7 +647,6 @@ void Courtroom::set_char_select()
   }
 
   this->resize(f_charselect.width, f_charselect.height);
-  this->setFixedSize(f_charselect.width, f_charselect.height);
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
 
@@ -1205,13 +1203,14 @@ void Courtroom::play_preanim()
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int preanim_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim) * time_mod;
+  int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim) * time_mod;
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
 
   sfx_delay_timer->start(sfx_delay);
 
-  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif"))
+  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif") ||
+      preanim_duration < 0)
   {
     anim_state = 1;
     preanim_done();
