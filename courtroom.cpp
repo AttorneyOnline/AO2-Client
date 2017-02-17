@@ -244,7 +244,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
   //emote signals are set in emotes.cpp
 
-  connect(ui_emote_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_emote_dropdown_changed(int)));
+  connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -1211,9 +1211,16 @@ void Courtroom::play_preanim()
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
+  int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
+
+  int preanim_duration;
+
+  if (ao2_duration < 0)
+    preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
+  else
+    preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
 

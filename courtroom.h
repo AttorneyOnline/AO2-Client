@@ -337,6 +337,8 @@ private slots:
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QModelIndex p_model);
 
+  void select_emote(int p_id);
+
   void on_emote_clicked(int p_id);
 
   void on_emote_left_clicked();

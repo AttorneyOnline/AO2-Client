@@ -115,7 +115,7 @@ void Courtroom::set_emote_dropdown()
   ui_emote_dropdown->addItems(emote_list);
 }
 
-void Courtroom::on_emote_clicked(int p_id)
+void Courtroom::select_emote(int p_id)
 {
   int min = current_emote_page * max_emotes_on_page;
   int max = (max_emotes_on_page - 1) + current_emote_page * max_emotes_on_page;
@@ -125,7 +125,7 @@ void Courtroom::on_emote_clicked(int p_id)
 
   int old_emote = current_emote;
 
-  current_emote = p_id + max_emotes_on_page * current_emote_page;
+  current_emote = p_id;
 
   if (current_emote >= min && current_emote <= max)
     ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_on.png");
@@ -141,7 +141,14 @@ void Courtroom::on_emote_clicked(int p_id)
   else
     ui_pre->setChecked(false);
 
+  ui_emote_dropdown->setCurrentIndex(current_emote);
+
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_emote_clicked(int p_id)
+{
+  select_emote(p_id + max_emotes_on_page * current_emote_page);
 }
 
 void Courtroom::on_emote_left_clicked()
@@ -164,5 +171,5 @@ void Courtroom::on_emote_right_clicked()
 
 void Courtroom::on_emote_dropdown_changed(int p_index)
 {
-  on_emote_clicked(p_index);
+  select_emote(p_index);
 }
