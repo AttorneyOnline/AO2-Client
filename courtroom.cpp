@@ -328,25 +328,25 @@ void Courtroom::set_mute_list()
 
 void Courtroom::set_widgets()
 {
-  QString design_ini_path = ao_app->get_theme_path() + "courtroom_design.ini";
-  QString default_ini_path = ao_app->get_base_path() + "themes/default/courtroom_design.ini";
+  QString filename = "courtroom_design.ini";
 
-  pos_size_type f_courtroom = ao_app->get_pos_and_size("courtroom", design_ini_path);
+  pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", filename);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
   {
-    f_courtroom = ao_app->get_pos_and_size("courtroom", default_ini_path);
-    if (f_courtroom.width < 0 || f_courtroom.height < 0)
-    {
-      qDebug() << "ERROR: did not find courtroom width or height in courtroom_design.ini!";
-      //T0D0: add error box then quit application, this is not recoverable
-    }
+    qDebug() << "W: did not find courtroom width or height in " << filename;
+
+    this->resize(714, 668);
+  }
+  else
+  {
+    m_courtroom_width = f_courtroom.width;
+    m_courtroom_height = f_courtroom.height;
+
+    this->resize(f_courtroom.width, f_courtroom.height);
   }
 
-  m_courtroom_width = f_courtroom.width;
-  m_courtroom_height = f_courtroom.height;
-
-  this->resize(m_courtroom_width, m_courtroom_height);
+  set_fonts();
 
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
@@ -391,11 +391,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_message, "message");
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
-  #if (defined (_WIN32) || defined (_WIN64))
-  ui_vp_message->setFont(pt_10);
-  #else
-  ui_vp_message->setFont(pt_9);
-  #endif
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
 
@@ -416,11 +411,6 @@ void Courtroom::set_widgets()
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
-  #if (defined (_WIN32) || defined (_WIN64))
-  ui_ic_chatlog->setFont(pt_10);
-  #else
-  ui_ic_chatlog->setFont(pt_9);
-  #endif
   ui_ic_chatlog->setStyleSheet("QPlainTextEdit{ background-color: rgba(0, 0, 0, 0);"
                                "color: white; }");
 
@@ -573,6 +563,22 @@ void Courtroom::set_widgets()
 
 }
 
+void Courtroom::set_font(QWidget *widget, int weight)
+{
+  widget->setFont(QFont("Sans", weight));
+}
+
+void Courtroom::set_fonts()
+{
+  QString design_file = "courtroom_fonts.ini";
+
+  set_font(ui_vp_showname, ao_app->get_font_size("showname", design_file));
+  set_font(ui_vp_message, ao_app->get_font_size("message", design_file));
+  set_font(ui_ic_chatlog, ao_app->get_font_size("ic_chatlog", design_file));
+  set_font(ui_ms_chatlog, ao_app->get_font_size("ms_chatlog", design_file));
+  set_font(ui_server_chatlog, ao_app->get_font_size("server_chatlog", design_file));
+}
+
 void Courtroom::set_window_title(QString p_title)
 {
   this->setWindowTitle(p_title);
@@ -580,23 +586,20 @@ void Courtroom::set_window_title(QString p_title)
 
 void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
-  QString design_ini_path = ao_app->get_theme_path() + "courtroom_design.ini";
-  QString default_ini_path = ao_app->get_base_path() + "themes/default/courtroom_design.ini";
+  QString filename = "courtroom_design.ini";
 
-  pos_size_type design_ini_result = ao_app->get_pos_and_size(p_identifier, design_ini_path);
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
-    design_ini_result = ao_app->get_pos_and_size(p_identifier, default_ini_path);
-
-    if (design_ini_result.width < 0 || design_ini_result.height < 0)
-    {
-      qDebug() << "W: could not find \"" << p_identifier << "\" in courtroom_design.ini";
-    }
+    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
+    p_widget->hide();
   }
-
-  p_widget->move(design_ini_result.x, design_ini_result.y);
-  p_widget->resize(design_ini_result.width, design_ini_result.height);
+  else
+  {
+    p_widget->move(design_ini_result.x, design_ini_result.y);
+    p_widget->resize(design_ini_result.width, design_ini_result.height);
+  }
 }
 
 void Courtroom::set_taken(int n_char, bool p_taken)
@@ -638,27 +641,19 @@ void Courtroom::done_received()
 
 void Courtroom::set_char_select()
 {
-  QString design_ini_path = ao_app->get_theme_path() + "courtroom_design.ini";
-  QString default_ini_path = ao_app->get_base_path() + "themes/default/courtroom_design.ini";
+  QString filename = "courtroom_design.ini";
 
-  pos_size_type f_charselect = ao_app->get_pos_and_size("char_select", design_ini_path);
+  pos_size_type f_charselect = ao_app->get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0)
   {
-    f_charselect = ao_app->get_pos_and_size("char_select", default_ini_path);
-    if (f_charselect.width < 0 || f_charselect.height < 0)
-    {
-      qDebug() << "W: did not find courtroom width or height in courtroom_design.ini!";
-    }
+    qDebug() << "W: did not find courtroom width or height in courtroom_design.ini!";
+    this->resize(714, 668);
   }
-
-  this->resize(f_charselect.width, f_charselect.height);
-
-  ui_char_select_background->resize(f_charselect.width, f_charselect.height);
+  else
+    this->resize(f_charselect.width, f_charselect.height);
 
   ui_char_select_background->set_image("charselect_background.png");
-  ui_char_select_background->move(0, 0);
-
 }
 
 void Courtroom::set_char_select_page()

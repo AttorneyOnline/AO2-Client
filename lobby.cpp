@@ -131,23 +131,20 @@ void Lobby::set_widgets()
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
-  QString design_ini_path = ao_app->get_theme_path() + "lobby_design.ini";
-  QString default_ini_path = ao_app->get_base_path() + "themes/default/lobby_design.ini";
+  QString filename = "lobby_design.ini";
 
-  pos_size_type design_ini_result = ao_app->get_pos_and_size(p_identifier, design_ini_path);
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
-    design_ini_result = ao_app->get_pos_and_size(p_identifier, default_ini_path);
-
-    if (design_ini_result.width < 0 || design_ini_result.height < 0)
-    {
-      qDebug() << "W: could not find " << p_identifier << " in lobby_design.ini";
-    }
+    qDebug() << "W: could not find " << p_identifier << " in " << filename;
+    p_widget->hide();
   }
-
-  p_widget->move(design_ini_result.x, design_ini_result.y);
-  p_widget->resize(design_ini_result.width, design_ini_result.height);
+  else
+  {
+    p_widget->move(design_ini_result.x, design_ini_result.y);
+    p_widget->resize(design_ini_result.width, design_ini_result.height);
+  }
 }
 
 void Lobby::set_loading_text(QString p_text)

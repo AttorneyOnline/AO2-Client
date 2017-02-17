@@ -85,25 +85,22 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   return f_server_list;
 }
 
-pos_size_type AOApplication::get_pos_and_size(QString p_identifier, QString p_design_path)
+QString AOApplication::read_design_ini(QString p_identifier, QString p_design_path)
 {
   QFile design_ini;
-
-  pos_size_type return_value;
 
   design_ini.setFileName(p_design_path);
 
   if (!design_ini.open(QIODevice::ReadOnly))
   {
     qDebug() << "W: Could not open or read " << p_design_path;
-    //caller should deal with the result properly(check width and height of output for negatives)
-    return_value.height = -1;
-    return_value.width = -1;
 
-    return return_value;
+    return "";
   }
 
   QTextStream in(&design_ini);
+
+  QString result = "";
 
   while (!in.atEnd())
   {
@@ -114,27 +111,70 @@ pos_size_type AOApplication::get_pos_and_size(QString p_identifier, QString p_de
 
     QStringList line_elements = f_line.split("=");
 
+    if (line_elements.at(0).trimmed() != p_identifier)
+      continue;
+
     if (line_elements.size() < 2)
       continue;
 
-    QStringList sub_line_elements = line_elements.at(1).split(",");
-
-    if (sub_line_elements.size() < 4)
-      continue;
-
-    //T0D0 check if integer conversion actually succeeded
-    return_value.x = sub_line_elements.at(0).toInt();
-    return_value.y = sub_line_elements.at(1).toInt();
-    return_value.width = sub_line_elements.at(2).toInt();
-    return_value.height = sub_line_elements.at(3).toInt();
-
-    return return_value;
+    result = line_elements.at(1).trimmed();
+    break;
   }
-  //caller should deal with the result properly(check width and height of output for negatives)
-  return_value.height = -1;
+
+  design_ini.close();
+
+  return result;
+}
+
+pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path() + p_file;
+  QString default_path = get_default_theme_path() + p_file;
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+  pos_size_type return_value;
+
+  return_value.x = 0;
+  return_value.y = 0;
   return_value.width = -1;
+  return_value.height = -1;
+
+  if (f_result == "")
+  {
+    f_result = read_design_ini(p_identifier, default_path);
+
+    if (f_result == "")
+      return return_value;
+  }
+
+  QStringList sub_line_elements = f_result.split(",");
+
+  if (sub_line_elements.size() < 4)
+    return return_value;
+
+  return_value.x = sub_line_elements.at(0).toInt();
+  return_value.y = sub_line_elements.at(1).toInt();
+  return_value.width = sub_line_elements.at(2).toInt();
+  return_value.height = sub_line_elements.at(3).toInt();
 
   return return_value;
+}
+
+int AOApplication::get_font_size(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path() + p_file;
+  QString default_path = get_default_theme_path() + p_file;
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+  if (f_result == "")
+  {
+    f_result = read_design_ini(p_identifier, default_path);
+
+    if (f_result == "")
+      return 10;
+  }
+
+  return f_result.toInt();
 }
 
 //returns whatever is to the right of "search_line =" within target_tag and terminator_tag, trimmed
