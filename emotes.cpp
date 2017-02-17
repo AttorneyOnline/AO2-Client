@@ -100,6 +100,21 @@ void Courtroom::set_emote_page()
 
 }
 
+void Courtroom::set_emote_dropdown()
+{
+  ui_emote_dropdown->clear();
+
+  int total_emotes = ao_app->get_emote_number(current_char);
+  QStringList emote_list;
+
+  for (int n = 0 ; n < total_emotes ; ++n)
+  {
+    emote_list.append(ao_app->get_emote_comment(current_char, n));
+  }
+
+  ui_emote_dropdown->addItems(emote_list);
+}
+
 void Courtroom::on_emote_clicked(int p_id)
 {
   int min = current_emote_page * max_emotes_on_page;
@@ -112,7 +127,8 @@ void Courtroom::on_emote_clicked(int p_id)
 
   current_emote = p_id + max_emotes_on_page * current_emote_page;
 
-  ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_on.png");
+  if (current_emote >= min && current_emote <= max)
+    ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_on.png");
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -144,4 +160,9 @@ void Courtroom::on_emote_right_clicked()
   set_emote_page();
 
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_emote_dropdown_changed(int p_index)
+{
+  on_emote_clicked(p_index);
 }

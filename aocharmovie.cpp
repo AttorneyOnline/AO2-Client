@@ -72,24 +72,28 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   this->clear();
   m_movie->setFileName(gif_path);
 
+  int full_duration = duration * time_mod;
   int real_duration = 0;
 
   play_once = false;
 
   for (int n_frame = 0 ; n_frame < m_movie->frameCount() ; ++n_frame)
   {
-
     real_duration += m_movie->nextFrameDelay();
     m_movie->jumpToFrame(n_frame);
   }
+  qDebug() << "full_duration: " << full_duration;
   qDebug() << "real_duration: " << real_duration;
-  qDebug() << "duration: " << duration;
 
   double percentage_modifier = 100.0;
 
   if (real_duration != 0 && duration != 0)
   {
-    percentage_modifier = (duration / static_cast<double>(real_duration)) * 100.0;
+    double modifier = full_duration / static_cast<double>(real_duration);
+    percentage_modifier = 100 / modifier;
+
+    if (percentage_modifier > 100.0)
+      percentage_modifier = 100.0;
   }
   qDebug() << "% mod: " << percentage_modifier;
   play_once = true;

@@ -32,6 +32,8 @@ private:
   QVector<QImage> flipped_movie;
   QTimer *preanim_timer;
 
+  const int time_mod = 62;
+
   bool m_flipped = false;
 
   bool play_once = true;

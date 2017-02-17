@@ -112,6 +112,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_emote_left = new AOButton(this, ao_app);
   ui_emote_right = new AOButton(this, ao_app);
 
+  ui_emote_dropdown = new QComboBox(this);
+
   ///////////////////////////////////////
 
   ui_defense_bar = new AOImage(this, ao_app);
@@ -241,6 +243,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
   connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
   //emote signals are set in emotes.cpp
+
+  connect(ui_emote_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_emote_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -457,6 +461,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_emote_right, "emote_right");
   ui_emote_right->set_image("arrow_right.png");
+
+  set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
 
   //emote buttons
 
@@ -745,6 +751,7 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_emotes->show();
 
   set_emote_page();
+  set_emote_dropdown();
 
   current_evidence_page = 0;
   current_evidence = 0;
@@ -882,7 +889,8 @@ void Courtroom::on_chat_return_pressed()
   if (ui_ic_chat_message->text() == "" || is_muted)
     return;
 
-  if (anim_state < 3 || text_state < 2)
+  if ((anim_state < 3 || text_state < 2) &&
+      objection_state == 0)
     return;
 
   //MS#chat#
@@ -1203,9 +1211,9 @@ void Courtroom::play_preanim()
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim) * time_mod;
+  int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
-  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
+  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
 
   sfx_delay_timer->start(sfx_delay);
 
