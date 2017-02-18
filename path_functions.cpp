@@ -11,6 +11,8 @@ QString AOApplication::get_base_path()
   return "/media/omnitroid/Data/winshare/AO/client/base/";
 #elif defined(OMNI_WIN_DEBUG)
   return "E:/AO/client/base/";
+#elif defined(OMNI_WIN_DEBUG2)
+  return "F:/winshare/AO/client/base/";
 #else
   return (QDir::currentPath() + "/base/");
 #endif

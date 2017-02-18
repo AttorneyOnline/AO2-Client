@@ -421,7 +421,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_music_list, "music_list");
   ui_music_list->setStyleSheet("QListWidget{background-color: rgba(0, 0, 0, 0);}");
-  ui_music_list->setFont(pt_8);
 
   set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   ui_ic_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");

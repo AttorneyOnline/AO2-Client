@@ -157,12 +157,12 @@ void AOCharMovie::frame_change(int n_frame)
   if (m_movie->frameCount() - 1 == n_frame && play_once)
   {
     preanim_timer->start(m_movie->nextFrameDelay());
-    //done();
+    m_movie->stop();
   }
 }
 
 void AOCharMovie::timer_done()
 {
-  qDebug() << "timer done called";
+
   done();
 }
