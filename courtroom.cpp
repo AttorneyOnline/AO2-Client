@@ -379,13 +379,6 @@ void Courtroom::set_widgets()
   ui_vp_chatbox->hide();
 
   set_size_and_pos(ui_vp_showname, "showname");
-  QFont pt_8 = ui_vp_showname->font();
-  QFont pt_9 = ui_vp_showname->font();
-  QFont pt_10 = ui_vp_showname->font();
-  pt_8.setPointSize(8);
-  pt_9.setPointSize(9);
-  pt_10.setPointSize(10);
-  ui_vp_showname->setFont(pt_8);
   ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white;");
 
@@ -563,11 +556,6 @@ void Courtroom::set_widgets()
 
 }
 
-void Courtroom::set_font(QWidget *widget, int weight)
-{
-  widget->setFont(QFont("Sans", weight));
-}
-
 void Courtroom::set_fonts()
 {
   QString design_file = "courtroom_fonts.ini";
@@ -577,6 +565,11 @@ void Courtroom::set_fonts()
   set_font(ui_ic_chatlog, ao_app->get_font_size("ic_chatlog", design_file));
   set_font(ui_ms_chatlog, ao_app->get_font_size("ms_chatlog", design_file));
   set_font(ui_server_chatlog, ao_app->get_font_size("server_chatlog", design_file));
+}
+
+void Courtroom::set_font(QWidget *widget, int weight)
+{
+  widget->setFont(QFont("Sans", weight));
 }
 
 void Courtroom::set_window_title(QString p_title)
