@@ -566,6 +566,7 @@ void Courtroom::set_fonts()
   set_font(ui_ic_chatlog, ao_app->get_font_size("ic_chatlog", design_file));
   set_font(ui_ms_chatlog, ao_app->get_font_size("ms_chatlog", design_file));
   set_font(ui_server_chatlog, ao_app->get_font_size("server_chatlog", design_file));
+  set_font(ui_music_list, ao_app->get_font_size("music_list", design_file));
 }
 
 void Courtroom::set_font(QWidget *widget, int weight)
