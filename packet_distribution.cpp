@@ -143,7 +143,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QString server_version = f_contents.at(1);
 
-    if (server_version == "v1300.146")
+    if (server_version == "v1312.150")
     {
       encryption_needed = false;
       yellow_text_enabled = true;

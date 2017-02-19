@@ -40,12 +40,12 @@ void NetworkManager::connect_to_server(server_type p_server)
 
 void NetworkManager::ship_ms_packet(QString p_packet)
 {
-  ms_socket->write(p_packet.toLocal8Bit());
+  ms_socket->write(p_packet.toUtf8());
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)
 {
-  server_socket->write(p_packet.toLocal8Bit());
+  server_socket->write(p_packet.toUtf8());
 }
 
 void NetworkManager::handle_ms_packet()
