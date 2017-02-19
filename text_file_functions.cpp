@@ -7,27 +7,59 @@
 #include <QVector>
 #include <QDebug>
 
-QString AOApplication::read_user_theme(){
+QString AOApplication::read_config(QString searchline)
+{
+  QString return_value = "";
+
   QFile config_file(get_base_path() + "config.ini");
   if (!config_file.open(QIODevice::ReadOnly))
-      return "default";
+      return return_value;
 
   QTextStream in(&config_file);
 
   while(!in.atEnd())
   {
-    QString line = in.readLine();
+    QString f_line = in.readLine();
 
-    if (line.startsWith("theme"))
-    {
-      QStringList line_elements = line.split("=");
+    if (!f_line.startsWith(searchline))
+      continue;
 
-      if (line_elements.size() > 1)
-        return line_elements.at(1).trimmed();
-    }
+    QStringList line_elements = f_line.split("=");
+
+    if (line_elements.at(0).trimmed() != searchline)
+      continue;
+
+    if (line_elements.size() < 2)
+      continue;
+
+    return_value = line_elements.at(1).trimmed();
+    break;
   }
 
-  return "default";
+  config_file.close();
+
+  return return_value;
+}
+
+QString AOApplication::read_user_theme()
+{
+  QString result = read_config("theme");
+
+  if (result == "")
+    return "default";
+  else
+    return result;
+}
+
+int AOApplication::read_blip_rate()
+{
+  QString result = read_config("blip_rate");
+
+  //note: the empty string converted to int will return 0
+  if (result.toInt() <= 0)
+    return 1;
+  else
+    return result.toInt();
 }
 
 void AOApplication::write_to_serverlist_txt(QString p_line)

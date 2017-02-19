@@ -96,7 +96,9 @@ public:
   QString get_evidence_path();
 
   //implementation in text_file_functions.cpp
+  QString read_config(QString searchline);
   QString read_user_theme();
+  int read_blip_rate();
   void write_to_serverlist_txt(QString p_line);
   QVector<server_type> read_serverlist_txt();
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
@@ -123,7 +125,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 2;
-  const int MINOR_VERSION = 0;
+  const int MINOR_VERSION = 1;
 
   QString user_theme = "default";
 

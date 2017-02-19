@@ -35,6 +35,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_progress_bar = new QProgressBar(ui_loading_background);
   ui_progress_bar->setMinimum(0);
   ui_progress_bar->setMaximum(100);
+  ui_progress_bar->setStyleSheet("QProgressBar{ color: white; }");
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));

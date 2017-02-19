@@ -97,13 +97,16 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   }
   qDebug() << "% mod: " << percentage_modifier;
 
-  if (full_duration < real_duration)
+  if (full_duration == 0 || full_duration >= real_duration)
+  {
+    play_once = true;
+  }
+  else
   {
     play_once = false;
     preanim_timer->start(full_duration);
   }
-  else
-    play_once = true;
+
 
   m_movie->setSpeed(static_cast<int>(percentage_modifier));
   play(p_char, p_emote, "");

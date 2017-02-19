@@ -328,6 +328,8 @@ void Courtroom::set_mute_list()
 
 void Courtroom::set_widgets()
 {
+  blip_rate = ao_app->read_blip_rate();
+
   QString filename = "courtroom_design.ini";
 
   pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", filename);
@@ -1254,6 +1256,7 @@ void Courtroom::start_chat_ticking()
   ui_vp_chatbox->show();
 
   tick_pos = 0;
+  blip_pos = 0;
   chat_tick_timer->start(chat_tick_interval);
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
@@ -1282,14 +1285,22 @@ void Courtroom::chat_tick()
   else
   {
     ui_vp_message->insertPlainText(f_message.at(tick_pos));
-    //ui_vp_message->app
 
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());
     scroll->hide();
 
     if (f_message.at(tick_pos) != ' ')
-      blip_player->blip_tick();
+    {
+
+      if (blip_pos % blip_rate == 0)
+      {
+        blip_pos = 0;
+        blip_player->blip_tick();
+      }
+
+      ++blip_pos;
+    }
 
     ++tick_pos;
   }
@@ -1530,6 +1541,28 @@ void Courtroom::on_ooc_return_pressed()
 {
   if (ui_ooc_chat_message->text() == "" || ui_ooc_chat_name->text() == "")
     return;
+
+  if (ui_ooc_chat_message->text().startsWith("/pos"))
+  {
+    if (ui_ooc_chat_message->text().startsWith("/pos jud"))
+    {
+      ui_witness_testimony->show();
+      ui_cross_examination->show();
+      ui_defense_minus->show();
+      ui_defense_plus->show();
+      ui_prosecution_minus->show();
+      ui_prosecution_plus->show();
+    }
+    else
+    {
+      ui_witness_testimony->hide();
+      ui_cross_examination->hide();
+      ui_defense_minus->hide();
+      ui_defense_plus->hide();
+      ui_prosecution_minus->hide();
+      ui_prosecution_plus->hide();
+    }
+  }
 
   //cheap, but it works
   if (ui_ooc_chat_message->text().startsWith("/login"))

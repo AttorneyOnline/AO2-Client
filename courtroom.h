@@ -119,6 +119,9 @@ private:
   int chat_tick_interval = 60;
   //which tick position(character in chat message) we are at
   int tick_pos = 0;
+  //used to determine how often blips sound
+  int blip_pos = 0;
+  int blip_rate = 1;
 
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;
