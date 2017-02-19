@@ -26,6 +26,7 @@
 #include <QCloseEvent>
 #include <QSignalMapper>
 #include <QMap>
+#include <QTextBrowser>
 
 class AOApplication;
 
@@ -221,8 +222,8 @@ private:
 
   QPlainTextEdit *ui_ic_chatlog;
 
-  QPlainTextEdit *ui_ms_chatlog;
-  QPlainTextEdit *ui_server_chatlog;
+  QTextBrowser *ui_ms_chatlog;
+  QTextBrowser *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;

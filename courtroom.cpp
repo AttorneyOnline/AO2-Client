@@ -76,12 +76,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
-  ui_ms_chatlog = new QPlainTextEdit(this);
+  ui_ms_chatlog = new QTextBrowser(this);
   ui_ms_chatlog->setReadOnly(true);
+  ui_ms_chatlog->setOpenExternalLinks(true);
   ui_ms_chatlog->hide();
 
-  ui_server_chatlog = new QPlainTextEdit(this);
+  ui_server_chatlog = new QTextBrowser(this);
   ui_server_chatlog->setReadOnly(true);
+  ui_server_chatlog->setOpenExternalLinks(true);
 
   ui_mute_list = new QListWidget(this);
   //ui_area_list = new QListWidget(this);
@@ -410,10 +412,10 @@ void Courtroom::set_widgets()
                                "color: white; }");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
-  ui_ms_chatlog->setStyleSheet("QPlainTextEdit{ background-color: rgba(0, 0, 0, 0); }");
+  ui_ms_chatlog->setStyleSheet("QTextBrowser{ background-color: rgba(0, 0, 0, 0); }");
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
-  ui_server_chatlog->setStyleSheet("QPlainTextEdit{ background-color: rgba(0, 0, 0, 0); }");
+  ui_server_chatlog->setStyleSheet("QTextBrowser{ background-color: rgba(0, 0, 0, 0); }");
 
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
@@ -834,7 +836,18 @@ void Courtroom::append_ms_chatmessage(QString f_message)
 
   ui_ms_chatlog->moveCursor(QTextCursor::End);
 
-  ui_ms_chatlog->appendPlainText(f_message);
+  QStringList word_list = f_message.split(" ");
+  f_message = "";
+
+  for (QString i_word : word_list)
+  {
+    if (i_word.startsWith("http"))
+      i_word = "<a href=\"" + i_word + "\">" + i_word + "</a>";
+
+    f_message += i_word + " ";
+  }
+
+  ui_ms_chatlog->append(f_message);
 
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {
@@ -858,7 +871,18 @@ void Courtroom::append_server_chatmessage(QString f_message)
 
   ui_server_chatlog->moveCursor(QTextCursor::End);
 
-  ui_server_chatlog->appendPlainText(f_message);
+  QStringList word_list = f_message.split(" ");
+  f_message = "";
+
+  for (QString i_word : word_list)
+  {
+    if (i_word.startsWith("http"))
+      i_word = "<a href=\"" + i_word + "\">" + i_word + "</a>";
+
+    f_message += i_word + " ";
+  }
+
+  ui_server_chatlog->append(f_message);
 
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {
@@ -1446,7 +1470,7 @@ void Courtroom::set_ip_list(QString p_list)
 {
   QString f_list = p_list.replace("|", ":").replace("*", "\n");
 
-  ui_server_chatlog->appendPlainText(f_list);
+  ui_server_chatlog->append(f_list);
 }
 
 void Courtroom::set_mute(bool p_muted, int p_cid)
@@ -1533,7 +1557,7 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 
 void Courtroom::mod_called(QString p_ip)
 {
-  ui_server_chatlog->appendPlainText(p_ip);
+  ui_server_chatlog->append(p_ip);
   if (ui_guard->isChecked())
     modcall_player->play("sfx-gallery.wav");
 }
