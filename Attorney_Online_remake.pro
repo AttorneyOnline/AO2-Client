@@ -71,3 +71,8 @@ HEADERS  += lobby.h \
 
 unix:LIBS += -L/home/omnitroid/Project/Attorney_Online_2/src -lbass
 win32:LIBS += "$$PWD/bass.dll"
+
+RESOURCES += \
+    resources.qrc
+
+DISTFILES +=

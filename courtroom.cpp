@@ -564,6 +564,13 @@ void Courtroom::set_fonts()
   QString design_file = "courtroom_fonts.ini";
 
   set_font(ui_vp_showname, ao_app->get_font_size("showname", design_file));
+  /*
+  int id = QFontDatabase::addApplicationFont(":/resource/fonts/Ace-Attorney.ttf");
+  QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+  QFont monospace(family);
+  monospace.setPointSize(ao_app->get_font_size("message", design_file));
+  ui_vp_message->setFont(monospace);
+  */
   set_font(ui_vp_message, ao_app->get_font_size("message", design_file));
   set_font(ui_ic_chatlog, ao_app->get_font_size("ic_chatlog", design_file));
   set_font(ui_ms_chatlog, ao_app->get_font_size("ms_chatlog", design_file));
