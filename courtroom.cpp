@@ -524,8 +524,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_blip_slider, "blip_slider");
 
   set_size_and_pos(ui_evidence_button, "evidence_button");
-  //ui_evidence_button->set_image("evidencebutton.png");
-  ui_evidence_button->setText("Evidence");
+  ui_evidence_button->set_image("evidencebutton.png");
+  //ui_evidence_button->setText("Evidence");
 
   set_size_and_pos(ui_evidence, "evidence_background");
   ui_evidence->set_image("evidencebackground.png");
@@ -796,6 +796,8 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_widgets();
 
+  //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
+
   ui_char_select_background->hide();
 
   ui_ic_chat_message->setEnabled(m_cid != -1);
@@ -837,17 +839,17 @@ void Courtroom::append_ms_chatmessage(QString f_message)
   ui_ms_chatlog->moveCursor(QTextCursor::End);
 
   QStringList word_list = f_message.split(" ");
-  f_message = "";
 
   for (QString i_word : word_list)
   {
     if (i_word.startsWith("http"))
-      i_word = "<a href=\"" + i_word + "\">" + i_word + "</a>";
-
-    f_message += i_word + " ";
+      ui_ms_chatlog->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
+    else
+      ui_ms_chatlog->insertPlainText(i_word + " ");
   }
 
-  ui_ms_chatlog->append(f_message);
+  //ui_ms_chatlog->append(f_message);
+  ui_ms_chatlog->insertPlainText("\n");
 
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {
@@ -863,7 +865,7 @@ void Courtroom::append_ms_chatmessage(QString f_message)
   }
 }
 
-void Courtroom::append_server_chatmessage(QString f_message)
+void Courtroom::append_server_chatmessage(QString f_name, QString f_message)
 {
   const QTextCursor old_cursor = ui_server_chatlog->textCursor();
   const int old_scrollbar_value = ui_server_chatlog->verticalScrollBar()->value();
@@ -871,18 +873,19 @@ void Courtroom::append_server_chatmessage(QString f_message)
 
   ui_server_chatlog->moveCursor(QTextCursor::End);
 
+  ui_server_chatlog->insertPlainText(f_name + ": ");
+
   QStringList word_list = f_message.split(" ");
-  f_message = "";
 
   for (QString i_word : word_list)
   {
     if (i_word.startsWith("http"))
-      i_word = "<a href=\"" + i_word + "\">" + i_word + "</a>";
-
-    f_message += i_word + " ";
+      ui_server_chatlog->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
+    else
+      ui_server_chatlog->insertPlainText(i_word + " ");
   }
 
-  ui_server_chatlog->append(f_message);
+  ui_server_chatlog->insertPlainText("\n");
 
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {
@@ -1511,11 +1514,18 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (f_contents.size() < 2)
     return;
 
-  music_player->play(f_contents.at(0));
-
   int n_char = f_contents.at(1).toInt();
 
-  if (n_char >= 0 && n_char < char_list.size())
+  if (n_char >= char_list.size())
+    return;
+
+  if (n_char >= 0)
+    if (mute_map.value(char_list.at(f_contents.at(1).toInt()).name))
+      return;
+
+  music_player->play(f_contents.at(0));
+
+  if (n_char >= 0)
     append_ic_text(char_list.at(n_char).name + " has played a song: " + f_contents.at(0) + "\n");
 }
 

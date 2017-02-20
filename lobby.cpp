@@ -26,7 +26,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list = new QListWidget(this);
   ui_player_count = new QLabel(this);
   ui_description = new QPlainTextEdit(this);
-  ui_chatbox = new QPlainTextEdit(this);
+  ui_chatbox = new QTextBrowser(this);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
@@ -100,7 +100,7 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
-  ui_chatbox->setStyleSheet("QPlainTextEdit{background-color: rgba(0, 0, 0, 0);}");
+  ui_chatbox->setStyleSheet("QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
 
   set_size_and_pos(ui_chatname, "chatname");
   ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -340,7 +340,18 @@ void Lobby::append_chatmessage(QString f_message)
 
   ui_chatbox->moveCursor(QTextCursor::End);
 
-  ui_chatbox->appendPlainText(f_message);
+  QStringList word_list = f_message.split(" ");
+
+  for (QString i_word : word_list)
+  {
+    if (i_word.startsWith("http"))
+      ui_chatbox->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
+    else
+      ui_chatbox->insertPlainText(i_word + " ");
+  }
+
+  //ui_ms_chatlog->append(f_message);
+  ui_chatbox->insertPlainText("\n");
 
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {

@@ -11,6 +11,7 @@
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QProgressBar>
+#include <QTextBrowser>
 
 class AOApplication;
 
@@ -61,7 +62,7 @@ private:
   QLabel *ui_player_count;
   QPlainTextEdit *ui_description;
 
-  QPlainTextEdit *ui_chatbox;
+  QTextBrowser *ui_chatbox;
 
   QLineEdit *ui_chatname;
   QLineEdit *ui_chatmessage;

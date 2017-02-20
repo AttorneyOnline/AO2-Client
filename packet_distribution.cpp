@@ -170,15 +170,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "CT")
   {
     if (f_contents.size() < 2)
-    {
-      qDebug() << "W: malformed packet!";
       goto end;
-    }
-
-    QString message_line = f_contents.at(0) + ": " + f_contents.at(1);
 
     if (courtroom_constructed)
-      w_courtroom->append_server_chatmessage(message_line);
+      w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1));
   }
   else if (header == "PN")
   {
@@ -465,7 +460,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "MC")
   {
-    if (courtroom_constructed)
+    if (courtroom_constructed && courtroom_loaded)
       w_courtroom->handle_song(&p_packet->get_contents());
   }
   else if (header == "RT")
