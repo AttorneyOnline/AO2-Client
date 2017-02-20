@@ -1246,7 +1246,7 @@ void Courtroom::play_preanim()
   {
     anim_state = 1;
     preanim_done();
-    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim + ".gif";
+    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif";
     return;
   }
 
