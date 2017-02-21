@@ -71,3 +71,7 @@ HEADERS  += lobby.h \
 
 unix:LIBS += -L/home/omnitroid/Project/Attorney_Online_2/src -lbass
 win32:LIBS += "$$PWD/bass.dll"
+android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
