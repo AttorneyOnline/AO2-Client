@@ -13,6 +13,8 @@ QString AOApplication::get_base_path()
   return "E:/AO/client/base/";
 #elif defined(OMNI_WIN_DEBUG2)
   return "F:/winshare/AO/client/base/";
+#elif defined(ANDROID)
+  return "/storage/extSdCard/AO2/";
 #else
   return (QDir::currentPath() + "/base/");
 #endif
