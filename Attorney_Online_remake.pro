@@ -75,3 +75,7 @@ android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
+RESOURCES += \
+    resources.qrc
+
+DISTFILES +=
