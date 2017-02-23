@@ -224,30 +224,27 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QStr
 
   QTextStream in(&char_ini);
 
-  //because there are char inis that look like [eMoTIonS] for whatever reason
-  target_tag = target_tag.toLower();
-  terminator_tag = terminator_tag.toLower();
   bool tag_found = false;
 
   while(!in.atEnd())
   {
     QString line = in.readLine();
 
-    if (line.toLower().startsWith(terminator_tag))
+    if (QString::compare(line, terminator_tag, Qt::CaseInsensitive) == 0)
       break;
 
-    if (line.toLower().startsWith(target_tag))
+    if (line.startsWith(target_tag, Qt::CaseInsensitive))
     {
       tag_found = true;
       continue;
     }
 
-    if (!line.startsWith(p_search_line))
+    if (!line.startsWith(p_search_line, Qt::CaseInsensitive))
       continue;
 
     QStringList line_elements = line.split("=");
 
-    if (line_elements.at(0).trimmed() != p_search_line)
+    if (QString::compare(line_elements.at(0).trimmed(), p_search_line, Qt::CaseInsensitive) != 0)
       continue;
 
     if (line_elements.size() < 2)

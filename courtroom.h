@@ -92,6 +92,8 @@ public:
   void handle_wtce(QString p_wtce);
   void set_hp_bar(int p_bar, int p_state);
 
+  void check_connection_received();
+
   ~Courtroom();
 
 private:
@@ -114,6 +116,9 @@ private:
 
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
+
+  //how long we wait for the server to respond on a ping
+  QTimer *disconnect_timer;
 
   //determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
@@ -317,6 +322,8 @@ private:
   void construct_evidence();
   void set_evidence_page();
 
+
+
 public slots:
   void objection_done();
   void preanim_done();
@@ -406,6 +413,7 @@ private slots:
   void char_clicked(int n_char);
 
   void ping_server();
+  void connection_timeout();
 
 };
 

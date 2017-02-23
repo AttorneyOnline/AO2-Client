@@ -19,6 +19,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
+  disconnect_timer = new QTimer(this);
+  disconnect_timer->setSingleShot(true);
 
   chat_tick_timer = new QTimer(this);
 
@@ -299,6 +301,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_char_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
+
+  connect(disconnect_timer, SIGNAL(timeout()), this, SLOT(connection_timeout()));
 
   set_widgets();
 
@@ -1323,7 +1327,7 @@ void Courtroom::chat_tick()
 
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());
-    scroll->hide();
+    //scroll->hide();
 
     if (f_message.at(tick_pos) != ' ')
     {
@@ -1985,6 +1989,19 @@ void Courtroom::char_clicked(int n_char)
 void Courtroom::ping_server()
 {
   ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
+  disconnect_timer->start(10000);
+}
+
+void Courtroom::check_connection_received()
+{
+  disconnect_timer->stop();
+}
+
+void Courtroom::connection_timeout()
+{
+  call_notice("Disconnected from server.");
+  ao_app->construct_lobby();
+  ao_app->destruct_courtroom();
 }
 
 Courtroom::~Courtroom()
