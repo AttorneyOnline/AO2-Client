@@ -120,6 +120,7 @@ public:
   int get_emote_mod(QString p_char, int p_emote);
   QString get_gender(QString p_char);
   QString read_design_ini(QString p_identifier, QString p_design_path);
+  bool get_blank_blip();
 
 
 private:

@@ -254,6 +254,7 @@ void Lobby::on_about_clicked()
               "Special thanks:\n"
               "Unishred\n"
               "Argoneus\n"
+              "Noevain\n"
               "Cronnicossy");
 }
 
@@ -267,10 +268,12 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 
   if (public_servers_selected)
   {
-    if (n_server >= ao_app->get_server_list().size())
+    QVector<server_type> f_server_list = ao_app->get_server_list();
+
+    if (n_server >= f_server_list.size())
       return;
 
-    f_server = ao_app->get_server_list().at(p_model.row());
+    f_server = f_server_list.at(p_model.row());
   }
   else
   {

@@ -335,6 +335,7 @@ void Courtroom::set_mute_list()
 void Courtroom::set_widgets()
 {
   blip_rate = ao_app->read_blip_rate();
+  blank_blip = ao_app->get_blank_blip();
 
   QString filename = "courtroom_design.ini";
 
@@ -382,10 +383,6 @@ void Courtroom::set_widgets()
   ui_vp_legacy_desk->move(0, final_y);
   ui_vp_legacy_desk->hide();
 
-  set_size_and_pos(ui_vp_chatbox, "chatbox");
-  ui_vp_chatbox->set_scaled_image("chatmed.png");
-  ui_vp_chatbox->hide();
-
   set_size_and_pos(ui_vp_showname, "showname");
   ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white;");
@@ -430,8 +427,22 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_list, "music_list");
   ui_music_list->setStyleSheet("QListWidget{background-color: rgba(0, 0, 0, 0);}");
 
-  set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-  ui_ic_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  if (is_ao2_bg)
+  {
+    set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
+    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
+  }
+  else
+  {
+    set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
+    set_size_and_pos(ui_vp_chatbox, "chatbox");
+  }
+
+  ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
+
+  ui_vp_chatbox->set_scaled_image("chatmed.png");
+  ui_vp_chatbox->hide();
+
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
   ui_muted->set_image("muted.png");
 
@@ -1329,7 +1340,10 @@ void Courtroom::chat_tick()
     scroll->setValue(scroll->maximum());
     //scroll->hide();
 
-    if (f_message.at(tick_pos) != ' ')
+    if(blank_blip)
+      qDebug() << "blank_blip found true";
+
+    if (f_message.at(tick_pos) != ' ' || blank_blip)
     {
 
       if (blip_pos % blip_rate == 0)
@@ -1525,19 +1539,23 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (f_contents.size() < 2)
     return;
 
+  QString f_song = f_contents.at(0);
   int n_char = f_contents.at(1).toInt();
 
-  if (n_char >= char_list.size())
-    return;
+  if (n_char < 0 || n_char >= char_list.size())
+  {
+    music_player->play(f_song);
+  }
+  else
+  {
+    QString str_char = char_list.at(n_char).name;
 
-  if (n_char >= 0)
-    if (mute_map.value(char_list.at(f_contents.at(1).toInt()).name))
-      return;
-
-  music_player->play(f_contents.at(0));
-
-  if (n_char >= 0)
-    append_ic_text(char_list.at(n_char).name + " has played a song: " + f_contents.at(0) + "\n");
+    if (!mute_map.value(str_char))
+    {
+      append_ic_text(str_char + " has played a song: " + f_song + "\n");
+      music_player->play(f_song);
+    }
+  }
 }
 
 void Courtroom::handle_wtce(QString p_wtce)
@@ -1895,7 +1913,6 @@ void Courtroom::on_reload_theme_clicked()
 { 
   ao_app->set_user_theme();
 
-  set_widgets();
   //to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);

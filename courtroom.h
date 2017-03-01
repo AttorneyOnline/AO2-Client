@@ -128,6 +128,7 @@ private:
   //used to determine how often blips sound
   int blip_pos = 0;
   int blip_rate = 1;
+  bool blank_blip = false;
 
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;

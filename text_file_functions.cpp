@@ -415,6 +415,12 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
   else return f_result.toInt();
 }
 
+bool AOApplication::get_blank_blip()
+{
+  QString f_result = read_config("blank_blip");
+
+  return f_result.startsWith("true");
+}
 
 
 
