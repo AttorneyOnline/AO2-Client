@@ -143,6 +143,7 @@ void AOCharMovie::stop()
 {
   //for all intents and purposes, stopping is the same as hiding. at no point do we want a frozen gif to display
   m_movie->stop();
+  preanim_timer->stop();
   this->hide();
 }
 

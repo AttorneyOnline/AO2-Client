@@ -59,29 +59,29 @@ void Lobby::set_widgets()
 {
   ao_app->set_user_theme();
 
-  ui_background->set_image("lobbybackground.png");
   ui_background->resize(m_lobby_width, m_lobby_height);
+  ui_background->set_image("lobbybackground.png");
 
-  ui_public_servers->set_image("publicservers_selected.png");
   set_size_and_pos(ui_public_servers, "public_servers");
+  ui_public_servers->set_image("publicservers_selected.png");
 
-  ui_favorites->set_image("favorites.png");
   set_size_and_pos(ui_favorites, "favorites");
+  ui_favorites->set_image("favorites.png");
 
-  ui_refresh->set_image("refresh.png");
   set_size_and_pos(ui_refresh, "refresh");
+  ui_refresh->set_image("refresh.png");
 
-  ui_add_to_fav->set_image("addtofav.png");
   set_size_and_pos(ui_add_to_fav, "add_to_fav");
+  ui_add_to_fav->set_image("addtofav.png");
 
-  ui_connect->set_image("connect.png");
   set_size_and_pos(ui_connect, "connect");
+  ui_connect->set_image("connect.png");
 
-  ui_version->setText("Version: " + ao_app->get_version_string());
   set_size_and_pos(ui_version, "version");
+  ui_version->setText("Version: " + ao_app->get_version_string());
 
-  ui_about->set_image("about.png");
   set_size_and_pos(ui_about, "about");
+  ui_about->set_image("about.png");
 
   set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -110,8 +110,9 @@ void Lobby::set_widgets()
   ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "selection-background-color: rgba(0, 0, 0, 0);");
 
-  ui_loading_background->set_image("loadingbackground.png");
   ui_loading_background->resize(m_lobby_width, m_lobby_height);
+  ui_loading_background->set_image("loadingbackground.png");
+
 
   set_size_and_pos(ui_loading_text, "loading_label");
   ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));

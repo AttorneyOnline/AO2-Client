@@ -359,7 +359,7 @@ void Courtroom::set_widgets()
 
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
-  ui_background->set_scaled_image("courtroombackground.png");
+  ui_background->set_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport");
 
@@ -399,7 +399,7 @@ void Courtroom::set_widgets()
 
   ui_vp_realization->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_realization->resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_realization->set_scaled_image("realizationflash.png");
+  ui_vp_realization->set_image("realizationflash.png");
   ui_vp_realization->hide();
 
   ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
@@ -440,7 +440,7 @@ void Courtroom::set_widgets()
 
   ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 
-  ui_vp_chatbox->set_scaled_image("chatmed.png");
+  ui_vp_chatbox->set_image("chatmed.png");
   ui_vp_chatbox->hide();
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
@@ -540,38 +540,36 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_evidence_button, "evidence_button");
   ui_evidence_button->set_image("evidencebutton.png");
-  //ui_evidence_button->setText("Evidence");
 
   set_size_and_pos(ui_evidence, "evidence_background");
   ui_evidence->set_image("evidencebackground.png");
 
   //char select stuff under here
 
-  ui_char_select_background->set_image("charselect_background.png");
   ui_char_select_background->move(0, 0);
   ui_char_select_background->resize(m_courtroom_width, m_courtroom_height);
+  ui_char_select_background->set_image("charselect_background.png");
 
   //buttons are in the constructor
 
   ui_selector->set_image("char_selector.png");
   ui_selector->hide();
 
-  ui_back_to_lobby->setText("Back to Lobby");
   set_size_and_pos(ui_back_to_lobby, "back_to_lobby");
+  ui_back_to_lobby->setText("Back to Lobby");
 
   set_size_and_pos(ui_char_password, "char_password");
 
-  ui_char_select_left->set_image("arrow_left.png");
   ui_char_select_left->move(2, 325);
   ui_char_select_left->resize(20, 20);
+  ui_char_select_left->set_image("arrow_left.png");
 
-  ui_char_select_right->set_image("arrow_right.png");
   ui_char_select_right->move(691, 325);
   ui_char_select_right->resize(20, 20);
+  ui_char_select_right->set_image("arrow_right.png");
 
-  ui_spectator->setText("Spectator");
   set_size_and_pos(ui_spectator, "spectator");
-
+  ui_spectator->setText("Spectator");
 }
 
 void Courtroom::set_fonts()
@@ -1056,6 +1054,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   text_state = 0;
   anim_state = 0;
+  ui_vp_objection->stop();
+  ui_vp_player_char->stop();
+  chat_tick_timer->stop();
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
@@ -1133,7 +1134,7 @@ void Courtroom::handle_chatmessage_2()
   QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
 
   if (chatbox == "")
-    ui_vp_chatbox->set_scaled_image("chatmed.png");
+    ui_vp_chatbox->set_image("chatmed.png");
   else
   {
     QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
