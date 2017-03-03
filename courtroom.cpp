@@ -544,12 +544,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_evidence, "evidence_background");
   ui_evidence->set_image("evidencebackground.png");
 
-  //char select stuff under here
-
-  ui_char_select_background->move(0, 0);
-  ui_char_select_background->resize(m_courtroom_width, m_courtroom_height);
-  ui_char_select_background->set_image("charselect_background.png");
-
   //buttons are in the constructor
 
   ui_selector->set_image("char_selector.png");
@@ -670,6 +664,7 @@ void Courtroom::set_char_select()
   else
     this->resize(f_charselect.width, f_charselect.height);
 
+  ui_char_select_background->resize(f_charselect.width, f_charselect.height);
   ui_char_select_background->set_image("charselect_background.png");
 }
 
