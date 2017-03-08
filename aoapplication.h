@@ -99,6 +99,10 @@ public:
   QString read_config(QString searchline);
   QString read_user_theme();
   int read_blip_rate();
+  bool get_blank_blip();
+  int get_default_music();
+  int get_default_sfx();
+  int get_default_blip();
   void write_to_serverlist_txt(QString p_line);
   QVector<server_type> read_serverlist_txt();
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
@@ -120,7 +124,7 @@ public:
   int get_emote_mod(QString p_char, int p_emote);
   QString get_gender(QString p_char);
   QString read_design_ini(QString p_identifier, QString p_design_path);
-  bool get_blank_blip();
+
 
 
 private:

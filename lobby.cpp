@@ -217,8 +217,6 @@ void Lobby::on_add_to_fav_pressed()
 
 void Lobby::on_add_to_fav_released()
 {
-  ao_app->server_packet_received(new AOPacket("AO2CHECK#2.1.1#%"));
-
   ui_add_to_fav->set_image("addtofav.png");
 
   //you cant add favorites from favorites m8

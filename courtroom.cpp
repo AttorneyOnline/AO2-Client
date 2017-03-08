@@ -169,15 +169,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
-  ui_music_slider->setValue(50);
+  ui_music_slider->setValue(ao_app->get_default_music());
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
-  ui_sfx_slider->setValue(50);
+  ui_sfx_slider->setValue(ao_app->get_default_sfx());
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
-  ui_blip_slider->setValue(50);
+  ui_blip_slider->setValue(ao_app->get_default_blip());
 
   ui_evidence_button = new AOButton(this, ao_app);
 
@@ -468,10 +468,10 @@ void Courtroom::set_widgets()
   //emote buttons
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
-  ui_defense_bar->set_image("defensebar10.png");
+  ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state) + ".png");
 
   set_size_and_pos(ui_prosecution_bar, "prosecution_bar");
-  ui_prosecution_bar->set_image("prosecutionbar10.png");
+  ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
 
   set_size_and_pos(ui_music_label, "music_label");
   ui_music_label->setText("Music");

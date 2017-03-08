@@ -62,6 +62,33 @@ int AOApplication::read_blip_rate()
     return result.toInt();
 }
 
+int AOApplication::get_default_music()
+{
+  QString f_result = read_config("default_music");
+
+  if (f_result == "")
+    return 50;
+  else return f_result.toInt();
+}
+
+int AOApplication::get_default_sfx()
+{
+  QString f_result = read_config("default_sfx");
+
+  if (f_result == "")
+    return 50;
+  else return f_result.toInt();
+}
+
+int AOApplication::get_default_blip()
+{
+  QString f_result = read_config("default_blip");
+
+  if (f_result == "")
+    return 50;
+  else return f_result.toInt();
+}
+
 void AOApplication::write_to_serverlist_txt(QString p_line)
 {
   QFile serverlist_txt;
@@ -76,7 +103,7 @@ void AOApplication::write_to_serverlist_txt(QString p_line)
 
   QTextStream out(&serverlist_txt);
 
-  out << p_line << '\n';
+  out << p_line << "\r\n";
 
   serverlist_txt.close();
 }
