@@ -1487,6 +1487,10 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: yellow");
     break;
+  case BLACK:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: black");
+    break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:
