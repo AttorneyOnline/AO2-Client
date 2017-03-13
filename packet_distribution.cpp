@@ -136,33 +136,51 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "ID")
   {
+    //default(legacy) values
+    encryption_needed = true;
+    yellow_text_enabled = false;
+    prezoom_enabled = false;
+    flipping_enabled = false;
+    custom_objection_enabled = false;
+    improved_loading_enabled = false;
+
     if (f_contents.size() < 2)
       goto end;
 
     s_pv = f_contents.at(0).toInt();
 
-    QString server_version = f_contents.at(1);
+    QString server_software = f_contents.at(1);
 
-    if (server_version == "v1312.150")
+    int server_release = 0;
+    int server_major = 0;
+    int server_minor = 0;
+
+    if (f_contents.size() >= 3)
+    {
+      QStringList version_list = f_contents.at(2).split(".");
+      if (version_list.size() >= 3)
+      {
+        server_release = version_list.at(0).toInt();
+        server_major = version_list.at(1).toInt();
+        server_minor = version_list.at(2).toInt();
+      }
+    }
+
+    if (server_software == "v1312.150")
     {
       encryption_needed = false;
       yellow_text_enabled = true;
-      //prezoom still needs some tweaking to work
-      prezoom_enabled = false;
-      //same goes for flipping, sadly
-      flipping_enabled = false;
       custom_objection_enabled = true;
-      //improved loading disabled for now
-      improved_loading_enabled = false;
     }
-    else
+    else if (server_software == "tsuserver3")
     {
-      encryption_needed = true;
-      yellow_text_enabled = false;
-      prezoom_enabled = false;
-      flipping_enabled = false;
-      custom_objection_enabled = false;
-      improved_loading_enabled = false;
+      if (server_release >= 3)
+      {
+        yellow_text_enabled = true;
+        flipping_enabled = true;
+        custom_objection_enabled = true;
+        improved_loading_enabled = true;
+      }
     }
 
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
@@ -221,10 +239,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     AOPacket *f_packet;
 
-    //AO2 loading disabled for now
-    //if(improved_loading_enabled)
-    //  f_packet = new AOPacket("RC#%");
-    //else
+    if(improved_loading_enabled)
+      f_packet = new AOPacket("RC#%");
+    else
       f_packet = new AOPacket("askchar2#%");
 
     send_server_packet(f_packet);
@@ -354,8 +371,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_courtroom->set_taken(n_char, false);
     }
   }
-  //AO2 loading is temporarily disabled as it needs to be revised altogether
-  /*
+
   else if (header == "SC")
   {
     if (!courtroom_constructed)
@@ -364,13 +380,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
       QStringList sub_elements = f_contents.at(n_element).split("&");
-      if (sub_elements.size() < 2)
-        break;
 
       char_type f_char;
       f_char.name = sub_elements.at(0);
-      f_char.description = sub_elements.at(1);
-      //temporary. the TC packet sets this properly
+      if (sub_elements.size() >= 2)
+        f_char.description = sub_elements.at(1);
+
+      //temporary. the CharsCheck packet sets this properly
       f_char.taken = false;
 
       ++loaded_chars;
@@ -384,8 +400,29 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
     w_lobby->set_loading_value(loading_value);
 
-    send_server_packet(new AOPacket("RE#%"));
+    send_server_packet(new AOPacket("RM#%"));
   }
+  else if (header == "SM")
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
+    {
+      ++loaded_music;
+
+      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
+
+      w_courtroom->append_music(f_contents.at(n_element));
+    }
+
+    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+    w_lobby->set_loading_value(loading_value);
+
+    send_server_packet(new AOPacket("RD#%"));
+  }
+  /* obsolete
   else if (header == "SE")
   {
     if (!courtroom_constructed)
@@ -422,6 +459,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     send_server_packet(new AOPacket("RM#%"));
   }
   */
+
   else if (header == "DONE")
   {
     if (!courtroom_constructed)

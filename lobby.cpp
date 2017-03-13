@@ -235,7 +235,10 @@ void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
 
-  AOPacket *f_packet = new AOPacket("askchaa#%");
+  AOPacket *f_packet;
+
+  f_packet = new AOPacket("askchaa#%");
+
   ao_app->send_server_packet(f_packet);
 }
 

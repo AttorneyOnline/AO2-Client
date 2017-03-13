@@ -1141,6 +1141,12 @@ void Courtroom::handle_chatmessage_2()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
+  if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
+    ui_vp_player_char->set_flipped(true);
+  else
+    ui_vp_player_char->set_flipped(false);
+
+
   switch (emote_mod)
   {
   case 1: case 2: case 6:
