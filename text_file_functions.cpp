@@ -103,7 +103,7 @@ void AOApplication::write_to_serverlist_txt(QString p_line)
 
   QTextStream out(&serverlist_txt);
 
-  out << p_line << "\r\n";
+  out << "\r\n" << p_line;
 
   serverlist_txt.close();
 }

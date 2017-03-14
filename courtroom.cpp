@@ -858,7 +858,10 @@ void Courtroom::append_ms_chatmessage(QString f_message)
   for (QString i_word : word_list)
   {
     if (i_word.startsWith("http"))
+    {
+      i_word.replace("\n", "").replace("\r", "");
       ui_ms_chatlog->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
+    }
     else
       ui_ms_chatlog->insertPlainText(i_word + " ");
   }
@@ -895,7 +898,10 @@ void Courtroom::append_server_chatmessage(QString f_name, QString f_message)
   for (QString i_word : word_list)
   {
     if (i_word.startsWith("http"))
+    {
+      i_word.replace("\n", "").replace("\r", "");
       ui_server_chatlog->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
+    }
     else
       ui_server_chatlog->insertPlainText(i_word + " ");
   }

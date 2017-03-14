@@ -350,7 +350,10 @@ void Lobby::append_chatmessage(QString f_message)
   for (QString i_word : word_list)
   {
     if (i_word.startsWith("http"))
+    {
+      i_word.replace("\n", "").replace("\r", "");
       ui_chatbox->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
+    }
     else
       ui_chatbox->insertPlainText(i_word + " ");
   }
