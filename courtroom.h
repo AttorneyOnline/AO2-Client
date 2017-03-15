@@ -46,10 +46,9 @@ public:
   void set_window_title(QString p_title);
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
   void set_taken(int n_char, bool p_taken);
-  void set_char_select_page();
   void set_background(QString p_background);
 
-  void set_char_select();
+
 
   void done_received();
 
@@ -199,8 +198,6 @@ private:
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
-
-
   QString current_background = "gs4";
 
   AOMusicPlayer *music_player;
@@ -304,6 +301,9 @@ private:
 
   AOImage *ui_char_select_background;
 
+  //abstract widget to hold char buttons
+  QWidget *ui_char_buttons;
+
   QVector<AOCharButton*> ui_char_button_list;
   AOImage *ui_selector;
 
@@ -315,6 +315,10 @@ private:
   AOButton *ui_char_select_right;
 
   AOButton *ui_spectator;
+
+  void construct_char_select();
+  void set_char_select();
+  void set_char_select_page();
 
   void construct_emotes();
   void set_emote_page();

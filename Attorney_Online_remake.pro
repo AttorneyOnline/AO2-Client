@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     aomusicplayer.cpp \
     aoblipplayer.cpp \
     evidence.cpp \
-    aoevidencebutton.cpp
+    aoevidencebutton.cpp \
+    charselect.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
