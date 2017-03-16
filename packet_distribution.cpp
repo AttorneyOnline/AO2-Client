@@ -169,7 +169,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (server_software == "v1312.150")
     {
       encryption_needed = false;
-      yellow_text_enabled = true;
       custom_objection_enabled = true;
     }
     else if (server_software == "tsuserver3")

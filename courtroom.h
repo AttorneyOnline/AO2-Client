@@ -127,6 +127,7 @@ private:
   //used to determine how often blips sound
   int blip_pos = 0;
   int blip_rate = 1;
+  int rainbow_counter = 0;
   bool blank_blip = false;
 
   //delay before chat messages starts ticking
@@ -164,8 +165,6 @@ private:
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
   int text_state = 2;
 
-  int current_char_page = 0;
-
   //character id, which index of the char_list the player is
   int m_cid = -1;
   //cid and this may differ in cases of ini-editing
@@ -177,6 +176,11 @@ private:
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
+
+  int current_char_page = 0;
+  int char_columns = 10;
+  int char_rows = 9;
+  int max_chars_on_page = 90;
 
   int current_emote_page = 0;
   int current_emote = 0;
@@ -217,7 +221,7 @@ private:
   AOScene *ui_vp_legacy_desk;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
-  QPlainTextEdit *ui_vp_message;
+  QTextEdit *ui_vp_message;
   AOImage *ui_vp_testimony;
   AOImage *ui_vp_realization;
   AOMovie *ui_vp_wtce;

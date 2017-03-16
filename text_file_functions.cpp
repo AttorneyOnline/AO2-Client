@@ -185,6 +185,36 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
   return result;
 }
 
+QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path() + p_file;
+  QString default_path = get_default_theme_path() + p_file;
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+  QPoint return_value;
+
+  return_value.setX(0);
+  return_value.setY(0);
+
+  if (f_result == "")
+  {
+    f_result = read_design_ini(p_identifier, default_path);
+
+    if (f_result == "")
+      return return_value;
+  }
+
+  QStringList sub_line_elements = f_result.split(",");
+
+  if (sub_line_elements.size() < 2)
+    return return_value;
+
+  return_value.setX(sub_line_elements.at(0).toInt());
+  return_value.setY(sub_line_elements.at(1).toInt());
+
+  return return_value;
+}
+
 pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path() + p_file;

@@ -105,6 +105,8 @@ public:
   int get_default_blip();
   void write_to_serverlist_txt(QString p_line);
   QVector<server_type> read_serverlist_txt();
+  QString read_design_ini(QString p_identifier, QString p_design_path);
+  QPoint get_button_spacing(QString p_identifier, QString p_file);
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
   int get_font_size(QString p_identifier, QString p_file);
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
@@ -123,9 +125,6 @@ public:
   int get_sfx_delay(QString p_char, int p_emote);
   int get_emote_mod(QString p_char, int p_emote);
   QString get_gender(QString p_char);
-  QString read_design_ini(QString p_identifier, QString p_design_path);
-
-
 
 private:
   const int RELEASE = 2;

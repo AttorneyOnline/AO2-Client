@@ -36,7 +36,6 @@ void Courtroom::construct_emotes()
 
     ++x_mod_count;
 
-    //if emote number is divisible by columns with rest columns -1 then the next emote button should start on a new line
     if (x_mod_count == emote_columns)
     {
       ++y_mod_count;

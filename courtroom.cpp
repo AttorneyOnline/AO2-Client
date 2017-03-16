@@ -64,7 +64,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
-  ui_vp_message = new QPlainTextEdit(ui_vp_chatbox);
+  ui_vp_message = new QTextEdit(ui_vp_chatbox);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -166,6 +166,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_text_color->addItem("Blue");
   if (ao_app->yellow_text_enabled)
     ui_text_color->addItem("Yellow");
+
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -1177,6 +1178,9 @@ void Courtroom::realization_done()
 
 void Courtroom::start_chat_ticking()
 {
+  ui_vp_message->clear();
+  set_text_color();
+  rainbow_counter = 0;
   //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
   if (text_state != 0)
     return;
@@ -1219,11 +1223,42 @@ void Courtroom::chat_tick()
 
   else
   {
-    ui_vp_message->insertPlainText(f_message.at(tick_pos));
+    QString f_character = f_message.at(tick_pos);
+
+    if (f_character == " ")
+      ui_vp_message->insertPlainText(" ");
+    else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
+    {
+      QString html_color;
+
+      switch (rainbow_counter)
+      {
+      case 0:
+        html_color = "#FF0000";
+        break;
+      case 1:
+        html_color = "#FF7F00";
+        break;
+      case 2:
+        html_color = "#FFFF00";
+        break;
+      case 3:
+        html_color = "#00FF00";
+        break;
+      default:
+        html_color = "#2d96ff";
+        rainbow_counter = -1;
+      }
+
+      ++rainbow_counter;
+
+      ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
+    }
+    else
+      ui_vp_message->insertHtml(f_character);
 
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());
-    //scroll->hide();
 
     if(blank_blip)
       qDebug() << "blank_blip found true";
@@ -1370,10 +1405,6 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: yellow");
     break;
-  case BLACK:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: black");
-    break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:
@@ -1492,12 +1523,16 @@ void Courtroom::mod_called(QString p_ip)
 
 void Courtroom::on_ooc_return_pressed()
 {
-  if (ui_ooc_chat_message->text() == "" || ui_ooc_chat_name->text() == "")
+  static bool rainbow_appended = false;
+
+  QString ooc_message = ui_ooc_chat_message->text();
+
+  if (ooc_message == "" || ui_ooc_chat_name->text() == "")
     return;
 
-  if (ui_ooc_chat_message->text().startsWith("/pos"))
+  if (ooc_message.startsWith("/pos"))
   {
-    if (ui_ooc_chat_message->text().startsWith("/pos jud"))
+    if (ooc_message.startsWith("/pos jud"))
     {
       ui_witness_testimony->show();
       ui_cross_examination->show();
@@ -1516,14 +1551,19 @@ void Courtroom::on_ooc_return_pressed()
       ui_prosecution_plus->hide();
     }
   }
-
-  //cheap, but it works
-  if (ui_ooc_chat_message->text().startsWith("/login"))
+  else if (ooc_message.startsWith("/login"))
     ui_guard->show();
+  else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
+  {
+    ui_text_color->addItem("Rainbow");
+    ui_ooc_chat_message->clear();
+    rainbow_appended = true;
+    return;
+  }
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
-  packet_contents.append(ui_ooc_chat_message->text());
+  packet_contents.append(ooc_message);
 
   AOPacket *f_packet = new AOPacket("CT", packet_contents);
 
@@ -1871,25 +1911,6 @@ void Courtroom::on_evidence_button_clicked()
   {
     ui_evidence->hide();
   }
-}
-
-void Courtroom::char_clicked(int n_char)
-{
-  int n_real_char = n_char + current_char_page * 90;
-
-  QString char_ini_path = ao_app->get_character_path(char_list.at(n_real_char).name) + "char.ini";
-
-  if (!file_exists(char_ini_path))
-  {
-    qDebug() << "did not find " << char_ini_path;
-    call_notice("Could not find " + char_ini_path);
-    return;
-  }
-
-  if (n_real_char == m_cid)
-    enter_courtroom(m_cid);
-  else
-    ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%"));
 }
 
 void Courtroom::ping_server()

@@ -103,7 +103,6 @@ enum COLOR
   ORANGE,
   BLUE,
   YELLOW,
-  BLACK,
   RAINBOW
 };
 
