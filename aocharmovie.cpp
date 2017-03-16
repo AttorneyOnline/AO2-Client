@@ -157,7 +157,11 @@ void AOCharMovie::combo_resize(int w, int h)
 void AOCharMovie::frame_change(int n_frame)
 {
   if (m_flipped && flipped_movie.size() > n_frame)
-    this->setPixmap(QPixmap::fromImage(flipped_movie.at(n_frame)));
+  {
+    QPixmap f_pixmap = QPixmap::fromImage(flipped_movie.at(n_frame));
+
+    this->setPixmap(f_pixmap.scaled(this->width(), this->height()));
+  }
 
   if (m_movie->frameCount() - 1 == n_frame && play_once)
   {
