@@ -15,43 +15,37 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
 
-void AOMovie::play(QString p_gif, QString p_char)
-{
-  play_once = true;
-
-  m_movie->stop();
-
-  QString default_path = ao_app->get_default_theme_path() + p_gif + ".gif";
-  QString gif_path;
-
-  if (p_gif == "custom")
-    gif_path = ao_app->get_character_path(p_char) + "custom.gif";
-  else
-    gif_path = ao_app->get_theme_path() + p_gif + ".gif";
-
-
-  if (file_exists(gif_path))
-    m_movie->setFileName(gif_path);
-  else
-    m_movie->setFileName(default_path);
-
-  this->show();
-  m_movie->start();
-}
-
-void AOMovie::play(QString p_gif, bool p_play_once)
+void AOMovie::set_play_once(bool p_play_once)
 {
   play_once = p_play_once;
+}
 
+void AOMovie::play(QString p_gif, QString p_char)
+{
   m_movie->stop();
 
-  QString default_path = ao_app->get_default_theme_path() + p_gif + ".gif";
-  QString gif_path = ao_app->get_theme_path() + p_gif + ".gif";
+  QString gif_path;
 
-  if (file_exists(gif_path))
-    m_movie->setFileName(gif_path);
+  QString custom_path = ao_app->get_character_path(p_char) + p_gif + ".gif";
+  QString theme_path = ao_app->get_theme_path() + p_gif + ".gif";
+  QString default_theme_path = ao_app->get_default_theme_path() + p_gif + ".gif";
+  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
+  QString default_placeholder_path = ao_app->get_default_theme_path() + "placeholder.gif";
+
+  if (file_exists(custom_path))
+    gif_path = custom_path;
+  else if (file_exists(theme_path))
+    gif_path = theme_path;
+  else if (file_exists(default_theme_path))
+    gif_path = default_theme_path;
+  else if (file_exists(placeholder_path))
+    gif_path = placeholder_path;
+  else if (file_exists(default_placeholder_path))
+    gif_path = default_placeholder_path;
   else
-    m_movie->setFileName(default_path);
+    gif_path = "";
+
+  m_movie->setFileName(gif_path);
 
   this->show();
   m_movie->start();

@@ -58,6 +58,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_viewport = new QWidget(this);
   ui_vp_background = new AOScene(ui_viewport, ao_app);
   ui_vp_speedlines = new AOMovie(ui_viewport, ao_app);
+  ui_vp_speedlines->set_play_once(false);
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
   ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
@@ -1003,7 +1004,9 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
 
-  QString f_showname = ao_app->get_showname(char_list.at(m_chatmessage[CHAR_ID].toInt()).name);
+  QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
+
+  QString f_showname = ao_app->get_showname(real_name);
 
   ui_vp_showname->setText(f_showname);
 
@@ -1060,9 +1063,9 @@ void Courtroom::handle_chatmessage_3()
     if (side == "pro" ||
         side == "hlp" ||
         side == "wit")
-      ui_vp_speedlines->play("prosecution_speedlines", false);
+      ui_vp_speedlines->play("prosecution_speedlines");
     else
-      ui_vp_speedlines->play("defense_speedlines", false);
+      ui_vp_speedlines->play("defense_speedlines");
 
   }
 
@@ -1227,6 +1230,10 @@ void Courtroom::chat_tick()
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
+    else if (f_character == "<")
+      ui_vp_message->insertHtml("&lt;");
+    else if (f_character == ">")
+      ui_vp_message->insertHtml("&gt;");
     else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
     {
       QString html_color;

@@ -14,8 +14,8 @@ class AOMovie : public QLabel
 public:
   AOMovie(QWidget *p_parent, AOApplication *p_ao_app);
 
-  void play(QString p_gif, QString p_char = "null");
-  void play(QString p_gif, bool p_play_once);
+  void set_play_once(bool p_play_once);
+  void play(QString p_gif, QString p_char = "");
   void combo_resize(int w, int h);
   void stop();
 

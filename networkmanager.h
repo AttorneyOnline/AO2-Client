@@ -27,6 +27,8 @@ public:
   bool partial_packet = false;
   QString temp_packet = "";
 
+  unsigned int s_decryptor = 5;
+
   void connect_to_master();
   void connect_to_server(server_type p_server);
 
