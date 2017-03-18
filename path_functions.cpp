@@ -79,7 +79,14 @@ QString AOApplication::get_default_background_path()
 
 QString AOApplication::get_evidence_path()
 {
-  return get_base_path() + "evidence/";
+    QString default_path = "evidence/";
+    QString alt_path = "items/";
+    if (dir_exists(default_path))
+      return get_base_path() + default_path;
+    else if (dir_exists(alt_path))
+      return get_base_path() + alt_path;
+    else
+      return get_base_path() + default_path;
 }
 
 QString Courtroom::get_background_path()
