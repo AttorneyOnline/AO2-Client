@@ -129,13 +129,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString f_hdid;
     f_hdid = get_hdid();
 
-    encryption_needed = true;
-
-    AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
-    send_server_packet(hi_packet);
-  }
-  else if (header == "ID")
-  {
     //default(legacy) values
     encryption_needed = true;
     yellow_text_enabled = false;
@@ -144,6 +137,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     custom_objection_enabled = false;
     improved_loading_enabled = false;
 
+    AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
+    send_server_packet(hi_packet);
+  }
+  else if (header == "ID")
+  {
     if (f_contents.size() < 2)
       goto end;
 
