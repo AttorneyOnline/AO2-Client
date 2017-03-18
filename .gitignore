@@ -1,3 +1,5 @@
 *~
 *.db
 *.user
+*.dll
+*.so
