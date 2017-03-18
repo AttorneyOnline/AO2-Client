@@ -1,6 +1,6 @@
 #include "aoapplication.h"
 #include "courtroom.h"
-
+#include "file_functions.h"
 #include <QDir>
 #include <QDebug>
 
@@ -16,7 +16,16 @@ QString AOApplication::get_base_path()
 #elif defined(ANDROID)
   return "/storage/extSdCard/AO2/";
 #else
-  return (QDir::currentPath() + "/base/");
+  QString default_path = "/base/";
+  QString alt_path = "/data/";
+
+  if (dir_exists(default_path))
+    return QDir::currentPath() + default_path;
+  else if (dir_exists(alt_path))
+    return QDir::currentPath() + alt_path;
+  else
+      return QDir::currentPath() + default_path;
+
 #endif
 }
 
@@ -37,7 +46,14 @@ QString AOApplication::get_character_path(QString p_character)
 
 QString AOApplication::get_demothings_path()
 {
-  return get_base_path() + "misc/demothings/";
+  QString default_path = "misc/demothings/";
+  QString alt_path = "misc/RosterImages";
+  if (dir_exists(default_path))
+    return get_base_path() + default_path;
+  else if (dir_exists(alt_path))
+    return get_base_path() + alt_path;
+  else
+    return get_base_path() + default_path;
 }
 QString AOApplication::get_sounds_path()
 {

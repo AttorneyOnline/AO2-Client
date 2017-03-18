@@ -165,23 +165,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_minor = version_list.at(2).toInt();
       }
     }
-
-    if (server_software == "v1312.150")
-    {
-      encryption_needed = false;
-      custom_objection_enabled = true;
-    }
-    else if (server_software == "tsuserver3")
-    {
-      if (server_release >= 3)
-      {
-        yellow_text_enabled = true;
-        flipping_enabled = true;
-        custom_objection_enabled = true;
-        improved_loading_enabled = true;
-      }
-    }
-
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
   else if (header == "CT")
@@ -191,6 +174,19 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (courtroom_constructed)
       w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1));
+  }
+  else if (header == "FL")
+  {
+    if (f_packet.contains("yellowtext",Qt::CaseInsensitive))
+        yellow_text_enabled = true;
+    if (f_packet.contains("flipping",Qt::CaseInsensitive))
+        flipping_enabled = true;
+    if (f_packet.contains("customobjections",Qt::CaseInsensitive))
+        custom_objection_enabled = true;
+    if (f_packet.contains("fastloading",Qt::CaseInsensitive))
+        improved_loading_enabled = true;
+    if (f_packet.contains("noencryption",Qt::CaseInsensitive))
+        encryption_needed = false;
   }
   else if (header == "PN")
   {

@@ -4,5 +4,6 @@
 #include <QString>
 
 bool file_exists(QString file_path);
+bool dir_exists(QString file_path);
 
 #endif // FILE_FUNCTIONS_H

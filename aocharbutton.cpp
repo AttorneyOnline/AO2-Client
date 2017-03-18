@@ -54,6 +54,7 @@ void AOCharButton::set_image(QString p_character)
 {
   QString image_path = ao_app->get_character_path(p_character) + "char_icon.png";
   QString legacy_path = ao_app->get_demothings_path() + p_character.toLower() + "_char_icon.png";
+  QString alt_path = ao_app->get_demothings_path() + p_character.toLower() + "_off.png";
 
   this->setText("");
 
