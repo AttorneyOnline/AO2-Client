@@ -149,20 +149,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QString server_software = f_contents.at(1);
 
-    int server_release = 0;
-    int server_major = 0;
-    int server_minor = 0;
+    //temporary workaround
+    if (server_software == "tsuserver3")
+      server_packet_received(new AOPacket("FL#yellowtext#customobjections#flipping#fastloading#%"));
 
-    if (f_contents.size() >= 3)
-    {
-      QStringList version_list = f_contents.at(2).split(".");
-      if (version_list.size() >= 3)
-      {
-        server_release = version_list.at(0).toInt();
-        server_major = version_list.at(1).toInt();
-        server_minor = version_list.at(2).toInt();
-      }
-    }
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
   else if (header == "CT")
