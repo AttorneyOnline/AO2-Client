@@ -59,7 +59,25 @@ void Lobby::set_widgets()
 {
   ao_app->set_user_theme();
 
-  ui_background->resize(m_lobby_width, m_lobby_height);
+  QString filename = "lobby_design.ini";
+
+  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
+
+  if (f_lobby.width < 0 || f_lobby.height < 0)
+  {
+    qDebug() << "W: did not find courtroom width or height in " << filename;
+
+    this->resize(517, 666);
+  }
+  else
+  {
+    m_lobby_width = f_lobby.width;
+    m_lobby_height = f_lobby.height;
+
+    this->setFixedSize(f_lobby.width, f_lobby.height);
+  }
+
+  set_size_and_pos(ui_background, "lobby");
   ui_background->set_image("lobbybackground.png");
 
   set_size_and_pos(ui_public_servers, "public_servers");

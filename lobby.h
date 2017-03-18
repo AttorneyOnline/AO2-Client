@@ -42,8 +42,8 @@ public:
 private:
   AOApplication *ao_app;
 
-  const int m_lobby_width = 517;
-  const int m_lobby_height = 666;
+  int m_lobby_width = 517;
+  int m_lobby_height = 666;
 
   AOImage *ui_background;
 
