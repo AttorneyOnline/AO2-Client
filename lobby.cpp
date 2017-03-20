@@ -13,7 +13,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
 
   this->setWindowTitle("Attorney Online 2");
-  this->setFixedSize(m_lobby_width, m_lobby_height);
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -65,16 +64,13 @@ void Lobby::set_widgets()
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
-    qDebug() << "W: did not find courtroom width or height in " << filename;
+    qDebug() << "W: did not find lobby width or height in " << filename;
 
     this->resize(517, 666);
   }
   else
   {
-    m_lobby_width = f_lobby.width;
-    m_lobby_height = f_lobby.height;
-
-    this->setFixedSize(f_lobby.width, f_lobby.height);
+    this->resize(f_lobby.width, f_lobby.height);
   }
 
   set_size_and_pos(ui_background, "lobby");
@@ -128,7 +124,7 @@ void Lobby::set_widgets()
   ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "selection-background-color: rgba(0, 0, 0, 0);");
 
-  ui_loading_background->resize(m_lobby_width, m_lobby_height);
+  ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground.png");
 
 

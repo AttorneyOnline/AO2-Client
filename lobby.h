@@ -42,9 +42,6 @@ public:
 private:
   AOApplication *ao_app;
 
-  int m_lobby_width = 517;
-  int m_lobby_height = 666;
-
   AOImage *ui_background;
 
   AOButton *ui_public_servers;

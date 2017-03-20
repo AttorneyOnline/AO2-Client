@@ -70,7 +70,7 @@ HEADERS  += lobby.h \
     aoblipplayer.h \
     aoevidencebutton.h
 
-unix:LIBS += -L/home/omnitroid/Project/Attorney_Online_2/src -lbass
+unix:LIBS += -L$$PWD -lbass
 win32:LIBS += "$$PWD/bass.dll"
 android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
 
