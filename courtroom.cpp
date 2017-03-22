@@ -596,6 +596,8 @@ void Courtroom::done_received()
 
 void Courtroom::set_background(QString p_background)
 {
+  testimony_in_progress = false;
+
   current_background = p_background;
   QString bg_path = get_background_path();
 
@@ -940,7 +942,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
-  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text())
+  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
     objection_state = 0;
@@ -958,6 +960,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   previous_ic_message = f_message;
 
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
   //if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1)
@@ -965,21 +969,21 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     switch (objection_mod)
     {
     case 1:
-      ui_vp_objection->play("holdit");
-      objection_player->play("holdit.wav", m_chatmessage[CHAR_NAME]);
+      ui_vp_objection->play("holdit", f_char, f_custom_theme);
+      objection_player->play("holdit.wav", f_char);
       break;
     case 2:
-      ui_vp_objection->play("objection");
-      objection_player->play("objection.wav", m_chatmessage[CHAR_NAME]);
+      ui_vp_objection->play("objection", f_char, f_custom_theme);
+      objection_player->play("objection.wav", f_char);
       break;
     case 3:
-      ui_vp_objection->play("takethat");
-      objection_player->play("takethat.wav", m_chatmessage[CHAR_NAME]);
+      ui_vp_objection->play("takethat", f_char, f_custom_theme);
+      objection_player->play("takethat.wav", f_char);
       break;
     //case 4 is AO2 only
     case 4:
-      ui_vp_objection->play("custom", m_chatmessage[CHAR_NAME]);
-      objection_player->play("custom.wav", m_chatmessage[CHAR_NAME]);
+      ui_vp_objection->play("custom", f_char, f_custom_theme);
+      objection_player->play("custom.wav", f_char);
       break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
@@ -1933,6 +1937,10 @@ void Courtroom::check_connection_received()
 
 void Courtroom::connection_timeout()
 {
+  //cheap hack because demonsoftware refuses to conform to standards
+  if (ao_app->server_software.startsWith("AODemon"))
+    return;
+
   call_notice("Disconnected from server.");
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();

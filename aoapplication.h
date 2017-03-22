@@ -55,6 +55,8 @@ public:
   //player number, it's hardly used but might be needed for some old servers
   int s_pv = 0;
 
+  QString server_software = "";
+
   int char_list_size = 0;
   int loaded_chars = 0;
   int evidence_list_size = 0;
@@ -113,6 +115,7 @@ public:
   QString get_char_side(QString p_char);
   QString get_showname(QString p_char);
   QString get_chat(QString p_char);
+  QString get_char_shouts(QString p_char);
   int get_preanim_duration(QString p_char, QString p_emote);
   int get_ao2_preanim_duration(QString p_char, QString p_emote);
   int get_text_delay(QString p_char, QString p_emote);

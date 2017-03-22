@@ -19,7 +19,7 @@ QString AOApplication::read_config(QString searchline)
 
   while(!in.atEnd())
   {
-    QString f_line = in.readLine();
+    QString f_line = in.readLine().trimmed();
 
     if (!f_line.startsWith(searchline))
       continue;
@@ -163,7 +163,7 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
 
   while (!in.atEnd())
   {
-    QString f_line = in.readLine();
+    QString f_line = in.readLine().trimmed();
 
     if (!f_line.startsWith(p_identifier))
       continue;
@@ -359,6 +359,13 @@ QString AOApplication::get_chat(QString p_char)
   QString f_result = read_char_ini(p_char, "chat", "[Options]", "[Time]");
 
   //handling the correct order of chat is a bit complicated, we let the caller do it
+  return f_result.toLower();
+}
+
+QString AOApplication::get_char_shouts(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "shouts", "[Options]", "[Time]");
+
   return f_result.toLower();
 }
 

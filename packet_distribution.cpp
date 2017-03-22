@@ -116,7 +116,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   QString f_packet = p_packet->to_string();
 
   if (header != "checkconnection")
-    qDebug() << "R: " << f_packet;
+    qDebug() << "R:" << f_packet;
 
   if (header == "decryptor")
   {
@@ -146,6 +146,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     s_pv = f_contents.at(0).toInt();
+    server_software = f_contents.at(1);
 
     QString server_software = f_contents.at(1);
 

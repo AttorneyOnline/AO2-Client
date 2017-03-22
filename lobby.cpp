@@ -26,6 +26,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_player_count = new QLabel(this);
   ui_description = new QPlainTextEdit(this);
   ui_chatbox = new QTextBrowser(this);
+  ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
