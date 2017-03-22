@@ -1927,7 +1927,7 @@ void Courtroom::on_evidence_button_clicked()
 void Courtroom::ping_server()
 {
   ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
-  disconnect_timer->start(10000);
+  disconnect_timer->start(20000);
 }
 
 void Courtroom::check_connection_received()
