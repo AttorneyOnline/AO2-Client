@@ -1534,8 +1534,6 @@ void Courtroom::mod_called(QString p_ip)
 
 void Courtroom::on_ooc_return_pressed()
 {
-  static bool rainbow_appended = false;
-
   QString ooc_message = ui_ooc_chat_message->text();
 
   if (ooc_message == "" || ui_ooc_chat_name->text() == "")

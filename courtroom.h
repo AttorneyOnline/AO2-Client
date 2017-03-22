@@ -128,6 +128,7 @@ private:
   int blip_pos = 0;
   int blip_rate = 1;
   int rainbow_counter = 0;
+  bool rainbow_appended = false;
   bool blank_blip = false;
 
   //delay before chat messages starts ticking
