@@ -152,7 +152,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     //temporary workaround
     if (server_software == "tsuserver3")
-      server_packet_received(new AOPacket("FL#yellowtext#customobjections#flipping#fastloading#%"));
+      server_packet_received(new AOPacket("FL#yellowtext#customobjections#flipping#fastloading#noencryption#%"));
 
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
