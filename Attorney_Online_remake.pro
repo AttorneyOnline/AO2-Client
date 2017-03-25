@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     aoblipplayer.cpp \
     evidence.cpp \
     aoevidencebutton.cpp \
-    charselect.cpp
+    charselect.cpp \
+    aotextarea.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -68,7 +69,8 @@ HEADERS  += lobby.h \
     aosfxplayer.h \
     aomusicplayer.h \
     aoblipplayer.h \
-    aoevidencebutton.h
+    aoevidencebutton.h \
+    aotextarea.h
 
 unix:LIBS += -L$$PWD -lbass
 win32:LIBS += "$$PWD/bass.dll"

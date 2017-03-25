@@ -9,6 +9,7 @@
 
 #include <QDebug>
 #include <QScrollBar>
+#include <QRegExp>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -774,13 +775,14 @@ void Courtroom::append_server_chatmessage(QString f_name, QString f_message)
 
   ui_server_chatlog->insertPlainText(f_name + ": ");
 
-  QStringList word_list = f_message.split(" ");
+  QRegExp split_rx("(\\ |\\n)");
+  QStringList word_list = f_message.split(split_rx);
 
   for (QString i_word : word_list)
   {
     if (i_word.startsWith("http"))
     {
-      i_word.replace("\n", "").replace("\r", "");
+      i_word.replace("\r", "");
       ui_server_chatlog->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
     }
     else
