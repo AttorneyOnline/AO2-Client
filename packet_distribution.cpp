@@ -542,11 +542,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && f_contents.size() > 0)
       w_courtroom->mod_called(f_contents.at(0));
   }
-  else if (header == "checkconnection" || header == "CHECK")
-  {
-    if (courtroom_constructed)
-      w_courtroom->check_connection_received();
-  }
 
   end:
 

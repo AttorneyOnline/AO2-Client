@@ -20,8 +20,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
-  disconnect_timer = new QTimer(this);
-  disconnect_timer->setSingleShot(true);
 
   chat_tick_timer = new QTimer(this);
 
@@ -248,8 +246,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
-
-  connect(disconnect_timer, SIGNAL(timeout()), this, SLOT(connection_timeout()));
 
   construct_char_select();
 
@@ -1927,23 +1923,6 @@ void Courtroom::on_evidence_button_clicked()
 void Courtroom::ping_server()
 {
   ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
-  disconnect_timer->start(20000);
-}
-
-void Courtroom::check_connection_received()
-{
-  disconnect_timer->stop();
-}
-
-void Courtroom::connection_timeout()
-{
-  //cheap hack because demonsoftware refuses to conform to standards
-  if (ao_app->server_software.startsWith("AODemon"))
-    return;
-
-  call_notice("Disconnected from server.");
-  ao_app->construct_lobby();
-  ao_app->destruct_courtroom();
 }
 
 Courtroom::~Courtroom()

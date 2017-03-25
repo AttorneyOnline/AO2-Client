@@ -116,9 +116,6 @@ private:
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 
-  //how long we wait for the server to respond on a ping
-  QTimer *disconnect_timer;
-
   //determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
   int chat_tick_interval = 60;
@@ -423,8 +420,6 @@ private slots:
   void char_clicked(int n_char);
 
   void ping_server();
-  void connection_timeout();
-
 };
 
 #endif // COURTROOM_H
