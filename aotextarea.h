@@ -6,9 +6,9 @@
 class AOTextArea : public QTextBrowser
 {
 public:
-  AOTextArea();
+  AOTextArea(QWidget *p_parent = nullptr);
 
-  append_text();
+  void append_chatmessage(QString p_name, QString p_message);
 };
 
 #endif // AOTEXTAREA_H

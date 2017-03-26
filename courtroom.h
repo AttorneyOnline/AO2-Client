@@ -13,6 +13,7 @@
 #include "aosfxplayer.h"
 #include "aoblipplayer.h"
 #include "aoevidencebutton.h"
+#include "aotextarea.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -76,7 +77,7 @@ public:
   void list_music();
 
   void append_ms_chatmessage(QString f_message);
-  void append_server_chatmessage(QString f_name, QString f_message);
+  void append_server_chatmessage(QString p_name, QString p_message);
 
   void handle_chatmessage(QStringList *p_contents);
   void handle_chatmessage_2();
@@ -228,7 +229,7 @@ private:
   QPlainTextEdit *ui_ic_chatlog;
 
   QTextBrowser *ui_ms_chatlog;
-  QTextBrowser *ui_server_chatlog;
+  AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;

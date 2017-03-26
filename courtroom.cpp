@@ -83,7 +83,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ms_chatlog->setOpenExternalLinks(true);
   ui_ms_chatlog->hide();
 
-  ui_server_chatlog = new QTextBrowser(this);
+  ui_server_chatlog = new AOTextArea(this);
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
 
@@ -761,44 +761,9 @@ void Courtroom::append_ms_chatmessage(QString f_message)
   }
 }
 
-void Courtroom::append_server_chatmessage(QString f_name, QString f_message)
+void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
 {
-  const QTextCursor old_cursor = ui_server_chatlog->textCursor();
-  const int old_scrollbar_value = ui_server_chatlog->verticalScrollBar()->value();
-  const bool is_scrolled_down = old_scrollbar_value == ui_server_chatlog->verticalScrollBar()->maximum();
-
-  ui_server_chatlog->moveCursor(QTextCursor::End);
-
-  ui_server_chatlog->insertPlainText(f_name + ": ");
-
-  QRegExp split_rx("(\\ |\\n)");
-  QStringList word_list = f_message.split(split_rx);
-
-  for (QString i_word : word_list)
-  {
-    if (i_word.startsWith("http"))
-    {
-      i_word.replace("\r", "");
-      ui_server_chatlog->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
-    }
-    else
-      ui_server_chatlog->insertPlainText(i_word + " ");
-  }
-
-  ui_server_chatlog->insertPlainText("\n");
-
-  if (old_cursor.hasSelection() || !is_scrolled_down)
-  {
-      // The user has selected text or scrolled away from the bottom: maintain position.
-      ui_server_chatlog->setTextCursor(old_cursor);
-      ui_server_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-  }
-  else
-  {
-      // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
-      ui_server_chatlog->moveCursor(QTextCursor::End);
-      ui_server_chatlog->verticalScrollBar()->setValue(ui_server_chatlog->verticalScrollBar()->maximum());
-  }
+  ui_server_chatlog->append_chatmessage(p_name, p_message);
 }
 
 void Courtroom::on_chat_return_pressed()
