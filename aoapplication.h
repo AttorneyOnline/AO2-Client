@@ -127,6 +127,7 @@ public:
   QString get_sfx_name(QString p_char, int p_emote);
   int get_sfx_delay(QString p_char, int p_emote);
   int get_emote_mod(QString p_char, int p_emote);
+  int get_desk_mod(QString p_char, int p_emote);
   QString get_gender(QString p_char);
 
 private:
