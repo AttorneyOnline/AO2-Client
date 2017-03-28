@@ -17,23 +17,19 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
 
   this->moveCursor(QTextCursor::End);
 
-  this->insertPlainText(p_name + ": ");
+  this->append(p_name + ": ");
 
-  QRegExp split_rx("(\\ |\\n)");
-  QStringList word_list = p_message.split(split_rx);
+  QStringList word_list = p_message.split(" ");
 
   for (QString i_word : word_list)
   {
     if (i_word.startsWith("http"))
     {
-      i_word.replace("\r", "");
       this->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
     }
     else
       this->insertPlainText(i_word + " ");
   }
-
-  this->insertPlainText("\n");
 
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {

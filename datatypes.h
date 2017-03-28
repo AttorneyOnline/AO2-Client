@@ -78,7 +78,7 @@ struct pos_size_type
 
 enum CHAT_MESSAGE
 {
-  CHAT = 0,
+  DESK_MOD = 0,
   PRE_EMOTE,
   CHAR_NAME,
   EMOTE,

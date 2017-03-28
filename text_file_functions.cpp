@@ -459,10 +459,13 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 5)
-  {
     return -1;
-  }
-  else return result_contents.at(4).toInt();
+
+  QString string_result = result_contents.at(4);
+  if (string_result == "")
+    return -1;
+
+  else return string_result.toInt();
 }
 
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)

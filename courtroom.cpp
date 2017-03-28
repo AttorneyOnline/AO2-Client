@@ -793,7 +793,14 @@ void Courtroom::on_chat_return_pressed()
 
   QStringList packet_contents;
 
-  packet_contents.append("chat");
+  QString f_side = ao_app->get_char_side(current_char);
+
+  QString f_desk_mod = QString::number(ao_app->get_desk_mod(current_char, current_emote));
+  qDebug() << "f_desk_mod: " << f_desk_mod;
+  if (f_desk_mod == "-1")
+    f_desk_mod = "chat";
+
+  packet_contents.append(f_desk_mod);
 
   packet_contents.append(ao_app->get_pre_emote(current_char, current_emote));
 
@@ -803,7 +810,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(ui_ic_chat_message->text());
 
-  packet_contents.append(ao_app->get_char_side(current_char));
+  packet_contents.append(f_side);
 
   packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
 
@@ -1295,6 +1302,7 @@ void Courtroom::set_scene()
   QString f_image = "witnessempty.png";
 
   QString f_side = m_chatmessage[SIDE];
+  QString f_desk_mod = m_chatmessage[DESK_MOD];
 
   if (f_side == "def")
     f_image = "defenseempty.png";
@@ -1309,11 +1317,9 @@ void Courtroom::set_scene()
 
   ui_vp_background->set_image(f_image);
 
-  //no-desk-emotes have been temporarily reverted
-  //we're done if one of the non-desk positions is the current one(jud, hlp and hld)
-  if (f_side == "jud" ||
-      f_side == "hlp" ||
-      f_side == "hld")
+  //we're done if deskmod is 0 or the deskmod is chat and it's a nondesk side
+  if (f_desk_mod == "0" ||
+     (f_desk_mod == "chat" && (f_side == "hlp" || f_side == "hld" || f_side == "jud")))
   {
     ui_vp_desk->hide();
     ui_vp_legacy_desk->hide();

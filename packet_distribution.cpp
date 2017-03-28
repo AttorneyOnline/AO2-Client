@@ -136,6 +136,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     flipping_enabled = false;
     custom_objection_enabled = false;
     improved_loading_enabled = false;
+    desk_mod_enabled = false;
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
@@ -176,6 +177,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         improved_loading_enabled = true;
     if (f_packet.contains("noencryption",Qt::CaseInsensitive))
         encryption_needed = false;
+    if (f_packet.contains("deskmod",Qt::CaseInsensitive))
+        desk_mod_enabled = true;
   }
   else if (header == "PN")
   {
