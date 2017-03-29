@@ -25,7 +25,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list = new QListWidget(this);
   ui_player_count = new QLabel(this);
   ui_description = new QPlainTextEdit(this);
-  ui_chatbox = new QTextBrowser(this);
+  ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
@@ -352,42 +352,9 @@ void Lobby::list_favorites()
   }
 }
 
-void Lobby::append_chatmessage(QString f_message)
+void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  const QTextCursor old_cursor = ui_chatbox->textCursor();
-  const int old_scrollbar_value = ui_chatbox->verticalScrollBar()->value();
-  const bool is_scrolled_down = old_scrollbar_value == ui_chatbox->verticalScrollBar()->maximum();
-
-  ui_chatbox->moveCursor(QTextCursor::End);
-
-  QStringList word_list = f_message.split(" ");
-
-  for (QString i_word : word_list)
-  {
-    if (i_word.startsWith("http"))
-    {
-      i_word.replace("\n", "").replace("\r", "");
-      ui_chatbox->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
-    }
-    else
-      ui_chatbox->insertPlainText(i_word + " ");
-  }
-
-  //ui_ms_chatlog->append(f_message);
-  ui_chatbox->insertPlainText("\n");
-
-  if (old_cursor.hasSelection() || !is_scrolled_down)
-  {
-      // The user has selected text or scrolled away from the bottom: maintain position.
-      ui_chatbox->setTextCursor(old_cursor);
-      ui_chatbox->verticalScrollBar()->setValue(old_scrollbar_value);
-  }
-  else
-  {
-      // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
-      ui_chatbox->moveCursor(QTextCursor::End);
-      ui_chatbox->verticalScrollBar()->setValue(ui_chatbox->verticalScrollBar()->maximum());
-  }
+  ui_chatbox->append_chatmessage(f_name, f_message);
 }
 
 void Lobby::set_player_count(int players_online, int max_players)

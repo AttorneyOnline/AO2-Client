@@ -78,7 +78,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
-  ui_ms_chatlog = new QTextBrowser(this);
+  ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
   ui_ms_chatlog->setOpenExternalLinks(true);
   ui_ms_chatlog->hide();
@@ -723,42 +723,9 @@ void Courtroom::list_music()
   }
 }
 
-void Courtroom::append_ms_chatmessage(QString f_message)
+void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
 {
-  const QTextCursor old_cursor = ui_ms_chatlog->textCursor();
-  const int old_scrollbar_value = ui_ms_chatlog->verticalScrollBar()->value();
-  const bool is_scrolled_down = old_scrollbar_value == ui_ms_chatlog->verticalScrollBar()->maximum();
-
-  ui_ms_chatlog->moveCursor(QTextCursor::End);
-
-  QStringList word_list = f_message.split(" ");
-
-  for (QString i_word : word_list)
-  {
-    if (i_word.startsWith("http"))
-    {
-      i_word.replace("\n", "").replace("\r", "");
-      ui_ms_chatlog->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
-    }
-    else
-      ui_ms_chatlog->insertPlainText(i_word + " ");
-  }
-
-  //ui_ms_chatlog->append(f_message);
-  ui_ms_chatlog->insertPlainText("\n");
-
-  if (old_cursor.hasSelection() || !is_scrolled_down)
-  {
-      // The user has selected text or scrolled away from the bottom: maintain position.
-      ui_ms_chatlog->setTextCursor(old_cursor);
-      ui_ms_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-  }
-  else
-  {
-      // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
-      ui_ms_chatlog->moveCursor(QTextCursor::End);
-      ui_ms_chatlog->verticalScrollBar()->setValue(ui_ms_chatlog->verticalScrollBar()->maximum());
-  }
+  ui_ms_chatlog->append_chatmessage(f_name, f_message);
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
@@ -775,7 +742,8 @@ void Courtroom::on_chat_return_pressed()
       objection_state == 0)
     return;
 
-  //MS#chat#
+  //MS#
+  //deskmod#
   //pre-emote#
   //character#
   //emote#
@@ -1288,9 +1256,6 @@ void Courtroom::play_sfx()
     return;
 
   sfx_player->play(sfx_name + ".wav");
-
-  //T0D0: add audio implementation
-  //QString sfx_name = m_chatmessage[SFX_NAME];
 }
 
 void Courtroom::set_scene()
@@ -1299,65 +1264,73 @@ void Courtroom::set_scene()
     show_testimony();
 
   //witness is default if pos is invalid
-  QString f_image = "witnessempty.png";
-
-  QString f_side = m_chatmessage[SIDE];
+  QString f_background = "witnessempty.png";
+  QString f_desk_image = "stand.png";
   QString f_desk_mod = m_chatmessage[DESK_MOD];
+  QString f_side = m_chatmessage[SIDE];
 
   if (f_side == "def")
-    f_image = "defenseempty.png";
-  else if (f_side == "pro")
-    f_image = "prosecutorempty.png";
-  else if (f_side == "jud")
-    f_image = "judgestand.png";
-  else if (f_side == "hld")
-    f_image = "helperstand.png";
-  else if (f_side == "hlp")
-    f_image = "prohelperstand.png";
-
-  ui_vp_background->set_image(f_image);
-
-  //we're done if deskmod is 0 or the deskmod is chat and it's a nondesk side
-  if (f_desk_mod == "0" ||
-     (f_desk_mod == "chat" && (f_side == "hlp" || f_side == "hld" || f_side == "jud")))
   {
-    ui_vp_desk->hide();
-    ui_vp_legacy_desk->hide();
-    return;
-  }
-
-  if (is_ao2_bg)
-  {
-    QString desk_image = "stand.png";
-
-    if (f_side == "def")
-      desk_image = "defensedesk.png";
-    else if (f_side == "pro")
-      desk_image = "prosecutiondesk.png";
-
-    ui_vp_desk->set_image(desk_image);
-    ui_vp_legacy_desk->hide();
-    ui_vp_desk->show();
-  }
-  else if (f_side == "def" || f_side == "pro")
-  {
-    QString desk_image;
-
-    if (f_side == "def")
-      desk_image = "bancodefensa.png";
+    f_background = "defenseempty.png";
+    if (is_ao2_bg)
+      f_desk_image = "defensedesk.png";
     else
-      desk_image = "bancoacusacion.png";
-
-    ui_vp_legacy_desk->set_legacy_desk(desk_image);
-    ui_vp_desk->hide();
-    ui_vp_legacy_desk->show();
+      f_desk_image = "bancodefensa.png";
   }
-  //assume wit or invalid side
+  else if (f_side == "pro")
+  {
+    f_background = "prosecutorempty.png";
+    if (is_ao2_bg)
+      f_desk_image = "prosecutiondesk.png";
+    else
+      f_desk_image = "bancoacusacion.png";
+  }
+  else if (f_side == "jud")
+  {
+    f_background = "judgestand.png";
+    f_desk_image = "judgedesk.png";
+  }
+  else if (f_side == "hld")
+  {
+    f_background = "helperstand.png";
+    f_desk_image = "helperdesk.png";
+  }
+  else if (f_side == "hlp")
+  {
+    f_background = "prohelperstand.png";
+    f_desk_image = "prohelperdesk.png";
+  }
   else
   {
-    ui_vp_desk->set_image("estrado.png");
+    if (is_ao2_bg)
+      f_desk_image = "stand.png";
+    else
+      f_desk_image = "estrado.png";
+  }
+
+  ui_vp_background->set_image(f_background);
+  ui_vp_desk->set_image(f_desk_image);
+  ui_vp_legacy_desk->set_image(f_desk_image);
+
+  if (f_desk_mod == "0" || (f_desk_mod != "1" &&
+           (f_side == "jud" ||
+            f_side == "hld" ||
+            f_side == "hlp")))
+  {
+    ui_vp_desk->hide();
+    ui_vp_legacy_desk->hide();
+  }
+  else if (is_ao2_bg || (f_side == "jud" ||
+                         f_side == "hld" ||
+                         f_side == "hlp"))
+  {
     ui_vp_legacy_desk->hide();
     ui_vp_desk->show();
+  }
+  else
+  {
+    ui_vp_desk->hide();
+    ui_vp_legacy_desk->show();
   }
 }
 

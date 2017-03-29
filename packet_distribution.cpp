@@ -49,22 +49,28 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   }
   else if (header == "CT")
   {
-    QString message_line;
+    QString f_name, f_message;
 
     if (f_contents.size() == 1)
-      message_line = f_contents.at(0);
+    {
+      f_name = "";
+      f_message = f_contents.at(0);
+    }
     else if (f_contents.size() >= 2)
-      message_line = f_contents.at(0) + ": " + f_contents.at(1);
+    {
+      f_name = f_contents.at(0);
+      f_message = f_contents.at(1);
+    }
     else
       goto end;
 
     if (lobby_constructed)
     {
-      w_lobby->append_chatmessage(message_line);
+      w_lobby->append_chatmessage(f_name, f_message);
     }
     if (courtroom_constructed && courtroom_loaded)
     {
-      w_courtroom->append_ms_chatmessage(message_line);
+      w_courtroom->append_ms_chatmessage(f_name, f_message);
     }
   }
   else if (header == "AO2CHECK")
@@ -453,7 +459,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (lobby_constructed)
-      w_courtroom->append_ms_chatmessage(w_lobby->get_chatlog());
+      w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
 
     w_courtroom->done_received();
 

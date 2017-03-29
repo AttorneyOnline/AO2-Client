@@ -76,7 +76,7 @@ public:
   void enter_courtroom(int p_cid);
   void list_music();
 
-  void append_ms_chatmessage(QString f_message);
+  void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
 
   void handle_chatmessage(QStringList *p_contents);
@@ -228,7 +228,7 @@ private:
 
   QPlainTextEdit *ui_ic_chatlog;
 
-  QTextBrowser *ui_ms_chatlog;
+  AOTextArea *ui_ms_chatlog;
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;

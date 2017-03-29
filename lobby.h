@@ -4,6 +4,7 @@
 #include "aoimage.h"
 #include "aobutton.h"
 #include "aopacket.h"
+#include "aotextarea.h"
 
 #include <QMainWindow>
 #include <QListWidget>
@@ -25,7 +26,7 @@ public:
   void set_widgets();
   void list_servers();
   void list_favorites();
-  void append_chatmessage(QString f_message);
+  void append_chatmessage(QString f_name, QString f_message);
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
   void show_loading_overlay(){ui_loading_background->show();}
@@ -59,7 +60,7 @@ private:
   QLabel *ui_player_count;
   QPlainTextEdit *ui_description;
 
-  QTextBrowser *ui_chatbox;
+  AOTextArea *ui_chatbox;
 
   QLineEdit *ui_chatname;
   QLineEdit *ui_chatmessage;
