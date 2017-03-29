@@ -18,17 +18,13 @@ QString AOApplication::get_base_path()
 #elif defined(ANDROID)
   return "/storage/extSdCard/AO2/";
 #else
-  QString default_path = "/base/";
-  QString alt_path = "/data/";
-
-  if (dir_exists(default_path))
-    return QDir::currentPath() + default_path;
-  else if (dir_exists(alt_path))
-    return QDir::currentPath() + alt_path;
-  else
-      return QDir::currentPath() + default_path;
-
+  return QDir::currentPath() + "/base/";
 #endif
+}
+
+QString AOApplication::get_data_path()
+{
+  return get_base_path() + "data/";
 }
 
 QString AOApplication::get_theme_path()
