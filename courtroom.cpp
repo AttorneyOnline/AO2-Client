@@ -764,7 +764,6 @@ void Courtroom::on_chat_return_pressed()
   QString f_side = ao_app->get_char_side(current_char);
 
   QString f_desk_mod = QString::number(ao_app->get_desk_mod(current_char, current_emote));
-  qDebug() << "f_desk_mod: " << f_desk_mod;
   if (f_desk_mod == "-1")
     f_desk_mod = "chat";
 
@@ -1309,8 +1308,9 @@ void Courtroom::set_scene()
   }
 
   ui_vp_background->set_image(f_background);
+  qDebug() << "f_desk_image: " << f_desk_image;
   ui_vp_desk->set_image(f_desk_image);
-  ui_vp_legacy_desk->set_image(f_desk_image);
+  ui_vp_legacy_desk->set_legacy_desk(f_desk_image);
 
   if (f_desk_mod == "0" || (f_desk_mod != "1" &&
            (f_side == "jud" ||
@@ -1329,8 +1329,17 @@ void Courtroom::set_scene()
   }
   else
   {
-    ui_vp_desk->hide();
-    ui_vp_legacy_desk->show();
+    qDebug() << "last";
+    if (f_side == "wit")
+    {
+      ui_vp_desk->show();
+      ui_vp_legacy_desk->hide();
+    }
+    else
+    {
+      ui_vp_desk->hide();
+      ui_vp_legacy_desk->show();
+    }
   }
 }
 
