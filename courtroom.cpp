@@ -856,6 +856,9 @@ void Courtroom::on_chat_return_pressed()
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
+  if (p_contents->size() < 15)
+    return;
+
   for (int n_string = 0 ; n_string < chatmessage_size ; ++n_string)
   {
     m_chatmessage[n_string] = p_contents->at(n_string);
