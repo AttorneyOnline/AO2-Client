@@ -1,6 +1,4 @@
 # Attorney-Online-Client-Remake
-What is this? A remake of a remake?
+This is a remake of Attorney Online made by FanatSors. This project uses Qt 5.7.
 
-The original AO2 project can be found here: https://github.com/OmniTroid/Attorney-Online-Client
-
-This project uses Qt 5.7
+This project depends on the bass shared library, get it here: http://www.un4seen.com/
