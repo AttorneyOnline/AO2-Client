@@ -763,9 +763,14 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_side = ao_app->get_char_side(current_char);
 
-  QString f_desk_mod = QString::number(ao_app->get_desk_mod(current_char, current_emote));
-  if (f_desk_mod == "-1")
-    f_desk_mod = "chat";
+  QString f_desk_mod = "chat";
+
+  if (ao_app->desk_mod_enabled)
+  {
+    f_desk_mod = QString::number(ao_app->get_desk_mod(current_char, current_emote));
+    if (f_desk_mod == "-1")
+      f_desk_mod = "chat";
+  }
 
   packet_contents.append(f_desk_mod);
 
