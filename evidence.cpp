@@ -6,15 +6,32 @@ void Courtroom::construct_evidence()
 {
   ui_evidence = new AOImage(this, ao_app);
 
+  ui_evidence_name = new QLabel(ui_evidence);
+  ui_evidence_name->setAlignment(Qt::AlignCenter);
+  ui_evidence_name->setFont(QFont("Arial", 14, QFont::Bold));
+  ui_evidence_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                  "color: rgba(255, 128, 0, 255);");
+
   ui_evidence_buttons = new QWidget(ui_evidence);
+
+  ui_evidence_left = new AOImage(ui_evidence, ao_app);
+  ui_evidence_right = new AOImage(ui_evidence, ao_app);
+
+  ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
+
+  ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_x->setText("X");
+
+  ui_evidence_description = new QPlainTextEdit(ui_evidence_overlay);
+  ui_evidence_description->setReadOnly(true);
+  ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                         "color: white;");
 
   set_size_and_pos(ui_evidence, "evidence_background");
   set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
 
   QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
 
-  //Todo: finish refactoring this
-  /*
   const int button_width = 60;
   int x_spacing = f_spacing.x();
   int x_mod_count = 0;
@@ -22,29 +39,18 @@ void Courtroom::construct_evidence()
   const int button_height = 60;
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
-  */
 
-  //constructing evidence button grid
-  const int base_x_pos{28};
-  const int base_y_pos{27};
-
-  const int x_modifier{72};
-  int x_mod_count{0};
-
-  const int y_modifier{73};
-  int y_mod_count{0};
-
-  evidence_columns = ui_evidence->width() / x_modifier;
-  evidence_rows = ui_evidence->height() / y_modifier;
+  evidence_columns = ((ui_evidence->width() - button_width) / (x_spacing + button_width)) + 1;
+  evidence_rows = ((ui_evidence->height() - button_height) / (y_spacing + button_height)) + 1;
 
   max_evidence_on_page = evidence_columns * evidence_rows;
 
   for (int n = 0 ; n < max_evidence_on_page ; ++n)
   {
-    int x_pos = base_x_pos + (x_modifier * x_mod_count);
-    int y_pos = base_y_pos + (y_modifier * y_mod_count);
+    int x_pos = (button_width + x_spacing) * x_mod_count;
+    int y_pos = (button_height + y_spacing) * y_mod_count;
 
-    AOEvidenceButton *f_evidence = new AOEvidenceButton(ui_evidence, ao_app, x_pos, y_pos);
+    AOEvidenceButton *f_evidence = new AOEvidenceButton(ui_evidence_button, ao_app, x_pos, y_pos);
 
     ui_evidence_list.append(f_evidence);
 
@@ -61,42 +67,6 @@ void Courtroom::construct_evidence()
       x_mod_count = 0;
     }
   }
-
-  ui_evidence_name = new QLabel(ui_evidence);
-
-  ui_evidence_left = new AOImage(ui_evidence, ao_app);
-  ui_evidence_right = new AOImage(ui_evidence, ao_app);
-
-  ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
-
-  ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
-
-  ui_evidence_description = new QPlainTextEdit(ui_evidence_overlay);
-
-  set_size_and_pos(ui_evidence_name, "evidence_name");
-  ui_evidence_name->setAlignment(Qt::AlignCenter);
-  ui_evidence_name->setFont(QFont("Arial", 14, QFont::Bold));
-  ui_evidence_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                  "color: rgba(255, 128, 0, 255);");
-
-  set_size_and_pos(ui_evidence_left, "evidence_left");
-  ui_evidence_left->set_image("arrow_left.png");
-
-  set_size_and_pos(ui_evidence_right, "evidence_right");
-  ui_evidence_right->set_image("arrow_right.png");
-
-  set_size_and_pos(ui_evidence_overlay, "evidence_overlay");
-  ui_evidence_overlay->set_image("evidenceoverlay.png");
-
-  set_size_and_pos(ui_evidence_x, "evidence_x");
-  ui_evidence_x->setText("X");
-
-  set_size_and_pos(ui_evidence_description, "evidence_description");
-  ui_evidence_description->setReadOnly(true);
-  ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                         "color: white;");
-
-  connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
 
   ui_evidence->hide();
 }

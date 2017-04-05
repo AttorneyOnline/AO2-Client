@@ -24,6 +24,7 @@ void Courtroom::construct_char_select()
   ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
+  ui_spectator->setText("Spectator");
 
   QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
 

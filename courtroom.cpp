@@ -167,7 +167,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   if (ao_app->yellow_text_enabled)
     ui_text_color->addItem("Yellow");
 
-
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
   ui_music_slider->setValue(ao_app->get_default_music());
@@ -484,6 +483,23 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_evidence, "evidence_background");
   ui_evidence->set_image("evidencebackground.png");
 
+  set_size_and_pos(ui_evidence_name, "evidence_name");
+
+  set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
+
+  set_size_and_pos(ui_evidence_left, "evidence_left");
+  ui_evidence_left->set_image("arrow_left.png");
+
+  set_size_and_pos(ui_evidence_right, "evidence_right");
+  ui_evidence_right->set_image("arrow_right.png");
+
+  set_size_and_pos(ui_evidence_overlay, "evidence_overlay");
+  ui_evidence_overlay->set_image("evidenceoverlay.png");
+
+  set_size_and_pos(ui_evidence_x, "evidence_x");
+
+  set_size_and_pos(ui_evidence_description, "evidence_description");
+
   ui_selector->set_image("char_selector.png");
   ui_selector->hide();
 
@@ -501,7 +517,6 @@ void Courtroom::set_widgets()
   ui_char_select_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_spectator, "spectator");
-  ui_spectator->setText("Spectator");
 }
 
 void Courtroom::set_fonts()
