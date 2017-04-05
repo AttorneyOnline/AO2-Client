@@ -6,25 +6,29 @@
 
 void Courtroom::construct_emotes()
 {
-  //constructing emote button grid
-  const int base_x_pos{0};
-  const int base_y_pos{0};
+  ui_emotes = new QWidget(this);
 
-  const int x_modifier{49};
-  int x_mod_count{0};
+  set_size_and_pos(ui_emotes, "emotes");
 
-  const int y_modifier{49};
-  int y_mod_count{0};
+  QPoint f_spacing = ao_app->get_button_spacing("emote_button_spacing", "courtroom_design.ini");
 
-  emote_columns = ui_emotes->width() / x_modifier;
-  emote_rows = ui_emotes->height() / y_modifier;
+  const int button_width = 40;
+  int x_spacing = f_spacing.x();
+  int x_mod_count = 0;
+
+  const int button_height = 40;
+  int y_spacing = f_spacing.y();
+  int y_mod_count = 0;
+
+  emote_columns = ((ui_emotes->width() - button_width) / (x_spacing + button_width)) + 1;
+  emote_rows = ((ui_emotes->height() - button_height) / (y_spacing + button_height)) + 1;
 
   max_emotes_on_page = emote_columns * emote_rows;
 
   for (int n = 0 ; n < max_emotes_on_page ; ++n)
   {
-    int x_pos = base_x_pos + (x_modifier * x_mod_count);
-    int y_pos = base_y_pos + (y_modifier * y_mod_count);
+    int x_pos = (button_width + x_spacing) * x_mod_count;
+    int y_pos = (button_height + y_spacing) * y_mod_count;
 
     AOEmoteButton *f_emote = new AOEmoteButton(ui_emotes, ao_app, x_pos, y_pos);
 
@@ -42,9 +46,6 @@ void Courtroom::construct_emotes()
       x_mod_count = 0;
     }
   }
-
-  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
-  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 }
 
 void Courtroom::set_emote_page()
@@ -161,6 +162,7 @@ void Courtroom::on_emote_left_clicked()
 
 void Courtroom::on_emote_right_clicked()
 {
+  qDebug() << "emote right clicked";
   ++current_emote_page;
 
   set_emote_page();

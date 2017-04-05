@@ -111,7 +111,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   //////////emotes//////////////////////
 
-  ui_emotes = new QWidget(this);
+  construct_emotes();
 
   ui_emote_left = new AOButton(this, ao_app);
   ui_emote_right = new AOButton(this, ao_app);
@@ -198,7 +198,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
   connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
-  //emote signals are set in emotes.cpp
+
+  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
+  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
 
@@ -252,9 +254,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   set_widgets();
 
   construct_evidence();
-
-  //implementation in emotes.cpp
-  construct_emotes();
 
   set_char_select();
 }

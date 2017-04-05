@@ -54,8 +54,6 @@ void Courtroom::construct_char_select()
 
     ++x_mod_count;
 
-    //if char number is divisible by ten with rest 9 then the next charicon should start on a new line
-    //if (n % 10 == 9 && n != 0)
     if (x_mod_count == char_columns)
     {
       ++y_mod_count;
