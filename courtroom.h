@@ -295,6 +295,7 @@ private:
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
   QLabel *ui_evidence_name;
+  QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton*> ui_evidence_list;
   AOImage *ui_evidence_left;
   AOImage *ui_evidence_right;

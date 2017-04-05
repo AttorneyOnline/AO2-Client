@@ -4,6 +4,26 @@
 
 void Courtroom::construct_evidence()
 {
+  ui_evidence = new AOImage(this, ao_app);
+
+  ui_evidence_buttons = new QWidget(ui_evidence);
+
+  set_size_and_pos(ui_evidence, "evidence_background");
+  set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
+
+  QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
+
+  //Todo: finish refactoring this
+  /*
+  const int button_width = 60;
+  int x_spacing = f_spacing.x();
+  int x_mod_count = 0;
+
+  const int button_height = 60;
+  int y_spacing = f_spacing.y();
+  int y_mod_count = 0;
+  */
+
   //constructing evidence button grid
   const int base_x_pos{28};
   const int base_y_pos{27};

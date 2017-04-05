@@ -182,7 +182,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_evidence_button = new AOButton(this, ao_app);
 
-  ui_evidence = new AOImage(this, ao_app);
+  construct_evidence();
+
+  construct_char_select();
 
   connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
@@ -249,11 +251,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
-  construct_char_select();
-
   set_widgets();
-
-  construct_evidence();
 
   set_char_select();
 }
