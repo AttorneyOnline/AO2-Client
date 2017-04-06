@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QVector>
 #include <QDebug>
+#include <QColor>
 
 QString AOApplication::read_config(QString searchline)
 {
@@ -264,6 +265,34 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
   }
 
   return f_result.toInt();
+}
+
+QColor AOApplication::get_color(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path() + p_file;
+  QString default_path = get_default_theme_path() + p_file;
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+  QColor return_color(255, 255, 255);
+
+  if (f_result == "")
+  {
+    f_result = read_design_ini(p_identifier, default_path);
+
+    if (f_result == "")
+      return return_color;
+  }
+
+  QStringList color_list = f_result.split(",");
+
+  if (color_list.size() < 3)
+    return return_color;
+
+  return_color.setRed(color_list.at(0).toInt());
+  return_color.setGreen(color_list.at(1).toInt());
+  return_color.setBlue(color_list.at(2).toInt());
+
+  return return_color;
 }
 
 //returns whatever is to the right of "search_line =" within target_tag and terminator_tag, trimmed

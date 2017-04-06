@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QRegExp>
+#include <QBrush>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -325,8 +326,6 @@ void Courtroom::set_widgets()
   ui_vp_legacy_desk->hide();
 
   set_size_and_pos(ui_vp_showname, "showname");
-  ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                               "color: white;");
 
   set_size_and_pos(ui_vp_message, "message");
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
@@ -521,9 +520,8 @@ void Courtroom::set_widgets()
 
 void Courtroom::set_fonts()
 {
-  QString design_file = "courtroom_fonts.ini";
+  set_font(ui_vp_showname, "showname");
 
-  set_font(ui_vp_showname, ao_app->get_font_size("showname", design_file));
   /*
   int id = QFontDatabase::addApplicationFont(":/resource/fonts/Ace-Attorney.ttf");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
@@ -531,16 +529,43 @@ void Courtroom::set_fonts()
   monospace.setPointSize(ao_app->get_font_size("message", design_file));
   ui_vp_message->setFont(monospace);
   */
-  set_font(ui_vp_message, ao_app->get_font_size("message", design_file));
-  set_font(ui_ic_chatlog, ao_app->get_font_size("ic_chatlog", design_file));
-  set_font(ui_ms_chatlog, ao_app->get_font_size("ms_chatlog", design_file));
-  set_font(ui_server_chatlog, ao_app->get_font_size("server_chatlog", design_file));
-  set_font(ui_music_list, ao_app->get_font_size("music_list", design_file));
+  set_font(ui_vp_message, "message");
+  set_font(ui_ic_chatlog, "ic_chatlog");
+  set_font(ui_ms_chatlog, "ms_chatlog");
+  set_font(ui_server_chatlog, "server_chatlog");
+  set_font(ui_music_list, "music_list");
+
+
+
+
 }
 
-void Courtroom::set_font(QWidget *widget, int weight)
+void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
-  widget->setFont(QFont("Sans", weight));
+  QString design_file = "courtroom_fonts.ini";
+  int f_weight = ao_app->get_font_size(p_identifier, design_file);
+  QString class_name = widget->metaObject()->className();
+
+  widget->setFont(QFont("Sans", f_weight));
+
+  QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);\
+
+  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
+                                            "color: rgba(" +
+                                             QString::number(f_color.red()) + ", " +
+                                             QString::number(f_color.green()) + ", " +
+                                             QString::number(f_color.blue()) + ", 255); }";
+
+  qDebug() << "style_sheet_string: " << style_sheet_string;
+
+  //widget->setStyleSheet(style_sheet_string);
+
+  ui_ic_chatlog->setStyleSheet("QPlainTextEdit { background-color: rgba(0, 0, 0, 0);"
+                               "color: rgba(" +
+                                QString::number(f_color.red()) + ", " +
+                                QString::number(f_color.green()) + ", " +
+                                QString::number(f_color.blue()) + ", 255); }");
+
 }
 
 void Courtroom::set_window_title(QString p_title)
@@ -713,6 +738,11 @@ void Courtroom::list_music()
 {
   ui_music_list->clear();
 
+  QString f_file = "courtroom_design.ini";
+
+  QBrush found_brush(ao_app->get_color("found_song_color", f_file));
+  QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
+
   int n_listed_songs = 0;
 
   for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
@@ -726,9 +756,9 @@ void Courtroom::list_music()
       QString song_path = ao_app->get_base_path() + "sounds/music/" + i_song.toLower();
 
       if (file_exists(song_path))
-        ui_music_list->item(n_listed_songs)->setBackground(Qt::green);
+        ui_music_list->item(n_listed_songs)->setBackground(found_brush);
       else
-        ui_music_list->item(n_listed_songs)->setBackground(Qt::red);
+        ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
 
       ++n_listed_songs;
     }

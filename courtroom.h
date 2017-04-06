@@ -42,7 +42,7 @@ public:
   void append_music(QString f_music){music_list.append(f_music);}
 
   void set_widgets();
-  void set_font(QWidget *widget, int weight);
+  void set_font(QWidget *widget, QString p_identifier);
   void set_fonts();
   void set_window_title(QString p_title);
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
