@@ -38,9 +38,6 @@ void AOEvidenceButton::set_image(QString p_image)
 void AOEvidenceButton::set_selected(bool p_selected)
 {
   m_selected = p_selected;
-
-  if (!m_selected)
-    ui_selector->hide();
 }
 
 void AOEvidenceButton::on_clicked()

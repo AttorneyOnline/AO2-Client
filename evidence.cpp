@@ -14,8 +14,8 @@ void Courtroom::construct_evidence()
 
   ui_evidence_buttons = new QWidget(ui_evidence);
 
-  ui_evidence_left = new AOImage(ui_evidence, ao_app);
-  ui_evidence_right = new AOImage(ui_evidence, ao_app);
+  ui_evidence_left = new AOButton(ui_evidence, ao_app);
+  ui_evidence_right = new AOButton(ui_evidence, ao_app);
 
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
@@ -32,16 +32,16 @@ void Courtroom::construct_evidence()
 
   QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
 
-  const int button_width = 60;
+  const int button_width = 70;
   int x_spacing = f_spacing.x();
   int x_mod_count = 0;
 
-  const int button_height = 60;
+  const int button_height = 70;
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
-  evidence_columns = ((ui_evidence->width() - button_width) / (x_spacing + button_width)) + 1;
-  evidence_rows = ((ui_evidence->height() - button_height) / (y_spacing + button_height)) + 1;
+  evidence_columns = ((ui_evidence_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
+  evidence_rows = ((ui_evidence_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
 
   max_evidence_on_page = evidence_columns * evidence_rows;
 
@@ -50,7 +50,7 @@ void Courtroom::construct_evidence()
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
-    AOEvidenceButton *f_evidence = new AOEvidenceButton(ui_evidence_button, ao_app, x_pos, y_pos);
+    AOEvidenceButton *f_evidence = new AOEvidenceButton(ui_evidence_buttons, ao_app, x_pos, y_pos);
 
     ui_evidence_list.append(f_evidence);
 
@@ -67,6 +67,10 @@ void Courtroom::construct_evidence()
       x_mod_count = 0;
     }
   }
+
+  connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
+  connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
+  connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
 
   ui_evidence->hide();
 }
@@ -105,20 +109,21 @@ void Courtroom::set_evidence_page()
   if (total_evidence == 0)
     return;
 
-  int total_pages = total_evidence / max_evidence_on_page;
-
+  int total_pages = evidence_list.size() / max_evidence_on_page;
   int evidence_on_page = 0;
 
-  if (total_evidence % max_evidence_on_page != 0)
+  if ((evidence_list.size() % max_evidence_on_page) != 0)
   {
     ++total_pages;
-    evidence_on_page = total_evidence % max_evidence_on_page;
+    //i. e. not on the last page
+    if (total_pages > current_evidence_page + 1)
+      evidence_on_page = max_evidence_on_page;
+    else
+      evidence_on_page = evidence_list.size() % max_evidence_on_page;
 
   }
   else
     evidence_on_page = max_evidence_on_page;
-
-  qDebug() << "evidence_on_page: " << evidence_on_page;
 
   if (total_pages > current_evidence_page + 1)
     ui_evidence_right->show();
@@ -135,6 +140,7 @@ void Courtroom::set_evidence_page()
 
     f_evidence->show();
   }
+
 
 }
 

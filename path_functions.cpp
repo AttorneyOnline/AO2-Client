@@ -4,9 +4,20 @@
 #include <QDir>
 #include <QDebug>
 
+#ifdef BASE_OVERRIDE
+#include "base_override.h"
+#endif
+
 QString AOApplication::get_base_path()
 {
+#ifdef BASE_OVERRIDE
+  return base_override;
+#else
+  return QDir::currentPath() + "/base/";
+#endif
 
+
+  /*
 #ifdef OMNI_DEBUG
   return "/media/omnitroid/Data/winshare/AO/client/base/";
 #elif OMNI_DEBUG2
@@ -20,6 +31,7 @@ QString AOApplication::get_base_path()
 #else
   return QDir::currentPath() + "/base/";
 #endif
+*/
 }
 
 QString AOApplication::get_data_path()

@@ -539,8 +539,6 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
                                              QString::number(f_color.green()) + ", " +
                                              QString::number(f_color.blue()) + ", 255); }";
 
-  qDebug() << "style_sheet_string: " << style_sheet_string;
-
   widget->setStyleSheet(style_sheet_string);
 }
 
@@ -1334,7 +1332,6 @@ void Courtroom::set_scene()
   }
 
   ui_vp_background->set_image(f_background);
-  qDebug() << "f_desk_image: " << f_desk_image;
   ui_vp_desk->set_image(f_desk_image);
   ui_vp_legacy_desk->set_legacy_desk(f_desk_image);
 

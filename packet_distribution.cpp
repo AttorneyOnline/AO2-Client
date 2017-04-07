@@ -188,7 +188,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_packet.contains("customobjections",Qt::CaseInsensitive))
         custom_objection_enabled = true;
     if (f_packet.contains("fastloading",Qt::CaseInsensitive))
-        improved_loading_enabled = true;
+        //improved_loading_enabled = true;
     if (f_packet.contains("noencryption",Qt::CaseInsensitive))
         encryption_needed = false;
     if (f_packet.contains("deskmod",Qt::CaseInsensitive))

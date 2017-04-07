@@ -3,3 +3,5 @@
 *.user
 *.dll
 *.so
+base_override.h
+

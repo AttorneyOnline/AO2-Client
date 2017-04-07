@@ -297,8 +297,8 @@ private:
   QLabel *ui_evidence_name;
   QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton*> ui_evidence_list;
-  AOImage *ui_evidence_left;
-  AOImage *ui_evidence_right;
+  AOButton *ui_evidence_left;
+  AOButton *ui_evidence_right;
   AOImage *ui_evidence_overlay;
   AOButton *ui_evidence_x;
   QPlainTextEdit *ui_evidence_description;
