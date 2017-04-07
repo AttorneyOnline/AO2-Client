@@ -295,6 +295,27 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
   return return_color;
 }
 
+QString AOApplication::get_sfx(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path() + p_file;
+  QString default_path = get_default_theme_path() + p_file;
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+  QString return_sfx = "";
+
+  if (f_result == "")
+  {
+    f_result = read_design_ini(p_identifier, default_path);
+
+    if (f_result == "")
+      return return_sfx;
+  }
+
+  return_sfx = f_result;
+
+  return return_sfx;
+}
+
 //returns whatever is to the right of "search_line =" within target_tag and terminator_tag, trimmed
 //returns the empty string if the search line couldnt be found
 QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag)

@@ -349,14 +349,10 @@ void Courtroom::set_widgets()
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
-  ui_ic_chatlog->setStyleSheet("QPlainTextEdit{ background-color: rgba(0, 0, 0, 0);"
-                               "color: white; }");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
-  ui_ms_chatlog->setStyleSheet("QTextBrowser{ background-color: rgba(0, 0, 0, 0); }");
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
-  ui_server_chatlog->setStyleSheet("QTextBrowser{ background-color: rgba(0, 0, 0, 0); }");
 
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
@@ -365,7 +361,6 @@ void Courtroom::set_widgets()
   //ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_music_list, "music_list");
-  ui_music_list->setStyleSheet("QListWidget{background-color: rgba(0, 0, 0, 0);}");
 
   if (is_ao2_bg)
   {
@@ -521,23 +516,11 @@ void Courtroom::set_widgets()
 void Courtroom::set_fonts()
 {
   set_font(ui_vp_showname, "showname");
-
-  /*
-  int id = QFontDatabase::addApplicationFont(":/resource/fonts/Ace-Attorney.ttf");
-  QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-  QFont monospace(family);
-  monospace.setPointSize(ao_app->get_font_size("message", design_file));
-  ui_vp_message->setFont(monospace);
-  */
   set_font(ui_vp_message, "message");
   set_font(ui_ic_chatlog, "ic_chatlog");
   set_font(ui_ms_chatlog, "ms_chatlog");
   set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
-
-
-
-
 }
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
@@ -548,7 +531,7 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
 
   widget->setFont(QFont("Sans", f_weight));
 
-  QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);\
+  QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
                                             "color: rgba(" +
@@ -558,14 +541,7 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
 
   qDebug() << "style_sheet_string: " << style_sheet_string;
 
-  //widget->setStyleSheet(style_sheet_string);
-
-  ui_ic_chatlog->setStyleSheet("QPlainTextEdit { background-color: rgba(0, 0, 0, 0);"
-                               "color: rgba(" +
-                                QString::number(f_color.red()) + ", " +
-                                QString::number(f_color.green()) + ", " +
-                                QString::number(f_color.blue()) + ", 255); }");
-
+  widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_window_title(QString p_title)
@@ -1095,7 +1071,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play("sfx-realization.wav");
+    sfx_player->play(ao_app->get_sfx("realization", "courtroom_sounds.ini"));
   }
 
 }
@@ -1492,10 +1468,12 @@ void Courtroom::handle_song(QStringList *p_contents)
 
 void Courtroom::handle_wtce(QString p_wtce)
 {
+  QString sfx_file = "courtroom_sounds.ini";
+
   //witness testimony
   if (p_wtce == "testimony1")
   {
-    sfx_player->play("sfx-testimony2.wav");
+    sfx_player->play(ao_app->get_sfx("witness_testimony", sfx_file));
     ui_vp_wtce->play("witnesstestimony");
     testimony_in_progress = true;
     show_testimony();
@@ -1503,7 +1481,7 @@ void Courtroom::handle_wtce(QString p_wtce)
   //cross examination
   else if (p_wtce == "testimony2")
   {
-    sfx_player->play("sfx-testimony.wav");
+    sfx_player->play(ao_app->get_sfx("cross_examination", sfx_file));
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
   }

@@ -114,6 +114,7 @@ public:
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
   int get_font_size(QString p_identifier, QString p_file);
   QColor get_color(QString p_identifier, QString p_file);
+  QString get_sfx(QString p_identifier, QString p_file);
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
   QString get_char_side(QString p_char);
   QString get_showname(QString p_char);
@@ -136,7 +137,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 3;
-  const int MINOR_VERSION = 3;
+  const int MINOR_VERSION = 4;
 
   QString user_theme = "default";
 
