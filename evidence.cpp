@@ -84,7 +84,7 @@ void Courtroom::set_evidence_page()
 
   QString evi_string = char_list.at(m_cid).evidence_string;
 
-  QStringList evi_numbers = evi_string.split(",");
+  QStringList evi_numbers = evi_string.split(",", QString::SkipEmptyParts);
 
   for (QString i_evi : evi_numbers)
   {
@@ -109,17 +109,17 @@ void Courtroom::set_evidence_page()
   if (total_evidence == 0)
     return;
 
-  int total_pages = evidence_list.size() / max_evidence_on_page;
+  int total_pages = total_evidence / max_evidence_on_page;
   int evidence_on_page = 0;
 
-  if ((evidence_list.size() % max_evidence_on_page) != 0)
+  if ((total_evidence % max_evidence_on_page) != 0)
   {
     ++total_pages;
     //i. e. not on the last page
     if (total_pages > current_evidence_page + 1)
       evidence_on_page = max_evidence_on_page;
     else
-      evidence_on_page = evidence_list.size() % max_evidence_on_page;
+      evidence_on_page = total_evidence % max_evidence_on_page;
 
   }
   else
@@ -131,14 +131,21 @@ void Courtroom::set_evidence_page()
   if (current_evidence_page > 0)
     ui_evidence_left->show();
 
-  for (int n_evidence = 0 ; n_evidence < evidence_on_page ; ++n_evidence)
+  qDebug() << "evidence_on_page: " << evidence_on_page;
+
+  for (int n_evidence_button = 0 ; n_evidence_button < evidence_on_page ; ++n_evidence_button)
   {
-    int n_real_evidence = n_evidence + current_evidence_page * max_evidence_on_page;
-    AOEvidenceButton *f_evidence = ui_evidence_list.at(n_evidence);
+    qDebug() << "n_evidence_button " << n_evidence_button;
 
-    f_evidence->set_image(evidence_list.at(n_real_evidence).image);
+    int n_real_evidence = n_evidence_button + current_evidence_page * max_evidence_on_page;
+    AOEvidenceButton *f_evidence_button = ui_evidence_list.at(n_evidence_button);
 
-    f_evidence->show();
+    if (n_real_evidence < total_evidence)
+      f_evidence_button->set_image(local_evidence_list.at(n_real_evidence).image);
+    else
+      f_evidence_button->set_image("");
+
+    f_evidence_button->show();
   }
 
 
@@ -165,8 +172,12 @@ void Courtroom::on_evidence_clicked(int p_id)
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
-  if (p_state)
-    ui_evidence_name->setText(local_evidence_list.at(p_id + max_evidence_on_page * current_evidence_page).name);
+  int final_id = p_id + max_evidence_on_page * current_evidence_page;
+
+  if (p_state && final_id < local_evidence_list.size())
+  {
+    ui_evidence_name->setText(local_evidence_list.at(final_id).name);
+  }
   else
     ui_evidence_name->setText("");
 }
