@@ -42,8 +42,6 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   m_movie->stop();
   m_movie->setFileName(gif_path);
 
-  qDebug() << "framecount: " << m_movie->frameCount();
-
   if (m_flipped)
   {
     QImageReader *reader = new QImageReader(gif_path);

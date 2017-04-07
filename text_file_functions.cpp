@@ -152,11 +152,7 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
   design_ini.setFileName(p_design_path);
 
   if (!design_ini.open(QIODevice::ReadOnly))
-  {
-    qDebug() << "W: Could not open or read " << p_design_path;
-
     return "";
-  }
 
   QTextStream in(&design_ini);
 

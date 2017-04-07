@@ -1141,7 +1141,6 @@ void Courtroom::preanim_done()
 void Courtroom::realization_done()
 {
   ui_vp_realization->hide();
-  qDebug() << "realization_done called";
 }
 
 void Courtroom::start_chat_ticking()
