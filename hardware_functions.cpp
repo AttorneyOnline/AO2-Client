@@ -10,12 +10,14 @@ BOOL bIsRetrieved;
 
 QString get_hdid()
 {
-    bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), NULL, NULL, &dwVolSerial, NULL, NULL, NULL, NULL);
+  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), NULL, NULL, &dwVolSerial, NULL, NULL, NULL, NULL);
 
-    if (bIsRetrieved)
-        return QString::number(dwVolSerial, 16);
-    else
-        return "gxsps32sa9fnwic92mfbs0"; //what could possibly go wrong
+  if (bIsRetrieved)
+    return QString::number(dwVolSerial, 16);
+  else
+    //literally a random string
+    //what could possibly go wrong
+    return "gxsps32sa9fnwic92mfbs0";
 
 }
 

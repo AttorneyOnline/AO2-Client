@@ -76,6 +76,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   else if (header == "AO2CHECK")
   {
     send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
+    send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
 
     if (f_contents.size() < 1)
       goto end;
@@ -104,6 +105,13 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
 
     call_notice("Outdated version! Your version: " + get_version_string()
                 + "\nPlease go to aceattorneyonline.com to update.");
+    destruct_courtroom();
+    destruct_lobby();
+  }
+  else if (header == "DOOM")
+  {
+    call_notice("You have been exiled from AO."
+                "Have a nice day.");
     destruct_courtroom();
     destruct_lobby();
   }
