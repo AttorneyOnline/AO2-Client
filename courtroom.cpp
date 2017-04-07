@@ -1192,13 +1192,10 @@ void Courtroom::chat_tick()
   else
   {
     QString f_character = f_message.at(tick_pos);
+    f_character = f_character.toHtmlEscaped();
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
-    else if (f_character == "<")
-      ui_vp_message->insertHtml("&lt;");
-    else if (f_character == ">")
-      ui_vp_message->insertHtml("&gt;");
     else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
     {
       QString html_color;

@@ -25,6 +25,7 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
   {
     if (i_word.startsWith("http"))
     {
+      i_word.replace("\n", "").replace("\r", "");
       this->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
     }
     else
