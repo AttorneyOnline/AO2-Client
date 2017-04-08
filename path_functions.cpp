@@ -12,6 +12,8 @@ QString AOApplication::get_base_path()
 {
 #ifdef BASE_OVERRIDE
   return base_override;
+#elif defined(ANDROID)
+  return "/storage/extSdCard/AO2/";
 #else
   return QDir::currentPath() + "/base/";
 #endif
