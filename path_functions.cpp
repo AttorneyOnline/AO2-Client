@@ -3,22 +3,32 @@
 #include "file_functions.h"
 #include <QDir>
 #include <QDebug>
+#include <QStandardPaths>
 
 #ifdef BASE_OVERRIDE
 #include "base_override.h"
 #endif
+QString base_path = "";
 
 QString AOApplication::get_base_path()
 {
+    if (base_path == "")
+    {
 #ifdef BASE_OVERRIDE
-  return base_override;
+  base_path = base_override;
 #elif defined(ANDROID)
-  return "/storage/extSdCard/AO2/";
+        QString sdcard_storage = getenv("SECONDARY_STORAGE");
+        if (dir_exists(sdcard_storage)){
+            base_path = sdcard_storage + "/AO2/";
+        }else{
+            QString external_storage = getenv("EXTERNAL_STORAGE");
+            base_path = external_storage + "/AO2/";
+        }
 #else
-  return QDir::currentPath() + "/base/";
+  base_path = QDir::currentPath() + "/base/";
 #endif
-
-
+}
+    return base_path;
   /*
 #ifdef OMNI_DEBUG
   return "/media/omnitroid/Data/winshare/AO/client/base/";

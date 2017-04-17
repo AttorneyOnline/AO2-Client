@@ -152,8 +152,10 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
   design_ini.setFileName(p_design_path);
 
   if (!design_ini.open(QIODevice::ReadOnly))
+  {
+      qDebug() << "Could not find design ini " + p_design_path;
     return "";
-
+  }
   QTextStream in(&design_ini);
 
   QString result = "";
