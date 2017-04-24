@@ -22,6 +22,7 @@ public:
 private:
   AOApplication *ao_app;
 
+  AOImage *ui_selected;
   AOImage *ui_selector;
 
   bool m_selected = false;
@@ -31,9 +32,11 @@ private:
 protected:
   void enterEvent(QEvent *e);
   void leaveEvent(QEvent *e);
+  void mouseDoubleClickEvent(QMouseEvent *e);
 
 signals:
   void evidence_clicked(int p_id);
+  void evidence_double_clicked(int p_id);
   void on_hover(int p_id, bool p_state);
 
 private slots:

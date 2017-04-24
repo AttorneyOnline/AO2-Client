@@ -6,7 +6,8 @@ void Courtroom::construct_evidence()
 {
   ui_evidence = new AOImage(this, ao_app);
 
-  ui_evidence_name = new QLabel(ui_evidence);
+  //ui_evidence_name = new QLabel(ui_evidence);
+  ui_evidence_name = new AOLineEdit(ui_evidence);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFont(QFont("Arial", 14, QFont::Bold));
   ui_evidence_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -57,6 +58,7 @@ void Courtroom::construct_evidence()
     f_evidence->set_id(n);
 
     connect(f_evidence, SIGNAL(evidence_clicked(int)), this, SLOT(on_evidence_clicked(int)));
+    connect(f_evidence, SIGNAL(evidence_double_clicked(int)), this, SLOT(on_evidence_double_clicked(int)));
     connect(f_evidence, SIGNAL(on_hover(int, bool)), this, SLOT(on_evidence_hover(int, bool)));
 
     ++x_mod_count;
@@ -163,9 +165,12 @@ void Courtroom::on_evidence_clicked(int p_id)
   ui_evidence_list.at(p_id)->set_selected(true);
 
   current_evidence = p_id + max_evidence_on_page * current_evidence_page;
+}
 
+void Courtroom::on_evidence_double_clicked(int p_id)
+{
   ui_evidence_description->clear();
-  ui_evidence_description->appendPlainText(local_evidence_list.at(current_evidence).description);
+  ui_evidence_description->appendPlainText(local_evidence_list.at(p_id).description);
 
   ui_evidence_overlay->show();
 }
@@ -179,7 +184,7 @@ void Courtroom::on_evidence_hover(int p_id, bool p_state)
     ui_evidence_name->setText(local_evidence_list.at(final_id).name);
   }
   else
-    ui_evidence_name->setText("");
+    ui_evidence_name->setText(local_evidence_list.at(current_evidence).name);
 }
 
 void Courtroom::on_evidence_left_clicked()

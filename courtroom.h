@@ -14,6 +14,7 @@
 #include "aoblipplayer.h"
 #include "aoevidencebutton.h"
 #include "aotextarea.h"
+#include "aolineedit.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -294,7 +295,8 @@ private:
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
-  QLabel *ui_evidence_name;
+  //QLabel *ui_evidence_name;
+  AOLineEdit *ui_evidence_name;
   QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton*> ui_evidence_list;
   AOButton *ui_evidence_left;
@@ -369,6 +371,7 @@ private slots:
   void on_emote_dropdown_changed(int p_index);
 
   void on_evidence_clicked(int p_id);
+  void on_evidence_double_clicked(int p_id);
 
   void on_evidence_hover(int p_id, bool p_state);
 
