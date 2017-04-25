@@ -15,6 +15,7 @@
 #include "aoevidencebutton.h"
 #include "aotextarea.h"
 #include "aolineedit.h"
+#include "aotextedit.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -303,7 +304,7 @@ private:
   AOButton *ui_evidence_right;
   AOImage *ui_evidence_overlay;
   AOButton *ui_evidence_x;
-  QPlainTextEdit *ui_evidence_description;
+  AOTextEdit *ui_evidence_description;
 
   AOImage *ui_char_select_background;
 
