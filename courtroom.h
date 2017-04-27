@@ -50,8 +50,7 @@ public:
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
   void set_taken(int n_char, bool p_taken);
   void set_background(QString p_background);
-
-
+  void set_evidence_list(QVector<evi_type> &p_evi_list);
 
   void done_received();
 

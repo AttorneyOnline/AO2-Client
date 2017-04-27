@@ -426,44 +426,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RD#%"));
   }
-  /* obsolete
-  else if (header == "SE")
-  {
-    if (!courtroom_constructed)
-      goto end;
-
-    // +1 because evidence starts at 1 rather than 0 for whatever reason
-    //enjoy fanta
-    if (f_contents.at(0).toInt() != loaded_evidence + 1)
-      goto end;
-
-    if (f_contents.size() < 2)
-      goto end;
-
-    QStringList sub_elements = f_contents.at(1).split("&");
-    if (sub_elements.size() < 4)
-      goto end;
-
-    evi_type f_evi;
-    f_evi.name = sub_elements.at(0);
-    f_evi.description = sub_elements.at(1);
-    //no idea what the number at position 2 is. probably an identifier?
-    f_evi.image = sub_elements.at(3);
-
-    ++loaded_evidence;
-
-    w_lobby->set_loading_text("Loading evidence:\n" + QString::number(loaded_evidence) + "/" + QString::number(evidence_list_size));
-
-    w_courtroom->append_evidence(f_evi);
-
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = ((loaded_chars + loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
-    w_lobby->set_loading_value(loading_value);
-
-    send_server_packet(new AOPacket("RM#%"));
-  }
-  */
-
   else if (header == "DONE")
   {
     if (!courtroom_constructed)
@@ -516,6 +478,30 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() > 1)
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+  }
+  else if (header == "LE")
+  {
+    if (courtroom_constructed)
+    {
+      QVector<evi_type> f_evi_list;
+
+      for (QString f_string : f_contents)
+      {
+        QStringList sub_contents = f_string.split("&");
+
+        if (sub_contents.size() < 3)
+          continue;
+
+        evi_type f_evi;
+        f_evi.name = sub_contents.at(0);
+        f_evi.description = sub_contents.at(1);
+        f_evi.image = sub_contents.at(2);
+
+        f_evi_list.append(f_evi);
+      }
+
+      w_courtroom->set_evidence_list(f_evi_list);
+    }
   }
   else if (header == "IL")
   {

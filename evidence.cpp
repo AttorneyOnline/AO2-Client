@@ -75,11 +75,18 @@ void Courtroom::construct_evidence()
   ui_evidence->hide();
 }
 
+void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
+{
+  local_evidence_list.clear();
+  local_evidence_list = p_evi_list;
+}
+
 void Courtroom::set_evidence_page()
 {
   if (m_cid == -1)
     return;
 
+  /*
   local_evidence_list.clear();
 
   QString evi_string = char_list.at(m_cid).evidence_string;
@@ -94,7 +101,7 @@ void Courtroom::set_evidence_page()
       continue;
 
     local_evidence_list.append(evidence_list.at(n_evi));
-  }
+  */
 
   int total_evidence = local_evidence_list.size();
 
