@@ -21,7 +21,6 @@ void Courtroom::construct_evidence()
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
-  ui_evidence_x->setText("X");
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -202,6 +201,7 @@ void Courtroom::on_evidence_right_clicked()
 
 void Courtroom::on_evidence_x_clicked()
 {
+  ui_evidence_description->setReadOnly(true);
   ui_evidence_overlay->hide();
 }
 

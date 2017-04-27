@@ -491,6 +491,7 @@ void Courtroom::set_widgets()
   ui_evidence_overlay->set_image("evidenceoverlay.png");
 
   set_size_and_pos(ui_evidence_x, "evidence_x");
+  ui_evidence_x->set_image("evidencex.png");
 
   set_size_and_pos(ui_evidence_description, "evidence_description");
 
