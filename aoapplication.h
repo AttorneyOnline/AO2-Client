@@ -50,6 +50,7 @@ public:
   bool custom_objection_enabled = false;
   bool improved_loading_enabled = false;
   bool desk_mod_enabled = false;
+  bool evidence_enabled = false;
 
   ///////////////loading info///////////////////
 
