@@ -18,7 +18,7 @@ QString AOApplication::get_base_path()
   base_path = base_override;
 #elif defined(ANDROID)
         QString sdcard_storage = getenv("SECONDARY_STORAGE");
-        if (dir_exists(sdcard_storage)){
+        if (dir_exists(sdcard_storage + "/AO2/")){
             base_path = sdcard_storage + "/AO2/";
         }else{
             QString external_storage = getenv("EXTERNAL_STORAGE");
