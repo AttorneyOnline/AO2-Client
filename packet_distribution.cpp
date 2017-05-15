@@ -206,14 +206,18 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "SI")
   {
-    if (f_contents.size() < 3)
+    if (f_contents.size() != 3)
       goto end;
 
     char_list_size = f_contents.at(0).toInt();
-    loaded_chars = 0;
     evidence_list_size = f_contents.at(1).toInt();
-    loaded_evidence = 0;
     music_list_size = f_contents.at(2).toInt();
+
+    if (char_list_size < 1 || evidence_list_size < 0 || music_list_size < 0)
+      goto end;
+
+    loaded_chars = 0;
+    loaded_evidence = 0;
     loaded_music = 0;
 
     destruct_courtroom();

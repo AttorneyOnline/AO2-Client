@@ -15,7 +15,7 @@ QString get_hdid()
   if (bIsRetrieved)
     return QString::number(dwVolSerial, 16);
   else
-    //literally a random string
+    //a totally random string
     //what could possibly go wrong
     return "gxsps32sa9fnwic92mfbs0";
 
@@ -30,7 +30,6 @@ QString get_hdid()
 {
   QFile fstab_file("/etc/fstab");
   if (!fstab_file.open(QIODevice::ReadOnly))
-    //literally a random string.... what else are we supposed to do?
     return "gxcps32sa9fnwic92mfbs0";
 
   QTextStream in(&fstab_file);
