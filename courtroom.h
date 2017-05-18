@@ -370,6 +370,7 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
 
+  void on_evidence_name_edited();
   void on_evidence_clicked(int p_id);
   void on_evidence_double_clicked(int p_id);
 

@@ -48,11 +48,11 @@ void AOScene::set_legacy_desk(QString p_image)
   int vp_height = m_parent->height();
 
   //double y_modifier = 147 / 192;
-  double w_modifier = vp_width / 256;
+  //double w_modifier = vp_width / 256;
   double h_modifier = vp_height / 192;
 
   //int final_y = y_modifier * vp_height;
-  int final_w = w_modifier * f_desk.width();
+  //int final_w = w_modifier * f_desk.width();
   int final_h = h_modifier * f_desk.height();
 
   //this->resize(final_w, final_h);

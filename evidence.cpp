@@ -68,6 +68,7 @@ void Courtroom::construct_evidence()
     }
   }
 
+  connect(ui_evidence_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_name_edited()));
   connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
   connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
   connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
@@ -79,6 +80,8 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
 {
   local_evidence_list.clear();
   local_evidence_list = p_evi_list;
+
+  set_evidence_page();
 }
 
 void Courtroom::set_evidence_page()
@@ -110,11 +113,14 @@ void Courtroom::set_evidence_page()
 
   for (AOEvidenceButton *i_button : ui_evidence_list)
   {
-    i_button->hide();
+    i_button->reset();
   }
 
   if (total_evidence == 0)
     return;
+
+  //to account for the "add evidence" button
+  ++total_evidence;
 
   int total_pages = total_evidence / max_evidence_on_page;
   int evidence_on_page = 0;
@@ -132,6 +138,8 @@ void Courtroom::set_evidence_page()
   else
     evidence_on_page = max_evidence_on_page;
 
+  qDebug() << "total pages: " << total_pages;
+
   if (total_pages > current_evidence_page + 1)
     ui_evidence_right->show();
 
@@ -142,34 +150,73 @@ void Courtroom::set_evidence_page()
 
   for (int n_evidence_button = 0 ; n_evidence_button < evidence_on_page ; ++n_evidence_button)
   {
-    qDebug() << "n_evidence_button " << n_evidence_button;
-
     int n_real_evidence = n_evidence_button + current_evidence_page * max_evidence_on_page;
     AOEvidenceButton *f_evidence_button = ui_evidence_list.at(n_evidence_button);
 
-    if (n_real_evidence < total_evidence)
+    //ie. the add evidence button
+    if (n_real_evidence == (total_evidence - 1))
+      f_evidence_button->set_theme_image("addevidence.png");
+    else if (n_real_evidence < (total_evidence - 1))
+    {
       f_evidence_button->set_image(local_evidence_list.at(n_real_evidence).image);
+
+      if (n_real_evidence == current_evidence)
+        f_evidence_button->set_selected(true);
+      else
+        f_evidence_button->set_selected(false);
+    }
     else
       f_evidence_button->set_image("");
 
     f_evidence_button->show();
   }
+}
 
+void Courtroom::on_evidence_name_edited()
+{
+  QStringList f_contents;
 
+  evi_type f_evi = local_evidence_list.at(current_evidence);
+
+  f_contents.append(QString::number(current_evidence));
+  f_contents.append(ui_evidence_name->text());
+  f_contents.append(f_evi.description);
+  f_contents.append(f_evi.image);
+
+  ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_clicked(int p_id)
 {
-  ui_evidence_name->setText(local_evidence_list.at(p_id + max_evidence_on_page * current_evidence_page).name);
+  ui_evidence_name->setReadOnly(true);
 
+  int f_real_id = p_id + max_evidence_on_page * current_evidence_page;
+
+  if (f_real_id == local_evidence_list.size())
+  {
+    ao_app->send_server_packet(new AOPacket("PE#<name>#<description>#empty.png#%"));
+    return;
+  }
+  else if (f_real_id > local_evidence_list.size())
+    return;
+
+  ui_evidence_name->setText(local_evidence_list.at(f_real_id).name);
+
+  for (AOEvidenceButton *i_button : ui_evidence_list)
+    i_button->set_selected(false);
+
+  ui_evidence_list.at(p_id)->set_selected(true);
+
+  /*
   for (AOEvidenceButton *i_button : ui_evidence_list)
   {
     i_button->set_selected(false);
   }
 
   ui_evidence_list.at(p_id)->set_selected(true);
+  */
 
-  current_evidence = p_id + max_evidence_on_page * current_evidence_page;
+  current_evidence = f_real_id;
 }
 
 void Courtroom::on_evidence_double_clicked(int p_id)
@@ -184,12 +231,15 @@ void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
-  if (p_state && final_id < local_evidence_list.size())
+  if (p_state)
   {
-    ui_evidence_name->setText(local_evidence_list.at(final_id).name);
+    if (final_id == local_evidence_list.size())
+      ui_evidence_name->setText("Add new evidence...");
+    else if (final_id < local_evidence_list.size())
+      ui_evidence_name->setText(local_evidence_list.at(final_id).name);
+    else
+      ui_evidence_name->setText(local_evidence_list.at(current_evidence).name);
   }
-  else
-    ui_evidence_name->setText(local_evidence_list.at(current_evidence).name);
 }
 
 void Courtroom::on_evidence_left_clicked()

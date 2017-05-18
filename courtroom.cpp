@@ -878,7 +878,7 @@ void Courtroom::on_chat_return_pressed()
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
-  if (p_contents->size() < 15)
+  if (p_contents->size() < chatmessage_size)
     return;
 
   for (int n_string = 0 ; n_string < chatmessage_size ; ++n_string)
@@ -886,10 +886,15 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[n_string] = p_contents->at(n_string);
   }
 
+  int f_char_id = m_chatmessage[CHAR_ID].toInt();
+
+  if (f_char_id < 0 || f_char_id >= char_list.size())
+    return;
+
   if (mute_map.value(m_chatmessage[CHAR_NAME]))
     return;
 
-  QString f_showname = ao_app->get_showname(char_list.at(m_chatmessage[CHAR_ID].toInt()).name);
+  QString f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
@@ -1349,7 +1354,6 @@ void Courtroom::set_scene()
   }
   else
   {
-    qDebug() << "last";
     if (f_side == "wit")
     {
       ui_vp_desk->show();
@@ -1502,7 +1506,10 @@ void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
   if (ui_guard->isChecked())
+  {
     modcall_player->play("sfx-gallery.wav");
+    ao_app->alert(this);
+  }
 }
 
 void Courtroom::on_ooc_return_pressed()

@@ -7,6 +7,7 @@
 AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
 {
   ao_app = p_ao_app;
+  m_parent = p_parent;
 
   ui_selected = new AOImage(p_parent, ao_app);
   ui_selected->resize(70, 70);
@@ -28,6 +29,13 @@ AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, i
   connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
 }
 
+void AOEvidenceButton::reset()
+{
+  this->hide();
+  ui_selected->hide();
+  ui_selector->hide();
+}
+
 void AOEvidenceButton::set_image(QString p_image)
 {
   QString image_path = ao_app->get_evidence_path() + p_image;
@@ -44,14 +52,28 @@ void AOEvidenceButton::set_image(QString p_image)
   }
 }
 
+void AOEvidenceButton::set_theme_image(QString p_image)
+{
+  QString theme_image_path = ao_app->get_theme_path() + p_image;
+  QString default_image_path = ao_app->get_default_theme_path() + p_image;
+
+  QString final_image_path;
+
+  if (file_exists(theme_image_path))
+    final_image_path = theme_image_path;
+  else
+    final_image_path = default_image_path;
+
+  this->setText("");
+  this->setStyleSheet("border-image:url(\"" + final_image_path + "\")");
+}
+
 void AOEvidenceButton::set_selected(bool p_selected)
 {
-  m_selected = p_selected;
-
-  if (!m_selected)
-    ui_selected->hide();
-  else
+  if (p_selected)
     ui_selected->show();
+  else
+    ui_selected->hide();
 }
 
 void AOEvidenceButton::on_clicked()
