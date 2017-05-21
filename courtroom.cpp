@@ -1631,7 +1631,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
     f_pos = "";
   }
 
-  if (f_pos == "" || ui_ooc_chat_name == "")
+  if (f_pos == "" || ui_ooc_chat_name->text() == "")
     return;
 
   ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));

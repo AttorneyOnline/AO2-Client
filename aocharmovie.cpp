@@ -42,24 +42,20 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   m_movie->stop();
   m_movie->setFileName(gif_path);
 
-  if (m_flipped)
-  {
-    QImageReader *reader = new QImageReader(gif_path);
+  QImageReader *reader = new QImageReader(gif_path);
 
-    flipped_movie.clear();
-    QImage f_image = reader->read();
-    while (!f_image.isNull())
-    {
+  flipped_movie.clear();
+  QImage f_image = reader->read();
+  while (!f_image.isNull())
+  {
+    if (m_flipped)
       flipped_movie.append(f_image.mirrored(true, false));
-      f_image = reader->read();
-    }
+    else
+      flipped_movie.append(f_image);
+    f_image = reader->read();
+  }
 
-    delete reader;
-  }
-  else
-  {
-    this->setMovie(m_movie);
-  }
+  delete reader;
 
   this->show();
   m_movie->start();
@@ -157,7 +153,7 @@ void AOCharMovie::combo_resize(int w, int h)
 
 void AOCharMovie::frame_change(int n_frame)
 {
-  if (m_flipped && flipped_movie.size() > n_frame)
+  if (flipped_movie.size() > n_frame)
   {
     QPixmap f_pixmap = QPixmap::fromImage(flipped_movie.at(n_frame));
 
