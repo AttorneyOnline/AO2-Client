@@ -10,6 +10,8 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 
   m_movie = new QMovie();
 
+  this->setMovie(m_movie);
+
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
 

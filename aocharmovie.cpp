@@ -16,8 +16,6 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
 
-  this->setMovie(m_movie);
-
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
@@ -44,14 +42,14 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
   QImageReader *reader = new QImageReader(gif_path);
 
-  flipped_movie.clear();
+  movie_frames.clear();
   QImage f_image = reader->read();
   while (!f_image.isNull())
   {
     if (m_flipped)
-      flipped_movie.append(f_image.mirrored(true, false));
+      movie_frames.append(f_image.mirrored(true, false));
     else
-      flipped_movie.append(f_image);
+      movie_frames.append(f_image);
     f_image = reader->read();
   }
 
@@ -153,9 +151,9 @@ void AOCharMovie::combo_resize(int w, int h)
 
 void AOCharMovie::frame_change(int n_frame)
 {
-  if (flipped_movie.size() > n_frame)
+  if (movie_frames.size() > n_frame)
   {
-    QPixmap f_pixmap = QPixmap::fromImage(flipped_movie.at(n_frame));
+    QPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(n_frame));
 
     this->setPixmap(f_pixmap.scaled(this->width(), this->height()));
   }

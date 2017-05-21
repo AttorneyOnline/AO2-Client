@@ -29,7 +29,7 @@ private:
   AOApplication *ao_app;
 
   QMovie *m_movie;
-  QVector<QImage> flipped_movie;
+  QVector<QImage> movie_frames;
   QTimer *preanim_timer;
 
   const int time_mod = 62;
