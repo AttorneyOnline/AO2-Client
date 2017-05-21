@@ -250,6 +250,7 @@ private:
   AOButton *ui_emote_right;
 
   QComboBox *ui_emote_dropdown;
+  QComboBox *ui_pos_dropdown;
 
   AOImage *ui_defense_bar;
   AOImage *ui_prosecution_bar;
@@ -369,6 +370,7 @@ private slots:
   void on_emote_right_clicked();
 
   void on_emote_dropdown_changed(int p_index);
+  void on_pos_dropdown_changed(int p_index);
 
   void on_evidence_name_edited();
   void on_evidence_clicked(int p_id);

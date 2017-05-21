@@ -110,16 +110,19 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_search = new QLineEdit(this);
   ui_music_search->setFrame(false);
 
-  //////////emotes//////////////////////
-
   construct_emotes();
 
   ui_emote_left = new AOButton(this, ao_app);
   ui_emote_right = new AOButton(this, ao_app);
 
   ui_emote_dropdown = new QComboBox(this);
-
-  ///////////////////////////////////////
+  ui_pos_dropdown = new QComboBox(this);
+  ui_pos_dropdown->addItem("wit");
+  ui_pos_dropdown->addItem("def");
+  ui_pos_dropdown->addItem("pro");
+  ui_pos_dropdown->addItem("jud");
+  ui_pos_dropdown->addItem("hld");
+  ui_pos_dropdown->addItem("hlp");
 
   ui_defense_bar = new AOImage(this, ao_app);
   ui_prosecution_bar = new  AOImage(this, ao_app);
@@ -205,6 +208,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
+  connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -399,6 +403,7 @@ void Courtroom::set_widgets()
   ui_emote_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
+  set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state) + ".png");
@@ -1593,11 +1598,48 @@ void Courtroom::on_music_search_edited(QString p_text)
   list_music();
 }
 
+void Courtroom::on_pos_dropdown_changed(int p_index)
+{
+  ui_ic_chat_message->setFocus();
+
+  if (p_index < 0 || p_index > 5)
+    return;
+
+  QString f_pos;
+
+  switch (p_index)
+  {
+  case 0:
+    f_pos = "wit";
+    break;
+  case 1:
+    f_pos = "def";
+    break;
+  case 2:
+    f_pos = "pro";
+    break;
+  case 3:
+    f_pos = "jud";
+    break;
+  case 4:
+    f_pos = "hld";
+    break;
+  case 5:
+    f_pos = "hlp";
+    break;
+  default:
+    f_pos = "";
+  }
+
+  if (f_pos == "" || ui_ooc_chat_name == "")
+    return;
+
+  ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
+}
+
 void Courtroom::on_mute_list_clicked(QModelIndex p_index)
 {
-  qDebug() << "mute_list_clicked";
   QListWidgetItem *f_item = ui_mute_list->item(p_index.row());
-  qDebug() << "item text: " << f_item->text();
   QString f_char = f_item->text();
   QString real_char;
 
