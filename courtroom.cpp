@@ -492,11 +492,16 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_evidence_right, "evidence_right");
   ui_evidence_right->set_image("arrow_right.png");
 
+  set_size_and_pos(ui_evidence_present, "evidence_present");
+  ui_evidence_present->set_image("present_disabled");
+
   set_size_and_pos(ui_evidence_overlay, "evidence_overlay");
   ui_evidence_overlay->set_image("evidenceoverlay.png");
 
   set_size_and_pos(ui_evidence_delete, "evidence_delete");
   ui_evidence_delete->set_image("deleteevidence.png");
+
+  set_size_and_pos(ui_evidence_image, "evidence_image");
 
   set_size_and_pos(ui_evidence_x, "evidence_x");
   ui_evidence_x->set_image("evidencex.png");

@@ -17,10 +17,12 @@ void Courtroom::construct_evidence()
 
   ui_evidence_left = new AOButton(ui_evidence, ao_app);
   ui_evidence_right = new AOButton(ui_evidence, ao_app);
+  ui_evidence_present = new AOButton(ui_evidence, ao_app);
 
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_image = new AOLineEdit(ui_evidence_overlay);
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
@@ -72,7 +74,9 @@ void Courtroom::construct_evidence()
   connect(ui_evidence_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_name_edited()));
   connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
   connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
+  connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
   connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
+  connect(ui_evidence_image, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_edited()));
   connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
 
   ui_evidence->hide();
@@ -88,27 +92,6 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
 
 void Courtroom::set_evidence_page()
 {
-  /*
-  if (m_cid == -1)
-    return;
-
-
-  local_evidence_list.clear();
-
-  QString evi_string = char_list.at(m_cid).evidence_string;
-
-  QStringList evi_numbers = evi_string.split(",", QString::SkipEmptyParts);
-
-  for (QString i_evi : evi_numbers)
-  {
-    int n_evi = i_evi.toInt() - 1;
-
-    if (n_evi < 0 || n_evi >= evidence_list.size())
-      continue;
-
-    local_evidence_list.append(evidence_list.at(n_evi));
-  */
-
   int total_evidence = local_evidence_list.size();
 
   ui_evidence_left->hide();
@@ -174,6 +157,9 @@ void Courtroom::set_evidence_page()
 
 void Courtroom::on_evidence_name_edited()
 {
+  if (current_evidence >= local_evidence_list.size())
+    return;
+
   QStringList f_contents;
 
   evi_type f_evi = local_evidence_list.at(current_evidence);
@@ -182,6 +168,23 @@ void Courtroom::on_evidence_name_edited()
   f_contents.append(ui_evidence_name->text());
   f_contents.append(f_evi.description);
   f_contents.append(f_evi.image);
+
+  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+}
+
+void Courtroom::on_evidence_image_edited()
+{
+  if (current_evidence >= local_evidence_list.size())
+    return;
+
+  QStringList f_contents;
+
+  evi_type f_evi = local_evidence_list.at(current_evidence);
+
+  f_contents.append(QString::number(current_evidence));
+  f_contents.append(f_evi.name);
+  f_contents.append(f_evi.description);
+  f_contents.append(ui_evidence_image->text());
 
   ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
@@ -221,8 +224,15 @@ void Courtroom::on_evidence_clicked(int p_id)
 
 void Courtroom::on_evidence_double_clicked(int p_id)
 {
+  if (current_evidence >= local_evidence_list.size())
+    return;
+
+  evi_type f_evi = local_evidence_list.at(p_id);
+
   ui_evidence_description->clear();
-  ui_evidence_description->appendPlainText(local_evidence_list.at(p_id).description);
+  ui_evidence_description->appendPlainText(f_evi.description);
+
+  ui_evidence_image->setText(f_evi.image);
 
   ui_evidence_overlay->show();
 }
@@ -258,6 +268,16 @@ void Courtroom::on_evidence_right_clicked()
   set_evidence_page();
 }
 
+void Courtroom::on_evidence_present_clicked()
+{
+  if (is_presenting_evidence)
+    ui_evidence_present->set_image("present_disabled.png");
+  else
+    ui_evidence_present->set_image("present.png");
+
+  is_presenting_evidence = !is_presenting_evidence;
+}
+
 void Courtroom::on_evidence_delete_clicked()
 {
   ui_evidence_description->setReadOnly(true);
@@ -272,5 +292,19 @@ void Courtroom::on_evidence_x_clicked()
 {
   ui_evidence_description->setReadOnly(true);
   ui_evidence_overlay->hide();
+
+  if (current_evidence >= local_evidence_list.size())
+    return;
+
+  QStringList f_contents;
+
+  evi_type f_evi = local_evidence_list.at(current_evidence);
+
+  f_contents.append(QString::number(current_evidence));
+  f_contents.append(f_evi.name);
+  f_contents.append(ui_evidence_description->toPlainText());
+  f_contents.append(f_evi.image);
+
+  ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
 

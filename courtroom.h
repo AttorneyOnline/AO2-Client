@@ -173,6 +173,7 @@ private:
   int objection_state = 0;
   int realization_state = 0;
   int text_color = 0;
+  bool is_presenting_evidence = false;
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
@@ -302,8 +303,10 @@ private:
   QVector<AOEvidenceButton*> ui_evidence_list;
   AOButton *ui_evidence_left;
   AOButton *ui_evidence_right;
+  AOButton *ui_evidence_present;
   AOImage *ui_evidence_overlay;
   AOButton *ui_evidence_delete;
+  AOLineEdit *ui_evidence_image;
   AOButton *ui_evidence_x;
   AOTextEdit *ui_evidence_description;
 
@@ -374,6 +377,7 @@ private slots:
   void on_pos_dropdown_changed(int p_index);
 
   void on_evidence_name_edited();
+  void on_evidence_image_edited();
   void on_evidence_clicked(int p_id);
   void on_evidence_double_clicked(int p_id);
 
@@ -381,6 +385,7 @@ private slots:
 
   void on_evidence_left_clicked();
   void on_evidence_right_clicked();
+  void on_evidence_present_clicked();
 
   void on_hold_it_clicked();
   void on_objection_clicked();
