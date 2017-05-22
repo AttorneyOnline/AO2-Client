@@ -58,7 +58,7 @@ private:
   QListWidget *ui_server_list;
 
   QLabel *ui_player_count;
-  QPlainTextEdit *ui_description;
+  AOTextArea *ui_description;
 
   AOTextArea *ui_chatbox;
 

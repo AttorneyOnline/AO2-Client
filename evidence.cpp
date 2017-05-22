@@ -20,6 +20,7 @@ void Courtroom::construct_evidence()
 
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
+  ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
@@ -71,6 +72,7 @@ void Courtroom::construct_evidence()
   connect(ui_evidence_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_name_edited()));
   connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
   connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
+  connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
   connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
 
   ui_evidence->hide();
@@ -86,10 +88,11 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
 
 void Courtroom::set_evidence_page()
 {
+  /*
   if (m_cid == -1)
     return;
 
-  /*
+
   local_evidence_list.clear();
 
   QString evi_string = char_list.at(m_cid).evidence_string;
@@ -115,9 +118,6 @@ void Courtroom::set_evidence_page()
   {
     i_button->reset();
   }
-
-  if (total_evidence == 0)
-    return;
 
   //to account for the "add evidence" button
   ++total_evidence;
@@ -237,9 +237,11 @@ void Courtroom::on_evidence_hover(int p_id, bool p_state)
       ui_evidence_name->setText("Add new evidence...");
     else if (final_id < local_evidence_list.size())
       ui_evidence_name->setText(local_evidence_list.at(final_id).name);
-    else
-      ui_evidence_name->setText(local_evidence_list.at(current_evidence).name);
   }
+  else if (current_evidence < local_evidence_list.size())
+    ui_evidence_name->setText(local_evidence_list.at(current_evidence).name);
+  else
+    ui_evidence_name->setText("");
 }
 
 void Courtroom::on_evidence_left_clicked()
@@ -254,6 +256,16 @@ void Courtroom::on_evidence_right_clicked()
   ++current_evidence_page;
 
   set_evidence_page();
+}
+
+void Courtroom::on_evidence_delete_clicked()
+{
+  ui_evidence_description->setReadOnly(true);
+  ui_evidence_overlay->hide();
+
+  ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
+
+  current_evidence = 0;
 }
 
 void Courtroom::on_evidence_x_clicked()

@@ -303,6 +303,7 @@ private:
   AOButton *ui_evidence_left;
   AOButton *ui_evidence_right;
   AOImage *ui_evidence_overlay;
+  AOButton *ui_evidence_delete;
   AOButton *ui_evidence_x;
   AOTextEdit *ui_evidence_description;
 
@@ -416,6 +417,7 @@ private slots:
 
   void on_evidence_button_clicked();
 
+  void on_evidence_delete_clicked();
   void on_evidence_x_clicked();
 
   void on_back_to_lobby_clicked();
