@@ -239,6 +239,7 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
+  ui_evidence_name->setReadOnly(true);
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (p_state)

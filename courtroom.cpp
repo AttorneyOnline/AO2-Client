@@ -63,6 +63,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
   ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
 
+  ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
+
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_message = new QTextEdit(ui_vp_chatbox);
@@ -328,6 +330,9 @@ void Courtroom::set_widgets()
   int final_y = y_modifier * ui_viewport->height();
   ui_vp_legacy_desk->move(0, final_y);
   ui_vp_legacy_desk->hide();
+
+  ui_vp_evidence_display->move(0, 0);
+  ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_vp_showname, "showname");
 
@@ -856,8 +861,12 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_obj_state);
 
-  //evidence. 0 for now
-  packet_contents.append("0");
+  if (is_presenting_evidence)
+    //the evidence index is shifted by 1 because 0 is no evidence per legacy standards
+    //besides, older clients crash if we pass -1
+    packet_contents.append(QString::number(current_evidence + 1));
+  else
+    packet_contents.append("0");
 
   QString f_flip;
 
@@ -1034,6 +1043,18 @@ void Courtroom::handle_chatmessage_2()
 void Courtroom::handle_chatmessage_3()
 {
   start_chat_ticking();
+
+  int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
+  QString f_side = m_chatmessage[SIDE];
+
+  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
+  {
+    //shifted by 1 because 0 is no evidence per legacy standards
+    QString f_image = local_evidence_list.at(f_evi_id - 1).image;
+    //def jud and hlp should display the evidence icon on the RIGHT side
+    bool is_left_side = !(f_side == "def" || f_side == "hlp" || "jud");
+    ui_vp_evidence_display->show_evidence(f_image, is_left_side, ui_sfx_slider->value());
+  }
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 

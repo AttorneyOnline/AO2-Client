@@ -16,6 +16,7 @@
 #include "aotextarea.h"
 #include "aolineedit.h"
 #include "aotextedit.h"
+#include "aoevidencedisplay.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -220,6 +221,7 @@ private:
   AOCharMovie *ui_vp_player_char;
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
+  AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;

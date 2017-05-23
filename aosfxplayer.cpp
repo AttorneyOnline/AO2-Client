@@ -30,6 +30,11 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char)
   BASS_ChannelPlay(m_stream, false);
 }
 
+void AOSfxPlayer::stop()
+{
+  BASS_ChannelStop(m_stream);
+}
+
 void AOSfxPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
