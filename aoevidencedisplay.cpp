@@ -70,8 +70,6 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
 
 void AOEvidenceDisplay::frame_change(int p_frame)
 {
-  qDebug() << "total evi frames: " << evidence_movie->frameCount();
-  qDebug() << "evi_frame: " << p_frame;
   if (p_frame == (evidence_movie->frameCount() - 1))
   {
     //we need this or else the last frame wont show

@@ -928,6 +928,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_objection->stop();
   ui_vp_player_char->stop();
   chat_tick_timer->stop();
+  ui_vp_evidence_display->reset();
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
@@ -936,12 +937,14 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_ic_chat_message->clear();
     objection_state = 0;
     realization_state = 0;
+    is_presenting_evidence = false;
     ui_pre->setChecked(false);
     ui_hold_it->set_image("holdit.png");
     ui_objection->set_image("objection.png");
     ui_take_that->set_image("takethat.png");
     ui_custom_objection->set_image("custom.png");
     ui_realization->set_image("realization.png");
+    ui_evidence_present->set_image("present_disabled.png");
   }
 
   append_ic_text(f_message);
@@ -1052,7 +1055,7 @@ void Courtroom::handle_chatmessage_3()
     //shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     //def jud and hlp should display the evidence icon on the RIGHT side
-    bool is_left_side = !(f_side == "def" || f_side == "hlp" || "jud");
+    bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side, ui_sfx_slider->value());
   }
 

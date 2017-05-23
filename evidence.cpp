@@ -210,16 +210,9 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   ui_evidence_list.at(p_id)->set_selected(true);
 
-  /*
-  for (AOEvidenceButton *i_button : ui_evidence_list)
-  {
-    i_button->set_selected(false);
-  }
-
-  ui_evidence_list.at(p_id)->set_selected(true);
-  */
-
   current_evidence = f_real_id;
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_double_clicked(int p_id)
@@ -235,6 +228,8 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_image->setText(f_evi.image);
 
   ui_evidence_overlay->show();
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
@@ -260,6 +255,8 @@ void Courtroom::on_evidence_left_clicked()
   --current_evidence_page;
 
   set_evidence_page();
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_right_clicked()
@@ -267,6 +264,8 @@ void Courtroom::on_evidence_right_clicked()
   ++current_evidence_page;
 
   set_evidence_page();
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_present_clicked()
@@ -277,6 +276,8 @@ void Courtroom::on_evidence_present_clicked()
     ui_evidence_present->set_image("present.png");
 
   is_presenting_evidence = !is_presenting_evidence;
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_delete_clicked()
@@ -287,6 +288,8 @@ void Courtroom::on_evidence_delete_clicked()
   ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
 
   current_evidence = 0;
+
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_x_clicked()
@@ -307,5 +310,7 @@ void Courtroom::on_evidence_x_clicked()
   f_contents.append(f_evi.image);
 
   ao_app->send_server_packet(new AOPacket("EE", f_contents));
+
+  ui_ic_chat_message->setFocus();
 }
 
