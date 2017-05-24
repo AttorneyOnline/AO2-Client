@@ -22,6 +22,8 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
 
   QRegExp regExp("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[\\-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9\\.\\-]+|(?:www\\.|[\\-;:&=\\+\\$,\\w]+@)[A-Za-z0-9\\.\\-]+)((?:\\/[\\+~%\\/\\.\\w\\-]*)?\\??(?:[\\-\\+=&;%@\\.\\w]*)#?(?:[\\.\\!\\/\\\\\\w]*))?)");
 
+  //cheap workarounds ahoy
+  p_message += " ";
   QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(regExp, "<a href='\\1'>\\1</a>" );
 
   this->insertHtml(result);
