@@ -121,15 +121,11 @@ void Courtroom::set_evidence_page()
   else
     evidence_on_page = max_evidence_on_page;
 
-  qDebug() << "total pages: " << total_pages;
-
   if (total_pages > current_evidence_page + 1)
     ui_evidence_right->show();
 
   if (current_evidence_page > 0)
     ui_evidence_left->show();
-
-  qDebug() << "evidence_on_page: " << evidence_on_page;
 
   for (int n_evidence_button = 0 ; n_evidence_button < evidence_on_page ; ++n_evidence_button)
   {
