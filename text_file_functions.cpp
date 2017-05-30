@@ -90,6 +90,28 @@ int AOApplication::get_default_blip()
   else return f_result.toInt();
 }
 
+QStringList AOApplication::get_call_words()
+{
+  QStringList return_value;
+
+  QFile callwords_ini;
+
+  callwords_ini.setFileName(get_base_path() + "callwords.ini");
+
+  if (!callwords_ini.open(QIODevice::ReadOnly))
+    return return_value;
+
+  QTextStream in(&callwords_ini);
+
+  while (!in.atEnd())
+  {
+    QString line = in.readLine();
+    return_value.append(line);
+  }
+
+  return return_value;
+}
+
 void AOApplication::write_to_serverlist_txt(QString p_line)
 {
   QFile serverlist_txt;
@@ -292,10 +314,10 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
   return return_color;
 }
 
-QString AOApplication::get_sfx(QString p_identifier, QString p_file)
+QString AOApplication::get_sfx(QString p_identifier)
 {
-  QString design_ini_path = get_theme_path() + p_file;
-  QString default_path = get_default_theme_path() + p_file;
+  QString design_ini_path = get_theme_path() + "courtroom_sounds.ini";
+  QString default_path = get_default_theme_path() + "courtroom_sounds.ini";
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   QString return_sfx = "";
@@ -548,6 +570,8 @@ bool AOApplication::get_blank_blip()
 
   return f_result.startsWith("true");
 }
+
+
 
 
 

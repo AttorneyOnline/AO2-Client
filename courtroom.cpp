@@ -1112,7 +1112,21 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play(ao_app->get_sfx("realization", "courtroom_sounds.ini"));
+    sfx_player->play(ao_app->get_sfx("realization"));
+  }
+
+  QString f_message = m_chatmessage[MESSAGE];
+  QStringList call_words = ao_app->get_call_words();
+
+  for (QString word : call_words)
+  {
+    if (f_message.contains(word, Qt::CaseInsensitive))
+    {
+      modcall_player->play(ao_app->get_sfx("word_call"));
+      ao_app->alert(this);
+
+      break;
+    }
   }
 
 }
@@ -1508,7 +1522,7 @@ void Courtroom::handle_wtce(QString p_wtce)
   //witness testimony
   if (p_wtce == "testimony1")
   {
-    sfx_player->play(ao_app->get_sfx("witness_testimony", sfx_file));
+    sfx_player->play(ao_app->get_sfx("witness_testimony"));
     ui_vp_wtce->play("witnesstestimony");
     testimony_in_progress = true;
     show_testimony();
@@ -1516,7 +1530,7 @@ void Courtroom::handle_wtce(QString p_wtce)
   //cross examination
   else if (p_wtce == "testimony2")
   {
-    sfx_player->play(ao_app->get_sfx("cross_examination", sfx_file));
+    sfx_player->play(ao_app->get_sfx("cross_examination"));
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
   }
@@ -1544,7 +1558,7 @@ void Courtroom::mod_called(QString p_ip)
   ui_server_chatlog->append(p_ip);
   if (ui_guard->isChecked())
   {
-    modcall_player->play("sfx-gallery.wav");
+    modcall_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);
   }
 }
