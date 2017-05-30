@@ -209,11 +209,12 @@ void Courtroom::on_evidence_clicked(int p_id)
   current_evidence = f_real_id;
 
   ui_ic_chat_message->setFocus();
+
 }
 
 void Courtroom::on_evidence_double_clicked(int p_id)
 {
-  if (current_evidence >= local_evidence_list.size())
+  if (p_id >= local_evidence_list.size())
     return;
 
   evi_type f_evi = local_evidence_list.at(p_id);
