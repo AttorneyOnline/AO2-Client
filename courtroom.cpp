@@ -17,8 +17,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
 
   //initializing sound device
+#ifdef _WIN32
   BASS_Init(-1, 44100, BASS_DEVICE_LATENCY, 0, NULL);
-
+#endif
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
 
