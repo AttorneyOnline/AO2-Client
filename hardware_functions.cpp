@@ -52,7 +52,6 @@ QString get_hdid()
 
 #else
 
-//throwing compile-time errors professionally
-fhasdfuifhidfhasjkfasdkfahsdj
+#error This operating system is unsupported for hardware functions.
 
 #endif
