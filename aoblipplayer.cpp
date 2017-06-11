@@ -18,7 +18,7 @@ void AOBlipPlayer::set_blips(QString p_sfx)
   {
     BASS_StreamFree(m_stream_list[n_stream]);
 
-    m_stream_list[n_stream] = BASS_StreamCreateFile(FALSE, f_path.toStdString().c_str(), 0, 0, 0);
+    m_stream_list[n_stream] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
   }
 
   set_volume(m_volume);
