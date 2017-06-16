@@ -266,6 +266,12 @@ void Courtroom::set_mute_list()
 {
   mute_map.clear();
 
+  //maps which characters are muted based on cid, none are muted by default
+  for (int n_cid = 0 ; n_cid < char_list.size() ; n_cid++)
+  {
+    mute_map.insert(n_cid, false);
+  }
+
   QStringList sorted_mute_list;
 
   for (char_type i_char : char_list)
@@ -275,7 +281,7 @@ void Courtroom::set_mute_list()
 
   for (QString i_name : sorted_mute_list)
   {
-    mute_map.insert(i_name, false);
+    //mute_map.insert(i_name, false);
     ui_mute_list->addItem(i_name);
   }
 }
@@ -913,7 +919,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_char_id < 0 || f_char_id >= char_list.size())
     return;
 
-  if (mute_map.value(m_chatmessage[CHAR_NAME]))
+  if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
   QString f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
@@ -1507,7 +1513,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   {
     QString str_char = char_list.at(n_char).name;
 
-    if (!mute_map.value(str_char))
+    if (!mute_map.value(n_char))
     {
       append_ic_text(str_char + " has played a song: " + f_song + "\n");
       music_player->play(f_song);
@@ -1690,6 +1696,39 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
   QString real_char;
 
   if (f_char.endsWith(" [x]"))
+    real_char = f_char.left(f_char.size() - 4);
+  else
+    real_char = f_char;
+
+  int f_cid = -1;
+
+  for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
+  {
+    if (char_list.at(n_char).name == real_char)
+      f_cid = n_char;
+  }
+
+  if (f_cid < 0 || f_cid >= char_list.size())
+  {
+    qDebug() << "W: " << real_char << " not present in char_list";
+    return;
+  }
+
+  if (mute_map.value(f_cid))
+  {
+    mute_map.insert(f_cid, false);
+    f_item->setText(real_char);
+  }
+  else
+  {
+    mute_map.insert(f_cid, true);
+    f_item->setText(real_char + " [x]");
+  }
+
+
+
+  /*
+  if (f_char.endsWith(" [x]"))
   {
     real_char = f_char.left(f_char.size() - 4);
     mute_map.remove(real_char);
@@ -1703,6 +1742,7 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
     mute_map.insert(real_char, true);
     f_item->setText(real_char + " [x]");
   }
+  */
 }
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)

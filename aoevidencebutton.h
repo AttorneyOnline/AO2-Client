@@ -34,6 +34,8 @@ protected:
   void enterEvent(QEvent *e);
   void leaveEvent(QEvent *e);
   void mouseDoubleClickEvent(QMouseEvent *e);
+  void dragLeaveEvent(QMouseEvent *e);
+  void dragEnterEvent(QMouseEvent *e);
 
 signals:
   void evidence_clicked(int p_id);

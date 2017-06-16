@@ -153,10 +153,16 @@ private:
 
   bool testimony_in_progress = false;
 
+  //in milliseconds
   const int testimony_show_time = 1500;
+
+  //in milliseconds
   const int testimony_hide_time = 500;
 
-  QMap<QString, bool> mute_map;
+  //char id, muted or not
+  QMap<int, bool> mute_map;
+
+  //QVector<int> muted_cids;
 
   bool is_muted = false;
 

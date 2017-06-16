@@ -25,6 +25,7 @@ AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, i
 
   this->move(p_x, p_y);
   this->resize(70, 70);
+  this->setAcceptDrops(true);
 
   connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
 }
@@ -81,9 +82,24 @@ void AOEvidenceButton::on_clicked()
   evidence_clicked(m_id);
 }
 
-void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e) {
+void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
+{
   QPushButton::mouseDoubleClickEvent(e);
   evidence_double_clicked(m_id);
+}
+
+void AOEvidenceButton::dragLeaveEvent(QMouseEvent *e)
+{
+  //QWidget::dragLeaveEvent(e);
+
+  qDebug() << "drag leave event";
+}
+
+void AOEvidenceButton::dragEnterEvent(QMouseEvent *e)
+{
+  //QWidget::dragEnterEvent(e);
+
+  qDebug() << "drag enter event";
 }
 
 void AOEvidenceButton::enterEvent(QEvent * e)
