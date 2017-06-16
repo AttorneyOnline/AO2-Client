@@ -18,13 +18,16 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
 
   this->moveCursor(QTextCursor::End);
 
-  this->append(p_name + ": ");
+  this->append("");
+  this->insertHtml("<b>" + p_name.toHtmlEscaped() + "</b>:&nbsp;");
 
-  QRegExp regExp("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[\\-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9\\.\\-]+|(?:www\\.|[\\-;:&=\\+\\$,\\w]+@)[A-Za-z0-9\\.\\-]+)((?:\\/[\\+~%\\/\\.\\w\\-]*)?\\??(?:[\\-\\+=&;%@\\.\\w]*)#?(?:[\\.\\!\\/\\\\\\w]*))?)");
+  //QRegExp regExp("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[\\-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9\\.\\-]+|(?:www\\.|[\\-;:&=\\+\\$,\\w]+@)[A-Za-z0-9\\.\\-]+)((?:\\/[\\+~%\\/\\.\\w\\-]*)?\\??(?:[\\-\\+=&;%@\\.\\w]*)#?(?:[\\.\\!\\/\\\\\\w]*))?)");
+
+  QRegExp omnis_dank_url_regex("\\b(https?://\\S+\\.\\S+)\\b");
 
   //cheap workarounds ahoy
   p_message += " ";
-  QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(regExp, "<a href='\\1'>\\1</a>" );
+  QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
 
   this->insertHtml(result);
 
