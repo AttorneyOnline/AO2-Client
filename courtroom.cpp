@@ -512,7 +512,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_evidence_delete, "evidence_delete");
   ui_evidence_delete->set_image("deleteevidence.png");
 
-  set_size_and_pos(ui_evidence_image, "evidence_image");
+  set_size_and_pos(ui_evidence_image_name, "evidence_image_name");
+
+  set_size_and_pos(ui_evidence_image_button, "evidence_image_button");
 
   set_size_and_pos(ui_evidence_x, "evidence_x");
   ui_evidence_x->set_image("evidencex.png");

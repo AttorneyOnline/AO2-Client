@@ -1,6 +1,7 @@
 #include "courtroom.h"
 
 #include <QDebug>
+#include <QFileDialog>
 
 void Courtroom::construct_evidence()
 {
@@ -22,7 +23,9 @@ void Courtroom::construct_evidence()
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
-  ui_evidence_image = new AOLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
+  ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_image_button->setText("Choose..");
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
@@ -76,7 +79,8 @@ void Courtroom::construct_evidence()
   connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
   connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
   connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
-  connect(ui_evidence_image, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_edited()));
+  connect(ui_evidence_image_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_name_edited()));
+  connect(ui_evidence_image_button, SIGNAL(clicked()), this, SLOT(on_evidence_image_button_clicked()));
   connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
 
   ui_evidence->hide();
@@ -168,7 +172,7 @@ void Courtroom::on_evidence_name_edited()
   ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
 
-void Courtroom::on_evidence_image_edited()
+void Courtroom::on_evidence_image_name_edited()
 {
   if (current_evidence >= local_evidence_list.size())
     return;
@@ -180,9 +184,36 @@ void Courtroom::on_evidence_image_edited()
   f_contents.append(QString::number(current_evidence));
   f_contents.append(f_evi.name);
   f_contents.append(f_evi.description);
-  f_contents.append(ui_evidence_image->text());
+  f_contents.append(ui_evidence_image_name->text());
 
   ao_app->send_server_packet(new AOPacket("EE", f_contents));
+}
+
+void Courtroom::on_evidence_image_button_clicked()
+{
+  QFileDialog dialog(this);
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setNameFilter(tr("Images (*.png)"));
+  dialog.setViewMode(QFileDialog::List);
+  dialog.setDirectory(ao_app->get_evidence_path());
+
+  QStringList filenames;
+
+  if (dialog.exec())
+      filenames = dialog.selectedFiles();
+
+  if (filenames.size() != 1)
+    return;
+
+  QString filename = filenames.at(0);
+
+  QStringList split_filename = filename.split("/");
+
+  filename = split_filename.at(split_filename.size() - 1);
+
+  ui_evidence_image_name->setText(filename);
+
+  on_evidence_image_name_edited();
 }
 
 void Courtroom::on_evidence_clicked(int p_id)
@@ -226,7 +257,7 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_description->clear();
   ui_evidence_description->appendPlainText(f_evi.description);
 
-  ui_evidence_image->setText(f_evi.image);
+  ui_evidence_image_name->setText(f_evi.image);
 
   ui_evidence_overlay->show();
 

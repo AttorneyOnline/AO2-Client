@@ -305,7 +305,6 @@ private:
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
-  //QLabel *ui_evidence_name;
   AOLineEdit *ui_evidence_name;
   QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton*> ui_evidence_list;
@@ -314,7 +313,8 @@ private:
   AOButton *ui_evidence_present;
   AOImage *ui_evidence_overlay;
   AOButton *ui_evidence_delete;
-  AOLineEdit *ui_evidence_image;
+  AOLineEdit *ui_evidence_image_name;
+  AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
   AOTextEdit *ui_evidence_description;
 
@@ -385,7 +385,8 @@ private slots:
   void on_pos_dropdown_changed(int p_index);
 
   void on_evidence_name_edited();
-  void on_evidence_image_edited();
+  void on_evidence_image_name_edited();
+  void on_evidence_image_button_clicked();
   void on_evidence_clicked(int p_id);
   void on_evidence_double_clicked(int p_id);
 
