@@ -1348,48 +1348,48 @@ void Courtroom::set_scene()
     show_testimony();
 
   //witness is default if pos is invalid
-  QString f_background = "witnessempty.png";
-  QString f_desk_image = "stand.png";
+  QString f_background = "witnessempty";
+  QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[DESK_MOD];
   QString f_side = m_chatmessage[SIDE];
 
   if (f_side == "def")
   {
-    f_background = "defenseempty.png";
+    f_background = "defenseempty";
     if (is_ao2_bg)
-      f_desk_image = "defensedesk.png";
+      f_desk_image = "defensedesk";
     else
-      f_desk_image = "bancodefensa.png";
+      f_desk_image = "bancodefensa";
   }
   else if (f_side == "pro")
   {
-    f_background = "prosecutorempty.png";
+    f_background = "prosecutorempty";
     if (is_ao2_bg)
-      f_desk_image = "prosecutiondesk.png";
+      f_desk_image = "prosecutiondesk";
     else
-      f_desk_image = "bancoacusacion.png";
+      f_desk_image = "bancoacusacion";
   }
   else if (f_side == "jud")
   {
-    f_background = "judgestand.png";
-    f_desk_image = "judgedesk.png";
+    f_background = "judgestand";
+    f_desk_image = "judgedesk";
   }
   else if (f_side == "hld")
   {
-    f_background = "helperstand.png";
-    f_desk_image = "helperdesk.png";
+    f_background = "helperstand";
+    f_desk_image = "helperdesk";
   }
   else if (f_side == "hlp")
   {
-    f_background = "prohelperstand.png";
-    f_desk_image = "prohelperdesk.png";
+    f_background = "prohelperstand";
+    f_desk_image = "prohelperdesk";
   }
   else
   {
     if (is_ao2_bg)
-      f_desk_image = "stand.png";
+      f_desk_image = "stand";
     else
-      f_desk_image = "estrado.png";
+      f_desk_image = "estrado";
   }
 
   ui_vp_background->set_image(f_background);
