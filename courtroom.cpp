@@ -956,9 +956,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_evidence_present->set_image("present_disabled.png");
   }
 
-  //true means append as html
   append_ic_text("<b>" + f_showname.toHtmlEscaped() + "</b>:&nbsp;" + m_chatmessage[MESSAGE].toHtmlEscaped());
-
 
   previous_ic_message = f_message;
 
