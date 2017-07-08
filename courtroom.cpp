@@ -11,6 +11,7 @@
 #include <QScrollBar>
 #include <QRegExp>
 #include <QBrush>
+#include <QTextCharFormat>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -955,7 +956,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_evidence_present->set_image("present_disabled.png");
   }
 
-  append_ic_text(f_message);
+  //true means append as html
+  append_ic_text("<b>" + f_showname.toHtmlEscaped() + "</b>:&nbsp;" + m_chatmessage[MESSAGE].toHtmlEscaped());
+
 
   previous_ic_message = f_message;
 
@@ -1147,7 +1150,9 @@ void Courtroom::append_ic_text(QString p_text)
 
   ui_ic_chatlog->moveCursor(QTextCursor::Start);
 
-  ui_ic_chatlog->textCursor().insertText(p_text);
+  ui_ic_chatlog->textCursor().insertHtml(p_text);
+  ui_ic_chatlog->textCursor().insertHtml("<br>");
+
 
   if (old_cursor.hasSelection() || !is_scrolled_up)
   {
@@ -1517,7 +1522,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      append_ic_text(str_char + " has played a song: " + f_song + "\n");
+      append_ic_text("<b>" + str_char + "</b> has played a song: " + f_song);
       music_player->play(f_song);
     }
   }
