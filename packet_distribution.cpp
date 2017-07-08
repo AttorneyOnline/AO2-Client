@@ -140,9 +140,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     //you may ask where 322 comes from. that would be a good question.
     s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
 
-    QString f_hdid;
-    f_hdid = get_hdid();
-
     //default(legacy) values
     encryption_needed = true;
     yellow_text_enabled = false;
@@ -152,6 +149,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     improved_loading_enabled = false;
     desk_mod_enabled = false;
     evidence_enabled = false;
+
+    //workaround for tsuserver4
+    if (f_contents.at(0) == "NOENCRYPT")
+      encryption_needed = false;
+
+    QString f_hdid;
+    f_hdid = get_hdid();
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
@@ -163,12 +167,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     s_pv = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
-
-    QString server_software = f_contents.at(1);
-
-    //temporary workaround
-    if (server_software == "tsuserver3")
-      server_packet_received(new AOPacket("FL#yellowtext#customobjections#flipping#fastloading#noencryption#%"));
 
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
