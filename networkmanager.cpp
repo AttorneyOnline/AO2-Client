@@ -27,7 +27,7 @@ void NetworkManager::connect_to_master()
   ms_socket->close();
   ms_socket->abort();
 
-  ms_socket->connectToHost(ms_hostname, ms_port);
+  perform_srv_lookup();
 }
 
 void NetworkManager::connect_to_server(server_type p_server)
@@ -80,6 +80,59 @@ void NetworkManager::handle_ms_packet()
 
     ao_app->ms_packet_received(f_packet);
   }
+}
+
+void NetworkManager::perform_srv_lookup()
+{
+  ms_dns = new QDnsLookup(QDnsLookup::SRV, ms_hostname, this);
+
+  connect(ms_dns, SIGNAL(finished()), this, SLOT(on_srv_lookup()));
+  ms_dns->lookup();
+}
+
+void NetworkManager::on_srv_lookup()
+{
+  bool connected = false;
+  if (ms_dns->error() != QDnsLookup::NoError)
+  {
+    qWarning("SRV lookup of the master server DNS failed.");
+    ms_dns->deleteLater();
+  }
+  else
+  {
+    const auto srv_records = ms_dns->serviceRecords();
+
+    for (const QDnsServiceRecord &record : srv_records)
+    {
+      qDebug() << "Connecting to " << record.target();
+      ms_socket->connectToHost(record.target(), record.port());
+      QTime timer;
+      timer.start();
+      do
+      {
+        ao_app->processEvents();
+        if (ms_socket->state() == QAbstractSocket::ConnectedState)
+        {
+          connected = true;
+          break;
+        }
+        else if (ms_socket->error() != -1)
+        {
+          qWarning(QString("Error connecting to master server: %1").arg(ms_socket->errorString()).toStdString().c_str());
+          ms_socket->abort();
+          ms_socket->close();
+          break;
+        }
+      } while (timer.elapsed() < timeout_milliseconds); // Very expensive spin-wait loop - it will bring CPU to 100%!
+      if (connected) break;
+      else
+      {
+        ms_socket->abort();
+        ms_socket->close();
+      }
+    }
+  }
+  emit ms_connect_finished(connected);
 }
 
 void NetworkManager::handle_server_packet()

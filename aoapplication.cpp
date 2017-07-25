@@ -12,6 +12,7 @@
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
+  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool)), SLOT(ms_connect_finished(bool)));
 }
 
 AOApplication::~AOApplication()
@@ -133,4 +134,21 @@ void AOApplication::loading_cancelled()
   destruct_courtroom();
 
   w_lobby->hide_loading_overlay();
+}
+
+void AOApplication::ms_connect_finished(bool connected)
+{
+  if (connected)
+  {
+    AOPacket *f_packet = new AOPacket("ALL#%");
+    send_ms_packet(f_packet);
+  }
+  else
+  {
+    call_error("There was an error connecting to the master server.\n"
+               "We deploy multiple master servers to mitigate any possible downtime,"
+               "but the client appears to have exhausted all possible methods of finding"
+               "and connecting to one.\n"
+               "Please check your Internet connection and firewall, and please try again.");
+  }
 }
