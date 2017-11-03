@@ -104,7 +104,7 @@ void NetworkManager::on_srv_lookup()
 
     for (const QDnsServiceRecord &record : srv_records)
     {
-      qDebug() << "Connecting to " << record.target();
+      qDebug() << "Connecting to " << record.target() << ":" << record.port();
       ms_socket->connectToHost(record.target(), record.port());
       QTime timer;
       timer.start();
@@ -116,9 +116,12 @@ void NetworkManager::on_srv_lookup()
           connected = true;
           break;
         }
-        else if (ms_socket->error() != -1)
+        else if (ms_socket->state() != QAbstractSocket::ConnectingState
+                 && ms_socket->state() != QAbstractSocket::HostLookupState
+                 && ms_socket->error() != -1)
         {
-          qWarning(QString("Error connecting to master server: %1").arg(ms_socket->errorString()).toStdString().c_str());
+          qDebug() << ms_socket->error();
+          qWarning() << "Error connecting to master server:" << ms_socket->errorString();
           ms_socket->abort();
           ms_socket->close();
           break;
