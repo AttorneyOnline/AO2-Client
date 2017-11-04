@@ -12,7 +12,8 @@
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
-  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool)), SLOT(ms_connect_finished(bool)));
+  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
+                   SLOT(ms_connect_finished(bool, bool)));
 }
 
 AOApplication::~AOApplication()
@@ -136,7 +137,7 @@ void AOApplication::loading_cancelled()
   w_lobby->hide_loading_overlay();
 }
 
-void AOApplication::ms_connect_finished(bool connected)
+void AOApplication::ms_connect_finished(bool connected, bool will_retry)
 {
   if (connected)
   {
@@ -145,10 +146,18 @@ void AOApplication::ms_connect_finished(bool connected)
   }
   else
   {
-    call_error("There was an error connecting to the master server.\n"
-               "We deploy multiple master servers to mitigate any possible downtime,"
-               "but the client appears to have exhausted all possible methods of finding"
-               "and connecting to one.\n"
-               "Please check your Internet connection and firewall, and please try again.");
+    if (will_retry)
+    {
+      w_lobby->append_error("Error connecting to master server. Will try again in "
+                          + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
+    }
+    else
+    {
+      call_error("There was an error connecting to the master server.\n"
+                 "We deploy multiple master servers to mitigate any possible downtime, "
+                 "but the client appears to have exhausted all possible methods of finding "
+                 "and connecting to one.\n"
+                 "Please check your Internet connection and firewall, and please try again.");
+    }
   }
 }

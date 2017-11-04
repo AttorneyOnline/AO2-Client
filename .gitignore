@@ -5,3 +5,5 @@
 *.so
 base_override.h
 
+base-full/
+bass.lib

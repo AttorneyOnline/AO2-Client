@@ -262,8 +262,9 @@ void Lobby::on_about_clicked()
   call_notice("Attorney Online 2 is built using Qt 5.7\n\n"
               "Lead development:\n"
               "OmniTroid\n\n"
-              "Supporting development:\n"
               "stonedDiscord\n"
+              "longbyte1\n"
+              "Supporting development:\n"
               "Fiercy\n\n"
               "UI design:\n"
               "Ruekasu\n"
@@ -355,6 +356,11 @@ void Lobby::list_favorites()
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
   ui_chatbox->append_chatmessage(f_name, f_message);
+}
+
+void Lobby::append_error(QString f_message)
+{
+  ui_chatbox->append_error(f_message);
 }
 
 void Lobby::set_player_count(int players_online, int max_players)

@@ -147,7 +147,7 @@ private:
   QVector<server_type> favorite_list;
 
 private slots:
-  void ms_connect_finished(bool connected);
+  void ms_connect_finished(bool connected, bool will_retry);
 
 public slots:
   void server_disconnected();

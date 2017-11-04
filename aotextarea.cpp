@@ -7,7 +7,7 @@
 
 AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
 {
-
+  this->setStyleSheet(".error {color: #0f0}");
 }
 
 void AOTextArea::append_chatmessage(QString p_name, QString p_message)
@@ -21,81 +21,37 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
   this->append("");
   this->insertHtml("<b>" + p_name.toHtmlEscaped() + "</b>:&nbsp;");
 
-  //QRegExp regExp("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[\\-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9\\.\\-]+|(?:www\\.|[\\-;:&=\\+\\$,\\w]+@)[A-Za-z0-9\\.\\-]+)((?:\\/[\\+~%\\/\\.\\w\\-]*)?\\??(?:[\\-\\+=&;%@\\.\\w]*)#?(?:[\\.\\!\\/\\\\\\w]*))?)");
-
-  QRegExp omnis_dank_url_regex("\\b(https?://\\S+\\.\\S+)\\b");
-
   //cheap workarounds ahoy
   p_message += " ";
   QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
 
   this->insertHtml(result);
 
+  this->auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
+}
 
-  /*
-  QRegExp rx("\\bhttp://\\S+");
+void AOTextArea::append_error(QString p_message)
+{
+  const QTextCursor old_cursor = this->textCursor();
+  const int old_scrollbar_value = this->verticalScrollBar()->value();
+  const bool is_scrolled_down = old_scrollbar_value == this->verticalScrollBar()->maximum();
 
-  int first_index = rx.indexIn(p_message);
+  this->moveCursor(QTextCursor::End);
 
-  qDebug() << "number of rx indices: " << rx.captureCount();
+  this->append("");
+  this->insertHtml("<div class='error'>");
 
-  if (first_index < 0)
-  {
-    this->insertPlainText(p_message);
-    qDebug() << "NO REGEX MATCHES";
-    return;
-  }
+  p_message += " ";
+  QString result = p_message.replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
 
-  //indices where we found a regex match
-  QVector<int> rx_indices;
-  QStringList links = rx.capturedTexts();
+  this->insertHtml(result);
+  this->insertHtml("</div>");
 
-  qDebug() << "link size" << links.size();
+  this->auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
+}
 
-  rx_indices.append(first_index);
-
-
-  //start at one because first_index is already appended
-  for (int n_pos = 1 ; n_pos < rx.captureCount() ; ++n_pos)
-    rx_indices.append(rx.indexIn(p_message));
-
-  for (int msg_pos = 0 ; msg_pos < p_message.size() ; ++msg_pos)
-  {
-    int tag_index = rx_indices.indexOf(msg_pos);
-    if (tag_index < 0)
-    {
-      this->insertPlainText(p_message.at(msg_pos));
-      continue;
-    }
-
-    QString link = links.at(tag_index);
-    QString html_string = "<a href=\"" + link + "\">" + link + "</a>";
-    qDebug() << "html: " << html_string;
-
-    this->insertHtml(html_string);
-
-    msg_pos += link.size() - 1;
-
-  }
-
-  */
-
-  /*
-
-  QStringList word_list = p_message.split(" ");
-
-  for (QString i_word : word_list)
-  {
-    if (i_word.startsWith("http"))
-    {
-      i_word.replace("\n", "").replace("\r", "");
-      this->insertHtml("<a href=\"" + i_word + "\">" + i_word + "</a> ");
-    }
-    else
-      this->insertPlainText(i_word + " ");
-  }
-  */
-
+void AOTextArea::auto_scroll(QTextCursor old_cursor, int old_scrollbar_value, bool is_scrolled_down)
+{
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {
       // The user has selected text or scrolled away from the bottom: maintain position.

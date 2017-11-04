@@ -1,12 +1,20 @@
 #ifndef NETWORKMANAGER_H
 #define NETWORKMANAGER_H
 
+// Qt for Android has stubbed QDnsLookup. This is not documented in any part of their wiki.
+// This prevents SRV lookup/failover behavior from functioning.
+// https://bugreports.qt.io/browse/QTBUG-56143
+#ifndef ANDROID
+#define MS_FAILOVER_SUPPORTED
+#endif
+
 #include "aopacket.h"
 #include "aoapplication.h"
 
 #include <QTcpSocket>
 #include <QDnsLookup>
 #include <QTime>
+#include <QTimer>
 
 class NetworkManager : public QObject
 {
@@ -20,10 +28,15 @@ public:
   QTcpSocket *ms_socket;
   QTcpSocket *server_socket;
   QDnsLookup *ms_dns;
+  QTimer *ms_reconnect_timer;
 
-  QString ms_hostname = "_aoms._tcp.aceattorneyonline.com";
-  int ms_port = 27016;
+  const QString ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
+  const QString ms_nosrv_hostname = "master.aceattorneyonline.com";
+
+  const int ms_port = 27016;
   const int timeout_milliseconds = 2000;
+
+  const int ms_reconnect_delay_ms = 5000;
 
   bool ms_partial_packet = false;
   QString ms_temp_packet = "";
@@ -41,7 +54,7 @@ public slots:
   void ship_server_packet(QString p_packet);
 
 signals:
-  void ms_connect_finished(bool success);
+  void ms_connect_finished(bool success, bool will_retry);
 
 private:
   void perform_srv_lookup();
@@ -50,6 +63,9 @@ private slots:
   void on_srv_lookup();
   void handle_ms_packet();
   void handle_server_packet();
+  void on_ms_nosrv_connect_success();
+  void on_ms_socket_error(QAbstractSocket::SocketError error);
+  void retry_ms_connect();
 };
 
 #endif // NETWORKMANAGER_H

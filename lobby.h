@@ -27,6 +27,7 @@ public:
   void list_servers();
   void list_favorites();
   void append_chatmessage(QString f_name, QString f_message);
+  void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
   void show_loading_overlay(){ui_loading_background->show();}

@@ -12,6 +12,10 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   ms_socket = new QTcpSocket(this);
   server_socket = new QTcpSocket(this);
 
+  ms_reconnect_timer = new QTimer(this);
+  ms_reconnect_timer->setSingleShot(true);
+  QObject::connect(ms_reconnect_timer, SIGNAL(timeout()), this, SLOT(retry_ms_connect()));
+
   QObject::connect(ms_socket, SIGNAL(readyRead()), this, SLOT(handle_ms_packet()));
   QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
   QObject::connect(server_socket, SIGNAL(disconnected()), ao_app, SLOT(server_disconnected()));
@@ -27,7 +31,16 @@ void NetworkManager::connect_to_master()
   ms_socket->close();
   ms_socket->abort();
 
+#ifdef MS_FAILOVER_SUPPORTED
   perform_srv_lookup();
+#else
+  QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                   this, SLOT(on_ms_connect_error(QAbstractSocket::SocketError)));
+
+  QObject::connect(ms_socket, SIGNAL(connected()),
+                   this, SLOT(on_ms_nosrv_connect_success()));
+  ms_socket->connectToHost(ms_nosrv_hostname, ms_port);
+#endif
 }
 
 void NetworkManager::connect_to_server(server_type p_server)
@@ -40,7 +53,14 @@ void NetworkManager::connect_to_server(server_type p_server)
 
 void NetworkManager::ship_ms_packet(QString p_packet)
 {
-  ms_socket->write(p_packet.toUtf8());
+  if (!ms_socket->isOpen())
+  {
+    retry_ms_connect();
+  }
+  else
+  {
+    ms_socket->write(p_packet.toUtf8());
+  }
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)
@@ -82,9 +102,10 @@ void NetworkManager::handle_ms_packet()
   }
 }
 
+#ifdef MS_FAILOVER_SUPPORTED
 void NetworkManager::perform_srv_lookup()
 {
-  ms_dns = new QDnsLookup(QDnsLookup::SRV, ms_hostname, this);
+  ms_dns = new QDnsLookup(QDnsLookup::SRV, ms_srv_hostname, this);
 
   connect(ms_dns, SIGNAL(finished()), this, SLOT(on_srv_lookup()));
   ms_dns->lookup();
@@ -127,7 +148,13 @@ void NetworkManager::on_srv_lookup()
           break;
         }
       } while (timer.elapsed() < timeout_milliseconds); // Very expensive spin-wait loop - it will bring CPU to 100%!
-      if (connected) break;
+      if (connected)
+      {
+        // Connect a one-shot signal in case the master server disconnects randomly
+        QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                         this, SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
+        break;
+      }
       else
       {
         ms_socket->abort();
@@ -135,7 +162,37 @@ void NetworkManager::on_srv_lookup()
       }
     }
   }
-  emit ms_connect_finished(connected);
+  emit ms_connect_finished(connected, false);
+}
+#endif
+
+void NetworkManager::on_ms_nosrv_connect_success()
+{
+  emit ms_connect_finished(true, false);
+
+  QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                   this, SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
+}
+
+void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
+{
+  qWarning() << "Master server socket error:" << ms_socket->errorString()
+             << "(" << error << ")";
+
+  // Disconnect the one-shot signal - this way, failover connect attempts
+  // don't trigger a full retry
+  QObject::disconnect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                   this, SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
+
+  emit ms_connect_finished(false, true);
+
+  ms_reconnect_timer->start(ms_reconnect_delay_ms);
+}
+
+void NetworkManager::retry_ms_connect()
+{
+  if (!ms_reconnect_timer->isActive() && ms_socket->state() != QAbstractSocket::ConnectingState)
+    connect_to_master();
 }
 
 void NetworkManager::handle_server_packet()
