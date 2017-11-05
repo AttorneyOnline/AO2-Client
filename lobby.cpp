@@ -67,6 +67,11 @@ void Lobby::set_widgets()
   {
     qDebug() << "W: did not find lobby width or height in " << filename;
 
+    // Most common symptom of bad config files and missing assets.
+    call_notice("It doesn't look like your client is set up correctly.\n"
+                "Did you download all resources correctly from tiny.cc/getao, "
+                "including the large 'base' folder?");
+
     this->resize(517, 666);
   }
   else
