@@ -102,17 +102,20 @@ void NetworkManager::handle_ms_packet()
   }
 }
 
-#ifdef MS_FAILOVER_SUPPORTED
+
 void NetworkManager::perform_srv_lookup()
 {
+  #ifdef MS_FAILOVER_SUPPORTED
   ms_dns = new QDnsLookup(QDnsLookup::SRV, ms_srv_hostname, this);
 
   connect(ms_dns, SIGNAL(finished()), this, SLOT(on_srv_lookup()));
   ms_dns->lookup();
+  #endif
 }
 
 void NetworkManager::on_srv_lookup()
 {
+  #ifdef MS_FAILOVER_SUPPORTED
   bool connected = false;
   if (ms_dns->error() != QDnsLookup::NoError)
   {
@@ -163,8 +166,8 @@ void NetworkManager::on_srv_lookup()
     }
   }
   emit ms_connect_finished(connected, false);
+  #endif
 }
-#endif
 
 void NetworkManager::on_ms_nosrv_connect_success()
 {
