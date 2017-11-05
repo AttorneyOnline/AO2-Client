@@ -7,7 +7,7 @@
 
 AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
 {
-  this->setStyleSheet(".error {color: #0f0}");
+
 }
 
 void AOTextArea::append_chatmessage(QString p_name, QString p_message)
@@ -40,13 +40,11 @@ void AOTextArea::append_error(QString p_message)
   this->moveCursor(QTextCursor::End);
 
   this->append("");
-  this->insertHtml("<div class='error'>");
 
   p_message += " ";
   QString result = p_message.replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
 
-  this->insertHtml(result);
-  this->insertHtml("</div>");
+  this->insertHtml("<font color='red'>" + result + "</font>");
 
   this->auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
   this->auto_truncate();
