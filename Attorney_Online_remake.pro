@@ -82,6 +82,8 @@ unix:LIBS += -L$$PWD -lbass
 win32:LIBS += "$$PWD/bass.dll"
 android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
 
+CONFIG += c++11
+
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 RESOURCES += \
