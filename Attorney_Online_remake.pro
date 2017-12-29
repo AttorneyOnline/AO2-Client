@@ -13,7 +13,7 @@ RC_ICONS = logo.ico
 TARGET = Attorney_Online_remake
 TEMPLATE = app
 
-VERSION = 2.4.5.0
+VERSION = 2.4.6.0
 
 SOURCES += main.cpp\
         lobby.cpp \
