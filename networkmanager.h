@@ -8,6 +8,12 @@
 #define MS_FAILOVER_SUPPORTED
 #endif
 
+//#define LOCAL_MS
+
+#ifdef LOCAL_MS
+#undef MS_FAILOVER_SUPPORTED
+#endif
+
 #include "aopacket.h"
 #include "aoapplication.h"
 
@@ -31,12 +37,16 @@ public:
   QTimer *ms_reconnect_timer;
 
   const QString ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
+#ifdef LOCAL_MS
+  const QString ms_nosrv_hostname = "localhost";
+#else
   const QString ms_nosrv_hostname = "master.aceattorneyonline.com";
+#endif
 
   const int ms_port = 27016;
   const int timeout_milliseconds = 2000;
 
-  const int ms_reconnect_delay_ms = 5000;
+  const int ms_reconnect_delay_ms = 7000;
 
   bool ms_partial_packet = false;
   QString ms_temp_packet = "";
@@ -47,6 +57,7 @@ public:
   unsigned int s_decryptor = 5;
 
   void connect_to_master();
+  void connect_to_master_nosrv();
   void connect_to_server(server_type p_server);
 
 public slots:

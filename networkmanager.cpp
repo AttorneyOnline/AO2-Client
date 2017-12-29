@@ -34,13 +34,18 @@ void NetworkManager::connect_to_master()
 #ifdef MS_FAILOVER_SUPPORTED
   perform_srv_lookup();
 #else
+  connect_to_master_nosrv();
+#endif
+}
+
+void NetworkManager::connect_to_master_nosrv()
+{
   QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
-                   this, SLOT(on_ms_connect_error(QAbstractSocket::SocketError)));
+                   this, SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
 
   QObject::connect(ms_socket, SIGNAL(connected()),
                    this, SLOT(on_ms_nosrv_connect_success()));
   ms_socket->connectToHost(ms_nosrv_hostname, ms_port);
-#endif
 }
 
 void NetworkManager::connect_to_server(server_type p_server)
@@ -165,13 +170,21 @@ void NetworkManager::on_srv_lookup()
       }
     }
   }
-  emit ms_connect_finished(connected, false);
+
+  // Failover to non-SRV connection
+  if (!connected)
+    connect_to_master_nosrv();
+  else
+    emit ms_connect_finished(connected, false);
   #endif
 }
 
 void NetworkManager::on_ms_nosrv_connect_success()
 {
   emit ms_connect_finished(true, false);
+
+  QObject::disconnect(ms_socket, SIGNAL(connected()),
+                   this, SLOT(on_ms_nosrv_connect_success()));
 
   QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
                    this, SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
