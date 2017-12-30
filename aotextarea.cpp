@@ -70,7 +70,7 @@ void AOTextArea::auto_truncate()
 {
   QTextCursor temp_cursor = this->textCursor();
 
-  if (this->document()->characterCount() > 100000)
+  if (this->document()->characterCount() > 500000)
   {
     temp_cursor.movePosition(QTextCursor::Start);
     temp_cursor.select(QTextCursor::LineUnderCursor);
