@@ -3,6 +3,7 @@
 
 #include "aopacket.h"
 #include "datatypes.h"
+#include "discord_rich_presence.h"
 
 #include <QApplication>
 #include <QVector>
@@ -23,6 +24,7 @@ public:
   NetworkManager *net_manager;
   Lobby *w_lobby;
   Courtroom *w_courtroom;
+  AttorneyOnline::Discord *discord;
 
   bool lobby_constructed = false;
   bool courtroom_constructed = false;
