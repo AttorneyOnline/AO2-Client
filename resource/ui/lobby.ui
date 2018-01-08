@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>517</width>
+    <height>690</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="AOButton" name="ui_connect">
+    <property name="geometry">
+     <rect>
+      <x>332</x>
+      <y>381</y>
+      <width>132</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(':/base/themes/default/connect.png');</string>
+    </property>
+    <property name="text">
+     <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="AOButton" name="ui_about">
+    <property name="geometry">
+     <rect>
+      <x>428</x>
+      <y>1</y>
+      <width>88</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(':/base/themes/default/about.png');</string>
+    </property>
+    <property name="text">
+     <string>About</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="ui_server_list">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>125</y>
+      <width>286</width>
+      <height>240</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ui_player_count">
+    <property name="geometry">
+     <rect>
+      <x>336</x>
+      <y>91</y>
+      <width>173</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Offline</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="AOButton" name="ui_refresh">
+    <property name="geometry">
+     <rect>
+      <x>56</x>
+      <y>381</y>
+      <width>132</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(':/base/themes/default/refresh.png');</string>
+    </property>
+    <property name="text">
+     <string>Refresh</string>
+    </property>
+   </widget>
+   <widget class="AOButton" name="ui_add_to_fav">
+    <property name="geometry">
+     <rect>
+      <x>194</x>
+      <y>381</y>
+      <width>132</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(':/base/themes/default/addtofav.png');</string>
+    </property>
+    <property name="text">
+     <string>Add to Favorites</string>
+    </property>
+   </widget>
+   <widget class="AOButton" name="ui_favorites">
+    <property name="geometry">
+     <rect>
+      <x>164</x>
+      <y>88</y>
+      <width>114</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(':/base/themes/default/favorites.png');</string>
+    </property>
+    <property name="text">
+     <string>Favorites</string>
+    </property>
+   </widget>
+   <widget class="AOButton" name="ui_public_servers">
+    <property name="geometry">
+     <rect>
+      <x>46</x>
+      <y>88</y>
+      <width>114</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(':/base/themes/default/favorites.png');</string>
+    </property>
+    <property name="text">
+     <string>Public Servers</string>
+    </property>
+   </widget>
+   <widget class="AOTextArea" name="ui_description">
+    <property name="geometry">
+     <rect>
+      <x>337</x>
+      <y>109</y>
+      <width>173</width>
+      <height>245</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="AOTextArea" name="ui_chatbox">
+    <property name="geometry">
+     <rect>
+      <x>2</x>
+      <y>445</y>
+      <width>511</width>
+      <height>198</height>
+     </rect>
+    </property>
+    <property name="openExternalLinks">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ui_chatname">
+    <property name="geometry">
+     <rect>
+      <x>3</x>
+      <y>646</y>
+      <width>85</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="maxLength">
+     <number>64</number>
+    </property>
+    <property name="placeholderText">
+     <string>Name</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ui_chatmessage">
+    <property name="geometry">
+     <rect>
+      <x>93</x>
+      <y>646</y>
+      <width>420</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="maxLength">
+     <number>2048</number>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>517</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="menu_file_exit"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <action name="menu_file_exit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AOButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">aobutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AOTextArea</class>
+   <extends>QTextBrowser</extends>
+   <header location="global">aotextarea.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
