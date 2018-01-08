@@ -12,6 +12,7 @@
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
+  discord = new AttorneyOnline::Discord();
   QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
                    SLOT(ms_connect_finished(bool, bool)));
 }
@@ -20,6 +21,7 @@ AOApplication::~AOApplication()
 {
   destruct_lobby();
   destruct_courtroom();
+  delete discord;
 }
 
 void AOApplication::construct_lobby()
@@ -37,6 +39,8 @@ void AOApplication::construct_lobby()
   int x = (screenGeometry.width()-w_lobby->width()) / 2;
   int y = (screenGeometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
+
+  discord->state_lobby();
 
   w_lobby->show();
 }

@@ -8,6 +8,7 @@
 #include "debug_functions.h"
 
 #include <QDebug>
+#include <QCryptographicHash>
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
@@ -226,15 +227,24 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString window_title = "Attorney Online 2";
     int selected_server = w_lobby->get_selected_server();
 
+    QString server_address = "", server_name = "";
     if (w_lobby->public_servers_selected)
     {
-      if (selected_server >= 0 && selected_server < server_list.size())
-        window_title += ": " + server_list.at(selected_server).name;
+      if (selected_server >= 0 && selected_server < server_list.size()) {
+        auto info = server_list.at(selected_server);
+        server_name = info.name;
+        server_address = info.ip + info.port;
+        window_title += ": " + server_name;
+      }
     }
     else
     {
-      if (selected_server >= 0 && selected_server < favorite_list.size())
-        window_title += ": " + favorite_list.at(selected_server).name;
+      if (selected_server >= 0 && selected_server < favorite_list.size()) {
+        auto info = favorite_list.at(selected_server);
+        server_name = info.name;
+        server_address = info.ip + info.port;
+        window_title += ": " + server_name;
+      }
     }
 
     w_courtroom->set_window_title(window_title);
@@ -251,6 +261,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       f_packet = new AOPacket("askchar2#%");
 
     send_server_packet(f_packet);
+
+    QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
+    hash.addData(server_address.toUtf8());
+    discord->state_server((const char*) server_name.toLocal8Bit().data(), (const char*) hash.result().toBase64());
   }
   else if (header == "CI")
   {
