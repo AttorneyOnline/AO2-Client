@@ -53,6 +53,7 @@ void Discord::state_server(const char* name, const char* server_id)
   presence.largeImageText = "Objection!";
   presence.instance = 1;
   presence.matchSecret = server_id;
+  Discord_UpdatePresence(&presence);
 }
 
 }

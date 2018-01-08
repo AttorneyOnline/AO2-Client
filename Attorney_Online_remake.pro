@@ -78,7 +78,8 @@ HEADERS  += lobby.h \
     aolineedit.h \
     aotextedit.h \
     aoevidencedisplay.h \
-    discord_rich_presence.h
+    discord_rich_presence.h \
+    discord-rpc.h
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you want a static link, you'll probably
@@ -87,7 +88,7 @@ HEADERS  += lobby.h \
 #    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
 #    QMake, so this step must be manual.
 unix:LIBS += -L$$PWD -lbass -ldiscord-rpc
-win32:LIBS += "$$PWD/bass.dll"
+win32:LIBS += -L$$PWD "$$PWD/bass.dll" -ldiscord-rpc #"$$PWD/discord-rpc.dll"
 android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
 
 CONFIG += c++11
