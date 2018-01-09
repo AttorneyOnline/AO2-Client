@@ -464,6 +464,34 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && courtroom_loaded)
       w_courtroom->handle_chatmessage(&p_packet->get_contents());
   }
+  else if (header == "confirm") {
+      if (!w_courtroom) {
+          goto end;
+      }
+
+      auto s = p_packet->get_contents();
+      if (s.length() < 1) {
+          qDebug() << "Not enough arguments for confirm.";
+          goto end;
+      }
+
+      bool o;
+      auto t = s[0].toInt(&o);
+
+      if (!o) {
+          goto end;
+      }
+
+      switch (t) {
+          case 0:
+          w_courtroom->cc();
+          break;
+
+          case 1:
+          w_courtroom->cd();
+          break;
+      }
+  }
   else if (header == "MC")
   {
     if (courtroom_constructed && courtroom_loaded)

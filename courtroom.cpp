@@ -171,8 +171,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_text_color->addItem("Red");
   ui_text_color->addItem("Orange");
   ui_text_color->addItem("Blue");
-  if (ao_app->yellow_text_enabled)
-    ui_text_color->addItem("Yellow");
+  if (ao_app->yellow_text_enabled) {
+      ui_text_color->addItem("Yellow");
+      ui_text_color->addItem("Purple");
+  }
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -654,7 +656,7 @@ void Courtroom::set_background(QString p_background)
 }
 
 void Courtroom::enter_courtroom(int p_cid)
-{ 
+{
   m_cid = p_cid;
 
   QString f_char;
@@ -907,6 +909,25 @@ void Courtroom::on_chat_return_pressed()
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
+
+void Courtroom::cc() {
+    ui_ooc_chat_message->clear();
+}
+
+void Courtroom::cd() {
+    ui_ic_chat_message->clear();
+    objection_state = 0;
+    realization_state = 0;
+    is_presenting_evidence = false;
+    ui_pre->setChecked(false);
+    ui_hold_it->set_image("holdit.png");
+    ui_objection->set_image("objection.png");
+    ui_take_that->set_image("takethat.png");
+    ui_custom_objection->set_image("custom.png");
+    ui_realization->set_image("realization.png");
+    ui_evidence_present->set_image("present_disabled.png");
+}
+
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   if (p_contents->size() < chatmessage_size)
@@ -940,21 +961,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_evidence_display->reset();
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
-
-  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
-  {
-    ui_ic_chat_message->clear();
-    objection_state = 0;
-    realization_state = 0;
-    is_presenting_evidence = false;
-    ui_pre->setChecked(false);
-    ui_hold_it->set_image("holdit.png");
-    ui_objection->set_image("objection.png");
-    ui_take_that->set_image("takethat.png");
-    ui_custom_objection->set_image("custom.png");
-    ui_realization->set_image("realization.png");
-    ui_evidence_present->set_image("present_disabled.png");
-  }
 
   append_ic_text("<b>" + f_showname.toHtmlEscaped() + "</b>:&nbsp;" + m_chatmessage[MESSAGE].toHtmlEscaped());
 
@@ -1215,7 +1221,17 @@ void Courtroom::start_chat_ticking()
 {
   ui_vp_message->clear();
   set_text_color();
-  rainbow_counter = 0;
+
+  switch (m_chatmessage[TEXT_COLOR].toInt())
+  {
+      case BLUE:
+      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+      break;
+
+      default:
+      ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+  }
+
   //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
   if (text_state != 0)
     return;
@@ -1263,33 +1279,6 @@ void Courtroom::chat_tick()
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
-    else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
-    {
-      QString html_color;
-
-      switch (rainbow_counter)
-      {
-      case 0:
-        html_color = "#FF0000";
-        break;
-      case 1:
-        html_color = "#FF7F00";
-        break;
-      case 2:
-        html_color = "#FFFF00";
-        break;
-      case 3:
-        html_color = "#00FF00";
-        break;
-      default:
-        html_color = "#2d96ff";
-        rainbow_counter = -1;
-      }
-
-      ++rainbow_counter;
-
-      ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
-    }
     else
       ui_vp_message->insertHtml(f_character);
 
@@ -1453,6 +1442,10 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: yellow");
     break;
+  case PURPLE:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: rgb(191, 63, 255)");
+    break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:
@@ -1602,15 +1595,6 @@ void Courtroom::on_ooc_return_pressed()
       ui_prosecution_plus->hide();
     }
   }
-  else if (ooc_message.startsWith("/login"))
-    ui_guard->show();
-  else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
-  {
-    ui_text_color->addItem("Rainbow");
-    ui_ooc_chat_message->clear();
-    rainbow_appended = true;
-    return;
-  }
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
@@ -1622,8 +1606,6 @@ void Courtroom::on_ooc_return_pressed()
     ao_app->send_server_packet(f_packet);
   else
     ao_app->send_ms_packet(f_packet);
-
-  ui_ooc_chat_message->clear();
 
   ui_ooc_chat_message->setFocus();
 }
@@ -1961,7 +1943,7 @@ void Courtroom::on_change_character_clicked()
 }
 
 void Courtroom::on_reload_theme_clicked()
-{ 
+{
   ao_app->set_user_theme();
 
   //to update status on the background
@@ -2002,9 +1984,29 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::on_call_mod_clicked()
 {
-  ao_app->send_server_packet(new AOPacket("ZZ#%"));
+    bool ok;
+    QString desc = QInputDialog::getMultiLineText(this,
+                                                  "Moderator Call",
+                                                  "Please input a short description of the problem encountered.\n(Minimum 10 characters.)",
+                                                  "",
+                                                  &ok,
+                                                  Qt::WindowStaysOnTopHint);
 
-  ui_ic_chat_message->setFocus();
+    if (ok) {
+        QString result;
+
+        if (desc.isEmpty()) {
+            result = "You must provide a description of the problem!";
+        } else if (desc.length() < 10) {
+            result = "Description too short!";
+        } else {
+            result = "Call sent, thank you!";
+            ao_app->send_server_packet(new AOPacket(QString("ZZ#%1#%").arg(desc)));
+        }
+
+        call_notice(result);
+    }
+    ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_pre_clicked()

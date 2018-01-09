@@ -110,15 +110,15 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower();
+    QString gif_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower();
 
-  m_movie->stop();
-  this->clear();
-  m_movie->setFileName(gif_path);
+    m_movie->stop();
+    this->clear();
+    m_movie->setFileName(gif_path);
 
-  play_once = false;
-  m_movie->setSpeed(100);
-  play(p_char, p_emote, "(b)");
+    play_once = false;
+    m_movie->setSpeed(100);
+    play(p_char, p_emote, "(b)");
 }
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
