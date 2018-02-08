@@ -15,7 +15,6 @@ private:
   const QRegExp omnis_dank_url_regex = QRegExp("\\b(https?://\\S+\\.\\S+)\\b");
 
   void auto_scroll(QTextCursor old_cursor, int scrollbar_value, bool is_scrolled_down);
-  void auto_truncate();
 };
 
 #endif // AOTEXTAREA_H
