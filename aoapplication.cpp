@@ -86,15 +86,17 @@ void AOApplication::destruct_courtroom()
   courtroom_constructed = false;
 }
 
-QString AOApplication::get_version_string(){
+QString AOApplication::get_version_string()
+{
   return
   QString::number(RELEASE) + "." +
   QString::number(MAJOR_VERSION) + "." +
   QString::number(MINOR_VERSION);
 }
 
-void AOApplication::set_user_theme(){
-  user_theme = read_user_theme();
+void AOApplication::reload_theme()
+{
+  current_theme = read_theme();
 }
 
 void AOApplication::set_favorite_list()

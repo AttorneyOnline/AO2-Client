@@ -12,6 +12,7 @@
 #include <QRegExp>
 #include <QBrush>
 #include <QTextCharFormat>
+#include <QFont>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -80,7 +81,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
-  ui_ic_chatlog = new QPlainTextEdit(this);
+  ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
   ui_ms_chatlog = new AOTextArea(this);
@@ -963,7 +964,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_evidence_present->set_image("present_disabled.png");
   }
 
-  append_ic_text("<b>" + f_showname.toHtmlEscaped() + "</b>:&nbsp;" + m_chatmessage[MESSAGE].toHtmlEscaped());
+  append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
 
   previous_ic_message = f_message;
 
@@ -1147,17 +1148,20 @@ void Courtroom::handle_chatmessage_3()
 
 }
 
-void Courtroom::append_ic_text(QString p_text)
+void Courtroom::append_ic_text(QString p_text, QString p_name)
 {
+  QTextCharFormat bold;
+  QTextCharFormat normal;
+  bold.setFontWeight(QFont::Bold);
+  normal.setFontWeight(QFont::Normal);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
   const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
 
   ui_ic_chatlog->moveCursor(QTextCursor::Start);
 
-  ui_ic_chatlog->textCursor().insertHtml(p_text);
-  ui_ic_chatlog->textCursor().insertHtml("<br>");
-
+  ui_ic_chatlog->textCursor().insertText(p_name, bold);
+  ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
 
   if (old_cursor.hasSelection() || !is_scrolled_up)
   {
@@ -1527,7 +1531,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      append_ic_text("<b>" + str_char + "</b> has played a song: " + f_song);
+      append_ic_text(" has played a song: " + f_song, str_char);
       music_player->play(f_song);
     }
   }
@@ -1969,7 +1973,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::on_reload_theme_clicked()
 { 
-  ao_app->set_user_theme();
+  ao_app->reload_theme();
 
   //to update status on the background
   set_background(current_background);

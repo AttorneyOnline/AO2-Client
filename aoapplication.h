@@ -77,6 +77,8 @@ public:
   int get_minor_version() {return MINOR_VERSION;}
   QString get_version_string();
 
+  ///////////////////////////////////////////
+
   void set_favorite_list();
   QVector<server_type>& get_favorite_list() {return favorite_list;}
   void add_favorite_server(int p_server);
@@ -84,8 +86,10 @@ public:
   void set_server_list();
   QVector<server_type>& get_server_list() {return server_list;}
 
-  void set_user_theme();
-  QString get_user_theme() {return user_theme;}
+  //reads the theme from config.ini and sets it accordingly
+  void reload_theme();
+
+  //QString get_theme() {return current_theme;}
 
   QString get_current_char();
 
@@ -103,8 +107,10 @@ public:
   QString get_evidence_path();
 
   //implementation in text_file_functions.cpp
+
+  QString read_file(QString p_path);
   QString read_config(QString searchline);
-  QString read_user_theme();
+  QString read_theme();
   int read_blip_rate();
   bool get_blank_blip();
   int get_default_music();
@@ -143,7 +149,7 @@ private:
   const int MAJOR_VERSION = 4;
   const int MINOR_VERSION = 8;
 
-  QString user_theme = "default";
+  QString current_theme = "default";
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
