@@ -1973,7 +1973,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::on_reload_theme_clicked()
 { 
-  ao_app->set_user_theme();
+  ao_app->reload_theme();
 
   //to update status on the background
   set_background(current_background);
