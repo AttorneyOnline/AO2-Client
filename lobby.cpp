@@ -4,7 +4,6 @@
 #include "aoapplication.h"
 #include "networkmanager.h"
 #include "aosfxplayer.h"
-#include "file_functions.h"
 
 #include <QDebug>
 #include <QScrollBar>
@@ -52,22 +51,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
-  //set_widgets();
-  set_theme();
-}
-
-void Lobby::set_theme()
-{
-  ao_app->reload_theme();
-
-  //check if our current theme is a valid qss theme
-  if (!file_exists(ao_app->get_theme_path() + "lobby.qss"))
-  {
-    set_widgets();
-    return;
-  }
-
-  this->setStyleSheet(ao_app->read_file(ao_app->get_theme_path() + "lobby.qss"));
+  set_widgets();
 }
 
 //sets images, position and size

@@ -23,7 +23,6 @@ class Lobby : public QMainWindow
 public:
   Lobby(AOApplication *p_ao_app);
 
-  void set_theme();
   void set_widgets();
   void list_servers();
   void list_favorites();
