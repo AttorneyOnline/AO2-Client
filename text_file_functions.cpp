@@ -8,15 +8,6 @@
 #include <QDebug>
 #include <QColor>
 
-QString AOApplication::read_file(QString p_path)
-{
-  QFile file(p_path);
-  if (!file.open(QFile::ReadOnly))
-    return "";
-
-  return file.readAll();
-}
-
 QString AOApplication::read_config(QString searchline)
 {
   QString return_value = "";
