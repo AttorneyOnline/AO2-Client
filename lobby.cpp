@@ -57,6 +57,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 //sets images, position and size
 void Lobby::set_widgets()
 {
+  ao_app->reload_theme();
+
   QString filename = "lobby_design.ini";
 
   pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
