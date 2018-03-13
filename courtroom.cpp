@@ -109,6 +109,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText("Name");
+  ui_ooc_chat_name->setText(ao_app->get_ooc_name());
 
   //ui_area_password = new QLineEdit(this);
   //ui_area_password->setFrame(false);
@@ -656,20 +657,22 @@ void Courtroom::set_background(QString p_background)
 }
 
 void Courtroom::enter_courtroom(int p_cid)
-{ 
+{
   m_cid = p_cid;
 
   QString f_char;
 
   if (m_cid == -1)
   {
-    ao_app->discord->state_spectate();
+    if (ao_app->is_discord_enabled())
+      ao_app->discord->state_spectate();
     f_char = "";
   }
   else
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
-    ao_app->discord->state_character(f_char.toStdString());
+    if (ao_app->is_discord_enabled())
+      ao_app->discord->state_character(f_char.toStdString());
   }
 
   current_char = f_char;
@@ -1972,7 +1975,7 @@ void Courtroom::on_change_character_clicked()
 }
 
 void Courtroom::on_reload_theme_clicked()
-{ 
+{
   ao_app->reload_theme();
 
   //to update status on the background

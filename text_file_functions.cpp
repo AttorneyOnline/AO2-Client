@@ -49,7 +49,12 @@ QString AOApplication::read_theme()
   if (result == "")
     return "default";
   else
-    return result;
+      return result;
+}
+
+QString AOApplication::get_ooc_name()
+{
+  return read_config("ooc_name");
 }
 
 int AOApplication::read_blip_rate()
@@ -571,8 +576,9 @@ bool AOApplication::get_blank_blip()
   return f_result.startsWith("true");
 }
 
+bool AOApplication::is_discord_enabled()
+{
+  QString f_result = read_config("discord");
 
-
-
-
-
+  return f_result.startsWith("true");
+}

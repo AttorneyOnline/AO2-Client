@@ -18,7 +18,10 @@ int main(int argc, char *argv[])
 #endif
     AOApplication main_app(argc, argv);
     main_app.construct_lobby();
+
+#ifndef t00thp3ck_dev
     main_app.net_manager->connect_to_master();
+#endif
     main_app.w_lobby->show();
 
     return main_app.exec();
