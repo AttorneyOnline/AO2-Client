@@ -12,15 +12,13 @@
 #include <QRegExp>
 #include <QBrush>
 #include <QTextCharFormat>
-#include <QFont>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
   //initializing sound device
-  BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
-  BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+  BASS_Init(-1, 44100, BASS_DEVICE_LATENCY, 0, NULL);
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
@@ -76,12 +74,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
+  ui_vp_musicspace_a = new AOImage(this, ao_app);
+  ui_vp_musicspace_b = new AOImage(this, ao_app);
+  ui_vp_musicname = new QTextEdit(this);
+  ui_vp_musicname->setText("hewwo OwO");
+  ui_vp_musicname->setFrameStyle(QFrame::NoFrame);
+  ui_vp_musicname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_vp_musicname->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_vp_musicname->setReadOnly(true);
+
   ui_vp_testimony = new AOImage(this, ao_app);
   ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
-  ui_ic_chatlog = new QTextEdit(this);
+  ui_ic_chatlog = new QPlainTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
   ui_ms_chatlog = new AOTextArea(this);
@@ -391,6 +398,18 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_vp_chatbox, "chatbox");
   }
 
+  set_size_and_pos(ui_vp_musicname, "musicname");
+//  ui_vp_musicname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+//                                 "font: bold");
+
+  set_size_and_pos(ui_vp_musicspace_a, "musicspace_a");
+  ui_vp_musicspace_a->set_image("musicspace_a.png");
+  ui_vp_musicspace_a->show();
+
+  set_size_and_pos(ui_vp_musicspace_b, "musicspace_b");
+  ui_vp_musicspace_b->set_image("musicspace_b.png");
+  ui_vp_musicspace_b->show();
+
   ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 
   ui_vp_chatbox->set_image("chatmed.png");
@@ -545,29 +564,38 @@ void Courtroom::set_widgets()
 
 void Courtroom::set_fonts()
 {
-  set_font(ui_vp_showname, "showname");
-  set_font(ui_vp_message, "message");
-  set_font(ui_ic_chatlog, "ic_chatlog");
-  set_font(ui_ms_chatlog, "ms_chatlog");
-  set_font(ui_server_chatlog, "server_chatlog");
-  set_font(ui_music_list, "music_list");
+  set_font(ui_vp_showname, "showname", "showname");
+  set_font(ui_vp_message, "message", "vp");
+  set_font(ui_ic_chatlog, "ic_chatlog", "ic");
+  set_font(ui_ms_chatlog, "ms_chatlog", "ooc");
+  set_font(ui_server_chatlog, "server_chatlog", "ooc");
+  set_font(ui_music_list, "music_list", "ooc");
+  set_font(ui_vp_musicname, "musicname", "musicname");
 }
 
-void Courtroom::set_font(QWidget *widget, QString p_identifier)
+void Courtroom::set_font(QWidget *widget, QString p_identifier, QString id="default")
 {
   QString design_file = "courtroom_fonts.ini";
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
 
-  widget->setFont(QFont("Sans", f_weight));
+  QString font_name = ao_app->get_font_info("font_" + id, design_file);
+
+  widget->setFont(QFont(font_name, f_weight));
 
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
+
+  int bold = ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
+
+  QString is_bold = "";
+  if(bold == 1) is_bold = "bold";
 
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
                                             "color: rgba(" +
                                              QString::number(f_color.red()) + ", " +
                                              QString::number(f_color.green()) + ", " +
-                                             QString::number(f_color.blue()) + ", 255); }";
+                                             QString::number(f_color.blue()) + ", 255);\n"
+                                             "font: " + is_bold + "; }";
 
   widget->setStyleSheet(style_sheet_string);
 }
@@ -964,7 +992,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_evidence_present->set_image("present_disabled.png");
   }
 
-  append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
+  append_ic_text("<b>" + f_showname.toHtmlEscaped() + "</b>:&nbsp;" + m_chatmessage[MESSAGE].toHtmlEscaped());
 
   previous_ic_message = f_message;
 
@@ -1148,20 +1176,17 @@ void Courtroom::handle_chatmessage_3()
 
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name)
+void Courtroom::append_ic_text(QString p_text)
 {
-  QTextCharFormat bold;
-  QTextCharFormat normal;
-  bold.setFontWeight(QFont::Bold);
-  normal.setFontWeight(QFont::Normal);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
   const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
 
   ui_ic_chatlog->moveCursor(QTextCursor::Start);
 
-  ui_ic_chatlog->textCursor().insertText(p_name, bold);
-  ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
+  ui_ic_chatlog->textCursor().insertHtml(p_text);
+  ui_ic_chatlog->textCursor().insertHtml("<br>");
+
 
   if (old_cursor.hasSelection() || !is_scrolled_up)
   {
@@ -1531,10 +1556,12 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      append_ic_text(" has played a song: " + f_song, str_char);
+      append_ic_text("<b>" + str_char + "</b> has played a song: " + f_song);
       music_player->play(f_song);
     }
   }
+
+  ui_vp_musicname->setText(f_song);
 }
 
 void Courtroom::handle_wtce(QString p_wtce)
@@ -1973,7 +2000,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::on_reload_theme_clicked()
 { 
-  ao_app->reload_theme();
+  ao_app->set_user_theme();
 
   //to update status on the background
   set_background(current_background);

@@ -44,31 +44,17 @@ public:
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
 
-  //sets position of widgets based on theme ini files
   void set_widgets();
-  //sets font size based on theme ini files
-  void set_font(QWidget *widget, QString p_identifier);
-  //helper function that calls above function on the relevant widgets
+  void set_font(QWidget *widget, QString p_identifier, QString id);
   void set_fonts();
-
   void set_window_title(QString p_title);
-
-  //reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-
-  //sets status as taken on character with cid n_char and places proper shading on charselect
   void set_taken(int n_char, bool p_taken);
-
-  //sets the current background to argument. also does some checks to see if it's a legacy bg
   void set_background(QString p_background);
-
-  //sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
-  //called when a DONE#% from the server was received
   void done_received();
 
-  //sets the local mute list based on characters available on the server
   void set_mute_list();
 
   //sets desk and bg based on pos in chatmessage
@@ -77,58 +63,35 @@ public:
   //sets text color based on text color in chatmessage
   void set_text_color();
 
-  //takes in serverD-formatted IP list as prints a converted version to server OOC
-  //admittedly poorly named
   void set_ip_list(QString p_list);
 
-  //disables chat if current cid matches second argument
-  //enables if p_muted is false
   void set_mute(bool p_muted, int p_cid);
-
-  //send a message that the player is banned and quits the server
   void set_ban(int p_cid);
 
   //implementations in path_functions.cpp
   QString get_background_path();
   QString get_default_background_path();
 
-  //cid = character id, returns the cid of the currently selected character
   int get_cid() {return m_cid;}
   QString get_current_char() {return current_char;}
 
-  //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
-
-  //helper function that populates ui_music_list with the contents of music_list
   void list_music();
 
-  //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
 
-  //these functions handle chatmessages sequentially.
-  //The process itself is very convoluted and merits separate documentation
-  //But the general idea is objection animation->pre animation->talking->idle
   void handle_chatmessage(QStringList *p_contents);
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
-  //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
-  //this function keeps the chatlog scrolled to the top unless there's text selected
-  // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "");
+  void append_ic_text(QString p_text);
 
-  //prints who played the song to IC chat and plays said song(if found on local filesystem)
-  //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
   void play_preanim();
 
-  //plays the witness testimony or cross examination animation based on argument
   void handle_wtce(QString p_wtce);
-
-  //sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
-  //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
   void check_connection_received();
@@ -174,12 +137,9 @@ private:
   //delay before sfx plays
   QTimer *sfx_delay_timer;
 
-  //keeps track of how long realization is visible(it's just a white square and should be visible less than a second)
   QTimer *realization_timer;
 
-  //times how long the blinking testimony should be shown(green one in the corner)
   QTimer *testimony_show_timer;
-  //times how long the blinking testimony should be hidden
   QTimer *testimony_hide_timer;
 
   //every time point in char.inis times this equals the final time
@@ -276,7 +236,11 @@ private:
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
 
-  QTextEdit *ui_ic_chatlog;
+  AOImage *ui_vp_musicspace_a;
+  AOImage *ui_vp_musicspace_b;
+  QTextEdit *ui_vp_musicname;
+
+  QPlainTextEdit *ui_ic_chatlog;
 
   AOTextArea *ui_ms_chatlog;
   AOTextArea *ui_server_chatlog;

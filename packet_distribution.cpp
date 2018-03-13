@@ -224,7 +224,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = "Attorney Online 2";
+    QString window_title = "Danganronpa Online";
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -482,6 +482,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && courtroom_loaded)
       w_courtroom->handle_song(&p_packet->get_contents());
+      qDebug() << "song playing is " << p_packet->get_contents().at(0) << " and n_char is " << p_packet->get_contents().at(1);
   }
   else if (header == "RT")
   {

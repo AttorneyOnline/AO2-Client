@@ -12,7 +12,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowTitle("Attorney Online 2");
+  this->setWindowTitle("Danganronpa Online");
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -57,7 +57,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 //sets images, position and size
 void Lobby::set_widgets()
 {
-  ao_app->reload_theme();
+  ao_app->set_user_theme();
 
   QString filename = "lobby_design.ini";
 

@@ -53,7 +53,7 @@ QString AOApplication::get_data_path()
 
 QString AOApplication::get_theme_path()
 {
-  return get_base_path() + "themes/" + current_theme.toLower() + "/";
+  return get_base_path() + "themes/" + user_theme.toLower() + "/";
 }
 
 QString AOApplication::get_default_theme_path()

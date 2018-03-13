@@ -42,7 +42,7 @@ QString AOApplication::read_config(QString searchline)
   return return_value;
 }
 
-QString AOApplication::read_theme()
+QString AOApplication::read_user_theme()
 {
   QString result = read_config("theme");
 
@@ -175,6 +175,7 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
 
   if (!design_ini.open(QIODevice::ReadOnly))
   {
+    qDebug() << "couldn't OPEN";
     return "";
   }
   QTextStream in(&design_ini);
@@ -284,6 +285,26 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
   }
 
   return f_result.toInt();
+}
+
+QString AOApplication::get_font_info(QString p_identifier, QString p_file)
+{
+    QString design_ini_path = get_theme_path() + p_file;
+    QString default_path = get_default_theme_path() + p_file;
+    QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+    if(f_result == "")
+    {
+        f_result = read_design_ini(p_identifier, default_path);
+
+        if(f_result == "")
+        {
+            qDebug() << "IS PROBLEM HAPPEN";
+            return f_result;
+        }
+    }
+
+    return f_result;
 }
 
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
