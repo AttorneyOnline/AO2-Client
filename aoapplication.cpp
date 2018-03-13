@@ -40,7 +40,7 @@ void AOApplication::construct_lobby()
   int y = (screenGeometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (get_discord())
+  if (is_discord_enabled())
     discord->state_lobby();
 
   w_lobby->show();

@@ -663,14 +663,14 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (m_cid == -1)
   {
-    if (ao_app->get_discord())
+    if (ao_app->is_discord_enabled())
       ao_app->discord->state_spectate();
     f_char = "";
   }
   else
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
-    if (ao_app->get_discord())
+    if (ao_app->is_discord_enabled())
       ao_app->discord->state_character(f_char.toStdString());
   }
 

@@ -130,7 +130,7 @@ public:
   int get_default_blip();
 
   //Returns true if discord is enabled in config.ini and false otherwise
-  bool get_discord();
+  bool is_discord_enabled();
 
   //Returns the list of words in callwords.ini
   QStringList get_call_words();

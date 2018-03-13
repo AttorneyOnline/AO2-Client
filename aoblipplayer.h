@@ -6,7 +6,7 @@
 
 #include <QWidget>
 
-#define blip_count 5
+const int BLIP_COUNT = 5;
 
 class AOBlipPlayer
 {
@@ -24,7 +24,7 @@ private:
   AOApplication *ao_app;
 
   int m_volume;
-  HSTREAM m_stream_list[blip_count];
+  HSTREAM m_stream_list[BLIP_COUNT];
 };
 
 #endif // AOBLIPPLAYER_H
