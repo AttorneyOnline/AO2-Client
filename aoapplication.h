@@ -114,6 +114,9 @@ public:
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
 
+  //returns the value of ooc_name in config.ini
+  QString get_ooc_name();
+
   //Returns the blip rate from config.ini
   int read_blip_rate();
 

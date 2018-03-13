@@ -49,7 +49,12 @@ QString AOApplication::read_theme()
   if (result == "")
     return "default";
   else
-    return result;
+      return result;
+}
+
+QString AOApplication::get_ooc_name()
+{
+  return read_config("ooc_name");
 }
 
 int AOApplication::read_blip_rate()

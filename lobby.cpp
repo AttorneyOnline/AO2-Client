@@ -29,6 +29,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
+  ui_chatname->setText(ao_app->get_ooc_name());
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_text = new QTextEdit(ui_loading_background);
