@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     aolineedit.cpp \
     aotextedit.cpp \
     aoevidencedisplay.cpp \
-    discord_rich_presence.cpp
+    discord_rich_presence.cpp \
+    aonotepad.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -79,7 +80,8 @@ HEADERS  += lobby.h \
     aotextedit.h \
     aoevidencedisplay.h \
     discord_rich_presence.h \
-    discord-rpc.h
+    discord-rpc.h \
+    aonotepad.h
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you want a static link, you'll probably

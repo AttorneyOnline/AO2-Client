@@ -482,7 +482,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && courtroom_loaded)
       w_courtroom->handle_song(&p_packet->get_contents());
-      qDebug() << "song playing is " << p_packet->get_contents().at(0) << " and n_char is " << p_packet->get_contents().at(1);
   }
   else if (header == "RT")
   {

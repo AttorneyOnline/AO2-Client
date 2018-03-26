@@ -17,6 +17,7 @@
 #include "aolineedit.h"
 #include "aotextedit.h"
 #include "aoevidencedisplay.h"
+#include "aonotepad.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -31,6 +32,8 @@
 #include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
+#include <QRect>
+#include <QComboBox>
 
 class AOApplication;
 
@@ -44,17 +47,31 @@ public:
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
 
+  //sets position of widgets based on theme ini files
   void set_widgets();
-  void set_font(QWidget *widget, QString p_identifier, QString id);
+  //sets font size based on theme ini files
+  void set_font(QWidget *widget, QString p_identifier);
+  //helper function that calls above function on the relevant widgets
   void set_fonts();
+
   void set_window_title(QString p_title);
+
+  //reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+
+  //sets status as taken on character with cid n_char and places proper shading on charselect
   void set_taken(int n_char, bool p_taken);
+
+  //sets the current background to argument. also does some checks to see if it's a legacy bg
   void set_background(QString p_background);
+
+  //sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
+  //called when a DONE#% from the server was received
   void done_received();
 
+  //sets the local mute list based on characters available on the server
   void set_mute_list();
 
   //sets desk and bg based on pos in chatmessage
@@ -63,35 +80,69 @@ public:
   //sets text color based on text color in chatmessage
   void set_text_color();
 
+  //takes in serverD-formatted IP list as prints a converted version to server OOC
+  //admittedly poorly named
   void set_ip_list(QString p_list);
 
+  //disables chat if current cid matches second argument
+  //enables if p_muted is false
   void set_mute(bool p_muted, int p_cid);
+
+  //send a message that the player is banned and quits the server
   void set_ban(int p_cid);
 
   //implementations in path_functions.cpp
   QString get_background_path();
   QString get_default_background_path();
 
+  //cid = character id, returns the cid of the currently selected character
   int get_cid() {return m_cid;}
   QString get_current_char() {return current_char;}
 
+  //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
+
+  //helper function that populates ui_music_list with the contents of music_list
   void list_music();
 
+  void list_sfx();
+
+  void list_themes();
+
+  //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
 
+  //these functions handle chatmessages sequentially.
+  //The process itself is very convoluted and merits separate documentation
+  //But the general idea is objection animation->pre animation->talking->idle
   void handle_chatmessage(QStringList *p_contents);
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
-  void append_ic_text(QString p_text);
+  //handles character portrait animation
+  void handle_char_anim(AOCharMovie *charPlayer);
+  void handle_char_anim_2(AOCharMovie *charPlayer);
 
+  //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
+  //this function keeps the chatlog scrolled to the top unless there's text selected
+  // or the user isn't already scrolled to the top
+  void append_ic_text(QString p_text, QString p_name = "");
+
+  //prints who played the song to IC chat and plays said song(if found on local filesystem)
+  //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
+
+  //animates music text
+  void handle_music_anim(QWidget *p_widget, QString p_identifier_a, QString p_identifier_b);
 
   void play_preanim();
 
+  //plays the witness testimony or cross examination animation based on argument
   void handle_wtce(QString p_wtce);
+
+  //sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
+  //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
   void check_connection_received();
@@ -113,6 +164,7 @@ private:
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
+//  QVector<QString> sfx_list;
 
   QSignalMapper *char_button_mapper;
 
@@ -130,6 +182,7 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+  bool note_shown = false;
 
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;
@@ -137,9 +190,12 @@ private:
   //delay before sfx plays
   QTimer *sfx_delay_timer;
 
+  //keeps track of how long realization is visible(it's just a white square and should be visible less than a second)
   QTimer *realization_timer;
 
+  //times how long the blinking testimony should be shown(green one in the corner)
   QTimer *testimony_show_timer;
+  //times how long the blinking testimony should be hidden
   QTimer *testimony_hide_timer;
 
   //every time point in char.inis times this equals the final time
@@ -192,9 +248,12 @@ private:
 
   int current_emote_page = 0;
   int current_emote = 0;
+  int prev_emote = 0;
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;
+
+  bool same_emote = false;
 
   QVector<evi_type> local_evidence_list;
 
@@ -228,6 +287,12 @@ private:
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
+
+//  AONotepad *ui_vp_notepad;
+
+  AOImage *ui_vp_notepad_image;
+  QTextEdit *ui_vp_notepad;
+
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;
@@ -236,11 +301,12 @@ private:
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
 
-  AOImage *ui_vp_musicspace_a;
-  AOImage *ui_vp_musicspace_b;
-  QTextEdit *ui_vp_musicname;
+  AOImage *ui_vp_music_display_a;
+  AOImage *ui_vp_music_display_b;
+  QTextEdit *ui_vp_music_name;
+  QWidget *ui_vp_music_area;
 
-  QPlainTextEdit *ui_ic_chatlog;
+  QTextEdit *ui_ic_chatlog;
 
   AOTextArea *ui_ms_chatlog;
   AOTextArea *ui_server_chatlog;
@@ -248,6 +314,9 @@ private:
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
   QListWidget *ui_music_list;
+  QListWidget *ui_sfx_list;
+
+//  QListWidget *ui_sfx_list;
 
   QLineEdit *ui_ic_chat_message;
 
@@ -256,6 +325,8 @@ private:
 
   //QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
+
+  QLineEdit *ui_sfx_search;
 
   QWidget *ui_emotes;
   QVector<AOEmoteButton*> ui_emote_list;
@@ -285,6 +356,10 @@ private:
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
 
+  QComboBox *ui_theme_list;
+
+  AOButton *ui_confirm_theme;
+
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
@@ -306,6 +381,8 @@ private:
   QSlider *ui_blip_slider;
 
   AOImage *ui_muted;
+
+  AOButton *ui_note_button;
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
@@ -378,6 +455,8 @@ private slots:
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QModelIndex p_model);
 
+  void on_sfx_search_edited(QString p_text);
+
   void select_emote(int p_id);
 
   void on_emote_clicked(int p_id);
@@ -428,6 +507,9 @@ private slots:
   void on_change_character_clicked();
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
+
+  void on_confirm_theme_clicked();
+  void on_note_button_clicked();
 
   void on_pre_clicked();
   void on_flip_clicked();

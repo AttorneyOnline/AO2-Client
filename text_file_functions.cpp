@@ -42,7 +42,7 @@ QString AOApplication::read_config(QString searchline)
   return return_value;
 }
 
-QString AOApplication::read_user_theme()
+QString AOApplication::read_theme()
 {
   QString result = read_config("theme");
 
@@ -112,6 +112,66 @@ QStringList AOApplication::get_call_words()
   return return_value;
 }
 
+void AOApplication::write_theme(QString theme)
+{
+    QString filename = get_base_path() + "config.ini";
+    QFile config_file(filename);
+
+    if(!config_file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Couldn't open config.ini";
+        return;
+    }
+
+    QTextStream in(&config_file);
+
+    QByteArray t = "";
+
+    while(!in.atEnd())
+    {
+        QString f_line = in.readLine();
+        qDebug() << "F_LINE = " << f_line;
+        if(!f_line.startsWith("theme"))
+        {
+//            out << f_line << "\n";
+            t += f_line + "\n";
+            continue;
+        }
+
+        QStringList line_elements = f_line.split("=");
+
+        if(line_elements.at(0).trimmed() != "theme")
+        {
+//            out << f_line << "\n";
+            t += f_line + "\n";
+            continue;
+        }
+
+        if(line_elements.size() < 2)
+        {
+//            out << f_line << "\n";
+            t += f_line +"\n";
+            continue;
+        }
+
+//        out << "theme = " << theme << "\n";
+        t += "theme = " + theme + "\n";
+    }
+//    config_file.seek(0);
+//    config_file.write(t);
+
+    config_file.close();
+
+    QFile ex(filename);
+    if(!ex.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    {
+        qDebug() << "Couldn't open config.ini";
+        return;
+    }
+
+    ex.write(t);
+}
+
 void AOApplication::write_to_serverlist_txt(QString p_line)
 {
   QFile serverlist_txt;
@@ -175,7 +235,6 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
 
   if (!design_ini.open(QIODevice::ReadOnly))
   {
-    qDebug() << "couldn't OPEN";
     return "";
   }
   QTextStream in(&design_ini);
@@ -287,26 +346,6 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
   return f_result.toInt();
 }
 
-QString AOApplication::get_font_info(QString p_identifier, QString p_file)
-{
-    QString design_ini_path = get_theme_path() + p_file;
-    QString default_path = get_default_theme_path() + p_file;
-    QString f_result = read_design_ini(p_identifier, design_ini_path);
-
-    if(f_result == "")
-    {
-        f_result = read_design_ini(p_identifier, default_path);
-
-        if(f_result == "")
-        {
-            qDebug() << "IS PROBLEM HAPPEN";
-            return f_result;
-        }
-    }
-
-    return f_result;
-}
-
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path() + p_file;
@@ -335,6 +374,26 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
   return return_color;
 }
 
+QString AOApplication::get_font_name(QString p_identifier, QString p_file)
+{
+    QString design_ini_path = get_theme_path() + p_file;
+    QString default_path = get_default_theme_path() + p_file;
+    QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+    if(f_result == "")
+    {
+        f_result = read_design_ini(p_identifier, default_path);
+
+        if(f_result == "")
+        {
+            qDebug() << "Failure retreiving font name";
+            return f_result;
+        }
+    }
+
+    return f_result;
+}
+
 QString AOApplication::get_sfx(QString p_identifier)
 {
   QString design_ini_path = get_theme_path() + "courtroom_sounds.ini";
@@ -354,6 +413,40 @@ QString AOApplication::get_sfx(QString p_identifier)
   return_sfx = f_result;
 
   return return_sfx;
+}
+
+QStringList AOApplication::get_sfx_list()
+{
+    QStringList return_value;
+
+    QFile base_sfx_list_ini;
+
+    QFile char_sfx_list_ini;
+
+    base_sfx_list_ini.setFileName(get_base_path() + "sounds.ini");
+    char_sfx_list_ini.setFileName(get_character_path(get_current_char()) + "sounds.ini");
+
+    if (!char_sfx_list_ini.open(QIODevice::ReadOnly) && !base_sfx_list_ini.open(QIODevice::ReadOnly))
+    {
+          return return_value;
+    }
+
+    QTextStream in_a(&base_sfx_list_ini);
+    QTextStream in_b(&char_sfx_list_ini);
+
+    while (!in_a.atEnd())
+    {
+      QString line = in_a.readLine();
+      return_value.append(line);
+    }
+
+    while (!in_b.atEnd())
+    {
+      QString line = in_b.readLine();
+      return_value.append(line);
+    }
+
+    return return_value;
 }
 
 //returns whatever is to the right of "search_line =" within target_tag and terminator_tag, trimmed
