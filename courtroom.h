@@ -17,6 +17,7 @@
 #include "aolineedit.h"
 #include "aotextedit.h"
 #include "aoevidencedisplay.h"
+#include "aonotepad.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -31,6 +32,8 @@
 #include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
+#include <QRect>
+#include <QComboBox>
 
 class AOApplication;
 
@@ -102,6 +105,10 @@ public:
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
 
+  void list_sfx();
+
+  void list_themes();
+
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
@@ -113,6 +120,10 @@ public:
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
+  //handles character portrait animation
+  void handle_char_anim(AOCharMovie *charPlayer);
+  void handle_char_anim_2(AOCharMovie *charPlayer);
+
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
   // or the user isn't already scrolled to the top
@@ -121,6 +132,9 @@ public:
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
+
+  //animates music text
+  void handle_music_anim(QWidget *p_widget, QString p_identifier_a, QString p_identifier_b);
 
   void play_preanim();
 
@@ -150,6 +164,7 @@ private:
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
+//  QVector<QString> sfx_list;
 
   QSignalMapper *char_button_mapper;
 
@@ -167,6 +182,7 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+  bool note_shown = false;
 
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;
@@ -232,9 +248,12 @@ private:
 
   int current_emote_page = 0;
   int current_emote = 0;
+  int prev_emote = 0;
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;
+
+  bool same_emote = false;
 
   QVector<evi_type> local_evidence_list;
 
@@ -268,6 +287,12 @@ private:
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
+
+//  AONotepad *ui_vp_notepad;
+
+  AOImage *ui_vp_notepad_image;
+  QTextEdit *ui_vp_notepad;
+
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;
@@ -275,6 +300,11 @@ private:
   AOImage *ui_vp_realization;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
+
+  AOImage *ui_vp_music_display_a;
+  AOImage *ui_vp_music_display_b;
+  QTextEdit *ui_vp_music_name;
+  QWidget *ui_vp_music_area;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -284,6 +314,9 @@ private:
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
   QListWidget *ui_music_list;
+  QListWidget *ui_sfx_list;
+
+//  QListWidget *ui_sfx_list;
 
   QLineEdit *ui_ic_chat_message;
 
@@ -292,6 +325,8 @@ private:
 
   //QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
+
+  QLineEdit *ui_sfx_search;
 
   QWidget *ui_emotes;
   QVector<AOEmoteButton*> ui_emote_list;
@@ -321,6 +356,10 @@ private:
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
 
+  QComboBox *ui_theme_list;
+
+  AOButton *ui_confirm_theme;
+
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
@@ -342,6 +381,8 @@ private:
   QSlider *ui_blip_slider;
 
   AOImage *ui_muted;
+
+  AOButton *ui_note_button;
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
@@ -414,6 +455,8 @@ private slots:
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QModelIndex p_model);
 
+  void on_sfx_search_edited(QString p_text);
+
   void select_emote(int p_id);
 
   void on_emote_clicked(int p_id);
@@ -464,6 +507,9 @@ private slots:
   void on_change_character_clicked();
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
+
+  void on_confirm_theme_clicked();
+  void on_note_button_clicked();
 
   void on_pre_clicked();
   void on_flip_clicked();

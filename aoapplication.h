@@ -132,8 +132,13 @@ public:
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 
+  QStringList get_sfx_list();
+
   //Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
+
+  //
+  void write_theme(QString theme);
 
   //Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
@@ -149,6 +154,9 @@ public:
 
   //Returns the value of font_size with p_identifier from p_file
   int get_font_size(QString p_identifier, QString p_file);
+
+  //Returns the name of the font with p_identifier from p_file
+  QString get_font_name(QString p_identifier, QString p_file);
 
   //Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);

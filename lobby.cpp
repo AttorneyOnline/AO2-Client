@@ -12,7 +12,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowTitle("Attorney Online 2");
+  this->setWindowTitle("Danganronpa Online");
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -149,6 +149,7 @@ void Lobby::set_widgets()
 
   ui_loading_background->hide();
 
+  set_fonts();
 }
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
@@ -167,6 +168,39 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
+}
+
+void Lobby::set_fonts()
+{
+//    ui_server_list->setFont(QFont("Poor Richard", 10));
+//    set_font(ui_server_list, "server_list");
+}
+
+void Lobby::set_font(QWidget *widget, QString p_identifier)
+{
+  QString design_file = "lobby_fonts.ini";
+  int f_weight = ao_app->get_font_size(p_identifier, design_file);
+  QString class_name = widget->metaObject()->className();
+
+  QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
+
+//  widget->setFont(QFont(font_name, f_weight));
+
+  QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
+
+  int bold = ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
+
+  QString is_bold = "";
+  if(bold == 1) is_bold = "bold";
+
+  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
+                                            "color: rgba(" +
+                                             QString::number(f_color.red()) + ", " +
+                                             QString::number(f_color.green()) + ", " +
+                                             QString::number(f_color.blue()) + ", 255);\n"
+                                             "font: " + QString(f_weight) + " pt " + is_bold + ' "' + font_name + '" ' + "; }";
+
+  widget->setStyleSheet(style_sheet_string);
 }
 
 void Lobby::set_loading_text(QString p_text)

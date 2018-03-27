@@ -56,6 +56,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   delete reader;
 
   this->show();
+
   m_movie->start();
 }
 

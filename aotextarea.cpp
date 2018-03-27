@@ -25,6 +25,8 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
   p_message += " ";
   QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
 
+  qDebug() << "STRING IS: " << result;
+
   this->insertHtml(result);
 
   this->auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
