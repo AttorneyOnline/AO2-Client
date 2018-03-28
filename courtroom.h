@@ -164,7 +164,7 @@ private:
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
-//  QVector<QString> sfx_list;
+  QVector<QString> sfx_names;
 
   QSignalMapper *char_button_mapper;
 

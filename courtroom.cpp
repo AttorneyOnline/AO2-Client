@@ -889,6 +889,7 @@ void Courtroom::list_music()
 void Courtroom::list_sfx()
 {
   ui_sfx_list->clear();
+  sfx_names.clear();
 
   QString f_file = "courtroom_design.ini";
 
@@ -903,11 +904,18 @@ void Courtroom::list_sfx()
 
   for (int n_sfx = 0 ; n_sfx < sfx_list.size() ; ++n_sfx)
   {
-    QString i_sfx = sfx_list.at(n_sfx);
+    sfx_names.append(sfx_list.at(n_sfx).split("=").at(0).trimmed());
+    QString i_sfx = sfx_names.at(n_sfx);
+    QString d_sfx = "";
+    if(sfx_list.at(n_sfx).split("=").size() < 2)
+        d_sfx = i_sfx;
+    else d_sfx = sfx_list.at(n_sfx).split("=").at(1).trimmed();
+
+    qDebug() << "i_sfx = " << i_sfx << "d_sfx = " << d_sfx;
 
     if (i_sfx.toLower().contains(ui_sfx_search->text().toLower()))
     {
-      ui_sfx_list->addItem(i_sfx);
+      ui_sfx_list->addItem(d_sfx);
 
       QString sfx_path = ao_app->get_base_path() + "sounds/general/" + i_sfx.toLower();
 
@@ -1003,9 +1011,10 @@ void Courtroom::on_chat_return_pressed()
 
 //  packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
 //  packet_contents.append(ui_sfx_search->text());
-  if(ui_sfx_list->selectedItems().size() > 0)
+  qDebug() << "ROW  = " << ui_sfx_list->currentRow();
+  if(ui_sfx_list->currentRow() > 0)
   {
-      packet_contents.append(ui_sfx_list->currentItem()->text());
+      packet_contents.append(sfx_names.at(ui_sfx_list->currentRow()-1)); // subtracting because 0 = "None"
   }
   else
   {
