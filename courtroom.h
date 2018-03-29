@@ -427,6 +427,9 @@ private:
   void construct_evidence();
   void set_evidence_page();
 
+  void load_note();
+  void save_note();
+
 
 
 public slots:
@@ -510,6 +513,8 @@ private slots:
 
   void on_confirm_theme_clicked();
   void on_note_button_clicked();
+
+  void on_note_text_changed();
 
   void on_pre_clicked();
   void on_flip_clicked();

@@ -287,6 +287,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_confirm_theme, SIGNAL(clicked()), this, SLOT(on_confirm_theme_clicked()));
   connect(ui_note_button, SIGNAL(clicked()), this, SLOT(on_note_button_clicked()));
 
+  connect(ui_vp_notepad, SIGNAL(textChanged()), this, SLOT(on_note_text_changed()));
+
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
@@ -927,6 +929,21 @@ void Courtroom::list_sfx()
       ++n_listed_sfxs;
     }
   }
+}
+
+void Courtroom::load_note()
+{
+    QString filename = ao_app->get_base_path() + "note.txt";
+    QString text = ao_app->read_note(filename);
+    ui_vp_notepad->setPlainText(text);
+}
+
+void Courtroom::save_note()
+{
+    QString filename = ao_app->get_base_path() + "note.txt";
+    QString text = ui_vp_notepad->toPlainText();
+
+    ao_app->write_note(text, filename);
 }
 
 void Courtroom::list_themes()
@@ -2253,35 +2270,6 @@ void Courtroom::on_confirm_theme_clicked()
 
     ao_app->write_theme(ui_theme_list->currentText());
 }
-void Courtroom::on_note_button_clicked()
-{
-//    QPropertyAnimation *anim = new QPropertyAnimation(ui_vp_notepad, "geometry");
-//    pos_size_type pos_s = ao_app->get_element_dimensions("notepad", "courtroom_design.ini");
-//    pos_size_type pos_f = ao_app->get_element_dimensions("notepad_final", "courtroom_design.ini");
-//    qDebug() << "pos_s: " << pos_s.x << " " << pos_s.y << " " << pos_s.width << " " << pos_s.height << " pos_f: " << pos_f.x << " " << pos_f.y << " " << pos_f.width << " " << pos_f.height;
-//    anim->setEasingCurve(QEasingCurve::InCubic);
-//    anim->setDuration(1000);
-
-
-    if(!note_shown)
-    {
-        ui_vp_notepad_image->show();
-        ui_vp_notepad->show();
-        note_shown = true;
-//        anim->setStartValue(QRect(pos_s.x, pos_s.y, pos_s.width, pos_s.height));
-//        anim->setEndValue(QRect(pos_f.x, pos_f.y, pos_f.width, pos_f.height));
-//        anim->start();
-    }
-    else
-    {
-        ui_vp_notepad_image->hide();
-        ui_vp_notepad->hide();
-        note_shown = false;
-//        anim->setEndValue(QRect(pos_s.x, pos_s.y, pos_s.width, pos_s.height));
-//        anim->setStartValue(QRect(pos_f.x, pos_f.y, pos_f.width, pos_f.height));
-//        anim->start();
-    }
-}
 
 void Courtroom::on_char_select_left_clicked()
 {
@@ -2337,6 +2325,44 @@ void Courtroom::on_evidence_button_clicked()
   {
     ui_evidence->hide();
   }
+}
+
+void Courtroom::on_note_button_clicked()
+{
+//    QPropertyAnimation *anim = new QPropertyAnimation(ui_vp_notepad, "geometry");
+//    pos_size_type pos_s = ao_app->get_element_dimensions("notepad", "courtroom_design.ini");
+//    pos_size_type pos_f = ao_app->get_element_dimensions("notepad_final", "courtroom_design.ini");
+//    qDebug() << "pos_s: " << pos_s.x << " " << pos_s.y << " " << pos_s.width << " " << pos_s.height << " pos_f: " << pos_f.x << " " << pos_f.y << " " << pos_f.width << " " << pos_f.height;
+//    anim->setEasingCurve(QEasingCurve::InCubic);
+//    anim->setDuration(1000);
+
+
+    if(!note_shown)
+    {
+        load_note();
+        ui_vp_notepad_image->show();
+        ui_vp_notepad->show();
+        note_shown = true;
+//        anim->setStartValue(QRect(pos_s.x, pos_s.y, pos_s.width, pos_s.height));
+//        anim->setEndValue(QRect(pos_f.x, pos_f.y, pos_f.width, pos_f.height));
+//        anim->start();
+    }
+    else
+    {
+        save_note();
+        ui_vp_notepad_image->hide();
+        ui_vp_notepad->hide();
+        note_shown = false;
+//        anim->setEndValue(QRect(pos_s.x, pos_s.y, pos_s.width, pos_s.height));
+//        anim->setStartValue(QRect(pos_f.x, pos_f.y, pos_f.width, pos_f.height));
+//        anim->start();
+    }
+}
+
+void Courtroom::on_note_text_changed()
+{
+    QString filename = ao_app->get_base_path() + "note.txt";
+    ao_app->write_note(ui_vp_notepad->toPlainText(), filename);
 }
 
 void Courtroom::ping_server()

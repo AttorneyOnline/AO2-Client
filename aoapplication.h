@@ -111,6 +111,9 @@ public:
   //Returns the config value for the passed searchline from a properly formatted config ini file
   QString read_config(QString searchline);
 
+  //Returns text from note file
+  QString read_note(QString filename);
+
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
 
@@ -137,8 +140,12 @@ public:
   //Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
 
-  //
+  //Writes to note file
+  void write_note(QString p_text, QString filename);
+
+  //Overwrites config.ini with new theme
   void write_theme(QString theme);
+
 
   //Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();

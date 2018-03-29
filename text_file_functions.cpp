@@ -170,6 +170,37 @@ void AOApplication::write_theme(QString theme)
     }
 
     ex.write(t);
+    ex.close();
+}
+
+QString AOApplication::read_note(QString filename)
+{
+    QFile note_txt(filename);
+
+    if(!note_txt.open(QIODevice::ReadOnly | QFile::Text))
+    {
+        qDebug() << "Couldn't open" << filename;
+        return "";
+    }
+
+    QTextStream in(&note_txt);
+    QString text = in.readAll();
+    note_txt.close();
+    return text;
+}
+
+void AOApplication::write_note(QString p_text, QString filename)
+{
+    QFile note_txt(filename);
+
+    if(!note_txt.open(QIODevice::WriteOnly | QFile::Text))
+    {
+        qDebug() << "Couldn't open" << filename;
+        return;
+    }
+    QTextStream out(&note_txt);
+    out << p_text;
+    note_txt.close();
 }
 
 void AOApplication::write_to_serverlist_txt(QString p_line)
