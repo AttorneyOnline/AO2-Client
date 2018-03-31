@@ -1771,6 +1771,7 @@ void Courtroom::set_ban(int p_cid)
 
 void Courtroom::handle_song(QStringList *p_contents)
 {
+
   QStringList f_contents = *p_contents;
 
   if (f_contents.size() < 2)
@@ -1789,8 +1790,17 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      append_ic_text(" has played a song: " + f_song, str_char);
-      music_player->play(f_song);
+        QString music_change_log = ao_app->read_config("music_change_log");
+
+        if (music_change_log == ("false"))
+        {
+           music_player->play(f_song);
+        }
+      else
+        {
+          append_ic_text(" has played a song: " + f_song, str_char);
+          music_player->play(f_song);
+        }
     }
   }
 

@@ -75,16 +75,15 @@ void Discord::state_character(std::string name)
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "danganronpa_online";
-  presence.largeImageText = "Sore Wa Chigau Yo!";
+  presence.largeImageKey = name_internal.c_str();
   presence.instance = 1;
   presence.details = this->server_name.c_str();
   presence.matchSecret = this->server_id.c_str();
   presence.startTimestamp = this->timestamp;
 
   presence.state = playing_as.c_str();
-  presence.smallImageKey = name_internal.c_str();
-  // presence.smallImageText = name_internal.c_str();
+  presence.smallImageKey = "danganronpa_online";
+  presence.smallImageText = "Danganronpa Online";
   Discord_UpdatePresence(&presence);
 }
 
