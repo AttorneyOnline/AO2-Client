@@ -172,8 +172,12 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Lobby::set_fonts()
 {
-//    ui_server_list->setFont(QFont("Poor Richard", 10));
-//    set_font(ui_server_list, "server_list");
+    set_font(ui_player_count, "player_count");
+    set_font(ui_description, "description");
+    set_font(ui_chatbox, "chatbox");
+    set_font(ui_chatname, "chatname");
+    set_font(ui_chatmessage, "chatmessage");
+    set_font(ui_loading_text, "loading_text");
 }
 
 void Lobby::set_font(QWidget *widget, QString p_identifier)
@@ -184,23 +188,41 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
 
   QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
 
-//  widget->setFont(QFont(font_name, f_weight));
+  QFont font(font_name, f_weight);
 
-  QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
+  bool use = (bool)ao_app->get_font_size("use_custom_fonts", design_file);
 
-  int bold = ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
+  if(use)
+  {
+      widget->setFont(font);
 
-  QString is_bold = "";
-  if(bold == 1) is_bold = "bold";
+      qDebug() << "font =" << font;
 
-  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
-                                            "color: rgba(" +
-                                             QString::number(f_color.red()) + ", " +
-                                             QString::number(f_color.green()) + ", " +
-                                             QString::number(f_color.blue()) + ", 255);\n"
-                                             "font: " + QString(f_weight) + " pt " + is_bold + ' "' + font_name + '" ' + "; }";
+      QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
-  widget->setStyleSheet(style_sheet_string);
+      bool bold = (bool)ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
+      bool center = (bool)ao_app->get_font_size(p_identifier + "_center", design_file); // should it be centered?
+
+
+      QString is_bold = "";
+      if(bold) is_bold = "bold";
+
+      QString is_center = "";
+      if(center) is_center = "qproperty-alignment: AlignCenter;";
+
+      QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
+                                                "color: rgba(" +
+                                                 QString::number(f_color.red()) + ", " +
+                                                 QString::number(f_color.green()) + ", " +
+                                                 QString::number(f_color.blue()) + ", 255);\n" +
+                                                 is_center + "\n" +
+                                                 "font: " + is_bold + "; }";
+
+      widget->setStyleSheet(style_sheet_string);
+  }
+
+
+  return;
 }
 
 void Lobby::set_loading_text(QString p_text)
