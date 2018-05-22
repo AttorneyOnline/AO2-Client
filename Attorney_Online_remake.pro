@@ -121,4 +121,5 @@ FORMS += \
     resource/ui/lobby.ui \
     resource/ui/loading.ui \
     resource/ui/courtroom.ui \
-    resource/ui/viewport.ui
+    resource/ui/viewport.ui \
+    resource/ui/ic_log.ui

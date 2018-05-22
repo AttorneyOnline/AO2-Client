@@ -6,19 +6,97 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>348</width>
-    <height>234</height>
+    <width>256</width>
+    <height>192</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>DockWidget</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <widget class="AOScene" name="label">
+   <widget class="AOScene" name="ui_vp_background">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>30</y>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOMovie" name="ui_vp_speedlines">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOCharMovie" name="ui_vp_player_char">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOScene" name="ui_vp_desk">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOScene" name="ui_vp_legacy_desk">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOImage" name="ui_vp_chatbox">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>110</y>
+      <width>251</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ui_vp_showname">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>110</y>
       <width>47</width>
       <height>13</height>
      </rect>
@@ -27,23 +105,120 @@
      <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="ui_vp_message">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>140</y>
-      <width>321</width>
-      <height>51</height>
+      <x>0</x>
+      <y>100</y>
+      <width>256</width>
+      <height>71</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="AOImage" name="ui_vp_testimony">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOImage" name="ui_vp_realization">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOMovie" name="ui_vp_wtce">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOMovie" name="ui_vp_objection">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="AOEvidenceDisplay" name="ui_vp_evidence_display">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>AOImage</class>
+   <extends>QLabel</extends>
+   <header location="global">aoimage.h</header>
+  </customwidget>
+  <customwidget>
    <class>AOScene</class>
    <extends>QLabel</extends>
    <header location="global">aoscene.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AOMovie</class>
+   <extends>QLabel</extends>
+   <header location="global">aomovie.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AOCharMovie</class>
+   <extends>QLabel</extends>
+   <header location="global">aocharmovie.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AOEvidenceDisplay</class>
+   <extends>QLabel</extends>
+   <header location="global">aoevidencedisplay.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
