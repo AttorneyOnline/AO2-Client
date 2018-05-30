@@ -12,7 +12,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowTitle("Attorney Online 2");
+  this->setWindowTitle(tr("Attorney Online 2"));
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -28,7 +28,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
-  ui_chatname->setPlaceholderText("Name");
+  ui_chatname->setPlaceholderText(tr("Name"));
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_text = new QTextEdit(ui_loading_background);
@@ -68,9 +68,9 @@ void Lobby::set_widgets()
     qDebug() << "W: did not find lobby width or height in " << filename;
 
     // Most common symptom of bad config files and missing assets.
-    call_notice("It doesn't look like your client is set up correctly.\n"
+    call_notice(tr("It doesn't look like your client is set up correctly.\n"
                 "Did you download all resources correctly from tiny.cc/getao, "
-                "including the large 'base' folder?");
+                "including the large 'base' folder?"));
 
     this->resize(517, 666);
   }
@@ -141,11 +141,11 @@ void Lobby::set_widgets()
   ui_loading_text->setFrameStyle(QFrame::NoFrame);
   ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: rgba(255, 128, 0, 255);");
-  ui_loading_text->append("Loading");
+  ui_loading_text->append(tr("Loading"));
 
   set_size_and_pos(ui_progress_bar, "progress_bar");
   set_size_and_pos(ui_cancel, "cancel");
-  ui_cancel->setText("Cancel");
+  ui_cancel->setText(tr("Cancel"));
 
   ui_loading_background->hide();
 
@@ -264,21 +264,21 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-  call_notice("Attorney Online 2 is built using Qt 5.7\n\n"
-              "Lead development:\n"
-              "OmniTroid\n\n"
-              "stonedDiscord\n"
-              "longbyte1\n"
-              "Supporting development:\n"
-              "Fiercy\n\n"
-              "UI design:\n"
-              "Ruekasu\n"
-              "Draxirch\n\n"
-              "Special thanks:\n"
-              "Unishred\n"
-              "Argoneus\n"
-              "Noevain\n"
-              "Cronnicossy");
+  call_notice(tr("Attorney Online 2 is built using Qt 5.11.\n\n"
+                 "Lead development:\n"
+                 "longbyte1\n"
+                 "OmniTroid\n\n"
+                 "stonedDiscord\n"
+                 "Supporting development:\n"
+                 "Fiercy\n\n"
+                 "UI design:\n"
+                 "Ruekasu\n"
+                 "Draxirch\n\n"
+                 "Special thanks:\n"
+                 "Unishred\n"
+                 "Argoneus\n"
+                 "Noevain\n"
+                 "Cronnicossy"));
 }
 
 void Lobby::on_server_list_clicked(QModelIndex p_model)
@@ -312,7 +312,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_description->moveCursor(QTextCursor::Start);
   ui_description->ensureCursorVisible();
 
-  ui_player_count->setText("Offline");
+  ui_player_count->setText(tr("Offline"));
 
   ao_app->net_manager->connect_to_server(f_server);
 }

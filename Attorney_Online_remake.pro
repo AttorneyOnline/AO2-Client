@@ -99,3 +99,5 @@ RESOURCES += \
     resources.qrc
 
 DISTFILES +=
+
+TRANSLATIONS += translations/ao_en.ts translations/ao_ja.ts

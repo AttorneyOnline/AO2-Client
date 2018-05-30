@@ -108,7 +108,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
-  ui_ooc_chat_name->setPlaceholderText("Name");
+  ui_ooc_chat_name->setPlaceholderText(tr("Name"));
 
   //ui_area_password = new QLineEdit(this);
   //ui_area_password->setFrame(false);
@@ -149,12 +149,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_call_mod = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
-  ui_pre->setText("Pre");
+  ui_pre->setText(tr("Pre"));
   ui_flip = new QCheckBox(this);
-  ui_flip->setText("Flip");
+  ui_flip->setText(tr("Flip"));
   ui_flip->hide();
   ui_guard = new QCheckBox(this);
-  ui_guard->setText("Guard");
+  ui_guard->setText(tr("Guard"));
   ui_guard->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
@@ -168,13 +168,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_prosecution_minus = new AOButton(this, ao_app);
 
   ui_text_color = new QComboBox(this);
-  ui_text_color->addItem("White");
-  ui_text_color->addItem("Green");
-  ui_text_color->addItem("Red");
-  ui_text_color->addItem("Orange");
-  ui_text_color->addItem("Blue");
+  ui_text_color->addItem(tr("White"));
+  ui_text_color->addItem(tr("Green"));
+  ui_text_color->addItem(tr("Red"));
+  ui_text_color->addItem(tr("Orange"));
+  ui_text_color->addItem(tr("Blue"));
   if (ao_app->yellow_text_enabled)
-    ui_text_color->addItem("Yellow");
+    ui_text_color->addItem(tr("Yellow"));
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -426,11 +426,11 @@ void Courtroom::set_widgets()
   ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
 
   set_size_and_pos(ui_music_label, "music_label");
-  ui_music_label->setText("Music");
+  ui_music_label->setText(tr("Music"));
   set_size_and_pos(ui_sfx_label, "sfx_label");
-  ui_sfx_label->setText("Sfx");
+  ui_sfx_label->setText(tr("Sfx"));
   set_size_and_pos(ui_blip_label, "blip_label");
-  ui_blip_label->setText("Blips");
+  ui_blip_label->setText(tr("Blips"));
 
   set_size_and_pos(ui_hold_it, "hold_it");
   ui_hold_it->set_image("holdit.png");
@@ -440,7 +440,7 @@ void Courtroom::set_widgets()
   ui_take_that->set_image("takethat.png");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
-  ui_ooc_toggle->setText("Server");
+  ui_ooc_toggle->setText(tr("Server"));
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
   ui_witness_testimony->set_image("witnesstestimony.png");
@@ -448,16 +448,16 @@ void Courtroom::set_widgets()
   ui_cross_examination->set_image("crossexamination.png");
 
   set_size_and_pos(ui_change_character, "change_character");
-  ui_change_character->setText("Change character");
+  ui_change_character->setText(tr("Change character"));
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
-  ui_reload_theme->setText("Reload theme");
+  ui_reload_theme->setText(tr("Reload theme"));
 
   set_size_and_pos(ui_call_mod, "call_mod");
-  ui_call_mod->setText("Call mod");
+  ui_call_mod->setText(tr("Call mod"));
 
   set_size_and_pos(ui_pre, "pre");
-  ui_pre->setText("Pre");
+  ui_pre->setText(tr("Pre"));
 
   set_size_and_pos(ui_flip, "flip");
 
@@ -528,7 +528,7 @@ void Courtroom::set_widgets()
   ui_selector->hide();
 
   set_size_and_pos(ui_back_to_lobby, "back_to_lobby");
-  ui_back_to_lobby->setText("Back to Lobby");
+  ui_back_to_lobby->setText(tr("Back to Lobby"));
 
   set_size_and_pos(ui_char_password, "char_password");
 
@@ -1505,7 +1505,7 @@ void Courtroom::set_ban(int p_cid)
   if (p_cid != m_cid && p_cid != -1)
     return;
 
-  call_notice("You have been banned.");
+  call_notice(tr("You have been banned."));
 
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
@@ -1531,7 +1531,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      append_ic_text(" has played a song: " + f_song, str_char);
+      append_ic_text(tr("%1 has played a song: %2").arg(f_song).arg(str_char));
       music_player->play(f_song);
     }
   }
@@ -1617,7 +1617,7 @@ void Courtroom::on_ooc_return_pressed()
     ui_guard->show();
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
-    ui_text_color->addItem("Rainbow");
+    ui_text_color->addItem(tr("Rainbow"));
     ui_ooc_chat_message->clear();
     rainbow_appended = true;
     return;
@@ -1645,7 +1645,7 @@ void Courtroom::on_ooc_toggle_clicked()
   {
     ui_ms_chatlog->show();
     ui_server_chatlog->hide();
-    ui_ooc_toggle->setText("Master");
+    ui_ooc_toggle->setText(tr("Master"));
 
     server_ooc = false;
   }
@@ -1653,7 +1653,7 @@ void Courtroom::on_ooc_toggle_clicked()
   {
     ui_ms_chatlog->hide();
     ui_server_chatlog->show();
-    ui_ooc_toggle->setText("Server");
+    ui_ooc_toggle->setText(tr("Server"));
 
     server_ooc = true;
   }

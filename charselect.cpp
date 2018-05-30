@@ -24,7 +24,7 @@ void Courtroom::construct_char_select()
   ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
-  ui_spectator->setText("Spectator");
+  ui_spectator->setText(tr("Spectator"));
 
   QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
 
@@ -146,7 +146,7 @@ void Courtroom::char_clicked(int n_char)
   if (!file_exists(char_ini_path))
   {
     qDebug() << "did not find " << char_ini_path;
-    call_notice("Could not find " + char_ini_path);
+    call_notice(tr("Could not find %1").arg(char_ini_path));
     return;
   }
 

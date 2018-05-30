@@ -25,7 +25,7 @@ void Courtroom::construct_evidence()
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
-  ui_evidence_image_button->setText("Choose..");
+  ui_evidence_image_button->setText(tr("Choose.."));
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
@@ -272,7 +272,7 @@ void Courtroom::on_evidence_hover(int p_id, bool p_state)
   if (p_state)
   {
     if (final_id == local_evidence_list.size())
-      ui_evidence_name->setText("Add new evidence...");
+      ui_evidence_name->setText(tr("Add new evidence..."));
     else if (final_id < local_evidence_list.size())
       ui_evidence_name->setText(local_evidence_list.at(final_id).name);
   }
