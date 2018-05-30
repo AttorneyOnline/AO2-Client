@@ -7,6 +7,20 @@
 #include "courtroom.h"
 #include <QPluginLoader>
 #include <QDebug>
+#include <QTranslator>
+
+static void install_translators(QtApplication &app)
+{
+  QTranslator qtTranslator;
+  qtTranslator.load("qt_" + QLocale::system().name(),
+          QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+  app.installTranslator(&qtTranslator);
+
+  QTranslator appTranslator;
+  appTranslator.load("ao_" + QLocale::system().name());
+  app.installTranslator(&appTranslator);
+}
+
 int main(int argc, char *argv[])
 {
 #if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
@@ -17,6 +31,9 @@ int main(int argc, char *argv[])
 #endif
 
     AOApplication main_app(argc, argv);
+
+    install_translators(&main_app);
+
     main_app.construct_lobby();
     main_app.net_manager->connect_to_master();
     main_app.w_lobby->show();

@@ -71,9 +71,9 @@ void Lobby::set_widgets()
     qDebug() << "W: did not find lobby width or height in " << filename;
 
     // Most common symptom of bad config files and missing assets.
-    call_notice("It doesn't look like your client is set up correctly.\n"
+    call_notice(tr("It doesn't look like your client is set up correctly.\n"
                 "Did you download all resources correctly from tiny.cc/getao, "
-                "including the large 'base' folder?");
+                "including the large 'base' folder?"));
 
     this->resize(517, 666);
   }
@@ -144,11 +144,11 @@ void Lobby::set_widgets()
   ui_loading_text->setFrameStyle(QFrame::NoFrame);
   ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: rgba(255, 128, 0, 255);");
-  ui_loading_text->append("Loading");
+  ui_loading_text->append(tr("Loading"));
 
   set_size_and_pos(ui_progress_bar, "progress_bar");
   set_size_and_pos(ui_cancel, "cancel");
-  ui_cancel->setText("Cancel");
+  ui_cancel->setText(tr("Cancel"));
 
   ui_loading_background->hide();
 
@@ -313,7 +313,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_description->moveCursor(QTextCursor::Start);
   ui_description->ensureCursorVisible();
 
-  ui_player_count->setText("Offline");
+  ui_player_count->setText(tr("Offline"));
 
   ui_connect->setEnabled(false);
 

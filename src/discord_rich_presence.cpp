@@ -31,11 +31,11 @@ void Discord::state_lobby()
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageText = tr("Objection!");
   presence.instance = 1;
 
-  presence.state = "In Lobby";
-  presence.details = "Idle";
+  presence.state = tr("In Lobby");
+  presence.details = tr("Idle");
   Discord_UpdatePresence(&presence);
 }
 
@@ -46,12 +46,12 @@ void Discord::state_server(std::string name, std::string server_id)
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageText = tr("Objection!");
   presence.instance = 1;
 
   auto timestamp = static_cast<int64_t>(std::time(nullptr));
 
-  presence.state = "In a Server";
+  presence.state = tr("In a Server");
   presence.details = name.c_str();
   presence.matchSecret = server_id.c_str();
   presence.startTimestamp = this->timestamp;
@@ -66,13 +66,13 @@ void Discord::state_character(std::string name)
 {
   auto name_internal = QString(name.c_str()).toLower().replace(' ', '_').toStdString();
   auto name_friendly = QString(name.c_str()).replace('_', ' ').toStdString();
-  const std::string playing_as = "Playing as " + name_friendly;
+  const std::string playing_as = tr("Playing as %1").arg(name_friendly);
   qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str() << ")";
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageText = tr("Objection!");
   presence.instance = 1;
   presence.details = this->server_name.c_str();
   presence.matchSecret = this->server_id.c_str();
@@ -91,13 +91,13 @@ void Discord::state_spectate()
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageText = tr("Objection!");
   presence.instance = 1;
   presence.details = this->server_name.c_str();
   presence.matchSecret = this->server_id.c_str();
   presence.startTimestamp = this->timestamp;
 
-  presence.state = "Spectating";
+  presence.state = tr("Spectating");
   Discord_UpdatePresence(&presence);
 }
 #else
