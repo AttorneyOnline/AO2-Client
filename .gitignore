@@ -7,3 +7,5 @@ base_override.h
 
 base-full/
 bass.lib
+discord-rpc.lib
+send-presence.exe

@@ -13,6 +13,7 @@
 #include <QBrush>
 #include <QTextCharFormat>
 #include <QFont>
+#include <QTime>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include <QDir>
@@ -73,7 +74,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_music_display_b = new AOImage(this, ao_app);
   ui_vp_music_area = new QWidget(ui_vp_music_display_a);
   ui_vp_music_name = new QTextEdit(ui_vp_music_area);
-  ui_vp_music_name->setText("hewwo OwO");
+  ui_vp_music_name->setText("Danganronpa Online");
   ui_vp_music_name->setFrameStyle(QFrame::NoFrame);
   ui_vp_music_name->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_music_name->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -330,7 +331,6 @@ void Courtroom::set_widgets()
   blank_blip = ao_app->get_blank_blip();
 
   QString filename = "courtroom_design.ini";
-
   pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", filename);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
@@ -688,6 +688,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "courtroom_design.ini";
 
+
   pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
@@ -942,6 +943,15 @@ void Courtroom::save_note()
 {
     QString filename = ao_app->get_base_path() + "note.txt";
     QString text = ui_vp_notepad->toPlainText();
+
+    ao_app->write_note(text, filename);
+}
+
+void Courtroom::save_textlog()
+{
+
+    QString filename = ao_app->get_base_path() + icchatlogsfilename;
+    QString text = ui_ic_chatlog->toPlainText();
 
     ao_app->write_note(text, filename);
 }
@@ -1205,6 +1215,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
+  save_textlog();
 
   previous_ic_message = f_message;
 

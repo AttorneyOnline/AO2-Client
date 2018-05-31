@@ -34,6 +34,7 @@
 #include <QTextBrowser>
 #include <QRect>
 #include <QComboBox>
+#include <QDateTime>
 
 class AOApplication;
 
@@ -197,6 +198,9 @@ private:
   QTimer *testimony_show_timer;
   //times how long the blinking testimony should be hidden
   QTimer *testimony_hide_timer;
+
+  //Generate a File Name based on the time you launched the client
+  QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM yyyy hh.mm.ss.z'.txt'");
 
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
@@ -429,7 +433,7 @@ private:
 
   void load_note();
   void save_note();
-
+  void save_textlog();
 
 
 public slots:
