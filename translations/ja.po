@@ -53,12 +53,12 @@ msgstr ""
 #: ../packet_distribution.cpp:228
 msgctxt "AOApplication|"
 msgid "Attorney Online 2"
-msgstr ""
+msgstr "Attorney Online 2"
 
 #: ../packet_distribution.cpp:254
 msgctxt "AOApplication|"
 msgid "Loading"
-msgstr ""
+msgstr "ロード中"
 
 #: ../packet_distribution.cpp:341
 #, qt-format
@@ -66,7 +66,7 @@ msgctxt "AOApplication|"
 msgid ""
 "Loading evidence:\n"
 "%1/%2"
-msgstr ""
+msgstr "証拠がロード中: %1/%2"
 
 #: ../packet_distribution.cpp:370 ../packet_distribution.cpp:435
 #, qt-format
@@ -74,7 +74,7 @@ msgctxt "AOApplication|"
 msgid ""
 "Loading music:\n"
 "%1/%2"
-msgstr ""
+msgstr "音楽がロード中: %1/%2"
 
 #: ../packet_distribution.cpp:415
 #, qt-format
@@ -82,7 +82,7 @@ msgctxt "AOApplication|"
 msgid ""
 "Loading chars:\n"
 "%1/%2"
-msgstr ""
+msgstr "キャラがロード中: %1/%2"
 
 #: ../packet_distribution.cpp:548
 msgctxt "AOApplication|"
@@ -97,7 +97,7 @@ msgstr ""
 #: ../charselect.cpp:27
 msgctxt "Courtroom|"
 msgid "Spectator"
-msgstr ""
+msgstr "観客"
 
 #: ../charselect.cpp:149
 #, qt-format
@@ -113,27 +113,27 @@ msgstr "名前"
 #: ../courtroom.cpp:152 ../courtroom.cpp:460
 msgctxt "Courtroom|"
 msgid "Pre"
-msgstr ""
+msgstr "前"
 
 #: ../courtroom.cpp:154
 msgctxt "Courtroom|"
 msgid "Flip"
-msgstr ""
+msgstr "フリップ"
 
 #: ../courtroom.cpp:157
 msgctxt "Courtroom|"
 msgid "Guard"
-msgstr ""
+msgstr "ガード"
 
 #: ../courtroom.cpp:171
 msgctxt "Courtroom|"
 msgid "White"
-msgstr ""
+msgstr "白"
 
 #: ../courtroom.cpp:172
 msgctxt "Courtroom|"
 msgid "Green"
-msgstr ""
+msgstr "緑"
 
 #: ../courtroom.cpp:173
 msgctxt "Courtroom|"
@@ -163,7 +163,7 @@ msgstr "音楽"
 #: ../courtroom.cpp:431
 msgctxt "Courtroom|"
 msgid "Sfx"
-msgstr ""
+msgstr "効果音"
 
 #: ../courtroom.cpp:433
 msgctxt "Courtroom|"
@@ -178,22 +178,22 @@ msgstr "サーバ"
 #: ../courtroom.cpp:451
 msgctxt "Courtroom|"
 msgid "Change character"
-msgstr ""
+msgstr "キャラを変える"
 
 #: ../courtroom.cpp:454
 msgctxt "Courtroom|"
 msgid "Reload theme"
-msgstr ""
+msgstr "テーマをリロード"
 
 #: ../courtroom.cpp:457
 msgctxt "Courtroom|"
 msgid "Call mod"
-msgstr ""
+msgstr "モデレーターを呼ぶ"
 
 #: ../courtroom.cpp:531
 msgctxt "Courtroom|"
 msgid "Back to Lobby"
-msgstr ""
+msgstr "ロビーに戻る"
 
 #: ../courtroom.cpp:1508
 msgctxt "Courtroom|"
@@ -204,12 +204,12 @@ msgstr ""
 #, qt-format
 msgctxt "Courtroom|"
 msgid "%1 has played a song: %2"
-msgstr ""
+msgstr "%1は%2を再生した"
 
 #: ../courtroom.cpp:1620
 msgctxt "Courtroom|"
 msgid "Rainbow"
-msgstr ""
+msgstr "虹"
 
 #: ../courtroom.cpp:1648
 msgctxt "Courtroom|"
@@ -224,33 +224,33 @@ msgstr "選択..."
 #: ../evidence.cpp:196
 msgctxt "Courtroom|"
 msgid "Images (*.png)"
-msgstr ""
+msgstr "イメージ (*.png)"
 
 #: ../evidence.cpp:275
 msgctxt "Courtroom|"
 msgid "Add new evidence..."
-msgstr ""
+msgstr "新しい証拠を付け加える..."
 
 #: ../discord_rich_presence.cpp:38 ../discord_rich_presence.cpp:53
 #: ../discord_rich_presence.cpp:79 ../discord_rich_presence.cpp:98
 msgctxt "Discord|"
 msgid "Objection!"
-msgstr ""
+msgstr "意義あり!"
 
 #: ../discord_rich_presence.cpp:41
 msgctxt "Discord|"
 msgid "In Lobby"
-msgstr ""
+msgstr "ロビーでいる"
 
 #: ../discord_rich_presence.cpp:42
 msgctxt "Discord|"
 msgid "Idle"
-msgstr ""
+msgstr "落ちている"
 
 #: ../discord_rich_presence.cpp:58
 msgctxt "Discord|"
 msgid "In a Server"
-msgstr ""
+msgstr "サーバーでいます"
 
 #: ../discord_rich_presence.cpp:73
 #, qt-format
@@ -261,12 +261,12 @@ msgstr ""
 #: ../discord_rich_presence.cpp:104
 msgctxt "Discord|"
 msgid "Spectating"
-msgstr ""
+msgstr "観客している"
 
 #: ../lobby.cpp:15
 msgctxt "Lobby|"
 msgid "Attorney Online 2"
-msgstr ""
+msgstr "Attorney Online 2"
 
 #: ../lobby.cpp:31
 msgctxt "Lobby|"
@@ -284,12 +284,12 @@ msgstr ""
 #: ../lobby.cpp:144
 msgctxt "Lobby|"
 msgid "Loading"
-msgstr ""
+msgstr "ロード中"
 
 #: ../lobby.cpp:148
 msgctxt "Lobby|"
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #: ../lobby.cpp:267
 msgctxt "Lobby|"
@@ -318,18 +318,18 @@ msgstr ""
 #: ../lobby.cpp:315
 msgctxt "Lobby|"
 msgid "Offline"
-msgstr ""
+msgstr "オフライン"
 
 #: ../debug_functions.cpp:10
 #, qt-format
 msgctxt "debug_functions|"
 msgid "Error: %1"
-msgstr ""
+msgstr "エラー: %1"
 
 #: ../debug_functions.cpp:11
 msgctxt "debug_functions|"
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #: ../debug_functions.cpp:23
 msgctxt "debug_functions|"
