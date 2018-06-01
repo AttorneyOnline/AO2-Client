@@ -1,26 +1,21 @@
 #ifndef AOMUSICPLAYER_H
 #define AOMUSICPLAYER_H
 
-#include "bass.h"
-#include "aoapplication.h"
+#include "aoabstractplayer.hpp"
 
-#include <QWidget>
-
-class AOMusicPlayer
+class AOMusicPlayer : public AOAbstractPlayer
 {
-public:
-  AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
-  ~AOMusicPlayer();
+    Q_OBJECT
 
-  void play(QString p_song);
-  void set_volume(int p_value);
+public:
+    AOMusicPlayer(QObject *p_parent, AOApplication *p_ao_app);
+
+    void play(QString p_file);
+    void stop();
 
 private:
-  QWidget *m_parent;
-  AOApplication *ao_app;
-
-  int m_volume = 0;
-  HSTREAM m_stream;
+    AOBassHandle* m_handle = nullptr;
+    QString       m_file;
 };
 
 #endif // AOMUSICPLAYER_H

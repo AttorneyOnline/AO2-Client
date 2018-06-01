@@ -9,9 +9,13 @@
 #include "aoscene.h"
 #include "aomovie.h"
 #include "aocharmovie.h"
+
+#include "aobasshandle.hpp"
+#include "aoblipplayer.h"
 #include "aomusicplayer.h"
 #include "aosfxplayer.h"
-#include "aoblipplayer.h"
+#include "aoshoutplayer.hpp"
+
 #include "aoevidencebutton.h"
 #include "aotextarea.h"
 #include "aolineedit.h"
@@ -19,6 +23,7 @@
 #include "aoevidencedisplay.h"
 #include "aonotepad.h"
 #include "datatypes.h"
+
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -148,8 +153,6 @@ public:
 
   void check_connection_received();
 
-  ~Courtroom();
-
 private:
   AOApplication *ao_app;
 
@@ -275,12 +278,11 @@ private:
 
   QString current_background = "gs4";
 
-  AOMusicPlayer *music_player;
-  AOSfxPlayer *sfx_player;
-  AOSfxPlayer *objection_player;
-  AOBlipPlayer *blip_player;
-
-  AOSfxPlayer *modcall_player;
+  AOBlipPlayer*  m_blip_player = nullptr;
+  AOSfxPlayer*   m_mod_player = nullptr;
+  AOMusicPlayer* m_music_player = nullptr;
+  AOSfxPlayer*   m_sfx_player = nullptr;
+  AOShoutPlayer* m_shout_player = nullptr;
 
   AOImage *ui_background;
 
@@ -310,7 +312,8 @@ private:
   QTextEdit *ui_vp_music_name;
   QWidget *ui_vp_music_area;
 
-  QTextEdit *ui_ic_chatlog;
+  QTextEdit* ui_ic_chatlog = nullptr;
+  QVector<record_type_ptr> m_ic_records;
 
   AOTextArea *ui_ms_chatlog;
   AOTextArea *ui_server_chatlog;
