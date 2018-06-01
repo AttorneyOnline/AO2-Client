@@ -189,18 +189,18 @@ QString AOApplication::read_note(QString filename)
     return text;
 }
 
-void AOApplication::write_note(QString p_text, QString filename)
+void AOApplication::write_note(QString p_text, QString p_file)
 {
-    QFile note_txt(filename);
-
-    if(!note_txt.open(QIODevice::WriteOnly | QFile::Text))
+    QFile f_log(p_file);
+    if(f_log.open(QIODevice::WriteOnly | QFile::Text))
     {
-        qDebug() << "Couldn't open" << filename;
-        return;
+        QTextStream out(&f_log);
+
+        out << p_text;
+
+        f_log.flush();
+        f_log.close();
     }
-    QTextStream out(&note_txt);
-    out << p_text;
-    note_txt.close();
 }
 
 void AOApplication::write_to_serverlist_txt(QString p_line)

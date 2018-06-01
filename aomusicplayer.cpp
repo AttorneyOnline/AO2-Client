@@ -4,36 +4,36 @@
 
 #include <QDebug>
 
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOMusicPlayer::AOMusicPlayer(QObject *p_parent, AOApplication *p_ao_app)
+    : AOAbstractPlayer(p_parent, p_ao_app)
+{}
+
+void AOMusicPlayer::play(QString p_file)
 {
-  m_parent = parent;
-  ao_app = p_ao_app;
+    QString f_file = ao_app->get_music_path(p_file);
+
+    stop();
+
+    m_file = f_file;
+
+    try { // create new song
+        AOBassHandle *handle = new AOBassHandle(m_file, false, this);
+        connect(this, &AOMusicPlayer::new_volume, handle, &AOBassHandle::set_volume);
+        connect(this, &AOMusicPlayer::stopping, handle, &AOBassHandle::stop);
+
+        // delete previous
+        if (m_handle)
+            delete m_handle;
+
+        m_handle = handle;
+        m_handle->set_volume(get_volume());
+        m_handle->play();
+    } catch(const std::exception &e_exception) {
+        qDebug() << e_exception.what();
+    }
 }
 
-AOMusicPlayer::~AOMusicPlayer()
+void AOMusicPlayer::stop()
 {
-  BASS_ChannelStop(m_stream);
-}
-
-void AOMusicPlayer::play(QString p_song)
-{
-  BASS_ChannelStop(m_stream);
-
-  QString f_path = ao_app->get_music_path(p_song);
-
-  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
-
-  this->set_volume(m_volume);
-
-  BASS_ChannelPlay(m_stream, false);
-}
-
-void AOMusicPlayer::set_volume(int p_value)
-{
-  m_volume = p_value;
-
-  float volume = m_volume / 100.0f;
-
-  BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
-
+    emit stopping();
 }
