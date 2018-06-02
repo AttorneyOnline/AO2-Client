@@ -54,7 +54,12 @@ void AOBassHandle::set_file(QString p_file, bool p_suicide) noexcept(false)
 
     m_sync = BASS_ChannelSetSync(m_handle, BASS_SYNC_END, 0, &AOBassHandle::static_sync, this);
     if (!m_sync)
+    {
+        // free stream since we can't sync
+        BASS_StreamFree(m_handle);
+
         throw AOException(QString("could not set sync for %1").arg(m_file));
+    }
 
     m_suicide = p_suicide;
     if (m_suicide)
