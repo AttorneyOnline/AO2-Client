@@ -350,9 +350,13 @@ private:
   QLabel *ui_sfx_label;
   QLabel *ui_blip_label;
 
-  AOButton *ui_hold_it;
-  AOButton *ui_objection;
-  AOButton *ui_take_that;
+  AOButton* ui_shout_hold_it      = nullptr;
+  AOButton* ui_shout_objection    = nullptr;
+  AOButton* ui_shout_take_that    = nullptr;
+  AOButton* ui_shout_custom       = nullptr;
+  AOButton* ui_shout_got_it       = nullptr;
+  AOButton* ui_shout_cross_swords = nullptr;
+  AOButton* ui_shout_counter_alt  = nullptr;
 
   AOButton *ui_ooc_toggle;
 
@@ -371,7 +375,6 @@ private:
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
 
-  AOButton *ui_custom_objection;
   AOButton *ui_realization;
   AOButton *ui_mute;
 
@@ -489,10 +492,16 @@ private slots:
   void on_evidence_right_clicked();
   void on_evidence_present_clicked();
 
-  void on_hold_it_clicked();
-  void on_objection_clicked();
-  void on_take_that_clicked();
-  void on_custom_objection_clicked();
+  /**
+   * @brief reset the shout button's texture to default
+   * DOES NOT MODIFY OBJECTION_STATE
+   */
+  void reset_shout_buttons();
+
+  /**
+   * @brief a general purpose function to toggle button selection
+   */
+  void on_shout_clicked();
 
   void on_realization_clicked();
 
