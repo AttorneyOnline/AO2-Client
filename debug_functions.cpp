@@ -4,24 +4,24 @@
 
 void call_error(QString p_message)
 {
-  QMessageBox *msgBox = new QMessageBox;
+  QMessageBox *f_box = new QMessageBox;
 
-  msgBox->setText("Error: " + p_message);
-  msgBox->setWindowTitle("Error");
-
+  f_box->setText("Error: " + p_message);
+  f_box->setWindowTitle("Error");
 
   //msgBox->setWindowModality(Qt::NonModal);
-  msgBox->exec();
+  f_box->exec();
+  delete f_box;
 }
 
 void call_notice(QString p_message)
 {
-  QMessageBox *msgBox = new QMessageBox;
+  QMessageBox *f_box = new QMessageBox;
 
-  msgBox->setText(p_message);
-  msgBox->setWindowTitle("Notice");
-
+  f_box->setText(p_message);
+  f_box->setWindowTitle("Notice");
 
   //msgBox->setWindowModality(Qt::NonModal);
-  msgBox->exec();
+  f_box->exec();
+  delete f_box;
 }
