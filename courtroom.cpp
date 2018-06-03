@@ -982,11 +982,13 @@ void Courtroom::list_themes()
 {
   QString themes = ao_app->get_base_path() + "themes/";
   QDir dir(themes);
+  ui_theme_list->clear();
 
   QStringList lis = dir.entryList();
   for(QString s : lis)
   {
-    ui_theme_list->addItem(s);
+    if(s != "." && s != "..")
+        ui_theme_list->addItem(s);
   }
 }
 
