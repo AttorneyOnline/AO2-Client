@@ -38,9 +38,9 @@ public:
 
   const QString ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
 #ifdef LOCAL_MS
-  const QString ms_nosrv_hostname = "localhost";
+  QString ms_nosrv_hostname = "localhost";
 #else
-  const QString ms_nosrv_hostname = "master.aceattorneyonline.com";
+  QString ms_nosrv_hostname = "master.aceattorneyonline.com";
 #endif
 
   const int ms_port = 27016;

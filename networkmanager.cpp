@@ -19,6 +19,11 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   QObject::connect(ms_socket, SIGNAL(readyRead()), this, SLOT(handle_ms_packet()));
   QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
   QObject::connect(server_socket, SIGNAL(disconnected()), ao_app, SLOT(server_disconnected()));
+
+  QString master_config = ao_app->read_config("master");
+  if (master_config != "") {
+    ms_nosrv_hostname = master_config;
+  }
 }
 
 NetworkManager::~NetworkManager()
