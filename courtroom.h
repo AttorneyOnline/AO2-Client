@@ -115,6 +115,10 @@ public:
 
   void list_themes();
 
+  void move_widget(QWidget *p_widget, QString p_identifier);
+
+  void set_shouts();
+
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
@@ -152,6 +156,9 @@ public:
   void set_hp_bar(int p_bar, int p_state);
 
   void check_connection_received();
+
+  //checks whether shout files are found
+  void check_shouts();
 
 private:
   AOApplication *ao_app;
@@ -243,6 +250,7 @@ private:
   int objection_state = 0;
   int realization_state = 0;
   int text_color = 0;
+  int shout_state = 0;
   bool is_presenting_evidence = false;
 
   int defense_bar_state = 0;
@@ -350,13 +358,26 @@ private:
   QLabel *ui_sfx_label;
   QLabel *ui_blip_label;
 
-  AOButton* ui_shout_hold_it      = nullptr;
-  AOButton* ui_shout_objection    = nullptr;
-  AOButton* ui_shout_take_that    = nullptr;
-  AOButton* ui_shout_custom       = nullptr;
-  AOButton* ui_shout_got_it       = nullptr;
-  AOButton* ui_shout_cross_swords = nullptr;
-  AOButton* ui_shout_counter_alt  = nullptr;
+  //buttons to cycle through shouts
+  AOButton* ui_shout_up = nullptr;
+  AOButton* ui_shout_down = nullptr;
+
+  //holds all the shout button objects
+  QVector<AOButton*> ui_shouts;
+
+  //holds all the names for sound files for the shouts
+  QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
+
+  //holds whether the sound file exists for a determined shout
+  QVector<bool> shouts_enabled;
+
+//  AOButton* ui_shout_hold_it      = nullptr; // 1
+//  AOButton* ui_shout_objection    = nullptr; // 2
+//  AOButton* ui_shout_take_that    = nullptr; // 3
+//  AOButton* ui_shout_custom       = nullptr; // 4
+//  AOButton* ui_shout_got_it       = nullptr; // 5
+//  AOButton* ui_shout_cross_swords = nullptr; // 6
+//  AOButton* ui_shout_counter_alt  = nullptr; // 7
 
   AOButton *ui_ooc_toggle;
 
@@ -491,6 +512,8 @@ private slots:
   void on_evidence_left_clicked();
   void on_evidence_right_clicked();
   void on_evidence_present_clicked();
+
+  void on_cycle_clicked();
 
   /**
    * @brief reset the shout button's texture to default
