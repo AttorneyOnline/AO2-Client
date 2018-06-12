@@ -203,6 +203,20 @@ void AOApplication::write_note(QString p_text, QString p_file)
     }
 }
 
+void AOApplication::append_note(QString p_line, QString p_file)
+{
+  QFile f_log(p_file);
+  if(f_log.open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+      QTextStream out(&f_log);
+
+      out << p_line << "\r\n";
+
+      f_log.flush();
+      f_log.close();
+    }
+}
+
 void AOApplication::write_to_serverlist_txt(QString p_line)
 {
   QFile serverlist_txt;
@@ -423,6 +437,43 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
     }
 
     return f_result;
+}
+
+QString AOApplication::get_stylesheet(QString target_tag, QString terminator_tag)
+{
+  QString design_ini_path = get_theme_path() + "courtroom_config.ini";
+
+  QFile design_ini;
+
+  design_ini.setFileName(design_ini_path);
+
+  if(!design_ini.open(QIODevice::ReadOnly))
+    return "";
+
+  QTextStream in(&design_ini);
+
+  QString f_text;
+
+  bool tag_found = false;
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (QString::compare(line, terminator_tag, Qt::CaseInsensitive) == 0)
+      break;
+
+    if (line.startsWith(target_tag, Qt::CaseInsensitive))
+    {
+      tag_found = true;
+      continue;
+    }
+
+    if(tag_found) f_text.append(line);
+  }
+
+  design_ini.close();
+  return f_text;
 }
 
 QString AOApplication::get_sfx(QString p_identifier)

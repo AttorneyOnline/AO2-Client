@@ -60,6 +60,12 @@ public:
   //helper function that calls above function on the relevant widgets
   void set_fonts();
 
+  //sets dropdown menu stylesheet
+  void set_dropdown(QWidget *widget, QString target_tag, QString terminator_tag);
+
+  //helper funciton that call above function on the relevant widgets
+  void set_dropdowns();
+
   void set_window_title(QString p_title);
 
   //reads theme inis and sets size and pos based on the identifier
@@ -460,7 +466,7 @@ private:
 
   void load_note();
   void save_note();
-  void save_textlog();
+  void save_textlog(QString p_text);
 
 
 public slots:
@@ -514,6 +520,8 @@ private slots:
   void on_evidence_present_clicked();
 
   void on_cycle_clicked();
+
+  void cycle_shout(int p_index);
 
   /**
    * @brief reset the shout button's texture to default

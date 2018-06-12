@@ -143,6 +143,9 @@ public:
   //Writes to note file
   void write_note(QString p_text, QString filename);
 
+  //appends to note file
+  void append_note(QString p_line, QString filename);
+
   //Overwrites config.ini with new theme
   void write_theme(QString theme);
 
@@ -173,6 +176,9 @@ public:
 
   //Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
+
+  //Returns the text between target_tag and terminator_tag in courtroom_config.ini
+  QString get_stylesheet(QString target_tag, QString terminator_tag);
 
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
