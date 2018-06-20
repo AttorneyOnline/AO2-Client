@@ -30,7 +30,7 @@ public:
   NetworkManager(AOApplication *parent);
   ~NetworkManager();
 
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
   QTcpSocket *ms_socket;
   QTcpSocket *server_socket;
   QDnsLookup *ms_dns;

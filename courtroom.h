@@ -40,6 +40,7 @@
 #include <QRect>
 #include <QComboBox>
 #include <QDateTime>
+#include <QPropertyAnimation>
 
 class AOApplication;
 
@@ -48,6 +49,7 @@ class Courtroom : public QMainWindow
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+  virtual ~Courtroom();
 
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
@@ -167,7 +169,7 @@ public:
   void check_shouts();
 
 private:
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
@@ -323,7 +325,10 @@ private:
 
   AOImage *ui_vp_music_display_a;
   AOImage *ui_vp_music_display_b;
-  QTextEdit *ui_vp_music_name;
+
+  QTextEdit*          ui_vp_music_name = nullptr;
+  QPropertyAnimation* music_anim = nullptr;
+
   QWidget *ui_vp_music_area;
 
   QTextEdit* ui_ic_chatlog = nullptr;

@@ -15,7 +15,7 @@ class AOCharButton : public QPushButton
 public:
   AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos);
 
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   void reset();
   void set_taken();

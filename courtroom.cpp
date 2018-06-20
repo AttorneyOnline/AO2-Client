@@ -79,6 +79,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_music_name->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_music_name->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_music_name->setReadOnly(true);
+  music_anim = new QPropertyAnimation(ui_vp_music_name, "geometry");
 
   ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
 
@@ -309,6 +310,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   set_widgets();
 
   set_char_select();
+}
+
+Courtroom::~Courtroom()
+{
+  delete music_anim;
 }
 
 void Courtroom::set_mute_list()
@@ -750,13 +756,11 @@ void Courtroom::handle_music_anim(QWidget *p_widget, QString p_identifier_a, QSt
   int time = nchar/speed*1000;
 //  qDebug() << "DIST = " << dist << "WEIGHT = " << weight << "END VALUE = " << -dist + res_a.x;
 
-  QPropertyAnimation *animation = new QPropertyAnimation(p_widget, "geometry");
-  animation->setLoopCount(-1);
-  animation->setDuration(time);
-  animation->setStartValue(QRect(res_b.width + res_a.x, res_a.y, res_a.width, res_a.height));
-  animation->setEndValue(QRect(-dist + res_a.x, res_a.y, res_a.width, res_a.height));
-
-  animation->start();
+  music_anim->setLoopCount(-1);
+  music_anim->setDuration(time);
+  music_anim->setStartValue(QRect(res_b.width + res_a.x, res_a.y, res_a.width, res_a.height));
+  music_anim->setEndValue(QRect(-dist + res_a.x, res_a.y, res_a.width, res_a.height));
+  music_anim->start();
 }
 
 void Courtroom::set_window_title(QString p_title)
