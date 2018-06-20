@@ -21,7 +21,7 @@ public:
 
 private:
   QWidget *parent;
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   int m_id = 0;
 

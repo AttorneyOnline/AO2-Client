@@ -21,7 +21,7 @@ public:
 
 private:
   QMovie *m_movie;
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
   bool play_once = true;
 
 signals:

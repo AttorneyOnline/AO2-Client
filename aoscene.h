@@ -17,7 +17,7 @@ public:
 
 private:
   QWidget *m_parent;
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
 };
 

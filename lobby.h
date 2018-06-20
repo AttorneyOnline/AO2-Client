@@ -44,7 +44,7 @@ public:
   ~Lobby();
 
 private:
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   AOImage *ui_background;
 

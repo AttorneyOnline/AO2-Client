@@ -9,26 +9,26 @@
 
 class AOAbstractPlayer : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    AOAbstractPlayer(QObject *p_parent, AOApplication *p_ao_app);
+  AOAbstractPlayer(QObject *p_parent, AOApplication *p_ao_app);
 
-    int get_volume();
+  int get_volume();
 
 public slots:
-    void set_volume(int p_volume);
+  void set_volume(int p_volume);
 
 signals:
-    void starting();
-    void stopping();
-    void new_volume(int p_volume);
+  void starting();
+  void stopping();
+  void new_volume(int p_volume);
 
 protected:
-    AOApplication* ao_app = nullptr;
+  AOApplication* ao_app = nullptr;
 
 private:
-    int m_volume = 0;
+  int m_volume = 0;
 };
 
 #endif // AOABSTRACTPLAYER_HPP

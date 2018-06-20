@@ -19,7 +19,7 @@ public:
   void reset();
 
 private:
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
   QMovie *evidence_movie;
   QLabel *evidence_icon;
   AOSfxPlayer *sfx_player;

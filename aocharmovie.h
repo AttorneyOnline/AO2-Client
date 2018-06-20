@@ -26,7 +26,7 @@ public:
   void combo_resize(int w, int h);
 
 private:
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   QMovie *m_movie;
   QVector<QImage> movie_frames;
