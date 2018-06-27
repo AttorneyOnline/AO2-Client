@@ -152,7 +152,7 @@ public:
   void handle_song(QStringList *p_contents);
 
   //animates music text
-  void handle_music_anim(QWidget *p_widget, QString p_identifier_a, QString p_identifier_b);
+  void handle_music_anim(QString p_identifier_a, QString p_identifier_b);
 
   void play_preanim();
 
@@ -311,6 +311,10 @@ private:
   AOEvidenceDisplay *ui_vp_evidence_display;
 
 //  AONotepad *ui_vp_notepad;
+
+  // list of characters that require a second application ID
+  // note that since it's hardcoded, it won't be of much use in other servers
+  QVector<QString> rpc_char_list;
 
   AOImage *ui_vp_notepad_image;
   QTextEdit *ui_vp_notepad;
@@ -472,6 +476,8 @@ private:
   void load_note();
   void save_note();
   void save_textlog(QString p_text);
+
+  void set_char_rpc();
 
 
 public slots:

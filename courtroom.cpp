@@ -222,8 +222,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_evidence_button = new AOButton(this, ao_app);
 
-  //  ui_vp_notepad = new AONotepad(this, ao_app);
-
   ui_vp_notepad_image = new AOImage(this, ao_app);
   ui_vp_notepad = new QTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
@@ -653,7 +651,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_spectator, "spectator");
 
-  handle_music_anim(ui_vp_music_name, "music_name", "music_area");
+  handle_music_anim("music_name", "music_area");
 
   set_dropdowns();
 }
@@ -739,26 +737,21 @@ void Courtroom::set_shouts()
   ui_shouts[shout_state]->show();
 }
 
-void Courtroom::handle_music_anim(QWidget *p_widget, QString p_identifier_a, QString p_identifier_b)
+void Courtroom::handle_music_anim(QString p_identifier_a, QString p_identifier_b)
 {
   QString file_a = "courtroom_design.ini";
   QString file_b = "courtroom_fonts.ini";
   pos_size_type res_a = ao_app->get_element_dimensions(p_identifier_a, file_a);
   pos_size_type res_b = ao_app->get_element_dimensions(p_identifier_b, file_a);
-  int speed = ao_app->get_font_size(p_identifier_a + "_speed", file_b);
-  int nchar = ui_vp_music_name->toPlainText().size();
+  float speed = static_cast<float>(ao_app->get_font_size(p_identifier_a + "_speed", file_b));
 
-  int weight = ao_app->get_font_size(p_identifier_a, file_b);
-
-  //    int cursor_w = ui_vp_music_name->cursorWidth();
-
-  int dist = nchar*weight*2;
-  int time = nchar/speed*1000;
-//  qDebug() << "DIST = " << dist << "WEIGHT = " << weight << "END VALUE = " << -dist + res_a.x;
-
+  QFont f_font = ui_vp_music_name->font();
+  QFontMetrics fm(f_font);
+  int dist = fm.width(ui_vp_music_name->toPlainText());
+  int time = static_cast<int>(1000000*dist/speed);
   music_anim->setLoopCount(-1);
   music_anim->setDuration(time);
-  music_anim->setStartValue(QRect(res_b.width + res_a.x, res_a.y, res_a.width, res_a.height));
+  music_anim->setStartValue(QRect(res_b.width + res_b.x, res_a.y, res_a.width, res_a.height));
   music_anim->setEndValue(QRect(-dist + res_a.x, res_a.y, res_a.width, res_a.height));
   music_anim->start();
 }
@@ -766,6 +759,28 @@ void Courtroom::handle_music_anim(QWidget *p_widget, QString p_identifier_a, QSt
 void Courtroom::set_window_title(QString p_title)
 {
   this->setWindowTitle(p_title);
+}
+
+void Courtroom::set_char_rpc()
+{
+  rpc_char_list.clear();
+
+  QFile config_file(ao_app->get_base_path() + "rpccharlist.ini");
+  if (!config_file.open(QIODevice::ReadOnly))
+    { qDebug() << "Error reading rpccharlist.ini"; return; }
+
+  QTextStream in(&config_file);
+
+  while(!in.atEnd())
+  {
+    QString f_line = in.readLine().trimmed();
+
+    QStringList line_elements = f_line.split("-");
+
+    rpc_char_list.append(line_elements.at(1).trimmed().toLower());
+  }
+
+  config_file.close();
 }
 
 void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
@@ -845,8 +860,6 @@ void Courtroom::set_background(QString p_background)
     set_size_and_pos(ui_vp_chatbox, "chatbox");
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   }
-
-  set_size_and_pos(ui_vp_notepad, "notepad");
 }
 
 void Courtroom::enter_courtroom(int p_cid)
@@ -854,6 +867,8 @@ void Courtroom::enter_courtroom(int p_cid)
   m_cid = p_cid;
 
   QString f_char;
+
+  set_char_rpc();
 
   if (m_cid == -1)
   {
@@ -863,6 +878,15 @@ void Courtroom::enter_courtroom(int p_cid)
   else
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+    if(!rpc_char_list.contains(f_char.toLower()))
+      {
+        ao_app->discord->toggle(1);
+      }
+    else
+      {
+        ao_app->discord->toggle(0);
+      }
+
     ao_app->discord->state_character(f_char.toStdString());
   }
 
@@ -1014,8 +1038,6 @@ void Courtroom::list_sfx()
       d_sfx = i_sfx;
     else d_sfx = sfx_list.at(n_sfx).split("=").at(1).trimmed();
 
-//    qDebug() << "i_sfx = " << i_sfx << "d_sfx = " << d_sfx;
-
     if (i_sfx.toLower().contains(ui_sfx_search->text().toLower()))
     {
       ui_sfx_list->addItem(d_sfx);
@@ -1036,7 +1058,7 @@ void Courtroom::load_note()
 {
   QString f_file = ao_app->get_base_path() + "note.txt";
   QString f_text = ao_app->read_note(f_file);
-  ui_vp_notepad->setPlainText(f_text);
+  ui_vp_notepad->setText(f_text);
 }
 
 void Courtroom::save_note()
@@ -1122,7 +1144,6 @@ void Courtroom::on_chat_return_pressed()
     if (f_desk_mod == "-1")
       f_desk_mod = "chat";
   }
-//  qDebug() << "F_DESK_MOD = " << f_desk_mod;
 
   packet_contents.append(f_desk_mod);
 
@@ -1138,7 +1159,7 @@ void Courtroom::on_chat_return_pressed()
 
   //  packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
   //  packet_contents.append(ui_sfx_search->text());
-//  qDebug() << "ROW  = " << ui_sfx_list->currentRow();
+
   if(ui_sfx_list->currentRow() > 0)
   {
     packet_contents.append(sfx_names.at(ui_sfx_list->currentRow()-1)); // subtracting because 0 = "None"
@@ -1270,9 +1291,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[n_string] = p_contents->at(n_string);
     //    qDebug() << "m_chatmessage[" << n_string << "] = " << m_chatmessage[n_string];
   }
-
-  //  qDebug() << "CURRENT CHAR = " << get_current_char();
-  //  qDebug() << "CURRENT CHAR PATH = " << ao_app->get_character_path(get_current_char());
 
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
 
@@ -1667,7 +1685,7 @@ void Courtroom::chat_tick()
     if(blank_blip)
       qDebug() << "blank_blip found true";
 
-    if (f_message.at(tick_pos) != ' ' || blank_blip)
+    if ((f_message.at(tick_pos) != ' ' || blank_blip))
     {
 
       if (blip_pos % blip_rate == 0)
@@ -1913,7 +1931,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   ui_vp_music_name->setText(r_song);
 
-  handle_music_anim(ui_vp_music_name, "music_name", "music_area");
+  handle_music_anim("music_name", "music_area");
 }
 
 void Courtroom::handle_wtce(QString p_wtce)
@@ -2211,7 +2229,6 @@ void Courtroom::on_cycle_clicked()
     break;
     }
 
-//  qDebug() << "shout_state =" << shout_state;
   set_shouts();
 }
 
@@ -2364,10 +2381,6 @@ void Courtroom::on_back_to_lobby_clicked()
 
 void Courtroom::on_confirm_theme_clicked()
 {
-  // put writeover code here
-
-  // this code has to read the config.ini and replace "current theme" with theme in ui_theme_list->currentText()
-
   ao_app->write_theme(ui_theme_list->currentText());
 }
 

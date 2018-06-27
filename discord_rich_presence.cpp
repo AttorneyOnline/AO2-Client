@@ -9,6 +9,26 @@ namespace AttorneyOnline {
 
 Discord::Discord()
 {
+//  DiscordEventHandlers handlers;
+//  std::memset(&handlers, 0, sizeof(handlers));
+//  handlers = {};
+//  handlers.ready = [] {
+//    qInfo() << "Discord RPC ready";
+//  };
+//  handlers.disconnected = [](int errorCode, const char* message) {
+//    qInfo() << "Discord RPC disconnected! " << message;
+//  };
+//  handlers.errored = [](int errorCode, const char* message) {
+//    qWarning() << "Discord RPC errored out! " << message;
+//  };
+//  qInfo() << "Initializing Discord RPC";
+//  Discord_Initialize(APPLICATION_ID1, &handlers, 1, nullptr);
+
+  start(APPLICATION_ID[0]);
+}
+
+void Discord::start(const char *APPLICATION_ID)
+{
   DiscordEventHandlers handlers;
   std::memset(&handlers, 0, sizeof(handlers));
   handlers = {};
@@ -28,6 +48,21 @@ Discord::Discord()
 Discord::~Discord()
 {
   Discord_Shutdown();
+}
+
+void Discord::restart(const char *APPLICATION_ID)
+{
+  Discord_Shutdown();
+  start(APPLICATION_ID);
+}
+
+void Discord::toggle(int p_index)
+{
+  if(p_index >=0 && p_index < 2)
+    {
+      if(p_index!=m_index) { restart(APPLICATION_ID[p_index]); m_index = p_index; }
+    }
+  else qDebug() << p_index << "is not a valid APPLICATION_ID Index";
 }
 
 void Discord::state_lobby()
