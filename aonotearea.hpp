@@ -20,8 +20,6 @@ public:
   AONoteArea(QWidget *p_parent, AOApplication *p_ao_app);
   ~AONoteArea();
 
-  QVector<AONotePicker*> m_notepicker;
-
   AOButton *add_button;
   QVBoxLayout *m_layout;
   AOButton *f_button;

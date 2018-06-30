@@ -313,6 +313,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
 
+  connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_sfx_list_clicked()));
+
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
   connect(ui_note_area->add_button, SIGNAL(clicked(bool)), this, SLOT(on_add_button_clicked()));
@@ -582,6 +584,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_pre, "pre");
   ui_pre->setText("Pre");
+  if(ao_app->read_config("always_pre") == "true")
+    ui_pre->setChecked(true);
 
   set_size_and_pos(ui_flip, "flip");
 
@@ -729,19 +733,20 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
   widget->setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_dropdown(QWidget *widget, QString target_tag, QString terminator_tag)
+void Courtroom::set_dropdown(QWidget *widget, QString target_tag)
 {
-  QString style_sheet_string = ao_app->get_stylesheet(target_tag, terminator_tag);
+  QString style_sheet_string = ao_app->get_stylesheet(target_tag);
 
   widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_dropdowns()
 {
-  set_dropdown(ui_text_color, "[TEXT COLOR]", "[POS DROPDOWN]");
-  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]", "[THEME LIST]");
-  set_dropdown(ui_theme_list, "[THEME LIST]", "[EMOTE DROPDOWN]");
-  set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]", "[END]");
+  set_dropdown(ui_text_color, "[TEXT COLOR]");
+  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
+  set_dropdown(ui_theme_list, "[THEME LIST]");
+  set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
+  set_dropdown(ui_mute_list, "[MUTE LIST]");
 }
 
 void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
@@ -1058,6 +1063,7 @@ void Courtroom::list_sfx()
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
 
+  ui_sfx_list->addItem("Silence");
   ui_sfx_list->addItem("None");
 
   int n_listed_sfxs = 0;
@@ -1230,14 +1236,15 @@ void Courtroom::on_chat_return_pressed()
   //  packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
   //  packet_contents.append(ui_sfx_search->text());
 
-  if(ui_sfx_list->currentRow() > 0)
+  if(ui_sfx_list->currentRow() > 1)
   {
-    packet_contents.append(sfx_names.at(ui_sfx_list->currentRow()-1)); // subtracting because 0 = "None"
+    packet_contents.append(sfx_names.at(ui_sfx_list->currentRow()-2)); // subtracting because 0 = "Silence" and 1 = "None"
   }
-  else
+  else if(ui_sfx_list->currentRow() == 1)
   {
     packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
   }
+  else packet_contents.append("1");
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -1389,7 +1396,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
-    ui_pre->setChecked(false);
+    if(ao_app->read_config("always_pre") != "true")
+        ui_pre->setChecked(false);
+    else
+      ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
 
     objection_state = 0;
     reset_shout_buttons();
@@ -2543,127 +2553,9 @@ void Courtroom::ping_server()
   ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
 }
 
-void Courtroom::on_add_button_clicked()
+void Courtroom::on_sfx_list_clicked()
 {
-  if(ui_note_area->m_layout->count() > 6)
-    return;
-
-  AONotePicker *f_notepicker = new AONotePicker(ui_note_area, ao_app);
-  AOButton *f_button = new AOButton(f_notepicker, ao_app);
-  AOButton *f_delete = new AOButton(f_notepicker, ao_app);
-  QLineEdit *f_line = new QLineEdit(f_notepicker);
-  AOButton *f_hover = new AOButton(f_notepicker, ao_app);
-  QHBoxLayout *f_layout = new QHBoxLayout(f_notepicker);
-
-  f_notepicker->m_line = f_line;
-  f_notepicker->m_button = f_button;
-  f_notepicker->m_layout = f_layout;
-  f_notepicker->m_delete_button = f_delete;
-  f_notepicker->m_hover = f_hover;
-  f_notepicker->setProperty("index", ui_note_area->m_layout->count()-1);
-
-  f_button->set_image("note_edit.png");
-  f_delete->set_image("note_delete.png");
-  f_hover->set_image("note_select.png");
-
-  f_line->setReadOnly(true);
-
-  f_layout->setSizeConstraint(QLayout::SetFixedSize);
-
-  f_layout->addWidget(f_hover);
-  f_layout->addWidget(f_line);
-  f_layout->addWidget(f_button);
-  f_layout->addWidget(f_delete);
-  f_notepicker->setLayout(f_layout);
-  ui_note_area->m_layout->addWidget(f_notepicker);
-
-  if(contains_add_button)
-    {
-      ui_note_area->m_layout->removeWidget(ui_note_area->add_button);
-      ui_note_area->m_layout->addWidget(ui_note_area->add_button);
-    }
-
-  connect(f_button, SIGNAL(clicked(bool)), this, SLOT(on_set_file_button_clicked()));
-  connect(f_delete, SIGNAL(clicked(bool)), this, SLOT(on_delete_button_clicked()));
-  connect(f_hover, SIGNAL(clicked(bool)), this, SLOT(on_file_selected()));
-
-  set_note_files();
-}
-
-void Courtroom::on_delete_button_clicked()
-{
-  AOButton *f_button = static_cast<AOButton*>(sender());
-  AONotePicker *f_notepicker = static_cast<AONotePicker*>(f_button->parent());
-  ui_note_area->m_layout->removeWidget(f_notepicker);
-  delete f_notepicker;
-  set_note_files();
-}
-
-void Courtroom::on_set_file_button_clicked()
-{
-  AOButton *f_button = static_cast<AOButton*>(sender());
-  AONotePicker *f_notepicker = static_cast<AONotePicker*>(f_button->parent());
-  QString f_filename = QFileDialog::getOpenFileName(this, "Open File");
-  if(f_filename != "")
-    {
-      f_notepicker->m_line->setText(f_filename);
-      f_notepicker->real_file = f_filename;
-
-      set_note_files();
-    }
-}
-
-void Courtroom::on_file_selected()
-{
-  for(int i=0; i < ui_note_area->m_layout->count() -1; ++i)
-    {
-      AONotePicker *f_notepicker = static_cast<AONotePicker*>(ui_note_area->m_layout->itemAt(i)->widget());
-      f_notepicker->m_hover->set_image("note_select.png");
-    }
-
-  AOButton *f_button = static_cast<AOButton*>(sender());
-  AONotePicker *f_notepicker = static_cast<AONotePicker*>(f_button->parent());
-  current_file = f_notepicker->real_file;
-  load_note();
-  f_button->set_image("note_select_selected.png");
-}
-
-void Courtroom::set_note_files()
-{
-  QString filename = ao_app->get_base_path() + "configs/filesabstract.ini";
-  QFile config_file(filename);
-
-  if(!config_file.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-      qDebug() << "Couldn't open" << filename;
-      return;
-  }
-
-  QTextStream in(&config_file);
-
-  QByteArray t = "";
-
-  for(int i = 0; i < ui_note_area->m_layout->count()-1; ++i)
-    {
-      AONotePicker *f_notepicker = static_cast<AONotePicker*>(ui_note_area->m_layout->itemAt(i)->widget());
-      QString f_filestring = f_notepicker->real_file;
-      QString f_filename = f_notepicker->m_line->text();
-
-      t += QString::number(i) + " = " + f_filestring + " = " + f_filename + "\n\n";
-    }
-
-
-  config_file.close();
-
-  QFile ex(filename);
-  if(!ex.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-  {
-      qDebug() << "Couldn't open" << filename;
-      return;
-  }
-
-  ex.write(t);
-  ex.close();
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_set_notes_clicked()

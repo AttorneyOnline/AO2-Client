@@ -63,7 +63,7 @@ public:
   void set_fonts();
 
   //sets dropdown menu stylesheet
-  void set_dropdown(QWidget *widget, QString target_tag, QString terminator_tag);
+  void set_dropdown(QWidget *widget, QString target_tag);
 
   //helper funciton that call above function on the relevant widgets
   void set_dropdowns();
@@ -604,6 +604,8 @@ private slots:
   void on_pre_clicked();
   void on_flip_clicked();
   void on_guard_clicked();
+
+  void on_sfx_list_clicked();
 
   void on_evidence_button_clicked();
 
