@@ -22,8 +22,8 @@
 #include "aotextedit.h"
 #include "aoevidencedisplay.h"
 #include "aonotepad.h"
+#include "aonotearea.hpp"
 #include "datatypes.h"
-
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -123,6 +123,10 @@ public:
 
   void list_themes();
 
+  void list_note_files();
+
+  void set_note_files();
+
   void move_widget(QWidget *p_widget, QString p_identifier);
 
   void set_shouts();
@@ -184,6 +188,7 @@ private:
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
   QVector<QString> sfx_names;
+  QVector<QString> note_list;
 
   QSignalMapper *char_button_mapper;
 
@@ -202,6 +207,10 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
   bool note_shown = false;
+  bool contains_add_button = false;
+
+  //////////////
+  QScrollArea *note_scroll_area;
 
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;
@@ -255,6 +264,8 @@ private:
   //cid and this may differ in cases of ini-editing
   QString current_char = "";
 
+  QString current_file = "";
+
   int objection_state = 0;
   int realization_state = 0;
   int text_color = 0;
@@ -277,6 +288,8 @@ private:
   int max_emotes_on_page = 10;
 
   bool same_emote = false;
+
+//  int note_amount = 0;
 
   QVector<evi_type> local_evidence_list;
 
@@ -309,6 +322,8 @@ private:
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
+
+  AONoteArea *ui_note_area;
 
 //  AONotepad *ui_vp_notepad;
 
@@ -406,6 +421,8 @@ private:
   QComboBox *ui_theme_list;
 
   AOButton *ui_confirm_theme;
+
+  AOButton *ui_set_notes;
 
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
@@ -534,6 +551,14 @@ private slots:
 
   void cycle_shout(int p_index);
 
+  void on_add_button_clicked();
+
+  void on_delete_button_clicked();
+
+  void on_set_file_button_clicked();
+
+  void on_file_selected();
+
   /**
    * @brief reset the shout button's texture to default
    * DOES NOT MODIFY OBJECTION_STATE
@@ -572,7 +597,9 @@ private slots:
   void on_confirm_theme_clicked();
   void on_note_button_clicked();
 
-  void on_note_text_changed();
+  void on_set_notes_clicked();
+
+  void on_note_text_changed();  
 
   void on_pre_clicked();
   void on_flip_clicked();

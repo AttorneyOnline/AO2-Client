@@ -130,10 +130,8 @@ void AOApplication::write_theme(QString theme)
     while(!in.atEnd())
     {
         QString f_line = in.readLine();
-        qDebug() << "F_LINE = " << f_line;
         if(!f_line.startsWith("theme"))
         {
-//            out << f_line << "\n";
             t += f_line + "\n";
             continue;
         }
@@ -142,24 +140,17 @@ void AOApplication::write_theme(QString theme)
 
         if(line_elements.at(0).trimmed() != "theme")
         {
-//            out << f_line << "\n";
             t += f_line + "\n";
             continue;
         }
 
         if(line_elements.size() < 2)
         {
-//            out << f_line << "\n";
             t += f_line +"\n";
             continue;
         }
-
-//        out << "theme = " << theme << "\n";
         t += "theme = " + theme + "\n";
     }
-//    config_file.seek(0);
-//    config_file.write(t);
-
     config_file.close();
 
     QFile ex(filename);
@@ -505,8 +496,8 @@ QStringList AOApplication::get_sfx_list()
 
     QFile char_sfx_list_ini;
 
-    base_sfx_list_ini.setFileName(get_base_path() + "sounds.ini");
-    char_sfx_list_ini.setFileName(get_character_path(get_current_char()) + "sounds.ini");
+    base_sfx_list_ini.setFileName(get_base_path() + "configs/sounds.ini");
+    char_sfx_list_ini.setFileName(get_character_path(get_current_char()) + "configs/sounds.ini");
 
     if (!char_sfx_list_ini.open(QIODevice::ReadOnly) && !base_sfx_list_ini.open(QIODevice::ReadOnly))
     {
