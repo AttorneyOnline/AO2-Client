@@ -7,7 +7,6 @@
 
 AONotePicker::AONotePicker(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
-  m_parent = p_parent;
   ao_app = p_ao_app;
 }
 

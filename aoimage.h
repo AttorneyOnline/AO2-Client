@@ -13,7 +13,6 @@ public:
   AOImage(QWidget *parent, AOApplication *p_ao_app);
   ~AOImage();
 
-  QWidget *m_parent;
   AOApplication *ao_app = nullptr;
 
   void set_image(QString p_image);

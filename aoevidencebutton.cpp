@@ -7,7 +7,6 @@
 AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
 {
   ao_app = p_ao_app;
-  m_parent = p_parent;
 
   ui_selected = new AOImage(p_parent, ao_app);
   ui_selected->resize(70, 70);
