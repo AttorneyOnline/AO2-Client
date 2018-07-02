@@ -53,7 +53,9 @@ SOURCES += main.cpp\
     aobasshandle.cpp \
     aoexception.cpp \
     aoabstractplayer.cpp \
-    aoshoutplayer.cpp
+    aoshoutplayer.cpp \
+    aonotearea.cpp \
+    aonotepicker.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -89,7 +91,9 @@ HEADERS  += lobby.h \
     aobasshandle.hpp \
     aoexception.hpp \
     aoabstractplayer.hpp \
-    aoshoutplayer.hpp
+    aoshoutplayer.hpp \
+    aonotearea.hpp \
+    aonotepicker.hpp
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you want a static link, you'll probably
