@@ -6,8 +6,6 @@
 
 AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos) : QPushButton(parent)
 {
-  m_parent = parent;
-
   ao_app = p_ao_app;
 
   this->resize(60, 60);

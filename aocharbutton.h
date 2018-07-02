@@ -24,8 +24,6 @@ public:
   void set_image(QString p_character);
 
 private:
-  QWidget *m_parent;
-
   AOImage *ui_taken;
   AOImage *ui_passworded;
   AOImage *ui_selector;

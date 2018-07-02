@@ -15,39 +15,39 @@
 
 class AOBassHandle : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    AOBassHandle(QObject *p_parent = nullptr);
-    AOBassHandle(QString p_file, bool p_suicide, QObject *p_parent = nullptr) noexcept(false);
-    ~AOBassHandle();
+  AOBassHandle(QObject *p_parent = nullptr);
+  AOBassHandle(QString p_file, bool p_suicide, QObject *p_parent = nullptr) noexcept(false);
+  ~AOBassHandle();
 
-    QString get_file();
-    void set_file(QString p_file, bool p_suicide = false) noexcept(false);
+  QString get_file();
+  void set_file(QString p_file, bool p_suicide = false) noexcept(false);
 
-    // static
-    static void CALLBACK static_sync(HSYNC handle, DWORD channel, DWORD data, void *user);
+  // static
+  static void CALLBACK static_sync(HSYNC handle, DWORD channel, DWORD data, void *user);
 
 public slots:
-    void play();
-    void stop();
+  void play();
+  void stop();
 
-    void set_volume(int p_volume);
+  void set_volume(int p_volume);
 
 signals:
-    void stopped();
-    void body_discovery();
+  void stopped();
+  void body_discovery();
 
 private:
-    QString m_file;
-    HSTREAM m_handle  = 0;
-    HSYNC   m_sync    = 0;
-    bool    m_suicide = false;
+  QString m_file;
+  HSTREAM m_handle  = 0;
+  HSYNC   m_sync    = 0;
+  bool    m_suicide = false;
 
-    void sync(DWORD data);
+  void sync(DWORD data);
 
 private slots:
-    void suicide();
+  void suicide();
 };
 
 #endif // AOBASSHANDLE_HPP

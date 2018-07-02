@@ -23,7 +23,6 @@ public:
 
 private:
   AOApplication *ao_app;
-  QWidget *m_parent;
 };
 
 #endif // AONOTEPICKER_HPP

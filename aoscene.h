@@ -16,8 +16,9 @@ public:
   void set_legacy_desk(QString p_image);
 
 private:
-  QWidget *m_parent;
-  AOApplication *ao_app = nullptr;
+  QWidget*       m_parent = nullptr;
+  QMovie*        m_movie = nullptr;
+  AOApplication* ao_app = nullptr;
 
 };
 

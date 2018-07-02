@@ -25,7 +25,6 @@ public:
   AOButton *f_button;
 
 private:
-  QWidget *m_parent;
   AOApplication *ao_app;
   void set_layout();
 

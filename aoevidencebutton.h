@@ -23,7 +23,6 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
-  QWidget *m_parent;
 
   AOImage *ui_selected;
   AOImage *ui_selector;

@@ -4,33 +4,53 @@
 
 #include "file_functions.h"
 
+// core
 #include <QDebug>
+
+// gui
+#include <QMovie>
 
 AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
   m_parent = parent;
+  m_movie = new QMovie(this);
   ao_app = p_ao_app;
 }
 
 void AOScene::set_image(QString p_image)
 {
-  QString background_path = ao_app->get_background_path() + p_image + ".png";
   QString animated_background_path = ao_app->get_background_path() + p_image + ".gif";
+  QString background_path = ao_app->get_background_path() + p_image + ".png";
   QString default_path = ao_app->get_default_background_path() + p_image;
 
-  QPixmap background(background_path);
   QPixmap animated_background(animated_background_path);
+  QPixmap background(background_path);
   QPixmap default_bg(default_path);
 
   int w = this->width();
   int h = this->height();
 
-  if (file_exists(animated_background_path))
-    this->setPixmap(animated_background.scaled(w, h));
+  // remove movie
+  this->clear();
+  this->setMovie(nullptr);
+  // stop current movie
+  m_movie->stop();
+  m_movie->setFileName(animated_background_path);
+  m_movie->setScaledSize(QSize(w, h));
+
+  if (m_movie->isValid())
+  {
+    this->setMovie(m_movie);
+    m_movie->start();
+  }
   else if (file_exists(background_path))
+  {
     this->setPixmap(background.scaled(w, h));
+  }
   else
+  {
     this->setPixmap(default_bg.scaled(w, h));
+  }
 }
 
 void AOScene::set_legacy_desk(QString p_image)
