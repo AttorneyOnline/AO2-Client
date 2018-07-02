@@ -584,8 +584,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_pre, "pre");
   ui_pre->setText("Pre");
-  if(ao_app->read_config("always_pre") == "true")
-    ui_pre->setChecked(true);
 
   set_size_and_pos(ui_flip, "flip");
 
@@ -1063,8 +1061,8 @@ void Courtroom::list_sfx()
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
 
+  ui_sfx_list->addItem("Default");
   ui_sfx_list->addItem("Silence");
-  ui_sfx_list->addItem("None");
 
   int n_listed_sfxs = 0;
 
@@ -1236,15 +1234,13 @@ void Courtroom::on_chat_return_pressed()
   //  packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
   //  packet_contents.append(ui_sfx_search->text());
 
-  if(ui_sfx_list->currentRow() > 1)
-  {
-    packet_contents.append(sfx_names.at(ui_sfx_list->currentRow()-2)); // subtracting because 0 = "Silence" and 1 = "None"
-  }
-  else if(ui_sfx_list->currentRow() == 1)
-  {
+  int row = ui_sfx_list->currentRow();
+  if (row == -1 || row == 0) // default
     packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
-  }
-  else packet_contents.append("1");
+  else if (row == 1) // silence
+    packet_contents.append("1");
+  else if (QListWidgetItem *item = ui_sfx_list->item(row)) // selection
+    packet_contents.append(item->text());
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -1396,10 +1392,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
-    if(ao_app->read_config("always_pre") != "true")
-        ui_pre->setChecked(false);
-    else
-      ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
+    ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
 
     objection_state = 0;
     reset_shout_buttons();
