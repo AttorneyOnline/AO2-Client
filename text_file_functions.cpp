@@ -499,7 +499,7 @@ QStringList AOApplication::get_sfx_list()
     QFile char_sfx_list_ini;
 
     base_sfx_list_ini.setFileName(get_base_path() + "configs/sounds.ini");
-    char_sfx_list_ini.setFileName(get_character_path(get_current_char()) + "configs/sounds.ini");
+    char_sfx_list_ini.setFileName(get_character_path(get_current_char()) + "sounds.ini");
 
     if (!char_sfx_list_ini.open(QIODevice::ReadOnly) && !base_sfx_list_ini.open(QIODevice::ReadOnly))
     {
