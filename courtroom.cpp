@@ -1064,6 +1064,9 @@ void Courtroom::list_sfx()
   ui_sfx_list->addItem("Default");
   ui_sfx_list->addItem("Silence");
 
+  sfx_names.append("1"); // Default
+  sfx_names.append("1"); // Silence
+
   int n_listed_sfxs = 0;
 
   for (int n_sfx = 0 ; n_sfx < sfx_list.size() ; ++n_sfx)
@@ -1237,10 +1240,8 @@ void Courtroom::on_chat_return_pressed()
   int row = ui_sfx_list->currentRow();
   if (row == -1 || row == 0) // default
     packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
-  else if (row == 1) // silence
-    packet_contents.append("1");
   else if (QListWidgetItem *item = ui_sfx_list->item(row)) // selection
-    packet_contents.append(item->text());
+    packet_contents.append(sfx_names.at(row));
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
