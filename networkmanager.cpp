@@ -78,7 +78,7 @@ void NetworkManager::handle_ms_packet()
 {
   char buffer[buffer_max_size];
   std::memset(buffer, 0, sizeof(buffer));
-  server_socket->read(buffer, buffer_max_size);
+  ms_socket->read(buffer, buffer_max_size);
 
   QString in_data = buffer;
 
