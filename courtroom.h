@@ -266,10 +266,10 @@ private:
 
   QString current_file = "";
 
-  int objection_state = 0;
-  int realization_state = 0;
-  int text_color = 0;
-  int shout_state = 0;
+  int m_objection_state = 0;
+  int m_effect_state = 0;
+  int m_text_color = 0;
+  int m_shout_state = 0;
   bool is_presenting_evidence = false;
 
   int defense_bar_state = 0;
@@ -334,16 +334,16 @@ private:
   AOImage *ui_vp_notepad_image;
   QTextEdit *ui_vp_notepad;
 
-  AOImage *ui_vp_chatbox;
-  QLabel *ui_vp_showname;
-  QTextEdit *ui_vp_message;
-  AOImage *ui_vp_testimony;
-  AOImage *ui_vp_realization;
-  AOMovie *ui_vp_wtce;
-  AOMovie *ui_vp_objection;
+  AOImage* ui_vp_chatbox = nullptr;
+  QLabel* ui_vp_showname = nullptr;
+  QTextEdit* ui_vp_message = nullptr;
+  AOImage* ui_vp_testimony = nullptr;
+  AOMovie* ui_vp_effect = nullptr;
+  AOMovie* ui_vp_wtce = nullptr;
+  AOMovie* ui_vp_objection = nullptr;
 
-  AOImage *ui_vp_music_display_a;
-  AOImage *ui_vp_music_display_b;
+  AOImage* ui_vp_music_display_a = nullptr;
+  AOImage* ui_vp_music_display_b = nullptr;
 
   QTextEdit*          ui_vp_music_name = nullptr;
   QPropertyAnimation* music_anim = nullptr;
@@ -428,8 +428,10 @@ private:
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
 
-  AOButton *ui_realization;
-  AOButton *ui_mute;
+  AOButton* ui_effect_flash = nullptr;
+  AOButton* ui_effect_gloom = nullptr;
+
+  AOButton* ui_mute = nullptr;
 
   AOButton *ui_defense_plus;
   AOButton *ui_defense_minus;
@@ -570,7 +572,8 @@ private slots:
    */
   void on_shout_clicked();
 
-  void on_realization_clicked();
+  void reset_effect_buttons();
+  void on_effect_button_clicked();
 
   void on_mute_clicked();
 
@@ -599,7 +602,7 @@ private slots:
 
   void on_set_notes_clicked();
 
-  void on_note_text_changed();  
+  void on_note_text_changed();
 
   void on_pre_clicked();
   void on_flip_clicked();

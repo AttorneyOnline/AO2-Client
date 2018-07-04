@@ -56,6 +56,7 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
   m_movie->setFileName(gif_path);
 
   this->show();
+  m_movie->setScaledSize(this->size());
   m_movie->start();
 }
 

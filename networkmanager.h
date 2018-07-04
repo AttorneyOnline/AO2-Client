@@ -48,6 +48,9 @@ public:
 
   const int ms_reconnect_delay_ms = 7000;
 
+  // kind of arbitrary
+  const size_t buffer_max_size = 16384;
+
   bool ms_partial_packet = false;
   QString ms_temp_packet = "";
 
