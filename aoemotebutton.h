@@ -1,9 +1,10 @@
 #ifndef AOEMOTEBUTTON_H
 #define AOEMOTEBUTTON_H
 
-#include <QPushButton>
-
 #include "aoapplication.h"
+
+#include <QPushButton>
+#include <QDebug>
 
 class AOEmoteButton : public QPushButton
 {

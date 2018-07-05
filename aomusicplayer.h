@@ -5,6 +5,8 @@
 #include "aoapplication.h"
 
 #include <QWidget>
+#include <string.h>
+#include <QDebug>
 
 class AOMusicPlayer
 {

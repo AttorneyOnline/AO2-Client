@@ -1,9 +1,5 @@
 #include "aoblipplayer.h"
 
-#include <string.h>
-
-#include <QDebug>
-
 AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;

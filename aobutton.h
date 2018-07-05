@@ -4,6 +4,7 @@
 #include "aoapplication.h"
 
 #include <QPushButton>
+#include <QDebug>
 
 class AOButton : public QPushButton
 {

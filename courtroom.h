@@ -18,7 +18,19 @@
 #include "aotextedit.h"
 #include "aoevidencedisplay.h"
 #include "datatypes.h"
+#include "aoapplication.h"
+#include "lobby.h"
+#include "hardware_functions.h"
+#include "file_functions.h"
+#include "datatypes.h"
+#include "debug_functions.h"
 
+#include <QDebug>
+#include <QScrollBar>
+#include <QRegExp>
+#include <QBrush>
+#include <QTextCharFormat>
+#include <QFont>
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QPlainTextEdit>

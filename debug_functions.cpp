@@ -1,5 +1,3 @@
-#include <QMessageBox>
-
 #include "debug_functions.h"
 
 void call_error(QString p_message)
