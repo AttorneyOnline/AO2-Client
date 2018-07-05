@@ -48,7 +48,7 @@ public:
 
   const int ms_reconnect_delay_ms = 7000;
 
-  // kind of arbitrary
+  // Arbitrary buffer size
   const size_t buffer_max_size = 16384;
 
   bool ms_partial_packet = false;
