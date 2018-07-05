@@ -132,11 +132,9 @@ void Courtroom::select_emote(int p_id)
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
-  if (old_emote == current_emote)
-  {
+  if (old_emote == current_emote) // toggle
     ui_pre->setChecked(!ui_pre->isChecked());
-  }
-  else if (emote_mod == 1)
+  else if (emote_mod == 1 || ao_app->read_config("always_pre") == "true")
     ui_pre->setChecked(true);
   else
     ui_pre->setChecked(false);

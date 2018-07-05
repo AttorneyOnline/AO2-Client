@@ -30,6 +30,8 @@ public:
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
+  void set_fonts();
+  void set_font(QWidget *widget, QString p_identifier);
   void show_loading_overlay(){ui_loading_background->show();}
   void hide_loading_overlay(){ui_loading_background->hide();}
   QString get_chatlog();
@@ -42,7 +44,7 @@ public:
   ~Lobby();
 
 private:
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   AOImage *ui_background;
 

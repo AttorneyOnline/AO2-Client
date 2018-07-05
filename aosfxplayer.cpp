@@ -4,43 +4,26 @@
 
 #include <QDebug>
 
-AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOSfxPlayer::AOSfxPlayer(QObject *p_parent, AOApplication *p_ao_app)
+    : AOAbstractPlayer(p_parent, p_ao_app)
+{}
+
+void AOSfxPlayer::play(QString p_name)
 {
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
+    QString f_file = ao_app->get_sounds_path() + p_name.toLower();
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char)
-{
-  BASS_ChannelStop(m_stream);
-
-  p_sfx = p_sfx.toLower();
-
-  QString f_path;
-
-  if (p_char != "")
-    f_path = ao_app->get_character_path(p_char) + p_sfx;
-  else
-    f_path = ao_app->get_sounds_path() + p_sfx;
-
-  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
-
-  set_volume(m_volume);
-
-  BASS_ChannelPlay(m_stream, false);
+    try {
+        AOBassHandle *handle = new AOBassHandle(f_file, true, this);
+        connect(this, &AOSfxPlayer::new_volume, handle, &AOBassHandle::set_volume);
+        connect(this, &AOSfxPlayer::stopping, handle, &AOBassHandle::stop);
+        handle->set_volume(get_volume());
+        handle->play();
+    } catch(const std::exception &e_exception) {
+        qDebug() << e_exception.what();
+    }
 }
 
 void AOSfxPlayer::stop()
 {
-  BASS_ChannelStop(m_stream);
-}
-
-void AOSfxPlayer::set_volume(int p_value)
-{
-  m_volume = p_value;
-
-  float volume = p_value / 100.0f;
-
-  BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
-
+    emit stopping();
 }

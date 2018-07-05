@@ -6,7 +6,6 @@
 
 AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
-  m_parent = parent;
   ao_app = p_ao_app;
 }
 

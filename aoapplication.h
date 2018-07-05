@@ -111,6 +111,9 @@ public:
   //Returns the config value for the passed searchline from a properly formatted config ini file
   QString read_config(QString searchline);
 
+  //Returns text from note file
+  QString read_note(QString filename);
+
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
 
@@ -132,8 +135,20 @@ public:
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 
+  QStringList get_sfx_list();
+
   //Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
+
+  //Writes to note file
+  void write_note(QString p_text, QString filename);
+
+  //appends to note file
+  void append_note(QString p_line, QString filename);
+
+  //Overwrites config.ini with new theme
+  void write_theme(QString theme);
+
 
   //Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
@@ -150,6 +165,9 @@ public:
   //Returns the value of font_size with p_identifier from p_file
   int get_font_size(QString p_identifier, QString p_file);
 
+  //Returns the name of the font with p_identifier from p_file
+  QString get_font_name(QString p_identifier, QString p_file);
+
   //Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);
 
@@ -158,6 +176,9 @@ public:
 
   //Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
+
+  //Returns the text between target_tag and terminator_tag in courtroom_config.ini
+  QString get_stylesheet(QString target_tag);
 
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);

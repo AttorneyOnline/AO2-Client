@@ -9,6 +9,26 @@ namespace AttorneyOnline {
 
 Discord::Discord()
 {
+//  DiscordEventHandlers handlers;
+//  std::memset(&handlers, 0, sizeof(handlers));
+//  handlers = {};
+//  handlers.ready = [] {
+//    qInfo() << "Discord RPC ready";
+//  };
+//  handlers.disconnected = [](int errorCode, const char* message) {
+//    qInfo() << "Discord RPC disconnected! " << message;
+//  };
+//  handlers.errored = [](int errorCode, const char* message) {
+//    qWarning() << "Discord RPC errored out! " << message;
+//  };
+//  qInfo() << "Initializing Discord RPC";
+//  Discord_Initialize(APPLICATION_ID1, &handlers, 1, nullptr);
+
+  start(APPLICATION_ID[0]);
+}
+
+void Discord::start(const char *APPLICATION_ID)
+{
   DiscordEventHandlers handlers;
   std::memset(&handlers, 0, sizeof(handlers));
   handlers = {};
@@ -30,12 +50,27 @@ Discord::~Discord()
   Discord_Shutdown();
 }
 
+void Discord::restart(const char *APPLICATION_ID)
+{
+  Discord_Shutdown();
+  start(APPLICATION_ID);
+}
+
+void Discord::toggle(int p_index)
+{
+  if(p_index >=0 && p_index < 2)
+    {
+      if(p_index!=m_index) { restart(APPLICATION_ID[p_index]); m_index = p_index; }
+    }
+  else qDebug() << p_index << "is not a valid APPLICATION_ID Index";
+}
+
 void Discord::state_lobby()
 {
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageKey = "danganronpa_online";
+  presence.largeImageText = "Sore Wa Chigau Yo!";
   presence.instance = 1;
 
   presence.state = "In Lobby";
@@ -49,8 +84,8 @@ void Discord::state_server(std::string name, std::string server_id)
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageKey = "danganronpa_online";
+  presence.largeImageText = "Sore Wa Chigau Yo!";
   presence.instance = 1;
 
   auto timestamp = static_cast<int64_t>(std::time(nullptr));
@@ -75,16 +110,15 @@ void Discord::state_character(std::string name)
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageKey = name_internal.c_str();
   presence.instance = 1;
   presence.details = this->server_name.c_str();
   presence.matchSecret = this->server_id.c_str();
   presence.startTimestamp = this->timestamp;
 
   presence.state = playing_as.c_str();
-  presence.smallImageKey = name_internal.c_str();
-  // presence.smallImageText = name_internal.c_str();
+  presence.smallImageKey = "danganronpa_online";
+  presence.smallImageText = "Danganronpa Online";
   Discord_UpdatePresence(&presence);
 }
 
@@ -94,8 +128,8 @@ void Discord::state_spectate()
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "ao2-logo";
-  presence.largeImageText = "Objection!";
+  presence.largeImageKey = "danganronpa_online";
+  presence.largeImageText = "Sore Wa Chigau Yo!";
   presence.instance = 1;
   presence.details = this->server_name.c_str();
   presence.matchSecret = this->server_id.c_str();

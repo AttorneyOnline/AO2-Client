@@ -1,26 +1,17 @@
 #ifndef AOSFXPLAYER_H
 #define AOSFXPLAYER_H
 
-#include "bass.h"
-#include "aoapplication.h"
+#include "aoabstractplayer.hpp"
 
-#include <QWidget>
-
-class AOSfxPlayer
+class AOSfxPlayer : public AOAbstractPlayer
 {
+    Q_OBJECT
+
 public:
-  AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
+    AOSfxPlayer(QObject *p_parent, AOApplication *p_ao_app);
 
-  void play(QString p_sfx, QString p_char = "");
-  void stop();
-  void set_volume(int p_volume);
-
-private:
-  QWidget *m_parent;
-  AOApplication *ao_app;
-
-  int m_volume = 0;
-  HSTREAM m_stream;
+    void play(QString p_file);
+    void stop();
 };
 
 #endif // AOSFXPLAYER_H

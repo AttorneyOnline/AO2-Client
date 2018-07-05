@@ -20,8 +20,7 @@ public:
   int get_id() {return m_id;}
 
 private:
-  QWidget *parent;
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   int m_id = 0;
 

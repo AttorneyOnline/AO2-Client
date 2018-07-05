@@ -22,8 +22,7 @@ public:
   void set_selected(bool p_selected);
 
 private:
-  AOApplication *ao_app;
-  QWidget *m_parent;
+  AOApplication *ao_app = nullptr;
 
   AOImage *ui_selected;
   AOImage *ui_selector;

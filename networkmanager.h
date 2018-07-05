@@ -30,7 +30,7 @@ public:
   NetworkManager(AOApplication *parent);
   ~NetworkManager();
 
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
   QTcpSocket *ms_socket;
   QTcpSocket *server_socket;
   QDnsLookup *ms_dns;
@@ -48,7 +48,7 @@ public:
 
   const int ms_reconnect_delay_ms = 7000;
 
-  // kind of arbitrary max buffer size
+  // Arbitrary buffer size
   const size_t buffer_max_size = 16384;
 
   bool ms_partial_packet = false;

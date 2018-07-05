@@ -224,7 +224,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = "Attorney Online 2";
+    QString window_title = "Danganronpa Online";
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";

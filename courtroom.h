@@ -9,14 +9,20 @@
 #include "aoscene.h"
 #include "aomovie.h"
 #include "aocharmovie.h"
+
+#include "aobasshandle.hpp"
+#include "aoblipplayer.h"
 #include "aomusicplayer.h"
 #include "aosfxplayer.h"
-#include "aoblipplayer.h"
+#include "aoshoutplayer.hpp"
+
 #include "aoevidencebutton.h"
 #include "aotextarea.h"
 #include "aolineedit.h"
 #include "aotextedit.h"
 #include "aoevidencedisplay.h"
+#include "aonotepad.h"
+#include "aonotearea.hpp"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -31,6 +37,10 @@
 #include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
+#include <QRect>
+#include <QComboBox>
+#include <QDateTime>
+#include <QPropertyAnimation>
 
 class AOApplication;
 
@@ -39,6 +49,7 @@ class Courtroom : public QMainWindow
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+  virtual ~Courtroom();
 
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
@@ -50,6 +61,12 @@ public:
   void set_font(QWidget *widget, QString p_identifier);
   //helper function that calls above function on the relevant widgets
   void set_fonts();
+
+  //sets dropdown menu stylesheet
+  void set_dropdown(QWidget *widget, QString target_tag);
+
+  //helper funciton that call above function on the relevant widgets
+  void set_dropdowns();
 
   void set_window_title(QString p_title);
 
@@ -102,6 +119,18 @@ public:
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
 
+  void list_sfx();
+
+  void list_themes();
+
+  void list_note_files();
+
+  void set_note_files();
+
+  void move_widget(QWidget *p_widget, QString p_identifier);
+
+  void set_shouts();
+
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
@@ -113,6 +142,10 @@ public:
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
+  //handles character portrait animation
+  void handle_char_anim(AOCharMovie *charPlayer);
+  void handle_char_anim_2(AOCharMovie *charPlayer);
+
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
   // or the user isn't already scrolled to the top
@@ -121,6 +154,9 @@ public:
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
+
+  //animates music text
+  void handle_music_anim(QString p_identifier_a, QString p_identifier_b);
 
   void play_preanim();
 
@@ -133,10 +169,11 @@ public:
 
   void check_connection_received();
 
-  ~Courtroom();
+  //checks whether shout files are found
+  void check_shouts();
 
 private:
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
@@ -150,6 +187,8 @@ private:
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
+  QVector<QString> sfx_names;
+  QVector<QString> note_list;
 
   QSignalMapper *char_button_mapper;
 
@@ -167,6 +206,11 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+  bool note_shown = false;
+  bool contains_add_button = false;
+
+  //////////////
+  QScrollArea *note_scroll_area;
 
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;
@@ -181,6 +225,9 @@ private:
   QTimer *testimony_show_timer;
   //times how long the blinking testimony should be hidden
   QTimer *testimony_hide_timer;
+
+  //Generate a File Name based on the time you launched the client
+  QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM yyyy hh.mm.ss.z'.txt'");
 
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
@@ -217,9 +264,12 @@ private:
   //cid and this may differ in cases of ini-editing
   QString current_char = "";
 
-  int objection_state = 0;
-  int realization_state = 0;
-  int text_color = 0;
+  QString current_file = "";
+
+  int m_objection_state = 0;
+  int m_effect_state = 0;
+  int m_text_color = 0;
+  int m_shout_state = 0;
   bool is_presenting_evidence = false;
 
   int defense_bar_state = 0;
@@ -232,9 +282,14 @@ private:
 
   int current_emote_page = 0;
   int current_emote = 0;
+  int prev_emote = 0;
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;
+
+  bool same_emote = false;
+
+//  int note_amount = 0;
 
   QVector<evi_type> local_evidence_list;
 
@@ -252,12 +307,11 @@ private:
 
   QString current_background = "gs4";
 
-  AOMusicPlayer *music_player;
-  AOSfxPlayer *sfx_player;
-  AOSfxPlayer *objection_player;
-  AOBlipPlayer *blip_player;
-
-  AOSfxPlayer *modcall_player;
+  AOBlipPlayer*  m_blip_player = nullptr;
+  AOSfxPlayer*   m_mod_player = nullptr;
+  AOMusicPlayer* m_music_player = nullptr;
+  AOSfxPlayer*   m_sfx_player = nullptr;
+  AOShoutPlayer* m_shout_player = nullptr;
 
   AOImage *ui_background;
 
@@ -268,15 +322,36 @@ private:
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
-  AOImage *ui_vp_chatbox;
-  QLabel *ui_vp_showname;
-  QTextEdit *ui_vp_message;
-  AOImage *ui_vp_testimony;
-  AOImage *ui_vp_realization;
-  AOMovie *ui_vp_wtce;
-  AOMovie *ui_vp_objection;
 
-  QTextEdit *ui_ic_chatlog;
+  AONoteArea *ui_note_area;
+
+//  AONotepad *ui_vp_notepad;
+
+  // list of characters that require a second application ID
+  // note that since it's hardcoded, it won't be of much use in other servers
+  QVector<QString> rpc_char_list;
+
+  AOImage *ui_vp_notepad_image;
+  QTextEdit *ui_vp_notepad;
+
+  AOImage* ui_vp_chatbox = nullptr;
+  QLabel* ui_vp_showname = nullptr;
+  QTextEdit* ui_vp_message = nullptr;
+  AOImage* ui_vp_testimony = nullptr;
+  AOMovie* ui_vp_effect = nullptr;
+  AOMovie* ui_vp_wtce = nullptr;
+  AOMovie* ui_vp_objection = nullptr;
+
+  AOImage* ui_vp_music_display_a = nullptr;
+  AOImage* ui_vp_music_display_b = nullptr;
+
+  QTextEdit*          ui_vp_music_name = nullptr;
+  QPropertyAnimation* music_anim = nullptr;
+
+  QWidget *ui_vp_music_area;
+
+  QTextEdit* ui_ic_chatlog = nullptr;
+  QVector<record_type_ptr> m_ic_records;
 
   AOTextArea *ui_ms_chatlog;
   AOTextArea *ui_server_chatlog;
@@ -284,6 +359,9 @@ private:
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
   QListWidget *ui_music_list;
+  QListWidget *ui_sfx_list;
+
+//  QListWidget *ui_sfx_list;
 
   QLineEdit *ui_ic_chat_message;
 
@@ -292,6 +370,8 @@ private:
 
   //QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
+
+  QLineEdit *ui_sfx_search;
 
   QWidget *ui_emotes;
   QVector<AOEmoteButton*> ui_emote_list;
@@ -308,9 +388,26 @@ private:
   QLabel *ui_sfx_label;
   QLabel *ui_blip_label;
 
-  AOButton *ui_hold_it;
-  AOButton *ui_objection;
-  AOButton *ui_take_that;
+  //buttons to cycle through shouts
+  AOButton* ui_shout_up = nullptr;
+  AOButton* ui_shout_down = nullptr;
+
+  //holds all the shout button objects
+  QVector<AOButton*> ui_shouts;
+
+  //holds all the names for sound files for the shouts
+  QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
+
+  //holds whether the sound file exists for a determined shout
+  QVector<bool> shouts_enabled;
+
+//  AOButton* ui_shout_hold_it      = nullptr; // 1
+//  AOButton* ui_shout_objection    = nullptr; // 2
+//  AOButton* ui_shout_take_that    = nullptr; // 3
+//  AOButton* ui_shout_custom       = nullptr; // 4
+//  AOButton* ui_shout_got_it       = nullptr; // 5
+//  AOButton* ui_shout_cross_swords = nullptr; // 6
+//  AOButton* ui_shout_counter_alt  = nullptr; // 7
 
   AOButton *ui_ooc_toggle;
 
@@ -321,13 +418,20 @@ private:
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
 
+  QComboBox *ui_theme_list;
+
+  AOButton *ui_confirm_theme;
+
+  AOButton *ui_set_notes;
+
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
 
-  AOButton *ui_custom_objection;
-  AOButton *ui_realization;
-  AOButton *ui_mute;
+  AOButton* ui_effect_flash = nullptr;
+  AOButton* ui_effect_gloom = nullptr;
+
+  AOButton* ui_mute = nullptr;
 
   AOButton *ui_defense_plus;
   AOButton *ui_defense_minus;
@@ -342,6 +446,8 @@ private:
   QSlider *ui_blip_slider;
 
   AOImage *ui_muted;
+
+  AOButton *ui_note_button;
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
@@ -386,6 +492,11 @@ private:
   void construct_evidence();
   void set_evidence_page();
 
+  void load_note();
+  void save_note();
+  void save_textlog(QString p_text);
+
+  void set_char_rpc();
 
 
 public slots:
@@ -414,6 +525,8 @@ private slots:
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QModelIndex p_model);
 
+  void on_sfx_search_edited(QString p_text);
+
   void select_emote(int p_id);
 
   void on_emote_clicked(int p_id);
@@ -436,12 +549,31 @@ private slots:
   void on_evidence_right_clicked();
   void on_evidence_present_clicked();
 
-  void on_hold_it_clicked();
-  void on_objection_clicked();
-  void on_take_that_clicked();
-  void on_custom_objection_clicked();
+  void on_cycle_clicked();
 
-  void on_realization_clicked();
+  void cycle_shout(int p_index);
+
+  void on_add_button_clicked();
+
+  void on_delete_button_clicked();
+
+  void on_set_file_button_clicked();
+
+  void on_file_selected();
+
+  /**
+   * @brief reset the shout button's texture to default
+   * DOES NOT MODIFY OBJECTION_STATE
+   */
+  void reset_shout_buttons();
+
+  /**
+   * @brief a general purpose function to toggle button selection
+   */
+  void on_shout_clicked();
+
+  void reset_effect_buttons();
+  void on_effect_button_clicked();
 
   void on_mute_clicked();
 
@@ -465,9 +597,18 @@ private slots:
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
 
+  void on_confirm_theme_clicked();
+  void on_note_button_clicked();
+
+  void on_set_notes_clicked();
+
+  void on_note_text_changed();
+
   void on_pre_clicked();
   void on_flip_clicked();
   void on_guard_clicked();
+
+  void on_sfx_list_clicked();
 
   void on_evidence_button_clicked();
 
