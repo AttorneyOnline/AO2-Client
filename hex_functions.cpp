@@ -57,10 +57,10 @@ namespace omni
       return "FF";
 
     std::stringstream stream;
-    stream << std::setfill ('0') << std::setw(sizeof(char)*2) 
+    stream << std::setfill('0') << std::setw(sizeof(char)*2)
        << std::hex << input;
     std::string result(stream.str());
-    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    std::transform(result.begin(), result.end(), result.begin(), ::toupper);
 
     return result;
   }

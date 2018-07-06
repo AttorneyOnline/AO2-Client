@@ -6,6 +6,8 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <iomanip>
+#include <sstream>
 
 namespace omni
 {
