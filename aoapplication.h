@@ -117,6 +117,9 @@ public:
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
 
+  //Returns the value of ooc_name in config.ini
+  QString get_ooc_name();
+
   //Returns the blip rate from config.ini
   int read_blip_rate();
 
@@ -131,6 +134,9 @@ public:
 
   //Returns the value of default_blip in config.ini
   int get_default_blip();
+
+  //Returns true if discord is enabled in config.ini and false otherwise
+  bool is_discord_enabled();
 
   //Returns the list of words in callwords.ini
   QStringList get_call_words();

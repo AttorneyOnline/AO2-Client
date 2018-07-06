@@ -4,6 +4,10 @@
 #include <bitset>
 #include <cstdint>
 #include <iostream>
+#include <algorithm>
+#include <string>
+#include <iomanip>
+#include <sstream>
 
 namespace omni
 {

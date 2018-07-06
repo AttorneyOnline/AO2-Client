@@ -8,6 +8,8 @@
 #include <string.h>
 #include <QDebug>
 
+const int BLIP_COUNT = 5;
+
 class AOBlipPlayer
 {
 public:
@@ -24,7 +26,7 @@ private:
   AOApplication *ao_app;
 
   int m_volume;
-  HSTREAM m_stream_list[5];
+  HSTREAM m_stream_list[BLIP_COUNT];
 };
 
 #endif // AOBLIPPLAYER_H

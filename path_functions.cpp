@@ -29,21 +29,6 @@ QString AOApplication::get_base_path()
 #endif
 }
     return base_path;
-  /*
-#ifdef OMNI_DEBUG
-  return "/media/omnitroid/Data/winshare/AO/client/base/";
-#elif OMNI_DEBUG2
-  return "/home/omnitroid/winshare/AO/client/base/";
-#elif defined(OMNI_WIN_DEBUG)
-  return "E:/AO/client/base/";
-#elif defined(OMNI_WIN_DEBUG2)
-  return "F:/winshare/AO/client/base/";
-#elif defined(ANDROID)
-  return "/storage/extSdCard/AO2/";
-#else
-  return QDir::currentPath() + "/base/";
-#endif
-*/
 }
 
 QString AOApplication::get_data_path()
@@ -96,7 +81,7 @@ QString AOApplication::get_background_path()
 
 QString AOApplication::get_default_background_path()
 {
-  return get_base_path() + "background/gs4/";
+  return get_base_path() + "background/default/";
 }
 
 QString AOApplication::get_evidence_path()
@@ -118,5 +103,5 @@ QString Courtroom::get_background_path()
 
 QString Courtroom::get_default_background_path()
 {
-  return ao_app->get_base_path() + "background/gs4/";
+  return ao_app->get_base_path() + "background/default/";
 }
