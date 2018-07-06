@@ -579,5 +579,5 @@ bool AOApplication::get_blank_blip()
 bool AOApplication::is_discord_enabled()
 {
   QString f_result = read_config("discord");
-  return f_result.startsWith("true");
+  return !f_result.startsWith("false");
 }
