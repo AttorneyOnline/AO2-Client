@@ -6,6 +6,7 @@
 #include "aoapplication.h"
 
 #include <QLabel>
+#include <QDebug>
 
 class AOImage : public QLabel
 {

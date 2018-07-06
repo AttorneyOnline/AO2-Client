@@ -4,6 +4,8 @@
 #include <QMovie>
 #include <QLabel>
 #include <QTimer>
+#include <QDebug>
+#include <QImageReader>
 
 class AOApplication;
 

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QDebug>
 
 class AOPacket
 {

@@ -1,9 +1,5 @@
 #include "aosfxplayer.h"
 
-#include <string.h>
-
-#include <QDebug>
-
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;

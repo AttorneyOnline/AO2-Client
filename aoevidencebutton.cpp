@@ -2,8 +2,6 @@
 
 #include "file_functions.h"
 
-#include <QDebug>
-
 AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
 {
   ao_app = p_ao_app;

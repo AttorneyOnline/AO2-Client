@@ -2,6 +2,7 @@
 #define AOSCENE_H
 
 #include <QLabel>
+#include <QDebug>
 
 class Courtroom;
 class AOApplication;

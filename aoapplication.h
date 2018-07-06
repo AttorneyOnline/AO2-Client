@@ -8,6 +8,9 @@
 #include <QApplication>
 #include <QVector>
 #include <QFile>
+#include <QDebug>
+#include <QRect>
+#include <QDesktopWidget>
 
 class NetworkManager;
 class Lobby;

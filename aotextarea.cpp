@@ -1,10 +1,5 @@
 #include "aotextarea.h"
 
-#include <QScrollBar>
-#include <QTextCursor>
-#include <QRegExp>
-#include <QDebug>
-
 AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
 {
 

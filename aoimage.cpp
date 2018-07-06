@@ -2,8 +2,6 @@
 
 #include "aoimage.h"
 
-#include <QDebug>
-
 AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
   m_parent = parent;

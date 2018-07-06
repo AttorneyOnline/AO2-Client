@@ -1,11 +1,12 @@
 #ifndef AOEVIDENCEDISPLAY_H
 #define AOEVIDENCEDISPLAY_H
 
-#include <QLabel>
-#include <QMovie>
-
 #include "aoapplication.h"
 #include "aosfxplayer.h"
+
+#include <QLabel>
+#include <QMovie>
+#include <QDebug>
 
 class AOEvidenceDisplay : public QLabel
 {

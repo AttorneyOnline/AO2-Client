@@ -1,19 +1,5 @@
 #include "courtroom.h"
 
-#include "aoapplication.h"
-#include "lobby.h"
-#include "hardware_functions.h"
-#include "file_functions.h"
-#include "datatypes.h"
-#include "debug_functions.h"
-
-#include <QDebug>
-#include <QScrollBar>
-#include <QRegExp>
-#include <QBrush>
-#include <QTextCharFormat>
-#include <QFont>
-
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;

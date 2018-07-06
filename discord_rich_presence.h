@@ -1,6 +1,9 @@
 #ifndef DISCORD_RICH_PRESENCE_H
 #define DISCORD_RICH_PRESENCE_H
 
+#include <cstring>
+#include <ctime>
+#include <QDebug>
 #include <string>
 #include <discord-rpc.h>
 

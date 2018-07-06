@@ -5,10 +5,6 @@
 #include "networkmanager.h"
 #include "debug_functions.h"
 
-#include <QDebug>
-#include <QRect>
-#include <QDesktopWidget>
-
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
