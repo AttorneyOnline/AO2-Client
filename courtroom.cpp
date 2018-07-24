@@ -1145,14 +1145,14 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   normal.setFontWeight(QFont::Normal);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
-  const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
+  const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
 
-  ui_ic_chatlog->moveCursor(QTextCursor::Start);
+  ui_ic_chatlog->moveCursor(QTextCursor::End);
 
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
   ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
 
-  if (old_cursor.hasSelection() || !is_scrolled_up)
+  if (old_cursor.hasSelection() || !is_scrolled_down)
   {
       // The user has selected text or scrolled away from the top: maintain position.
       ui_ic_chatlog->setTextCursor(old_cursor);
@@ -1161,8 +1161,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   else
   {
       // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
-      ui_ic_chatlog->moveCursor(QTextCursor::Start);
-      ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
+      ui_ic_chatlog->moveCursor(QTextCursor::End);
+      ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
   }
 }
 
