@@ -1214,6 +1214,16 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           p_text.remove(trick_check_pos,1);
       }
 
+      // Text speed modifier.
+      else if (f_character == "{" and !ic_next_is_not_special)
+      {
+          p_text.remove(trick_check_pos,1);
+      }
+      else if (f_character == "}" and !ic_next_is_not_special)
+      {
+          p_text.remove(trick_check_pos,1);
+      }
+
       // Orange inline colourisation.
       else if (f_character == "|" and !ic_next_is_not_special)
       {
@@ -1398,7 +1408,10 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_pos = 0;
-  chat_tick_timer->start(chat_tick_interval);
+
+  // At the start of every new message, we set the text speed to the default.
+  current_display_speed = 3;
+  chat_tick_timer->start(message_display_speed[current_display_speed]);
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
@@ -1415,10 +1428,12 @@ void Courtroom::chat_tick()
 
   QString f_message = m_chatmessage[MESSAGE];
 
+  // Due to our new text speed system, we always need to stop the timer now.
+  chat_tick_timer->stop();
+
   if (tick_pos >= f_message.size())
   {
     text_state = 2;
-    chat_tick_timer->stop();
     anim_state = 3;
     ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
   }
@@ -1462,6 +1477,17 @@ void Courtroom::chat_tick()
     else if (f_character == "\\" and !next_character_is_not_special)
     {
         next_character_is_not_special = true;
+    }
+
+    // Text speed modifier.
+    else if (f_character == "{" and !next_character_is_not_special)
+    {
+        // ++, because it INCREASES delay!
+        current_display_speed++;
+    }
+    else if (f_character == "}" and !next_character_is_not_special)
+    {
+        current_display_speed--;
     }
 
     // Orange inline colourisation.
@@ -1594,6 +1620,20 @@ void Courtroom::chat_tick()
     }
 
     ++tick_pos;
+
+    // Restart the timer, but according to the newly set speeds, if there were any.
+    // Keep the speed at bay.
+    if (current_display_speed < 0)
+    {
+        current_display_speed = 0;
+    }
+
+    if (current_display_speed > 6)
+    {
+        current_display_speed = 6;
+    }
+
+    chat_tick_timer->start(message_display_speed[current_display_speed]);
   }
 }
 

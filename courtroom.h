@@ -170,6 +170,9 @@ private:
 
   bool message_is_centered = false;
 
+  int current_display_speed = 3;
+  int message_display_speed[7] = {30, 40, 50, 60, 75, 100, 120};
+
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
@@ -181,7 +184,7 @@ private:
 
   //determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
-  int chat_tick_interval = 60;
+  //int chat_tick_interval = 60;
   //which tick position(character in chat message) we are at
   int tick_pos = 0;
   //used to determine how often blips sound
