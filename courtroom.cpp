@@ -1240,7 +1240,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           }
       }
 
-      else if (f_character == "$" and !ic_next_is_not_special)
+      else if (f_character == "`" and !ic_next_is_not_special)
       {
           if (!ic_colour_stack.empty())
           {
@@ -1461,7 +1461,7 @@ void Courtroom::chat_tick()
         }
     }
 
-    else if (f_character == "$" and !next_character_is_not_special)
+    else if (f_character == "`" and !next_character_is_not_special)
     {
         if (!inline_colour_stack.empty())
         {
