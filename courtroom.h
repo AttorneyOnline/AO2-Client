@@ -156,7 +156,8 @@ private:
   enum INLINE_COLOURS {
       INLINE_BLUE,
       INLINE_GREEN,
-      INLINE_ORANGE
+      INLINE_ORANGE,
+      INLINE_GREY
   };
 
   // A stack of inline colours.

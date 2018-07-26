@@ -174,8 +174,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_text_color->addItem("Red");
   ui_text_color->addItem("Orange");
   ui_text_color->addItem("Blue");
-  if (ao_app->yellow_text_enabled)
-    ui_text_color->addItem("Yellow");
+  ui_text_color->addItem("Yellow");
+  ui_text_color->addItem("Rainbow");
+  //ui_text_color->addItem("Pink");
+  //ui_text_color->addItem("Purple");
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -906,7 +908,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (text_color < 0)
     f_text_color = "0";
-  else if (text_color > 4 && !ao_app->yellow_text_enabled)
+  else if (text_color > 8)
     f_text_color = "0";
   else
     f_text_color = QString::number(text_color);
@@ -1228,6 +1230,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
       else if (f_character == "(" and !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_BLUE);
+          trick_check_pos++;
       }
       else if (f_character == ")" and !ic_next_is_not_special
                and !ic_colour_stack.empty())
@@ -1235,6 +1238,22 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           if (ic_colour_stack.top() == INLINE_BLUE)
           {
               ic_colour_stack.pop();
+              trick_check_pos++;
+          }
+      }
+
+      else if (f_character == "[" and !ic_next_is_not_special)
+      {
+          ic_colour_stack.push(INLINE_GREY);
+          trick_check_pos++;
+      }
+      else if (f_character == "]" and !ic_next_is_not_special
+               and !ic_colour_stack.empty())
+      {
+          if (ic_colour_stack.top() == INLINE_GREY)
+          {
+              ic_colour_stack.pop();
+              trick_check_pos++;
           }
       }
 
@@ -1459,6 +1478,21 @@ void Courtroom::chat_tick()
         }
     }
 
+    else if (f_character == "[" and !next_character_is_not_special)
+    {
+        inline_colour_stack.push(INLINE_GREY);
+        ui_vp_message->insertHtml("<font color=\"#BBBBBB\">" + f_character + "</font>");
+    }
+    else if (f_character == "]" and !next_character_is_not_special
+             and !inline_colour_stack.empty())
+    {
+        if (inline_colour_stack.top() == INLINE_GREY)
+        {
+            inline_colour_stack.pop();
+            ui_vp_message->insertHtml("<font color=\"#BBBBBB\">" + f_character + "</font>");
+        }
+    }
+
     else if (f_character == "`" and !next_character_is_not_special)
     {
         if (!inline_colour_stack.empty())
@@ -1492,6 +1526,9 @@ void Courtroom::chat_tick()
               break;
           case INLINE_GREEN:
               ui_vp_message->insertHtml("<font color=\"#00FF00\">" + f_character + "</font>");
+              break;
+          case INLINE_GREY:
+              ui_vp_message->insertHtml("<font color=\"#BBBBBB\">" + f_character + "</font>");
               break;
           default:
               ui_vp_message->insertHtml(f_character);
@@ -1674,6 +1711,14 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: yellow");
     break;
+  case PINK:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: pink");
+    break;
+  case PURPLE:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: purple");
+    break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:
@@ -1827,9 +1872,9 @@ void Courtroom::on_ooc_return_pressed()
     ui_guard->show();
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
-    ui_text_color->addItem("Rainbow");
+    //ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
-    rainbow_appended = true;
+    //rainbow_appended = true;
     return;
   }
 
