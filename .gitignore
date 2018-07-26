@@ -7,3 +7,12 @@ base_override.h
 
 base-full/
 bass.lib
+
+bins/
+
+.qmake.stash
+
+Makefile*
+object_script*
+/Attorney_Online_remake_resource.rc
+/attorney_online_remake_plugin_import.cpp
