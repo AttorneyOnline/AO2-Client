@@ -90,6 +90,15 @@ int AOApplication::get_default_blip()
   else return f_result.toInt();
 }
 
+int AOApplication::get_max_log_size()
+{
+    QString f_result = read_config("log_maximum");
+
+    if (f_result == "")
+      return 200;
+    else return f_result.toInt();
+}
+
 QStringList AOApplication::get_call_words()
 {
   QStringList return_value;

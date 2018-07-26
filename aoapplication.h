@@ -129,6 +129,10 @@ public:
   //Returns the value of default_blip in config.ini
   int get_default_blip();
 
+  //Returns the value of the maximum amount of lines the IC chatlog
+  //may contain, from config.ini.
+  int get_max_log_size();
+
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 
