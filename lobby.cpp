@@ -12,7 +12,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowTitle("Attorney Online 2");
+  this->setWindowTitle("Attorney Online 2 -- Case Café Custom Client");
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
