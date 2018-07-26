@@ -1206,27 +1206,38 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   while (trick_check_pos < p_text.size())
   {
       f_character = p_text.at(trick_check_pos);
+
+      // Escape character.
       if (f_character == "\\" and !ic_next_is_not_special)
       {
           ic_next_is_not_special = true;
           p_text.remove(trick_check_pos,1);
       }
 
-      else if (f_character == "{" and !ic_next_is_not_special)
+      // Orange inline colourisation.
+      else if (f_character == "|" and !ic_next_is_not_special)
       {
-          ic_colour_stack.push(INLINE_ORANGE);
-          p_text.remove(trick_check_pos,1);
-      }
-      else if (f_character == "}" and !ic_next_is_not_special
-               and !ic_colour_stack.empty())
-      {
-          if (ic_colour_stack.top() == INLINE_ORANGE)
+          if (!ic_colour_stack.empty())
           {
-              ic_colour_stack.pop();
+              if (ic_colour_stack.top() == INLINE_ORANGE)
+              {
+                  ic_colour_stack.pop();
+                  p_text.remove(trick_check_pos,1);
+              }
+              else
+              {
+                  ic_colour_stack.push(INLINE_ORANGE);
+                  p_text.remove(trick_check_pos,1);
+              }
+          }
+          else
+          {
+              ic_colour_stack.push(INLINE_ORANGE);
               p_text.remove(trick_check_pos,1);
           }
       }
 
+      // Blue inline colourisation.
       else if (f_character == "(" and !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_BLUE);
@@ -1242,6 +1253,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           }
       }
 
+      // Grey inline colourisation.
       else if (f_character == "[" and !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_GREY);
@@ -1257,6 +1269,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           }
       }
 
+      // Green inline colourisation.
       else if (f_character == "`" and !ic_next_is_not_special)
       {
           if (!ic_colour_stack.empty())
@@ -1445,24 +1458,33 @@ void Courtroom::chat_tick()
       ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
     }
 
+    // Escape character.
     else if (f_character == "\\" and !next_character_is_not_special)
     {
         next_character_is_not_special = true;
     }
 
-    else if (f_character == "{" and !next_character_is_not_special)
+    // Orange inline colourisation.
+    else if (f_character == "|" and !next_character_is_not_special)
     {
-        inline_colour_stack.push(INLINE_ORANGE);
-    }
-    else if (f_character == "}" and !next_character_is_not_special
-             and !inline_colour_stack.empty())
-    {
-        if (inline_colour_stack.top() == INLINE_ORANGE)
+        if (!inline_colour_stack.empty())
         {
-            inline_colour_stack.pop();
+            if (inline_colour_stack.top() == INLINE_ORANGE)
+            {
+                inline_colour_stack.pop();
+            }
+            else
+            {
+                inline_colour_stack.push(INLINE_ORANGE);
+            }
+        }
+        else
+        {
+            inline_colour_stack.push(INLINE_ORANGE);
         }
     }
 
+    // Blue inline colourisation.
     else if (f_character == "(" and !next_character_is_not_special)
     {
         inline_colour_stack.push(INLINE_BLUE);
@@ -1478,6 +1500,7 @@ void Courtroom::chat_tick()
         }
     }
 
+    // Grey inline colourisation.
     else if (f_character == "[" and !next_character_is_not_special)
     {
         inline_colour_stack.push(INLINE_GREY);
@@ -1493,6 +1516,7 @@ void Courtroom::chat_tick()
         }
     }
 
+    // Green inline colourisation.
     else if (f_character == "`" and !next_character_is_not_special)
     {
         if (!inline_colour_stack.empty())
