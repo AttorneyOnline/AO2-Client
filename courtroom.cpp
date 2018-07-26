@@ -1180,6 +1180,96 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
 
   ui_ic_chatlog->moveCursor(QTextCursor::End);
 
+  // Get rid of centering.
+  if(p_text.startsWith(": ~~"))
+  {
+      // Don't forget, the p_text part actually everything after the name!
+      // Hence why we check for ': ~~'.
+
+      // If the user decided to put a space after the two tildes, remove that
+      // in one go.
+      p_text.remove("~~ ");
+
+      // Remove all remaining ~~s.
+      p_text.remove("~~");
+  }
+
+  // Get rid of the inline-colouring.
+  // I know, I know, excessive code duplication.
+  // Nobody looks in here, I'm fine.
+  int trick_check_pos = 0;
+  bool ic_next_is_not_special = false;
+  QString f_character = p_text.at(trick_check_pos);
+  std::stack<INLINE_COLOURS> ic_colour_stack;
+  while (trick_check_pos < p_text.size())
+  {
+      f_character = p_text.at(trick_check_pos);
+      if (f_character == "\\" and !ic_next_is_not_special)
+      {
+          ic_next_is_not_special = true;
+          p_text.remove(trick_check_pos,1);
+      }
+
+      else if (f_character == "{" and !ic_next_is_not_special)
+      {
+          ic_colour_stack.push(INLINE_ORANGE);
+          p_text.remove(trick_check_pos,1);
+      }
+      else if (f_character == "}" and !ic_next_is_not_special
+               and !ic_colour_stack.empty())
+      {
+          if (ic_colour_stack.top() == INLINE_ORANGE)
+          {
+              ic_colour_stack.pop();
+              p_text.remove(trick_check_pos,1);
+          }
+      }
+
+      else if (f_character == "(" and !ic_next_is_not_special)
+      {
+          ic_colour_stack.push(INLINE_BLUE);
+          p_text.remove(trick_check_pos,1);
+      }
+      else if (f_character == ")" and !ic_next_is_not_special
+               and !ic_colour_stack.empty())
+      {
+          if (ic_colour_stack.top() == INLINE_BLUE)
+          {
+              ic_colour_stack.pop();
+              p_text.remove(trick_check_pos,1);
+          }
+      }
+
+      else if (f_character == "$" and !ic_next_is_not_special)
+      {
+          if (!ic_colour_stack.empty())
+          {
+              if (ic_colour_stack.top() == INLINE_GREEN)
+              {
+                  ic_colour_stack.pop();
+                  p_text.remove(trick_check_pos,1);
+              }
+              else
+              {
+                  ic_colour_stack.push(INLINE_GREEN);
+                  p_text.remove(trick_check_pos,1);
+              }
+          }
+          else
+          {
+              ic_colour_stack.push(INLINE_GREEN);
+              p_text.remove(trick_check_pos,1);
+          }
+      }
+      else
+      {
+          trick_check_pos++;
+          ic_next_is_not_special = false;
+      }
+  }
+
+  // After all of that, let's jot down the message into the IC chatlog.
+
   if (!first_message_sent)
   {
       ui_ic_chatlog->textCursor().insertText(p_name, bold);
@@ -1189,6 +1279,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   {
       ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
   }
+
   ui_ic_chatlog->textCursor().insertText(p_text, normal);
 
   if (old_cursor.hasSelection() || !is_scrolled_down)
