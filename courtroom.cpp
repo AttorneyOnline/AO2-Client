@@ -83,6 +83,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
+  ui_ic_chatlog->document()->setMaximumBlockCount(ao_app->get_max_log_size());
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -1039,6 +1040,25 @@ void Courtroom::handle_chatmessage_2()
   set_scene();
   set_text_color();
 
+  // Check if the message needs to be centered.
+  QString f_message = m_chatmessage[MESSAGE];
+  if (f_message.size() >= 2)
+  {
+      if (f_message.startsWith("~~"))
+      {
+          message_is_centered = true;
+      }
+      else
+      {
+          message_is_centered = false;
+      }
+  }
+  else
+  {
+      ui_vp_message->setAlignment(Qt::AlignLeft);
+  }
+
+
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
   if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
@@ -1156,14 +1176,22 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   normal.setFontWeight(QFont::Normal);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
-  const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
+  const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
 
-  ui_ic_chatlog->moveCursor(QTextCursor::Start);
+  ui_ic_chatlog->moveCursor(QTextCursor::End);
 
-  ui_ic_chatlog->textCursor().insertText(p_name, bold);
-  ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
+  if (!first_message_sent)
+  {
+      ui_ic_chatlog->textCursor().insertText(p_name, bold);
+      first_message_sent = true;
+  }
+  else
+  {
+      ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+  }
+  ui_ic_chatlog->textCursor().insertText(p_text, normal);
 
-  if (old_cursor.hasSelection() || !is_scrolled_up)
+  if (old_cursor.hasSelection() || !is_scrolled_down)
   {
       // The user has selected text or scrolled away from the top: maintain position.
       ui_ic_chatlog->setTextCursor(old_cursor);
@@ -1172,8 +1200,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   else
   {
       // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
-      ui_ic_chatlog->moveCursor(QTextCursor::Start);
-      ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
+      ui_ic_chatlog->moveCursor(QTextCursor::End);
+      ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
   }
 }
 
@@ -1236,6 +1264,13 @@ void Courtroom::start_chat_ticking()
     //since the message is empty, it's technically done ticking
     text_state = 2;
     return;
+  }
+
+  // At this point, we'd do well to clear the inline colour stack.
+  // This stops it from flowing into next messages.
+  while (!inline_colour_stack.empty())
+  {
+      inline_colour_stack.pop();
   }
 
   ui_vp_chatbox->show();
@@ -1301,8 +1336,94 @@ void Courtroom::chat_tick()
 
       ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
     }
+
+    else if (f_character == "\\" and !next_character_is_not_special)
+    {
+        next_character_is_not_special = true;
+    }
+
+    else if (f_character == "{" and !next_character_is_not_special)
+    {
+        inline_colour_stack.push(INLINE_ORANGE);
+    }
+    else if (f_character == "}" and !next_character_is_not_special
+             and !inline_colour_stack.empty())
+    {
+        if (inline_colour_stack.top() == INLINE_ORANGE)
+        {
+            inline_colour_stack.pop();
+        }
+    }
+
+    else if (f_character == "(" and !next_character_is_not_special)
+    {
+        inline_colour_stack.push(INLINE_BLUE);
+        ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+    }
+    else if (f_character == ")" and !next_character_is_not_special
+             and !inline_colour_stack.empty())
+    {
+        if (inline_colour_stack.top() == INLINE_BLUE)
+        {
+            inline_colour_stack.pop();
+            ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+        }
+    }
+
+    else if (f_character == "$" and !next_character_is_not_special)
+    {
+        if (!inline_colour_stack.empty())
+        {
+            if (inline_colour_stack.top() == INLINE_GREEN)
+            {
+                inline_colour_stack.pop();
+            }
+            else
+            {
+                inline_colour_stack.push(INLINE_GREEN);
+            }
+        }
+        else
+        {
+            inline_colour_stack.push(INLINE_GREEN);
+        }
+    }
+
     else
-      ui_vp_message->insertHtml(f_character);
+    {
+      next_character_is_not_special = false;
+      if (!inline_colour_stack.empty())
+      {
+          switch (inline_colour_stack.top()) {
+          case INLINE_ORANGE:
+              ui_vp_message->insertHtml("<font color=\"#FF7F00\">" + f_character + "</font>");
+              break;
+          case INLINE_BLUE:
+              ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+              break;
+          case INLINE_GREEN:
+              ui_vp_message->insertHtml("<font color=\"#00FF00\">" + f_character + "</font>");
+              break;
+          default:
+              ui_vp_message->insertHtml(f_character);
+              break;
+          }
+
+      }
+      else
+      {
+          ui_vp_message->insertHtml(f_character);
+      }
+
+      if (message_is_centered)
+      {
+          ui_vp_message->setAlignment(Qt::AlignCenter);
+      }
+      else
+      {
+          ui_vp_message->setAlignment(Qt::AlignLeft);
+      }
+    }
 
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());
@@ -1974,6 +2095,9 @@ void Courtroom::on_change_character_clicked()
 void Courtroom::on_reload_theme_clicked()
 { 
   ao_app->reload_theme();
+
+  //Refresh IC chat limits.
+  ui_ic_chatlog->document()->setMaximumBlockCount(ao_app->get_max_log_size());
 
   //to update status on the background
   set_background(current_background);

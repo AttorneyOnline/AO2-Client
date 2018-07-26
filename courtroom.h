@@ -32,6 +32,8 @@
 #include <QMap>
 #include <QTextBrowser>
 
+#include <stack>
+
 class AOApplication;
 
 class Courtroom : public QMainWindow
@@ -146,6 +148,26 @@ private:
 
   int m_viewport_width = 256;
   int m_viewport_height = 192;
+
+  bool first_message_sent = false;
+  int maximumMessages = 0;
+
+  // This is for inline message-colouring.
+  enum INLINE_COLOURS {
+      INLINE_BLUE,
+      INLINE_GREEN,
+      INLINE_ORANGE
+  };
+
+  // A stack of inline colours.
+  std::stack<INLINE_COLOURS> inline_colour_stack;
+
+  bool centre_text = false;
+
+  bool next_character_is_not_special = false; // If true, write the
+                        // next character as it is.
+
+  bool message_is_centered = false;
 
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
