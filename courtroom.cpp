@@ -1228,7 +1228,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
       else if (f_character == "(" and !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_BLUE);
-          p_text.remove(trick_check_pos,1);
       }
       else if (f_character == ")" and !ic_next_is_not_special
                and !ic_colour_stack.empty())
@@ -1236,7 +1235,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           if (ic_colour_stack.top() == INLINE_BLUE)
           {
               ic_colour_stack.pop();
-              p_text.remove(trick_check_pos,1);
           }
       }
 
