@@ -581,3 +581,9 @@ bool AOApplication::is_discord_enabled()
   QString f_result = read_config("discord");
   return !f_result.startsWith("false");
 }
+
+bool AOApplication::ic_scroll_down_enabled()
+{
+  QString f_result = read_config("ic_scroll_down");
+  return f_result.startsWith("true");
+}
