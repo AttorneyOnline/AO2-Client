@@ -13,6 +13,7 @@
 #include <QBrush>
 #include <QTextCharFormat>
 #include <QFont>
+#include <QInputDialog>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -2337,7 +2338,14 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::on_call_mod_clicked()
 {
-  ao_app->send_server_packet(new AOPacket("ZZ#%"));
+  bool ok;
+  QString text = QInputDialog::getText(ui_viewport, "Call a mod",
+                                               "Reason for the modcall (optional):", QLineEdit::Normal,
+                                               "", &ok);
+  if (ok)
+  {
+    ao_app->send_server_packet(new AOPacket("ZZ#" + text + "#%"));
+  }
 
   ui_ic_chat_message->setFocus();
 }
