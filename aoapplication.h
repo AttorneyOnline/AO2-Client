@@ -138,6 +138,9 @@ public:
   //Returns true if discord is enabled in config.ini and false otherwise
   bool is_discord_enabled();
 
+  //Returns true if reverse IC is enabled in config.ini and false otherwise
+  bool ic_scroll_down_enabled();
+
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 
