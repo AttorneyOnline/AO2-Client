@@ -133,6 +133,9 @@ public:
   //may contain, from config.ini.
   int get_max_log_size();
 
+  // Returns the username the user may have set in config.ini.
+  QString get_default_username();
+
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 

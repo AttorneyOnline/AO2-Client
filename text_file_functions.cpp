@@ -99,6 +99,12 @@ int AOApplication::get_max_log_size()
     else return f_result.toInt();
 }
 
+QString AOApplication::get_default_username()
+{
+    QString f_result = read_config("default_username");
+    return f_result;
+}
+
 QStringList AOApplication::get_call_words()
 {
   QStringList return_value;

@@ -111,6 +111,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText("Name");
 
+  ui_ooc_chat_name->setText(p_ao_app->get_default_username());
+
   //ui_area_password = new QLineEdit(this);
   //ui_area_password->setFrame(false);
   ui_music_search = new QLineEdit(this);
