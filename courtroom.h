@@ -31,6 +31,7 @@
 #include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
+#include <QSpinBox>
 
 #include <stack>
 
@@ -369,6 +370,9 @@ private:
 
   AOImage *ui_muted;
 
+  QSpinBox *ui_log_limit_spinbox;
+  QLabel *ui_log_limit_label;
+
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
   AOLineEdit *ui_evidence_name;
@@ -481,6 +485,8 @@ private slots:
   void on_music_slider_moved(int p_value);
   void on_sfx_slider_moved(int p_value);
   void on_blip_slider_moved(int p_value);
+
+  void on_log_limit_changed(int value);
 
   void on_ooc_toggle_clicked();
 

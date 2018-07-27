@@ -140,6 +140,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_sfx_label = new QLabel(this);
   ui_blip_label = new QLabel(this);
 
+  ui_log_limit_label = new QLabel(this);
+
   ui_hold_it = new AOButton(this, ao_app);
   ui_objection = new AOButton(this, ao_app);
   ui_take_that = new AOButton(this, ao_app);
@@ -179,8 +181,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_text_color->addItem("Blue");
   ui_text_color->addItem("Yellow");
   ui_text_color->addItem("Rainbow");
-  //ui_text_color->addItem("Pink");
-  //ui_text_color->addItem("Purple");
+  ui_text_color->addItem("Pink");
+  ui_text_color->addItem("Purple");
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -193,6 +195,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
   ui_blip_slider->setValue(ao_app->get_default_blip());
+
+  ui_log_limit_spinbox = new QSpinBox(this);
+  ui_log_limit_spinbox->setRange(0, 10000);
+  ui_log_limit_spinbox->setValue(ao_app->get_max_log_size());
 
   ui_evidence_button = new AOButton(this, ao_app);
 
@@ -248,6 +254,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_music_slider, SIGNAL(valueChanged(int)), this, SLOT(on_music_slider_moved(int)));
   connect(ui_sfx_slider, SIGNAL(valueChanged(int)), this, SLOT(on_sfx_slider_moved(int)));
   connect(ui_blip_slider, SIGNAL(valueChanged(int)), this, SLOT(on_blip_slider_moved(int)));
+
+  connect(ui_log_limit_spinbox, SIGNAL(valueChanged(int)), this, SLOT(on_log_limit_changed(int)));
 
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
 
@@ -438,6 +446,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_blip_label, "blip_label");
   ui_blip_label->setText("Blips");
 
+  set_size_and_pos(ui_log_limit_label, "log_limit_label");
+  ui_log_limit_label->setText("Log limit");
+
   set_size_and_pos(ui_hold_it, "hold_it");
   ui_hold_it->set_image("holdit.png");
   set_size_and_pos(ui_objection, "objection");
@@ -495,6 +506,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
+
+  set_size_and_pos(ui_log_limit_spinbox, "log_limit_spinbox");
 
   set_size_and_pos(ui_evidence_button, "evidence_button");
   ui_evidence_button->set_image("evidencebutton.png");
@@ -2286,6 +2299,11 @@ void Courtroom::on_blip_slider_moved(int p_value)
 {
   blip_player->set_volume(p_value);
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_log_limit_changed(int value)
+{
+  ui_ic_chatlog->document()->setMaximumBlockCount(value);
 }
 
 void Courtroom::on_witness_testimony_clicked()
