@@ -99,8 +99,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //ui_area_list = new QListWidget(this);
   ui_music_list = new QListWidget(this);
 
+  ui_ic_chat_name = new QLineEdit(this);
+  ui_ic_chat_name->setFrame(false);
+  ui_ic_chat_name->setPlaceholderText("Showname");
+
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
+  ui_ic_chat_message->setPlaceholderText("Message");
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
@@ -399,14 +404,17 @@ void Courtroom::set_widgets()
   {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
     set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
+    set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
   }
   else
   {
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
     set_size_and_pos(ui_vp_chatbox, "chatbox");
+    set_size_and_pos(ui_ic_chat_name, "ic_chat_name");
   }
 
   ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
+  ui_ic_chat_name->setStyleSheet("QLineEdit{background-color: rgba(180, 180, 180, 255);}");
 
   ui_vp_chatbox->set_image("chatmed.png");
   ui_vp_chatbox->hide();
@@ -932,17 +940,40 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_text_color);
 
+  if (!ui_ic_chat_name->text().isEmpty())
+  {
+    packet_contents.append(ui_ic_chat_name->text());
+  }
+
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
-  if (p_contents->size() < chatmessage_size)
+  // Instead of checking for whether a message has at least chatmessage_size
+  // amount of packages, we'll check if it has at least 15.
+  // That was the original chatmessage_size.
+  if (p_contents->size() < 15)
     return;
 
+  //qDebug() << "A message was got. Its contents:";
   for (int n_string = 0 ; n_string < chatmessage_size ; ++n_string)
   {
-    m_chatmessage[n_string] = p_contents->at(n_string);
+    //m_chatmessage[n_string] = p_contents->at(n_string);
+
+    // Note that we have added stuff that vanilla clients and servers simply won't send.
+    // So now, we have to check if the thing we want even exists amongst the packet's content.
+    // Also, don't forget! A size 15 message will have indices from 0 to 14.
+    if (n_string < p_contents->size())
+    {
+      m_chatmessage[n_string] = p_contents->at(n_string);
+      //qDebug() << "- " << n_string << ": " << p_contents->at(n_string);
+    }
+    else
+    {
+      m_chatmessage[n_string] = "";
+      //qDebug() << "- " << n_string << ": Nothing?";
+    }
   }
 
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
@@ -953,7 +984,16 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
-  QString f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+  QString f_showname;
+  if (m_chatmessage[SHOWNAME].isEmpty())
+  {
+      f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+  }
+  else
+  {
+      f_showname = m_chatmessage[SHOWNAME];
+  }
+
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
@@ -1037,11 +1077,18 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
 
-  QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
+  if (m_chatmessage[SHOWNAME].isEmpty())
+  {
+      QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
 
-  QString f_showname = ao_app->get_showname(real_name);
+      QString f_showname = ao_app->get_showname(real_name);
 
-  ui_vp_showname->setText(f_showname);
+      ui_vp_showname->setText(f_showname);
+  }
+  else
+  {
+      ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
+  }
 
   ui_vp_message->clear();
   ui_vp_chatbox->hide();

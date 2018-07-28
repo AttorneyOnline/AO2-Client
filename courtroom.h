@@ -210,7 +210,7 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 15;
+  static const int chatmessage_size = 16;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -311,6 +311,7 @@ private:
   QListWidget *ui_music_list;
 
   QLineEdit *ui_ic_chat_message;
+  QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
   QLineEdit *ui_ooc_chat_name;

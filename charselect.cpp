@@ -158,5 +158,7 @@ void Courtroom::char_clicked(int n_char)
   {
     ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%"));
   }
+
+  ui_ic_chat_name->setPlaceholderText(char_list.at(n_real_char).name);
 }
 
