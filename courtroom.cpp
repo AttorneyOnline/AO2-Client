@@ -1324,6 +1324,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
               ic_colour_stack.pop();
               trick_check_pos++;
           }
+          else
+          {
+              ic_next_is_not_special = true;
+          }
       }
 
       // Grey inline colourisation.
@@ -1339,6 +1343,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           {
               ic_colour_stack.pop();
               trick_check_pos++;
+          }
+          else
+          {
+              ic_next_is_not_special = true;
           }
       }
 
@@ -1523,6 +1531,9 @@ void Courtroom::chat_tick()
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
 
+  // Stops blips from playing when we have a formatting option.
+  bool formatting_char = false;
+
   if (tick_pos >= f_message.size())
   {
     text_state = 2;
@@ -1569,6 +1580,7 @@ void Courtroom::chat_tick()
     else if (f_character == "\\" and !next_character_is_not_special)
     {
         next_character_is_not_special = true;
+        formatting_char = true;
     }
 
     // Text speed modifier.
@@ -1576,10 +1588,12 @@ void Courtroom::chat_tick()
     {
         // ++, because it INCREASES delay!
         current_display_speed++;
+        formatting_char = true;
     }
     else if (f_character == "}" and !next_character_is_not_special)
     {
         current_display_speed--;
+        formatting_char = true;
     }
 
     // Orange inline colourisation.
@@ -1600,6 +1614,7 @@ void Courtroom::chat_tick()
         {
             inline_colour_stack.push(INLINE_ORANGE);
         }
+        formatting_char = true;
     }
 
     // Blue inline colourisation.
@@ -1615,6 +1630,11 @@ void Courtroom::chat_tick()
         {
             inline_colour_stack.pop();
             ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+        }
+        else
+        {
+            next_character_is_not_special = true;
+            tick_pos--;
         }
     }
 
@@ -1632,6 +1652,11 @@ void Courtroom::chat_tick()
             inline_colour_stack.pop();
             ui_vp_message->insertHtml("<font color=\"#BBBBBB\">" + f_character + "</font>");
         }
+        else
+        {
+            next_character_is_not_special = true;
+            tick_pos--;
+        }
     }
 
     // Green inline colourisation.
@@ -1642,15 +1667,18 @@ void Courtroom::chat_tick()
             if (inline_colour_stack.top() == INLINE_GREEN)
             {
                 inline_colour_stack.pop();
+                formatting_char = true;
             }
             else
             {
                 inline_colour_stack.push(INLINE_GREEN);
+                formatting_char = true;
             }
         }
         else
         {
             inline_colour_stack.push(INLINE_GREEN);
+            formatting_char = true;
         }
     }
 
@@ -1702,7 +1730,7 @@ void Courtroom::chat_tick()
     if (f_message.at(tick_pos) != ' ' || blank_blip)
     {
 
-      if (blip_pos % blip_rate == 0)
+      if (blip_pos % blip_rate == 0 && !formatting_char)
       {
         blip_pos = 0;
         blip_player->blip_tick();
@@ -1725,7 +1753,16 @@ void Courtroom::chat_tick()
         current_display_speed = 6;
     }
 
-    chat_tick_timer->start(message_display_speed[current_display_speed]);
+    // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
+    if (formatting_char)
+    {
+        chat_tick_timer->start(1);
+    }
+    else
+    {
+        chat_tick_timer->start(message_display_speed[current_display_speed]);
+    }
+
   }
 }
 
