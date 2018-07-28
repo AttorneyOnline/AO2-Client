@@ -1146,21 +1146,18 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
   
-  QTextCursor::MoveOperation move_op;
   int scrollbar_limit;
   
   if(ao_app->ic_scroll_down_enabled()) {
       scrollbar_limit = ui_ic_chatlog->verticalScrollBar()->maximum();
-      move_op = QTextCursor::End;
+      ui_ic_chatlog->moveCursor(QTextCursor::End);
   }
   else {
       scrollbar_limit = ui_ic_chatlog->verticalScrollBar()->minimum();
-      move_op = QTextCursor::Start;
+      ui_ic_chatlog->moveCursor(QTextCursor::Start);
   }
   
   const bool is_fully_scrolled = old_scrollbar_value == scrollbar_limit;
-  
-  ui_ic_chatlog->moveCursor(move_op);
 
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
   ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
