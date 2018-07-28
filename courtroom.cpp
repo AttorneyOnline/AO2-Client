@@ -1174,8 +1174,14 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   else
   {
       // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
-      ui_ic_chatlog->moveCursor(move_op);
-      ui_ic_chatlog->verticalScrollBar()->setValue(scrollbar_limit);
+      if(ao_app->ic_scroll_down_enabled()) {
+        ui_ic_chatlog->moveCursor(QTextCursor::End);
+        ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
+      }
+      else {
+        ui_ic_chatlog->moveCursor(QTextCursor::Start);
+        ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
+      }
   }
 }
 
