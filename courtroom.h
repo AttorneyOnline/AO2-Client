@@ -164,8 +164,6 @@ private:
   // A stack of inline colours.
   std::stack<INLINE_COLOURS> inline_colour_stack;
 
-  bool centre_text = false;
-
   bool next_character_is_not_special = false; // If true, write the
                         // next character as it is.
 
