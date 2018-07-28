@@ -140,6 +140,9 @@ public:
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
 
+  // Returns whether the user would like to have custom shownames on by default.
+  bool get_showname_enabled_by_default();
+
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 

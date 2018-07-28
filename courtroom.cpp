@@ -169,6 +169,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_guard->setText("Guard");
   ui_guard->hide();
 
+  ui_showname_enable = new QCheckBox(this);
+  ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
+  ui_showname_enable->setText("Custom shownames");
+  ui_showname_enable;
+
   ui_custom_objection = new AOButton(this, ao_app);
   ui_realization = new AOButton(this, ao_app);
   ui_mute = new AOButton(this, ao_app);
@@ -277,6 +282,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
+
+  connect(ui_showname_enable, SIGNAL(clicked()), this, SLOT(on_showname_enable_clicked()));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
@@ -488,6 +495,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_flip, "flip");
 
   set_size_and_pos(ui_guard, "guard");
+
+  set_size_and_pos(ui_showname_enable, "showname_enable");
 
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->set_image("custom.png");
@@ -985,7 +994,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   QString f_showname;
-  if (m_chatmessage[SHOWNAME].isEmpty())
+  if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
       f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
@@ -1077,7 +1086,7 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
 
-  if (m_chatmessage[SHOWNAME].isEmpty())
+  if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
       QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
 
@@ -2493,6 +2502,11 @@ void Courtroom::on_flip_clicked()
 }
 
 void Courtroom::on_guard_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_showname_enable_clicked()
 {
   ui_ic_chat_message->setFocus();
 }

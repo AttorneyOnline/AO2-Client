@@ -351,6 +351,8 @@ private:
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
 
+  QCheckBox *ui_showname_enable;
+
   AOButton *ui_custom_objection;
   AOButton *ui_realization;
   AOButton *ui_mute;
@@ -499,6 +501,8 @@ private slots:
   void on_pre_clicked();
   void on_flip_clicked();
   void on_guard_clicked();
+
+  void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
 

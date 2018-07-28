@@ -102,13 +102,13 @@ int AOApplication::get_max_log_size()
 bool AOApplication::get_log_goes_downwards()
 {
     QString f_result = read_config("log_goes_downwards");
+    return f_result.startsWith("true");
+}
 
-    if (f_result == "true")
-        return true;
-    else if (f_result == "false")
-        return false;
-    else
-        return true;
+bool AOApplication::get_showname_enabled_by_default()
+{
+    QString f_result = read_config("show_custom_shownames");
+    return f_result.startsWith("true");
 }
 
 QString AOApplication::get_default_username()
