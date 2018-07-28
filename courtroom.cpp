@@ -188,7 +188,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_text_color->addItem("Yellow");
   ui_text_color->addItem("Rainbow");
   ui_text_color->addItem("Pink");
-  ui_text_color->addItem("Purple");
+  ui_text_color->addItem("Cyan");
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -1871,9 +1871,9 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: pink");
     break;
-  case PURPLE:
+  case CYAN:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: purple");
+                                 "color: cyan");
     break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];

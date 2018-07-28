@@ -106,7 +106,7 @@ enum COLOR
   YELLOW,
   RAINBOW,
   PINK,
-  PURPLE
+  CYAN
 };
 
 #endif // DATATYPES_H
