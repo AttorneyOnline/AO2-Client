@@ -1260,12 +1260,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
       // Don't forget, the p_text part actually everything after the name!
       // Hence why we check for ': ~~'.
 
-      // If the user decided to put a space after the two tildes, remove that
-      // in one go.
-      p_text.remove("~~ ");
-
-      // Remove all remaining ~~s.
-      p_text.remove("~~");
+      // Let's remove those two tildes, then.
+      // : _ ~ ~
+      // 0 1 2 3
+      p_text.remove(2,2);
   }
 
   // Get rid of the inline-colouring.
@@ -1542,6 +1540,13 @@ void Courtroom::chat_tick()
 
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
+
+  // If previously, we have detected that the message is centered, now
+  // is the time to remove those two tildes at the start.
+  if (message_is_centered)
+  {
+    f_message.remove(0,2);
+  }
 
   if (tick_pos >= f_message.size())
   {
