@@ -2442,9 +2442,6 @@ void Courtroom::on_reload_theme_clicked()
 { 
   ao_app->reload_theme();
 
-  //Refresh IC chat limits.
-  ui_ic_chatlog->document()->setMaximumBlockCount(ao_app->get_max_log_size());
-
   //to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
