@@ -2022,8 +2022,10 @@ void Courtroom::on_call_mod_clicked()
   box->setLabelText("Enter a reason:");
   auto code = box->exec();
 
-  if (code != QDialog::Accepted)
+  if (code != QDialog::Accepted) {
+    delete box;
     return;
+  }
 
   auto text = box->textValue();
   if (text.isEmpty())
