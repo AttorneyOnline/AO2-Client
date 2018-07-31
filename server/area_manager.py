@@ -49,6 +49,8 @@ class AreaManager:
             self.recorded_messages = []
             self.evidence_mod = evidence_mod
             self.locking_allowed = locking_allowed
+            self.showname_changes_allowed = showname_changes_allowed
+            self.shouts_allowed = shouts_allowed
             self.owned = False
             self.cards = dict()
 
