@@ -340,7 +340,7 @@ class AOProtocol(asyncio.Protocol):
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color = args
-            showname = self.client.get_char_name()
+            showname = ""
         elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
                                      self.ArgType.STR,
                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
@@ -442,7 +442,7 @@ class AOProtocol(asyncio.Protocol):
             return
         if args[1].startswith('/'):
             spl = args[1][1:].split(' ', 1)
-            cmd = spl[0]
+            cmd = spl[0].lower()
             arg = ''
             if len(spl) == 2:
                 arg = spl[1][:256]
