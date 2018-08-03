@@ -9,6 +9,8 @@ base-full/
 bass.lib
 
 bins/
+release/
+debug/
 
 .qmake.stash
 
@@ -18,3 +20,6 @@ object_script*
 /attorney_online_remake_plugin_import.cpp
 
 server/__pycache__
+
+*.o
+moc*

@@ -2486,7 +2486,7 @@ void Courtroom::on_call_mod_clicked()
                                                "", &ok);
   if (ok)
   {
-    text = text.chopped(100);
+    text = text.left(100);
     ao_app->send_server_packet(new AOPacket("ZZ#" + text + "#%"));
   }
 
