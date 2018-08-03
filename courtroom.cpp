@@ -2039,7 +2039,7 @@ void Courtroom::on_call_mod_clicked()
 
     ao_app->send_server_packet(new AOPacket("ZZ", mod_reason));
   } else {
-    ao_app->send_server_packet(new AOPacket("ZZ"));
+    ao_app->send_server_packet(new AOPacket("ZZ#%"));
   }
 
   ui_ic_chat_message->setFocus();
