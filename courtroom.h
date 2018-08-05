@@ -43,6 +43,7 @@
 #include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
+#include <QInputDialog>
 
 class AOApplication;
 

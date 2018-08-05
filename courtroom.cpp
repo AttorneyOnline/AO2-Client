@@ -2018,7 +2018,34 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::on_call_mod_clicked()
 {
-  ao_app->send_server_packet(new AOPacket("ZZ#%"));
+  if (ao_app->modcall_reason_enabled) {
+    QMessageBox errorBox;
+    QInputDialog input;
+
+    input.setWindowFlags(Qt::WindowSystemMenuHint);
+    input.setLabelText("Reason:");
+    input.setWindowTitle("Call Moderator");
+    auto code = input.exec();
+
+    if (code != QDialog::Accepted)
+      return;
+
+    QString text = input.textValue();
+    if (text.isEmpty()) {
+      errorBox.critical(nullptr, "Error", "You must provide a reason.");
+      return;
+    } else if (text.length() > 256) {
+      errorBox.critical(nullptr, "Error", "The message is too long.");
+      return;
+    }
+
+    QStringList mod_reason;
+    mod_reason.append(text);
+
+    ao_app->send_server_packet(new AOPacket("ZZ", mod_reason));
+  } else {
+    ao_app->send_server_packet(new AOPacket("ZZ#%"));
+  }
 
   ui_ic_chat_message->setFocus();
 }
