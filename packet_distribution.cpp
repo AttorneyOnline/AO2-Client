@@ -195,6 +195,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       desk_mod_enabled = true;
     if (f_packet.contains("evidence",Qt::CaseInsensitive))
       evidence_enabled = true;
+    if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
+      modcall_reason_enabled = true;
   }
   else if (header == "PN")
   {

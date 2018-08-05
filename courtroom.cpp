@@ -2018,7 +2018,29 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::on_call_mod_clicked()
 {
-  ao_app->send_server_packet(new AOPacket("ZZ#%"));
+  if (ao_app->modcall_reason_enabled) {
+    auto box = new QInputDialog();
+    box->setLabelText("Enter a reason:");
+    auto code = box->exec();
+
+    if (code != QDialog::Accepted) {
+      delete box;
+      return;
+    }
+
+    auto text = box->textValue();
+    if (text.isEmpty())
+      text = "N/A";
+
+    delete box;
+
+    QStringList mod_reason;
+    mod_reason.append(text);
+
+    ao_app->send_server_packet(new AOPacket("ZZ", mod_reason));
+  } else {
+    ao_app->send_server_packet(new AOPacket("ZZ#%"));
+  }
 
   ui_ic_chat_message->setFocus();
 }
