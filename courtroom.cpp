@@ -2019,20 +2019,25 @@ void Courtroom::on_spectator_clicked()
 void Courtroom::on_call_mod_clicked()
 {
   if (ao_app->modcall_reason_enabled) {
-    auto box = new QInputDialog();
-    box->setLabelText("Enter a reason:");
-    auto code = box->exec();
+    QMessageBox errorBox;
+    QInputDialog input;
 
-    if (code != QDialog::Accepted) {
-      delete box;
+    input.setWindowFlags(Qt::WindowSystemMenuHint);
+    input.setLabelText("Reason:");
+    input.setWindowTitle("Call Moderator");
+    auto code = input.exec();
+
+    if (code != QDialog::Accepted)
+      return;
+
+    QString text = input.textValue();
+    if (text.isEmpty()) {
+      errorBox.critical(nullptr, "Error", "You must provide a reason.");
+      return;
+    } else if (text.length() > 256) {
+      errorBox.critical(nullptr, "Error", "The message is too long.");
       return;
     }
-
-    auto text = box->textValue();
-    if (text.isEmpty())
-      text = "N/A";
-
-    delete box;
 
     QStringList mod_reason;
     mod_reason.append(text);
