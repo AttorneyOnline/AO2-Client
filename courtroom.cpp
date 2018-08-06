@@ -1139,29 +1139,48 @@ void Courtroom::handle_chatmessage_3()
 
 void Courtroom::append_ic_text(QString p_text, QString p_name)
 {
+  // a bit of a silly hack, should use QListWidget for IC in the first place though
+  static bool isEmpty = true;
+
   QTextCharFormat bold;
   QTextCharFormat normal;
   bold.setFontWeight(QFont::Bold);
   normal.setFontWeight(QFont::Normal);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
-  
+
+  QTextCursor::MoveOperation move_op;
   int scrollbar_limit;
-  
-  if(ao_app->ic_scroll_down_enabled()) {
+
+  if (ao_app->ic_scroll_down_enabled()) {
       scrollbar_limit = ui_ic_chatlog->verticalScrollBar()->maximum();
-      ui_ic_chatlog->moveCursor(QTextCursor::End);
+      move_op = QTextCursor::End;
   }
   else {
       scrollbar_limit = ui_ic_chatlog->verticalScrollBar()->minimum();
-      ui_ic_chatlog->moveCursor(QTextCursor::Start);
+      move_op = QTextCursor::Start;
   }
-  
+
   const bool is_fully_scrolled = old_scrollbar_value == scrollbar_limit;
 
-  ui_ic_chatlog->textCursor().insertText(p_name, bold);
-  ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
-  
+  ui_ic_chatlog->moveCursor(move_op);
+
+  if (ao_app->ic_scroll_down_enabled()) {
+    if (!isEmpty)
+      ui_ic_chatlog->textCursor().insertText("\n", normal);
+    else
+      isEmpty = false;
+    ui_ic_chatlog->textCursor().insertText(p_name, bold);
+    ui_ic_chatlog->textCursor().insertText(p_text, normal);
+  } else {
+    ui_ic_chatlog->textCursor().insertText(p_name, bold);
+    ui_ic_chatlog->textCursor().insertText(p_text, normal);
+    if (!isEmpty)
+      ui_ic_chatlog->textCursor().insertText("\n", normal);
+    else
+      isEmpty = false;
+  }
+
   if (old_cursor.hasSelection() || !is_fully_scrolled)
   {
       // The user has selected text or scrolled away from the top: maintain position.
@@ -1171,14 +1190,14 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   else
   {
       // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
-      if(ao_app->ic_scroll_down_enabled()) {
-        ui_ic_chatlog->moveCursor(QTextCursor::End);
-        ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
-      }
-      else {
-        ui_ic_chatlog->moveCursor(QTextCursor::Start);
-        ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
-      }
+      ui_ic_chatlog->moveCursor(move_op);
+
+      // update the value to the new maximum/minimum
+      if (ao_app->ic_scroll_down_enabled())
+        scrollbar_limit = ui_ic_chatlog->verticalScrollBar()->maximum();
+      else
+        scrollbar_limit = ui_ic_chatlog->verticalScrollBar()->minimum();
+      ui_ic_chatlog->verticalScrollBar()->setValue(scrollbar_limit);
   }
 }
 
