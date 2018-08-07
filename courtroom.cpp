@@ -84,7 +84,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
-  ui_ic_chatlog->document()->setMaximumBlockCount(ao_app->get_max_log_size());
+
+  log_maximum_blocks = ao_app->get_max_log_size();
+  log_goes_downwards = ao_app->get_log_goes_downwards();
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -172,7 +174,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_showname_enable = new QCheckBox(this);
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
   ui_showname_enable->setText("Custom shownames");
-  ui_showname_enable;
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_realization = new AOButton(this, ao_app);
@@ -1245,8 +1246,6 @@ void Courtroom::handle_chatmessage_3()
 
 void Courtroom::append_ic_text(QString p_text, QString p_name)
 {
-  bool downwards = ao_app->get_log_goes_downwards();
-
   QTextCharFormat bold;
   QTextCharFormat normal;
   bold.setFontWeight(QFont::Bold);
@@ -1388,7 +1387,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
 
   // After all of that, let's jot down the message into the IC chatlog.
 
-  if (downwards)
+  if (log_goes_downwards)
   {
       const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
 
@@ -1414,9 +1413,19 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
       }
       else
       {
-          // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the top.
+          // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
           ui_ic_chatlog->moveCursor(QTextCursor::End);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
+      }
+
+      // Finally, if we got too many blocks in the current log, delete some from the top.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::Start);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deleteChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
   }
   else
@@ -1439,6 +1448,17 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
           ui_ic_chatlog->moveCursor(QTextCursor::Start);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
+      }
+
+
+      // Finally, if we got too many blocks in the current log, delete some from the bottom.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::End);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deletePreviousChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
   }
 }
@@ -2402,7 +2422,7 @@ void Courtroom::on_blip_slider_moved(int p_value)
 
 void Courtroom::on_log_limit_changed(int value)
 {
-  ui_ic_chatlog->document()->setMaximumBlockCount(value);
+  log_maximum_blocks = value;
 }
 
 void Courtroom::on_witness_testimony_clicked()

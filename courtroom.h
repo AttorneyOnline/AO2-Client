@@ -193,6 +193,12 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
 
+  // Used for getting the current maximum blocks allowed in the IC chatlog.
+  int log_maximum_blocks = 0;
+
+  // True, if the log should go downwards.
+  bool log_goes_downwards = false;
+
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;
 
