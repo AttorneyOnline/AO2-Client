@@ -98,7 +98,7 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect.png");
 
   set_size_and_pos(ui_version, "version");
-  ui_version->setText("Version: " + ao_app->get_version_string());
+  ui_version->setText("AO Version: " + ao_app->get_version_string() + " | CCCC Version: " + ao_app->get_cccc_version_string());
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about.png");

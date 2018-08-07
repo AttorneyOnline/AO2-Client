@@ -94,6 +94,14 @@ QString AOApplication::get_version_string()
   QString::number(MINOR_VERSION);
 }
 
+QString AOApplication::get_cccc_version_string()
+{
+  return
+  QString::number(CCCC_RELEASE) + "." +
+  QString::number(CCCC_MAJOR_VERSION) + "." +
+  QString::number(CCCC_MINOR_VERSION);
+}
+
 void AOApplication::reload_theme()
 {
   current_theme = read_theme();

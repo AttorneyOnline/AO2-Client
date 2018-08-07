@@ -77,6 +77,11 @@ public:
   int get_minor_version() {return MINOR_VERSION;}
   QString get_version_string();
 
+  int get_cccc_release() {return CCCC_RELEASE;}
+  int get_cccc_major_version() {return CCCC_MAJOR_VERSION;}
+  int get_cccc_minor_version() {return CCCC_MINOR_VERSION;}
+  QString get_cccc_version_string();
+
   ///////////////////////////////////////////
 
   void set_favorite_list();
@@ -228,6 +233,10 @@ private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 4;
   const int MINOR_VERSION = 8;
+
+  const int CCCC_RELEASE = 1;
+  const int CCCC_MAJOR_VERSION = 3;
+  const int CCCC_MINOR_VERSION = 0;
 
   QString current_theme = "default";
 
