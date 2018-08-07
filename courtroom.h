@@ -172,6 +172,14 @@ private:
   int current_display_speed = 3;
   int message_display_speed[7] = {30, 40, 50, 60, 75, 100, 120};
 
+  // This is for checking if the character should start talking again
+  // when an inline blue text ends.
+  bool entire_message_is_blue = false;
+
+  // And this is the inline 'talking checker'. Counts how 'deep' we are
+  // in inline blues.
+  int inline_blue_depth = 0;
+
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;

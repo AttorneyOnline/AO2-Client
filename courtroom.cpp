@@ -1195,11 +1195,17 @@ void Courtroom::handle_chatmessage_3()
   bool text_is_blue = m_chatmessage[TEXT_COLOR].toInt() == BLUE;
 
   if (!text_is_blue && text_state == 1)
+  {
     //talking
     f_anim_state = 2;
+    entire_message_is_blue = false;
+  }
   else
+  {
     //idle
     f_anim_state = 3;
+    entire_message_is_blue = true;
+  }
 
   if (f_anim_state <= anim_state)
     return;
@@ -1536,6 +1542,10 @@ void Courtroom::start_chat_ticking()
   tick_pos = 0;
   blip_pos = 0;
 
+  // Just in case we somehow got inline blue text left over from a previous message,
+  // let's set it to false.
+  inline_blue_depth = 0;
+
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
   chat_tick_timer->start(message_display_speed[current_display_speed]);
@@ -1656,6 +1666,18 @@ void Courtroom::chat_tick()
     {
         inline_colour_stack.push(INLINE_BLUE);
         ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+
+        // Increase how deep we are in inline blues.
+        inline_blue_depth++;
+
+        // Here, we check if the entire message is blue.
+        // If it isn't, we stop talking.
+        if (!entire_message_is_blue)
+        {
+          QString f_char = m_chatmessage[CHAR_NAME];
+          QString f_emote = m_chatmessage[EMOTE];
+          ui_vp_player_char->play_idle(f_char, f_emote);
+        }
     }
     else if (f_character == ")" and !next_character_is_not_special
              and !inline_colour_stack.empty())
@@ -1664,6 +1686,24 @@ void Courtroom::chat_tick()
         {
             inline_colour_stack.pop();
             ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+
+            // Decrease how deep we are in inline blues.
+            // Just in case, we do a check if we're above zero, but we should be.
+            if (inline_blue_depth > 0)
+            {
+              inline_blue_depth--;
+              // Here, we check if the entire message is blue.
+              // If it isn't, we start talking if we have completely climbed out of inline blues.
+              if (!entire_message_is_blue)
+              {
+                if (inline_blue_depth == 0)
+                {
+                  QString f_char = m_chatmessage[CHAR_NAME];
+                  QString f_emote = m_chatmessage[EMOTE];
+                  ui_vp_player_char->play_talking(f_char, f_emote);
+                }
+              }
+            }
         }
         else
         {
