@@ -1222,6 +1222,7 @@ void Courtroom::handle_chatmessage_3()
     break;
   default:
     qDebug() << "W: invalid anim_state: " << f_anim_state;
+    // fall through
   case 3:
     ui_vp_player_char->play_idle(f_char, f_emote);
     anim_state = 3;
@@ -1988,6 +1989,7 @@ void Courtroom::set_text_color()
     break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
+    // fall through
   case WHITE:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: white");

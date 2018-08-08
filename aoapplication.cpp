@@ -15,6 +15,9 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   discord = new AttorneyOnline::Discord();
   QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
                    SLOT(ms_connect_finished(bool, bool)));
+
+  // Create the QSettings class that points to the config.ini.
+  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
 }
 
 AOApplication::~AOApplication()
@@ -43,6 +46,25 @@ void AOApplication::construct_lobby()
   discord->state_lobby();
 
   w_lobby->show();
+
+  // Change the default audio output device to be the one the user has given
+  // in his config.ini file for now.
+  int a = 0;
+  BASS_DEVICEINFO info;
+
+  for (a = 1; BASS_GetDeviceInfo(a, &info); a++)
+  {
+      if (get_audio_output_device() == info.name)
+      {
+          BASS_SetDevice(a);
+          qDebug() << info.name << "was set as the default audio output device.";
+          break;
+      }
+      qDebug() << info.name;
+  }
+
+  //AOOptionsDialog* test = new AOOptionsDialog(nullptr, this);
+  //test->exec();
 }
 
 void AOApplication::destruct_lobby()

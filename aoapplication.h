@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QVector>
 #include <QFile>
+#include <QSettings>
 
 class NetworkManager;
 class Lobby;
@@ -113,8 +114,13 @@ public:
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
 
+  // Instead of reinventing the wheel, we'll use a QSettings class.
+  QSettings *configini;
+
   //Returns the config value for the passed searchline from a properly formatted config ini file
-  QString read_config(QString searchline);
+  //QString read_config(QString searchline);
+
+  // No longer necessary.
 
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
@@ -144,6 +150,9 @@ public:
 
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
+
+  // Returns the audio device used for the client.
+  QString get_audio_output_device();
 
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();

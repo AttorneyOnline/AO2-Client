@@ -8,6 +8,9 @@
 #include <QDebug>
 #include <QColor>
 
+/*
+ * This may no longer be necessary, if we use the QSettings class.
+ *
 QString AOApplication::read_config(QString searchline)
 {
   QString return_value = "";
@@ -41,80 +44,66 @@ QString AOApplication::read_config(QString searchline)
 
   return return_value;
 }
+*/
 
 QString AOApplication::read_theme()
 {
-  QString result = read_config("theme");
-
-  if (result == "")
-    return "default";
-  else
-    return result;
+  QString result = configini->value("theme", "default").value<QString>();
+  return result;
 }
 
 int AOApplication::read_blip_rate()
 {
-  QString result = read_config("blip_rate");
-
-  //note: the empty string converted to int will return 0
-  if (result.toInt() <= 0)
-    return 1;
-  else
-    return result.toInt();
+  int result = configini->value("blip_rate", 1).toInt();
+  return result;
 }
 
 int AOApplication::get_default_music()
 {
-  QString f_result = read_config("default_music");
-
-  if (f_result == "")
-    return 50;
-  else return f_result.toInt();
+  int result = configini->value("default_music", 50).toInt();
+  return result;
 }
 
 int AOApplication::get_default_sfx()
 {
-  QString f_result = read_config("default_sfx");
-
-  if (f_result == "")
-    return 50;
-  else return f_result.toInt();
+  int result = configini->value("default_sfx", 50).toInt();
+  return result;
 }
 
 int AOApplication::get_default_blip()
 {
-  QString f_result = read_config("default_blip");
-
-  if (f_result == "")
-    return 50;
-  else return f_result.toInt();
+  int result = configini->value("default_blip", 50).toInt();
+  return result;
 }
 
 int AOApplication::get_max_log_size()
 {
-    QString f_result = read_config("log_maximum");
-
-    if (f_result == "")
-      return 200;
-    else return f_result.toInt();
+  int result = configini->value("log_maximum", 200).toInt();
+  return result;
 }
 
 bool AOApplication::get_log_goes_downwards()
 {
-    QString f_result = read_config("log_goes_downwards");
-    return f_result.startsWith("true");
+  QString result = configini->value("log_goes_downwards", "false").value<QString>();
+  return result.startsWith("true");
 }
 
 bool AOApplication::get_showname_enabled_by_default()
 {
-    QString f_result = read_config("show_custom_shownames");
-    return f_result.startsWith("true");
+  QString result = configini->value("show_custom_shownames", "false").value<QString>();
+  return result.startsWith("true");
 }
 
 QString AOApplication::get_default_username()
 {
-    QString f_result = read_config("default_username");
-    return f_result;
+  QString result = configini->value("default_username", "").value<QString>();
+  return result;
+}
+
+QString AOApplication::get_audio_output_device()
+{
+  QString result = configini->value("default_username", "default").value<QString>();
+  return result;
 }
 
 QStringList AOApplication::get_call_words()
@@ -593,9 +582,8 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 
 bool AOApplication::get_blank_blip()
 {
-  QString f_result = read_config("blank_blip");
-
-  return f_result.startsWith("true");
+    QString result = configini->value("blank_blip", "false").value<QString>();
+    return result.startsWith("true");
 }
 
 
