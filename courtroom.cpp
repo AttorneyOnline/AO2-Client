@@ -796,10 +796,12 @@ void Courtroom::list_music()
   for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
   {
     QString i_song = music_list.at(n_song);
+    QString i_song_listname = i_song;
+    i_song_listname.replace(".mp3","");
 
     if (i_song.toLower().contains(ui_music_search->text().toLower()))
     {
-      ui_music_list->addItem(i_song);
+      ui_music_list->addItem(i_song_listname);
 
       QString song_path = ao_app->get_base_path() + "sounds/music/" + i_song.toLower();
 
@@ -2043,6 +2045,8 @@ void Courtroom::handle_song(QStringList *p_contents)
     return;
 
   QString f_song = f_contents.at(0);
+  QString f_song_clear = f_song;
+  f_song_clear.replace(".mp3", "");
   int n_char = f_contents.at(1).toInt();
 
   if (n_char < 0 || n_char >= char_list.size())
@@ -2055,7 +2059,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      append_ic_text(" has played a song: " + f_song, str_char);
+      append_ic_text(" has played a song: " + f_song_clear, str_char);
       music_player->play(f_song);
     }
   }
@@ -2290,7 +2294,8 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
   if (is_muted)
     return;
 
-  QString p_song = ui_music_list->item(p_model.row())->text();
+  //QString p_song = ui_music_list->item(p_model.row())->text();
+  QString p_song = music_list.at(p_model.row());
 
   ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
 }
