@@ -5,6 +5,8 @@
 #include "networkmanager.h"
 #include "debug_functions.h"
 
+#include "aooptionsdialog.h"
+
 #include <QDebug>
 #include <QRect>
 #include <QDesktopWidget>
@@ -52,7 +54,7 @@ void AOApplication::construct_lobby()
   int a = 0;
   BASS_DEVICEINFO info;
 
-  for (a = 1; BASS_GetDeviceInfo(a, &info); a++)
+  for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
   {
       if (get_audio_output_device() == info.name)
       {
@@ -60,11 +62,7 @@ void AOApplication::construct_lobby()
           qDebug() << info.name << "was set as the default audio output device.";
           break;
       }
-      qDebug() << info.name;
   }
-
-  //AOOptionsDialog* test = new AOOptionsDialog(nullptr, this);
-  //test->exec();
 }
 
 void AOApplication::destruct_lobby()
@@ -127,6 +125,20 @@ QString AOApplication::get_cccc_version_string()
 void AOApplication::reload_theme()
 {
   current_theme = read_theme();
+
+  // This may not be the best place for it, but let's read the audio output device just in case.
+  int a = 0;
+  BASS_DEVICEINFO info;
+
+  for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
+  {
+      if (get_audio_output_device() == info.name)
+      {
+          BASS_SetDevice(a);
+          qDebug() << info.name << "was set as the default audio output device.";
+          break;
+      }
+  }
 }
 
 void AOApplication::set_favorite_list()
@@ -196,4 +208,11 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
                  "Please check your Internet connection and firewall, and please try again.");
     }
   }
+}
+
+void AOApplication::call_settings_menu()
+{
+    AOOptionsDialog* settings = new AOOptionsDialog(nullptr, this);
+    settings->exec();
+    delete settings;
 }

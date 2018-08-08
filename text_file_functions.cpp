@@ -102,7 +102,7 @@ QString AOApplication::get_default_username()
 
 QString AOApplication::get_audio_output_device()
 {
-  QString result = configini->value("default_username", "default").value<QString>();
+  QString result = configini->value("default_audio_device", "default").value<QString>();
   return result;
 }
 

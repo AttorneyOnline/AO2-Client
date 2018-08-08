@@ -42,6 +42,8 @@ public:
   void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
+  void call_settings_menu();
+
   /////////////////server metadata//////////////////
 
   unsigned int s_decryptor = 5;
