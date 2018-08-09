@@ -466,7 +466,10 @@ def ooc_cmd_pm(client, arg):
     if c.pm_mute:
         raise ClientError('This user muted all pm conversation')
     else:
-        c.send_host_message('PM from {} in {} ({}): {}'.format(client.name, client.area.name, client.get_char_name(), msg))
+        if c.is_mod:
+            c.send_host_message('PM from {} (ID: {}, IPID: {}) in {} ({}): {}'.format(client.name, client.id, client.ipid, client.area.name, client.get_char_name(), msg))
+        else:
+            c.send_host_message('PM from {} (ID: {}) in {} ({}): {}'.format(client.name, client.id, client.area.name, client.get_char_name(), msg))
         client.send_host_message('PM sent to {}. Message: {}'.format(args[0], msg))
  
 def ooc_cmd_mutepm(client, arg):
