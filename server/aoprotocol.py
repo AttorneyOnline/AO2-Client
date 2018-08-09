@@ -489,6 +489,9 @@ class AOProtocol(asyncio.Protocol):
                 name, length = self.server.get_song_data(args[0])
                 if len(args) > 2:
                     showname = args[2]
+                    if len(showname) > 0 and not self.client.area.showname_changes_allowed:
+                        self.client.send_host_message("Showname changes are forbidden in this area!")
+                        return
                     self.client.area.play_music_shownamed(name, self.client.char_id, showname, length)
                     self.client.area.add_music_playing_shownamed(self.client, showname, name)
                 else:
