@@ -478,7 +478,7 @@ class AOProtocol(asyncio.Protocol):
             if not self.client.is_dj:
                 self.client.send_host_message('You were blockdj\'d by a moderator.')
                 return
-            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT):
+            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT) and not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT, self.ArgType.STR):
                 return
             if args[1] != self.client.char_id:
                 return
@@ -487,8 +487,13 @@ class AOProtocol(asyncio.Protocol):
                 return
             try:
                 name, length = self.server.get_song_data(args[0])
-                self.client.area.play_music(name, self.client.char_id, length)
-                self.client.area.add_music_playing(self.client, name)
+                if len(args) > 2:
+                    showname = args[2]
+                    self.client.area.play_music_shownamed(name, self.client.char_id, showname, length)
+                    self.client.area.add_music_playing_shownamed(self.client, showname, name)
+                else:
+                    self.client.area.play_music(name, self.client.char_id, length)
+                    self.client.area.add_music_playing(self.client, name)
                 logger.log_server('[{}][{}]Changed music to {}.'
                                   .format(self.client.area.id, self.client.get_char_name(), name), self.client)
             except ServerError:

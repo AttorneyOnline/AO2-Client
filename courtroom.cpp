@@ -2155,6 +2155,12 @@ void Courtroom::handle_song(QStringList *p_contents)
   {
     QString str_char = char_list.at(n_char).name;
 
+    if (p_contents->length() > 2)
+    {
+      if (ui_showname_enable->isChecked())
+        str_char = p_contents->at(2);
+    }
+
     if (!mute_map.value(n_char))
     {
       append_ic_songchange(f_song_clear, str_char);
@@ -2401,7 +2407,14 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
   //QString p_song = ui_music_list->item(p_model.row())->text();
   QString p_song = music_list.at(p_model.row());
 
-  ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
+  if (!ui_ic_chat_name->text().isEmpty())
+  {
+    ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
+  }
+  else
+  {
+    ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
+  }
 }
 
 void Courtroom::on_hold_it_clicked()

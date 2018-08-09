@@ -116,6 +116,14 @@ class AreaManager:
             if length > 0:
                 self.music_looper = asyncio.get_event_loop().call_later(length,
                                                                         lambda: self.play_music(name, -1, length))
+        
+        def play_music_shownamed(self, name, cid, showname, length=-1):
+            self.send_command('MC', name, cid, showname)
+            if self.music_looper:
+                self.music_looper.cancel()
+            if length > 0:
+                self.music_looper = asyncio.get_event_loop().call_later(length,
+                                                                        lambda: self.play_music(name, -1, length))
 
 
         def can_send_message(self, client):
@@ -157,6 +165,10 @@ class AreaManager:
 
         def add_music_playing(self, client, name):
             self.current_music_player = client.get_char_name()
+            self.current_music = name
+
+        def add_music_playing_shownamed(self, client, showname, name):
+            self.current_music_player = showname + " (" + client.get_char_name() + ")"
             self.current_music = name
 
         def get_evidence_list(self, client):
