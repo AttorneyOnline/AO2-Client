@@ -121,6 +121,9 @@ public:
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "");
 
+  // This is essentially the same as the above, but specifically for song changes.
+  void append_ic_songchange(QString p_songname, QString p_name = "");
+
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
@@ -360,6 +363,7 @@ private:
   AOButton *ui_change_character;
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
+  AOButton *ui_settings;
 
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
@@ -511,6 +515,7 @@ private slots:
   void on_change_character_clicked();
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
+  void on_settings_clicked();
 
   void on_pre_clicked();
   void on_flip_clicked();

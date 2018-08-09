@@ -161,6 +161,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_change_character = new AOButton(this, ao_app);
   ui_reload_theme = new AOButton(this, ao_app);
   ui_call_mod = new AOButton(this, ao_app);
+  ui_settings = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
   ui_pre->setText("Pre");
@@ -279,6 +280,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
+  connect(ui_settings, SIGNAL(clicked()), this, SLOT(on_settings_clicked()));
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
@@ -489,6 +491,9 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_call_mod, "call_mod");
   ui_call_mod->setText("Call mod");
+
+  set_size_and_pos(ui_settings, "settings");
+  ui_settings->setText("Settings");
 
   set_size_and_pos(ui_pre, "pre");
   ui_pre->setText("Pre");
@@ -1472,6 +1477,99 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   }
 }
 
+// Call it ugly, call it a hack, but I wanted to do something special with the songname changes.
+void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
+{
+  QTextCharFormat bold;
+  QTextCharFormat normal;
+  QTextCharFormat italics;
+  bold.setFontWeight(QFont::Bold);
+  normal.setFontWeight(QFont::Normal);
+  italics.setFontItalic(true);
+  const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
+  const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
+
+  if (log_goes_downwards)
+  {
+      const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
+
+      ui_ic_chatlog->moveCursor(QTextCursor::End);
+
+      if (!first_message_sent)
+      {
+          ui_ic_chatlog->textCursor().insertText(p_name, bold);
+          first_message_sent = true;
+      }
+      else
+      {
+          ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+      }
+
+      ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+      ui_ic_chatlog->textCursor().insertText(p_songname, italics);
+      ui_ic_chatlog->textCursor().insertText(".", normal);
+
+      if (old_cursor.hasSelection() || !is_scrolled_down)
+      {
+          // The user has selected text or scrolled away from the bottom: maintain position.
+          ui_ic_chatlog->setTextCursor(old_cursor);
+          ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
+      }
+      else
+      {
+          // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
+          ui_ic_chatlog->moveCursor(QTextCursor::End);
+          ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
+      }
+
+      // Finally, if we got too many blocks in the current log, delete some from the top.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::Start);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deleteChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
+      }
+  }
+  else
+  {
+      const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
+
+      ui_ic_chatlog->moveCursor(QTextCursor::Start);
+
+      ui_ic_chatlog->textCursor().insertText(p_name, bold);
+
+      ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+      ui_ic_chatlog->textCursor().insertText(p_songname, italics);
+      ui_ic_chatlog->textCursor().insertText(".", normal);
+
+      if (old_cursor.hasSelection() || !is_scrolled_up)
+      {
+          // The user has selected text or scrolled away from the top: maintain position.
+          ui_ic_chatlog->setTextCursor(old_cursor);
+          ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
+      }
+      else
+      {
+          // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
+          ui_ic_chatlog->moveCursor(QTextCursor::Start);
+          ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
+      }
+
+
+      // Finally, if we got too many blocks in the current log, delete some from the bottom.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::End);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deletePreviousChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
+      }
+  }
+}
+
 void Courtroom::play_preanim()
 {
   QString f_char = m_chatmessage[CHAR_NAME];
@@ -2059,7 +2157,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      append_ic_text(" has played a song: " + f_song_clear, str_char);
+      append_ic_songchange(f_song_clear, str_char);
       music_player->play(f_song);
     }
   }
@@ -2149,6 +2247,12 @@ void Courtroom::on_ooc_return_pressed()
     ui_ooc_chat_message->clear();
     //rainbow_appended = true;
     return;
+  }
+  else if (ooc_message.startsWith("/settings"))
+  {
+     ui_ooc_chat_message->clear();
+     ao_app->call_settings_menu();
+     return;
   }
 
   QStringList packet_contents;
@@ -2558,6 +2662,11 @@ void Courtroom::on_call_mod_clicked()
   }
 
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_settings_clicked()
+{
+    ao_app->call_settings_menu();
 }
 
 void Courtroom::on_pre_clicked()
