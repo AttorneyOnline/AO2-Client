@@ -603,7 +603,7 @@ class AOProtocol(asyncio.Protocol):
         else:
             self.server.send_all_cmd_pred('ZZ', '[{}] {} ({}) in {} ({}) with reason: {}'
                                         .format(current_time, self.client.get_char_name(), self.client.get_ip(), self.client.area.name,
-                                                self.client.area.id, args[0]), pred=lambda c: c.is_mod)
+                                                self.client.area.id, args[0][:100]), pred=lambda c: c.is_mod)
             self.client.set_mod_call_delay()
             logger.log_server('[{}][{}]{} called a moderator: {}.'.format(self.client.get_ip(), self.client.area.id, self.client.get_char_name(), args[0]))
 
