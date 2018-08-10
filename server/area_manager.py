@@ -150,9 +150,11 @@ class AreaManager:
             self.send_command('BN', self.background)
 
         def change_status(self, value):
-            allowed_values = ('idle', 'building-open', 'building-full', 'casing-open', 'casing-full', 'recess')
+            allowed_values = ('idle', 'rp', 'casing', 'looking-for-players', 'lfp', 'recess', 'gaming')
             if value.lower() not in allowed_values:
                 raise AreaError('Invalid status. Possible values: {}'.format(', '.join(allowed_values)))
+            if value.lower() == 'lfp':
+                value = 'looking-for-players'
             self.status = value.upper()
 
         def change_doc(self, doc='No document.'):
