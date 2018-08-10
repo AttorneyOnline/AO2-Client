@@ -44,6 +44,7 @@ class AreaManager:
             self.judgelog = []
             self.current_music = ''
             self.current_music_player = ''
+            self.current_music_player_ipid = -1
             self.evi_list = EvidenceList()
             self.is_recording = False
             self.recorded_messages = []
@@ -167,10 +168,12 @@ class AreaManager:
 
         def add_music_playing(self, client, name):
             self.current_music_player = client.get_char_name()
+            self.current_music_player_ipid = client.ipid
             self.current_music = name
 
         def add_music_playing_shownamed(self, client, showname, name):
             self.current_music_player = showname + " (" + client.get_char_name() + ")"
+            self.current_music_player_ipid = client.ipid
             self.current_music = name
 
         def get_evidence_list(self, client):

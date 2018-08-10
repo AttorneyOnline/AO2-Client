@@ -152,7 +152,11 @@ def ooc_cmd_currentmusic(client, arg):
         raise ArgumentError('This command has no arguments.')
     if client.area.current_music == '':
         raise ClientError('There is no music currently playing.')
-    client.send_host_message('The current music is {} and was played by {}.'.format(client.area.current_music,
+    if client.is_mod:
+        client.send_host_message('The current music is {} and was played by {} ({}).'.format(client.area.current_music,
+                                                                                    client.area.current_music_player, client.area.current_music_player_ipid))
+    else:
+        client.send_host_message('The current music is {} and was played by {}.'.format(client.area.current_music,
                                                                                     client.area.current_music_player))
 
 def ooc_cmd_coinflip(client, arg):
