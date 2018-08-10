@@ -538,6 +538,16 @@ def ooc_cmd_cm(client, arg):
         if client.area.evidence_mod == 'HiddenCM':
             client.area.broadcast_evidence_list()
         client.area.send_host_message('{} is CM in this area now.'.format(client.get_char_name()))
+     
+def ooc_cmd_uncm(client, arg):
+    if client.is_cm:
+        client.is_cm = False
+        client.area.owned = False
+        if client.area.is_locked:
+            client.area.unlock()
+        client.area.send_host_message('{} is no longer CM in this area.'.format(client.get_char_name()))
+    else:
+        raise ClientError('You cannot give up being the CM when you are not one')
     
 def ooc_cmd_unmod(client, arg):
     client.is_mod = False
