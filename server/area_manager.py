@@ -187,6 +187,18 @@ class AreaManager:
             """
             for client in self.clients:
                 client.send_command('LE', *self.get_evidence_list(client))
+        
+        def get_abbreviation(self):
+            if self.name.lower().startswith("courtroom"):
+                return "CR" + self.name.split()[-1]
+            elif self.name.lower().startswith("area"):
+                return "A" + self.name.split()[-1]
+            elif len(self.name.split()) > 1:
+                return "".join(item[0].upper() for item in self.name.split())
+            elif len(self.name) > 3:
+                return self.name[:3].upper()
+            else:
+                return self.name.upper()
     
 
     def __init__(self, server):

@@ -203,7 +203,7 @@ class ClientManager:
                     for client in [x for x in area.clients if x.is_cm]:
                         owner = 'MASTER: {}'.format(client.get_char_name())
                         break
-                msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(i, area.name, len(area.clients), area.status, owner, lock[area.is_locked])
+                msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(area.get_abbreviation(), area.name, len(area.clients), area.status, owner, lock[area.is_locked])
                 if self.area == area:
                     msg += ' [*]'
             self.send_host_message(msg)
@@ -214,7 +214,7 @@ class ClientManager:
                 area = self.server.area_manager.get_area_by_id(area_id)
             except AreaError:
                 raise
-            info += '= Area {}: {} =='.format(area.id, area.name)
+            info += '=== {} ==='.format(area.name)
             sorted_clients = []
             for client in area.clients:
                 if (not mods) or client.is_mod:

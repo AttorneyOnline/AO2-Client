@@ -593,7 +593,7 @@ def ooc_cmd_invite(client, arg):
         c = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)[0]
         client.area.invite_list[c.ipid] = None
         client.send_host_message('{} is invited to your area.'.format(c.get_char_name()))
-        c.send_host_message('You were invited and given access to area {}.'.format(client.area.id))
+        c.send_host_message('You were invited and given access to {}.'.format(client.area.name))
     except:
         raise ClientError('You must specify a target. Use /invite <id>')
 
