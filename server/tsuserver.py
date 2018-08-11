@@ -240,6 +240,14 @@ class TsuServer3:
             self.district_client.send_raw_message(
                 'GLOBAL#{}#{}#{}#{}'.format(int(as_mod), client.area.id, char_name, msg))
 
+    def send_modchat(self, client, msg):
+        name = client.name
+        ooc_name = '{}[{}][{}]'.format('<dollar>M', client.area.get_abbreviation(), name)
+        self.send_all_cmd_pred('CT', ooc_name, msg, pred=lambda x: x.is_mod)
+        if self.config['use_district']:
+            self.district_client.send_raw_message(
+                'MODCHAT#{}#{}#{}'.format(client.area.id, char_name, msg))
+
     def broadcast_need(self, client, msg):
         char_name = client.get_char_name()
         area_name = client.area.name

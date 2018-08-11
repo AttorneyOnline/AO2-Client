@@ -343,6 +343,14 @@ def ooc_cmd_gm(client, arg):
     client.server.broadcast_global(client, arg, True)
     logger.log_server('[{}][{}][GLOBAL-MOD]{}.'.format(client.area.id, client.get_char_name(), arg), client)
     
+def ooc_cmd_m(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    if len(arg) == 0:
+        raise ArgumentError("You can't send an empty message.")
+    client.server.send_modchat(client, arg)
+    logger.log_server('[{}][{}][MODCHAT]{}.'.format(client.area.id, client.get_char_name(), arg), client)
+    
 def ooc_cmd_lm(client, arg):
     if not client.is_mod:
         raise ClientError('You must be authorized to do that.')
