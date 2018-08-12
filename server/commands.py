@@ -577,7 +577,7 @@ def ooc_cmd_area_lock(client, arg):
         client.area.is_locked = True
         client.area.send_host_message('Area is locked.')
         for i in client.area.clients:
-            client.area.invite_list[i.ipid] = None
+            client.area.invite_list[i.id] = None
         return
     else:
         raise ClientError('Only CM can lock the area.')
@@ -599,7 +599,7 @@ def ooc_cmd_invite(client, arg):
         raise ClientError('You must be authorized to do that.')
     try:
         c = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)[0]
-        client.area.invite_list[c.ipid] = None
+        client.area.invite_list[c.id] = None
         client.send_host_message('{} is invited to your area.'.format(c.get_char_name()))
         c.send_host_message('You were invited and given access to {}.'.format(client.area.name))
     except:
@@ -620,7 +620,7 @@ def ooc_cmd_uninvite(client, arg):
                 client.send_host_message("You have removed {} from the whitelist.".format(c.get_char_name()))
                 c.send_host_message("You were removed from the area whitelist.")
                 if client.area.is_locked:
-                    client.area.invite_list.pop(c.ipid)
+                    client.area.invite_list.pop(c.id)
         except AreaError:
             raise
         except ClientError:
@@ -653,7 +653,7 @@ def ooc_cmd_area_kick(client, arg):
                 c.change_area(area)
                 c.send_host_message("You were kicked from the area to area {}.".format(output))
                 if client.area.is_locked:
-                    client.area.invite_list.pop(c.ipid)
+                    client.area.invite_list.pop(c.id)
         except AreaError:
             raise
         except ClientError:
