@@ -186,7 +186,12 @@ void Courtroom::character_loading_finished()
     }
 
     filter_character_list();
-    put_button_in_place(0, max_chars_on_page);
+
+    int chars_on_page = max_chars_on_page;
+    if (ui_char_button_list_filtered.size() < max_chars_on_page)
+        chars_on_page = ui_char_button_list_filtered.size();
+    put_button_in_place(0, chars_on_page);
+
 }
 
 void Courtroom::filter_character_list()
