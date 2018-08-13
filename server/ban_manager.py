@@ -25,6 +25,9 @@ class BanManager:
         self.bans = []
         self.load_banlist()
 
+        self.hdid_bans = []
+        self.load_hdid_banlist()
+
     def load_banlist(self):
         try:
             with open('storage/banlist.json', 'r') as banlist_file:
@@ -52,3 +55,31 @@ class BanManager:
 
     def is_banned(self, ipid):
         return (ipid in self.bans)
+
+    def load_hdid_banlist(self):
+        try:
+            with open('storage/banlist_hdid.json', 'r') as banlist_file:
+                self.hdid_bans = json.load(banlist_file)
+        except FileNotFoundError:
+            return
+
+    def write_hdid_banlist(self):
+        with open('storage/banlist_hdid.json', 'w') as banlist_file:
+            json.dump(self.hdid_bans, banlist_file)
+
+    def add_hdid_ban(self, hdid):
+        if hdid not in self.hdid_bans:
+            self.hdid_bans.append(hdid)
+        else:
+            raise ServerError('This HDID is already banned.')
+        self.write_hdid_banlist()
+        
+    def remove_hdid_ban(self, hdid):
+        if hdid in self.hdid_bans:
+            self.hdid_bans.remove(hdid)
+        else:
+            raise ServerError('This HDID is not banned.')
+        self.write_hdid_banlist()
+
+    def is_hdid_banned(self, hdid):
+        return (hdid in self.hdid_bans)

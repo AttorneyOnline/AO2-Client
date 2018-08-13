@@ -275,10 +275,39 @@ def ooc_cmd_unban(client, arg):
     try:
         client.server.ban_manager.remove_ban(int(arg.strip()))
     except:
-        raise ClientError('You must specify \'hdid\'')
+        raise ClientError('You must specify ipid')
     logger.log_server('Unbanned {}.'.format(arg), client)
     client.send_host_message('Unbanned {}'.format(arg))
-
+        
+def ooc_cmd_ban_hdid(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    try:
+        hdid = int(arg.strip())
+    except:
+        raise ClientError('You must specify hdid')
+    try:
+        client.server.ban_manager.add_hdid_ban(hdid)
+    except ServerError:
+        raise
+    if hdid != None:
+        targets = client.server.client_manager.get_targets(client, TargetType.HDID, hdid, False)
+        if targets:
+            for c in targets:
+                c.disconnect()
+            client.send_host_message('{} clients was kicked.'.format(len(targets)))
+        client.send_host_message('{} was banned.'.format(hdid))
+        logger.log_server('Banned {}.'.format(hdid), client)
+        
+def ooc_cmd_unban_hdid(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    try:
+        client.server.ban_manager.remove_hdid_ban(int(arg.strip()))
+    except:
+        raise ClientError('You must specify hdid')
+    logger.log_server('Unbanned {}.'.format(arg), client)
+    client.send_host_message('Unbanned {}'.format(arg))
 
 def ooc_cmd_play(client, arg):
     if not client.is_mod:
