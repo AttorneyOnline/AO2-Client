@@ -825,7 +825,7 @@ def rolla_reload(area):
 def ooc_cmd_rolla_set(client, arg):
     if not hasattr(client.area, 'ability_dice'):
         rolla_reload(client.area)
-    available_sets = client.area.ability_dice.keys()
+    available_sets = ', '.join(client.area.ability_dice.keys())
     if len(arg) == 0:
         raise ArgumentError('You must specify the ability set name.\nAvailable sets: {}'.format(available_sets))
     if arg in client.area.ability_dice:
