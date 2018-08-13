@@ -297,8 +297,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_char(f_char);
 
-      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
 
@@ -341,8 +341,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->append_evidence(f_evi);
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+    int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+    int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
     w_lobby->set_loading_value(loading_value);
 
     QString next_packet_number = QString::number(loaded_evidence);
@@ -370,8 +370,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_music(f_music);
 
-      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
 
@@ -415,8 +415,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_char(f_char);
 
-      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
     w_courtroom->character_loading_finished();
@@ -436,8 +436,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_music(f_contents.at(n_element));
 
-      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
 

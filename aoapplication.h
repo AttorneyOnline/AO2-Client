@@ -66,6 +66,7 @@ public:
 
   int char_list_size = 0;
   int loaded_chars = 0;
+  int generated_chars = 0;
   int evidence_list_size = 0;
   int loaded_evidence = 0;
   int music_list_size = 0;

@@ -1,4 +1,5 @@
 #include "courtroom.h"
+#include "lobby.h"
 
 #include "file_functions.h"
 #include "debug_functions.h"
@@ -29,6 +30,7 @@ void Courtroom::construct_char_select()
 
   ui_char_search = new QLineEdit(ui_char_select_background);
   ui_char_search->setPlaceholderText("Search");
+  ui_char_search->setFocus();
   set_size_and_pos(ui_char_search, "char_search");
 
   ui_char_passworded = new QCheckBox(ui_char_select_background);
@@ -70,6 +72,8 @@ void Courtroom::set_char_select()
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
   ui_char_select_background->set_image("charselect_background.png");
+
+  ui_char_search->setFocus();
 }
 
 void Courtroom::set_char_select_page()
@@ -183,6 +187,14 @@ void Courtroom::character_loading_finished()
 
       connect(character, SIGNAL(clicked()), char_button_mapper, SLOT(map()));
       char_button_mapper->setMapping(character, ui_char_button_list.size() - 1);
+
+      // This part here serves as a way of showing to the player that the game is still running, it is
+      // just loading the pictures of the characters.
+      ao_app->generated_chars++;
+      int total_loading_size = ao_app->char_list_size * 2 + ao_app->evidence_list_size + ao_app->music_list_size;
+      int loading_value = int(((ao_app->loaded_chars + ao_app->generated_chars + ao_app->loaded_music + ao_app->loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      ao_app->w_lobby->set_loading_value(loading_value);
+      ao_app->w_lobby->set_loading_text("Generating chars:\n" + QString::number(ao_app->generated_chars) + "/" + QString::number(ao_app->char_list_size));
     }
 
     filter_character_list();
