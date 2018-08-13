@@ -418,6 +418,7 @@ private:
   QWidget *ui_char_buttons;
 
   QVector<AOCharButton*> ui_char_button_list;
+  QVector<AOCharButton*> ui_char_button_list_filtered;
   AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
@@ -429,10 +430,15 @@ private:
 
   AOButton *ui_spectator;
 
+  QLineEdit *ui_char_search;
+  QCheckBox *ui_char_passworded;
+  QCheckBox *ui_char_taken;
+
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
   void put_button_in_place(int starting, int chars_on_this_page);
+  void filter_character_list();
 
   void construct_emotes();
   void set_emote_page();
@@ -538,6 +544,9 @@ private slots:
 
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
+  void on_char_search_changed(const QString& newtext);
+  void on_char_taken_clicked(int newstate);
+  void on_char_passworded_clicked(int newstate);
 
   void on_spectator_clicked();
 

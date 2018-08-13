@@ -19,12 +19,25 @@ void Courtroom::construct_char_select()
   ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
 
   ui_char_password = new QLineEdit(ui_char_select_background);
+  ui_char_password->setPlaceholderText("Password");
 
   ui_char_select_left = new AOButton(ui_char_select_background, ao_app);
   ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
   ui_spectator->setText("Spectator");
+
+  ui_char_search = new QLineEdit(ui_char_select_background);
+  ui_char_search->setPlaceholderText("Search");
+  set_size_and_pos(ui_char_search, "char_search");
+
+  ui_char_passworded = new QCheckBox(ui_char_select_background);
+  ui_char_passworded->setText("Passworded");
+  set_size_and_pos(ui_char_passworded, "char_passworded");
+
+  ui_char_taken = new QCheckBox(ui_char_select_background);
+  ui_char_taken->setText("Taken");
+  set_size_and_pos(ui_char_taken, "char_taken");
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
@@ -35,6 +48,10 @@ void Courtroom::construct_char_select()
   connect(ui_char_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
+
+  connect(ui_char_search, SIGNAL(textEdited(const QString&)), this, SLOT(on_char_search_changed(const QString&)));
+  connect(ui_char_passworded, SIGNAL(stateChanged(int)), this, SLOT(on_char_passworded_clicked(int)));
+  connect(ui_char_taken, SIGNAL(stateChanged(int)), this, SLOT(on_char_taken_clicked(int)));
 }
 
 void Courtroom::set_char_select()
@@ -68,17 +85,17 @@ void Courtroom::set_char_select_page()
     i_button->move(0,0);
   }
 
-  int total_pages = char_list.size() / max_chars_on_page;
+  int total_pages = ui_char_button_list_filtered.size() / max_chars_on_page;
   int chars_on_page = 0;
 
-  if (char_list.size() % max_chars_on_page != 0)
+  if (ui_char_button_list_filtered.size() % max_chars_on_page != 0)
   {
     ++total_pages;
     //i. e. not on the last page
     if (total_pages > current_char_page + 1)
       chars_on_page = max_chars_on_page;
     else
-      chars_on_page = char_list.size() % max_chars_on_page;
+      chars_on_page = ui_char_button_list_filtered.size() % max_chars_on_page;
 
   }
   else
@@ -91,18 +108,6 @@ void Courtroom::set_char_select_page()
     ui_char_select_left->show();
 
   put_button_in_place(current_char_page * max_chars_on_page, chars_on_page);
-
-  /*for (int n_button = 0 ; n_button < chars_on_page ; ++n_button)
-  {
-    int n_real_char = n_button + current_char_page * max_chars_on_page;
-    AOCharButton *f_button = ui_char_button_list.at(n_button);
-
-    f_button->show();
-
-    if (char_list.at(n_real_char).taken)
-      f_button->set_taken();
-  }*/
-
 }
 
 void Courtroom::char_clicked(int n_char)
@@ -131,6 +136,9 @@ void Courtroom::char_clicked(int n_char)
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 {
+    if (ui_char_button_list_filtered.size() == 0)
+        return;
+
     QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
 
     int x_spacing = f_spacing.x();
@@ -148,8 +156,8 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
       int x_pos = (button_width + x_spacing) * x_mod_count;
       int y_pos = (button_height + y_spacing) * y_mod_count;
 
-      ui_char_button_list.at(n)->move(x_pos, y_pos);
-      ui_char_button_list.at(n)->show();
+      ui_char_button_list_filtered.at(n)->move(x_pos, y_pos);
+      ui_char_button_list_filtered.at(n)->show();
 
       ++x_mod_count;
 
@@ -163,9 +171,9 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 
 void Courtroom::character_loading_finished()
 {
-    // We move them out of the reachable area, so they can't be accidentally clicked.
     // First, we'll make all the character buttons in the very beginning.
-    // We hide them too, just in case.
+    // We also hide them all, so they can't be accidentally clicked.
+    // Later on, we'll be revealing buttons as we need them.
     for (int n = 0; n < char_list.size(); n++)
     {
       AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0);
@@ -177,5 +185,46 @@ void Courtroom::character_loading_finished()
       char_button_mapper->setMapping(character, ui_char_button_list.size() - 1);
     }
 
+    filter_character_list();
     put_button_in_place(0, max_chars_on_page);
+}
+
+void Courtroom::filter_character_list()
+{
+    ui_char_button_list_filtered.clear();
+    for (int i = 0; i < char_list.size(); i++)
+    {
+      AOCharButton* current_char = ui_char_button_list.at(i);
+
+      // It seems passwording characters is unimplemented yet?
+      // Until then, this will stay here, I suppose.
+      //if (ui_char_passworded->isChecked() && character_is_passworded??)
+      //    continue;
+
+      if (!ui_char_taken->isChecked() && char_list.at(i).taken)
+          continue;
+
+      if (!char_list.at(i).name.contains(ui_char_search->text(), Qt::CaseInsensitive))
+          continue;
+
+      ui_char_button_list_filtered.append(current_char);
+    }
+
+    current_char_page = 0;
+    set_char_select_page();
+}
+
+void Courtroom::on_char_search_changed(const QString& newtext)
+{
+    filter_character_list();
+}
+
+void Courtroom::on_char_passworded_clicked(int newstate)
+{
+    filter_character_list();
+}
+
+void Courtroom::on_char_taken_clicked(int newstate)
+{
+    filter_character_list();
 }
