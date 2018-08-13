@@ -296,11 +296,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
 
       w_courtroom->append_char(f_char);
-    }
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
-    w_lobby->set_loading_value(loading_value);
+      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      w_lobby->set_loading_value(loading_value);
+    }
 
     if (improved_loading_enabled)
       send_server_packet(new AOPacket("RE#%"));
@@ -342,7 +342,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->append_evidence(f_evi);
 
     int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = ((loaded_chars + loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
+    int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
     w_lobby->set_loading_value(loading_value);
 
     QString next_packet_number = QString::number(loaded_evidence);
@@ -369,11 +369,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
 
       w_courtroom->append_music(f_music);
-    }
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
-    w_lobby->set_loading_value(loading_value);
+      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      w_lobby->set_loading_value(loading_value);
+    }
 
     QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
     send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
@@ -414,11 +414,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
 
       w_courtroom->append_char(f_char);
-    }
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
-    w_lobby->set_loading_value(loading_value);
+      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      w_lobby->set_loading_value(loading_value);
+    }
+    w_courtroom->character_loading_finished();
 
     send_server_packet(new AOPacket("RM#%"));
   }
@@ -434,11 +435,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
 
       w_courtroom->append_music(f_contents.at(n_element));
-    }
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
-    w_lobby->set_loading_value(loading_value);
+      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      w_lobby->set_loading_value(loading_value);
+    }
 
     send_server_packet(new AOPacket("RD#%"));
   }
@@ -450,6 +451,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (lobby_constructed)
       w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
 
+    w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 
     courtroom_loaded = true;

@@ -47,6 +47,8 @@ public:
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
 
+  void character_loading_finished();
+
   //sets position of widgets based on theme ini files
   void set_widgets();
   //sets font size based on theme ini files
@@ -272,6 +274,9 @@ private:
   int char_rows = 9;
   int max_chars_on_page = 90;
 
+  const int button_width = 60;
+  const int button_height = 60;
+
   int current_emote_page = 0;
   int current_emote = 0;
   int emote_columns = 5;
@@ -427,6 +432,7 @@ private:
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
+  void put_button_in_place(int starting, int chars_on_this_page);
 
   void construct_emotes();
   void set_emote_page();
