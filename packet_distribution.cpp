@@ -218,6 +218,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     loaded_chars = 0;
     loaded_evidence = 0;
     loaded_music = 0;
+    generated_chars = 0;
 
     destruct_courtroom();
     construct_courtroom();
@@ -419,7 +420,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
-    w_courtroom->character_loading_finished();
 
     send_server_packet(new AOPacket("RM#%"));
   }
