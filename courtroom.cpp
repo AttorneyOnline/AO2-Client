@@ -1421,6 +1421,16 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
 
       ui_ic_chatlog->textCursor().insertText(p_text, normal);
 
+      // If we got too many blocks in the current log, delete some from the top.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::Start);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deleteChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
+      }
+
       if (old_cursor.hasSelection() || !is_scrolled_down)
       {
           // The user has selected text or scrolled away from the bottom: maintain position.
@@ -1433,16 +1443,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           ui_ic_chatlog->moveCursor(QTextCursor::End);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
       }
-
-      // Finally, if we got too many blocks in the current log, delete some from the top.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::Start);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deleteChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
-      }
   }
   else
   {
@@ -1452,6 +1452,16 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
 
       ui_ic_chatlog->textCursor().insertText(p_name, bold);
       ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
+
+      // If we got too many blocks in the current log, delete some from the bottom.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::End);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deletePreviousChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
+      }
 
       if (old_cursor.hasSelection() || !is_scrolled_up)
       {
@@ -1464,17 +1474,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
           // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
           ui_ic_chatlog->moveCursor(QTextCursor::Start);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
-      }
-
-
-      // Finally, if we got too many blocks in the current log, delete some from the bottom.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::End);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deletePreviousChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
   }
 }
@@ -1511,6 +1510,16 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
       ui_ic_chatlog->textCursor().insertText(p_songname, italics);
       ui_ic_chatlog->textCursor().insertText(".", normal);
 
+      // If we got too many blocks in the current log, delete some from the top.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::Start);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deleteChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
+      }
+
       if (old_cursor.hasSelection() || !is_scrolled_down)
       {
           // The user has selected text or scrolled away from the bottom: maintain position.
@@ -1522,16 +1531,6 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
           // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
           ui_ic_chatlog->moveCursor(QTextCursor::End);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
-      }
-
-      // Finally, if we got too many blocks in the current log, delete some from the top.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::Start);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deleteChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
   }
   else
@@ -1546,6 +1545,16 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
       ui_ic_chatlog->textCursor().insertText(p_songname, italics);
       ui_ic_chatlog->textCursor().insertText(".", normal);
 
+      // If we got too many blocks in the current log, delete some from the bottom.
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      {
+          ui_ic_chatlog->moveCursor(QTextCursor::End);
+          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+          ui_ic_chatlog->textCursor().removeSelectedText();
+          ui_ic_chatlog->textCursor().deletePreviousChar();
+          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
+      }
+
       if (old_cursor.hasSelection() || !is_scrolled_up)
       {
           // The user has selected text or scrolled away from the top: maintain position.
@@ -1557,17 +1566,6 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
           // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
           ui_ic_chatlog->moveCursor(QTextCursor::Start);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
-      }
-
-
-      // Finally, if we got too many blocks in the current log, delete some from the bottom.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::End);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deletePreviousChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
   }
 }
