@@ -191,6 +191,8 @@ private:
 
   QSignalMapper *char_button_mapper;
 
+  QVector<int> music_row_to_number;
+
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 

@@ -790,6 +790,7 @@ void Courtroom::enter_courtroom(int p_cid)
 void Courtroom::list_music()
 {
   ui_music_list->clear();
+  music_row_to_number.clear();
 
   QString f_file = "courtroom_design.ini";
 
@@ -807,6 +808,7 @@ void Courtroom::list_music()
     if (i_song.toLower().contains(ui_music_search->text().toLower()))
     {
       ui_music_list->addItem(i_song_listname);
+      music_row_to_number.append(n_song);
 
       QString song_path = ao_app->get_base_path() + "sounds/music/" + i_song.toLower();
 
@@ -2404,8 +2406,7 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
   if (is_muted)
     return;
 
-  //QString p_song = ui_music_list->item(p_model.row())->text();
-  QString p_song = music_list.at(p_model.row());
+  QString p_song = music_list.at(music_row_to_number.at(p_model.row()));
 
   if (!ui_ic_chat_name->text().isEmpty())
   {
