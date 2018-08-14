@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 RC_ICONS = logo.ico
 
-TARGET = Attorney_Online_remake
+TARGET = Attorney_Online_CC
 TEMPLATE = app
 
 VERSION = 2.4.8.0
