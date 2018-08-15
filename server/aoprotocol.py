@@ -490,18 +490,23 @@ class AOProtocol(asyncio.Protocol):
                 return
             try:
                 name, length = self.server.get_song_data(args[0])
-                if len(args) > 2:
-                    showname = args[2]
-                    if len(showname) > 0 and not self.client.area.showname_changes_allowed:
-                        self.client.send_host_message("Showname changes are forbidden in this area!")
-                        return
-                    self.client.area.play_music_shownamed(name, self.client.char_id, showname, length)
-                    self.client.area.add_music_playing_shownamed(self.client, showname, name)
+
+                if self.client.area.jukebox:
+                    self.client.area.add_jukebox_vote(self.client, name, length)
+                    logger.log_server('[{}][{}]Added a jukebox vote for {}.'.format(self.client.area.id, self.client.get_char_name(), name), self.client)
                 else:
-                    self.client.area.play_music(name, self.client.char_id, length)
-                    self.client.area.add_music_playing(self.client, name)
-                logger.log_server('[{}][{}]Changed music to {}.'
-                                  .format(self.client.area.id, self.client.get_char_name(), name), self.client)
+                    if len(args) > 2:
+                        showname = args[2]
+                        if len(showname) > 0 and not self.client.area.showname_changes_allowed:
+                            self.client.send_host_message("Showname changes are forbidden in this area!")
+                            return
+                        self.client.area.play_music_shownamed(name, self.client.char_id, showname, length)
+                        self.client.area.add_music_playing_shownamed(self.client, showname, name)
+                    else:
+                        self.client.area.play_music(name, self.client.char_id, length)
+                        self.client.area.add_music_playing(self.client, name)
+                    logger.log_server('[{}][{}]Changed music to {}.'
+                                    .format(self.client.area.id, self.client.get_char_name(), name), self.client)
             except ServerError:
                 return
         except ClientError as ex:

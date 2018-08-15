@@ -232,7 +232,7 @@ class TsuServer3:
 
     def broadcast_global(self, client, msg, as_mod=False):
         char_name = client.get_char_name()
-        ooc_name = '{}[{}][{}]'.format('<dollar>G', client.area.get_abbreviation(), char_name)
+        ooc_name = '{}[{}][{}]'.format('<dollar>G', client.area.abbreviation, char_name)
         if as_mod:
             ooc_name += '[M]'
         self.send_all_cmd_pred('CT', ooc_name, msg, pred=lambda x: not x.muted_global)
@@ -242,7 +242,7 @@ class TsuServer3:
 
     def send_modchat(self, client, msg):
         name = client.name
-        ooc_name = '{}[{}][{}]'.format('<dollar>M', client.area.get_abbreviation(), name)
+        ooc_name = '{}[{}][{}]'.format('<dollar>M', client.area.abbreviation, name)
         self.send_all_cmd_pred('CT', ooc_name, msg, pred=lambda x: x.is_mod)
         if self.config['use_district']:
             self.district_client.send_raw_message(
@@ -251,7 +251,7 @@ class TsuServer3:
     def broadcast_need(self, client, msg):
         char_name = client.get_char_name()
         area_name = client.area.name
-        area_id = client.area.get_abbreviation()
+        area_id = client.area.abbreviation
         self.send_all_cmd_pred('CT', '{}'.format(self.config['hostname']),
                                '=== Advert ===\r\n{} in {} [{}] needs {}\r\n==============='
                                .format(char_name, area_name, area_id, msg), pred=lambda x: not x.muted_adverts)

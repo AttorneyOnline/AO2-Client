@@ -26,7 +26,7 @@ from server.evidence import EvidenceList
 
 class AreaManager:
     class Area:
-        def __init__(self, area_id, server, name, background, bg_lock, evidence_mod = 'FFA', locking_allowed = False, iniswap_allowed = True, showname_changes_allowed = False, shouts_allowed = True):
+        def __init__(self, area_id, server, name, background, bg_lock, evidence_mod = 'FFA', locking_allowed = False, iniswap_allowed = True, showname_changes_allowed = False, shouts_allowed = True, jukebox = False, abbreviation = ''):
             self.iniswap_allowed = iniswap_allowed
             self.clients = set()
             self.invite_list = {}
@@ -52,6 +52,7 @@ class AreaManager:
             self.locking_allowed = locking_allowed
             self.showname_changes_allowed = showname_changes_allowed
             self.shouts_allowed = shouts_allowed
+            self.abbreviation = abbreviation
             self.owned = False
             self.cards = dict()
 
@@ -63,6 +64,9 @@ class AreaManager:
             """
             
             self.is_locked = False
+
+            self.jukebox = jukebox
+            self.jukebox_votes = []
 
         def new_client(self, client):
             self.clients.add(client)
@@ -109,6 +113,70 @@ class AreaManager:
                 if client.get_char_name() in char_link and char in char_link:
                     return False
             return True
+
+        def add_jukebox_vote(self, client, music_name, length=-1):
+            if length <= 0:
+                self.remove_jukebox_vote(client, False)
+            else:
+                self.remove_jukebox_vote(client, True)
+                self.jukebox_votes.append(self.JukeboxVote(client, music_name, length))
+                client.send_host_message('Your song was added to the jukebox.')
+                if len(self.jukebox_votes) == 1:
+                    self.start_jukebox()
+        
+        def remove_jukebox_vote(self, client, silent):
+            for current_vote in self.jukebox_votes:
+                if current_vote.client.id == client.id:
+                    self.jukebox_votes.remove(current_vote)
+            if not silent:        
+                client.send_host_message('You removed your song from the jukebox.')
+        
+        def get_jukebox_picked(self):
+            if len(self.jukebox_votes) == 0:
+                return None
+            elif len(self.jukebox_votes) == 1:
+                return self.jukebox_votes[0]
+            else:
+                weighted_votes = []
+                for current_vote in self.jukebox_votes:
+                    i = 0
+                    while i < current_vote.chance:
+                        weighted_votes.append(current_vote)
+                        i += 1
+                return random.choice(weighted_votes)
+
+        def start_jukebox(self):
+            # There is a probability that the jukebox feature has been turned off since then,
+            # we should check that.
+            # We also do a check if we were the last to play a song, just in case.
+            if not self.jukebox:
+                if self.current_music_player == 'The Jukebox' and self.current_music_player_ipid == 'has no IPID':
+                    self.current_music = ''
+                return
+
+            vote_picked = self.get_jukebox_picked()
+
+            if vote_picked is None:
+                self.current_music = ''
+                return
+
+            self.send_command('MC', vote_picked.name, vote_picked.client.char_id)
+
+            self.current_music_player = 'The Jukebox'
+            self.current_music_player_ipid = 'has no IPID'
+            self.current_music = vote_picked.name
+            
+            for current_vote in self.jukebox_votes:
+                # Choosing the same song will get your votes down to 0, too.
+                # Don't want the same song twice in a row!
+                if current_vote.name == vote_picked.name:
+                    current_vote.chance = 0
+                else:
+                    current_vote.chance += 1
+
+            if self.music_looper:
+                self.music_looper.cancel()
+            self.music_looper = asyncio.get_event_loop().call_later(vote_picked.length, lambda: self.start_jukebox())
         
         def play_music(self, name, cid, length=-1):
             self.send_command('MC', name, cid)
@@ -188,18 +256,12 @@ class AreaManager:
             for client in self.clients:
                 client.send_command('LE', *self.get_evidence_list(client))
         
-        def get_abbreviation(self):
-            if self.name.lower().startswith("courtroom"):
-                return "CR" + self.name.split()[-1]
-            elif self.name.lower().startswith("area"):
-                return "A" + self.name.split()[-1]
-            elif len(self.name.split()) > 1:
-                return "".join(item[0].upper() for item in self.name.split())
-            elif len(self.name) > 3:
-                return self.name[:3].upper()
-            else:
-                return self.name.upper()
-    
+        class JukeboxVote:
+            def __init__(self, client, name, length):
+                self.client = client
+                self.name = name
+                self.length = length
+                self.chance = 1
 
     def __init__(self, server):
         self.server = server
@@ -221,8 +283,12 @@ class AreaManager:
                 item['showname_changes_allowed'] = False
             if 'shouts_allowed' not in item:
                 item['shouts_allowed'] = True
+            if 'jukebox' not in item:
+                item['jukebox'] = False
+            if 'abbreviation' not in item:
+                item['abbreviation'] = self.get_generated_abbreviation(item['area'])
             self.areas.append(
-                self.Area(self.cur_id, self.server, item['area'], item['background'], item['bglock'], item['evidence_mod'], item['locking_allowed'], item['iniswap_allowed'], item['showname_changes_allowed'], item['shouts_allowed']))
+                self.Area(self.cur_id, self.server, item['area'], item['background'], item['bglock'], item['evidence_mod'], item['locking_allowed'], item['iniswap_allowed'], item['showname_changes_allowed'], item['shouts_allowed'], item['jukebox'], item['abbreviation']))
             self.cur_id += 1
 
     def default_area(self):
@@ -239,3 +305,15 @@ class AreaManager:
             if area.id == num:
                 return area
         raise AreaError('Area not found.')
+
+    def get_generated_abbreviation(self, name):
+        if name.lower().startswith("courtroom"):
+            return "CR" + name.split()[-1]
+        elif name.lower().startswith("area"):
+            return "A" + name.split()[-1]
+        elif len(name.split()) > 1:
+            return "".join(item[0].upper() for item in name.split())
+        elif len(name) > 3:
+            return name[:3].upper()
+        else:
+            return name.upper()

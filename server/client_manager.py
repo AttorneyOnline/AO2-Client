@@ -106,6 +106,8 @@ class ClientManager:
             return True
             
         def disconnect(self):
+            if self.area.jukebox:
+                self.area.remove_jukebox_vote(self, True)
             self.transport.close()
 
         def change_character(self, char_id, force=False):
@@ -171,6 +173,10 @@ class ClientManager:
             if area.is_locked and not self.is_mod and not self.id in area.invite_list:
                 #self.send_host_message('This area is locked - you will be unable to send messages ICly.')
                 raise ClientError("That area is locked!")
+
+            if self.area.jukebox:
+                self.area.remove_jukebox_vote(self, True)
+
             old_area = self.area
             if not area.is_char_available(self.char_id):
                 try:
@@ -203,7 +209,7 @@ class ClientManager:
                     for client in [x for x in area.clients if x.is_cm]:
                         owner = 'MASTER: {}'.format(client.get_char_name())
                         break
-                msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(area.get_abbreviation(), area.name, len(area.clients), area.status, owner, lock[area.is_locked])
+                msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(area.abbreviation, area.name, len(area.clients), area.status, owner, lock[area.is_locked])
                 if self.area == area:
                     msg += ' [*]'
             self.send_host_message(msg)

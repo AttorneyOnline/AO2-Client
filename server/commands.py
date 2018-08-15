@@ -159,6 +159,76 @@ def ooc_cmd_currentmusic(client, arg):
         client.send_host_message('The current music is {} and was played by {}.'.format(client.area.current_music,
                                                                                     client.area.current_music_player))
 
+def ooc_cmd_jukebox_toggle(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    if len(arg) != 0:
+        raise ArgumentError('This command has no arguments.')
+    client.area.jukebox = not client.area.jukebox
+    client.area.send_host_message('A mod has set the jukebox to {}.'.format(client.area.jukebox))
+
+def ooc_cmd_jukebox_skip(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    if len(arg) != 0:
+        raise ArgumentError('This command has no arguments.')
+    if not client.area.jukebox:
+        raise ClientError('This area does not have a jukebox.')
+    if len(client.area.jukebox_votes) == 0:
+        raise ClientError('There is no song playing right now, skipping is pointless.')
+    client.area.start_jukebox()
+    if len(client.area.jukebox_votes) == 1:
+        client.area.send_host_message('A mod has forced a skip, restarting the only jukebox song.')
+    else:
+        client.area.send_host_message('A mod has forced a skip to the next jukebox song.')
+    logger.log_server('[{}][{}]Skipped the current jukebox song.'.format(client.area.id, client.get_char_name()))
+
+def ooc_cmd_jukebox(client, arg):
+    if len(arg) != 0:
+        raise ArgumentError('This command has no arguments.')
+    if not client.area.jukebox:
+        raise ClientError('This area does not have a jukebox.')
+    if len(client.area.jukebox_votes) == 0:
+        client.send_host_message('The jukebox has no songs in it.')
+    else:
+        total = 0
+        songs = []
+        voters = dict()
+        chance = dict()
+        message = ''
+
+        for current_vote in client.area.jukebox_votes:
+            if songs.count(current_vote.name) == 0:
+                songs.append(current_vote.name)
+                voters[current_vote.name] = [current_vote.client]
+                chance[current_vote.name] = current_vote.chance
+            else:
+                voters[current_vote.name].append(current_vote.client)
+                chance[current_vote.name] += current_vote.chance
+            total += current_vote.chance
+        
+        for song in songs:
+            message += '\n- ' + song + '\n'
+            message += '-- VOTERS: '
+            
+            first = True
+            for voter in voters[song]:
+                if first:
+                    first = False
+                else:
+                    message += ', '
+                message += voter.get_char_name() + ' [' + str(voter.id) + ']'
+                if client.is_mod:
+                    message += '(' + str(voter.ipid) + ')'
+            message += '\n'
+
+            if total == 0:
+                message += '-- CHANCE: 100'
+            else:
+                message += '-- CHANCE: ' + str(round(chance[song] / total * 100))
+
+        client.send_host_message('The jukebox has the following songs in it:{}'.format(message))
+
 def ooc_cmd_coinflip(client, arg):
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
