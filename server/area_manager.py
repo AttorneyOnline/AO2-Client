@@ -114,12 +114,12 @@ class AreaManager:
                     return False
             return True
 
-        def add_jukebox_vote(self, client, music_name, length=-1):
+        def add_jukebox_vote(self, client, music_name, length=-1, showname=''):
             if length <= 0:
                 self.remove_jukebox_vote(client, False)
             else:
                 self.remove_jukebox_vote(client, True)
-                self.jukebox_votes.append(self.JukeboxVote(client, music_name, length))
+                self.jukebox_votes.append(self.JukeboxVote(client, music_name, length, showname))
                 client.send_host_message('Your song was added to the jukebox.')
                 if len(self.jukebox_votes) == 1:
                     self.start_jukebox()
@@ -160,7 +160,10 @@ class AreaManager:
                 self.current_music = ''
                 return
 
-            self.send_command('MC', vote_picked.name, vote_picked.client.char_id)
+            if vote_picked.showname == '':
+                self.send_command('MC', vote_picked.name, vote_picked.client.char_id)
+            else:
+                self.send_command('MC', vote_picked.name, vote_picked.client.char_id, vote_picked.showname)
 
             self.current_music_player = 'The Jukebox'
             self.current_music_player_ipid = 'has no IPID'
@@ -257,11 +260,12 @@ class AreaManager:
                 client.send_command('LE', *self.get_evidence_list(client))
         
         class JukeboxVote:
-            def __init__(self, client, name, length):
+            def __init__(self, client, name, length, showname):
                 self.client = client
                 self.name = name
                 self.length = length
                 self.chance = 1
+                self.showname = showname
 
     def __init__(self, server):
         self.server = server
