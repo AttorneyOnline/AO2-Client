@@ -513,6 +513,9 @@ class AOProtocol(asyncio.Protocol):
         RT#<type:string>#%
 
         """
+        if not self.client.area.shouts_allowed:
+            self.client.send_host_message("You cannot use the testimony buttons here!")
+            return
         if self.client.is_muted:  # Checks to see if the client has been muted by a mod
             self.client.send_host_message("You have been muted by a moderator")
             return
