@@ -2255,6 +2255,8 @@ void Courtroom::on_ooc_return_pressed()
     {
       ui_witness_testimony->show();
       ui_cross_examination->show();
+      ui_guilty->show();
+      ui_not_guilty->show();
       ui_defense_minus->show();
       ui_defense_plus->show();
       ui_prosecution_minus->show();
@@ -2264,6 +2266,8 @@ void Courtroom::on_ooc_return_pressed()
     {
       ui_witness_testimony->hide();
       ui_cross_examination->hide();
+      ui_guilty->hide();
+      ui_not_guilty->hide();
       ui_defense_minus->hide();
       ui_defense_plus->hide();
       ui_prosecution_minus->hide();
