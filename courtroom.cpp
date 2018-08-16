@@ -1422,7 +1422,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
       ui_ic_chatlog->textCursor().insertText(p_text, normal);
 
       // If we got too many blocks in the current log, delete some from the top.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
       {
           ui_ic_chatlog->moveCursor(QTextCursor::Start);
           ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
@@ -1454,7 +1454,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
       ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
 
       // If we got too many blocks in the current log, delete some from the bottom.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
       {
           ui_ic_chatlog->moveCursor(QTextCursor::End);
           ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
@@ -1510,7 +1510,7 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
       ui_ic_chatlog->textCursor().insertText(p_songname + ".", italics);
 
       // If we got too many blocks in the current log, delete some from the top.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
       {
           ui_ic_chatlog->moveCursor(QTextCursor::Start);
           ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
@@ -1538,13 +1538,13 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
 
       ui_ic_chatlog->moveCursor(QTextCursor::Start);
 
-      ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+      ui_ic_chatlog->textCursor().insertText(p_name, bold);
 
       ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_songname + ".", italics);
+      ui_ic_chatlog->textCursor().insertText(p_songname + "." + '\n', italics);
 
       // If we got too many blocks in the current log, delete some from the bottom.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks)
+      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
       {
           ui_ic_chatlog->moveCursor(QTextCursor::End);
           ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
