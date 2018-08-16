@@ -64,7 +64,7 @@ class AreaManager:
             """
             
             self.is_locked = False
-
+            self.blankposting_allowed = True
             self.jukebox = jukebox
             self.jukebox_votes = []
 

@@ -89,7 +89,16 @@ def ooc_cmd_allow_iniswap(client, arg):
     client.send_host_message('iniswap is {}.'.format(answer[client.area.iniswap_allowed]))
     return
     
-    
+def ooc_cmd_allow_blankposting(client, arg):
+    if not client.is_mod and not client.is_cm:
+        raise ClientError('You must be authorized to do that.')
+    client.area.blankposting_allowed = not client.area.blankposting_allowed
+    answer = {True: 'allowed', False: 'forbidden'}
+    if client.is_cm:
+        client.area.send_host_message('The CM has set blankposting in the area to {}.'.format(answer[client.area.blankposting_allowed]))
+    else:
+        client.area.send_host_message('A mod has set blankposting in the area to {}.'.format(answer[client.area.blankposting_allowed]))
+    return
     
 def ooc_cmd_roll(client, arg):
     roll_max = 11037
