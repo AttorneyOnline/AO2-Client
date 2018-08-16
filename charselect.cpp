@@ -85,6 +85,7 @@ void Courtroom::set_char_select_page()
 
   for (AOCharButton *i_button : ui_char_button_list)
   {
+    i_button->reset();
     i_button->hide();
     i_button->move(0,0);
   }
@@ -163,6 +164,8 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
       ui_char_button_list_filtered.at(n)->move(x_pos, y_pos);
       ui_char_button_list_filtered.at(n)->show();
 
+      ui_char_button_list_filtered.at(n)->set_taken();
+
       ++x_mod_count;
 
       if (x_mod_count == char_columns)
@@ -189,7 +192,8 @@ void Courtroom::character_loading_finished()
     // Later on, we'll be revealing buttons as we need them.
     for (int n = 0; n < char_list.size(); n++)
     {
-      AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0);
+      AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+      character->reset();
       character->hide();
       character->set_image(char_list.at(n).name);
       ui_char_button_list.append(character);
@@ -207,12 +211,6 @@ void Courtroom::character_loading_finished()
     }
 
     filter_character_list();
-
-    int chars_on_page = max_chars_on_page;
-    if (ui_char_button_list_filtered.size() < max_chars_on_page)
-        chars_on_page = ui_char_button_list_filtered.size();
-    put_button_in_place(0, chars_on_page);
-
 }
 
 void Courtroom::filter_character_list()
