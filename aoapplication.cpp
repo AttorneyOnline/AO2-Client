@@ -48,21 +48,6 @@ void AOApplication::construct_lobby()
   discord->state_lobby();
 
   w_lobby->show();
-
-  // Change the default audio output device to be the one the user has given
-  // in his config.ini file for now.
-  int a = 0;
-  BASS_DEVICEINFO info;
-
-  for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
-  {
-      if (get_audio_output_device() == info.name)
-      {
-          BASS_SetDevice(a);
-          qDebug() << info.name << "was set as the default audio output device.";
-          break;
-      }
-  }
 }
 
 void AOApplication::destruct_lobby()
@@ -125,20 +110,6 @@ QString AOApplication::get_cccc_version_string()
 void AOApplication::reload_theme()
 {
   current_theme = read_theme();
-
-  // This may not be the best place for it, but let's read the audio output device just in case.
-  int a = 0;
-  BASS_DEVICEINFO info;
-
-  for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
-  {
-      if (get_audio_output_device() == info.name)
-      {
-          BASS_SetDevice(a);
-          qDebug() << info.name << "was set as the default audio output device.";
-          break;
-      }
-  }
 }
 
 void AOApplication::set_favorite_list()

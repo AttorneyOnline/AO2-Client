@@ -27,6 +27,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char)
 
   set_volume(m_volume);
 
+  BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
 }
 

@@ -33,6 +33,7 @@ void AOBlipPlayer::blip_tick()
 
   HSTREAM f_stream = m_stream_list[f_cycle];
 
+  BASS_ChannelSetDevice(f_stream, BASS_GetDevice());
   BASS_ChannelPlay(f_stream, false);
 }
 
