@@ -133,7 +133,7 @@ public:
   void play_preanim();
 
   //plays the witness testimony or cross examination animation based on argument
-  void handle_wtce(QString p_wtce);
+  void handle_wtce(QString p_wtce, int variant);
 
   //sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
   //state is an number between 0 and 10 inclusive
@@ -366,6 +366,8 @@ private:
 
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
+  AOButton *ui_guilty;
+  AOButton *ui_not_guilty;
 
   AOButton *ui_change_character;
   AOButton *ui_reload_theme;
@@ -525,6 +527,8 @@ private slots:
 
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();
+  void on_not_guilty_clicked();
+  void on_guilty_clicked();
 
   void on_change_character_clicked();
   void on_reload_theme_clicked();

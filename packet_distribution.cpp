@@ -490,7 +490,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       goto end;
     if (courtroom_constructed)
-      w_courtroom->handle_wtce(f_contents.at(0));
+    {
+      if (f_contents.size() == 1)
+          w_courtroom->handle_wtce(f_contents.at(0), 0);
+      else if (f_contents.size() == 2) {
+          w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
+      }
+    }
   }
   else if (header == "HP")
   {

@@ -157,6 +157,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_toggle = new AOButton(this, ao_app);
   ui_witness_testimony = new AOButton(this, ao_app);
   ui_cross_examination = new AOButton(this, ao_app);
+  ui_guilty = new AOButton(this, ao_app);
+  ui_not_guilty = new AOButton(this, ao_app);
 
   ui_change_character = new AOButton(this, ao_app);
   ui_reload_theme = new AOButton(this, ao_app);
@@ -276,6 +278,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_witness_testimony_clicked()));
   connect(ui_cross_examination, SIGNAL(clicked()), this, SLOT(on_cross_examination_clicked()));
+  connect(ui_guilty, SIGNAL(clicked()), this, SLOT(on_guilty_clicked()));
+  connect(ui_not_guilty, SIGNAL(clicked()), this, SLOT(on_not_guilty_clicked()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
@@ -482,6 +486,11 @@ void Courtroom::set_widgets()
   ui_witness_testimony->set_image("witnesstestimony.png");
   set_size_and_pos(ui_cross_examination, "cross_examination");
   ui_cross_examination->set_image("crossexamination.png");
+
+  set_size_and_pos(ui_guilty, "guilty");
+  ui_guilty->set_image("guilty.png");
+  set_size_and_pos(ui_not_guilty, "not_guilty");
+  ui_not_guilty->set_image("notguilty.png");
 
   set_size_and_pos(ui_change_character, "change_character");
   ui_change_character->setText("Change character");
@@ -739,6 +748,8 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     ui_witness_testimony->show();
     ui_cross_examination->show();
+    ui_not_guilty->show();
+    ui_guilty->show();
     ui_defense_minus->show();
     ui_defense_plus->show();
     ui_prosecution_minus->show();
@@ -748,6 +759,8 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     ui_witness_testimony->hide();
     ui_cross_examination->hide();
+    ui_guilty->hide();
+    ui_not_guilty->hide();
     ui_defense_minus->hide();
     ui_defense_plus->hide();
     ui_prosecution_minus->hide();
@@ -2167,7 +2180,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
 }
 
-void Courtroom::handle_wtce(QString p_wtce)
+void Courtroom::handle_wtce(QString p_wtce, int variant)
 {
   QString sfx_file = "courtroom_sounds.ini";
 
@@ -2185,6 +2198,20 @@ void Courtroom::handle_wtce(QString p_wtce)
     sfx_player->play(ao_app->get_sfx("cross_examination"));
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
+  }
+  else if (p_wtce == "judgeruling")
+  {
+    if (variant == 0)
+    {
+        sfx_player->play(ao_app->get_sfx("not_guilty"));
+        ui_vp_wtce->play("notguilty");
+        testimony_in_progress = false;
+    }
+    else if (variant == 1) {
+        sfx_player->play(ao_app->get_sfx("guilty"));
+        ui_vp_wtce->play("guilty");
+        testimony_in_progress = false;
+    }
   }
 }
 
@@ -2602,6 +2629,26 @@ void Courtroom::on_cross_examination_clicked()
     return;
 
   ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
+
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_not_guilty_clicked()
+{
+  if (is_muted)
+    return;
+
+  ao_app->send_server_packet(new AOPacket("RT#judgeruling#0#%"));
+
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_guilty_clicked()
+{
+  if (is_muted)
+    return;
+
+  ao_app->send_server_packet(new AOPacket("RT#judgeruling#1#%"));
 
   ui_ic_chat_message->setFocus();
 }
