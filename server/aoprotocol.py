@@ -65,7 +65,7 @@ class AOProtocol(asyncio.Protocol):
 
         buf = data
         
-        if not self.client.is_checked and (self.server.ban_manager.is_banned(self.client.ipid) or self.server.ban_manager.is_hdid_banned(self.client.hdid)):
+        if not self.client.is_checked and self.server.ban_manager.is_banned(self.client.ipid):
             self.client.transport.close()
         else:
             self.client.is_checked = True
@@ -165,9 +165,6 @@ class AOProtocol(asyncio.Protocol):
         if not self.validate_net_cmd(args, self.ArgType.STR, needs_auth=False):
             return
         self.client.hdid = args[0]
-        if self.server.ban_manager.is_hdid_banned(self.client.hdid):
-            self.client.disconnect()
-            return
         if self.client.hdid not in self.client.server.hdid_list:
             self.client.server.hdid_list[self.client.hdid] = []
         if self.client.ipid not in self.client.server.hdid_list[self.client.hdid]:
