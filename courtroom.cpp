@@ -811,6 +811,7 @@ void Courtroom::enter_courtroom(int p_cid)
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
 
   ui_char_select_background->hide();
+  ui_ic_chat_name->setPlaceholderText(ao_app->get_showname(f_char));
 
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
