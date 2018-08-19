@@ -731,13 +731,16 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (m_cid == -1)
   {
-    ao_app->discord->state_spectate();
+    if (ao_app->is_discord_enabled())
+      ao_app->discord->state_spectate();
     f_char = "";
   }
   else
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
-    ao_app->discord->state_character(f_char.toStdString());
+
+    if (ao_app->is_discord_enabled())
+      ao_app->discord->state_character(f_char.toStdString());
   }
 
   current_char = f_char;

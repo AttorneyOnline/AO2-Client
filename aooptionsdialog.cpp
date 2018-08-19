@@ -163,6 +163,17 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     GameplayForm->setWidget(8, QFormLayout::FieldRole, MasterServerLineEdit);
 
+    DiscordLabel = new QLabel(formLayoutWidget);
+    DiscordLabel->setText("Discord:");
+    DiscordLabel->setToolTip("If true, allows Discord's Rich Presence to read data about your game. These are: what server you are in, what character are you playing, and how long have you been playing for.");
+
+    GameplayForm->setWidget(9, QFormLayout::LabelRole, DiscordLabel);
+
+    DiscordCheckBox = new QCheckBox(formLayoutWidget);
+    DiscordCheckBox->setChecked(ao_app->is_discord_enabled());
+
+    GameplayForm->setWidget(9, QFormLayout::FieldRole, DiscordCheckBox);
+
     // Here we start the callwords tab.
     CallwordsTab = new QWidget();
     SettingsTabs->addTab(CallwordsTab, "Callwords");
@@ -317,6 +328,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("default_username", UsernameLineEdit->text());
     configini->setValue("show_custom_shownames", ShownameCheckbox->isChecked());
     configini->setValue("master", MasterServerLineEdit->text());
+    configini->setValue("discord", DiscordCheckBox->isChecked());
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 

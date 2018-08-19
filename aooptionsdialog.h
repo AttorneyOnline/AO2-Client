@@ -49,6 +49,8 @@ private:
     QFrame *NetDivider;
     QLabel *MasterServerLabel;
     QLineEdit *MasterServerLineEdit;
+    QLabel *DiscordLabel;
+    QCheckBox *DiscordCheckBox;
     QWidget *CallwordsTab;
     QWidget *verticalLayoutWidget;
     QVBoxLayout *CallwordsLayout;

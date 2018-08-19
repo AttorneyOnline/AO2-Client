@@ -143,8 +143,12 @@ public:
   //Returns the value of default_blip in config.ini
   int get_default_blip();
 
-  //Returns the value of the maximum amount of lines the IC chatlog
-  //may contain, from config.ini.
+  // Returns the value of whether Discord should be enabled on startup
+  // from the config.ini.
+  bool is_discord_enabled();
+
+  // Returns the value of the maximum amount of lines the IC chatlog
+  // may contain, from config.ini.
   int get_max_log_size();
 
   // Returns whether the log should go upwards (new behaviour)
