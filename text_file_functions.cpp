@@ -586,8 +586,11 @@ bool AOApplication::get_blank_blip()
     return result.startsWith("true");
 }
 
-
-
+bool AOApplication::is_discord_enabled()
+{
+    QString result = configini->value("discord", "true").value<QString>();
+    return result.startsWith("true");
+}
 
 
 
