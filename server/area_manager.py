@@ -115,6 +115,8 @@ class AreaManager:
             return True
 
         def add_jukebox_vote(self, client, music_name, length=-1, showname=''):
+            if not self.jukebox:
+                return
             if length <= 0:
                 self.remove_jukebox_vote(client, False)
             else:
@@ -125,6 +127,8 @@ class AreaManager:
                     self.start_jukebox()
         
         def remove_jukebox_vote(self, client, silent):
+            if not self.jukebox:
+                return
             for current_vote in self.jukebox_votes:
                 if current_vote.client.id == client.id:
                     self.jukebox_votes.remove(current_vote)
@@ -132,6 +136,8 @@ class AreaManager:
                 client.send_host_message('You removed your song from the jukebox.')
         
         def get_jukebox_picked(self):
+            if not self.jukebox:
+                return
             if len(self.jukebox_votes) == 0:
                 return None
             elif len(self.jukebox_votes) == 1:

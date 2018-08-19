@@ -812,6 +812,7 @@ def ooc_cmd_blockdj(client, arg):
     for target in targets:
         target.is_dj = False
         target.send_host_message('A moderator muted you from changing the music.')
+        target.area.remove_jukebox_vote(target, True)
     client.send_host_message('blockdj\'d {}.'.format(targets[0].get_char_name()))
 
 def ooc_cmd_unblockdj(client, arg):
