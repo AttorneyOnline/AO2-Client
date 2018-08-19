@@ -29,7 +29,7 @@ void Discord::state_lobby()
 {
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_empty_png";
+  presence.largeImageKey = "aa_cc_icon_new";
   presence.largeImageText = "Omit!";
   presence.instance = 1;
 
@@ -44,7 +44,7 @@ void Discord::state_server(std::string name, std::string server_id)
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_empty_png";
+  presence.largeImageKey = "aa_cc_icon_new";
   presence.largeImageText = "Omit!";
   presence.instance = 1;
 
@@ -70,7 +70,7 @@ void Discord::state_character(std::string name)
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_empty_png";
+  presence.largeImageKey = "aa_cc_icon_new";
   presence.largeImageText = "Omit!";
   presence.instance = 1;
   presence.details = this->server_name.c_str();
@@ -89,7 +89,7 @@ void Discord::state_spectate()
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_empty_png";
+  presence.largeImageKey = "aa_cc_icon_new";
   presence.largeImageText = "Omit!";
   presence.instance = 1;
   presence.details = this->server_name.c_str();
