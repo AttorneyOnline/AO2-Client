@@ -96,7 +96,7 @@ QString AOApplication::get_background_path()
 
 QString AOApplication::get_default_background_path()
 {
-  return get_base_path() + "background/gs4/";
+  return get_base_path() + "background/default/";
 }
 
 QString AOApplication::get_evidence_path()
@@ -118,5 +118,5 @@ QString Courtroom::get_background_path()
 
 QString Courtroom::get_default_background_path()
 {
-  return ao_app->get_base_path() + "background/gs4/";
+  return ao_app->get_base_path() + "background/default/";
 }
