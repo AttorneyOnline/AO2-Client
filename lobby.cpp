@@ -5,9 +5,6 @@
 #include "networkmanager.h"
 #include "aosfxplayer.h"
 
-#include <QDebug>
-#include <QScrollBar>
-
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;

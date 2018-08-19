@@ -4,8 +4,6 @@
 
 #include "file_functions.h"
 
-#include <QDebug>
-
 AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
   m_parent = parent;

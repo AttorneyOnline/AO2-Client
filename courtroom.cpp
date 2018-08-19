@@ -7,14 +7,6 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 
-#include <QDebug>
-#include <QScrollBar>
-#include <QRegExp>
-#include <QBrush>
-#include <QTextCharFormat>
-#include <QFont>
-#include <QInputDialog>
-
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;

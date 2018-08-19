@@ -33,6 +33,15 @@
 #include <QTextBrowser>
 #include <QSpinBox>
 
+#include <QDebug>
+#include <QScrollBar>
+#include <QRegExp>
+#include <QBrush>
+#include <QTextCharFormat>
+#include <QFont>
+#include <QInputDialog>
+#include <QFileDialog>
+
 #include <stack>
 
 class AOApplication;

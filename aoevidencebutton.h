@@ -6,6 +6,7 @@
 
 #include <QPushButton>
 #include <QString>
+#include <QDebug>
 
 class AOEvidenceButton : public QPushButton
 {

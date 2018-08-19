@@ -1,10 +1,5 @@
 #include "discord_rich_presence.h"
 
-#include <cstring>
-#include <ctime>
-
-#include <QDebug>
-
 namespace AttorneyOnline {
 
 Discord::Discord()

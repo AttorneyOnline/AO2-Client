@@ -2,8 +2,6 @@
 
 #include "encryption_functions.h"
 
-#include <QDebug>
-
 AOPacket::AOPacket(QString p_packet_string)
 {
   QStringList packet_contents = p_packet_string.split("#");

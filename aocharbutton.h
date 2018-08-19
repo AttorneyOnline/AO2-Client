@@ -2,11 +2,12 @@
 #define AOCHARBUTTON_H
 
 #include "aoapplication.h"
+#include "aoimage.h"
 
 #include <QPushButton>
 #include <QString>
 #include <QWidget>
-#include "aoimage.h"
+#include <QFile>
 
 class AOCharButton : public QPushButton
 {

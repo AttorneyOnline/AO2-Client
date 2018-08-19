@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "aoevidencedisplay.h"
 
 #include "file_functions.h"

@@ -2,25 +2,6 @@
 #include "aoapplication.h"
 #include "bass.h"
 
-#include <QtCore/QVariant>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QComboBox>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QDialogButtonBox>
-#include <QtWidgets/QFormLayout>
-#include <QtWidgets/QFrame>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QPlainTextEdit>
-#include <QtWidgets/QSpinBox>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
-
-#include <QDirIterator>
-#include <QTextStream>
-
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDialog(parent)
 {
     ao_app = p_ao_app;

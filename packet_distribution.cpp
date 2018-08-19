@@ -7,9 +7,6 @@
 #include "hardware_functions.h"
 #include "debug_functions.h"
 
-#include <QDebug>
-#include <QCryptographicHash>
-
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
   p_packet->net_decode();

@@ -2,12 +2,6 @@
 
 #include "file_functions.h"
 
-#include <QTextStream>
-#include <QStringList>
-#include <QVector>
-#include <QDebug>
-#include <QColor>
-
 /*
  * This may no longer be necessary, if we use the QSettings class.
  *

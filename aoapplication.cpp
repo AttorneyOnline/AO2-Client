@@ -7,10 +7,6 @@
 
 #include "aooptionsdialog.h"
 
-#include <QDebug>
-#include <QRect>
-#include <QDesktopWidget>
-
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   // Create the QSettings class that points to the config.ini.

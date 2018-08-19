@@ -14,6 +14,9 @@
 #include <QProgressBar>
 #include <QTextBrowser>
 
+#include <QDebug>
+#include <QScrollBar>
+
 class AOApplication;
 
 class Lobby : public QMainWindow

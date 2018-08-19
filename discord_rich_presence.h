@@ -4,6 +4,11 @@
 #include <string>
 #include <discord-rpc.h>
 
+#include <cstring>
+#include <ctime>
+
+#include <QDebug>
+
 namespace AttorneyOnline {
 
 class Discord

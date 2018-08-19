@@ -20,6 +20,9 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
+#include <QDirIterator>
+#include <QTextStream>
+
 class AOOptionsDialog: public QDialog
 {
     Q_OBJECT

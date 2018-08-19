@@ -4,9 +4,6 @@
 #include "debug_functions.h"
 #include "lobby.h"
 
-#include <cstring>
-
-
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;

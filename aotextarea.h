@@ -2,6 +2,10 @@
 #define AOTEXTAREA_H
 
 #include <QTextBrowser>
+#include <QScrollBar>
+#include <QTextCursor>
+#include <QRegExp>
+#include <QDebug>
 
 class AOTextArea : public QTextBrowser
 {

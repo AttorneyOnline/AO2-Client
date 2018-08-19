@@ -5,8 +5,6 @@
 #include "debug_functions.h"
 #include "hardware_functions.h"
 
-#include <QDebug>
-
 void Courtroom::construct_char_select()
 {
   ui_char_select_background = new AOImage(this, ao_app);

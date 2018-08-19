@@ -10,6 +10,19 @@
 #include <QFile>
 #include <QSettings>
 
+#include <QDebug>
+#include <QRect>
+#include <QDesktopWidget>
+
+#include <QCryptographicHash>
+
+#include <QDir>
+#include <QStandardPaths>
+
+#include <QTextStream>
+#include <QStringList>
+#include <QColor>
+
 class NetworkManager;
 class Lobby;
 class Courtroom;
