@@ -145,6 +145,24 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     GameplayForm->setWidget(6, QFormLayout::FieldRole, ShownameCheckbox);
 
+    NetDivider = new QFrame(formLayoutWidget);
+    NetDivider->setFrameShape(QFrame::HLine);
+    NetDivider->setFrameShadow(QFrame::Sunken);
+
+    GameplayForm->setWidget(7, QFormLayout::FieldRole, NetDivider);
+
+    MasterServerLabel = new QLabel(formLayoutWidget);
+    MasterServerLabel->setText("Backup MS:");
+    MasterServerLabel->setToolTip("After the built-in server lookups fail, the game will try the address given here and use it as a backup masterserver address.");
+
+    GameplayForm->setWidget(8, QFormLayout::LabelRole, MasterServerLabel);
+
+    QSettings* configini = ao_app->configini;
+    MasterServerLineEdit = new QLineEdit(formLayoutWidget);
+    MasterServerLineEdit->setText(configini->value("master", "").value<QString>());
+
+    GameplayForm->setWidget(8, QFormLayout::FieldRole, MasterServerLineEdit);
+
     // Here we start the callwords tab.
     CallwordsTab = new QWidget();
     SettingsTabs->addTab(CallwordsTab, "Callwords");
@@ -298,6 +316,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("log_maximum", LengthSpinbox->value());
     configini->setValue("default_username", UsernameLineEdit->text());
     configini->setValue("show_custom_shownames", ShownameCheckbox->isChecked());
+    configini->setValue("master", MasterServerLineEdit->text());
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
@@ -319,6 +338,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("blip_rate", BlipRateSpinbox->value());
     configini->setValue("blank_blip", BlankBlipsCheckbox->isChecked());
 
+    callwordsini->close();
     done(0);
 }
 

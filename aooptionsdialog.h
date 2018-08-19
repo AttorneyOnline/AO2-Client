@@ -46,6 +46,9 @@ private:
     QLabel *UsernameLabel;
     QLabel *ShownameLabel;
     QCheckBox *ShownameCheckbox;
+    QFrame *NetDivider;
+    QLabel *MasterServerLabel;
+    QLineEdit *MasterServerLineEdit;
     QWidget *CallwordsTab;
     QWidget *verticalLayoutWidget;
     QVBoxLayout *CallwordsLayout;

@@ -13,13 +13,13 @@
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
+  // Create the QSettings class that points to the config.ini.
+  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
+
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
   QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
                    SLOT(ms_connect_finished(bool, bool)));
-
-  // Create the QSettings class that points to the config.ini.
-  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
 }
 
 AOApplication::~AOApplication()
