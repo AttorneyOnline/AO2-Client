@@ -310,8 +310,8 @@ def ooc_cmd_forcepos(client, arg):
 def ooc_cmd_help(client, arg):
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
-    help_url = 'https://github.com/AttorneyOnline/tsuserver3/blob/master/README.md'
-    help_msg = 'Available commands, source code and issues can be found here: {}'.format(help_url)
+    help_url = 'http://casecafe.byethost14.com/commandlist'
+    help_msg = 'The commands available on this server can be found here: {}'.format(help_url)
     client.send_host_message(help_msg)
         
 def ooc_cmd_kick(client, arg):
