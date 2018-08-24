@@ -81,6 +81,7 @@ class AreaManager:
         
         def unlock(self):
             self.is_locked = False
+            self.blankposting_allowed = True
             self.invite_list = {}
             self.send_host_message('This area is open now.')
         

@@ -643,6 +643,7 @@ def ooc_cmd_uncm(client, arg):
     if client.is_cm:
         client.is_cm = False
         client.area.owned = False
+        client.area.blankposting_allowed = True
         if client.area.is_locked:
             client.area.unlock()
         client.area.send_host_message('{} is no longer CM in this area.'.format(client.get_char_name()))
