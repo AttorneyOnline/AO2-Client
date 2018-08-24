@@ -225,7 +225,10 @@ class ClientManager:
                     sorted_clients.append(client)
             sorted_clients = sorted(sorted_clients, key=lambda x: x.get_char_name())
             for c in sorted_clients:
-                info += '\r\n[{}] {}'.format(c.id, c.get_char_name())
+                info += '\r\n'
+                if c.is_cm:
+                    info +='[CM]'
+                info += '[{}] {}'.format(c.id, c.get_char_name())
                 if self.is_mod:
                     info += ' ({})'.format(c.ipid)
                     info += ': {}'.format(c.name)

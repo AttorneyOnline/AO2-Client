@@ -169,15 +169,20 @@ def ooc_cmd_currentmusic(client, arg):
                                                                                     client.area.current_music_player))
 
 def ooc_cmd_jukebox_toggle(client, arg):
-    if not client.is_mod:
+    if not client.is_mod and not client.is_cm:
         raise ClientError('You must be authorized to do that.')
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
     client.area.jukebox = not client.area.jukebox
-    client.area.send_host_message('A mod has set the jukebox to {}.'.format(client.area.jukebox))
+    changer = 'Unknown'
+    if client.is_cm:
+        changer = 'The CM'
+    elif client.is_mod:
+        changer = 'A mod'
+    client.area.send_host_message('{} has set the jukebox to {}.'.format(changer, client.area.jukebox))
 
 def ooc_cmd_jukebox_skip(client, arg):
-    if not client.is_mod:
+    if not client.is_mod and not client.is_cm:
         raise ClientError('You must be authorized to do that.')
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
@@ -186,10 +191,15 @@ def ooc_cmd_jukebox_skip(client, arg):
     if len(client.area.jukebox_votes) == 0:
         raise ClientError('There is no song playing right now, skipping is pointless.')
     client.area.start_jukebox()
+    changer = 'Unknown'
+    if client.is_cm:
+        changer = 'The CM'
+    elif client.is_mod:
+        changer = 'A mod'
     if len(client.area.jukebox_votes) == 1:
-        client.area.send_host_message('A mod has forced a skip, restarting the only jukebox song.')
+        client.area.send_host_message('{} has forced a skip, restarting the only jukebox song.'.format(changer))
     else:
-        client.area.send_host_message('A mod has forced a skip to the next jukebox song.')
+        client.area.send_host_message('{} has forced a skip to the next jukebox song.'.format(changer))
     logger.log_server('[{}][{}]Skipped the current jukebox song.'.format(client.area.id, client.get_char_name()))
 
 def ooc_cmd_jukebox(client, arg):
