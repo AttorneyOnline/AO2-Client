@@ -79,6 +79,8 @@ private:
     QLabel *BlankBlipsLabel;
     QDialogButtonBox *SettingsButtons;
 
+    bool needs_default_audiodev();
+
 signals:
 
 public slots:

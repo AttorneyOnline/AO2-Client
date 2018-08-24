@@ -19,15 +19,23 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   int a = 0;
   BASS_DEVICEINFO info;
 
-  for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
+  if (ao_app->get_audio_output_device() == "Default")
   {
-      if (ao_app->get_audio_output_device() == info.name)
+      BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
+      BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+  }
+  else
+  {
+      for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
       {
-          BASS_SetDevice(a);
-          BASS_Init(a, 48000, BASS_DEVICE_LATENCY, 0, NULL);
-          BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
-          qDebug() << info.name << "was set as the default audio output device.";
-          break;
+          if (ao_app->get_audio_output_device() == info.name)
+          {
+              BASS_SetDevice(a);
+              BASS_Init(a, 48000, BASS_DEVICE_LATENCY, 0, NULL);
+              BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+              qDebug() << info.name << "was set as the default audio output device.";
+              break;
+          }
       }
   }
 

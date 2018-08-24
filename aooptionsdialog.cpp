@@ -211,6 +211,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     int a = 0;
     BASS_DEVICEINFO info;
 
+    if (needs_default_audiodev())
+    {
+        AudioDeviceCombobox->addItem("Default");
+    }
+
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
     {
         AudioDeviceCombobox->addItem(info.name);
@@ -339,3 +344,17 @@ void AOOptionsDialog::discard_pressed()
 {
     done(0);
 }
+
+#if (defined (_WIN32) || defined (_WIN64))
+bool AOOptionsDialog::needs_default_audiodev()
+{
+    return true;
+}
+#elif (defined (LINUX) || defined (__linux__))
+bool AOOptionsDialog::needs_default_audiodev()
+{
+    return false;
+}
+#else
+#error This operating system is not supported.
+#endif

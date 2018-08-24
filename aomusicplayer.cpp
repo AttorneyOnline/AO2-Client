@@ -21,7 +21,8 @@ void AOMusicPlayer::play(QString p_song)
 
   this->set_volume(m_volume);
 
-  BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
+  if (ao_app->get_audio_output_device() != "Default")
+    BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
 }
 
