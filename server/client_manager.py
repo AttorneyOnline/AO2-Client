@@ -106,8 +106,6 @@ class ClientManager:
             return True
             
         def disconnect(self):
-            if self.area.jukebox:
-                self.area.remove_jukebox_vote(self, True)
             self.transport.close()
 
         def change_character(self, char_id, force=False):
@@ -337,6 +335,8 @@ class ClientManager:
 
             
     def remove_client(self, client):
+        if client.area.jukebox:
+            client.area.remove_jukebox_vote(client, True)
         heappush(self.cur_id, client.id)
         self.clients.remove(client)
 		
