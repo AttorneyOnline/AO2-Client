@@ -3,6 +3,7 @@
 
 #include <QLabel>
 #include <QDebug>
+#include <QMovie>
 
 class Courtroom;
 class AOApplication;
@@ -18,6 +19,7 @@ public:
 
 private:
   QWidget *m_parent;
+  QMovie *m_movie;
   AOApplication *ao_app;
 
 };

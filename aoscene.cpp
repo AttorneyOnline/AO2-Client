@@ -8,6 +8,7 @@ AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
   m_parent = parent;
   ao_app = p_ao_app;
+  m_movie = new QMovie(this);
 }
 
 void AOScene::set_image(QString p_image)
@@ -17,18 +18,31 @@ void AOScene::set_image(QString p_image)
   QString default_path = ao_app->get_default_background_path() + p_image;
 
   QPixmap background(background_path);
-  QPixmap animated_background(animated_background_path);
   QPixmap default_bg(default_path);
 
   int w = this->width();
   int h = this->height();
 
-  if (file_exists(animated_background_path))
-    this->setPixmap(animated_background.scaled(w, h));
+  this->clear();
+  this->setMovie(nullptr);
+
+  m_movie->stop();
+  m_movie->setFileName(animated_background_path);
+  m_movie->setScaledSize(QSize(w, h));
+
+  if (m_movie->isValid())
+  {
+    this->setMovie(m_movie);
+    m_movie->start();
+  }
   else if (file_exists(background_path))
+  {
     this->setPixmap(background.scaled(w, h));
+  }
   else
+  {
     this->setPixmap(default_bg.scaled(w, h));
+  }
 }
 
 void AOScene::set_legacy_desk(QString p_image)
