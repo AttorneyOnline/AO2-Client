@@ -174,6 +174,7 @@ def ooc_cmd_jukebox_toggle(client, arg):
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
     client.area.jukebox = not client.area.jukebox
+    client.area.jukebox_votes = []
     changer = 'Unknown'
     if client.is_cm:
         changer = 'The CM'
