@@ -177,6 +177,7 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 void Courtroom::character_loading_finished()
 {
     // Zeroeth, we'll clear any leftover characters from previous server visits.
+    ao_app->generated_chars = 0;
     if (ui_char_button_list.size() > 0)
     {
         foreach (AOCharButton* item, ui_char_button_list) {
@@ -201,11 +202,14 @@ void Courtroom::character_loading_finished()
 
       // This part here serves as a way of showing to the player that the game is still running, it is
       // just loading the pictures of the characters.
-      ao_app->generated_chars++;
-      int total_loading_size = ao_app->char_list_size * 2 + ao_app->evidence_list_size + ao_app->music_list_size;
-      int loading_value = int(((ao_app->loaded_chars + ao_app->generated_chars + ao_app->loaded_music + ao_app->loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
-      ao_app->w_lobby->set_loading_value(loading_value);
-      ao_app->w_lobby->set_loading_text("Generating chars:\n" + QString::number(ao_app->generated_chars) + "/" + QString::number(ao_app->char_list_size));
+      if (ao_app->lobby_constructed)
+      {
+          ao_app->generated_chars++;
+          int total_loading_size = ao_app->char_list_size * 2 + ao_app->evidence_list_size + ao_app->music_list_size;
+          int loading_value = int(((ao_app->loaded_chars + ao_app->generated_chars + ao_app->loaded_music + ao_app->loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+          ao_app->w_lobby->set_loading_value(loading_value);
+          ao_app->w_lobby->set_loading_text("Generating chars:\n" + QString::number(ao_app->generated_chars) + "/" + QString::number(ao_app->char_list_size));
+      }
     }
 
     filter_character_list();
