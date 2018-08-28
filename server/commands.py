@@ -330,44 +330,61 @@ def ooc_cmd_kick(client, arg):
         raise ClientError('You must be authorized to do that.')
     if len(arg) == 0:
         raise ArgumentError('You must specify a target. Use /kick <ipid>.')
-    targets = client.server.client_manager.get_targets(client, TargetType.IPID, int(arg), False)
-    if targets:
-        for c in targets:
-            logger.log_server('Kicked {}.'.format(c.ipid), client)
-            client.send_host_message("{} was kicked.".format(c.get_char_name()))
-            c.disconnect()
-    else:
-        client.send_host_message("No targets found.")
-        
-def ooc_cmd_ban(client, arg):
-    if not client.is_mod:
-        raise ClientError('You must be authorized to do that.')
-    try:
-        ipid = int(arg.strip())
-    except:
-        raise ClientError('You must specify ipid')
-    try:
-        client.server.ban_manager.add_ban(ipid)
-    except ServerError:
-        raise
-    if ipid != None:
+    args = list(arg.split(' '))
+    client.send_host_message('Attempting to ban {} IPIDs.'.format(len(args)))
+    for raw_ipid in args:
+        try:
+            ipid = int(raw_ipid)
+        except:
+            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
         targets = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
         if targets:
             for c in targets:
+                logger.log_server('Kicked {}.'.format(c.ipid), client)
+                client.send_host_message("{} was kicked.".format(c.get_char_name()))
                 c.disconnect()
-            client.send_host_message('{} clients was kicked.'.format(len(targets)))
-        client.send_host_message('{} was banned.'.format(ipid))
-        logger.log_server('Banned {}.'.format(ipid), client)
+        else:
+            client.send_host_message("No targets with the IPID {} were found.".format(ipid))
+
+def ooc_cmd_ban(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    if len(arg) == 0:
+        raise ArgumentError('You must specify a target. Use /ban <ipid>.')
+    args = list(arg.split(' '))
+    client.send_host_message('Attempting to ban {} IPIDs.'.format(len(args)))
+    for raw_ipid in args:
+        try:
+            ipid = int(raw_ipid)
+        except:
+            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
+        try:
+            client.server.ban_manager.add_ban(ipid)
+        except ServerError:
+            raise
+        if ipid != None:
+            targets = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
+            if targets:
+                for c in targets:
+                    c.disconnect()
+                client.send_host_message('{} clients was kicked.'.format(len(targets)))
+            client.send_host_message('{} was banned.'.format(ipid))
+            logger.log_server('Banned {}.'.format(ipid), client)
         
 def ooc_cmd_unban(client, arg):
     if not client.is_mod:
         raise ClientError('You must be authorized to do that.')
-    try:
-        client.server.ban_manager.remove_ban(int(arg.strip()))
-    except:
-        raise ClientError('You must specify ipid')
-    logger.log_server('Unbanned {}.'.format(arg), client)
-    client.send_host_message('Unbanned {}'.format(arg))
+    if len(arg) == 0:
+        raise ArgumentError('You must specify a target. Use /unban <ipid>.')
+    args = list(arg.split(' '))
+    client.send_host_message('Attempting to unban {} IPIDs.'.format(len(args)))
+    for raw_ipid in args:
+        try:
+            client.server.ban_manager.remove_ban(int(raw_ipid))
+        except:
+            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
+        logger.log_server('Unbanned {}.'.format(raw_ipid), client)
+        client.send_host_message('Unbanned {}'.format(raw_ipid))
     
 def ooc_cmd_play(client, arg):
     if not client.is_mod:
@@ -382,25 +399,49 @@ def ooc_cmd_mute(client, arg):
     if not client.is_mod:
         raise ClientError('You must be authorized to do that.')
     if len(arg) == 0:
-        raise ArgumentError('You must specify a target.')
-    try:
-        c = client.server.client_manager.get_targets(client, TargetType.IPID, int(arg), False)[0]
-        c.is_muted = True
-        client.send_host_message('{} existing client(s).'.format(c.get_char_name()))
-    except:
-        client.send_host_message("No targets found. Use /mute <id> for mute")
+        raise ArgumentError('You must specify a target. Use /mute <ipid>.')
+    args = list(arg.split(' '))
+    client.send_host_message('Attempting to mute {} IPIDs.'.format(len(args)))
+    for raw_ipid in args:
+        try:
+            ipid = int(raw_ipid)
+        except:
+            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
+        try:
+            clients = client.server.client_manager.get_targets(client, TargetType.IPID, int(ipid), False)
+            msg = 'Muted ' + str(ipid) + ' clients'
+            for c in clients:
+                c.is_muted = True
+                msg += ' ' + c.get_char_name() + ' [' + c.id + '],'
+            msg = msg[:-1]
+            msg += '.'
+            client.send_host_message('{}'.format(msg))
+        except:
+            client.send_host_message("No targets found. Use /mute <ipid> for mute.")
 
 def ooc_cmd_unmute(client, arg):
     if not client.is_mod:
         raise ClientError('You must be authorized to do that.')
     if len(arg) == 0:
         raise ArgumentError('You must specify a target.')
-    try:
-        c = client.server.client_manager.get_targets(client, TargetType.IPID, int(arg), False)[0]
-        c.is_muted = False
-        client.send_host_message('{} existing client(s).'.format(c.get_char_name()))
-    except:
-        client.send_host_message("No targets found. Use /mute <id> for mute")
+    args = list(arg.split(' '))
+    client.send_host_message('Attempting to unmute {} IPIDs.'.format(len(args)))
+    for raw_ipid in args:
+        try:
+            ipid = int(raw_ipid)
+        except:
+            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
+        try:
+            clients = client.server.client_manager.get_targets(client, TargetType.IPID, int(ipid), False)
+            msg = 'Unmuted ' + str(ipid) + ' clients'
+            for c in clients:
+                c.is_muted = True
+                msg += ' ' + c.get_char_name() + ' [' + c.id + '],'
+            msg = msg[:-1]
+            msg += '.'
+            client.send_host_message('{}'.format(msg))
+        except:
+            client.send_host_message("No targets found. Use /unmute <ipid> for unmute.")
     
 def ooc_cmd_login(client, arg):
     if len(arg) == 0:
