@@ -12,6 +12,7 @@ class AOSfxPlayer
 {
 public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
+  ~AOSfxPlayer();
 
   void play(QString p_sfx, QString p_char = "");
   void stop();

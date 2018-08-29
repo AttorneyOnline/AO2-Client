@@ -7,6 +7,12 @@ AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
+AOBlipPlayer::~AOBlipPlayer()
+{
+  m_sfxplayer->stop();
+  m_sfxplayer->deleteLater();
+}
+
 void AOBlipPlayer::set_blips(QString p_sfx)
 {
   m_sfxplayer->stop();
@@ -23,6 +29,5 @@ void AOBlipPlayer::blip_tick()
 void AOBlipPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
-  float volume = p_value / 100.0f;
-  m_sfxplayer->setVolume(qreal(volume));
+  m_sfxplayer->setVolume(p_value / 100.0);
 }

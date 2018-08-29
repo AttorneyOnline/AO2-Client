@@ -10,6 +10,7 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 AOMusicPlayer::~AOMusicPlayer()
 {
   m_player->stop();
+  m_player->deleteLater();
 }
 
 void AOMusicPlayer::play(QString p_song)

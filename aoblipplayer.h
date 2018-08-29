@@ -12,6 +12,7 @@ class AOBlipPlayer
 {
 public:
   AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
+  ~AOBlipPlayer();
 
   void set_blips(QString p_sfx);
   void blip_tick();
