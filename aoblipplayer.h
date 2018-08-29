@@ -1,7 +1,6 @@
 #ifndef AOBLIPPLAYER_H
 #define AOBLIPPLAYER_H
 
-#include "bass.h"
 #include "aoapplication.h"
 
 #include <QWidget>

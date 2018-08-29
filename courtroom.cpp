@@ -4,10 +4,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  //initializing sound device
-  BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
-  BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
-
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
 

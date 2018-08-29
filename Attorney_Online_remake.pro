@@ -69,7 +69,6 @@ HEADERS  += lobby.h \
     misc_functions.h \
     aocharmovie.h \
     aoemotebutton.h \
-    bass.h \
     aosfxplayer.h \
     aomusicplayer.h \
     aoblipplayer.h \
@@ -81,15 +80,11 @@ HEADERS  += lobby.h \
     discord_rich_presence.h \
     discord-rpc.h
 
-# 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
-#    AND the compilation output folder. If you want a static link, you'll probably
-#    need the .lib file too. MinGW-GCC is really finicky finding BASS, it seems.
-# 2. You need to compile the Discord Rich Presence SDK separately and add the lib/headers
-#    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
-#    QMake, so this step must be manual.
-unix:LIBS += -L$$PWD -lbass -ldiscord-rpc
-win32:LIBS += -L$$PWD "$$PWD/bass.dll" -ldiscord-rpc #"$$PWD/discord-rpc.dll"
-android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
+#    You need to compile the Discord Rich Presence SDK separately and add the lib/headers.
+#    Discord RPC uses CMake, which does not play nicely with QMake, so this step must be manual.
+
+unix:LIBS += -L$$PWD -ldiscord-rpc
+win32:LIBS += -L$$PWD -ldiscord-rpc #"$$PWD/discord-rpc.dll"
 
 CONFIG += c++11
 
