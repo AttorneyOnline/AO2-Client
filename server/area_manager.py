@@ -168,8 +168,8 @@ class AreaManager:
                 self.current_music = ''
                 return
 
-            if vote_picked.char_id != self.jukebox_prev_char_id or vote_picked.name != self.current_music or len(self.jukebox_votes) > 1:
-                self.jukebox_prev_char_id = vote_picked.char_id
+            if vote_picked.client.char_id != self.jukebox_prev_char_id or vote_picked.name != self.current_music or len(self.jukebox_votes) > 1:
+                self.jukebox_prev_char_id = vote_picked.client.char_id
                 if vote_picked.showname == '':
                     self.send_command('MC', vote_picked.name, vote_picked.client.char_id)
                 else:
