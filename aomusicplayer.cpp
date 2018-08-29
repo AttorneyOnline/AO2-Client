@@ -15,7 +15,7 @@ AOMusicPlayer::~AOMusicPlayer()
 void AOMusicPlayer::play(QString p_song)
 {
   m_player->setMedia(QUrl::fromLocalFile(ao_app->get_music_path(p_song)));
-  this->set_volume(50);
+  this->set_volume(m_volume);
   m_player->play();
 }
 
