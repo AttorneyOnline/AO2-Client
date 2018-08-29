@@ -409,7 +409,10 @@ QString AOApplication::get_char_name(QString p_char)
 QString AOApplication::get_showname(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "showname", "[Options]", "[Time]");
+  QString f_needed = read_char_ini(p_char, "needs_showname", "[Options]", "[Time]");
 
+  if (f_needed.startsWith("false"))
+    return "";
   if (f_result == "")
     return p_char;
   else return f_result;
