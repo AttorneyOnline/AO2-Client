@@ -7,8 +7,7 @@
 #include <QWidget>
 #include <string.h>
 #include <QDebug>
-
-const int BLIP_COUNT = 5;
+#include <QSoundEffect>
 
 class AOBlipPlayer
 {
@@ -24,9 +23,9 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
+  QSoundEffect *m_sfxplayer;
 
   int m_volume;
-  HSTREAM m_stream_list[BLIP_COUNT];
 };
 
 #endif // AOBLIPPLAYER_H
