@@ -168,8 +168,8 @@ public:
   //Returns the sfx with p_identifier from sounds.ini in the current theme path
   QString get_sfx(QString p_identifier);
 
-  //Returns the value of p_search_line within target_tag and terminator_tag
-  QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
+  //Returns the value of p_search_line within group target_tag
+  QString read_char_ini(QString p_char, QString p_search_line, QString target_tag);
 
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
