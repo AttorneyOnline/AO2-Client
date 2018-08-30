@@ -26,6 +26,7 @@ from .exceptions import ClientError, AreaError, ArgumentError, ServerError
 from .fantacrypt import fanta_decrypt
 from .evidence import EvidenceList
 from .websocket import WebSocket
+import unicodedata
 
 
 class AOProtocol(asyncio.Protocol):
@@ -440,6 +441,10 @@ class AOProtocol(asyncio.Protocol):
         if len(self.client.name) > 30:
             self.client.send_host_message('Your OOC name is too long! Limit it to 30 characters.')
             return
+        for c in self.client.name:
+            if unicodedata.category(c) == 'Cf':
+                self.client.send_host_message('You cannot use format characters in your name!')
+                return
         if self.client.name.startswith(self.server.config['hostname']) or self.client.name.startswith('<dollar>G'):
             self.client.send_host_message('That name is reserved!')
             return
