@@ -207,7 +207,7 @@ class ClientManager:
                 owner = 'FREE'
                 if area.owned:
                     for client in [x for x in area.clients if x.is_cm]:
-                        owner = 'MASTER: {}'.format(client.get_char_name())
+                        owner = 'CM: {}'.format(client.get_char_name())
                         break
                 msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(area.abbreviation, area.name, len(area.clients), area.status, owner, lock[area.is_locked])
                 if self.area == area:
@@ -221,6 +221,16 @@ class ClientManager:
             except AreaError:
                 raise
             info += '=== {} ==='.format(area.name)
+            info += '\r\n'
+
+            lock = {True: '[LOCKED]', False: ''}
+            owner = 'FREE'
+            if area.owned:
+                for client in [x for x in area.clients if x.is_cm]:
+                    owner = 'CM: {}'.format(client.get_char_name())
+                    break
+            info += '[{}]: [{} users][{}][{}]{}'.format(area.abbreviation, len(area.clients), area.status, owner, lock[area.is_locked])
+            
             sorted_clients = []
             for client in area.clients:
                 if (not mods) or client.is_mod:
