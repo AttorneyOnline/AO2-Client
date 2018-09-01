@@ -124,7 +124,7 @@ class ClientManager:
             self.send_command('PV', self.id, 'CID', self.char_id)
             self.area.send_command('CharsCheck', *self.get_available_char_list())
             logger.log_server('[{}]Changed character from {} to {}.'
-                              .format(self.area.id, old_char, self.get_char_name()), self)
+                              .format(self.area.abbreviation, old_char, self.get_char_name()), self)
 
         def change_music_cd(self):
             if self.is_mod or self.is_cm:

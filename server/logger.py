@@ -24,6 +24,7 @@ def setup_logger(debug):
     logging.Formatter.converter = time.gmtime
     debug_formatter = logging.Formatter('[%(asctime)s UTC]%(message)s')
     srv_formatter = logging.Formatter('[%(asctime)s UTC]%(message)s')
+    mod_formatter = logging.Formatter('[%(asctime)s UTC]%(message)s')
 
     debug_log = logging.getLogger('debug')
     debug_log.setLevel(logging.DEBUG)
@@ -44,6 +45,14 @@ def setup_logger(debug):
     server_handler.setFormatter(srv_formatter)
     server_log.addHandler(server_handler)
 
+    mod_log = logging.getLogger('mod')
+    mod_log.setLevel(logging.INFO)
+
+    mod_handler = logging.FileHandler('logs/mod.log', encoding='utf-8')
+    mod_handler.setLevel(logging.INFO)
+    mod_handler.setFormatter(mod_formatter)
+    mod_log.addHandler(mod_handler)
+
 
 def log_debug(msg, client=None):
     msg = parse_client_info(client) + msg
@@ -55,10 +64,15 @@ def log_server(msg, client=None):
     logging.getLogger('server').info(msg)
 
 
+def log_mod(msg, client=None):
+    msg = parse_client_info(client) + msg
+    logging.getLogger('mod').info(msg)
+
+
 def parse_client_info(client):
     if client is None:
         return ''
     info = client.get_ip()
     if client.is_mod:
-        return '[{:<15}][{}][MOD]'.format(info, client.id)
-    return '[{:<15}][{}]'.format(info, client.id)
+        return '[{:<15}][{:<3}][{}][MOD]'.format(info, client.id, client.name)
+    return '[{:<15}][{:<3}][{}]'.format(info, client.id, client.name)

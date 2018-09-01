@@ -413,7 +413,7 @@ class AOProtocol(asyncio.Protocol):
         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
                                       sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname)
         self.client.area.set_next_msg_delay(len(msg))
-        logger.log_server('[IC][{}][{}]{}'.format(self.client.area.id, self.client.get_char_name(), msg), self.client)
+        logger.log_server('[IC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(), msg), self.client)
 
         if (self.client.area.is_recording):
             self.client.area.recorded_messages.append(args)
@@ -467,7 +467,7 @@ class AOProtocol(asyncio.Protocol):
                 args[1] = self.client.disemvowel_message(args[1])
             self.client.area.send_command('CT', self.client.name, args[1])
             logger.log_server(
-                '[OOC][{}][{}][{}]{}'.format(self.client.area.id, self.client.get_char_name(), self.client.name,
+                '[OOC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(),
                                              args[1]), self.client)
 
     def net_cmd_mc(self, args):
@@ -504,7 +504,7 @@ class AOProtocol(asyncio.Protocol):
                             return
                         showname = args[2]
                     self.client.area.add_jukebox_vote(self.client, name, length, showname)
-                    logger.log_server('[{}][{}]Added a jukebox vote for {}.'.format(self.client.area.id, self.client.get_char_name(), name), self.client)
+                    logger.log_server('[{}][{}]Added a jukebox vote for {}.'.format(self.client.area.abbreviation, self.client.get_char_name(), name), self.client)
                 else:
                     if len(args) > 2:
                         showname = args[2]
@@ -517,7 +517,7 @@ class AOProtocol(asyncio.Protocol):
                         self.client.area.play_music(name, self.client.char_id, length)
                         self.client.area.add_music_playing(self.client, name)
                     logger.log_server('[{}][{}]Changed music to {}.'
-                                    .format(self.client.area.id, self.client.get_char_name(), name), self.client)
+                                    .format(self.client.area.abbreviation, self.client.get_char_name(), name), self.client)
             except ServerError:
                 return
         except ClientError as ex:
@@ -556,7 +556,7 @@ class AOProtocol(asyncio.Protocol):
         elif len(args) == 2:
             self.client.area.send_command('RT', args[0], args[1])
         self.client.area.add_to_judgelog(self.client, 'used {}'.format(sign))
-        logger.log_server("[{}]{} Used WT/CE".format(self.client.area.id, self.client.get_char_name()), self.client)
+        logger.log_server("[{}]{} Used WT/CE".format(self.client.area.abbreviation, self.client.get_char_name()), self.client)
 
     def net_cmd_hp(self, args):
         """ Sets the penalty bar.
@@ -573,7 +573,7 @@ class AOProtocol(asyncio.Protocol):
             self.client.area.change_hp(args[0], args[1])
             self.client.area.add_to_judgelog(self.client, 'changed the penalties')
             logger.log_server('[{}]{} changed HP ({}) to {}'
-                              .format(self.client.area.id, self.client.get_char_name(), args[0], args[1]), self.client)
+                              .format(self.client.area.abbreviation, self.client.get_char_name(), args[0], args[1]), self.client)
         except AreaError:
             return
 
@@ -633,12 +633,12 @@ class AOProtocol(asyncio.Protocol):
             self.server.send_all_cmd_pred('ZZ', '[{}] {} ({}) in {} without reason (not using the Case Café client?)'
                                       .format(current_time, self.client.get_char_name(), self.client.get_ip(), self.client.area.name), pred=lambda c: c.is_mod)
             self.client.set_mod_call_delay()
-            logger.log_server('[{}][{}]{} called a moderator.'.format(self.client.get_ip(), self.client.area.id, self.client.get_char_name()))
+            logger.log_server('[{}]{} called a moderator.'.format(self.client.area.abbreviation, self.client.get_char_name()), self.client)
         else:
             self.server.send_all_cmd_pred('ZZ', '[{}] {} ({}) in {} with reason: {}'
                                         .format(current_time, self.client.get_char_name(), self.client.get_ip(), self.client.area.name, args[0][:100]), pred=lambda c: c.is_mod)
             self.client.set_mod_call_delay()
-            logger.log_server('[{}][{}]{} called a moderator: {}.'.format(self.client.get_ip(), self.client.area.id, self.client.get_char_name(), args[0]))
+            logger.log_server('[{}]{} called a moderator: {}.'.format(self.client.area.abbreviation, self.client.get_char_name(), args[0]), self.client)
 
     def net_cmd_opKICK(self, args):
         self.net_cmd_ct(['opkick', '/kick {}'.format(args[0])])
