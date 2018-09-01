@@ -809,10 +809,10 @@ def ooc_cmd_ooc_unmute(client, arg):
     if not client.is_mod:
         raise ClientError('You must be authorized to do that.')
     if len(arg) == 0:
-        raise ArgumentError('You must specify a target. Use /ooc_mute <OOC-name>.')
-    targets = client.server.client_manager.get_targets(client, TargetType.ID, arg, False)
+        raise ArgumentError('You must specify a target. Use /ooc_unmute <OOC-name>.')
+    targets = client.server.client_manager.get_ooc_muted_clients()
     if not targets:
-        raise ArgumentError('Target not found. Use /ooc_mute <OOC-name>.')
+        raise ArgumentError('Targets not found. Use /ooc_unmute <OOC-name>.')
     for target in targets:
         target.is_ooc_muted = False
     client.send_host_message('Unmuted {} existing client(s).'.format(len(targets)))
