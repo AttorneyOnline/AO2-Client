@@ -122,6 +122,7 @@ class ClientManager:
             self.char_id = char_id
             self.pos = ''
             self.send_command('PV', self.id, 'CID', self.char_id)
+            self.area.send_command('CharsCheck', *self.get_available_char_list())
             logger.log_server('[{}]Changed character from {} to {}.'
                               .format(self.area.id, old_char, self.get_char_name()), self)
 
@@ -193,6 +194,7 @@ class ClientManager:
             logger.log_server(
                 '[{}]Changed area from {} ({}) to {} ({}).'.format(self.get_char_name(), old_area.name, old_area.id,
                                                                    self.area.name, self.area.id), self)
+            self.area.send_command('CharsCheck', *self.get_available_char_list())
             self.send_command('HP', 1, self.area.hp_def)
             self.send_command('HP', 2, self.area.hp_pro)
             self.send_command('BN', self.area.background)
@@ -276,11 +278,7 @@ class ClientManager:
             self.send_host_message(info)
 			
         def send_done(self):
-            avail_char_ids = set(range(len(self.server.char_list))) - set([x.char_id for x in self.area.clients])
-            char_list = [-1] * len(self.server.char_list)
-            for x in avail_char_ids:
-                char_list[x] = 0
-            self.send_command('CharsCheck', *char_list)
+            self.send_command('CharsCheck', *self.get_available_char_list())
             self.send_command('HP', 1, self.area.hp_def)
             self.send_command('HP', 2, self.area.hp_pro)
             self.send_command('BN', self.area.background)
@@ -291,6 +289,13 @@ class ClientManager:
         def char_select(self):
             self.char_id = -1
             self.send_done()
+
+        def get_available_char_list(self):
+            avail_char_ids = set(range(len(self.server.char_list))) - set([x.char_id for x in self.area.clients])
+            char_list = [-1] * len(self.server.char_list)
+            for x in avail_char_ids:
+                char_list[x] = 0
+            return char_list
 
         def auth_mod(self, password):
             if self.is_mod:

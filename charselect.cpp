@@ -39,6 +39,9 @@ void Courtroom::construct_char_select()
   ui_char_taken->setText("Taken");
   set_size_and_pos(ui_char_taken, "char_taken");
 
+  ui_char_taken->setChecked(true);
+  ui_char_passworded->setChecked(true);
+
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
   connect (char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
@@ -70,6 +73,8 @@ void Courtroom::set_char_select()
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
   ui_char_select_background->set_image("charselect_background.png");
+
+  filter_character_list();
 
   ui_char_search->setFocus();
 }
