@@ -445,7 +445,7 @@ class AOProtocol(asyncio.Protocol):
             if unicodedata.category(c) == 'Cf':
                 self.client.send_host_message('You cannot use format characters in your name!')
                 return
-        if self.client.name.startswith(self.server.config['hostname']) or self.client.name.startswith('<dollar>G'):
+        if self.client.name.startswith(self.server.config['hostname']) or self.client.name.startswith('<dollar>G') or self.client.name.startswith('<dollar>M'):
             self.client.send_host_message('That name is reserved!')
             return
         if args[1].startswith('/'):
