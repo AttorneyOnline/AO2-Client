@@ -216,7 +216,7 @@ class ClientManager:
             self.send_host_message(msg)
 
         def get_area_info(self, area_id, mods):
-            info = ''
+            info = '\r\n'
             try:
                 area = self.server.area_manager.get_area_by_id(area_id)
             except AreaError:
@@ -231,6 +231,8 @@ class ClientManager:
             for client in area.clients:
                 if (not mods) or client.is_mod:
                     sorted_clients.append(client)
+            if not sorted_clients:
+                return ''
             sorted_clients = sorted(sorted_clients, key=lambda x: x.get_char_name())
             for c in sorted_clients:
                 info += '\r\n'
@@ -253,7 +255,7 @@ class ClientManager:
                 for i in range(len(self.server.area_manager.areas)):
                     if len(self.server.area_manager.areas[i].clients) > 0:
                         cnt += len(self.server.area_manager.areas[i].clients)
-                        info += '\r\n{}'.format(self.get_area_info(i, mods))
+                        info += '{}'.format(self.get_area_info(i, mods))
                 info = 'Current online: {}'.format(cnt) + info
             else:
                 try:
