@@ -410,7 +410,7 @@ def ooc_cmd_mute(client, arg):
             ipid = int(raw_ipid)
             clients = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
             if (clients):
-                msg = 'Muted ' + str(ipid) + ' clients'
+                msg = 'Muted the IPID ' + str(ipid) + '\'s following clients:'
                 for c in clients:
                     c.is_muted = True
                     logger.log_server('Muted {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
@@ -436,7 +436,7 @@ def ooc_cmd_unmute(client, arg):
             ipid = int(raw_ipid)
             clients = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
             if (clients):
-                msg = 'Unmuted ' + str(ipid) + ' clients'
+                msg = 'Unmuted the IPID ' + str(ipid) + '\'s following clients::'
                 for c in clients:
                     c.is_muted = False
                     logger.log_server('Unmuted {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
