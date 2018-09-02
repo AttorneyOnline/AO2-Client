@@ -855,13 +855,49 @@ def ooc_cmd_undisemvowel(client, arg):
     try:
         targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)
     except:
-        raise ArgumentError('You must specify a target. Use /disemvowel <id>.')
+        raise ArgumentError('You must specify a target. Use /undisemvowel <id>.')
     if targets:
         for c in targets:
             logger.log_server('Undisemvowelling {}.'.format(c.get_ip()), client)
             logger.log_mod('Undisemvowelling {}.'.format(c.get_ip()), client)
             c.disemvowel = False
         client.send_host_message('Undisemvowelled {} existing client(s).'.format(len(targets)))
+    else:
+        client.send_host_message('No targets found.')
+
+def ooc_cmd_shake(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    elif len(arg) == 0:
+        raise ArgumentError('You must specify a target.')
+    try:
+        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)
+    except:
+        raise ArgumentError('You must specify a target. Use /shake <id>.')
+    if targets:
+        for c in targets:
+            logger.log_server('Shaking {}.'.format(c.get_ip()), client)
+            logger.log_mod('Shaking {}.'.format(c.get_ip()), client)
+            c.shaken = True
+        client.send_host_message('Shook {} existing client(s).'.format(len(targets)))
+    else:
+        client.send_host_message('No targets found.')
+
+def ooc_cmd_unshake(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    elif len(arg) == 0:
+        raise ArgumentError('You must specify a target.')
+    try:
+        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)
+    except:
+        raise ArgumentError('You must specify a target. Use /unshake <id>.')
+    if targets:
+        for c in targets:
+            logger.log_server('Unshaking {}.'.format(c.get_ip()), client)
+            logger.log_mod('Unshaking {}.'.format(c.get_ip()), client)
+            c.shaken = False
+        client.send_host_message('Unshook {} existing client(s).'.format(len(targets)))
     else:
         client.send_host_message('No targets found.')
 

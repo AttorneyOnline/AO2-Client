@@ -403,6 +403,8 @@ class AOProtocol(asyncio.Protocol):
             if pos not in ('def', 'pro', 'hld', 'hlp', 'jud', 'wit'):
                 return
         msg = text[:256]
+        if self.client.shaken:
+            msg = self.client.shake_message(msg)
         if self.client.disemvowel:
             msg = self.client.disemvowel_message(msg)
         self.client.pos = pos
@@ -463,6 +465,8 @@ class AOProtocol(asyncio.Protocol):
             except (ClientError, AreaError, ArgumentError, ServerError) as ex:
                 self.client.send_host_message(ex)
         else:
+            if self.client.shaken:
+                args[1] = self.client.shake_message(args[1])
             if self.client.disemvowel:
                 args[1] = self.client.disemvowel_message(args[1])
             self.client.area.send_command('CT', self.client.name, args[1])

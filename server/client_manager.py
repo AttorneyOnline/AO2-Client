@@ -47,6 +47,7 @@ class ClientManager:
             self.is_cm = False
             self.evi_list = []
             self.disemvowel = False
+            self.shaken = False
             self.muted_global = False
             self.muted_adverts = False
             self.is_muted = False
@@ -334,6 +335,13 @@ class ClientManager:
         def disemvowel_message(self, message):
             message = re.sub("[aeiou]", "", message, flags=re.IGNORECASE)
             return re.sub(r"\s+", " ", message)
+        
+        def shake_message(self, message):
+            import random
+            parts = message.split()
+            random.shuffle(parts)
+            return ' '.join(parts)
+            
 
     def __init__(self, server):
         self.clients = set()
