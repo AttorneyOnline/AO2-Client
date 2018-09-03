@@ -258,6 +258,40 @@ class TsuServer3:
         if self.config['use_district']:
             self.district_client.send_raw_message('NEED#{}#{}#{}#{}'.format(char_name, area_name, area_id, msg))
 
+    def send_arup(self, args):
+        """ Updates the area properties on the Case Café Custom Client.
+
+        Playercount: 
+            ARUP#0#<area1_p: int>#<area2_p: int>#...
+        Status:
+            ARUP#1##<area1_s: string>##<area2_s: string>#...
+        CM:
+            ARUP#2##<area1_cm: string>##<area2_cm: string>#...
+        Lockedness:
+            ARUP#3##<area1_l: bool>##<area2_l: bool>#...
+
+        """
+        if len(args) < 2:
+            # An argument count smaller than 2 means we only got the identifier of ARUP.
+            return
+        if args[0] not in (0,1,2,3):
+            return
+
+        if args[0] in (0, 3):
+            for part_arg in args[1:]:
+                try:
+                    sanitised = int(part_arg)
+                except:
+                    return
+        elif args[0] in (1, 2):
+            for part_arg in args[1:]:
+                try:
+                    sanitised = str(part_arg)
+                except:
+                    return
+        
+        self.send_all_cmd_pred('ARUP', *args, pred=lambda x: True)
+
     def refresh(self):
         with open('config/config.yaml', 'r') as cfg:
             self.config['motd'] = yaml.load(cfg)['motd'].replace('\\n', ' \n')

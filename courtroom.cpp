@@ -116,7 +116,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_server_chatlog->setOpenExternalLinks(true);
 
   ui_mute_list = new QListWidget(this);
-  //ui_area_list = new QListWidget(this);
+  ui_area_list = new QListWidget(this);
+  ui_area_list->hide();
   ui_music_list = new QListWidget(this);
 
   ui_pair_list = new QListWidget(this);
@@ -188,6 +189,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_reload_theme = new AOButton(this, ao_app);
   ui_call_mod = new AOButton(this, ao_app);
   ui_settings = new AOButton(this, ao_app);
+  ui_switch_area_music = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
   ui_pre->setText("Pre");
@@ -273,6 +275,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
   connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
+  connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
 
   connect(ui_hold_it, SIGNAL(clicked()), this, SLOT(on_hold_it_clicked()));
   connect(ui_objection, SIGNAL(clicked()), this, SLOT(on_objection_clicked()));
@@ -309,6 +312,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
   connect(ui_settings, SIGNAL(clicked()), this, SLOT(on_settings_clicked()));
+  connect(ui_switch_area_music, SIGNAL(clicked()), this, SLOT(on_switch_area_music_clicked()));
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
@@ -462,8 +466,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pair_button, "pair_button");
   ui_pair_button->set_image("pair_button.png");
 
-  //set_size_and_pos(ui_area_list, "area_list");
-  //ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  set_size_and_pos(ui_area_list, "music_list");
+  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_music_list, "music_list");
 
@@ -556,6 +560,9 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText("Settings");
+
+  set_size_and_pos(ui_switch_area_music, "switch_area_music");
+  ui_switch_area_music->setText("A/M");
 
   set_size_and_pos(ui_pre, "pre");
   ui_pre->setText("Pre");
@@ -656,6 +663,7 @@ void Courtroom::set_fonts()
   set_font(ui_ms_chatlog, "ms_chatlog");
   set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
+  set_font(ui_area_list, "music_list");
 }
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
@@ -839,6 +847,7 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_flip->hide();
 
   list_music();
+  list_areas();
 
   music_player->set_volume(ui_music_slider->value());
   sfx_player->set_volume(ui_sfx_slider->value());
@@ -889,6 +898,71 @@ void Courtroom::list_music()
         ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
 
       ++n_listed_songs;
+    }
+  }
+}
+
+void Courtroom::list_areas()
+{
+  ui_area_list->clear();
+  area_row_to_number.clear();
+
+  QString f_file = "courtroom_design.ini";
+
+  QBrush free_brush(ao_app->get_color("area_free_color", f_file));
+  QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
+  QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
+  QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
+  QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
+  QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
+  QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
+
+  int n_listed_areas = 0;
+
+  for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
+  {
+    QString i_area = area_list.at(n_area);
+    i_area.append("\n  ");
+
+    i_area.append(arup_statuses.at(n_area));
+    i_area.append(" | CM: ");
+    i_area.append(arup_cms.at(n_area));
+
+    i_area.append("\n  ");
+
+    i_area.append(QString::number(arup_players.at(n_area)));
+    i_area.append(" users | ");
+    if (arup_locks.at(n_area) == true)
+        i_area.append("LOCKED");
+    else
+        i_area.append("OPEN");
+
+    if (i_area.toLower().contains(ui_music_search->text().toLower()))
+    {
+      ui_area_list->addItem(i_area);
+      area_row_to_number.append(n_area);
+
+      // Colouring logic here.
+      ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+      if (arup_locks.at(n_area))
+      {
+          ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
+      }
+      else
+      {
+          if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
+              ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
+          else if (arup_statuses.at(n_area) == "CASING")
+              ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
+          else if (arup_statuses.at(n_area) == "RECESS")
+              ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
+          else if (arup_statuses.at(n_area) == "RP")
+              ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
+          else if (arup_statuses.at(n_area) == "GAMING")
+              ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
+      }
+
+      ++n_listed_areas;
     }
   }
 }
@@ -2535,6 +2609,11 @@ void Courtroom::on_ooc_return_pressed()
     }
     return;
   }
+  else if (ooc_message.startsWith("/switch_am"))
+  {
+      on_switch_area_music_clicked();
+      return;
+  }
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
@@ -2577,6 +2656,7 @@ void Courtroom::on_music_search_edited(QString p_text)
   //preventing compiler warnings
   p_text += "a";
   list_music();
+  list_areas();
 }
 
 void Courtroom::on_pos_dropdown_changed(int p_index)
@@ -2715,6 +2795,12 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
   {
     ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
   }
+}
+
+void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
+{
+    QString p_area = area_list.at(area_row_to_number.at(p_model.row()));
+    ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
 }
 
 void Courtroom::on_hold_it_clicked()
@@ -3062,6 +3148,20 @@ void Courtroom::on_evidence_button_clicked()
   {
     ui_evidence->hide();
   }
+}
+
+void Courtroom::on_switch_area_music_clicked()
+{
+    if (ui_area_list->isHidden())
+    {
+        ui_area_list->show();
+        ui_music_list->hide();
+    }
+    else
+    {
+        ui_area_list->hide();
+        ui_music_list->show();
+    }
 }
 
 void Courtroom::ping_server()

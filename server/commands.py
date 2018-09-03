@@ -691,6 +691,7 @@ def ooc_cmd_cm(client, arg):
         client.is_cm = True
         if client.area.evidence_mod == 'HiddenCM':
             client.area.broadcast_evidence_list()
+        client.server.area_manager.send_arup_cms()
         client.area.send_host_message('{} is CM in this area now.'.format(client.get_char_name()))
      
 def ooc_cmd_uncm(client, arg):
@@ -700,6 +701,7 @@ def ooc_cmd_uncm(client, arg):
         client.area.blankposting_allowed = True
         if client.area.is_locked:
             client.area.unlock()
+        client.server.area_manager.send_arup_cms()
         client.area.send_host_message('{} is no longer CM in this area.'.format(client.get_char_name()))
     else:
         raise ClientError('You cannot give up being the CM when you are not one')
@@ -718,6 +720,7 @@ def ooc_cmd_area_lock(client, arg):
         client.send_host_message('Area is already locked.')
     if client.is_cm:
         client.area.is_locked = True
+        client.server.area_manager.send_arup_lock()
         client.area.send_host_message('Area is locked.')
         for i in client.area.clients:
             client.area.invite_list[i.id] = None

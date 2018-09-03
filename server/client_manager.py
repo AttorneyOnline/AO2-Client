@@ -299,6 +299,12 @@ class ClientManager:
             self.send_command('BN', self.area.background)
             self.send_command('LE', *self.area.get_evidence_list(self))
             self.send_command('MM', 1)
+            
+            self.server.area_manager.send_arup_players()
+            self.server.area_manager.send_arup_status()
+            self.server.area_manager.send_arup_cms()
+            self.server.area_manager.send_arup_lock()
+
             self.send_command('DONE')
 
         def char_select(self):

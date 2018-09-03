@@ -55,6 +55,43 @@ public:
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
+  void append_area(QString f_area){area_list.append(f_area);}
+
+  void fix_last_area()
+  {
+      QString malplaced = area_list.last();
+      area_list.removeLast();
+      append_music(malplaced);
+  }
+
+  void arup_append(int players, QString status, QString cm, bool locked)
+  {
+      arup_players.append(players);
+      arup_statuses.append(status);
+      arup_cms.append(cm);
+      arup_locks.append(locked);
+  }
+
+  void arup_modify(int type, int place, QString value)
+  {
+    if (type == 0)
+    {
+      arup_players[place] = value.toInt();
+    }
+    else if (type == 1)
+    {
+      arup_statuses[place] = value;
+    }
+    else if (type == 2)
+    {
+      arup_cms[place] = value;
+    }
+    else if (type == 3)
+    {
+      arup_locks[place] = (value == "True");
+    }
+    list_areas();
+  }
 
   void character_loading_finished();
 
@@ -118,6 +155,7 @@ public:
 
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
+  void list_areas();
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
@@ -206,10 +244,18 @@ private:
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
+  QVector<QString> area_list;
+
+  QVector<int> arup_players;
+  QVector<QString> arup_statuses;
+  QVector<QString> arup_cms;
+  QVector<bool> arup_locks;
 
   QSignalMapper *char_button_mapper;
 
+  // These map music row items and area row items to their actual IDs.
   QVector<int> music_row_to_number;
+  QVector<int> area_row_to_number;
 
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
@@ -396,6 +442,7 @@ private:
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
   AOButton *ui_settings;
+  AOButton *ui_switch_area_music;
 
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
@@ -502,6 +549,7 @@ private slots:
 
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QModelIndex p_model);
+  void on_area_list_double_clicked(QModelIndex p_model);
 
   void select_emote(int p_id);
 
@@ -583,6 +631,8 @@ private slots:
   void on_spectator_clicked();
 
   void char_clicked(int n_char);
+
+  void on_switch_area_music_clicked();
 
   void ping_server();
 };

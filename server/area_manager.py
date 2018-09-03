@@ -71,12 +71,14 @@ class AreaManager:
 
         def new_client(self, client):
             self.clients.add(client)
+            self.server.area_manager.send_arup_players()
 
         def remove_client(self, client):
             self.clients.remove(client)
             if client.is_cm:
                 client.is_cm = False
                 self.owned = False
+                self.server.area_manager.send_arup_cms()
                 if self.is_locked:
                     self.unlock()
         
@@ -84,6 +86,7 @@ class AreaManager:
             self.is_locked = False
             self.blankposting_allowed = True
             self.invite_list = {}
+            self.server.area_manager.send_arup_lock()
             self.send_host_message('This area is open now.')
         
         def is_char_available(self, char_id):
@@ -240,6 +243,7 @@ class AreaManager:
             if value.lower() == 'lfp':
                 value = 'looking-for-players'
             self.status = value.upper()
+            self.server.area_manager.send_arup_status()
 
         def change_doc(self, doc='No document.'):
             self.doc = doc
@@ -333,3 +337,31 @@ class AreaManager:
             return name[:3].upper()
         else:
             return name.upper()
+
+    def send_arup_players(self):
+        players_list = [0]
+        for area in self.areas:
+            players_list.append(len(area.clients))
+        self.server.send_arup(players_list)
+    
+    def send_arup_status(self):
+        status_list = [1]
+        for area in self.areas:
+            status_list.append(area.status)
+        self.server.send_arup(status_list)
+    
+    def send_arup_cms(self):
+        cms_list = [2]
+        for area in self.areas:
+            cm = 'FREE'
+            for client in area.clients:
+                if client.is_cm:
+                    cm = client.get_char_name()
+            cms_list.append(cm)
+        self.server.send_arup(cms_list)
+    
+    def send_arup_lock(self):
+        lock_list = [3]
+        for area in self.areas:
+            lock_list.append(area.is_locked)
+        self.server.send_arup(lock_list)
