@@ -63,6 +63,7 @@ class ClientManager:
             self.offset_pair = 0
             self.last_sprite = ''
             self.flip = 0
+            self.claimed_folder = ''
             
             #flood-guard stuff
             self.mus_counter = 0

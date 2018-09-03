@@ -85,6 +85,9 @@ public:
   //sets the local mute list based on characters available on the server
   void set_mute_list();
 
+  // Sets the local pair list based on the characters available on the server.
+  void set_pair_list();
+
   //sets desk and bg based on pos in chatmessage
   void set_scene();
 
@@ -246,7 +249,7 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 21;
+  static const int chatmessage_size = 22;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -349,6 +352,10 @@ private:
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
   QListWidget *ui_music_list;
+
+  AOButton *ui_pair_button;
+  QListWidget *ui_pair_list;
+  QSpinBox *ui_pair_offset_spinbox;
 
   QLineEdit *ui_ic_chat_message;
   QLineEdit *ui_ic_chat_name;
@@ -487,6 +494,7 @@ private slots:
   void chat_tick();
 
   void on_mute_list_clicked(QModelIndex p_index);
+  void on_pair_list_clicked(QModelIndex p_index);
 
   void on_chat_return_pressed();
 
@@ -525,6 +533,7 @@ private slots:
   void on_realization_clicked();
 
   void on_mute_clicked();
+  void on_pair_clicked();
 
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();
@@ -538,6 +547,7 @@ private slots:
   void on_blip_slider_moved(int p_value);
 
   void on_log_limit_changed(int value);
+  void on_pair_offset_changed(int value);
 
   void on_ooc_toggle_clicked();
 

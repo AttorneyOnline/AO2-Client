@@ -119,6 +119,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //ui_area_list = new QListWidget(this);
   ui_music_list = new QListWidget(this);
 
+  ui_pair_list = new QListWidget(this);
+  ui_pair_offset_spinbox = new QSpinBox(this);
+  ui_pair_offset_spinbox->setRange(-100,100);
+  ui_pair_offset_spinbox->setSuffix("% offset");
+  ui_pair_button = new AOButton(this, ao_app);
+
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText("Showname");
@@ -310,6 +316,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_showname_enable, SIGNAL(clicked()), this, SLOT(on_showname_enable_clicked()));
 
+  connect(ui_pair_button, SIGNAL(clicked()), this, SLOT(on_pair_clicked()));
+  connect(ui_pair_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_pair_list_clicked(QModelIndex)));
+  connect(ui_pair_offset_spinbox, SIGNAL(valueChanged(int)), this, SLOT(on_pair_offset_changed(int)));
+
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
   set_widgets();
@@ -338,6 +348,21 @@ void Courtroom::set_mute_list()
   {
     //mute_map.insert(i_name, false);
     ui_mute_list->addItem(i_name);
+  }
+}
+
+void Courtroom::set_pair_list()
+{
+  QStringList sorted_pair_list;
+
+  for (char_type i_char : char_list)
+    sorted_pair_list.append(i_char.name);
+
+  sorted_pair_list.sort();
+
+  for (QString i_name : sorted_pair_list)
+  {
+    ui_pair_list->addItem(i_name);
   }
 }
 
@@ -429,6 +454,13 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
+
+  set_size_and_pos(ui_pair_list, "pair_list");
+  ui_pair_list->hide();
+  set_size_and_pos(ui_pair_offset_spinbox, "pair_offset_spinbox");
+  ui_pair_offset_spinbox->hide();
+  set_size_and_pos(ui_pair_button, "pair_button");
+  ui_pair_button->set_image("pair_button.png");
 
   //set_size_and_pos(ui_area_list, "area_list");
   //ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
@@ -697,6 +729,7 @@ void Courtroom::done_received()
   set_char_select_page();
 
   set_mute_list();
+  set_pair_list();
 
   set_char_select();
 
@@ -1009,7 +1042,8 @@ void Courtroom::on_chat_return_pressed()
   }
 
   // If there is someone this user would like to appear with.
-  if (other_charid > -1)
+  // And said someone is not ourselves!
+  if (other_charid > -1 && other_charid != m_cid)
   {
     // First, we'll add a filler in case we haven't set an IC showname.
     if (ui_ic_chat_name->text().isEmpty())
@@ -1285,7 +1319,7 @@ void Courtroom::handle_chatmessage_2()
           {
             vert2_offset = -1 * hor2_offset / 20;
           }
-          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset, ui_viewport->height() * vert2_offset);
+          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, ui_viewport->height() * vert2_offset / 100);
 
           // Finally, we reorder them based on who is more to the right.
           if (hor2_offset <= hor_offset)
@@ -1303,9 +1337,28 @@ void Courtroom::handle_chatmessage_2()
         }
         else
         {
-          // In every other case, the talker is on top.
-          ui_vp_sideplayer_char->raise();
-          ui_vp_player_char->raise();
+          // In every other case, the person more to the left is on top.
+          // With one exception, hlp.
+          // These cases also don't move the characters down.
+          int hor_offset = m_chatmessage[SELF_OFFSET].toInt();
+          ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, 0);
+
+          // We do the same with the second character.
+          int hor2_offset = m_chatmessage[OTHER_OFFSET].toInt();
+          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, 0);
+
+          // Finally, we reorder them based on who is more to the left.
+          // The person more to the left is more in the front.
+          if (hor2_offset >= hor_offset)
+          {
+            ui_vp_sideplayer_char->raise();
+            ui_vp_player_char->raise();
+          }
+          else
+          {
+            ui_vp_player_char->raise();
+            ui_vp_sideplayer_char->raise();
+          }
           ui_vp_desk->raise();
           ui_vp_legacy_desk->raise();
         }
@@ -1314,7 +1367,7 @@ void Courtroom::handle_chatmessage_2()
           ui_vp_sideplayer_char->set_flipped(true);
         else
           ui_vp_sideplayer_char->set_flipped(false);
-        ui_vp_sideplayer_char->play_idle(char_list.at(got_other_charid).name, m_chatmessage[OTHER_EMOTE]);
+        ui_vp_sideplayer_char->play_idle(m_chatmessage[OTHER_NAME], m_chatmessage[OTHER_EMOTE]);
       }
       else
       {
@@ -1366,6 +1419,7 @@ void Courtroom::handle_chatmessage_3()
   {
     ui_vp_desk->hide();
     ui_vp_legacy_desk->hide();
+    ui_vp_sideplayer_char->hide(); // Hide the second character if we're zooming!
 
     if (side == "pro" ||
         side == "hlp" ||
@@ -2599,25 +2653,51 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
     mute_map.insert(f_cid, true);
     f_item->setText(real_char + " [x]");
   }
+}
 
+void Courtroom::on_pair_list_clicked(QModelIndex p_index)
+{
+  QListWidgetItem *f_item = ui_pair_list->item(p_index.row());
+  QString f_char = f_item->text();
+  QString real_char;
 
-
-  /*
   if (f_char.endsWith(" [x]"))
   {
     real_char = f_char.left(f_char.size() - 4);
-    mute_map.remove(real_char);
-    mute_map.insert(real_char, false);
     f_item->setText(real_char);
   }
   else
-  {
     real_char = f_char;
-    mute_map.remove(real_char);
-    mute_map.insert(real_char, true);
-    f_item->setText(real_char + " [x]");
+
+  int f_cid = -1;
+
+  for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
+  {
+    if (char_list.at(n_char).name == real_char)
+      f_cid = n_char;
   }
-  */
+
+  if (f_cid < 0 || f_cid >= char_list.size())
+  {
+    qDebug() << "W: " << real_char << " not present in char_list";
+    return;
+  }
+
+  other_charid = f_cid;
+
+  // Redo the character list.
+  QStringList sorted_pair_list;
+
+  for (char_type i_char : char_list)
+    sorted_pair_list.append(i_char.name);
+
+  sorted_pair_list.sort();
+
+  for (int i = 0; i < ui_pair_list->count(); i++) {
+    ui_pair_list->item(i)->setText(sorted_pair_list.at(i));
+  }
+
+  f_item->setText(real_char + " [x]");
 }
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
@@ -2738,12 +2818,33 @@ void Courtroom::on_mute_clicked()
   if (ui_mute_list->isHidden())
   {
     ui_mute_list->show();
+    ui_pair_list->hide();
+    ui_pair_offset_spinbox->hide();
+    ui_pair_button->set_image("pair_button.png");
     ui_mute->set_image("mute_pressed.png");
   }
   else
   {
     ui_mute_list->hide();
     ui_mute->set_image("mute.png");
+  }
+}
+
+void Courtroom::on_pair_clicked()
+{
+  if (ui_pair_list->isHidden())
+  {
+    ui_pair_list->show();
+    ui_pair_offset_spinbox->show();
+    ui_mute_list->hide();
+    ui_mute->set_image("mute.png");
+    ui_pair_button->set_image("pair_button_pressed.png");
+  }
+  else
+  {
+    ui_pair_list->hide();
+    ui_pair_offset_spinbox->hide();
+    ui_pair_button->set_image("pair_button.png");
   }
 }
 
@@ -2807,6 +2908,11 @@ void Courtroom::on_blip_slider_moved(int p_value)
 void Courtroom::on_log_limit_changed(int value)
 {
   log_maximum_blocks = value;
+}
+
+void Courtroom::on_pair_offset_changed(int value)
+{
+  offset_with_pair = value;
 }
 
 void Courtroom::on_witness_testimony_clicked()

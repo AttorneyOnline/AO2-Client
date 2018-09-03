@@ -420,11 +420,14 @@ class AOProtocol(asyncio.Protocol):
         # and an other offset.
         self.client.charid_pair = charid_pair
         self.client.offset_pair = offset_pair
-        self.client.last_sprite = anim
+        if anim_type not in (5, 6):
+            self.client.last_sprite = anim
         self.client.flip = flip
+        self.client.claimed_folder = folder
         other_offset = 0
         other_emote = ''
         other_flip = 0
+        other_folder = ''
 
         confirmed = False
         if charid_pair > -1:
@@ -434,6 +437,7 @@ class AOProtocol(asyncio.Protocol):
                     other_offset = target.offset_pair
                     other_emote = target.last_sprite
                     other_flip = target.flip
+                    other_folder = target.claimed_folder
                     break
 
         if not confirmed:
@@ -442,7 +446,7 @@ class AOProtocol(asyncio.Protocol):
 
         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
                                       sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
-                                      charid_pair, other_emote, offset_pair, other_offset, other_flip)
+                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip)
         self.client.area.set_next_msg_delay(len(msg))
         logger.log_server('[IC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(), msg), self.client)
 
