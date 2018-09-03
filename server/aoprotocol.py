@@ -335,11 +335,13 @@ class AOProtocol(asyncio.Protocol):
             return
         if not self.client.area.can_send_message(self.client):
             return
+
         if self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
                                      self.ArgType.STR,
                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
+            # Vanilla validation monstrosity.
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color = args
             showname = ""
             charid_pair = -1
@@ -348,7 +350,20 @@ class AOProtocol(asyncio.Protocol):
                                      self.ArgType.STR,
                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
+                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY):
+            # 1.3.0 validation monstrosity.
+            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname = args
+            charid_pair = -1
+            offset_pair = 0
+            if len(showname) > 0 and not self.client.area.showname_changes_allowed:
+                self.client.send_host_message("Showname changes are forbidden in this area!")
+                return
+        elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
+                                     self.ArgType.STR,
+                                     self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
+                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY, self.ArgType.INT, self.ArgType.INT):
+            # 1.4.0 validation monstrosity.
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname, charid_pair, offset_pair = args
             if len(showname) > 0 and not self.client.area.showname_changes_allowed:
                 self.client.send_host_message("Showname changes are forbidden in this area!")
