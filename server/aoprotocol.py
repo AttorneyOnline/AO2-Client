@@ -358,6 +358,9 @@ class AOProtocol(asyncio.Protocol):
         if self.client.area.is_iniswap(self.client, pre, anim, folder) and folder != self.client.get_char_name():
             self.client.send_host_message("Iniswap is blocked in this area")
             return
+        if len(self.client.charcurse) > 0 and folder != self.client.get_char_name():
+            self.client.send_host_message("You may not iniswap while you are charcursed!")
+            return
         if not self.client.area.blankposting_allowed and text == ' ':
             self.client.send_host_message("Blankposting is forbidden in this area!")
             return

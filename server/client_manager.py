@@ -48,6 +48,7 @@ class ClientManager:
             self.evi_list = []
             self.disemvowel = False
             self.shaken = False
+            self.charcurse = []
             self.muted_global = False
             self.muted_adverts = False
             self.is_muted = False
@@ -119,6 +120,10 @@ class ClientManager:
         def change_character(self, char_id, force=False):
             if not self.server.is_valid_char_id(char_id):
                 raise ClientError('Invalid Character ID.')
+            if len(self.charcurse) > 0:
+                if not char_id in self.charcurse:
+                    raise ClientError('Character not available.')
+                force = True
             if not self.area.is_char_available(char_id):
                 if force:
                     for client in self.area.clients:
@@ -312,7 +317,10 @@ class ClientManager:
             self.send_done()
 
         def get_available_char_list(self):
-            avail_char_ids = set(range(len(self.server.char_list))) - set([x.char_id for x in self.area.clients])
+            if len(self.charcurse) > 0:
+                avail_char_ids = set(range(len(self.server.char_list))) and set(self.charcurse)
+            else:
+                avail_char_ids = set(range(len(self.server.char_list))) - set([x.char_id for x in self.area.clients])
             char_list = [-1] * len(self.server.char_list)
             for x in avail_char_ids:
                 char_list[x] = 0

@@ -904,6 +904,73 @@ def ooc_cmd_unshake(client, arg):
     else:
         client.send_host_message('No targets found.')
 
+def ooc_cmd_charcurse(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    elif len(arg) == 0:
+        raise ArgumentError('You must specify a target (an ID) and at least one character ID. Consult /charids for the character IDs.')
+    elif len(arg) == 1:
+        raise ArgumentError('You must specific at least one character ID. Consult /charids for the character IDs.')
+    try:
+        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg[0]), False)
+    except:
+        raise ArgumentError('You must specify a valid target! Make sure it is a valid ID.')
+    if targets:
+        for c in targets:
+            log_msg = ' ' + str(c.get_ip()) + ' to'
+            part_msg = ' [' + str(c.id) + '] to'
+            args = arg[1:].split()
+            for raw_cid in args:
+                try:
+                    cid = int(raw_cid)
+                    c.charcurse.append(cid)
+                    part_msg += ' ' + str(client.server.char_list[cid]) + ','
+                    log_msg += ' ' + str(client.server.char_list[cid]) + ','
+                except:
+                    ArgumentError('' + str(raw_cid) + ' does not look like a valid character ID.')
+            part_msg = part_msg[:-1]
+            part_msg += '.'
+            log_msg = log_msg[:-1]
+            log_msg += '.'
+            c.char_select()
+            logger.log_server('Charcursing' + log_msg, client)
+            logger.log_mod('Charcursing' + log_msg, client)
+            client.send_host_message('Charcursed' + part_msg)
+    else:
+        client.send_host_message('No targets found.')
+
+def ooc_cmd_uncharcurse(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    elif len(arg) == 0:
+        raise ArgumentError('You must specify a target (an ID).')
+    try:
+        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg[0]), False)
+    except:
+        raise ArgumentError('You must specify a valid target! Make sure it is a valid ID.')
+    if targets:
+        for c in targets:
+            if len(c.charcurse) > 0:
+                c.charcurse = []
+                logger.log_server('Uncharcursing {}.'.format(c.get_ip()), client)
+                logger.log_mod('Uncharcursing {}.'.format(c.get_ip()), client)
+                client.send_host_message('Uncharcursed [{}].'.format(c.id))
+                c.char_select()
+            else:
+                client.send_host_message('[{}] is not charcursed.'.format(c.id))
+    else:
+        client.send_host_message('No targets found.')
+
+def ooc_cmd_charids(client, arg):
+    if not client.is_mod:
+        raise ClientError('You must be authorized to do that.')
+    if len(arg) != 0:
+        raise ArgumentError("This command doesn't take any arguments")
+    msg = 'Here is a list of all available characters on the server:'
+    for c in range(0, len(client.server.char_list)):
+        msg += '\n[' + str(c) + '] ' + client.server.char_list[c]
+    client.send_host_message(msg)
+
 def ooc_cmd_blockdj(client, arg):
     if not client.is_mod:
         raise ClientError('You must be authorized to do that.')
