@@ -57,6 +57,12 @@ class ClientManager:
             self.in_rp = False
             self.ipid = ipid
             self.websocket = None
+
+            # Pairing stuff
+            self.charid_pair = -1
+            self.offset_pair = 0
+            self.last_sprite = ''
+            self.flip = 0
             
             #flood-guard stuff
             self.mus_counter = 0

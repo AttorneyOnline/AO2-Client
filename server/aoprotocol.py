@@ -342,12 +342,14 @@ class AOProtocol(asyncio.Protocol):
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color = args
             showname = ""
+            charid_pair = -1
+            offset_pair = 0
         elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
                                      self.ArgType.STR,
                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
-                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR):
-            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname = args
+                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY, self.ArgType.INT, self.ArgType.INT):
+            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname, charid_pair, offset_pair = args
             if len(showname) > 0 and not self.client.area.showname_changes_allowed:
                 self.client.send_host_message("Showname changes are forbidden in this area!")
                 return
@@ -412,8 +414,35 @@ class AOProtocol(asyncio.Protocol):
             if self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos != 'all':
                 self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos = 'all'
                 self.client.area.broadcast_evidence_list()
+        
+        # Here, we check the pair stuff, and save info about it to the client.
+        # Notably, while we only get a charid_pair and an offset, we send back a chair_pair, an emote, a talker offset
+        # and an other offset.
+        self.client.charid_pair = charid_pair
+        self.client.offset_pair = offset_pair
+        self.client.last_sprite = anim
+        self.client.flip = flip
+        other_offset = 0
+        other_emote = ''
+        other_flip = 0
+
+        confirmed = False
+        if charid_pair > -1:
+            for target in self.client.area.clients:
+                if target.char_id == self.client.charid_pair and target.charid_pair == self.client.char_id and target != self.client and target.pos == self.client.pos:
+                    confirmed = True
+                    other_offset = target.offset_pair
+                    other_emote = target.last_sprite
+                    other_flip = target.flip
+                    break
+
+        if not confirmed:
+            charid_pair = -1
+            offset_pair = 0
+
         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
-                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname)
+                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
+                                      charid_pair, other_emote, offset_pair, other_offset, other_flip)
         self.client.area.set_next_msg_delay(len(msg))
         logger.log_server('[IC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(), msg), self.client)
 

@@ -80,6 +80,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_speedlines = new AOMovie(ui_viewport, ao_app);
   ui_vp_speedlines->set_play_once(false);
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
+  ui_vp_sideplayer_char = new AOCharMovie(ui_viewport, ao_app);
+  ui_vp_sideplayer_char->hide();
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
   ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
 
@@ -378,6 +380,9 @@ void Courtroom::set_widgets()
 
   ui_vp_player_char->move(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
+
+  ui_vp_sideplayer_char->move(0, 0);
+  ui_vp_sideplayer_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   //the AO2 desk element
   ui_vp_desk->move(0, 0);
@@ -891,6 +896,12 @@ void Courtroom::on_chat_return_pressed()
   //realization#
   //text_color#%
 
+  // Additionally, in our case:
+
+  //showname#
+  //other_charid#
+  //self_offset#%
+
   QStringList packet_contents;
 
   QString f_side = ao_app->get_char_side(current_char);
@@ -995,6 +1006,19 @@ void Courtroom::on_chat_return_pressed()
   if (!ui_ic_chat_name->text().isEmpty())
   {
     packet_contents.append(ui_ic_chat_name->text());
+  }
+
+  // If there is someone this user would like to appear with.
+  if (other_charid > -1)
+  {
+    // First, we'll add a filler in case we haven't set an IC showname.
+    if (ui_ic_chat_name->text().isEmpty())
+    {
+      packet_contents.append("");
+    }
+
+    packet_contents.append(QString::number(other_charid));
+    packet_contents.append(QString::number(offset_with_pair));
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
@@ -1184,6 +1208,125 @@ void Courtroom::handle_chatmessage_2()
   else
     ui_vp_player_char->set_flipped(false);
 
+  QString side = m_chatmessage[SIDE];
+
+  // Making the second character appear.
+  if (m_chatmessage[OTHER_CHARID].isEmpty())
+  {
+    // If there is no second character, hide 'em, and center the first.
+    ui_vp_sideplayer_char->hide();
+    ui_vp_sideplayer_char->move(0,0);
+
+    ui_vp_player_char->move(0,0);
+  }
+  else
+  {
+    bool ok;
+    int got_other_charid = m_chatmessage[OTHER_CHARID].toInt(&ok);
+    if (ok)
+    {
+      if (got_other_charid > -1)
+      {
+        // If there is, show them!
+        ui_vp_sideplayer_char->show();
+
+        // Depending on where we are, we offset the characters, and reorder their stacking.
+        if (side == "def")
+        {
+          // We also move the character down depending on how far the are to the right.
+          int hor_offset = m_chatmessage[SELF_OFFSET].toInt();
+          int vert_offset = 0;
+          if (hor_offset > 0)
+          {
+            vert_offset = hor_offset / 20;
+          }
+          ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, ui_viewport->height() * vert_offset / 100);
+
+          // We do the same with the second character.
+          int hor2_offset = m_chatmessage[OTHER_OFFSET].toInt();
+          int vert2_offset = 0;
+          if (hor2_offset > 0)
+          {
+            vert2_offset = hor2_offset / 20;
+          }
+          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, ui_viewport->height() * vert2_offset / 100);
+
+          // Finally, we reorder them based on who is more to the left.
+          // The person more to the left is more in the front.
+          if (hor2_offset >= hor_offset)
+          {
+            ui_vp_sideplayer_char->raise();
+            ui_vp_player_char->raise();
+          }
+          else
+          {
+            ui_vp_player_char->raise();
+            ui_vp_sideplayer_char->raise();
+          }
+          ui_vp_desk->raise();
+          ui_vp_legacy_desk->raise();
+        }
+        else if (side == "pro")
+        {
+          // Almost the same thing happens here, but in reverse.
+          int hor_offset = m_chatmessage[SELF_OFFSET].toInt();
+          int vert_offset = 0;
+          if (hor_offset < 0)
+          {
+            // We don't want to RAISE the char off the floor.
+            vert_offset = -1 * hor_offset / 20;
+          }
+          ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, ui_viewport->height() * vert_offset / 100);
+
+          // We do the same with the second character.
+          int hor2_offset = m_chatmessage[OTHER_OFFSET].toInt();
+          int vert2_offset = 0;
+          if (hor2_offset < 0)
+          {
+            vert2_offset = -1 * hor2_offset / 20;
+          }
+          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset, ui_viewport->height() * vert2_offset);
+
+          // Finally, we reorder them based on who is more to the right.
+          if (hor2_offset <= hor_offset)
+          {
+            ui_vp_sideplayer_char->raise();
+            ui_vp_player_char->raise();
+          }
+          else
+          {
+            ui_vp_player_char->raise();
+            ui_vp_sideplayer_char->raise();
+          }
+          ui_vp_desk->raise();
+          ui_vp_legacy_desk->raise();
+        }
+        else
+        {
+          // In every other case, the talker is on top.
+          ui_vp_sideplayer_char->raise();
+          ui_vp_player_char->raise();
+          ui_vp_desk->raise();
+          ui_vp_legacy_desk->raise();
+        }
+        // We should probably also play the other character's idle emote.
+        if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
+          ui_vp_sideplayer_char->set_flipped(true);
+        else
+          ui_vp_sideplayer_char->set_flipped(false);
+        ui_vp_sideplayer_char->play_idle(char_list.at(got_other_charid).name, m_chatmessage[OTHER_EMOTE]);
+      }
+      else
+      {
+          // If the server understands other characters, but there
+          // really is no second character, hide 'em, and center the first.
+          ui_vp_sideplayer_char->hide();
+          ui_vp_sideplayer_char->move(0,0);
+
+          ui_vp_player_char->move(0,0);
+      }
+    }
+  }
 
   switch (emote_mod)
   {
@@ -1216,10 +1359,11 @@ void Courtroom::handle_chatmessage_3()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
+  QString side = m_chatmessage[SIDE];
+
   if (emote_mod == 5 ||
       emote_mod == 6)
   {
-    QString side = m_chatmessage[SIDE];
     ui_vp_desk->hide();
     ui_vp_legacy_desk->hide();
 
@@ -2305,9 +2449,37 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if (ooc_message.startsWith("/settings"))
   {
-     ui_ooc_chat_message->clear();
-     ao_app->call_settings_menu();
-     return;
+    ui_ooc_chat_message->clear();
+    ao_app->call_settings_menu();
+    return;
+  }
+  else if (ooc_message.startsWith("/pair"))
+  {
+    ui_ooc_chat_message->clear();
+    ooc_message.remove(0,6);
+    
+    bool ok;
+    int whom = ooc_message.toInt(&ok);
+    if (ok)
+    {
+      if (whom > -1)
+        other_charid = whom;
+    }
+    return;
+  }
+  else if (ooc_message.startsWith("/offset"))
+  {
+    ui_ooc_chat_message->clear();
+    ooc_message.remove(0,8);
+    
+    bool ok;
+    int off = ooc_message.toInt(&ok);
+    if (ok)
+    {
+      if (off >= -100 && off <= 100)
+        offset_with_pair = off;
+    }
+    return;
   }
 
   QStringList packet_contents;

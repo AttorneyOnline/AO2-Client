@@ -194,6 +194,12 @@ private:
   // in inline blues.
   int inline_blue_depth = 0;
 
+  // The character ID of the character this user wants to appear alongside with.
+  int other_charid = -1;
+
+  // The offset this user has given if they want to appear alongside someone.
+  int offset_with_pair = 0;
+
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
@@ -240,7 +246,7 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 16;
+  static const int chatmessage_size = 21;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -323,6 +329,7 @@ private:
   AOScene *ui_vp_background;
   AOMovie *ui_vp_speedlines;
   AOCharMovie *ui_vp_player_char;
+  AOCharMovie *ui_vp_sideplayer_char;
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
