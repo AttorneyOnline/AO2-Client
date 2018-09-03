@@ -3017,7 +3017,10 @@ void Courtroom::on_call_mod_clicked()
   if (ok)
   {
     text = text.left(100);
-    ao_app->send_server_packet(new AOPacket("ZZ#" + text + "#%"));
+    if (!text.isEmpty())
+        ao_app->send_server_packet(new AOPacket("ZZ#" + text + "#%"));
+    else
+        ao_app->send_server_packet(new AOPacket("ZZ#%"));
   }
 
   ui_ic_chat_message->setFocus();
