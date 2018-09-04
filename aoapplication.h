@@ -69,6 +69,10 @@ public:
   bool improved_loading_enabled = false;
   bool desk_mod_enabled = false;
   bool evidence_enabled = false;
+  bool shownames_enabled = false;
+  bool charpairs_enabled = false;
+  bool arup_enabled = false;
+  bool modcall_reason_enabled = false;
 
   ///////////////loading info///////////////////
 

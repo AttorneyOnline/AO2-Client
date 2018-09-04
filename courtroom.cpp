@@ -437,6 +437,16 @@ void Courtroom::set_widgets()
   ui_pair_offset_spinbox->hide();
   set_size_and_pos(ui_pair_button, "pair_button");
   ui_pair_button->set_image("pair_button.png");
+  if (ao_app->charpairs_enabled)
+  {
+    ui_pair_button->setEnabled(true);
+    ui_pair_button->show();
+  }
+  else
+  {
+    ui_pair_button->setEnabled(false);
+    ui_pair_button->hide();
+  }
 
   set_size_and_pos(ui_area_list, "music_list");
   ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
@@ -833,7 +843,16 @@ void Courtroom::enter_courtroom(int p_cid)
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
 
   ui_char_select_background->hide();
-  ui_ic_chat_name->setPlaceholderText(ao_app->get_showname(f_char));
+  if (ao_app->shownames_enabled)
+  {
+    ui_ic_chat_name->setPlaceholderText(ao_app->get_showname(f_char));
+    ui_ic_chat_name->setEnabled(true);
+  }
+  else
+  {
+    ui_ic_chat_name->setPlaceholderText("---");
+    ui_ic_chat_name->setEnabled(false);
+  }
 
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
@@ -894,44 +913,56 @@ void Courtroom::list_areas()
   for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
   {
     QString i_area = area_list.at(n_area);
-    i_area.append("\n  ");
 
-    i_area.append(arup_statuses.at(n_area));
-    i_area.append(" | CM: ");
-    i_area.append(arup_cms.at(n_area));
+    if (ao_app->arup_enabled)
+    {
+      i_area.append("\n  ");
 
-    i_area.append("\n  ");
+      i_area.append(arup_statuses.at(n_area));
+      i_area.append(" | CM: ");
+      i_area.append(arup_cms.at(n_area));
 
-    i_area.append(QString::number(arup_players.at(n_area)));
-    i_area.append(" users | ");
-    if (arup_locks.at(n_area) == true)
-        i_area.append("LOCKED");
-    else
-        i_area.append("OPEN");
+      i_area.append("\n  ");
+
+      i_area.append(QString::number(arup_players.at(n_area)));
+      i_area.append(" users | ");
+
+      if (arup_locks.at(n_area) == true)
+          i_area.append("LOCKED");
+      else
+          i_area.append("OPEN");
+    }
 
     if (i_area.toLower().contains(ui_music_search->text().toLower()))
     {
       ui_area_list->addItem(i_area);
       area_row_to_number.append(n_area);
 
-      // Colouring logic here.
-      ui_area_list->item(n_listed_areas)->setBackground(free_brush);
-      if (arup_locks.at(n_area))
+      if (ao_app->arup_enabled)
       {
-          ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
+        // Colouring logic here.
+        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+        if (arup_locks.at(n_area))
+        {
+            ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
+        }
+        else
+        {
+            if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
+                ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
+            else if (arup_statuses.at(n_area) == "CASING")
+                ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
+            else if (arup_statuses.at(n_area) == "RECESS")
+                ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
+            else if (arup_statuses.at(n_area) == "RP")
+                ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
+            else if (arup_statuses.at(n_area) == "GAMING")
+                ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
+        }
       }
       else
       {
-          if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-              ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
-          else if (arup_statuses.at(n_area) == "CASING")
-              ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
-          else if (arup_statuses.at(n_area) == "RECESS")
-              ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
-          else if (arup_statuses.at(n_area) == "RP")
-              ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
-          else if (arup_statuses.at(n_area) == "GAMING")
-              ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
+        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
       }
 
       ++n_listed_areas;
@@ -3070,6 +3101,13 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::on_call_mod_clicked()
 {
+  if (!ao_app->modcall_reason_enabled)
+  {
+    ao_app->send_server_packet(new AOPacket("ZZ#%"));
+    ui_ic_chat_message->setFocus();
+    return;
+  }
+
   bool ok;
   QString text = QInputDialog::getText(ui_viewport, "Call a mod",
                                                "Reason for the modcall (optional):", QLineEdit::Normal,

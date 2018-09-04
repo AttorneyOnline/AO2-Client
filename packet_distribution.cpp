@@ -147,6 +147,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     improved_loading_enabled = false;
     desk_mod_enabled = false;
     evidence_enabled = false;
+    shownames_enabled = false;
+    charpairs_enabled = false;
+    arup_enabled = false;
+    modcall_reason_enabled = false;
 
     //workaround for tsuserver4
     if (f_contents.at(0) == "NOENCRYPT")
@@ -192,6 +196,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       desk_mod_enabled = true;
     if (f_packet.contains("evidence",Qt::CaseInsensitive))
       evidence_enabled = true;
+    if (f_packet.contains("cc_customshownames",Qt::CaseInsensitive))
+      shownames_enabled = true;
+    if (f_packet.contains("characterpairs",Qt::CaseInsensitive))
+      charpairs_enabled = true;
+    if (f_packet.contains("arup",Qt::CaseInsensitive))
+      arup_enabled = true;
+    if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
+      modcall_reason_enabled = true;
   }
   else if (header == "PN")
   {
