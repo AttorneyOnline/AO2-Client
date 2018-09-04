@@ -6,7 +6,7 @@
 #include <QWidget>
 #include <string.h>
 #include <QDebug>
-#include <QSoundEffect>
+#include <QMediaPlayer>
 
 class AOBlipPlayer
 {
@@ -23,7 +23,7 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-  QSoundEffect *m_sfxplayer;
+  QMediaPlayer *m_sfxplayer;
 
   int m_volume;
 };
