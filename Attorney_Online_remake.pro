@@ -80,7 +80,8 @@ HEADERS  += lobby.h \
     aoevidencedisplay.h \
     discord_rich_presence.h \
     discord-rpc.h \
-    aooptionsdialog.h
+    aooptionsdialog.h \
+    text_file_functions.h
 
 #    You need to compile the Discord Rich Presence SDK separately and add the lib/headers.
 #    Discord RPC uses CMake, which does not play nicely with QMake, so this step must be manual.
