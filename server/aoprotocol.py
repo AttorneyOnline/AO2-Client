@@ -376,9 +376,16 @@ class AOProtocol(asyncio.Protocol):
         if len(self.client.charcurse) > 0 and folder != self.client.get_char_name():
             self.client.send_host_message("You may not iniswap while you are charcursed!")
             return
-        if not self.client.area.blankposting_allowed and text == ' ':
-            self.client.send_host_message("Blankposting is forbidden in this area!")
-            return
+        if not self.client.area.blankposting_allowed:
+            if text == ' ':
+                self.client.send_host_message("Blankposting is forbidden in this area!")
+                return
+            if text.isspace():
+                self.client.send_host_message("Blankposting is forbidden in this area, and putting more spaces in does not make it not blankposting.")
+                return
+            if len(text.replace(' ', '')) < 3 and text != '<' and text != '>':
+                self.client.send_host_message("While that is not a blankpost, it is still pretty spammy. Try forming sentences.")
+                return
         if msg_type not in ('chat', '0', '1'):
             return
         if anim_type not in (0, 1, 2, 5, 6):
@@ -500,6 +507,9 @@ class AOProtocol(asyncio.Protocol):
                 return
         if self.client.name.startswith(self.server.config['hostname']) or self.client.name.startswith('<dollar>G') or self.client.name.startswith('<dollar>M'):
             self.client.send_host_message('That name is reserved!')
+            return
+        if args[1].startswith(' /'):
+            self.client.send_host_message('Your message was not sent for safety reasons: you left a space before that slash.')
             return
         if args[1].startswith('/'):
             spl = args[1][1:].split(' ', 1)
