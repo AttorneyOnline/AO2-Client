@@ -1,6 +1,5 @@
 #include "aooptionsdialog.h"
 #include "aoapplication.h"
-#include "bass.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDialog(parent)
 {
