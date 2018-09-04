@@ -1384,7 +1384,6 @@ void Courtroom::handle_chatmessage_2()
         else
         {
           // In every other case, the person more to the left is on top.
-          // With one exception, hlp.
           // These cases also don't move the characters down.
           int hor_offset = m_chatmessage[SELF_OFFSET].toInt();
           ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, 0);
@@ -1395,7 +1394,8 @@ void Courtroom::handle_chatmessage_2()
 
           // Finally, we reorder them based on who is more to the left.
           // The person more to the left is more in the front.
-          if (hor2_offset >= hor_offset)
+          if (((hor2_offset >= hor_offset) && !(side == "hld")) || 
+             ((hor2_offset <= hor_offset) && (side == "hld")))
           {
             ui_vp_sideplayer_char->raise();
             ui_vp_player_char->raise();
@@ -1465,7 +1465,10 @@ void Courtroom::handle_chatmessage_3()
   {
     ui_vp_desk->hide();
     ui_vp_legacy_desk->hide();
-    ui_vp_sideplayer_char->hide(); // Hide the second character if we're zooming!
+
+    // Since we're zooming, hide the second character, and centre the first.
+    ui_vp_sideplayer_char->hide(); 
+    ui_vp_player_char->move(0,0);
 
     if (side == "pro" ||
         side == "hlp" ||
