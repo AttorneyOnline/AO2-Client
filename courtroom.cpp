@@ -1394,8 +1394,7 @@ void Courtroom::handle_chatmessage_2()
 
           // Finally, we reorder them based on who is more to the left.
           // The person more to the left is more in the front.
-          if (((hor2_offset >= hor_offset) && !(side == "hld")) || 
-             ((hor2_offset <= hor_offset) && (side == "hld")))
+          if (hor2_offset >= hor_offset)
           {
             ui_vp_sideplayer_char->raise();
             ui_vp_player_char->raise();
