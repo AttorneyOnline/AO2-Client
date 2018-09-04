@@ -654,10 +654,13 @@ def ooc_cmd_reload(client, arg):
 def ooc_cmd_randomchar(client, arg):
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
-    try:
-        free_id = client.area.get_rand_avail_char_id()
-    except AreaError:
-        raise
+    if len(client.charcurse) > 0:
+        free_id = random.choice(client.charcurse)
+    else:
+        try:
+            free_id = client.area.get_rand_avail_char_id()
+        except AreaError:
+            raise
     try:
         client.change_character(free_id)
     except ClientError:
@@ -911,16 +914,16 @@ def ooc_cmd_charcurse(client, arg):
         raise ArgumentError('You must specify a target (an ID) and at least one character ID. Consult /charids for the character IDs.')
     elif len(arg) == 1:
         raise ArgumentError('You must specific at least one character ID. Consult /charids for the character IDs.')
+    args = arg.split()
     try:
-        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg[0]), False)
+        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(args[0]), False)
     except:
         raise ArgumentError('You must specify a valid target! Make sure it is a valid ID.')
     if targets:
         for c in targets:
             log_msg = ' ' + str(c.get_ip()) + ' to'
             part_msg = ' [' + str(c.id) + '] to'
-            args = arg[1:].split()
-            for raw_cid in args:
+            for raw_cid in args[1:]:
                 try:
                     cid = int(raw_cid)
                     c.charcurse.append(cid)
@@ -944,8 +947,9 @@ def ooc_cmd_uncharcurse(client, arg):
         raise ClientError('You must be authorized to do that.')
     elif len(arg) == 0:
         raise ArgumentError('You must specify a target (an ID).')
+    args = arg.split()
     try:
-        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg[0]), False)
+        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(args[0]), False)
     except:
         raise ArgumentError('You must specify a valid target! Make sure it is a valid ID.')
     if targets:
