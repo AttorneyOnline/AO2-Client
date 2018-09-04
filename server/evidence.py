@@ -24,7 +24,16 @@ class EvidenceList:
             
     def __init__(self):
         self.evidences = []
-        self.poses = {'def':['def', 'hld'], 'pro':['pro', 'hlp'], 'wit':['wit'], 'hlp':['hlp', 'pro'], 'hld':['hld', 'def'], 'jud':['jud'], 'all':['hlp', 'hld', 'wit', 'jud', 'pro', 'def', ''], 'pos':[]}
+        self.poses = {'def':['def', 'hld'], 
+                      'pro':['pro', 'hlp'], 
+                      'wit':['wit', 'sea'],
+                      'sea':['sea', 'wit'], 
+                      'hlp':['hlp', 'pro'], 
+                      'hld':['hld', 'def'], 
+                      'jud':['jud', 'jur'],
+                      'jur':['jur', 'jud'], 
+                      'all':['hlp', 'hld', 'wit', 'jud', 'pro', 'def', 'jur', 'sea', ''], 
+                      'pos':[]}
         
     def login(self, client):
         if client.area.evidence_mod == 'FFA':

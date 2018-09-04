@@ -345,8 +345,8 @@ class ClientManager:
             return self.server.char_list[self.char_id]
 
         def change_position(self, pos=''):
-            if pos not in ('', 'def', 'pro', 'hld', 'hlp', 'jud', 'wit'):
-                raise ClientError('Invalid position. Possible values: def, pro, hld, hlp, jud, wit.')
+            if pos not in ('', 'def', 'pro', 'hld', 'hlp', 'jud', 'wit', 'jur', 'sea'):
+                raise ClientError('Invalid position. Possible values: def, pro, hld, hlp, jud, wit, jur, sea.')
             self.pos = pos
 
         def set_mod_call_delay(self):

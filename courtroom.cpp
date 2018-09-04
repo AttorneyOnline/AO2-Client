@@ -137,6 +137,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pos_dropdown->addItem("jud");
   ui_pos_dropdown->addItem("hld");
   ui_pos_dropdown->addItem("hlp");
+  ui_pos_dropdown->addItem("jur");
+  ui_pos_dropdown->addItem("sea");
 
   ui_defense_bar = new AOImage(this, ao_app);
   ui_prosecution_bar = new  AOImage(this, ao_app);
@@ -1482,7 +1484,7 @@ void Courtroom::handle_chatmessage_3()
     //shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     //def jud and hlp should display the evidence icon on the RIGHT side
-    bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud");
+    bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud" || f_side == "jur");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side, ui_sfx_slider->value());
   }
 
@@ -2320,6 +2322,16 @@ void Courtroom::set_scene()
   {
     f_background = "prohelperstand";
     f_desk_image = "prohelperdesk";
+  }
+  else if (f_side == "jur")
+  {
+    f_background = "jurystand";
+    f_desk_image = "jurydesk";
+  }
+  else if (f_side == "sea")
+  {
+    f_background = "seancestand";
+    f_desk_image = "seancedesk";
   }
   else
   {

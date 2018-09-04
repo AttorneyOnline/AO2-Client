@@ -427,7 +427,7 @@ class AOProtocol(asyncio.Protocol):
         if self.client.pos:
             pos = self.client.pos
         else:
-            if pos not in ('def', 'pro', 'hld', 'hlp', 'jud', 'wit'):
+            if pos not in ('def', 'pro', 'hld', 'hlp', 'jud', 'wit', 'jur', 'sea'):
                 return
         msg = text[:256]
         if self.client.shaken:
