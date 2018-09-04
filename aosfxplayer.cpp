@@ -4,12 +4,19 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
   ao_app = p_ao_app;
+  m_sfxplayer = new QSoundEffect();
 }
+
+AOSfxPlayer::~AOSfxPlayer()
+{
+  m_sfxplayer->stop();
+  m_sfxplayer->deleteLater();
+}
+
 
 void AOSfxPlayer::play(QString p_sfx, QString p_char)
 {
-  BASS_ChannelStop(m_stream);
-
+  m_sfxplayer->stop();
   p_sfx = p_sfx.toLower();
 
   QString f_path;
@@ -19,26 +26,19 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char)
   else
     f_path = ao_app->get_sounds_path() + p_sfx;
 
-  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
-
+  m_sfxplayer->setSource(QUrl::fromLocalFile(f_path));
   set_volume(m_volume);
 
-  if (ao_app->get_audio_output_device() != "Default")
-    BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
-  BASS_ChannelPlay(m_stream, false);
+  m_sfxplayer->play();
 }
 
 void AOSfxPlayer::stop()
 {
-  BASS_ChannelStop(m_stream);
+  m_sfxplayer->stop();
 }
 
 void AOSfxPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
-
-  float volume = p_value / 100.0f;
-
-  BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
-
+  m_sfxplayer->setVolume(p_value / 100.0);
 }
