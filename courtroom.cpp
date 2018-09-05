@@ -2010,19 +2010,19 @@ void Courtroom::chat_tick()
       switch (rainbow_counter)
       {
       case 0:
-        html_color = "#FF0000";
+        html_color = get_text_color(QString::number(RED)).name();
         break;
       case 1:
-        html_color = "#FF7F00";
+        html_color = get_text_color(QString::number(ORANGE)).name();
         break;
       case 2:
-        html_color = "#FFFF00";
+        html_color = get_text_color(QString::number(YELLOW)).name();
         break;
       case 3:
-        html_color = "#00FF00";
+        html_color = get_text_color(QString::number(GREEN)).name();
         break;
       default:
-        html_color = "#2d96ff";
+        html_color = get_text_color(QString::number(BLUE)).name();
         rainbow_counter = -1;
       }
 
@@ -2076,7 +2076,7 @@ void Courtroom::chat_tick()
     else if (f_character == "(" and !next_character_is_not_special)
     {
         inline_colour_stack.push(INLINE_BLUE);
-        ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+        ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
 
         // Increase how deep we are in inline blues.
         inline_blue_depth++;
@@ -2096,7 +2096,7 @@ void Courtroom::chat_tick()
         if (inline_colour_stack.top() == INLINE_BLUE)
         {
             inline_colour_stack.pop();
-            ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+            ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
 
             // Decrease how deep we are in inline blues.
             // Just in case, we do a check if we're above zero, but we should be.
@@ -2127,7 +2127,7 @@ void Courtroom::chat_tick()
     else if (f_character == "[" and !next_character_is_not_special)
     {
         inline_colour_stack.push(INLINE_GREY);
-        ui_vp_message->insertHtml("<font color=\"#BBBBBB\">" + f_character + "</font>");
+        ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
     }
     else if (f_character == "]" and !next_character_is_not_special
              and !inline_colour_stack.empty())
@@ -2135,7 +2135,7 @@ void Courtroom::chat_tick()
         if (inline_colour_stack.top() == INLINE_GREY)
         {
             inline_colour_stack.pop();
-            ui_vp_message->insertHtml("<font color=\"#BBBBBB\">" + f_character + "</font>");
+            ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
         }
         else
         {
@@ -2174,16 +2174,16 @@ void Courtroom::chat_tick()
       {
           switch (inline_colour_stack.top()) {
           case INLINE_ORANGE:
-              ui_vp_message->insertHtml("<font color=\"#FF7F00\">" + f_character + "</font>");
+              ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(ORANGE)).name() +"\">" + f_character + "</font>");
               break;
           case INLINE_BLUE:
-              ui_vp_message->insertHtml("<font color=\"#2d96ff\">" + f_character + "</font>");
+              ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
               break;
           case INLINE_GREEN:
-              ui_vp_message->insertHtml("<font color=\"#00FF00\">" + f_character + "</font>");
+              ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(GREEN)).name() +"\">" + f_character + "</font>");
               break;
           case INLINE_GREY:
-              ui_vp_message->insertHtml("<font color=\"#BBBBBB\">" + f_character + "</font>");
+              ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
               break;
           default:
               ui_vp_message->insertHtml(f_character);
@@ -2392,45 +2392,11 @@ void Courtroom::set_text_color()
   style.append(")");
 
   ui_vp_message->setStyleSheet(style);
+}
 
-  /*switch (m_chatmessage[TEXT_COLOR].toInt())
-  {
-  case GREEN:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: rgb(0, 255, 0)");
-    break;
-  case RED:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: red");
-    break;
-  case ORANGE:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: orange");
-    break;
-  case BLUE:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: rgb(45, 150, 255)");
-    break;
-  case YELLOW:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: yellow");
-    break;
-  case PINK:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: pink");
-    break;
-  case CYAN:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: cyan");
-    break;
-  default:
-    qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
-    // fall through
-  case WHITE:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: white");
-
-  }*/
+QColor Courtroom::get_text_color(QString color)
+{
+  return ao_app->get_chat_color(color, ao_app->get_chat(m_chatmessage[CHAR_NAME]));
 }
 
 void Courtroom::set_ip_list(QString p_list)

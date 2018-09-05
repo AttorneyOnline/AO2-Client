@@ -131,6 +131,9 @@ public:
   //sets text color based on text color in chatmessage
   void set_text_color();
 
+  // And gets the colour, too!
+  QColor get_text_color(QString color);
+
   //takes in serverD-formatted IP list as prints a converted version to server OOC
   //admittedly poorly named
   void set_ip_list(QString p_list);
