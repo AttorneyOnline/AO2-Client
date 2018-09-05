@@ -184,6 +184,7 @@ public:
   void handle_song(QStringList *p_contents);
 
   void play_preanim();
+  void play_noninterrupting_preanim();
 
   //plays the witness testimony or cross examination animation based on argument
   void handle_wtce(QString p_wtce, int variant);
@@ -298,7 +299,7 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 22;
+  static const int chatmessage_size = 23;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -319,7 +320,7 @@ private:
 
   bool is_muted = false;
 
-  //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
+  //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 = noniterrupting preanim
   int anim_state = 3;
 
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
@@ -451,6 +452,7 @@ private:
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
 
+  QCheckBox *ui_pre_non_interrupt;
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;

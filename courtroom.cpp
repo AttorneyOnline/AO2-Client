@@ -178,6 +178,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
   ui_showname_enable->setText("Custom shownames");
 
+  ui_pre_non_interrupt = new QCheckBox(this);
+  ui_pre_non_interrupt->setText("No Intrpt");
+
   ui_custom_objection = new AOButton(this, ao_app);
   ui_realization = new AOButton(this, ao_app);
   ui_mute = new AOButton(this, ao_app);
@@ -550,6 +553,9 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_pre, "pre");
   ui_pre->setText("Pre");
+
+  set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
+  ui_pre_non_interrupt->setText("No Intrpt");
 
   set_size_and_pos(ui_flip, "flip");
 
@@ -1012,7 +1018,8 @@ void Courtroom::on_chat_return_pressed()
 
   //showname#
   //other_charid#
-  //self_offset#%
+  //self_offset#
+  //noninterrupting_preanim#%
 
   QStringList packet_contents;
 
@@ -1051,7 +1058,7 @@ void Courtroom::on_chat_return_pressed()
     else
       f_emote_mod = 2;
   }
-  else if (ui_pre->isChecked())
+  else if (ui_pre->isChecked() and !ui_pre_non_interrupt->isChecked())
   {
     if (f_emote_mod == 0)
       f_emote_mod = 1;
@@ -1132,6 +1139,22 @@ void Courtroom::on_chat_return_pressed()
 
     packet_contents.append(QString::number(other_charid));
     packet_contents.append(QString::number(offset_with_pair));
+  }
+
+  if (ui_pre_non_interrupt->isChecked() and ui_pre->isChecked())
+  {
+    if (ui_ic_chat_name->text().isEmpty())
+    {
+      packet_contents.append("");
+    }
+
+    if (!(other_charid > -1 && other_charid != m_cid))
+    {
+      packet_contents.append("-1");
+      packet_contents.append("0");
+    }
+
+    packet_contents.append("1");
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
@@ -1468,7 +1491,10 @@ void Courtroom::handle_chatmessage_2()
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
     //intentional fallthru
   case 0: case 5:
-    handle_chatmessage_3();
+    if (m_chatmessage[NONINTERRUPTING_PRE].isEmpty())
+      handle_chatmessage_3();
+    else
+      play_noninterrupting_preanim();
   }
 }
 
@@ -1915,8 +1941,45 @@ void Courtroom::play_preanim()
 
 }
 
+void Courtroom::play_noninterrupting_preanim()
+{
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_preanim = m_chatmessage[PRE_EMOTE];
+
+  //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
+  int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
+  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
+  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
+
+  int preanim_duration;
+
+  if (ao2_duration < 0)
+    preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
+  else
+    preanim_duration = ao2_duration;
+
+  sfx_delay_timer->start(sfx_delay);
+
+  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif") ||
+      preanim_duration < 0)
+  {
+    anim_state = 4;
+    preanim_done();
+    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif";
+    return;
+  }
+
+  ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
+  anim_state = 4;
+  if (text_delay >= 0)
+    text_delay_timer->start(text_delay);
+
+  handle_chatmessage_3();
+}
+
 void Courtroom::preanim_done()
 {
+  anim_state = 1;
   handle_chatmessage_3();
 }
 
@@ -1927,12 +1990,13 @@ void Courtroom::realization_done()
 
 void Courtroom::start_chat_ticking()
 {
-  ui_vp_message->clear();
-  set_text_color();
-  rainbow_counter = 0;
   //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
   if (text_state != 0)
     return;
+
+  ui_vp_message->clear();
+  set_text_color();
+  rainbow_counter = 0;
 
   if (chatmessage_is_empty)
   {
@@ -1992,8 +2056,11 @@ void Courtroom::chat_tick()
   if (tick_pos >= f_message.size())
   {
     text_state = 2;
-    anim_state = 3;
-    ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+    if (anim_state != 4)
+    {
+      anim_state = 3;
+      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+    }
   }
 
   else
@@ -2083,7 +2150,7 @@ void Courtroom::chat_tick()
 
         // Here, we check if the entire message is blue.
         // If it isn't, we stop talking.
-        if (!entire_message_is_blue)
+        if (!entire_message_is_blue and anim_state != 4)
         {
           QString f_char = m_chatmessage[CHAR_NAME];
           QString f_emote = m_chatmessage[EMOTE];
@@ -2107,7 +2174,7 @@ void Courtroom::chat_tick()
               // If it isn't, we start talking if we have completely climbed out of inline blues.
               if (!entire_message_is_blue)
               {
-                if (inline_blue_depth == 0)
+                if (inline_blue_depth == 0 and anim_state != 4)
                 {
                   QString f_char = m_chatmessage[CHAR_NAME];
                   QString f_emote = m_chatmessage[EMOTE];
@@ -2566,18 +2633,23 @@ void Courtroom::on_ooc_return_pressed()
     }
   }
   else if (ooc_message.startsWith("/login"))
+  {
     ui_guard->show();
+    append_server_chatmessage("CLIENT", "You were granted the Guard button.");
+  }
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
     //ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
     //rainbow_appended = true;
+    append_server_chatmessage("CLIENT", "This does nohing, but there you go.");
     return;
   }
   else if (ooc_message.startsWith("/settings"))
   {
     ui_ooc_chat_message->clear();
     ao_app->call_settings_menu();
+    append_server_chatmessage("CLIENT", "You opened the settings menu.");
     return;
   }
   else if (ooc_message.startsWith("/pair"))
@@ -2590,7 +2662,21 @@ void Courtroom::on_ooc_return_pressed()
     if (ok)
     {
       if (whom > -1)
+      {
         other_charid = whom;
+        QString msg = "You will now pair up with ";
+        msg.append(char_list.at(whom).name);
+        msg.append(" if they also choose your character in return.");
+        append_server_chatmessage("CLIENT", msg);
+      }
+      else
+      {
+        append_server_chatmessage("CLIENT", "You are no longer paired with anyone.");
+      }
+    }
+    else
+    {
+      append_server_chatmessage("CLIENT", "Are you sure you typed that well? The char ID could not be recognised.");
     }
     return;
   }
@@ -2604,23 +2690,49 @@ void Courtroom::on_ooc_return_pressed()
     if (ok)
     {
       if (off >= -100 && off <= 100)
+      {
         offset_with_pair = off;
+        QString msg = "You have set your offset to ";
+        msg.append(QString::number(off));
+        msg.append("%.");
+        append_server_chatmessage("CLIENT", msg);
+      }
+      else
+      {
+        append_server_chatmessage("CLIENT", "Your offset must be between -100% and 100%!");
+      }
+    }
+    else
+    {
+      append_server_chatmessage("CLIENT", "That offset does not look like one.");
     }
     return;
   }
   else if (ooc_message.startsWith("/switch_am"))
   {
+      append_server_chatmessage("CLIENT", "You switched your music and area list.");
       on_switch_area_music_clicked();
       ui_ooc_chat_message->clear();
       return;
   }
   else if (ooc_message.startsWith("/enable_blocks"))
   {
+    append_server_chatmessage("CLIENT", "You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.");
     ao_app->shownames_enabled = true;
     ao_app->charpairs_enabled = true;
     ao_app->arup_enabled = true;
     ao_app->modcall_reason_enabled = true;
     on_reload_theme_clicked();
+    ui_ooc_chat_message->clear();
+    return;
+  }
+  else if (ooc_message.startsWith("/non_int_pre"))
+  {
+    if (ui_pre_non_interrupt->isChecked())
+      append_server_chatmessage("CLIENT", "Your pre-animations interrupt again.");
+    else
+      append_server_chatmessage("CLIENT", "Your pre-animations will not interrupt text.");
+    ui_pre_non_interrupt->setChecked(!ui_pre_non_interrupt->isChecked());
     ui_ooc_chat_message->clear();
     return;
   }

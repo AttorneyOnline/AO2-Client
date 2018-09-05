@@ -346,6 +346,7 @@ class AOProtocol(asyncio.Protocol):
             showname = ""
             charid_pair = -1
             offset_pair = 0
+            nonint_pre = ''
         elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
                                      self.ArgType.STR,
                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
@@ -355,6 +356,7 @@ class AOProtocol(asyncio.Protocol):
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname = args
             charid_pair = -1
             offset_pair = 0
+            nonint_pre = ''
             if len(showname) > 0 and not self.client.area.showname_changes_allowed:
                 self.client.send_host_message("Showname changes are forbidden in this area!")
                 return
@@ -363,8 +365,19 @@ class AOProtocol(asyncio.Protocol):
                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY, self.ArgType.INT, self.ArgType.INT):
-            # 1.4.0 validation monstrosity.
+            # 1.3.5 validation monstrosity.
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname, charid_pair, offset_pair = args
+            nonint_pre = ''
+            if len(showname) > 0 and not self.client.area.showname_changes_allowed:
+                self.client.send_host_message("Showname changes are forbidden in this area!")
+                return
+        elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
+                                     self.ArgType.STR,
+                                     self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
+                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
+                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
+            # 1.4.0 validation monstrosity.
+            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname, charid_pair, offset_pair, nonint_pre = args
             if len(showname) > 0 and not self.client.area.showname_changes_allowed:
                 self.client.send_host_message("Showname changes are forbidden in this area!")
                 return
@@ -383,7 +396,7 @@ class AOProtocol(asyncio.Protocol):
             if text.isspace():
                 self.client.send_host_message("Blankposting is forbidden in this area, and putting more spaces in does not make it not blankposting.")
                 return
-            if len(text.replace(' ', '')) < 3 and text != '<' and text != '>':
+            if len(re.sub(r'[{}\\`|]','', text).replace(' ', '')) < 3 and text != '<' and text != '>':
                 self.client.send_host_message("While that is not a blankpost, it is still pretty spammy. Try forming sentences.")
                 return
         if msg_type not in ('chat', '0', '1'):
@@ -405,6 +418,13 @@ class AOProtocol(asyncio.Protocol):
         if len(showname) > 15:
             self.client.send_host_message("Your IC showname is way too long!")
             return
+        if self.client.area.non_int_pres_only:
+            if anim_type == 1 or anim_type == 2:
+                anim_type = 0
+                nonint_pre = 1
+            elif anim_type == 6:
+                anim_type = 5
+                nonint_pre = 1
         if not self.client.area.shouts_allowed:
             # Old clients communicate the objecting in anim_type.
             if anim_type == 2:
@@ -471,7 +491,7 @@ class AOProtocol(asyncio.Protocol):
 
         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
                                       sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
-                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip)
+                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip, nonint_pre)
         self.client.area.set_next_msg_delay(len(msg))
         logger.log_server('[IC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(), msg), self.client)
 

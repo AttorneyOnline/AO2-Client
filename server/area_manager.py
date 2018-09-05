@@ -26,7 +26,7 @@ from server.evidence import EvidenceList
 
 class AreaManager:
     class Area:
-        def __init__(self, area_id, server, name, background, bg_lock, evidence_mod = 'FFA', locking_allowed = False, iniswap_allowed = True, showname_changes_allowed = False, shouts_allowed = True, jukebox = False, abbreviation = ''):
+        def __init__(self, area_id, server, name, background, bg_lock, evidence_mod = 'FFA', locking_allowed = False, iniswap_allowed = True, showname_changes_allowed = False, shouts_allowed = True, jukebox = False, abbreviation = '', non_int_pres_only = False):
             self.iniswap_allowed = iniswap_allowed
             self.clients = set()
             self.invite_list = {}
@@ -65,6 +65,7 @@ class AreaManager:
             
             self.is_locked = False
             self.blankposting_allowed = True
+            self.non_int_pres_only = non_int_pres_only
             self.jukebox = jukebox
             self.jukebox_votes = []
             self.jukebox_prev_char_id = -1
@@ -305,10 +306,12 @@ class AreaManager:
                 item['shouts_allowed'] = True
             if 'jukebox' not in item:
                 item['jukebox'] = False
+            if 'noninterrupting_pres' not in item:
+                item['noninterrupting_pres'] = False
             if 'abbreviation' not in item:
                 item['abbreviation'] = self.get_generated_abbreviation(item['area'])
             self.areas.append(
-                self.Area(self.cur_id, self.server, item['area'], item['background'], item['bglock'], item['evidence_mod'], item['locking_allowed'], item['iniswap_allowed'], item['showname_changes_allowed'], item['shouts_allowed'], item['jukebox'], item['abbreviation']))
+                self.Area(self.cur_id, self.server, item['area'], item['background'], item['bglock'], item['evidence_mod'], item['locking_allowed'], item['iniswap_allowed'], item['showname_changes_allowed'], item['shouts_allowed'], item['jukebox'], item['abbreviation'], item['noninterrupting_pres']))
             self.cur_id += 1
 
     def default_area(self):
