@@ -257,6 +257,34 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
   return return_color;
 }
 
+QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
+{
+  p_identifier = p_identifier.prepend("c");
+  QString design_ini_path = get_base_path() + "misc/" + p_chat + "/config.ini";
+  QString default_path = get_base_path() + "misc/default/config.ini";
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+  QColor return_color(255, 255, 255);
+  if (f_result == "")
+  {
+    f_result = read_design_ini(p_identifier, default_path);
+
+    if (f_result == "")
+      return return_color;
+  }
+
+  QStringList color_list = f_result.split(",");
+
+  if (color_list.size() < 3)
+    return return_color;
+
+  return_color.setRed(color_list.at(0).toInt());
+  return_color.setGreen(color_list.at(1).toInt());
+  return_color.setBlue(color_list.at(2).toInt());
+
+  return return_color;
+}
+
 QString AOApplication::get_sfx(QString p_identifier)
 {
   QString design_ini_path = get_theme_path() + "courtroom_sounds.ini";

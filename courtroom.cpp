@@ -1228,20 +1228,20 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     {
     case 1:
       ui_vp_objection->play("holdit", f_char, f_custom_theme);
-      objection_player->play("holdit.wav", f_char);
+      objection_player->play("holdit.wav", f_char, f_custom_theme);
       break;
     case 2:
       ui_vp_objection->play("objection", f_char, f_custom_theme);
-      objection_player->play("objection.wav", f_char);
+      objection_player->play("objection.wav", f_char, f_custom_theme);
       break;
     case 3:
       ui_vp_objection->play("takethat", f_char, f_custom_theme);
-      objection_player->play("takethat.wav", f_char);
+      objection_player->play("takethat.wav", f_char, f_custom_theme);
       break;
     //case 4 is AO2 only
     case 4:
       ui_vp_objection->play("custom", f_char, f_custom_theme);
-      objection_player->play("custom.wav", f_char);
+      objection_player->play("custom.wav", f_char, f_custom_theme);
       break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
@@ -1288,7 +1288,7 @@ void Courtroom::handle_chatmessage_2()
     ui_vp_chatbox->set_image("chatmed.png");
   else
   {
-    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
+    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chatbox.png";
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
@@ -2377,7 +2377,23 @@ void Courtroom::set_scene()
 
 void Courtroom::set_text_color()
 {
-  switch (m_chatmessage[TEXT_COLOR].toInt())
+  QColor textcolor = ao_app->get_chat_color(m_chatmessage[TEXT_COLOR], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+
+  ui_vp_message->setTextBackgroundColor(QColor(0,0,0,0));
+  ui_vp_message->setTextColor(textcolor);
+
+  QString style = "background-color: rgba(0, 0, 0, 0);";
+  style.append("color: rgb(");
+  style.append(QString::number(textcolor.red()));
+  style.append(", ");
+  style.append(QString::number(textcolor.green()));
+  style.append(", ");
+  style.append(QString::number(textcolor.blue()));
+  style.append(")");
+
+  ui_vp_message->setStyleSheet(style);
+
+  /*switch (m_chatmessage[TEXT_COLOR].toInt())
   {
   case GREEN:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -2414,7 +2430,7 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: white");
 
-  }
+  }*/
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -2629,7 +2645,18 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/switch_am"))
   {
       on_switch_area_music_clicked();
+      ui_ooc_chat_message->clear();
       return;
+  }
+  else if (ooc_message.startsWith("/enable_blocks"))
+  {
+    ao_app->shownames_enabled = true;
+    ao_app->charpairs_enabled = true;
+    ao_app->arup_enabled = true;
+    ao_app->modcall_reason_enabled = true;
+    on_reload_theme_clicked();
+    ui_ooc_chat_message->clear();
+    return;
   }
 
   QStringList packet_contents;

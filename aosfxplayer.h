@@ -14,7 +14,7 @@ public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
   ~AOSfxPlayer();
 
-  void play(QString p_sfx, QString p_char = "");
+  void play(QString p_sfx, QString p_char = "", QString shout = "");
   void stop();
   void set_volume(int p_volume);
 

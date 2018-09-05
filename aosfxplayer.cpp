@@ -1,4 +1,5 @@
 #include "aosfxplayer.h"
+#include "file_functions.h"
 
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
@@ -14,17 +15,28 @@ AOSfxPlayer::~AOSfxPlayer()
 }
 
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char)
+void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
   m_sfxplayer->stop();
   p_sfx = p_sfx.toLower();
 
+  QString misc_path = "";
+  QString char_path = "";
+  QString sound_path = ao_app->get_sounds_path() + p_sfx;
+
+  if (shout != "")
+    misc_path = ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx;
+  if (p_char != "")
+    char_path = ao_app->get_character_path(p_char) + p_sfx;
+
   QString f_path;
 
-  if (p_char != "")
-    f_path = ao_app->get_character_path(p_char) + p_sfx;
+  if (file_exists(char_path))
+      f_path = char_path;
+  else if (file_exists(misc_path))
+    f_path = misc_path;
   else
-    f_path = ao_app->get_sounds_path() + p_sfx;
+    f_path = sound_path;
 
   m_sfxplayer->setMedia(QUrl::fromLocalFile(f_path));
   set_volume(m_volume);
