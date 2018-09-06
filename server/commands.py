@@ -100,6 +100,17 @@ def ooc_cmd_allow_blankposting(client, arg):
         client.area.send_host_message('A mod has set blankposting in the area to {}.'.format(answer[client.area.blankposting_allowed]))
     return
     
+def ooc_cmd_force_nonint_pres(client, arg):
+    if not client.is_mod and not client.is_cm:
+        raise ClientError('You must be authorized to do that.')
+    client.area.non_int_pres_only = not client.area.non_int_pres_only
+    answer = {True: 'non-interrupting only', False: 'non-interrupting or interrupting as you choose'}
+    if client.is_cm:
+        client.area.send_host_message('The CM has set pres in the area to be {}.'.format(answer[client.area.non_int_pres_only]))
+    else:
+        client.area.send_host_message('A mod has set pres in the area to be {}.'.format(answer[client.area.non_int_pres_only]))
+    return
+    
 def ooc_cmd_roll(client, arg):
     roll_max = 11037
     if len(arg) != 0:
