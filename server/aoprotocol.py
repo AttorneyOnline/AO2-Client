@@ -396,7 +396,7 @@ class AOProtocol(asyncio.Protocol):
             if text.isspace():
                 self.client.send_host_message("Blankposting is forbidden in this area, and putting more spaces in does not make it not blankposting.")
                 return
-            if len(re.sub(r'[{}\\`|]','', text).replace(' ', '')) < 3 and text != '<' and text != '>':
+            if len(re.sub(r'[{}\\`|(~~)]','', text).replace(' ', '')) < 3 and text != '<' and text != '>':
                 self.client.send_host_message("While that is not a blankpost, it is still pretty spammy. Try forming sentences.")
                 return
         if msg_type not in ('chat', '0', '1'):
@@ -435,7 +435,7 @@ class AOProtocol(asyncio.Protocol):
             button = 0
             # Turn off the ding.
             ding = 0
-        if color == 2 and not self.client.is_mod:
+        if color == 2 and not (self.client.is_mod or self.client.is_cm):
             color = 0
         if color == 6:
             text = re.sub(r'[^\x00-\x7F]+',' ', text) #remove all unicode to prevent redtext abuse
