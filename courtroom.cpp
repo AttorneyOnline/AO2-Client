@@ -1374,7 +1374,7 @@ void Courtroom::handle_chatmessage_2()
           int vert_offset = 0;
           if (hor_offset > 0)
           {
-            vert_offset = hor_offset / 20;
+            vert_offset = hor_offset / 10;
           }
           ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, ui_viewport->height() * vert_offset / 100);
 
@@ -1383,7 +1383,7 @@ void Courtroom::handle_chatmessage_2()
           int vert2_offset = 0;
           if (hor2_offset > 0)
           {
-            vert2_offset = hor2_offset / 20;
+            vert2_offset = hor2_offset / 10;
           }
           ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, ui_viewport->height() * vert2_offset / 100);
 
@@ -1410,7 +1410,7 @@ void Courtroom::handle_chatmessage_2()
           if (hor_offset < 0)
           {
             // We don't want to RAISE the char off the floor.
-            vert_offset = -1 * hor_offset / 20;
+            vert_offset = -1 * hor_offset / 10;
           }
           ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, ui_viewport->height() * vert_offset / 100);
 
@@ -1419,7 +1419,7 @@ void Courtroom::handle_chatmessage_2()
           int vert2_offset = 0;
           if (hor2_offset < 0)
           {
-            vert2_offset = -1 * hor2_offset / 20;
+            vert2_offset = -1 * hor2_offset / 10;
           }
           ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, ui_viewport->height() * vert2_offset / 100);
 
