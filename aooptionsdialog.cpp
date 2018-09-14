@@ -199,73 +199,105 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     AudioForm->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
     AudioForm->setContentsMargins(0, 0, 0, 0);
 
+    AudioDevideLabel = new QLabel(formLayoutWidget_2);
+    AudioDevideLabel->setText("Audio device:");
+    AudioDevideLabel->setToolTip("Allows you to set the theme used ingame. If your theme changes the lobby's look, too, you'll obviously need to reload the lobby somehow for it take effect. Joining a server and leaving it should work.");
+
+    AudioForm->setWidget(0, QFormLayout::LabelRole, AudioDevideLabel);
+
+    AudioDeviceCombobox = new QComboBox(formLayoutWidget_2);
+
+    // Let's fill out the combobox with the available audio devices.
+    int a = 0;
+    BASS_DEVICEINFO info;
+
+    if (needs_default_audiodev())
+    {
+        AudioDeviceCombobox->addItem("Default");
+    }
+
+    for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
+    {
+        AudioDeviceCombobox->addItem(info.name);
+        if (p_ao_app->get_audio_output_device() == info.name)
+            AudioDeviceCombobox->setCurrentIndex(AudioDeviceCombobox->count()-1);
+    }
+
+    AudioForm->setWidget(0, QFormLayout::FieldRole, AudioDeviceCombobox);
+
+    DeviceVolumeDivider = new QFrame(formLayoutWidget_2);
+    DeviceVolumeDivider->setFrameShape(QFrame::HLine);
+    DeviceVolumeDivider->setFrameShadow(QFrame::Sunken);
+
+    AudioForm->setWidget(1, QFormLayout::FieldRole, DeviceVolumeDivider);
+
     MusicVolumeLabel = new QLabel(formLayoutWidget_2);
     MusicVolumeLabel->setText("Music:");
     MusicVolumeLabel->setToolTip("Sets the music's default volume.");
 
-    AudioForm->setWidget(1, QFormLayout::LabelRole, MusicVolumeLabel);
+    AudioForm->setWidget(2, QFormLayout::LabelRole, MusicVolumeLabel);
 
     MusicVolumeSpinbox = new QSpinBox(formLayoutWidget_2);
     MusicVolumeSpinbox->setValue(p_ao_app->get_default_music());
     MusicVolumeSpinbox->setMaximum(100);
     MusicVolumeSpinbox->setSuffix("%");
 
-    AudioForm->setWidget(1, QFormLayout::FieldRole, MusicVolumeSpinbox);
+    AudioForm->setWidget(2, QFormLayout::FieldRole, MusicVolumeSpinbox);
 
     SFXVolumeLabel = new QLabel(formLayoutWidget_2);
     SFXVolumeLabel->setText("SFX:");
     SFXVolumeLabel->setToolTip("Sets the SFX's default volume. Interjections and actual sound effects count as 'SFX'.");
 
-    AudioForm->setWidget(2, QFormLayout::LabelRole, SFXVolumeLabel);
+    AudioForm->setWidget(3, QFormLayout::LabelRole, SFXVolumeLabel);
 
     SFXVolumeSpinbox = new QSpinBox(formLayoutWidget_2);
     SFXVolumeSpinbox->setValue(p_ao_app->get_default_sfx());
     SFXVolumeSpinbox->setMaximum(100);
     SFXVolumeSpinbox->setSuffix("%");
 
-    AudioForm->setWidget(2, QFormLayout::FieldRole, SFXVolumeSpinbox);
+    AudioForm->setWidget(3, QFormLayout::FieldRole, SFXVolumeSpinbox);
 
     BlipsVolumeLabel = new QLabel(formLayoutWidget_2);
     BlipsVolumeLabel->setText("Blips:");
     BlipsVolumeLabel->setToolTip("Sets the volume of the blips, the talking sound effects.");
 
-    AudioForm->setWidget(3, QFormLayout::LabelRole, BlipsVolumeLabel);
+    AudioForm->setWidget(4, QFormLayout::LabelRole, BlipsVolumeLabel);
 
     BlipsVolumeSpinbox = new QSpinBox(formLayoutWidget_2);
     BlipsVolumeSpinbox->setValue(p_ao_app->get_default_blip());
     BlipsVolumeSpinbox->setMaximum(100);
     BlipsVolumeSpinbox->setSuffix("%");
 
-    AudioForm->setWidget(3, QFormLayout::FieldRole, BlipsVolumeSpinbox);
+    AudioForm->setWidget(4, QFormLayout::FieldRole, BlipsVolumeSpinbox);
 
     VolumeBlipDivider = new QFrame(formLayoutWidget_2);
     VolumeBlipDivider->setFrameShape(QFrame::HLine);
     VolumeBlipDivider->setFrameShadow(QFrame::Sunken);
 
-    AudioForm->setWidget(4, QFormLayout::FieldRole, VolumeBlipDivider);
+    AudioForm->setWidget(5, QFormLayout::FieldRole, VolumeBlipDivider);
 
     BlipRateLabel = new QLabel(formLayoutWidget_2);
     BlipRateLabel->setText("Blip rate:");
     BlipRateLabel->setToolTip("Sets the delay between playing the blip sounds.");
 
-    AudioForm->setWidget(5, QFormLayout::LabelRole, BlipRateLabel);
+    AudioForm->setWidget(6, QFormLayout::LabelRole, BlipRateLabel);
 
     BlipRateSpinbox = new QSpinBox(formLayoutWidget_2);
     BlipRateSpinbox->setValue(p_ao_app->read_blip_rate());
     BlipRateSpinbox->setMinimum(1);
 
-    AudioForm->setWidget(5, QFormLayout::FieldRole, BlipRateSpinbox);
+    AudioForm->setWidget(6, QFormLayout::FieldRole, BlipRateSpinbox);
 
     BlankBlipsLabel = new QLabel(formLayoutWidget_2);
     BlankBlipsLabel->setText("Blank blips:");
     BlankBlipsLabel->setToolTip("If true, the game will play a blip sound even when a space is 'being said'.");
 
-    AudioForm->setWidget(6, QFormLayout::LabelRole, BlankBlipsLabel);
+    AudioForm->setWidget(7, QFormLayout::LabelRole, BlankBlipsLabel);
 
     BlankBlipsCheckbox = new QCheckBox(formLayoutWidget_2);
     BlankBlipsCheckbox->setChecked(p_ao_app->get_blank_blip());
 
-    AudioForm->setWidget(6, QFormLayout::FieldRole, BlankBlipsCheckbox);
+    AudioForm->setWidget(7, QFormLayout::FieldRole, BlankBlipsCheckbox);
 
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);
@@ -297,6 +329,7 @@ void AOOptionsDialog::save_pressed()
         callwordsini->close();
     }
 
+    configini->setValue("default_audio_device", AudioDeviceCombobox->currentText());
     configini->setValue("default_music", MusicVolumeSpinbox->value());
     configini->setValue("default_sfx", SFXVolumeSpinbox->value());
     configini->setValue("default_blip", BlipsVolumeSpinbox->value());
@@ -311,3 +344,17 @@ void AOOptionsDialog::discard_pressed()
 {
     done(0);
 }
+
+#if (defined (_WIN32) || defined (_WIN64))
+bool AOOptionsDialog::needs_default_audiodev()
+{
+    return true;
+}
+#elif (defined (LINUX) || defined (__linux__))
+bool AOOptionsDialog::needs_default_audiodev()
+{
+    return false;
+}
+#else
+#error This operating system is not supported.
+#endif

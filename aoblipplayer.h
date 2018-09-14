@@ -1,18 +1,17 @@
 #ifndef AOBLIPPLAYER_H
 #define AOBLIPPLAYER_H
 
+#include "bass.h"
 #include "aoapplication.h"
 
 #include <QWidget>
 #include <string.h>
 #include <QDebug>
-#include <QSoundEffect>
 
 class AOBlipPlayer
 {
 public:
   AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
-  ~AOBlipPlayer();
 
   void set_blips(QString p_sfx);
   void blip_tick();
@@ -23,9 +22,9 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-  QSoundEffect *m_sfxplayer;
 
   int m_volume;
+  HSTREAM m_stream_list[5];
 };
 
 #endif // AOBLIPPLAYER_H

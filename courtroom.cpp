@@ -11,6 +11,34 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
+  //initializing sound device
+
+
+  // Change the default audio output device to be the one the user has given
+  // in his config.ini file for now.
+  int a = 0;
+  BASS_DEVICEINFO info;
+
+  if (ao_app->get_audio_output_device() == "Default")
+  {
+      BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
+      BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+  }
+  else
+  {
+      for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
+      {
+          if (ao_app->get_audio_output_device() == info.name)
+          {
+              BASS_SetDevice(a);
+              BASS_Init(a, 48000, BASS_DEVICE_LATENCY, 0, NULL);
+              BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+              qDebug() << info.name << "was set as the default audio output device.";
+              break;
+          }
+      }
+  }
+
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
 

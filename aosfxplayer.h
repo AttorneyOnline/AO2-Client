@@ -1,18 +1,17 @@
 #ifndef AOSFXPLAYER_H
 #define AOSFXPLAYER_H
 
+#include "bass.h"
 #include "aoapplication.h"
 
 #include <QWidget>
 #include <string.h>
 #include <QDebug>
-#include <QSoundEffect>
 
 class AOSfxPlayer
 {
 public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
-  ~AOSfxPlayer();
 
   void play(QString p_sfx, QString p_char = "", QString shout = "");
   void stop();
@@ -21,9 +20,9 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-  QSoundEffect *m_sfxplayer;
 
   int m_volume = 0;
+  HSTREAM m_stream;
 };
 
 #endif // AOSFXPLAYER_H

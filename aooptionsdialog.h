@@ -2,6 +2,7 @@
 #define AOOPTIONSDIALOG_H
 
 #include "aoapplication.h"
+#include "bass.h"
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -62,9 +63,9 @@ private:
     QWidget *AudioTab;
     QWidget *formLayoutWidget_2;
     QFormLayout *AudioForm;
-    //QLabel *AudioDevideLabel;
-    //QComboBox *AudioDeviceCombobox;
-    //QFrame *DeviceVolumeDivider;
+    QLabel *AudioDevideLabel;
+    QComboBox *AudioDeviceCombobox;
+    QFrame *DeviceVolumeDivider;
     QSpinBox *MusicVolumeSpinbox;
     QLabel *MusicVolumeLabel;
     QSpinBox *SFXVolumeSpinbox;
@@ -77,6 +78,8 @@ private:
     QCheckBox *BlankBlipsCheckbox;
     QLabel *BlankBlipsLabel;
     QDialogButtonBox *SettingsButtons;
+
+    bool needs_default_audiodev();
 
 signals:
 
