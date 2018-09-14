@@ -6,7 +6,7 @@
 #include <QWidget>
 #include <string.h>
 #include <QDebug>
-#include <QMediaPlayer>
+#include <QSoundEffect>
 
 class AOSfxPlayer
 {
@@ -21,7 +21,7 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-  QMediaPlayer *m_sfxplayer;
+  QSoundEffect *m_sfxplayer;
 
   int m_volume = 0;
 };
