@@ -58,7 +58,7 @@ def ooc_cmd_bglock(client,arg):
         client.area.bg_lock = "false"
     else:
         client.area.bg_lock = "true"
-    client.area.send_host_message('A mod has set the background lock to {}.'.format(client.area.bg_lock))
+    client.area.send_host_message('{} [{}] has set the background lock to {}.'.format(client.get_char_name(), client.id, client.area.bg_lock))
     logger.log_server('[{}][{}]Changed bglock to {}'.format(client.area.abbreviation, client.get_char_name(), client.area.bg_lock), client)
     
 def ooc_cmd_evidence_mod(client, arg):
@@ -94,10 +94,7 @@ def ooc_cmd_allow_blankposting(client, arg):
         raise ClientError('You must be authorized to do that.')
     client.area.blankposting_allowed = not client.area.blankposting_allowed
     answer = {True: 'allowed', False: 'forbidden'}
-    if client.is_cm:
-        client.area.send_host_message('The CM has set blankposting in the area to {}.'.format(answer[client.area.blankposting_allowed]))
-    else:
-        client.area.send_host_message('A mod has set blankposting in the area to {}.'.format(answer[client.area.blankposting_allowed]))
+    client.area.send_host_message('{} [{}] has set blankposting in the area to {}.'.format(client.get_char_name(), client.id, answer[client.area.blankposting_allowed]))
     return
     
 def ooc_cmd_force_nonint_pres(client, arg):
@@ -105,10 +102,7 @@ def ooc_cmd_force_nonint_pres(client, arg):
         raise ClientError('You must be authorized to do that.')
     client.area.non_int_pres_only = not client.area.non_int_pres_only
     answer = {True: 'non-interrupting only', False: 'non-interrupting or interrupting as you choose'}
-    if client.is_cm:
-        client.area.send_host_message('The CM has set pres in the area to be {}.'.format(answer[client.area.non_int_pres_only]))
-    else:
-        client.area.send_host_message('A mod has set pres in the area to be {}.'.format(answer[client.area.non_int_pres_only]))
+    client.area.send_host_message('{} [{}] has set pres in the area to be {}.'.format(client.get_char_name(), client.id, answer[client.area.non_int_pres_only]))
     return
     
 def ooc_cmd_roll(client, arg):
@@ -186,12 +180,7 @@ def ooc_cmd_jukebox_toggle(client, arg):
         raise ArgumentError('This command has no arguments.')
     client.area.jukebox = not client.area.jukebox
     client.area.jukebox_votes = []
-    changer = 'Unknown'
-    if client.is_cm:
-        changer = 'The CM'
-    elif client.is_mod:
-        changer = 'A mod'
-    client.area.send_host_message('{} has set the jukebox to {}.'.format(changer, client.area.jukebox))
+    client.area.send_host_message('{} [{}] has set the jukebox to {}.'.format(client.get_char_name(), client.id, client.area.jukebox))
 
 def ooc_cmd_jukebox_skip(client, arg):
     if not client.is_mod and not client.is_cm:
@@ -203,15 +192,10 @@ def ooc_cmd_jukebox_skip(client, arg):
     if len(client.area.jukebox_votes) == 0:
         raise ClientError('There is no song playing right now, skipping is pointless.')
     client.area.start_jukebox()
-    changer = 'Unknown'
-    if client.is_cm:
-        changer = 'The CM'
-    elif client.is_mod:
-        changer = 'A mod'
     if len(client.area.jukebox_votes) == 1:
-        client.area.send_host_message('{} has forced a skip, restarting the only jukebox song.'.format(changer))
+        client.area.send_host_message('{} [{}] has forced a skip, restarting the only jukebox song.'.format(client.get_char_name(), client.id))
     else:
-        client.area.send_host_message('{} has forced a skip to the next jukebox song.'.format(changer))
+        client.area.send_host_message('{} [{}] has forced a skip to the next jukebox song.'.format(client.get_char_name(), client.id))
     logger.log_server('[{}][{}]Skipped the current jukebox song.'.format(client.area.abbreviation, client.get_char_name()), client)
 
 def ooc_cmd_jukebox(client, arg):
