@@ -418,6 +418,12 @@ class AOProtocol(asyncio.Protocol):
         if len(showname) > 15:
             self.client.send_host_message("Your IC showname is way too long!")
             return
+        if nonint_pre != '':
+            if button in (1, 2, 3, 4, 23):
+                if anim_type == 1 or anim_type == 2:
+                    anim_type = 0
+                elif anim_type == 6:
+                    anim_type = 5
         if self.client.area.non_int_pres_only:
             if anim_type == 1 or anim_type == 2:
                 anim_type = 0

@@ -1141,7 +1141,7 @@ void Courtroom::on_chat_return_pressed()
     packet_contents.append(QString::number(offset_with_pair));
   }
 
-  if (ui_pre_non_interrupt->isChecked() and ui_pre->isChecked())
+  if (ui_pre_non_interrupt->isChecked())
   {
     if (ui_ic_chat_name->text().isEmpty())
     {
@@ -1502,6 +1502,13 @@ void Courtroom::handle_chatmessage_3()
 {
   start_chat_ticking();
 
+  if (m_chatmessage[REALIZATION] == "1")
+  {
+    realization_timer->start(60);
+    ui_vp_realization->show();
+    sfx_player->play(ao_app->get_sfx("realization"));
+  }
+
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
@@ -1573,13 +1580,6 @@ void Courtroom::handle_chatmessage_3()
   case 3:
     ui_vp_player_char->play_idle(f_char, f_emote);
     anim_state = 3;
-  }
-
-  if (m_chatmessage[REALIZATION] == "1")
-  {
-    realization_timer->start(60);
-    ui_vp_realization->show();
-    sfx_player->play(ao_app->get_sfx("realization"));
   }
 
   QString f_message = m_chatmessage[MESSAGE];
