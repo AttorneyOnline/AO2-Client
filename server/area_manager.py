@@ -22,6 +22,7 @@ import yaml
 
 from server.exceptions import AreaError
 from server.evidence import EvidenceList
+from enum import Enum
 
 
 class AreaManager:
@@ -63,12 +64,17 @@ class AreaManager:
             self.evidence_list.append(Evidence("weeeeeew", "desc3", "3.png"))
             """
             
-            self.is_locked = False
+            self.is_locked = self.Locked.FREE
             self.blankposting_allowed = True
             self.non_int_pres_only = non_int_pres_only
             self.jukebox = jukebox
             self.jukebox_votes = []
             self.jukebox_prev_char_id = -1
+
+        class Locked(Enum):
+            FREE = 1,
+            SPECTATABLE = 2,
+            LOCKED = 3
 
         def new_client(self, client):
             self.clients.add(client)
@@ -80,15 +86,29 @@ class AreaManager:
                 client.is_cm = False
                 self.owned = False
                 self.server.area_manager.send_arup_cms()
-                if self.is_locked:
+                if self.is_locked != self.Locked.FREE:
                     self.unlock()
         
         def unlock(self):
-            self.is_locked = False
+            self.is_locked = self.Locked.FREE
             self.blankposting_allowed = True
             self.invite_list = {}
             self.server.area_manager.send_arup_lock()
             self.send_host_message('This area is open now.')
+
+        def spectator(self):
+            self.is_locked = self.Locked.SPECTATABLE
+            for i in self.clients:
+                self.invite_list[i.id] = None
+            self.server.area_manager.send_arup_lock()
+            self.send_host_message('This area is spectatable now.')
+
+        def lock(self):
+            self.is_locked = self.Locked.LOCKED
+            for i in self.clients:
+                self.invite_list[i.id] = None
+            self.server.area_manager.send_arup_lock()
+            self.send_host_message('This area is locked now.')
         
         def is_char_available(self, char_id):
             return char_id not in [x.char_id for x in self.clients]
@@ -215,7 +235,7 @@ class AreaManager:
 
 
         def can_send_message(self, client):
-            if self.is_locked and not client.is_mod and not client.id in self.invite_list:
+            if self.is_locked != self.Locked.FREE and not client.is_mod and not client.id in self.invite_list:
                 client.send_host_message('This is a locked area - ask the CM to speak.')
                 return False
             return (time.time() * 1000.0 - self.next_message_time) > 0
@@ -366,5 +386,5 @@ class AreaManager:
     def send_arup_lock(self):
         lock_list = [3]
         for area in self.areas:
-            lock_list.append(area.is_locked)
+            lock_list.append(area.is_locked.name)
         self.server.send_arup(lock_list)

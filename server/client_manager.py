@@ -182,9 +182,10 @@ class ClientManager:
         def change_area(self, area):
             if self.area == area:
                 raise ClientError('User already in specified area.')
-            if area.is_locked and not self.is_mod and not self.id in area.invite_list:
-                #self.send_host_message('This area is locked - you will be unable to send messages ICly.')
+            if area.is_locked == area.Locked.LOCKED and not self.is_mod and not self.id in area.invite_list:
                 raise ClientError("That area is locked!")
+            if area.is_locked == area.Locked.SPECTATABLE and not self.is_mod and not self.id in area.invite_list:
+                self.send_host_message('This area is spectatable, but not free - you will be unable to send messages ICly unless invited.')
 
             if self.area.jukebox:
                 self.area.remove_jukebox_vote(self, True)
@@ -215,13 +216,13 @@ class ClientManager:
 
         def send_area_list(self):
             msg = '=== Areas ==='
-            lock = {True: '[LOCKED]', False: ''}
             for i, area in enumerate(self.server.area_manager.areas):
                 owner = 'FREE'
                 if area.owned:
                     for client in [x for x in area.clients if x.is_cm]:
                         owner = 'CM: {}'.format(client.get_char_name())
                         break
+                lock = {area.Locked.FREE: '', area.Locked.SPECTATABLE: '[SPECTATABLE]', area.Locked.LOCKED: '[LOCKED]'}
                 msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(area.abbreviation, area.name, len(area.clients), area.status, owner, lock[area.is_locked])
                 if self.area == area:
                     msg += ' [*]'
@@ -236,7 +237,7 @@ class ClientManager:
             info += '=== {} ==='.format(area.name)
             info += '\r\n'
 
-            lock = {True: '[LOCKED]', False: ''}
+            lock = {area.Locked.FREE: '', area.Locked.SPECTATABLE: '[SPECTATABLE]', area.Locked.LOCKED: '[LOCKED]'}
             info += '[{}]: [{} users][{}]{}'.format(area.abbreviation, len(area.clients), area.status, lock[area.is_locked])
             
             sorted_clients = []

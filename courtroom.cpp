@@ -963,10 +963,7 @@ void Courtroom::list_areas()
       i_area.append(QString::number(arup_players.at(n_area)));
       i_area.append(" users | ");
 
-      if (arup_locks.at(n_area) == true)
-          i_area.append("LOCKED");
-      else
-          i_area.append("OPEN");
+      i_area.append(arup_locks.at(n_area));
     }
 
     if (i_area.toLower().contains(ui_music_search->text().toLower()))
@@ -978,7 +975,7 @@ void Courtroom::list_areas()
       {
         // Colouring logic here.
         ui_area_list->item(n_listed_areas)->setBackground(free_brush);
-        if (arup_locks.at(n_area))
+        if (arup_locks.at(n_area) == "Locked")
         {
             ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
         }

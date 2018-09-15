@@ -268,7 +268,7 @@ class TsuServer3:
         CM:
             ARUP#2##<area1_cm: string>##<area2_cm: string>#...
         Lockedness:
-            ARUP#3##<area1_l: bool>##<area2_l: bool>#...
+            ARUP#3##<area1_l: string>##<area2_l: string>#...
 
         """
         if len(args) < 2:
@@ -277,13 +277,13 @@ class TsuServer3:
         if args[0] not in (0,1,2,3):
             return
 
-        if args[0] in (0, 3):
+        if args[0] == 0:
             for part_arg in args[1:]:
                 try:
                     sanitised = int(part_arg)
                 except:
                     return
-        elif args[0] in (1, 2):
+        elif args[0] in (1, 2, 3):
             for part_arg in args[1:]:
                 try:
                     sanitised = str(part_arg)

@@ -64,7 +64,7 @@ public:
       append_music(malplaced);
   }
 
-  void arup_append(int players, QString status, QString cm, bool locked)
+  void arup_append(int players, QString status, QString cm, QString locked)
   {
       arup_players.append(players);
       arup_statuses.append(status);
@@ -88,7 +88,7 @@ public:
     }
     else if (type == 3)
     {
-      arup_locks[place] = (value == "True");
+      arup_locks[place] = value;
     }
     list_areas();
   }
@@ -253,7 +253,7 @@ private:
   QVector<int> arup_players;
   QVector<QString> arup_statuses;
   QVector<QString> arup_cms;
-  QVector<bool> arup_locks;
+  QVector<QString> arup_locks;
 
   QSignalMapper *char_button_mapper;
 

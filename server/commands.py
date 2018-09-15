@@ -697,7 +697,7 @@ def ooc_cmd_uncm(client, arg):
         client.is_cm = False
         client.area.owned = False
         client.area.blankposting_allowed = True
-        if client.area.is_locked:
+        if client.area.is_locked != client.area.Locked.FREE:
             client.area.unlock()
         client.server.area_manager.send_arup_cms()
         client.area.send_host_message('{} is no longer CM in this area.'.format(client.get_char_name()))
@@ -714,20 +714,28 @@ def ooc_cmd_area_lock(client, arg):
     if not client.area.locking_allowed:
         client.send_host_message('Area locking is disabled in this area.')
         return
-    if client.area.is_locked:
+    if client.area.is_locked == client.area.Locked.LOCKED:
         client.send_host_message('Area is already locked.')
     if client.is_cm:
-        client.area.is_locked = True
-        client.server.area_manager.send_arup_lock()
-        client.area.send_host_message('Area is locked.')
-        for i in client.area.clients:
-            client.area.invite_list[i.id] = None
+        client.area.lock()
         return
     else:
         raise ClientError('Only CM can lock the area.')
+    
+def ooc_cmd_area_spectate(client, arg):
+    if not client.area.locking_allowed:
+        client.send_host_message('Area locking is disabled in this area.')
+        return
+    if client.area.is_locked == client.area.Locked.SPECTATABLE:
+        client.send_host_message('Area is already spectatable.')
+    if client.is_cm:
+        client.area.spectator()
+        return
+    else:
+        raise ClientError('Only CM can make the area spectatable.')
         
 def ooc_cmd_area_unlock(client, arg):
-    if not client.area.is_locked:
+    if client.area.is_locked == client.area.Locked.FREE:
         raise ClientError('Area is already unlocked.')
     if not client.is_cm:
         raise ClientError('Only CM can unlock area.')
