@@ -1268,6 +1268,14 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_evidence_present->set_image("present_disabled.png");
   }
 
+  chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
+  ic_chatlog_history.append(*temp);
+
+  while(ic_chatlog_history.size() > log_maximum_blocks)
+  {
+    ic_chatlog_history.removeFirst();
+  }
+
   append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
 
   previous_ic_message = f_message;
@@ -2555,16 +2563,24 @@ void Courtroom::handle_song(QStringList *p_contents)
   else
   {
     QString str_char = char_list.at(n_char).name;
+    QString str_show = char_list.at(n_char).name;
 
     if (p_contents->length() > 2)
     {
-      if (ui_showname_enable->isChecked())
-        str_char = p_contents->at(2);
+        str_show = p_contents->at(2);
     }
 
     if (!mute_map.value(n_char))
     {
-      append_ic_songchange(f_song_clear, str_char);
+      chatlogpiece* temp = new chatlogpiece(str_char, str_show, f_song, true);
+      ic_chatlog_history.append(*temp);
+
+      while(ic_chatlog_history.size() > log_maximum_blocks)
+      {
+        ic_chatlog_history.removeFirst();
+      }
+
+      append_ic_songchange(f_song_clear, str_show);
       music_player->play(f_song);
     }
   }
@@ -2765,6 +2781,29 @@ void Courtroom::on_ooc_return_pressed()
     else
       append_server_chatmessage("CLIENT", "Your pre-animations will not interrupt text.", "1");
     ui_pre_non_interrupt->setChecked(!ui_pre_non_interrupt->isChecked());
+    ui_ooc_chat_message->clear();
+    return;
+  }
+  else if (ooc_message.startsWith("/save_chatlog"))
+  {
+    QFile file("chatlog.txt");
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    {
+      append_server_chatmessage("CLIENT", "Couldn't open chatlog.txt to write into.", "1");
+      ui_ooc_chat_message->clear();
+      return;
+    }
+
+    QTextStream out(&file);
+
+    foreach (chatlogpiece item, ic_chatlog_history) {
+        out << item.get_full() << '\n';
+      }
+
+    file.close();
+
+    append_server_chatmessage("CLIENT", "The IC chatlog has been saved.", "1");
     ui_ooc_chat_message->clear();
     return;
   }
@@ -3295,6 +3334,26 @@ void Courtroom::on_guard_clicked()
 
 void Courtroom::on_showname_enable_clicked()
 {
+  ui_ic_chatlog->clear();
+  first_message_sent = false;
+
+  foreach (chatlogpiece item, ic_chatlog_history) {
+      if (ui_showname_enable->isChecked())
+      {
+         if (item.get_is_song())
+           append_ic_songchange(item.get_message(), item.get_showname());
+         else
+           append_ic_text(item.get_message(), item.get_showname());
+      }
+      else
+      {
+          if (item.get_is_song())
+            append_ic_songchange(item.get_message(), item.get_name());
+          else
+            append_ic_text(item.get_message(), item.get_name());
+      }
+    }
+
   ui_ic_chat_message->setFocus();
 }
 

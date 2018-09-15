@@ -18,6 +18,7 @@
 #include "aotextedit.h"
 #include "aoevidencedisplay.h"
 #include "datatypes.h"
+#include "chatlogpiece.h"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -256,6 +257,8 @@ private:
   QVector<QString> arup_locks;
 
   QSignalMapper *char_button_mapper;
+
+  QVector<chatlogpiece> ic_chatlog_history;
 
   // These map music row items and area row items to their actual IDs.
   QVector<int> music_row_to_number;
