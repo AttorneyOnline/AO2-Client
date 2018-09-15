@@ -2807,6 +2807,62 @@ void Courtroom::on_ooc_return_pressed()
     ui_ooc_chat_message->clear();
     return;
   }
+  else if (ooc_message.startsWith("/load_case"))
+  {
+    QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
+
+    if (command.size() < 2)
+    {
+      append_server_chatmessage("CLIENT", "You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.", "1");
+      ui_ooc_chat_message->clear();
+      return;
+    }
+
+
+    if (command.size() > 2)
+    {
+      append_server_chatmessage("CLIENT", "Too many arguments to load a case! You only need one filename, without extension.", "1");
+      ui_ooc_chat_message->clear();
+      return;
+    }
+
+    QDir casefolder("base/cases");
+    if (!casefolder.exists())
+    {
+        QDir::current().mkdir("base/" + casefolder.dirName());
+        append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely the case file you're looking for can't be found in there.", "1");
+        ui_ooc_chat_message->clear();
+        return;
+    }
+
+    QSettings casefile("base/cases/" + command[1] + ".ini", QSettings::IniFormat);
+
+    QString casedoc = casefile.value("doc", "UNKNOWN").value<QString>();
+
+    ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
+    ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status lfp#%"));
+
+    for (int i = local_evidence_list.size() - 1; i >= 0; i--) {
+        ao_app->send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
+    }
+
+    foreach (QString evi, casefile.childGroups()) {
+        if (evi == "General")
+          continue;
+
+        QStringList f_contents;
+
+        f_contents.append(casefile.value(evi + "/name", "UNKNOWN").value<QString>());
+        f_contents.append(casefile.value(evi + "/description", "UNKNOWN").value<QString>());
+        f_contents.append(casefile.value(evi + "/image", "UNKNOWN.png").value<QString>());
+
+        ao_app->send_server_packet(new AOPacket("PE", f_contents));
+      }
+
+    append_server_chatmessage("CLIENT", "Your case \"" + command[1] + "\" was loaded!", "1");
+    ui_ooc_chat_message->clear();
+    return;
+  }
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
