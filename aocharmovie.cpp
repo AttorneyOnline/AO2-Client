@@ -152,7 +152,10 @@ void AOCharMovie::frame_change(int n_frame)
   {
     QPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(n_frame));
 
-    this->setPixmap(f_pixmap.scaled(this->width(), this->height()));
+    if (f_pixmap.size().width() > this->size().width() || f_pixmap.size().height() > this->size().height())
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    else
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::KeepAspectRatioByExpanding, Qt::FastTransformation));
   }
 
   if (m_movie->frameCount() - 1 == n_frame && play_once)
