@@ -140,13 +140,13 @@ def ooc_cmd_rollp(client, arg):
             if not 1 <= val[0] <= roll_max:
                 raise ArgumentError('Roll value must be between 1 and {}.'.format(roll_max))
         except ValueError:
-            raise ArgumentError('Wrong argument. Use /roll [<max>] [<num of rolls>]')
+            raise ArgumentError('Wrong argument. Use /rollp [<max>] [<num of rolls>]')
     else:
         val = [6]
     if len(val) == 1:
         val.append(1)
     if len(val) > 2:
-        raise ArgumentError('Too many arguments. Use /roll [<max>] [<num of rolls>]')
+        raise ArgumentError('Too many arguments. Use /rollp [<max>] [<num of rolls>]')
     if val[1] > 20 or val[1] < 1:
         raise ArgumentError('Num of rolls must be between 1 and 20')
     roll = ''
@@ -156,10 +156,15 @@ def ooc_cmd_rollp(client, arg):
     if val[1] > 1:
         roll = '(' + roll + ')'
     client.send_host_message('{} rolled {} out of {}.'.format(client.get_char_name(), roll, val[0]))
-    client.area.send_host_message('{} rolled.'.format(client.get_char_name(), roll, val[0]))
-    SALT = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+
+    for c in client.area.clients:
+        if c.is_cm:
+            c.send_host_message('{} secretly rolled {} out of {}.'.format(client.get_char_name(), roll, val[0]))
+        else:
+            c.send_host_message('{} rolled in secret.'.format(client.get_char_name()))
+
     logger.log_server(
-        '[{}][{}]Used /roll and got {} out of {}.'.format(client.area.abbreviation, client.get_char_name(), hashlib.sha1((str(roll) + SALT).encode('utf-8')).hexdigest() + '|' + SALT, val[0]), client)
+        '[{}][{}]Used /rollp and got {} out of {}.'.format(client.area.abbreviation, client.get_char_name(), roll, val[0]), client)
 
 def ooc_cmd_currentmusic(client, arg):
     if len(arg) != 0:
