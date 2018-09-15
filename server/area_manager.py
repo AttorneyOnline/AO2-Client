@@ -82,6 +82,8 @@ class AreaManager:
 
         def remove_client(self, client):
             self.clients.remove(client)
+            if len(self.clients) == 0:
+                self.change_status('IDLE')
             if client.is_cm:
                 client.is_cm = False
                 self.owned = False
