@@ -12,7 +12,7 @@ class AOTextArea : public QTextBrowser
 public:
   AOTextArea(QWidget *p_parent = nullptr);
 
-  void append_chatmessage(QString p_name, QString p_message);
+  void append_chatmessage(QString p_name, QString p_message, QString p_colour);
   void append_error(QString p_message);
 
 private:

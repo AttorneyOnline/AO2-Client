@@ -60,7 +60,7 @@ class DistrictClient:
             elif cmd == 'NEED':
                 need_msg = '=== Cross Advert ===\r\n{} at {} in {} [{}] needs {}\r\n====================' \
                     .format(args[1], args[0], args[2], args[3], args[4])
-                self.server.send_all_cmd_pred('CT', '{}'.format(self.server.config['hostname']), need_msg,
+                self.server.send_all_cmd_pred('CT', '{}'.format(self.server.config['hostname']), need_msg, '1',
                                               pred=lambda x: not x.muted_adverts)
 
     async def write_queue(self):

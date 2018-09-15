@@ -502,7 +502,7 @@ def ooc_cmd_announce(client, arg):
     if len(arg) == 0:
         raise ArgumentError("Can't send an empty message.")
     client.server.send_all_cmd_pred('CT', '{}'.format(client.server.config['hostname']),
-                                    '=== Announcement ===\r\n{}\r\n=================='.format(arg))
+                                    '=== Announcement ===\r\n{}\r\n=================='.format(arg), '1')
     logger.log_server('[{}][{}][ANNOUNCEMENT]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
     logger.log_mod('[{}][{}][ANNOUNCEMENT]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
     

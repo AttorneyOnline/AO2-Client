@@ -1005,12 +1005,19 @@ void Courtroom::list_areas()
 
 void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
 {
-  ui_ms_chatlog->append_chatmessage(f_name, f_message);
+  ui_ms_chatlog->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
-void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
+void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_colour)
 {
-  ui_server_chatlog->append_chatmessage(p_name, p_message);
+  QString colour = "#000000";
+
+  if (p_colour == "0")
+    colour = ao_app->get_color("ooc_default_color", "courtroom_design.ini").name();
+  if (p_colour == "1")
+    colour = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
+
+  ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
 }
 
 void Courtroom::on_chat_return_pressed()
@@ -2660,21 +2667,21 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/login"))
   {
     ui_guard->show();
-    append_server_chatmessage("CLIENT", "You were granted the Guard button.");
+    append_server_chatmessage("CLIENT", "You were granted the Guard button.", "1");
   }
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
     //ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
     //rainbow_appended = true;
-    append_server_chatmessage("CLIENT", "This does nohing, but there you go.");
+    append_server_chatmessage("CLIENT", "This does nohing, but there you go.", "1");
     return;
   }
   else if (ooc_message.startsWith("/settings"))
   {
     ui_ooc_chat_message->clear();
     ao_app->call_settings_menu();
-    append_server_chatmessage("CLIENT", "You opened the settings menu.");
+    append_server_chatmessage("CLIENT", "You opened the settings menu.", "1");
     return;
   }
   else if (ooc_message.startsWith("/pair"))
@@ -2692,16 +2699,16 @@ void Courtroom::on_ooc_return_pressed()
         QString msg = "You will now pair up with ";
         msg.append(char_list.at(whom).name);
         msg.append(" if they also choose your character in return.");
-        append_server_chatmessage("CLIENT", msg);
+        append_server_chatmessage("CLIENT", msg, "1");
       }
       else
       {
-        append_server_chatmessage("CLIENT", "You are no longer paired with anyone.");
+        append_server_chatmessage("CLIENT", "You are no longer paired with anyone.", "1");
       }
     }
     else
     {
-      append_server_chatmessage("CLIENT", "Are you sure you typed that well? The char ID could not be recognised.");
+      append_server_chatmessage("CLIENT", "Are you sure you typed that well? The char ID could not be recognised.", "1");
     }
     return;
   }
@@ -2720,29 +2727,29 @@ void Courtroom::on_ooc_return_pressed()
         QString msg = "You have set your offset to ";
         msg.append(QString::number(off));
         msg.append("%.");
-        append_server_chatmessage("CLIENT", msg);
+        append_server_chatmessage("CLIENT", msg, "1");
       }
       else
       {
-        append_server_chatmessage("CLIENT", "Your offset must be between -100% and 100%!");
+        append_server_chatmessage("CLIENT", "Your offset must be between -100% and 100%!", "1");
       }
     }
     else
     {
-      append_server_chatmessage("CLIENT", "That offset does not look like one.");
+      append_server_chatmessage("CLIENT", "That offset does not look like one.", "1");
     }
     return;
   }
   else if (ooc_message.startsWith("/switch_am"))
   {
-      append_server_chatmessage("CLIENT", "You switched your music and area list.");
+      append_server_chatmessage("CLIENT", "You switched your music and area list.", "1");
       on_switch_area_music_clicked();
       ui_ooc_chat_message->clear();
       return;
   }
   else if (ooc_message.startsWith("/enable_blocks"))
   {
-    append_server_chatmessage("CLIENT", "You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.");
+    append_server_chatmessage("CLIENT", "You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.", "1");
     ao_app->shownames_enabled = true;
     ao_app->charpairs_enabled = true;
     ao_app->arup_enabled = true;
@@ -2754,9 +2761,9 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/non_int_pre"))
   {
     if (ui_pre_non_interrupt->isChecked())
-      append_server_chatmessage("CLIENT", "Your pre-animations interrupt again.");
+      append_server_chatmessage("CLIENT", "Your pre-animations interrupt again.", "1");
     else
-      append_server_chatmessage("CLIENT", "Your pre-animations will not interrupt text.");
+      append_server_chatmessage("CLIENT", "Your pre-animations will not interrupt text.", "1");
     ui_pre_non_interrupt->setChecked(!ui_pre_non_interrupt->isChecked());
     ui_ooc_chat_message->clear();
     return;

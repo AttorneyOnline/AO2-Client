@@ -94,7 +94,7 @@ class ClientManager:
                 self.send_raw_message('{}#%'.format(command))
 
         def send_host_message(self, msg):
-            self.send_command('CT', self.server.config['hostname'], msg)
+            self.send_command('CT', self.server.config['hostname'], msg, '1')
 
         def send_motd(self):
             self.send_host_message('=== MOTD ===\r\n{}\r\n============='.format(self.server.config['motd']))
@@ -272,7 +272,7 @@ class ClientManager:
                 info = 'Current online: {}'.format(cnt) + info
             else:
                 try:
-                    info = 'People in this area: {}\n'.format(len(self.server.area_manager.areas[area_id].clients)) + self.get_area_info(area_id, mods)
+                    info = 'People in this area: {}'.format(len(self.server.area_manager.areas[area_id].clients)) + self.get_area_info(area_id, mods)
                 except AreaError:
                     raise
             self.send_host_message(info)

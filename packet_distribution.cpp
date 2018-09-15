@@ -178,7 +178,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed)
-      w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1));
+    {
+      if (f_contents.size() == 3)
+        w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1), f_contents.at(2));
+      else
+        w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1), "0");
+    }
   }
   else if (header == "FL")
   {

@@ -124,7 +124,7 @@ class AreaManager:
                 c.send_command(cmd, *args)
 
         def send_host_message(self, msg):
-            self.send_command('CT', self.server.config['hostname'], msg)
+            self.send_command('CT', self.server.config['hostname'], msg, '1')
 
         def set_next_msg_delay(self, msg_length):
             delay = min(3000, 100 + 60 * msg_length)

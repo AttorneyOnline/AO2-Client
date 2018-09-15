@@ -162,7 +162,7 @@ public:
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
-  void append_server_chatmessage(QString p_name, QString p_message);
+  void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
 
   //these functions handle chatmessages sequentially.
   //The process itself is very convoluted and merits separate documentation
