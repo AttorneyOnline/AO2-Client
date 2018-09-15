@@ -237,10 +237,13 @@ class AreaManager:
 
 
         def can_send_message(self, client):
-            if self.is_locked != self.Locked.FREE and not client.is_mod and not client.id in self.invite_list:
+            if self.cannot_ic_interact(client):
                 client.send_host_message('This is a locked area - ask the CM to speak.')
                 return False
             return (time.time() * 1000.0 - self.next_message_time) > 0
+
+        def cannot_ic_interact(self, client):
+            return self.is_locked != self.Locked.FREE and not client.is_mod and not client.id in self.invite_list
 
         def change_hp(self, side, val):
             if not 0 <= val <= 10:

@@ -577,6 +577,9 @@ class AOProtocol(asyncio.Protocol):
             if not self.client.is_dj:
                 self.client.send_host_message('You were blockdj\'d by a moderator.')
                 return
+            if area.cannot_ic_interact(self.client):
+                self.client.send_host_message("You are not on the area's invite list, and thus, you cannot change music!")
+                return
             if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT) and not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT, self.ArgType.STR):
                 return
             if args[1] != self.client.char_id:
@@ -629,6 +632,9 @@ class AOProtocol(asyncio.Protocol):
         if not self.client.can_wtce:
             self.client.send_host_message('You were blocked from using judge signs by a moderator.')
             return
+        if self.client.area.cannot_ic_interact(self.client):
+            self.client.send_host_message("You are not on the area's invite list, and thus, you cannot use the WTCE buttons!")
+            return
         if not self.validate_net_cmd(args, self.ArgType.STR) and not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT):
             return
         if args[0] == 'testimony1':
@@ -657,6 +663,9 @@ class AOProtocol(asyncio.Protocol):
         """
         if self.client.is_muted:  # Checks to see if the client has been muted by a mod
             self.client.send_host_message("You have been muted by a moderator")
+            return
+        if self.client.area.cannot_ic_interact(self.client):
+            self.client.send_host_message("You are not on the area's invite list, and thus, you cannot change the Confidence bars!")
             return
         if not self.validate_net_cmd(args, self.ArgType.INT, self.ArgType.INT):
             return
