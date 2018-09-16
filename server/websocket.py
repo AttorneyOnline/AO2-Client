@@ -109,14 +109,17 @@ class WebSocket:
             self.keep_alive = 0
             return
 
+        mask_offset = 2
         if payload_length == 126:
             payload_length = struct.unpack(">H", data[2:4])[0]
+            mask_offset = 4
         elif payload_length == 127:
             payload_length = struct.unpack(">Q", data[2:10])[0]
+            mask_offset = 10
 
-        masks = data[2:6]
+        masks = data[mask_offset:mask_offset + 4]
         decoded = ""
-        for char in data[6:payload_length + 6]:
+        for char in data[mask_offset + 4:payload_length + mask_offset + 4]:
             char ^= masks[len(decoded) % 4]
             decoded += chr(char)
 

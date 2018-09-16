@@ -87,8 +87,7 @@ class AOProtocol(asyncio.Protocol):
             self.client.disconnect()
         for msg in self.get_messages():
             if len(msg) < 2:
-                self.client.disconnect()
-                return
+                continue
             # general netcode structure is not great
             if msg[0] in ('#', '3', '4'):
                 if msg[0] == '#':
@@ -100,7 +99,7 @@ class AOProtocol(asyncio.Protocol):
                 cmd, *args = msg.split('#')
                 self.net_cmd_dispatcher[cmd](self, args)
             except KeyError:
-                return
+                logger.log_debug('[INC][UNK]{}'.format(msg), self.client)
 
     def connection_made(self, transport):
         """ Called upon a new client connecting
