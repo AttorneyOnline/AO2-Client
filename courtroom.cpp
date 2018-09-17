@@ -2841,10 +2841,13 @@ void Courtroom::on_ooc_return_pressed()
 
     QSettings casefile("base/cases/" + command[1] + ".ini", QSettings::IniFormat);
 
+    QString caseauth = casefile.value("author", "").value<QString>();
     QString casedoc = casefile.value("doc", "").value<QString>();
     QString cmdoc = casefile.value("cmdoc", "").value<QString>();
     QString casestatus = casefile.value("status", "").value<QString>();
 
+    if (!caseauth.isEmpty())
+      append_server_chatmessage("CLIENT", "Case made by " + caseauth + ".", "1");
     if (!casedoc.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
     if (!casestatus.isEmpty())
