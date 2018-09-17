@@ -2811,9 +2811,22 @@ void Courtroom::on_ooc_return_pressed()
   {
     QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
 
+    QDir casefolder("base/cases");
+    if (!casefolder.exists())
+    {
+        QDir::current().mkdir("base/" + casefolder.dirName());
+        append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely the case file you're looking for can't be found in there.", "1");
+        ui_ooc_chat_message->clear();
+        return;
+    }
+    QStringList caseslist = casefolder.entryList();
+    caseslist.removeOne(".");
+    caseslist.removeOne("..");
+    caseslist.replaceInStrings(".ini","");
+
     if (command.size() < 2)
     {
-      append_server_chatmessage("CLIENT", "You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.", "1");
+      append_server_chatmessage("CLIENT", "You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.\nCases you can load: " + caseslist.join(", "), "1");
       ui_ooc_chat_message->clear();
       return;
     }
@@ -2826,21 +2839,18 @@ void Courtroom::on_ooc_return_pressed()
       return;
     }
 
-    QDir casefolder("base/cases");
-    if (!casefolder.exists())
-    {
-        QDir::current().mkdir("base/" + casefolder.dirName());
-        append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely the case file you're looking for can't be found in there.", "1");
-        ui_ooc_chat_message->clear();
-        return;
-    }
-
     QSettings casefile("base/cases/" + command[1] + ".ini", QSettings::IniFormat);
 
-    QString casedoc = casefile.value("doc", "UNKNOWN").value<QString>();
+    QString casedoc = casefile.value("doc", "").value<QString>();
+    QString cmdoc = casefile.value("cmdoc", "").value<QString>();
+    QString casestatus = casefile.value("status", "").value<QString>();
 
-    ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
-    ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status lfp#%"));
+    if (!casedoc.isEmpty())
+      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
+    if (!casestatus.isEmpty())
+      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status " + casestatus + "#%"));
+    if (!cmdoc.isEmpty())
+      append_server_chatmessage("CLIENT", "Navigate to " + cmdoc + " for the CM doc.", "1");
 
     for (int i = local_evidence_list.size() - 1; i >= 0; i--) {
         ao_app->send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
