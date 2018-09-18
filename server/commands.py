@@ -23,6 +23,34 @@ from server.constants import TargetType
 from server import logger
 from server.exceptions import ClientError, ServerError, ArgumentError, AreaError
 
+def ooc_cmd_a(client, arg):
+    if len(arg) == 0:
+        raise ArgumentError('You must specify an area.')
+    arg = arg.split(' ')
+    
+    try:
+        area = client.server.area_manager.get_area_by_id(int(arg[0]))
+    except AreaError:
+        raise
+
+    message_areas_cm(client, [area], ' '.join(arg[1:]))
+
+def ooc_cmd_s(client, arg):
+    areas = []
+    for a in client.server.area_manager.areas:
+        if client in a.owners:
+            areas.append(a)
+    if not areas:
+        client.send_host_message('You aren\'t a CM in any area!')
+        return
+    message_areas_cm(client, areas, arg)
+
+def message_areas_cm(client, areas, message):
+    for a in areas:
+        if not client in a.owners:
+            client.send_host_message('You are not a CM in {}!'.format(a.name))
+            return
+        a.send_command('CT', client.name, message)
 
 def ooc_cmd_switch(client, arg):
     if len(arg) == 0:
@@ -90,7 +118,7 @@ def ooc_cmd_allow_iniswap(client, arg):
     return
     
 def ooc_cmd_allow_blankposting(client, arg):
-    if not client.is_mod and not client.is_cm:
+    if not client.is_mod and not client in client.area.owners:
         raise ClientError('You must be authorized to do that.')
     client.area.blankposting_allowed = not client.area.blankposting_allowed
     answer = {True: 'allowed', False: 'forbidden'}
@@ -98,7 +126,7 @@ def ooc_cmd_allow_blankposting(client, arg):
     return
     
 def ooc_cmd_force_nonint_pres(client, arg):
-    if not client.is_mod and not client.is_cm:
+    if not client.is_mod and not client in client.area.owners:
         raise ClientError('You must be authorized to do that.')
     client.area.non_int_pres_only = not client.area.non_int_pres_only
     answer = {True: 'non-interrupting only', False: 'non-interrupting or interrupting as you choose'}
@@ -179,7 +207,7 @@ def ooc_cmd_currentmusic(client, arg):
                                                                                     client.area.current_music_player))
 
 def ooc_cmd_jukebox_toggle(client, arg):
-    if not client.is_mod and not client.is_cm:
+    if not client.is_mod and not client in client.area.owners:
         raise ClientError('You must be authorized to do that.')
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
@@ -188,7 +216,7 @@ def ooc_cmd_jukebox_toggle(client, arg):
     client.area.send_host_message('{} [{}] has set the jukebox to {}.'.format(client.get_char_name(), client.id, client.area.jukebox))
 
 def ooc_cmd_jukebox_skip(client, arg):
-    if not client.is_mod and not client.is_cm:
+    if not client.is_mod and not client in client.area.owners:
         raise ClientError('You must be authorized to do that.')
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
@@ -276,7 +304,7 @@ def ooc_cmd_pos(client, arg):
         client.send_host_message('Position changed.')   
 
 def ooc_cmd_forcepos(client, arg):
-    if not client.is_cm and not client.is_mod:
+    if not client in client.area.owners and not client.is_mod:
         raise ClientError('You must be authorized to do that.')
 
     args = arg.split()
@@ -689,25 +717,55 @@ def ooc_cmd_evi_swap(client, arg):
 def ooc_cmd_cm(client, arg):
     if 'CM' not in client.area.evidence_mod:
         raise ClientError('You can\'t become a CM in this area')
-    if client.area.owned == False:
-        client.area.owned = True
-        client.is_cm = True
+    if len(client.area.owners) == 0:
+        if len(arg) > 0:
+            raise ArgumentError('You cannot \'nominate\' people to be CMs when you are not one.')
+        client.area.owners.append(client)
         if client.area.evidence_mod == 'HiddenCM':
             client.area.broadcast_evidence_list()
         client.server.area_manager.send_arup_cms()
-        client.area.send_host_message('{} is CM in this area now.'.format(client.get_char_name()))
+        client.area.send_host_message('{} [{}] is CM in this area now.'.format(client.get_char_name(), client.id))
+    elif client in client.area.owners:
+        if len(arg) > 0:
+            arg = arg.split(' ')
+        for id in arg:
+            try:
+                id = int(id)
+                c = client.server.client_manager.get_targets(client, TargetType.ID, id, False)[0]
+                if c in client.area.owners:
+                    client.send_host_message('{} [{}] is already a CM here.'.format(c.get_char_name(), c.id))
+                else:
+                    client.area.owners.append(c)
+                    if client.area.evidence_mod == 'HiddenCM':
+                        client.area.broadcast_evidence_list()
+                    client.server.area_manager.send_arup_cms()
+                    client.area.send_host_message('{} [{}] is CM in this area now.'.format(c.get_char_name(), c.id))
+            except:
+                client.send_host_message('{} does not look like a valid ID.'.format(id))
+    else:
+        raise ClientError('You must be authorized to do that.')
+            
      
 def ooc_cmd_uncm(client, arg):
-    if client.is_cm:
-        client.is_cm = False
-        client.area.owned = False
-        client.area.blankposting_allowed = True
-        if client.area.is_locked != client.area.Locked.FREE:
-            client.area.unlock()
-        client.server.area_manager.send_arup_cms()
-        client.area.send_host_message('{} is no longer CM in this area.'.format(client.get_char_name()))
+    if client in client.area.owners:
+        if len(arg) > 0:
+            arg = arg.split(' ')
+        else:
+            arg = [client.id]
+        for id in arg:
+            try:
+                id = int(id)
+                c = client.server.client_manager.get_targets(client, TargetType.ID, id, False)[0]
+                if c in client.area.owners:
+                    client.area.owners.remove(c)
+                    client.server.area_manager.send_arup_cms()
+                    client.area.send_host_message('{} [{}] is no longer CM in this area.'.format(c.get_char_name(), c.id))
+                else:
+                    client.send_host_message('You cannot remove someone from CMing when they aren\'t a CM.')
+            except:
+                client.send_host_message('{} does not look like a valid ID.'.format(id))
     else:
-        raise ClientError('You cannot give up being the CM when you are not one')
+        raise ClientError('You must be authorized to do that.')
     
 def ooc_cmd_unmod(client, arg):
     client.is_mod = False
@@ -721,7 +779,7 @@ def ooc_cmd_area_lock(client, arg):
         return
     if client.area.is_locked == client.area.Locked.LOCKED:
         client.send_host_message('Area is already locked.')
-    if client.is_cm:
+    if client in client.area.owners:
         client.area.lock()
         return
     else:
@@ -733,7 +791,7 @@ def ooc_cmd_area_spectate(client, arg):
         return
     if client.area.is_locked == client.area.Locked.SPECTATABLE:
         client.send_host_message('Area is already spectatable.')
-    if client.is_cm:
+    if client in client.area.owners:
         client.area.spectator()
         return
     else:
@@ -742,7 +800,7 @@ def ooc_cmd_area_spectate(client, arg):
 def ooc_cmd_area_unlock(client, arg):
     if client.area.is_locked == client.area.Locked.FREE:
         raise ClientError('Area is already unlocked.')
-    if not client.is_cm:
+    if not client in client.area.owners:
         raise ClientError('Only CM can unlock area.')
     client.area.unlock()
     client.send_host_message('Area is unlocked.')
@@ -750,9 +808,9 @@ def ooc_cmd_area_unlock(client, arg):
 def ooc_cmd_invite(client, arg):
     if not arg:
         raise ClientError('You must specify a target. Use /invite <id>')
-    if not client.area.is_locked:
+    if client.area.is_locked == client.area.Locked.FREE:
         raise ClientError('Area isn\'t locked.')
-    if not client.is_cm and not client.is_mod:
+    if not client in client.area.owners and not client.is_mod:
         raise ClientError('You must be authorized to do that.')
     try:
         c = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)[0]
@@ -763,9 +821,9 @@ def ooc_cmd_invite(client, arg):
         raise ClientError('You must specify a target. Use /invite <id>')
 
 def ooc_cmd_uninvite(client, arg):
-    if not client.is_cm and not client.is_mod:
+    if not client in client.area.owners and not client.is_mod:
         raise ClientError('You must be authorized to do that.')
-    if not client.area.is_locked and not client.is_mod:
+    if client.area.is_locked == client.area.Locked.FREE:
         raise ClientError('Area isn\'t locked.')
     if not arg:
         raise ClientError('You must specify a target. Use /uninvite <id>')
@@ -776,7 +834,7 @@ def ooc_cmd_uninvite(client, arg):
             for c in targets:
                 client.send_host_message("You have removed {} from the whitelist.".format(c.get_char_name()))
                 c.send_host_message("You were removed from the area whitelist.")
-                if client.area.is_locked:
+                if client.area.is_locked != client.area.Locked.FREE:
                     client.area.invite_list.pop(c.id)
         except AreaError:
             raise
@@ -788,7 +846,7 @@ def ooc_cmd_uninvite(client, arg):
 def ooc_cmd_area_kick(client, arg):
     if not client.is_mod:
         raise ClientError('You must be authorized to do that.')
-    if not client.area.is_locked and not client.is_mod:
+    if client.area.is_locked == client.area.Locked.FREE:
         raise ClientError('Area isn\'t locked.')
     if not arg:
         raise ClientError('You must specify a target. Use /area_kick <id> [destination #]')
@@ -809,7 +867,7 @@ def ooc_cmd_area_kick(client, arg):
                 client.send_host_message("Attempting to kick {} to area {}.".format(c.get_char_name(), output))
                 c.change_area(area)
                 c.send_host_message("You were kicked from the area to area {}.".format(output))
-                if client.area.is_locked:
+                if client.area.is_locked != client.area.Locked.FREE:
                     client.area.invite_list.pop(c.id)
         except AreaError:
             raise
@@ -1070,7 +1128,7 @@ def ooc_cmd_notecard_clear(client, arg):
         raise ClientError('You do not have a note card.')
 
 def ooc_cmd_notecard_reveal(client, arg):
-    if not client.is_cm and not client.is_mod:
+    if not client in client.area.owners and not client.is_mod:
         raise ClientError('You must be a CM or moderator to reveal cards.')
     if len(client.area.cards) == 0:
         raise ClientError('There are no cards to reveal in this area.')

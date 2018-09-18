@@ -54,7 +54,6 @@ class AreaManager:
             self.showname_changes_allowed = showname_changes_allowed
             self.shouts_allowed = shouts_allowed
             self.abbreviation = abbreviation
-            self.owned = False
             self.cards = dict()
 
             """
@@ -71,6 +70,8 @@ class AreaManager:
             self.jukebox_votes = []
             self.jukebox_prev_char_id = -1
 
+            self.owners = []
+
         class Locked(Enum):
             FREE = 1,
             SPECTATABLE = 2,
@@ -84,12 +85,6 @@ class AreaManager:
             self.clients.remove(client)
             if len(self.clients) == 0:
                 self.change_status('IDLE')
-            if client.is_cm:
-                client.is_cm = False
-                self.owned = False
-                self.server.area_manager.send_arup_cms()
-                if self.is_locked != self.Locked.FREE:
-                    self.unlock()
         
         def unlock(self):
             self.is_locked = self.Locked.FREE
@@ -102,12 +97,16 @@ class AreaManager:
             self.is_locked = self.Locked.SPECTATABLE
             for i in self.clients:
                 self.invite_list[i.id] = None
+            for i in self.owners:
+                self.invite_list[i.id] = None
             self.server.area_manager.send_arup_lock()
             self.send_host_message('This area is spectatable now.')
 
         def lock(self):
             self.is_locked = self.Locked.LOCKED
             for i in self.clients:
+                self.invite_list[i.id] = None
+            for i in self.owners:
                 self.invite_list[i.id] = None
             self.server.area_manager.send_arup_lock()
             self.send_host_message('This area is locked now.')
@@ -124,9 +123,15 @@ class AreaManager:
         def send_command(self, cmd, *args):
             for c in self.clients:
                 c.send_command(cmd, *args)
+        
+        def send_owner_command(self, cmd, *args):
+            for c in self.owners:
+                if not c in self.clients:
+                    c.send_command(cmd, *args)
 
         def send_host_message(self, msg):
             self.send_command('CT', self.server.config['hostname'], msg, '1')
+            self.send_owner_command('CT', '[' + self.abbreviation + ']' + self.server.config['hostname'], msg, '1')
 
         def set_next_msg_delay(self, msg_length):
             delay = min(3000, 100 + 60 * msg_length)
@@ -300,6 +305,14 @@ class AreaManager:
             """
             for client in self.clients:
                 client.send_command('LE', *self.get_evidence_list(client))
+
+        def get_cms(self):
+            msg = ''
+            for i in self.owners:
+                msg = msg + '[' + str(i.id) + '] ' + i.get_char_name() + ', '
+            if len(msg) > 2:
+                msg = msg[:-2]
+            return msg
         
         class JukeboxVote:
             def __init__(self, client, name, length, showname):
@@ -365,6 +378,11 @@ class AreaManager:
             return name[:3].upper()
         else:
             return name.upper()
+    
+    def send_remote_command(self, area_ids, cmd, *args):
+        for a_id in area_ids:
+            self.get_area_by_id(a_id).send_command(cmd, *args)
+            self.get_area_by_id(a_id).send_owner_command(cmd, *args)
 
     def send_arup_players(self):
         players_list = [0]
@@ -382,9 +400,8 @@ class AreaManager:
         cms_list = [2]
         for area in self.areas:
             cm = 'FREE'
-            for client in area.clients:
-                if client.is_cm:
-                    cm = client.get_char_name()
+            if len(area.owners) > 0:
+                cm = area.get_cms()
             cms_list.append(cm)
         self.server.send_arup(cms_list)
     

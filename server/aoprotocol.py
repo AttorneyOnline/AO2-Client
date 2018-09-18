@@ -335,6 +335,8 @@ class AOProtocol(asyncio.Protocol):
             return
         if not self.client.area.can_send_message(self.client):
             return
+        
+        target_area = []
 
         if self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
                                      self.ArgType.STR,
@@ -399,6 +401,28 @@ class AOProtocol(asyncio.Protocol):
             if len(re.sub(r'[{}\\`|(~~)]','', text).replace(' ', '')) < 3 and text != '<' and text != '>':
                 self.client.send_host_message("While that is not a blankpost, it is still pretty spammy. Try forming sentences.")
                 return
+        if text.startswith('/a'):
+            part = text.split(' ')
+            try:
+                aid = int(part[1])
+                if self.client in self.server.area_manager.get_area_by_id(aid).owners:
+                    target_area.append(aid)
+                if not target_area:
+                    self.client.send_host_message('You don\'t own {}!'.format(self.server.area_manager.get_area_by_id(aid).name))
+                    return
+                text = ' '.join(part[2:])
+            except ValueError:
+                self.client.send_host_message("That does not look like a valid area ID!")
+                return
+        elif text.startswith('/s'):
+            part = text.split(' ')
+            for a in self.server.area_manager.areas:
+                if self.client in a.owners:
+                    target_area.append(a.id)
+            if not target_area:
+                self.client.send_host_message('You don\'t any areas!')
+                return
+            text = ' '.join(part[1:])
         if msg_type not in ('chat', '0', '1'):
             return
         if anim_type not in (0, 1, 2, 5, 6):
@@ -441,7 +465,7 @@ class AOProtocol(asyncio.Protocol):
             button = 0
             # Turn off the ding.
             ding = 0
-        if color == 2 and not (self.client.is_mod or self.client.is_cm):
+        if color == 2 and not (self.client.is_mod or self.client in self.client.area.owners):
             color = 0
         if color == 6:
             text = re.sub(r'[^\x00-\x7F]+',' ', text) #remove all unicode to prevent redtext abuse
@@ -498,6 +522,15 @@ class AOProtocol(asyncio.Protocol):
         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
                                       sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
                                       charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip, nonint_pre)
+        
+        self.client.area.send_owner_command('MS', msg_type, pre, folder, anim, '[' + self.client.area.abbreviation + ']' + msg, pos, sfx, anim_type, cid,
+                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
+                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip, nonint_pre)
+        
+        self.server.area_manager.send_remote_command(target_area, 'MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
+                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
+                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip, nonint_pre)
+        
         self.client.area.set_next_msg_delay(len(msg))
         logger.log_server('[IC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(), msg), self.client)
 
@@ -557,6 +590,7 @@ class AOProtocol(asyncio.Protocol):
             if self.client.disemvowel:
                 args[1] = self.client.disemvowel_message(args[1])
             self.client.area.send_command('CT', self.client.name, args[1])
+            self.client.area.send_owner_command('CT', '[' + self.client.area.abbreviation + ']' + self.client.name, args[1])
             logger.log_server(
                 '[OOC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(),
                                              args[1]), self.client)

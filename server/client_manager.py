@@ -44,7 +44,6 @@ class ClientManager:
             self.is_dj = True
             self.can_wtce = True
             self.pos = ''
-            self.is_cm = False
             self.evi_list = []
             self.disemvowel = False
             self.shaken = False
@@ -140,7 +139,7 @@ class ClientManager:
                               .format(self.area.abbreviation, old_char, self.get_char_name()), self)
 
         def change_music_cd(self):
-            if self.is_mod or self.is_cm:
+            if self.is_mod or self in self.area.owners:
                 return 0
             if self.mus_mute_time:
                 if time.time() - self.mus_mute_time < self.server.config['music_change_floodguard']['mute_length']:
@@ -157,7 +156,7 @@ class ClientManager:
             return 0
 
         def wtce_mute(self):
-            if self.is_mod or self.is_cm:
+            if self.is_mod or self in self.area.owners:
                 return 0
             if self.wtce_mute_time:
                 if time.time() - self.wtce_mute_time < self.server.config['wtce_floodguard']['mute_length']:
@@ -218,10 +217,8 @@ class ClientManager:
             msg = '=== Areas ==='
             for i, area in enumerate(self.server.area_manager.areas):
                 owner = 'FREE'
-                if area.owned:
-                    for client in [x for x in area.clients if x.is_cm]:
-                        owner = 'CM: {}'.format(client.get_char_name())
-                        break
+                if len(area.owners) > 0:
+                    owner = 'CM: {}'.format(area.get_cms())
                 lock = {area.Locked.FREE: '', area.Locked.SPECTATABLE: '[SPECTATABLE]', area.Locked.LOCKED: '[LOCKED]'}
                 msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(area.abbreviation, area.name, len(area.clients), area.status, owner, lock[area.is_locked])
                 if self.area == area:
@@ -244,13 +241,19 @@ class ClientManager:
             for client in area.clients:
                 if (not mods) or client.is_mod:
                     sorted_clients.append(client)
+            for owner in area.owners:
+                if not (mods or owner in area.clients):
+                    sorted_clients.append(owner)
             if not sorted_clients:
                 return ''
             sorted_clients = sorted(sorted_clients, key=lambda x: x.get_char_name())
             for c in sorted_clients:
                 info += '\r\n'
-                if c.is_cm:
-                    info +='[CM]'
+                if c in area.owners:
+                    if not c in area.clients:
+                        info += '[RCM]'
+                    else:
+                        info +='[CM]'
                 info += '[{}] {}'.format(c.id, c.get_char_name())
                 if self.is_mod:
                     info += ' ({})'.format(c.ipid)
@@ -266,7 +269,7 @@ class ClientManager:
                 cnt = 0
                 info = '\n== Area List =='
                 for i in range(len(self.server.area_manager.areas)):
-                    if len(self.server.area_manager.areas[i].clients) > 0:
+                    if len(self.server.area_manager.areas[i].clients) > 0 or len(self.server.area_manager.areas[i].owners) > 0:
                         cnt += len(self.server.area_manager.areas[i].clients)
                         info += '{}'.format(self.get_area_info(i, mods))
                 info = 'Current online: {}'.format(cnt) + info
@@ -382,6 +385,13 @@ class ClientManager:
     def remove_client(self, client):
         if client.area.jukebox:
             client.area.remove_jukebox_vote(client, True)
+        for a in self.server.area_manager.areas:
+            if client in a.owners:
+                a.owners.remove(client)
+                client.server.area_manager.send_arup_cms()
+                if len(a.owners) == 0:
+                    if a.is_locked != a.Locked.FREE:
+                            a.unlock()
         heappush(self.cur_id, client.id)
         self.clients.remove(client)
 		
