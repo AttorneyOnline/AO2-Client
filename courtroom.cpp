@@ -948,7 +948,12 @@ void Courtroom::list_areas()
 
   for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
   {
-    QString i_area = area_list.at(n_area);
+    QString i_area = "";
+    i_area.append("[");
+    i_area.append(QString::number(n_area));
+    i_area.append("] ");
+
+    i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled)
     {
@@ -975,7 +980,7 @@ void Courtroom::list_areas()
       {
         // Colouring logic here.
         ui_area_list->item(n_listed_areas)->setBackground(free_brush);
-        if (arup_locks.at(n_area) == "Locked")
+        if (arup_locks.at(n_area) == "LOCKED")
         {
             ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
         }
