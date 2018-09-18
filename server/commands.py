@@ -185,11 +185,9 @@ def ooc_cmd_rollp(client, arg):
         roll = '(' + roll + ')'
     client.send_host_message('{} rolled {} out of {}.'.format(client.get_char_name(), roll, val[0]))
 
-    for c in client.area.clients:
-        if c.is_cm:
-            c.send_host_message('{} secretly rolled {} out of {}.'.format(client.get_char_name(), roll, val[0]))
-        else:
-            c.send_host_message('{} rolled in secret.'.format(client.get_char_name()))
+    client.area.send_host_message('{} rolled in secret.'.format(client.get_char_name()))
+    for c in client.area.owners:
+        c.send_host_message('[{}]{} secretly rolled {} out of {}.'.format(client.area.abbreviation, client.get_char_name(), roll, val[0]))
 
     logger.log_server(
         '[{}][{}]Used /rollp and got {} out of {}.'.format(client.area.abbreviation, client.get_char_name(), roll, val[0]), client)
@@ -371,6 +369,7 @@ def ooc_cmd_kick(client, arg):
                 logger.log_server('Kicked {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
                 logger.log_mod('Kicked {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
                 client.send_host_message("{} was kicked.".format(c.get_char_name()))
+                c.send_command('KK', c.char_id)
                 c.disconnect()
         else:
             client.send_host_message("No targets with the IPID {} were found.".format(ipid))
@@ -395,6 +394,7 @@ def ooc_cmd_ban(client, arg):
             targets = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
             if targets:
                 for c in targets:
+                    c.send_command('KB', c.char_id)
                     c.disconnect()
                 client.send_host_message('{} clients was kicked.'.format(len(targets)))
             client.send_host_message('{} was banned.'.format(ipid))
