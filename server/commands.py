@@ -51,6 +51,7 @@ def message_areas_cm(client, areas, message):
             client.send_host_message('You are not a CM in {}!'.format(a.name))
             return
         a.send_command('CT', client.name, message)
+        a.send_owner_command('CT', client.name, message)
 
 def ooc_cmd_switch(client, arg):
     if len(arg) == 0:
