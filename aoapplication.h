@@ -271,8 +271,8 @@ private:
   const int MINOR_VERSION = 10;
 
   const int CCCC_RELEASE = 1;
-  const int CCCC_MAJOR_VERSION = 3;
-  const int CCCC_MINOR_VERSION = 1;
+  const int CCCC_MAJOR_VERSION = 4;
+  const int CCCC_MINOR_VERSION = 0;
 
   QString current_theme = "default";
 
