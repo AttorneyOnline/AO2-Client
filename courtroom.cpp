@@ -2072,6 +2072,9 @@ void Courtroom::start_chat_ticking()
   // let's set it to false.
   inline_blue_depth = 0;
 
+  // And also, reset the fullstop bool.
+  previous_character_is_fullstop = false;
+
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
   chat_tick_timer->start(message_display_speed[current_display_speed]);
@@ -2225,7 +2228,8 @@ void Courtroom::chat_tick()
               // If it isn't, we start talking if we have completely climbed out of inline blues.
               if (!entire_message_is_blue)
               {
-                if (inline_blue_depth == 0 and anim_state != 4)
+                // We should only go back to talking if we're out of inline blues, not during a non. int. pre, and not on the last character.
+                if (inline_blue_depth == 0 and anim_state != 4 and !(tick_pos+1 >= f_message.size()))
                 {
                   QString f_char = m_chatmessage[CHAR_NAME];
                   QString f_emote = m_chatmessage[EMOTE];
@@ -2285,6 +2289,20 @@ void Courtroom::chat_tick()
         }
     }
 
+    // Silencing the character during long times of ellipses.
+    else if (f_character == "." and !next_character_is_not_special and !previous_character_is_fullstop)
+    {
+      if (!previous_character_is_fullstop && inline_blue_depth == 0 && !entire_message_is_blue)
+      {
+        QString f_char = m_chatmessage[CHAR_NAME];
+        QString f_emote = m_chatmessage[EMOTE];
+        ui_vp_player_char->play_idle(f_char, f_emote);
+      }
+      previous_character_is_fullstop = true;
+      next_character_is_not_special = true;
+      formatting_char = true;
+      tick_pos--;
+    }
     else
     {
       next_character_is_not_special = false;
@@ -2322,6 +2340,20 @@ void Courtroom::chat_tick()
       {
           ui_vp_message->setAlignment(Qt::AlignLeft);
       }
+    }
+
+    // Basically only go back to talkin if:
+    // - This character is not a fullstop
+    // - But the previous character was
+    // - And we're out of inline blues
+    // - And the entire messages isn't blue
+    // - And this isn't the last character.
+    if (f_character != "." && previous_character_is_fullstop && inline_blue_depth == 0 && !entire_message_is_blue && tick_pos+1 >= f_message.size())
+    {
+      QString f_char = m_chatmessage[CHAR_NAME];
+      QString f_emote = m_chatmessage[EMOTE];
+      ui_vp_player_char->play_talking(f_char, f_emote);
+      previous_character_is_fullstop = false;
     }
 
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();

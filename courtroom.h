@@ -227,6 +227,8 @@ private:
   bool next_character_is_not_special = false; // If true, write the
                         // next character as it is.
 
+  bool previous_character_is_fullstop = false; // Used for silencing the character during long ellipses.
+
   bool message_is_centered = false;
 
   int current_display_speed = 3;
