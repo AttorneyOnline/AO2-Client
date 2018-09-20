@@ -234,6 +234,9 @@ public:
   //Not in use
   int get_text_delay(QString p_char, QString p_emote);
 
+  // Returns the custom realisation used by the character.
+  QString get_custom_realization(QString p_char);
+
   //Returns the name of p_char
   QString get_char_name(QString p_char);
 

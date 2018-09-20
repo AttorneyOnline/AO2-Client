@@ -497,6 +497,15 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
   else return f_result.toInt();
 }
 
+QString AOApplication::get_custom_realization(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "realization", "Options");
+
+  if (f_result == "")
+    return get_sfx("realization");
+  else return f_result;
+}
+
 bool AOApplication::get_blank_blip()
 {
     QString result = configini->value("blank_blip", "false").value<QString>();

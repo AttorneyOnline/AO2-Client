@@ -1557,7 +1557,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play(ao_app->get_sfx("realization"));
+    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
 
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
