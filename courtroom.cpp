@@ -208,6 +208,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_pre_non_interrupt = new QCheckBox(this);
   ui_pre_non_interrupt->setText("No Intrpt");
+  ui_pre_non_interrupt->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_realization = new AOButton(this, ao_app);
@@ -470,7 +471,7 @@ void Courtroom::set_widgets()
   ui_pair_offset_spinbox->hide();
   set_size_and_pos(ui_pair_button, "pair_button");
   ui_pair_button->set_image("pair_button.png");
-  if (ao_app->charpairs_enabled)
+  if (ao_app->cccc_ic_support_enabled)
   {
     ui_pair_button->setEnabled(true);
     ui_pair_button->show();
@@ -583,7 +584,6 @@ void Courtroom::set_widgets()
   ui_pre->setText("Pre");
 
   set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
-  ui_pre_non_interrupt->setText("No Intrpt");
 
   set_size_and_pos(ui_flip, "flip");
 
@@ -864,6 +864,11 @@ void Courtroom::enter_courtroom(int p_cid)
   else
     ui_flip->hide();
 
+  if (ao_app->cccc_ic_support_enabled)
+    ui_pre_non_interrupt->show();
+  else
+    ui_pre_non_interrupt->hide();
+
   list_music();
   list_areas();
 
@@ -879,7 +884,7 @@ void Courtroom::enter_courtroom(int p_cid)
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
 
   ui_char_select_background->hide();
-  if (ao_app->shownames_enabled)
+  if (ao_app->cccc_ic_support_enabled)
   {
     ui_ic_chat_name->setPlaceholderText(ao_app->get_showname(f_char));
     ui_ic_chat_name->setEnabled(true);
@@ -1159,39 +1164,41 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_text_color);
 
-  if (!ui_ic_chat_name->text().isEmpty())
+  // If the server we're on supports CCCC stuff, we should use it!
+  if (ao_app->cccc_ic_support_enabled)
   {
-    packet_contents.append(ui_ic_chat_name->text());
-  }
-
-  // If there is someone this user would like to appear with.
-  // And said someone is not ourselves!
-  if (other_charid > -1 && other_charid != m_cid)
-  {
-    // First, we'll add a filler in case we haven't set an IC showname.
-    if (ui_ic_chat_name->text().isEmpty())
+    // If there is a showname entered, use that -- else, just send an empty packet-part.
+    if (!ui_ic_chat_name->text().isEmpty())
+    {
+      packet_contents.append(ui_ic_chat_name->text());
+    }
+    else
     {
       packet_contents.append("");
     }
 
-    packet_contents.append(QString::number(other_charid));
-    packet_contents.append(QString::number(offset_with_pair));
-  }
-
-  if (ui_pre_non_interrupt->isChecked())
-  {
-    if (ui_ic_chat_name->text().isEmpty())
+    // Similarly, we send over whom we're paired with, unless we have chosen ourselves.
+    // Or a charid of -1 or lower, through some means.
+    if (other_charid > -1 && other_charid != m_cid)
     {
-      packet_contents.append("");
+      packet_contents.append(QString::number(other_charid));
+      packet_contents.append(QString::number(offset_with_pair));
     }
-
-    if (!(other_charid > -1 && other_charid != m_cid))
+    else
     {
       packet_contents.append("-1");
       packet_contents.append("0");
     }
 
-    packet_contents.append("1");
+    // Finally, we send over if we want our pres to not interrupt.
+    if (ui_pre_non_interrupt->isChecked())
+    {
+      packet_contents.append("1");
+    }
+    else
+    {
+      packet_contents.append("0");
+    }
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
@@ -1205,23 +1212,22 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (p_contents->size() < 15)
     return;
 
-  //qDebug() << "A message was got. Its contents:";
   for (int n_string = 0 ; n_string < chatmessage_size ; ++n_string)
   {
     //m_chatmessage[n_string] = p_contents->at(n_string);
 
     // Note that we have added stuff that vanilla clients and servers simply won't send.
     // So now, we have to check if the thing we want even exists amongst the packet's content.
+    // We also have to check if the server even supports CCCC's IC features, or if it's just japing us.
     // Also, don't forget! A size 15 message will have indices from 0 to 14.
-    if (n_string < p_contents->size())
+    if (n_string < p_contents->size() &&
+       (n_string < 15 || ao_app->cccc_ic_support_enabled))
     {
       m_chatmessage[n_string] = p_contents->at(n_string);
-      //qDebug() << "- " << n_string << ": " << p_contents->at(n_string);
     }
     else
     {
       m_chatmessage[n_string] = "";
-      //qDebug() << "- " << n_string << ": Nothing?";
     }
   }
 
@@ -2771,8 +2777,7 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/enable_blocks"))
   {
     append_server_chatmessage("CLIENT", "You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.", "1");
-    ao_app->shownames_enabled = true;
-    ao_app->charpairs_enabled = true;
+    ao_app->cccc_ic_support_enabled = true;
     ao_app->arup_enabled = true;
     ao_app->modcall_reason_enabled = true;
     on_reload_theme_clicked();

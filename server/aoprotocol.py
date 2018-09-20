@@ -213,7 +213,7 @@ class AOProtocol(asyncio.Protocol):
 
         self.client.is_ao2 = True
 
-        self.client.send_command('FL', 'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption', 'deskmod', 'evidence', 'modcall_reason', 'cc_customshownames', 'characterpairs', 'arup')
+        self.client.send_command('FL', 'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption', 'deskmod', 'evidence', 'modcall_reason', 'cccc_ic_support', 'arup')
 
     def net_cmd_ch(self, _):
         """ Periodically checks the connection.
@@ -348,7 +348,7 @@ class AOProtocol(asyncio.Protocol):
             showname = ""
             charid_pair = -1
             offset_pair = 0
-            nonint_pre = ''
+            nonint_pre = 0
         elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
                                      self.ArgType.STR,
                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
@@ -358,7 +358,7 @@ class AOProtocol(asyncio.Protocol):
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname = args
             charid_pair = -1
             offset_pair = 0
-            nonint_pre = ''
+            nonint_pre = 0
             if len(showname) > 0 and not self.client.area.showname_changes_allowed:
                 self.client.send_host_message("Showname changes are forbidden in this area!")
                 return
@@ -369,7 +369,7 @@ class AOProtocol(asyncio.Protocol):
                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY, self.ArgType.INT, self.ArgType.INT):
             # 1.3.5 validation monstrosity.
             msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname, charid_pair, offset_pair = args
-            nonint_pre = ''
+            nonint_pre = 0
             if len(showname) > 0 and not self.client.area.showname_changes_allowed:
                 self.client.send_host_message("Showname changes are forbidden in this area!")
                 return
@@ -442,7 +442,7 @@ class AOProtocol(asyncio.Protocol):
         if len(showname) > 15:
             self.client.send_host_message("Your IC showname is way too long!")
             return
-        if nonint_pre != '':
+        if nonint_pre == 1:
             if button in (1, 2, 3, 4, 23):
                 if anim_type == 1 or anim_type == 2:
                     anim_type = 0

@@ -147,8 +147,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     improved_loading_enabled = false;
     desk_mod_enabled = false;
     evidence_enabled = false;
-    shownames_enabled = false;
-    charpairs_enabled = false;
+    cccc_ic_support_enabled = false;
     arup_enabled = false;
     modcall_reason_enabled = false;
 
@@ -201,10 +200,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       desk_mod_enabled = true;
     if (f_packet.contains("evidence",Qt::CaseInsensitive))
       evidence_enabled = true;
-    if (f_packet.contains("cc_customshownames",Qt::CaseInsensitive))
-      shownames_enabled = true;
-    if (f_packet.contains("characterpairs",Qt::CaseInsensitive))
-      charpairs_enabled = true;
+    if (f_packet.contains("cccc_ic_support",Qt::CaseInsensitive))
+      cccc_ic_support_enabled = true;
     if (f_packet.contains("arup",Qt::CaseInsensitive))
       arup_enabled = true;
     if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
