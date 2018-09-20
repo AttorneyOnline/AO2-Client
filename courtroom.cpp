@@ -3059,7 +3059,7 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 
   QString p_song = music_list.at(music_row_to_number.at(p_model.row()));
 
-  if (!ui_ic_chat_name->text().isEmpty())
+  if (!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled)
   {
     ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
   }
