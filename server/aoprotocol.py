@@ -627,10 +627,10 @@ class AOProtocol(asyncio.Protocol):
                 if self.client.area.jukebox:
                     showname = ''
                     if len(args) > 2:
-                        if len(args[2]) > 0 and not self.client.area.showname_changes_allowed:
+                        showname = args[2]
+                        if len(showname) > 0 and not self.client.area.showname_changes_allowed:
                             self.client.send_host_message("Showname changes are forbidden in this area!")
                             return
-                        showname = args[2]
                     self.client.area.add_jukebox_vote(self.client, name, length, showname)
                     logger.log_server('[{}][{}]Added a jukebox vote for {}.'.format(self.client.area.abbreviation, self.client.get_char_name(), name), self.client)
                 else:
