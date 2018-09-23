@@ -915,7 +915,7 @@ void Courtroom::list_music()
   {
     QString i_song = music_list.at(n_song);
     QString i_song_listname = i_song;
-    i_song_listname.replace(".mp3","");
+    i_song_listname = i_song_listname.left(i_song_listname.lastIndexOf("."));
 
     if (i_song.toLower().contains(ui_music_search->text().toLower()))
     {
@@ -2599,7 +2599,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   QString f_song = f_contents.at(0);
   QString f_song_clear = f_song;
-  f_song_clear.replace(".mp3", "");
+  f_song_clear = f_song_clear.left(f_song_clear.lastIndexOf("."));
   int n_char = f_contents.at(1).toInt();
 
   if (n_char < 0 || n_char >= char_list.size())
