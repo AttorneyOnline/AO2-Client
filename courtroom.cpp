@@ -407,6 +407,31 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_viewport, "viewport");
 
+  // If there is a point to it, show all CCCC features.
+  // We also do this this soon so that set_size_and_pos can hide them all later, if needed.
+  if (ao_app->cccc_ic_support_enabled)
+  {
+    ui_pair_button->show();
+    ui_pre_non_interrupt->show();
+    ui_showname_enable->show();
+    ui_ic_chat_name->show();
+    ui_ic_chat_name->setEnabled(true);
+  }
+  else
+  {
+    ui_pair_button->hide();
+    ui_pre_non_interrupt->hide();
+    ui_showname_enable->hide();
+    ui_ic_chat_name->hide();
+    ui_ic_chat_name->setEnabled(false);
+  }
+
+  // We also show the non-server-dependent client additions.
+  // Once again, if the theme can't display it, set_move_and_pos will catch them.
+  ui_settings->show();
+  ui_log_limit_label->show();
+  ui_log_limit_spinbox->show();
+
   ui_vp_background->move(0, 0);
   ui_vp_background->resize(ui_viewport->width(), ui_viewport->height());
 
@@ -471,16 +496,6 @@ void Courtroom::set_widgets()
   ui_pair_offset_spinbox->hide();
   set_size_and_pos(ui_pair_button, "pair_button");
   ui_pair_button->set_image("pair_button.png");
-  if (ao_app->cccc_ic_support_enabled)
-  {
-    ui_pair_button->setEnabled(true);
-    ui_pair_button->show();
-  }
-  else
-  {
-    ui_pair_button->setEnabled(false);
-    ui_pair_button->hide();
-  }
 
   set_size_and_pos(ui_area_list, "music_list");
   ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
@@ -864,11 +879,6 @@ void Courtroom::enter_courtroom(int p_cid)
   else
     ui_flip->hide();
 
-  if (ao_app->cccc_ic_support_enabled)
-    ui_pre_non_interrupt->show();
-  else
-    ui_pre_non_interrupt->hide();
-
   list_music();
   list_areas();
 
@@ -884,16 +894,6 @@ void Courtroom::enter_courtroom(int p_cid)
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
 
   ui_char_select_background->hide();
-  if (ao_app->cccc_ic_support_enabled)
-  {
-    ui_ic_chat_name->setPlaceholderText(ao_app->get_showname(f_char));
-    ui_ic_chat_name->setEnabled(true);
-  }
-  else
-  {
-    ui_ic_chat_name->setPlaceholderText("---");
-    ui_ic_chat_name->setEnabled(false);
-  }
 
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
@@ -1194,7 +1194,7 @@ void Courtroom::on_chat_return_pressed()
     }
 
     // Finally, we send over if we want our pres to not interrupt.
-    if (ui_pre_non_interrupt->isChecked())
+    if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked())
     {
       packet_contents.append("1");
     }
@@ -1545,7 +1545,7 @@ void Courtroom::handle_chatmessage_2()
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
     //intentional fallthru
   case 0: case 5:
-    if (m_chatmessage[NONINTERRUPTING_PRE].isEmpty())
+    if (m_chatmessage[NONINTERRUPTING_PRE].toInt() == 0)
       handle_chatmessage_3();
     else
       play_noninterrupting_preanim();
