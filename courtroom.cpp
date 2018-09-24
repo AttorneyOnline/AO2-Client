@@ -1369,6 +1369,8 @@ void Courtroom::handle_chatmessage_2()
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
+  ui_vp_showname->setStyleSheet("QLabel { color : " + get_text_color("_showname").name() + "; }");
+
   set_scene();
   set_text_color();
 
