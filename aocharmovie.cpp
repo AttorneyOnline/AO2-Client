@@ -146,17 +146,30 @@ void AOCharMovie::combo_resize(int w, int h)
   m_movie->setScaledSize(f_size);
 }
 
+void AOCharMovie::move(int ax, int ay)
+{
+  x = ax;
+  y = ay;
+  QLabel::move(x, y);
+}
+
 void AOCharMovie::frame_change(int n_frame)
 {
   if (movie_frames.size() > n_frame)
   {
     QPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(n_frame));
+    auto aspect_ratio = Qt::KeepAspectRatio;
+
+    if (f_pixmap.size().width() > f_pixmap.size().height())
+      aspect_ratio = Qt::KeepAspectRatioByExpanding;
 
     if (f_pixmap.size().width() > this->size().width() || f_pixmap.size().height() > this->size().height())
-      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::SmoothTransformation));
     else
-      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::KeepAspectRatioByExpanding, Qt::FastTransformation));
-  }
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation));
+
+    QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
+   }
 
   if (m_movie->frameCount() - 1 == n_frame && play_once)
   {
