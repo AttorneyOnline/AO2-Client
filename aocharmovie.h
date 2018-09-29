@@ -25,6 +25,8 @@ public:
 
   void stop();
 
+  void move(int ax, int ay);
+
   void combo_resize(int w, int h);
 
 private:
@@ -35,6 +37,10 @@ private:
   QTimer *preanim_timer;
 
   const int time_mod = 62;
+
+  // These are the X and Y values before they are fixed based on the sprite's width.
+  int x = 0;
+  int y = 0;
 
   bool m_flipped = false;
 
