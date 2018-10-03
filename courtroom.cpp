@@ -23,6 +23,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   {
       BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
       BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+      BASS_PluginLoad("libbassopus.so", 0);
   }
   else
   {
@@ -33,6 +34,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
               BASS_SetDevice(a);
               BASS_Init(a, 48000, BASS_DEVICE_LATENCY, 0, NULL);
               BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+              BASS_PluginLoad("libbassopus.so", 0);
               qDebug() << info.name << "was set as the default audio output device.";
               break;
           }
