@@ -1377,7 +1377,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  sfx_player->play(sfx_name + ".wav");
+  sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
 }
 
 void Courtroom::set_scene()
@@ -1488,12 +1488,13 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: yellow");
     break;
-  default:
-    qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
+
   case WHITE:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: white");
-
+    break;
+  default:
+    qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   }
 }
 
