@@ -3,8 +3,6 @@
 #include "misc_functions.h"
 #include "file_functions.h"
 #include "aoapplication.h"
-#include "debug_functions.h"
-#include <string>
 
 AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
