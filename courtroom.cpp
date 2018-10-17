@@ -703,7 +703,7 @@ void Courtroom::enter_courtroom(int p_cid)
   QString char_path = ao_app->get_character_path(current_char);
 
   if (ao_app->custom_objection_enabled &&
-      file_exists(char_path + "custom.gif") &&
+      (file_exists(char_path + "custom.gif") || file_exists(char_path + "custom.apng")) &&
       file_exists(char_path + "custom.wav"))
     ui_custom_objection->show();
   else
