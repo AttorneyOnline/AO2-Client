@@ -1219,13 +1219,13 @@ void Courtroom::play_preanim()
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-
-  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif") ||
+  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char) + f_preanim.toLower());
+  if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
     anim_state = 1;
     preanim_done();
-    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif";
+    qDebug() << "could not find " + anim_to_find;
     return;
   }
 
