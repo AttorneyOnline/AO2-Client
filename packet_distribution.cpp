@@ -539,24 +539,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "KK")
   {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (courtroom_constructed && f_contents.size() >= 1)
     {
-      int f_cid = w_courtroom->get_cid();
-      int remote_cid = f_contents.at(0).toInt();
-
-      if (f_cid != remote_cid && remote_cid != -1)
-        goto end;
-
-      call_notice("You have been kicked.");
+      call_notice("You have been kicked from the server.\nReason: " + f_contents.at(0));
+      construct_lobby();
+      destruct_courtroom();
+    }
+  }
+  else if (header == "KB")
+  {
+    if (courtroom_constructed && f_contents.size() >= 1)
+    {
+      call_notice("You have been banned from the server.\nReason: " + f_contents.at(0));
       construct_lobby();
       destruct_courtroom();
     }
 
-  }
-  else if (header == "KB")
-  {
-    if (courtroom_constructed && f_contents.size() > 0)
-      w_courtroom->set_ban(f_contents.at(0).toInt());
   }
   else if (header == "BD")
   {
