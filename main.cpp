@@ -5,9 +5,9 @@
 #include "networkmanager.h"
 #include "lobby.h"
 #include "courtroom.h"
-
+#include <QPluginLoader>
 #include <QDebug>
-
+Q_IMPORT_PLUGIN(ApngImagePlugin);
 int main(int argc, char *argv[])
 {
 #if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
@@ -16,10 +16,10 @@ int main(int argc, char *argv[])
     // packages up to Qt 5.6, so this is conditional.
     AOApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
+
     AOApplication main_app(argc, argv);
     main_app.construct_lobby();
     main_app.net_manager->connect_to_master();
     main_app.w_lobby->show();
-
     return main_app.exec();
 }

@@ -21,11 +21,14 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
   QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower() + ".gif";
   QString alt_path = ao_app->get_character_path(p_char) + p_emote.toLower() + ".png";
+  QString apng_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower() + ".apng";
   QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
   QString placeholder_default_path = ao_app->get_default_theme_path() + "placeholder.gif";
   QString gif_path;
 
-  if (file_exists(original_path))
+  if (file_exists(apng_path))
+    gif_path = apng_path;
+  else if (file_exists(original_path))
     gif_path = original_path;
   else if (file_exists(alt_path))
     gif_path = alt_path;
@@ -148,6 +151,7 @@ void AOCharMovie::combo_resize(int w, int h)
 
 void AOCharMovie::frame_change(int n_frame)
 {
+
   if (movie_frames.size() > n_frame)
   {
     QPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(n_frame));

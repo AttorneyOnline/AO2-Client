@@ -172,6 +172,9 @@ public:
   //Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
 
+  // Can we use APNG for this? If not, fall back to a gif.
+  QString get_image_suffix(QString path_to_check);
+
   //Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
 
@@ -228,8 +231,8 @@ public:
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 5;
-  const int MINOR_VERSION = 2;
+  const int MAJOR_VERSION = 6;
+  const int MINOR_VERSION = 0;
 
   QString current_theme = "default";
 
