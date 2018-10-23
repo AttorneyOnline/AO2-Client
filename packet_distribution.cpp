@@ -206,6 +206,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       arup_enabled = true;
     if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
       modcall_reason_enabled = true;
+
+    w_lobby->enable_connect_button();
   }
   else if (header == "PN")
   {

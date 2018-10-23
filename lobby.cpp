@@ -48,6 +48,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
+  ui_connect->setEnabled(false);
+
   set_widgets();
 }
 
@@ -311,6 +313,8 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 
   ui_player_count->setText("Offline");
 
+  ui_connect->setEnabled(false);
+
   ao_app->net_manager->connect_to_server(f_server);
 }
 
@@ -369,6 +373,11 @@ void Lobby::set_player_count(int players_online, int max_players)
 {
   QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
   ui_player_count->setText(f_string);
+}
+
+void Lobby::enable_connect_button()
+{
+  ui_connect->setEnabled(true);
 }
 
 Lobby::~Lobby()
