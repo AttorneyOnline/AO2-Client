@@ -149,6 +149,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     evidence_enabled = false;
     cccc_ic_support_enabled = false;
     arup_enabled = false;
+    casing_alerts_enabled = false;
     modcall_reason_enabled = false;
 
     //workaround for tsuserver4
@@ -204,6 +205,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       cccc_ic_support_enabled = true;
     if (f_packet.contains("arup",Qt::CaseInsensitive))
       arup_enabled = true;
+    if (f_packet.contains("casing_alerts",Qt::CaseInsensitive))
+      casing_alerts_enabled = true;
     if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
       modcall_reason_enabled = true;
 
@@ -656,6 +659,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() > 0)
       w_courtroom->mod_called(f_contents.at(0));
+  }
+  else if (header == "CASEA")
+  {
+    if (courtroom_constructed && f_contents.size() > 0)
+      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1", f_contents.at(2) == "1", f_contents.at(3) == "1", f_contents.at(4) == "1");
+    qDebug() << f_contents;
+    qDebug() << (f_contents.at(1) == "1");
   }
 
   end:

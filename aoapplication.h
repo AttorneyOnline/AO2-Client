@@ -71,6 +71,7 @@ public:
   bool evidence_enabled = false;
   bool cccc_ic_support_enabled = false;
   bool arup_enabled = false;
+  bool casing_alerts_enabled = false;
   bool modcall_reason_enabled = false;
 
   ///////////////loading info///////////////////
@@ -266,6 +267,31 @@ public:
 
   //Returns p_char's gender
   QString get_gender(QString p_char);
+
+  // ======
+  // These are all casing-related settings.
+  // ======
+
+  // Returns if the user has casing alerts enabled.
+  bool get_casing_enabled();
+
+  // Returns if the user wants to get alerts for the defence role.
+  bool get_casing_defence_enabled();
+
+  // Same for prosecution.
+  bool get_casing_prosecution_enabled();
+
+  // Same for judge.
+  bool get_casing_judge_enabled();
+
+  // Same for juror.
+  bool get_casing_juror_enabled();
+
+  // Same for CM.
+  bool get_casing_cm_enabled();
+
+  // Get the message for the CM for casing alerts.
+  QString get_casing_can_host_cases();
 
 private:
   const int RELEASE = 2;

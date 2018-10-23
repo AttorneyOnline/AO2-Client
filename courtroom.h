@@ -460,6 +460,7 @@ private:
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
+  QCheckBox *ui_casing;
 
   QCheckBox *ui_pre_non_interrupt;
   QCheckBox *ui_showname_enable;
@@ -547,6 +548,8 @@ public slots:
   void hide_testimony();
 
   void mod_called(QString p_ip);
+
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur);
 
 private slots:
   void start_chat_ticking();
@@ -647,6 +650,8 @@ private slots:
   void char_clicked(int n_char);
 
   void on_switch_area_music_clicked();
+
+  void on_casing_clicked();
 
   void ping_server();
 

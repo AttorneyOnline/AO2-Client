@@ -186,7 +186,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     CallwordsLayout->addWidget(CallwordsExplainLabel);
 
-    // And finally, the Audio tab.
+    // The audio tab.
     AudioTab = new QWidget();
     SettingsTabs->addTab(AudioTab, "Audio");
 
@@ -299,6 +299,121 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     AudioForm->setWidget(7, QFormLayout::FieldRole, BlankBlipsCheckbox);
 
+    // The casing tab!
+    CasingTab = new QWidget();
+    SettingsTabs->addTab(CasingTab, "Casing");
+
+    formLayoutWidget_3 = new QWidget(CasingTab);
+    formLayoutWidget_3->setGeometry(QRect(10,10, 361, 211));
+
+    CasingForm = new QFormLayout(formLayoutWidget_3);
+    CasingForm->setObjectName(QStringLiteral("CasingForm"));
+    CasingForm->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+    CasingForm->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    CasingForm->setContentsMargins(0, 0, 0, 0);
+
+    // -- SERVER SUPPORTS CASING
+
+    ServerSupportsCasing = new QLabel(formLayoutWidget_3);
+    if (ao_app->casing_alerts_enabled)
+      ServerSupportsCasing->setText("This server supports case alerts.");
+    else
+      ServerSupportsCasing->setText("This server does not support case alerts.");
+    ServerSupportsCasing->setToolTip("Pretty self-explanatory.");
+
+    CasingForm->setWidget(0, QFormLayout::FieldRole, ServerSupportsCasing);
+
+    // -- CASE ANNOUNCEMENTS
+
+    CasingEnabledLabel = new QLabel(formLayoutWidget_3);
+    CasingEnabledLabel->setText("Casing:");
+    CasingEnabledLabel->setToolTip("If checked, you will get alerts about case announcements.");
+
+    CasingForm->setWidget(1, QFormLayout::LabelRole, CasingEnabledLabel);
+
+    CasingEnabledCheckbox = new QCheckBox(formLayoutWidget_3);
+    CasingEnabledCheckbox->setChecked(ao_app->get_casing_enabled());
+
+    CasingForm->setWidget(1, QFormLayout::FieldRole, CasingEnabledCheckbox);
+
+    // -- DEFENCE ANNOUNCEMENTS
+
+    DefenceLabel = new QLabel(formLayoutWidget_3);
+    DefenceLabel->setText("Defence:");
+    DefenceLabel->setToolTip("If checked, you will get alerts about case announcements if a defence spot is open.");
+
+    CasingForm->setWidget(2, QFormLayout::LabelRole, DefenceLabel);
+
+    DefenceCheckbox = new QCheckBox(formLayoutWidget_3);
+    DefenceCheckbox->setChecked(ao_app->get_casing_defence_enabled());
+
+    CasingForm->setWidget(2, QFormLayout::FieldRole, DefenceCheckbox);
+
+    // -- PROSECUTOR ANNOUNCEMENTS
+
+    ProsecutorLabel = new QLabel(formLayoutWidget_3);
+    ProsecutorLabel->setText("Prosecution:");
+    ProsecutorLabel->setToolTip("If checked, you will get alerts about case announcements if a prosecutor spot is open.");
+
+    CasingForm->setWidget(3, QFormLayout::LabelRole, ProsecutorLabel);
+
+    ProsecutorCheckbox = new QCheckBox(formLayoutWidget_3);
+    ProsecutorCheckbox->setChecked(ao_app->get_casing_prosecution_enabled());
+
+    CasingForm->setWidget(3, QFormLayout::FieldRole, ProsecutorCheckbox);
+
+    // -- JUDGE ANNOUNCEMENTS
+
+    JudgeLabel = new QLabel(formLayoutWidget_3);
+    JudgeLabel->setText("Judge:");
+    JudgeLabel->setToolTip("If checked, you will get alerts about case announcements if the judge spot is open.");
+
+    CasingForm->setWidget(4, QFormLayout::LabelRole, JudgeLabel);
+
+    JudgeCheckbox = new QCheckBox(formLayoutWidget_3);
+    JudgeCheckbox->setChecked(ao_app->get_casing_judge_enabled());
+
+    CasingForm->setWidget(4, QFormLayout::FieldRole, JudgeCheckbox);
+
+    // -- JUROR ANNOUNCEMENTS
+
+    JurorLabel = new QLabel(formLayoutWidget_3);
+    JurorLabel->setText("Juror:");
+    JurorLabel->setToolTip("If checked, you will get alerts about case announcements if a juror spot is open.");
+
+    CasingForm->setWidget(5, QFormLayout::LabelRole, JurorLabel);
+
+    JurorCheckbox = new QCheckBox(formLayoutWidget_3);
+    JurorCheckbox->setChecked(ao_app->get_casing_juror_enabled());
+
+    CasingForm->setWidget(5, QFormLayout::FieldRole, JurorCheckbox);
+
+    // -- CM ANNOUNCEMENTS
+
+    CMLabel = new QLabel(formLayoutWidget_3);
+    CMLabel->setText("CM:");
+    CMLabel->setToolTip("If checked, you will appear amongst the potential CMs on the server.");
+
+    CasingForm->setWidget(6, QFormLayout::LabelRole, CMLabel);
+
+    CMCheckbox = new QCheckBox(formLayoutWidget_3);
+    CMCheckbox->setChecked(ao_app->get_casing_cm_enabled());
+
+    CasingForm->setWidget(6, QFormLayout::FieldRole, CMCheckbox);
+
+    // -- CM CASES ANNOUNCEMENTS
+
+    CMCasesLabel = new QLabel(formLayoutWidget_3);
+    CMCasesLabel->setText("Hosting cases:");
+    CMCasesLabel->setToolTip("If you're a CM, enter what cases are you willing to host.");
+
+    CasingForm->setWidget(7, QFormLayout::LabelRole, CMCasesLabel);
+
+    CMCasesLineEdit = new QLineEdit(formLayoutWidget_3);
+    CMCasesLineEdit->setText(ao_app->get_casing_can_host_cases());
+
+    CasingForm->setWidget(7, QFormLayout::FieldRole, CMCasesLineEdit);
+
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);
 }
@@ -335,6 +450,14 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("default_blip", BlipsVolumeSpinbox->value());
     configini->setValue("blip_rate", BlipRateSpinbox->value());
     configini->setValue("blank_blip", BlankBlipsCheckbox->isChecked());
+
+    configini->setValue("casing_enabled", CasingEnabledCheckbox->isChecked());
+    configini->setValue("casing_defence_enabled", DefenceCheckbox->isChecked());
+    configini->setValue("casing_prosecution_enabled", ProsecutorCheckbox->isChecked());
+    configini->setValue("casing_judge_enabled", JudgeCheckbox->isChecked());
+    configini->setValue("casing_juror_enabled", JurorCheckbox->isChecked());
+    configini->setValue("casing_cm_enabled", CMCheckbox->isChecked());
+    configini->setValue("casing_can_host_casees", CMCasesLineEdit->text());
 
     callwordsini->close();
     done(0);

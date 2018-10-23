@@ -201,10 +201,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_guard = new QCheckBox(this);
   ui_guard->setText("Guard");
   ui_guard->hide();
+  ui_casing = new QCheckBox(this);
+  ui_showname_enable->setChecked(ao_app->get_casing_enabled());
+  ui_casing->setText("Casing");
+  ui_casing->hide();
 
   ui_showname_enable = new QCheckBox(this);
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
-  ui_showname_enable->setText("Custom shownames");
+  ui_showname_enable->setText("Shownames");
 
   ui_pre_non_interrupt = new QCheckBox(this);
   ui_pre_non_interrupt->setText("No Intrpt");
@@ -323,6 +327,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
+  connect(ui_casing, SIGNAL(clicked()), this, SLOT(on_casing_clicked()));
 
   connect(ui_showname_enable, SIGNAL(clicked()), this, SLOT(on_showname_enable_clicked()));
 
@@ -599,10 +604,11 @@ void Courtroom::set_widgets()
   ui_pre->setText("Pre");
 
   set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
-
   set_size_and_pos(ui_flip, "flip");
 
   set_size_and_pos(ui_guard, "guard");
+
+  set_size_and_pos(ui_casing, "casing");
 
   set_size_and_pos(ui_showname_enable, "showname_enable");
 
@@ -878,6 +884,11 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_flip->show();
   else
     ui_flip->hide();
+
+  if (ao_app->casing_alerts_enabled)
+    ui_casing->show();
+  else
+    ui_casing->hide();
 
   list_music();
   list_areas();
@@ -2697,6 +2708,22 @@ void Courtroom::mod_called(QString p_ip)
   }
 }
 
+void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur)
+{
+  if (ui_casing->isChecked())
+  {
+    ui_server_chatlog->append(msg);
+    if ((ao_app->get_casing_defence_enabled() && def) ||
+        (ao_app->get_casing_prosecution_enabled() && pro) ||
+        (ao_app->get_casing_judge_enabled() && jud) ||
+        (ao_app->get_casing_juror_enabled() && jur))
+    {
+        modcall_player->play(ao_app->get_sfx("case_call"));
+        ao_app->alert(this);
+    }
+  }
+}
+
 void Courtroom::on_ooc_return_pressed()
 {
   QString ooc_message = ui_ooc_chat_message->text();
@@ -3504,6 +3531,24 @@ void Courtroom::on_switch_area_music_clicked()
 void Courtroom::ping_server()
 {
   ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
+}
+
+void Courtroom::on_casing_clicked()
+{
+  if (ao_app->casing_alerts_enabled)
+  {
+    if (ui_casing->isChecked())
+      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase"
+                                            + " \"" + ao_app->get_casing_can_host_cases() + "\""
+                                            + " " + QString::number(ao_app->get_casing_cm_enabled())
+                                            + " " + QString::number(ao_app->get_casing_defence_enabled())
+                                            + " " + QString::number(ao_app->get_casing_prosecution_enabled())
+                                            + " " + QString::number(ao_app->get_casing_judge_enabled())
+                                            + " " + QString::number(ao_app->get_casing_juror_enabled())
+                                            + "#%"));
+    else
+      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0#%"));
+  }
 }
 
 Courtroom::~Courtroom()

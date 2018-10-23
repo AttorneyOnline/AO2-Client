@@ -518,5 +518,44 @@ bool AOApplication::is_discord_enabled()
     return result.startsWith("true");
 }
 
+bool AOApplication::get_casing_enabled()
+{
+    QString result = configini->value("casing_enabled", "false").value<QString>();
+    return result.startsWith("true");
+}
 
+bool AOApplication::get_casing_defence_enabled()
+{
+    QString result = configini->value("casing_defence_enabled", "false").value<QString>();
+    return result.startsWith("true");
+}
 
+bool AOApplication::get_casing_prosecution_enabled()
+{
+    QString result = configini->value("casing_prosecution_enabled", "false").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::get_casing_judge_enabled()
+{
+    QString result = configini->value("casing_judge_enabled", "false").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::get_casing_juror_enabled()
+{
+    QString result = configini->value("casing_juror_enabled", "false").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::get_casing_cm_enabled()
+{
+    QString result = configini->value("casing_cm_enabled", "false").value<QString>();
+    return result.startsWith("true");
+}
+
+QString AOApplication::get_casing_can_host_cases()
+{
+  QString result = configini->value("casing_can_host_casees", "Turnabout Check Your Settings").value<QString>();
+  return result;
+}

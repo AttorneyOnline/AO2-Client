@@ -34,6 +34,7 @@ private:
 
     QVBoxLayout *verticalLayout;
     QTabWidget *SettingsTabs;
+
     QWidget *GameplayTab;
     QWidget *formLayoutWidget;
     QFormLayout *GameplayForm;
@@ -54,12 +55,14 @@ private:
     QLineEdit *MasterServerLineEdit;
     QLabel *DiscordLabel;
     QCheckBox *DiscordCheckBox;
+
     QWidget *CallwordsTab;
     QWidget *verticalLayoutWidget;
     QVBoxLayout *CallwordsLayout;
     QPlainTextEdit *CallwordsTextEdit;
     QLabel *CallwordsExplainLabel;
     QCheckBox *CharacterCallwordsCheckbox;
+
     QWidget *AudioTab;
     QWidget *formLayoutWidget_2;
     QFormLayout *AudioForm;
@@ -78,6 +81,25 @@ private:
     QCheckBox *BlankBlipsCheckbox;
     QLabel *BlankBlipsLabel;
     QDialogButtonBox *SettingsButtons;
+
+    QWidget *CasingTab;
+    QWidget *formLayoutWidget_3;
+    QFormLayout *CasingForm;
+    QLabel *ServerSupportsCasing;
+    QLabel *CasingEnabledLabel;
+    QCheckBox *CasingEnabledCheckbox;
+    QLabel *DefenceLabel;
+    QCheckBox *DefenceCheckbox;
+    QLabel *ProsecutorLabel;
+    QCheckBox *ProsecutorCheckbox;
+    QLabel *JudgeLabel;
+    QCheckBox *JudgeCheckbox;
+    QLabel *JurorLabel;
+    QCheckBox *JurorCheckbox;
+    QLabel *CMLabel;
+    QCheckBox *CMCheckbox;
+    QLabel *CMCasesLabel;
+    QLineEdit *CMCasesLineEdit;
 
     bool needs_default_audiodev();
 
