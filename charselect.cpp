@@ -158,6 +158,8 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
     char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
     char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
 
+    max_chars_on_page = char_columns * char_rows;
+
     int startout = starting;
     for (int n = starting ; n < startout+chars_on_this_page ; ++n)
     {
