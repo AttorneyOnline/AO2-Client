@@ -22,8 +22,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   if (ao_app->get_audio_output_device() == "Default")
   {
       BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
-      BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
-      BASS_PluginLoad("libbassopus.so", 0);
+      load_bass_opus_plugin();
   }
   else
   {
@@ -33,8 +32,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           {
               BASS_SetDevice(a);
               BASS_Init(a, 48000, BASS_DEVICE_LATENCY, 0, NULL);
-              BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
-              BASS_PluginLoad("libbassopus.so", 0);
+              load_bass_opus_plugin();
               qDebug() << info.name << "was set as the default audio output device.";
               break;
           }
@@ -3514,3 +3512,17 @@ Courtroom::~Courtroom()
   delete objection_player;
   delete blip_player;
 }
+
+#if (defined (_WIN32) || defined (_WIN64))
+void Courtroom::load_bass_opus_plugin()
+{
+  BASS_PluginLoad("bassopus.dll", 0);
+}
+#elif (defined (LINUX) || defined (__linux__))
+void Courtroom::load_bass_opus_plugin()
+{
+  BASS_PluginLoad("libbassopus.so", 0);
+}
+#else
+#error This operating system is unsupported for bass plugins.
+#endif

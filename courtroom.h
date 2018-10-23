@@ -645,6 +645,8 @@ private slots:
   void on_switch_area_music_clicked();
 
   void ping_server();
+
+  void load_bass_opus_plugin();
 };
 
 #endif // COURTROOM_H
