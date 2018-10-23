@@ -72,6 +72,7 @@ class ClientManager:
             self.casing_pro = False
             self.casing_jud = False
             self.casing_jur = False
+            self.casing_steno = False
             self.case_call_time = 0
 
             #flood-guard stuff

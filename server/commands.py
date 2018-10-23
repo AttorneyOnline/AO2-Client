@@ -780,6 +780,7 @@ def ooc_cmd_setcase(client, arg):
         client.casing_pro = args[3] == "1"
         client.casing_jud = args[4] == "1"
         client.casing_jur = args[5] == "1"
+        client.casing_steno = args[6] == "1"
 
 def ooc_cmd_anncase(client, arg):
     if client in client.area.owners:
@@ -791,7 +792,7 @@ def ooc_cmd_anncase(client, arg):
         elif len(args) == 1:
             raise ArgumentError('You should probably announce the case to at least one person.')
         else:
-            if not args[1] == "1" and not args[2] == "1" and not args[3] == "1" and not args[4] == "1":
+            if not args[1] == "1" and not args[2] == "1" and not args[3] == "1" and not args[4] == "1" and not args[5] == "1":
                 raise ArgumentError('You should probably announce the case to at least one person.')
             msg = '=== Case Announcement ===\r\n{} [{}] is hosting {}, looking for '.format(client.get_char_name(), client.id, args[0])
 
@@ -805,14 +806,16 @@ def ooc_cmd_anncase(client, arg):
                 lookingfor.append("judge")
             if args[4] == "1":
                 lookingfor.append("juror")
+            if args[5] == "1":
+                lookingfor.append("stenographer")
 
             msg = msg + ', '.join(lookingfor) + '.\r\n=================='
 
-            client.server.send_all_cmd_pred('CASEA', msg, args[1], args[2], args[3], args[4], '1')
+            client.server.send_all_cmd_pred('CASEA', msg, args[1], args[2], args[3], args[4], args[5], '1')
 
             client.set_case_call_delay()
             
-            logger.log_server('[{}][{}][CASE_ANNOUNCEMENT]{}, DEF: {}, PRO: {}, JUD: {}, JUR: {}.'.format(client.area.abbreviation, client.get_char_name(), args[0], args[1], args[2], args[3], args[4]), client)
+            logger.log_server('[{}][{}][CASE_ANNOUNCEMENT]{}, DEF: {}, PRO: {}, JUD: {}, JUR: {}, STENO: {}.'.format(client.area.abbreviation, client.get_char_name(), args[0], args[1], args[2], args[3], args[4], args[5]), client)
     else:
         raise ClientError('You cannot announce a case in an area where you are not a CM!')
     

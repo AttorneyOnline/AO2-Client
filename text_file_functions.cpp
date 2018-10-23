@@ -548,6 +548,12 @@ bool AOApplication::get_casing_juror_enabled()
     return result.startsWith("true");
 }
 
+bool AOApplication::get_casing_steno_enabled()
+{
+  QString result = configini->value("casing_steno_enabled", "false").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::get_casing_cm_enabled()
 {
     QString result = configini->value("casing_cm_enabled", "false").value<QString>();

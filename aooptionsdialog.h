@@ -96,6 +96,8 @@ private:
     QCheckBox *JudgeCheckbox;
     QLabel *JurorLabel;
     QCheckBox *JurorCheckbox;
+    QLabel *StenographerLabel;
+    QCheckBox *StenographerCheckbox;
     QLabel *CMLabel;
     QCheckBox *CMCheckbox;
     QLabel *CMCasesLabel;

@@ -51,11 +51,14 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, AOApplication *p_a
   JudgeNeeded->setText("Judge needed");
   JurorNeeded = new QCheckBox(this);
   JurorNeeded->setText("Jurors needed");
+  StenographerNeeded = new QCheckBox(this);
+  StenographerNeeded->setText("Stenographer needed");
 
   FormLayout->setWidget(1, QFormLayout::FieldRole, DefenceNeeded);
   FormLayout->setWidget(2, QFormLayout::FieldRole, ProsecutorNeeded);
   FormLayout->setWidget(3, QFormLayout::FieldRole, JudgeNeeded);
   FormLayout->setWidget(4, QFormLayout::FieldRole, JurorNeeded);
+  FormLayout->setWidget(5, QFormLayout::FieldRole, StenographerNeeded);
 
   setUpdatesEnabled(true);
 }
@@ -66,7 +69,8 @@ void AOCaseAnnouncerDialog::ok_pressed()
                        DefenceNeeded->isChecked(),
                        ProsecutorNeeded->isChecked(),
                        JudgeNeeded->isChecked(),
-                       JurorNeeded->isChecked());
+                       JurorNeeded->isChecked(),
+                       StenographerNeeded->isChecked());
 
   done(0);
 }

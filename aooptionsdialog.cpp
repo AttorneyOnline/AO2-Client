@@ -388,18 +388,31 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     CasingForm->setWidget(5, QFormLayout::FieldRole, JurorCheckbox);
 
+    // -- STENO ANNOUNCEMENTS
+
+    StenographerLabel = new QLabel(formLayoutWidget_3);
+    StenographerLabel->setText("Stenographer:");
+    StenographerLabel->setToolTip("If checked, you will get alerts about case announcements if a stenographer spot is open.");
+
+    CasingForm->setWidget(6, QFormLayout::LabelRole, StenographerLabel);
+
+    StenographerCheckbox = new QCheckBox(formLayoutWidget_3);
+    StenographerCheckbox->setChecked(ao_app->get_casing_steno_enabled());
+
+    CasingForm->setWidget(6, QFormLayout::FieldRole, StenographerCheckbox);
+
     // -- CM ANNOUNCEMENTS
 
     CMLabel = new QLabel(formLayoutWidget_3);
     CMLabel->setText("CM:");
     CMLabel->setToolTip("If checked, you will appear amongst the potential CMs on the server.");
 
-    CasingForm->setWidget(6, QFormLayout::LabelRole, CMLabel);
+    CasingForm->setWidget(7, QFormLayout::LabelRole, CMLabel);
 
     CMCheckbox = new QCheckBox(formLayoutWidget_3);
     CMCheckbox->setChecked(ao_app->get_casing_cm_enabled());
 
-    CasingForm->setWidget(6, QFormLayout::FieldRole, CMCheckbox);
+    CasingForm->setWidget(7, QFormLayout::FieldRole, CMCheckbox);
 
     // -- CM CASES ANNOUNCEMENTS
 
@@ -407,12 +420,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     CMCasesLabel->setText("Hosting cases:");
     CMCasesLabel->setToolTip("If you're a CM, enter what cases are you willing to host.");
 
-    CasingForm->setWidget(7, QFormLayout::LabelRole, CMCasesLabel);
+    CasingForm->setWidget(8, QFormLayout::LabelRole, CMCasesLabel);
 
     CMCasesLineEdit = new QLineEdit(formLayoutWidget_3);
     CMCasesLineEdit->setText(ao_app->get_casing_can_host_cases());
 
-    CasingForm->setWidget(7, QFormLayout::FieldRole, CMCasesLineEdit);
+    CasingForm->setWidget(8, QFormLayout::FieldRole, CMCasesLineEdit);
 
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);
@@ -456,6 +469,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_prosecution_enabled", ProsecutorCheckbox->isChecked());
     configini->setValue("casing_judge_enabled", JudgeCheckbox->isChecked());
     configini->setValue("casing_juror_enabled", JurorCheckbox->isChecked());
+    configini->setValue("casing_steno_enabled", StenographerCheckbox->isChecked());
     configini->setValue("casing_cm_enabled", CMCheckbox->isChecked());
     configini->setValue("casing_can_host_casees", CMCasesLineEdit->text());
 

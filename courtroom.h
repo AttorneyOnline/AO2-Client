@@ -198,7 +198,7 @@ public:
   //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur);
+  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();
 
@@ -551,7 +551,7 @@ public slots:
 
   void mod_called(QString p_ip);
 
-  void case_called(QString msg, bool def, bool pro, bool jud, bool jur);
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
 
 private slots:
   void start_chat_ticking();

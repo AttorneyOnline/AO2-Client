@@ -35,6 +35,7 @@ private:
   QCheckBox *ProsecutorNeeded;
   QCheckBox *JudgeNeeded;
   QCheckBox *JurorNeeded;
+  QCheckBox *StenographerNeeded;
 
 public slots:
   void ok_pressed();

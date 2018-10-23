@@ -288,6 +288,9 @@ public:
   // Same for juror.
   bool get_casing_juror_enabled();
 
+  // Same for steno.
+  bool get_casing_steno_enabled();
+
   // Same for CM.
   bool get_casing_cm_enabled();
 

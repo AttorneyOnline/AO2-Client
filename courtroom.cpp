@@ -2722,7 +2722,7 @@ void Courtroom::mod_called(QString p_ip)
   }
 }
 
-void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur)
+void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno)
 {
   if (ui_casing->isChecked())
   {
@@ -2730,7 +2730,8 @@ void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur)
     if ((ao_app->get_casing_defence_enabled() && def) ||
         (ao_app->get_casing_prosecution_enabled() && pro) ||
         (ao_app->get_casing_judge_enabled() && jud) ||
-        (ao_app->get_casing_juror_enabled() && jur))
+        (ao_app->get_casing_juror_enabled() && jur) ||
+        (ao_app->get_casing_steno_enabled() && steno))
     {
         modcall_player->play(ao_app->get_sfx("case_call"));
         ao_app->alert(this);
@@ -3564,13 +3565,14 @@ void Courtroom::on_casing_clicked()
                                             + " " + QString::number(ao_app->get_casing_prosecution_enabled())
                                             + " " + QString::number(ao_app->get_casing_judge_enabled())
                                             + " " + QString::number(ao_app->get_casing_juror_enabled())
+                                            + " " + QString::number(ao_app->get_casing_steno_enabled())
                                             + "#%"));
     else
-      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0#%"));
+      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0 0#%"));
   }
 }
 
-void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur)
+void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno)
 {
   if (ao_app->casing_alerts_enabled)
     ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/anncase \""
@@ -3578,7 +3580,8 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool 
                                           + QString::number(def) + " "
                                           + QString::number(pro) + " "
                                           + QString::number(jud) + " "
-                                          + QString::number(jur)
+                                          + QString::number(jur) + " "
+                                          + QString::number(steno)
                                           + "#%"));
 }
 
