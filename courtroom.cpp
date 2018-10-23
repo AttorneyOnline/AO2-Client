@@ -2297,7 +2297,7 @@ void Courtroom::chat_tick()
     // Silencing the character during long times of ellipses.
     else if (f_character == "." and !next_character_is_not_special and !previous_character_is_fullstop)
     {
-      if (!previous_character_is_fullstop && inline_blue_depth == 0 && !entire_message_is_blue)
+      if (!previous_character_is_fullstop && inline_blue_depth == 0 && !entire_message_is_blue && anim_state != 4)
       {
         QString f_char = m_chatmessage[CHAR_NAME];
         QString f_emote = m_chatmessage[EMOTE];
@@ -2352,8 +2352,9 @@ void Courtroom::chat_tick()
     // - But the previous character was
     // - And we're out of inline blues
     // - And the entire messages isn't blue
+    // - And we aren't still in a non-interrupting pre
     // - And this isn't the last character.
-    if (f_character != "." && previous_character_is_fullstop && inline_blue_depth == 0 && !entire_message_is_blue && tick_pos+1 >= f_message.size())
+    if (f_character != "." && previous_character_is_fullstop && inline_blue_depth == 0 && !entire_message_is_blue && anim_state != 4 && tick_pos+1 <= f_message.size())
     {
       QString f_char = m_chatmessage[CHAR_NAME];
       QString f_emote = m_chatmessage[EMOTE];
