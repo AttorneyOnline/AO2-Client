@@ -198,6 +198,8 @@ public:
   //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
+  void announce_case(QString title, bool def, bool pro, bool jud, bool jur);
+
   void check_connection_received();
 
   ~Courtroom();
@@ -218,6 +220,7 @@ private:
   int maximumMessages = 0;
 
   // This is for inline message-colouring.
+
   enum INLINE_COLOURS {
       INLINE_BLUE,
       INLINE_GREEN,
@@ -455,6 +458,7 @@ private:
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
   AOButton *ui_settings;
+  AOButton *ui_announce_casing;
   AOButton *ui_switch_area_music;
 
   QCheckBox *ui_pre;
@@ -535,8 +539,6 @@ private:
 
   void construct_evidence();
   void set_evidence_page();
-
-
 
 public slots:
   void objection_done();
@@ -625,6 +627,7 @@ private slots:
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
   void on_settings_clicked();
+  void on_announce_casing_clicked();
 
   void on_pre_clicked();
   void on_flip_clicked();

@@ -191,6 +191,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_reload_theme = new AOButton(this, ao_app);
   ui_call_mod = new AOButton(this, ao_app);
   ui_settings = new AOButton(this, ao_app);
+  ui_announce_casing = new AOButton(this, ao_app);
   ui_switch_area_music = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
@@ -202,7 +203,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_guard->setText("Guard");
   ui_guard->hide();
   ui_casing = new QCheckBox(this);
-  ui_showname_enable->setChecked(ao_app->get_casing_enabled());
+  ui_casing->setChecked(ao_app->get_casing_enabled());
   ui_casing->setText("Casing");
   ui_casing->hide();
 
@@ -322,6 +323,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
   connect(ui_settings, SIGNAL(clicked()), this, SLOT(on_settings_clicked()));
+  connect(ui_announce_casing, SIGNAL(clicked()), this, SLOT(on_announce_casing_clicked()));
   connect(ui_switch_area_music, SIGNAL(clicked()), this, SLOT(on_switch_area_music_clicked()));
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
@@ -429,6 +431,15 @@ void Courtroom::set_widgets()
     ui_showname_enable->hide();
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
+  }
+
+  if (ao_app->casing_alerts_enabled)
+  {
+    ui_announce_casing->show();
+  }
+  else
+  {
+    ui_announce_casing->hide();
   }
 
   // We also show the non-server-dependent client additions.
@@ -596,6 +607,9 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText("Settings");
+
+  set_size_and_pos(ui_announce_casing, "casing_button");
+  ui_announce_casing->setText("Casing");
 
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
   ui_switch_area_music->setText("A/M");
@@ -3461,6 +3475,11 @@ void Courtroom::on_settings_clicked()
     ao_app->call_settings_menu();
 }
 
+void Courtroom::on_announce_casing_clicked()
+{
+    ao_app->call_announce_menu(this);
+}
+
 void Courtroom::on_pre_clicked()
 {
   ui_ic_chat_message->setFocus();
@@ -3549,6 +3568,18 @@ void Courtroom::on_casing_clicked()
     else
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0#%"));
   }
+}
+
+void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur)
+{
+  if (ao_app->casing_alerts_enabled)
+    ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/anncase \""
+                                          + title + "\" "
+                                          + QString::number(def) + " "
+                                          + QString::number(pro) + " "
+                                          + QString::number(jud) + " "
+                                          + QString::number(jur)
+                                          + "#%"));
 }
 
 Courtroom::~Courtroom()

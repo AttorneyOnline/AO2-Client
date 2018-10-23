@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #possible keys: ip, OOC, id, cname, ipid, hdid
 import random
+import re
 import hashlib
 import string
 from server.constants import TargetType
@@ -767,6 +768,53 @@ def ooc_cmd_uncm(client, arg):
                 client.send_host_message('{} does not look like a valid ID.'.format(id))
     else:
         raise ClientError('You must be authorized to do that.')
+
+def ooc_cmd_setcase(client, arg):
+    args = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', arg)
+    if len(args) == 0:
+        raise ArgumentError('Please do not call this command manually!')
+    else:
+        client.casing_cases = args[0]
+        client.casing_cm = args[1] == "1"
+        client.casing_def = args[2] == "1"
+        client.casing_pro = args[3] == "1"
+        client.casing_jud = args[4] == "1"
+        client.casing_jur = args[5] == "1"
+
+def ooc_cmd_anncase(client, arg):
+    if client in client.area.owners:
+        if not client.can_call_case():
+            raise ClientError('Please wait 60 seconds between case announcements!')
+        args = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', arg)
+        if len(args) == 0:
+            raise ArgumentError('Please do not call this command manually!')
+        elif len(args) == 1:
+            raise ArgumentError('You should probably announce the case to at least one person.')
+        else:
+            if not args[1] == "1" and not args[2] == "1" and not args[3] == "1" and not args[4] == "1":
+                raise ArgumentError('You should probably announce the case to at least one person.')
+            msg = '=== Case Announcement ===\r\n{} [{}] is hosting {}, looking for '.format(client.get_char_name(), client.id, args[0])
+
+            lookingfor = []
+
+            if args[1] == "1":
+                lookingfor.append("defence")
+            if args[2] == "1":
+                lookingfor.append("prosecutor")
+            if args[3] == "1":
+                lookingfor.append("judge")
+            if args[4] == "1":
+                lookingfor.append("juror")
+
+            msg = msg + ', '.join(lookingfor) + '.\r\n=================='
+
+            client.server.send_all_cmd_pred('CASEA', msg, args[1], args[2], args[3], args[4], '1')
+
+            client.set_case_call_delay()
+            
+            logger.log_server('[{}][{}][CASE_ANNOUNCEMENT]{}, DEF: {}, PRO: {}, JUD: {}, JUR: {}.'.format(client.area.abbreviation, client.get_char_name(), args[0], args[1], args[2], args[3], args[4]), client)
+    else:
+        raise ClientError('You cannot announce a case in an area where you are not a CM!')
     
 def ooc_cmd_unmod(client, arg):
     client.is_mod = False

@@ -65,6 +65,15 @@ class ClientManager:
             self.flip = 0
             self.claimed_folder = ''
             
+            # Casing stuff
+            self.casing_cm = False
+            self.casing_cases = ""
+            self.casing_def = False
+            self.casing_pro = False
+            self.casing_jud = False
+            self.casing_jur = False
+            self.case_call_time = 0
+
             #flood-guard stuff
             self.mus_counter = 0
             self.mus_mute_time = 0
@@ -358,6 +367,12 @@ class ClientManager:
 
         def can_call_mod(self):
             return (time.time() * 1000.0 - self.mod_call_time) > 0
+
+        def set_case_call_delay(self):
+            self.case_call_time = round(time.time() * 1000.0 + 60000)
+
+        def can_call_case(self):
+            return (time.time() * 1000.0 - self.case_call_time) > 0
 
         def disemvowel_message(self, message):
             message = re.sub("[aeiou]", "", message, flags=re.IGNORECASE)

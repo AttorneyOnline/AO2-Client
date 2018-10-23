@@ -6,6 +6,7 @@
 #include "debug_functions.h"
 
 #include "aooptionsdialog.h"
+#include "aocaseannouncerdialog.h"
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
@@ -183,4 +184,12 @@ void AOApplication::call_settings_menu()
     AOOptionsDialog* settings = new AOOptionsDialog(nullptr, this);
     settings->exec();
     delete settings;
+}
+
+
+void AOApplication::call_announce_menu(Courtroom *court)
+{
+    AOCaseAnnouncerDialog* announcer = new AOCaseAnnouncerDialog(nullptr, this, court);
+    announcer->exec();
+    delete announcer;
 }
