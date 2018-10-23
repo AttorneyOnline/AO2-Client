@@ -77,19 +77,23 @@ public:
   {
     if (type == 0)
     {
-      arup_players[place] = value.toInt();
+      if (arup_players.size() > place)
+        arup_players[place] = value.toInt();
     }
     else if (type == 1)
     {
-      arup_statuses[place] = value;
+      if (arup_statuses.size() > place)
+        arup_statuses[place] = value;
     }
     else if (type == 2)
     {
-      arup_cms[place] = value;
+      if (arup_cms.size() > place)
+        arup_cms[place] = value;
     }
     else if (type == 3)
     {
-      arup_locks[place] = value;
+      if (arup_locks.size() > place)
+        arup_locks[place] = value;
     }
     list_areas();
   }
