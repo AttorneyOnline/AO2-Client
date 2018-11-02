@@ -401,7 +401,7 @@ class AOProtocol(asyncio.Protocol):
             if len(re.sub(r'[{}\\`|(~~)]','', text).replace(' ', '')) < 3 and text != '<' and text != '>':
                 self.client.send_host_message("While that is not a blankpost, it is still pretty spammy. Try forming sentences.")
                 return
-        if text.startswith('/a'):
+        if text.startswith('/a '):
             part = text.split(' ')
             try:
                 aid = int(part[1])
@@ -414,7 +414,7 @@ class AOProtocol(asyncio.Protocol):
             except ValueError:
                 self.client.send_host_message("That does not look like a valid area ID!")
                 return
-        elif text.startswith('/s'):
+        elif text.startswith('/s '):
             part = text.split(' ')
             for a in self.server.area_manager.areas:
                 if self.client in a.owners:
