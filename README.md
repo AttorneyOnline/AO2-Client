@@ -60,6 +60,8 @@ Alternatively, you may wait till I make some stuff, and release a compiled execu
 	- Areas can be set to locked and spectatable.
 		- Spectatable areas (using `/area_spectate`) allow people to join, but not talk if they're not on the invite list.
 		- Locked areas (using `/area_lock`) forbid people not on the invite list from even entering.
+	- Can't find people to case with? Try the case alert system!
+		- 
 - **Area list:**
 	- The client automatically filters out areas from music if applicable, and these appear in their own list.
 	- Use the in-game A/M button, or the `/switch_am` command to switch between them.
@@ -91,6 +93,7 @@ Since this custom client, and the server files supplied with it, add a few featu
 	- In your `courtroom_sounds.ini`:
 		- Add a sound effect for `not_guilty`, for example: `not_guilty = sfx-notguilty.wav`.
 		- Add a sound effect for `guilty`, for example: `guilty = sfx-guilty.wav`.
+		- Add a sound effect for the case alerts. They work similarly to modcall alerts, or callword alerts. For example: `case_call = sfx-triplegavel-soj.wav`.
 	- In your `courtroom_design.ini`, place the following new UI elements as and if you wish:
 		- `log_limit_label`, which is a simple text that exmplains what the spinbox with the numbers is. Needs an X, Y, width, height number.
 		- `log_limit_spinbox`, which is the spinbox for the log limit, allowing you to set the size of the log limit in-game. Needs the same stuff as above.
@@ -119,6 +122,8 @@ Since this custom client, and the server files supplied with it, add a few featu
 		- `area_locked_color` determines the colour of the area if it is locked, REGARDLESS of status.
 		- `ooc_default_color` determines the colour of the username in the OOC chat if the message doesn't come from the server.
 		- `ooc_server_color` determines the colour of the username if the message arrived from the server.
+		- `casing_button` is a button with the text 'Casing' that when clicked, brings up the Case Announcements dialog. You can give the case a name, and tick whom do you want to alert. You need to be a CM for it to go through. Only people who have at least one of the roles ticked will get the alert.
+		- `casing` is a tickbox with the text 'Casing'. If ticked, you will get the case announcements alerts you should get, in accordance to the above. In the settings, you can change your defaults on the 'Casing' tab. (That's a buncha things titled 'Casing'!)
 
 ---
 
