@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += core gui multimedia network
-QTPLUGIN += qapng
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 RC_ICONS = logo.ico
@@ -88,7 +87,7 @@ HEADERS  += lobby.h \
 #    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
 #    QMake, so this step must be manual.
 unix:LIBS += -L$$PWD -lbass -ldiscord-rpc
-win32:LIBS += -L$$PWD "$$PWD/bass.dll" -L$$PWD "$$PWD/discord-rpc.dll" -lpng -lqapng -lz
+win32:LIBS += -L$$PWD "$$PWD/bass.dll" -ldiscord-rpc -L$$PWD
 android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
 
 CONFIG += c++11
