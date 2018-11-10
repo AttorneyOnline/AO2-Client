@@ -7,9 +7,6 @@
 #include "hardware_functions.h"
 #include "debug_functions.h"
 
-#include <QDebug>
-#include <QCryptographicHash>
-
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
   p_packet->net_decode();
@@ -150,6 +147,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     improved_loading_enabled = false;
     desk_mod_enabled = false;
     evidence_enabled = false;
+    cccc_ic_support_enabled = false;
+    arup_enabled = false;
+    casing_alerts_enabled = false;
+    modcall_reason_enabled = false;
 
     //workaround for tsuserver4
     if (f_contents.at(0) == "NOENCRYPT")
@@ -177,7 +178,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed)
-      w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1));
+    {
+      if (f_contents.size() == 3)
+        w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1), f_contents.at(2));
+      else
+        w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1), "0");
+    }
   }
   else if (header == "FL")
   {
@@ -195,6 +201,16 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       desk_mod_enabled = true;
     if (f_packet.contains("evidence",Qt::CaseInsensitive))
       evidence_enabled = true;
+    if (f_packet.contains("cccc_ic_support",Qt::CaseInsensitive))
+      cccc_ic_support_enabled = true;
+    if (f_packet.contains("arup",Qt::CaseInsensitive))
+      arup_enabled = true;
+    if (f_packet.contains("casing_alerts",Qt::CaseInsensitive))
+      casing_alerts_enabled = true;
+    if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
+      modcall_reason_enabled = true;
+
+    w_lobby->enable_connect_button();
   }
   else if (header == "PN")
   {
@@ -218,13 +234,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     loaded_chars = 0;
     loaded_evidence = 0;
     loaded_music = 0;
+    generated_chars = 0;
 
     destruct_courtroom();
     construct_courtroom();
 
     courtroom_loaded = false;
 
-    QString window_title = "Attorney Online 2";
+    QString window_title = "Attorney Online 2 -- Case Café Custom Client";
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -264,7 +281,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
-    if(is_discord_enabled())
+    if (is_discord_enabled())
       discord->state_server(server_name.toStdString(), hash.result().toBase64().toStdString());
   }
   else if (header == "CI")
@@ -300,7 +317,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_char(f_char);
 
-      int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
 
@@ -343,8 +361,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->append_evidence(f_evi);
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = ((loaded_chars + loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
+    int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+    int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
     w_lobby->set_loading_value(loading_value);
 
     QString next_packet_number = QString::number(loaded_evidence);
@@ -356,7 +374,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    bool musics_time = false;
+    int areas = 0;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
     {
@@ -372,12 +391,40 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
 
-      w_courtroom->append_music(f_music);
+      if (musics_time)
+      {
+          w_courtroom->append_music(f_music);
+      }
+      else
+      {
+          if (f_music.endsWith(".wav") ||
+                  f_music.endsWith(".mp3") ||
+                  f_music.endsWith(".mp4") ||
+                  f_music.endsWith(".ogg") ||
+                  f_music.endsWith(".opus"))
+          {
+              musics_time = true;
+              areas--;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_music);
+          }
+          else
+          {
+              w_courtroom->append_area(f_music);
+              areas++;
+          }
+      }
 
-      int loading_value = ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
+      for (int area_n = 0; area_n < areas; area_n++)
+      {
+          w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+      }
+
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
-
     }
+
     QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
     send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
   }
@@ -420,7 +467,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_char(f_char);
 
-      int loading_value = ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
 
@@ -432,6 +480,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+    bool musics_time = false;
+    int areas = 0;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
@@ -441,7 +491,37 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->append_music(f_contents.at(n_element));
 
-      int loading_value = ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
+      if (musics_time)
+      {
+          w_courtroom->append_music(f_contents.at(n_element));
+      }
+      else
+      {
+          if (f_contents.at(n_element).endsWith(".wav") ||
+                  f_contents.at(n_element).endsWith(".mp3") ||
+                  f_contents.at(n_element).endsWith(".mp4") ||
+                  f_contents.at(n_element).endsWith(".ogg") ||
+                  f_contents.at(n_element).endsWith(".opus"))
+          {
+              musics_time = true;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_contents.at(n_element));
+              areas--;
+          }
+          else
+          {
+              w_courtroom->append_area(f_contents.at(n_element));
+              areas++;
+          }
+      }
+
+      for (int area_n = 0; area_n < areas; area_n++)
+      {
+          w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+      }
+
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
 
@@ -455,6 +535,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (lobby_constructed)
       w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
 
+    w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 
     courtroom_loaded = true;
@@ -493,7 +574,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       goto end;
     if (courtroom_constructed)
-      w_courtroom->handle_wtce(f_contents.at(0));
+    {
+      if (f_contents.size() == 1)
+          w_courtroom->handle_wtce(f_contents.at(0), 0);
+      else if (f_contents.size() == 2) {
+          w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
+      }
+    }
   }
   else if (header == "HP")
   {
@@ -523,6 +610,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_courtroom->set_evidence_list(f_evi_list);
     }
+  }
+  else if (header == "ARUP")
+  {
+      if (courtroom_constructed)
+      {
+        int arup_type = f_contents.at(0).toInt();
+        for (int n_element = 1 ; n_element < f_contents.size() ; n_element++)
+        {
+            w_courtroom->arup_modify(arup_type, n_element - 1, f_contents.at(n_element));
+        }
+      }
   }
   else if (header == "IL")
   {
@@ -568,6 +666,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() > 0)
       w_courtroom->mod_called(f_contents.at(0));
+  }
+  else if (header == "CASEA")
+  {
+    if (courtroom_constructed && f_contents.size() > 6)
+      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1", f_contents.at(2) == "1", f_contents.at(3) == "1", f_contents.at(4) == "1", f_contents.at(5) == "1");
   }
 
   end:

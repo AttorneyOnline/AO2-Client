@@ -1,8 +1,5 @@
 #include "courtroom.h"
 
-#include <QDebug>
-#include <QFileDialog>
-
 void Courtroom::construct_evidence()
 {
   ui_evidence = new AOImage(this, ao_app);

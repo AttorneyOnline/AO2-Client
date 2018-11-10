@@ -2,11 +2,13 @@
 
 #include "file_functions.h"
 
-AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos) : QPushButton(parent)
+AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken) : QPushButton(parent)
 {
   m_parent = parent;
 
   ao_app = p_ao_app;
+
+  taken = is_taken;
 
   this->resize(60, 60);
   this->move(x_pos, y_pos);
@@ -40,7 +42,11 @@ void AOCharButton::reset()
 
 void AOCharButton::set_taken()
 {
-  ui_taken->show();
+  if (taken)
+  {
+    ui_taken->move(0,0);
+    ui_taken->show();
+  }
 }
 
 void AOCharButton::set_passworded()
@@ -73,6 +79,7 @@ void AOCharButton::set_image(QString p_character)
 
 void AOCharButton::enterEvent(QEvent * e)
 {
+  ui_selector->move(this->x() - 1, this->y() - 1);
   ui_selector->raise();
   ui_selector->show();
 

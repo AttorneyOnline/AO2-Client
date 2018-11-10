@@ -5,14 +5,11 @@
 #include "networkmanager.h"
 #include "aosfxplayer.h"
 
-#include <QDebug>
-#include <QScrollBar>
-
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowTitle("Attorney Online 2");
+  this->setWindowTitle("Attorney Online 2 -- Case Café Custom Client");
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -51,6 +48,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
+
+  ui_connect->setEnabled(false);
 
   set_widgets();
 }
@@ -99,7 +98,7 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect.png");
 
   set_size_and_pos(ui_version, "version");
-  ui_version->setText("Version: " + ao_app->get_version_string());
+  ui_version->setText("AO Version: " + ao_app->get_version_string() + " | CCCC Version: " + ao_app->get_cccc_version_string());
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about.png");
@@ -315,6 +314,8 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 
   ui_player_count->setText("Offline");
 
+  ui_connect->setEnabled(false);
+
   ao_app->net_manager->connect_to_server(f_server);
 }
 
@@ -361,7 +362,7 @@ void Lobby::list_favorites()
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  ui_chatbox->append_chatmessage(f_name, f_message);
+  ui_chatbox->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
 void Lobby::append_error(QString f_message)
@@ -373,6 +374,11 @@ void Lobby::set_player_count(int players_online, int max_players)
 {
   QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
   ui_player_count->setText(f_string);
+}
+
+void Lobby::enable_connect_button()
+{
+  ui_connect->setEnabled(true);
 }
 
 Lobby::~Lobby()

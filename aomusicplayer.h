@@ -1,12 +1,12 @@
 #ifndef AOMUSICPLAYER_H
 #define AOMUSICPLAYER_H
 
+#include "bass.h"
 #include "aoapplication.h"
 
 #include <QWidget>
 #include <string.h>
 #include <QDebug>
-#include <QMediaPlayer>
 
 class AOMusicPlayer
 {
@@ -21,8 +21,8 @@ private:
   QWidget *m_parent;
   AOApplication *ao_app;
 
-  QMediaPlayer *m_player;
   int m_volume = 0;
+  HSTREAM m_stream;
 };
 
 #endif // AOMUSICPLAYER_H

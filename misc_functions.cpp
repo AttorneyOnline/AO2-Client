@@ -1,8 +1,5 @@
 #include "misc_functions.h"
 
-#include <QTime>
-#include <QCoreApplication>
-
 void delay(int p_milliseconds)
 {
   QTime dieTime = QTime::currentTime().addMSecs(p_milliseconds);

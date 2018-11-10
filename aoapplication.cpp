@@ -5,8 +5,14 @@
 #include "networkmanager.h"
 #include "debug_functions.h"
 
+#include "aooptionsdialog.h"
+#include "aocaseannouncerdialog.h"
+
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
+  // Create the QSettings class that points to the config.ini.
+  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
+
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
   QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
@@ -36,7 +42,7 @@ void AOApplication::construct_lobby()
   int y = (screenGeometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if(is_discord_enabled())
+  if (is_discord_enabled())
     discord->state_lobby();
 
   w_lobby->show();
@@ -89,6 +95,14 @@ QString AOApplication::get_version_string()
   QString::number(RELEASE) + "." +
   QString::number(MAJOR_VERSION) + "." +
   QString::number(MINOR_VERSION);
+}
+
+QString AOApplication::get_cccc_version_string()
+{
+  return
+  QString::number(CCCC_RELEASE) + "." +
+  QString::number(CCCC_MAJOR_VERSION) + "." +
+  QString::number(CCCC_MINOR_VERSION);
 }
 
 void AOApplication::reload_theme()
@@ -163,4 +177,19 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
                  "Please check your Internet connection and firewall, and please try again.");
     }
   }
+}
+
+void AOApplication::call_settings_menu()
+{
+    AOOptionsDialog* settings = new AOOptionsDialog(nullptr, this);
+    settings->exec();
+    delete settings;
+}
+
+
+void AOApplication::call_announce_menu(Courtroom *court)
+{
+    AOCaseAnnouncerDialog* announcer = new AOCaseAnnouncerDialog(nullptr, this, court);
+    announcer->exec();
+    delete announcer;
 }

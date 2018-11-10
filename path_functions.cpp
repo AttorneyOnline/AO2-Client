@@ -1,9 +1,6 @@
 #include "aoapplication.h"
 #include "courtroom.h"
 #include "file_functions.h"
-#include <QDir>
-#include <QDebug>
-#include <QStandardPaths>
 
 #ifdef BASE_OVERRIDE
 #include "base_override.h"

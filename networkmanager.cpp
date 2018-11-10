@@ -4,8 +4,6 @@
 #include "debug_functions.h"
 #include "lobby.h"
 
-#include <cstring>
-
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;
@@ -21,10 +19,9 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
   QObject::connect(server_socket, SIGNAL(disconnected()), ao_app, SLOT(server_disconnected()));
 
-  QString master_config = ao_app->read_config("master");
-  if (master_config != "") {
+  QString master_config = ao_app->configini->value("master", "").value<QString>();
+  if (master_config != "")
     ms_nosrv_hostname = master_config;
-  }
 }
 
 NetworkManager::~NetworkManager()

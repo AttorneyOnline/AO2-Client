@@ -14,6 +14,9 @@
 #include <QProgressBar>
 #include <QTextBrowser>
 
+#include <QDebug>
+#include <QScrollBar>
+
 class AOApplication;
 
 class Lobby : public QMainWindow
@@ -34,6 +37,7 @@ public:
   void hide_loading_overlay(){ui_loading_background->hide();}
   QString get_chatlog();
   int get_selected_server();
+  void enable_connect_button();
 
   void set_loading_value(int p_value);
 

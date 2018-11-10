@@ -2,12 +2,6 @@
 
 #include "hex_functions.h"
 
-#include <cstddef>
-#include <stdlib.h>
-#include <sstream>
-#include <iomanip>
-#include <QVector>
-
 QString fanta_encrypt(QString temp_input, unsigned int p_key)
 {
   //using standard stdlib types is actually easier here because of implicit char<->int conversion

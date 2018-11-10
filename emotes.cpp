@@ -2,8 +2,6 @@
 
 #include "aoemotebutton.h"
 
-#include <QDebug>
-
 void Courtroom::construct_emotes()
 {
   ui_emotes = new QWidget(this);
