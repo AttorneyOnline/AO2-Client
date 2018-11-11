@@ -877,7 +877,7 @@ void Courtroom::enter_courtroom(int p_cid)
   QString char_path = ao_app->get_character_path(current_char);
 
   if (ao_app->custom_objection_enabled &&
-      file_exists(char_path + "custom.gif") &&
+      (file_exists(char_path + "custom.gif") || file_exists(char_path + "custom.apng")) &&
       file_exists(char_path + "custom.wav"))
     ui_custom_objection->show();
   else
@@ -1670,6 +1670,9 @@ void Courtroom::handle_chatmessage_3()
 
 void Courtroom::append_ic_text(QString p_text, QString p_name)
 {
+  // a bit of a silly hack, should use QListWidget for IC in the first place though
+  static bool isEmpty = true;
+
   QTextCharFormat bold;
   QTextCharFormat normal;
   bold.setFontWeight(QFont::Bold);
@@ -1994,13 +1997,13 @@ void Courtroom::play_preanim()
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-
-  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif") ||
+  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char) + f_preanim.toLower());
+  if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
     anim_state = 1;
     preanim_done();
-    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif";
+    qDebug() << "could not find " + anim_to_find;
     return;
   }
 
@@ -2029,13 +2032,13 @@ void Courtroom::play_noninterrupting_preanim()
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-
-  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif") ||
+  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char) + f_preanim.toLower());
+  if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
     anim_state = 4;
     preanim_done();
-    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif";
+    qDebug() << "could not find " + anim_to_find;
     return;
   }
 
@@ -2415,7 +2418,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  sfx_player->play(sfx_name + ".wav");
+  sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
 }
 
 void Courtroom::set_scene()
@@ -3404,24 +3407,33 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::on_call_mod_clicked()
 {
-  if (!ao_app->modcall_reason_enabled)
-  {
-    ao_app->send_server_packet(new AOPacket("ZZ#%"));
-    ui_ic_chat_message->setFocus();
-    return;
-  }
+  if (ao_app->modcall_reason_enabled) {
+    QMessageBox errorBox;
+    QInputDialog input;
 
-  bool ok;
-  QString text = QInputDialog::getText(ui_viewport, "Call a mod",
-                                               "Reason for the modcall (optional):", QLineEdit::Normal,
-                                               "", &ok);
-  if (ok)
-  {
-    text = text.left(100);
-    if (!text.isEmpty())
-        ao_app->send_server_packet(new AOPacket("ZZ#" + text + "#%"));
-    else
-        ao_app->send_server_packet(new AOPacket("ZZ#%"));
+    input.setWindowFlags(Qt::WindowSystemMenuHint);
+    input.setLabelText("Reason:");
+    input.setWindowTitle("Call Moderator");
+    auto code = input.exec();
+
+    if (code != QDialog::Accepted)
+      return;
+
+    QString text = input.textValue();
+    if (text.isEmpty()) {
+      errorBox.critical(nullptr, "Error", "You must provide a reason.");
+      return;
+    } else if (text.length() > 256) {
+      errorBox.critical(nullptr, "Error", "The message is too long.");
+      return;
+    }
+
+    QStringList mod_reason;
+    mod_reason.append(text);
+
+    ao_app->send_server_packet(new AOPacket("ZZ", mod_reason));
+  } else {
+    ao_app->send_server_packet(new AOPacket("ZZ#%"));
   }
 
   ui_ic_chat_message->setFocus();

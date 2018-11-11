@@ -315,6 +315,32 @@ QString AOApplication::get_sfx(QString p_identifier)
   return return_sfx;
 }
 
+QString AOApplication::get_sfx_suffix(QString sound_to_check)
+{
+    QString mp3_check = get_sounds_path() + sound_to_check + ".mp3";
+    QString opus_check = get_sounds_path() + sound_to_check + ".opus";
+    if(file_exists(opus_check))
+    {
+        return sound_to_check + ".opus";
+    }
+    if(file_exists(mp3_check))
+    {
+        return sound_to_check + ".mp3";
+    }
+    return sound_to_check + ".wav";
+}
+
+QString AOApplication::get_image_suffix(QString path_to_check)
+{
+    QString apng_check = path_to_check + ".apng";
+    if(file_exists(apng_check))
+    {
+        return path_to_check + ".apng";
+    }
+    return path_to_check + ".gif";
+}
+
+
 //returns whatever is to the right of "search_line =" within target_tag and terminator_tag, trimmed
 //returns the empty string if the search line couldnt be found
 QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QString target_tag)
