@@ -23,19 +23,19 @@ private:
   AOApplication *ao_app;
   Courtroom *court;
 
-  QDialogButtonBox *AnnouncerButtons;
+  QDialogButtonBox *ui_announcer_buttons;
 
-  QVBoxLayout *VBoxLayout;
-  QFormLayout *FormLayout;
+  QVBoxLayout *ui_vbox_layout;
+  QFormLayout *ui_form_layout;
 
-  QLabel *CaseTitleLabel;
-  QLineEdit *CaseTitleLineEdit;
+  QLabel *ui_case_title_label;
+  QLineEdit *ui_case_title_textbox;
 
-  QCheckBox *DefenceNeeded;
-  QCheckBox *ProsecutorNeeded;
-  QCheckBox *JudgeNeeded;
-  QCheckBox *JurorNeeded;
-  QCheckBox *StenographerNeeded;
+  QCheckBox *ui_defense_needed;
+  QCheckBox *ui_prosecutor_needed;
+  QCheckBox *ui_judge_needed;
+  QCheckBox *ui_juror_needed;
+  QCheckBox *ui_steno_needed;
 
 public slots:
   void ok_pressed();

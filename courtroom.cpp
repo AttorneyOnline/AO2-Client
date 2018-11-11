@@ -118,11 +118,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
-  ui_ic_chat_name->setPlaceholderText("Showname");
+  ui_ic_chat_name->setPlaceholderText(tr("Showname"));
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
-  ui_ic_chat_message->setPlaceholderText("Message");
+  ui_ic_chat_message->setPlaceholderText(tr("Message"));
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
@@ -193,15 +193,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_guard->hide();
   ui_casing = new QCheckBox(this);
   ui_casing->setChecked(ao_app->get_casing_enabled());
-  ui_casing->setText("Casing");
+  ui_casing->setText(tr("Casing"));
   ui_casing->hide();
 
   ui_showname_enable = new QCheckBox(this);
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
-  ui_showname_enable->setText("Shownames");
+  ui_showname_enable->setText(tr("Shownames"));
 
   ui_pre_non_interrupt = new QCheckBox(this);
-  ui_pre_non_interrupt->setText("No Intrpt");
+  ui_pre_non_interrupt->setText(tr("No Intrpt"));
   ui_pre_non_interrupt->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);

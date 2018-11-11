@@ -1,76 +1,77 @@
 #include "aocaseannouncerdialog.h"
 
 AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, AOApplication *p_ao_app, Courtroom *p_court)
+  : QDialog(parent)
 {
   ao_app = p_ao_app;
   court = p_court;
 
-  setWindowTitle("Case Announcer");
+  setWindowTitle(tr("Case Announcer"));
   resize(405, 235);
 
-  AnnouncerButtons = new QDialogButtonBox(this);
+  ui_announcer_buttons = new QDialogButtonBox(this);
 
   QSizePolicy sizepolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   sizepolicy.setHorizontalStretch(0);
   sizepolicy.setVerticalStretch(0);
-  sizepolicy.setHeightForWidth(AnnouncerButtons->sizePolicy().hasHeightForWidth());
-  AnnouncerButtons->setSizePolicy(sizepolicy);
-  AnnouncerButtons->setOrientation(Qt::Horizontal);
-  AnnouncerButtons->setStandardButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
+  sizepolicy.setHeightForWidth(ui_announcer_buttons->sizePolicy().hasHeightForWidth());
+  ui_announcer_buttons->setSizePolicy(sizepolicy);
+  ui_announcer_buttons->setOrientation(Qt::Horizontal);
+  ui_announcer_buttons->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-  QObject::connect(AnnouncerButtons, SIGNAL(accepted()), this, SLOT(ok_pressed()));
-  QObject::connect(AnnouncerButtons, SIGNAL(rejected()), this, SLOT(cancel_pressed()));
+  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this, SLOT(on_ok_pressed()));
+  QObject::connect(ui_announcer_buttons, SIGNAL(rejected()), this, SLOT(cancel_pressed()));
 
   setUpdatesEnabled(false);
 
-  VBoxLayout = new QVBoxLayout(this);
+  ui_vbox_layout = new QVBoxLayout(this);
 
-  FormLayout = new QFormLayout(this);
-  FormLayout->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-  FormLayout->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-  FormLayout->setContentsMargins(6, 6, 6, 6);
+  ui_form_layout = new QFormLayout(this);
+  ui_form_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignVCenter);
+  ui_form_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
+  ui_form_layout->setContentsMargins(6, 6, 6, 6);
 
-  VBoxLayout->addItem(FormLayout);
-  VBoxLayout->addWidget(AnnouncerButtons);
+  ui_vbox_layout->addItem(ui_form_layout);
+  ui_vbox_layout->addWidget(ui_announcer_buttons);
 
-  CaseTitleLabel = new QLabel(this);
-  CaseTitleLabel->setText("Case title:");
+  ui_case_title_label = new QLabel(this);
+  ui_case_title_label->setText(tr("Case title:"));
 
-  FormLayout->setWidget(0, QFormLayout::LabelRole, CaseTitleLabel);
+  ui_form_layout->setWidget(0, QFormLayout::LabelRole, ui_case_title_label);
 
-  CaseTitleLineEdit = new QLineEdit(this);
-  CaseTitleLineEdit->setMaxLength(50);
+  ui_case_title_textbox = new QLineEdit(this);
+  ui_case_title_textbox->setMaxLength(50);
 
-  FormLayout->setWidget(0, QFormLayout::FieldRole, CaseTitleLineEdit);
+  ui_form_layout->setWidget(0, QFormLayout::FieldRole, ui_case_title_textbox);
 
-  DefenceNeeded = new QCheckBox(this);
-  DefenceNeeded->setText("Defence needed");
-  ProsecutorNeeded = new QCheckBox(this);
-  ProsecutorNeeded->setText("Prosecution needed");
-  JudgeNeeded = new QCheckBox(this);
-  JudgeNeeded->setText("Judge needed");
-  JurorNeeded = new QCheckBox(this);
-  JurorNeeded->setText("Jurors needed");
-  StenographerNeeded = new QCheckBox(this);
-  StenographerNeeded->setText("Stenographer needed");
+  ui_defense_needed = new QCheckBox(this);
+  ui_defense_needed->setText(tr("Defense needed"));
+  ui_prosecutor_needed = new QCheckBox(this);
+  ui_prosecutor_needed->setText(tr("Prosecution needed"));
+  ui_judge_needed = new QCheckBox(this);
+  ui_judge_needed->setText(tr("Judge needed"));
+  ui_juror_needed = new QCheckBox(this);
+  ui_juror_needed->setText(tr("Jurors needed"));
+  ui_steno_needed = new QCheckBox(this);
+  ui_steno_needed->setText(tr("Stenographer needed"));
 
-  FormLayout->setWidget(1, QFormLayout::FieldRole, DefenceNeeded);
-  FormLayout->setWidget(2, QFormLayout::FieldRole, ProsecutorNeeded);
-  FormLayout->setWidget(3, QFormLayout::FieldRole, JudgeNeeded);
-  FormLayout->setWidget(4, QFormLayout::FieldRole, JurorNeeded);
-  FormLayout->setWidget(5, QFormLayout::FieldRole, StenographerNeeded);
+  ui_form_layout->setWidget(1, QFormLayout::FieldRole, ui_defense_needed);
+  ui_form_layout->setWidget(2, QFormLayout::FieldRole, ui_prosecutor_needed);
+  ui_form_layout->setWidget(3, QFormLayout::FieldRole, ui_judge_needed);
+  ui_form_layout->setWidget(4, QFormLayout::FieldRole, ui_juror_needed);
+  ui_form_layout->setWidget(5, QFormLayout::FieldRole, ui_steno_needed);
 
   setUpdatesEnabled(true);
 }
 
 void AOCaseAnnouncerDialog::ok_pressed()
 {
-  court->announce_case(CaseTitleLineEdit->text(),
-                       DefenceNeeded->isChecked(),
-                       ProsecutorNeeded->isChecked(),
-                       JudgeNeeded->isChecked(),
-                       JurorNeeded->isChecked(),
-                       StenographerNeeded->isChecked());
+  court->announce_case(ui_case_title_textbox->text(),
+                       ui_defense_needed->isChecked(),
+                       ui_prosecutor_needed->isChecked(),
+                       ui_judge_needed->isChecked(),
+                       ui_juror_needed->isChecked(),
+                       ui_steno_needed->isChecked());
 
   done(0);
 }

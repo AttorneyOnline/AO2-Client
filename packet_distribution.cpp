@@ -241,7 +241,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = "Attorney Online 2 -- Case Café Custom Client";
+    QString window_title = "Attorney Online 2";
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -250,7 +250,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (selected_server >= 0 && selected_server < server_list.size()) {
         auto info = server_list.at(selected_server);
         server_name = info.name;
-        server_address = info.ip + info.port;
+        server_address = QString("%1:%2").arg(info.ip, info.port);
         window_title += ": " + server_name;
       }
     }
@@ -288,8 +288,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (!courtroom_constructed)
       goto end;
-
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
     {
@@ -447,8 +445,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
       QStringList sub_elements = f_contents.at(n_element).split("&");
@@ -479,7 +475,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
     bool musics_time = false;
     int areas = 0;
 

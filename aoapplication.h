@@ -94,15 +94,10 @@ public:
 
   //////////////////versioning///////////////
 
-  int get_release() {return RELEASE;}
-  int get_major_version() {return MAJOR_VERSION;}
-  int get_minor_version() {return MINOR_VERSION;}
+  constexpr int get_release() const { return RELEASE; }
+  constexpr int get_major_version() const { return MAJOR_VERSION; }
+  constexpr int get_minor_version() const { return MINOR_VERSION; }
   QString get_version_string();
-
-  int get_cccc_release() {return CCCC_RELEASE;}
-  int get_cccc_major_version() {return CCCC_MAJOR_VERSION;}
-  int get_cccc_minor_version() {return CCCC_MINOR_VERSION;}
-  QString get_cccc_version_string();
 
   ///////////////////////////////////////////
 
@@ -137,11 +132,6 @@ public:
 
   // Instead of reinventing the wheel, we'll use a QSettings class.
   QSettings *configini;
-
-  //Returns the config value for the passed searchline from a properly formatted config ini file
-  //QString read_config(QString searchline);
-
-  // No longer necessary.
 
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
@@ -302,12 +292,8 @@ public:
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 4;
-  const int MINOR_VERSION = 10;
-
-  const int CCCC_RELEASE = 1;
-  const int CCCC_MAJOR_VERSION = 4;
-  const int CCCC_MINOR_VERSION = 1;
+  const int MAJOR_VERSION = 6;
+  const int MINOR_VERSION = 0;
 
   QString current_theme = "default";
 

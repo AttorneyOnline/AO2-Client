@@ -29,8 +29,8 @@ void Discord::state_lobby()
 {
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_new";
-  presence.largeImageText = "Omit!";
+  presence.largeImageKey = "ao2-logo";
+  presence.largeImageText = "Objection!";
   presence.instance = 1;
 
   presence.state = "In Lobby";
@@ -44,8 +44,8 @@ void Discord::state_server(std::string name, std::string server_id)
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_new";
-  presence.largeImageText = "Omit!";
+  presence.largeImageKey = "ao2-logo";
+  presence.largeImageText = "Objection!";
   presence.instance = 1;
 
   auto timestamp = static_cast<int64_t>(std::time(nullptr));
@@ -70,8 +70,8 @@ void Discord::state_character(std::string name)
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_new";
-  presence.largeImageText = "Omit!";
+  presence.largeImageKey = "ao2-logo";
+  presence.largeImageText = "Objection!";
   presence.instance = 1;
   presence.details = this->server_name.c_str();
   presence.matchSecret = this->server_id.c_str();
@@ -89,8 +89,8 @@ void Discord::state_spectate()
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "aa_cc_icon_new";
-  presence.largeImageText = "Omit!";
+  presence.largeImageKey = "ao2-logo";
+  presence.largeImageText = "Objection!";
   presence.instance = 1;
   presence.details = this->server_name.c_str();
   presence.matchSecret = this->server_id.c_str();

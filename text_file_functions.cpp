@@ -571,6 +571,6 @@ bool AOApplication::get_casing_cm_enabled()
 
 QString AOApplication::get_casing_can_host_cases()
 {
-  QString result = configini->value("casing_can_host_casees", "Turnabout Check Your Settings").value<QString>();
+  QString result = configini->value("casing_can_host_cases", "Turnabout Check Your Settings").value<QString>();
   return result;
 }

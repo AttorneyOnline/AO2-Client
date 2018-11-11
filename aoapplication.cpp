@@ -97,14 +97,6 @@ QString AOApplication::get_version_string()
   QString::number(MINOR_VERSION);
 }
 
-QString AOApplication::get_cccc_version_string()
-{
-  return
-  QString::number(CCCC_RELEASE) + "." +
-  QString::number(CCCC_MAJOR_VERSION) + "." +
-  QString::number(CCCC_MINOR_VERSION);
-}
-
 void AOApplication::reload_theme()
 {
   current_theme = read_theme();
@@ -165,8 +157,9 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
   {
     if (will_retry)
     {
-      w_lobby->append_error("Error connecting to master server. Will try again in "
-                          + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
+      if (w_lobby != nullptr)
+        w_lobby->append_error("Error connecting to master server. Will try again in "
+                            + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
     }
     else
     {
@@ -181,15 +174,12 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
 
 void AOApplication::call_settings_menu()
 {
-    AOOptionsDialog* settings = new AOOptionsDialog(nullptr, this);
-    settings->exec();
-    delete settings;
+    AOOptionsDialog settings(nullptr, this);
+    settings.exec();
 }
-
 
 void AOApplication::call_announce_menu(Courtroom *court)
 {
-    AOCaseAnnouncerDialog* announcer = new AOCaseAnnouncerDialog(nullptr, this, court);
-    announcer->exec();
-    delete announcer;
+    AOCaseAnnouncerDialog announcer(nullptr, this, court);
+    announcer.exec();
 }
