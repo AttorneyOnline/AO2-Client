@@ -1,0 +1,2227 @@
+diff --git a/tsuserver3/server/aoprotocol.py b/AO2-Client/server/aoprotocol.py
+index c5e4f63..2cf6fb4 100644
+--- a/tsuserver3/server/aoprotocol.py
++++ b/AO2-Client/server/aoprotocol.py
+@@ -26,6 +26,7 @@ from .exceptions import ClientError, AreaError, ArgumentError, ServerError
+ from .fantacrypt import fanta_decrypt
+ from .evidence import EvidenceList
+ from .websocket import WebSocket
++import unicodedata
+ 
+ 
+ class AOProtocol(asyncio.Protocol):
+@@ -171,6 +172,7 @@ class AOProtocol(asyncio.Protocol):
+             self.client.server.dump_hdids()
+         for ipid in self.client.server.hdid_list[self.client.hdid]:
+             if self.server.ban_manager.is_banned(ipid):
++                self.client.send_command('BD')
+                 self.client.disconnect()
+                 return
+         logger.log_server('Connected. HDID: {}.'.format(self.client.hdid), self.client)
+@@ -211,7 +213,7 @@ class AOProtocol(asyncio.Protocol):
+ 
+         self.client.is_ao2 = True
+ 
+-        self.client.send_command('FL', 'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption', 'deskmod', 'evidence')
++        self.client.send_command('FL', 'yellowtext', 'customobjections', 'flipping', 'fastloading', 'noencryption', 'deskmod', 'evidence', 'modcall_reason', 'cccc_ic_support', 'arup', 'casing_alerts')
+ 
+     def net_cmd_ch(self, _):
+         """ Periodically checks the connection.
+@@ -333,16 +335,94 @@ class AOProtocol(asyncio.Protocol):
+             return
+         if not self.client.area.can_send_message(self.client):
+             return
+-        if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
++        
++        target_area = []
++
++        if self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
+                                      self.ArgType.STR,
+                                      self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
+                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
+                                      self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
++            # Vanilla validation monstrosity.
++            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color = args
++            showname = ""
++            charid_pair = -1
++            offset_pair = 0
++            nonint_pre = 0
++        elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
++                                     self.ArgType.STR,
++                                     self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
++                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
++                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY):
++            # 1.3.0 validation monstrosity.
++            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname = args
++            charid_pair = -1
++            offset_pair = 0
++            nonint_pre = 0
++            if len(showname) > 0 and not self.client.area.showname_changes_allowed:
++                self.client.send_host_message("Showname changes are forbidden in this area!")
++                return
++        elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
++                                     self.ArgType.STR,
++                                     self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
++                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
++                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY, self.ArgType.INT, self.ArgType.INT):
++            # 1.3.5 validation monstrosity.
++            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname, charid_pair, offset_pair = args
++            nonint_pre = 0
++            if len(showname) > 0 and not self.client.area.showname_changes_allowed:
++                self.client.send_host_message("Showname changes are forbidden in this area!")
++                return
++        elif self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.STR_OR_EMPTY, self.ArgType.STR,
++                                     self.ArgType.STR,
++                                     self.ArgType.STR, self.ArgType.STR, self.ArgType.STR, self.ArgType.INT,
++                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT,
++                                     self.ArgType.INT, self.ArgType.INT, self.ArgType.INT, self.ArgType.STR_OR_EMPTY, self.ArgType.INT, self.ArgType.INT, self.ArgType.INT):
++            # 1.4.0 validation monstrosity.
++            msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color, showname, charid_pair, offset_pair, nonint_pre = args
++            if len(showname) > 0 and not self.client.area.showname_changes_allowed:
++                self.client.send_host_message("Showname changes are forbidden in this area!")
++                return
++        else:
+             return
+-        msg_type, pre, folder, anim, text, pos, sfx, anim_type, cid, sfx_delay, button, evidence, flip, ding, color = args
+         if self.client.area.is_iniswap(self.client, pre, anim, folder) and folder != self.client.get_char_name():
+             self.client.send_host_message("Iniswap is blocked in this area")
+             return
++        if len(self.client.charcurse) > 0 and folder != self.client.get_char_name():
++            self.client.send_host_message("You may not iniswap while you are charcursed!")
++            return
++        if not self.client.area.blankposting_allowed:
++            if text == ' ':
++                self.client.send_host_message("Blankposting is forbidden in this area!")
++                return
++            if text.isspace():
++                self.client.send_host_message("Blankposting is forbidden in this area, and putting more spaces in does not make it not blankposting.")
++                return
++            if len(re.sub(r'[{}\\`|(~~)]','', text).replace(' ', '')) < 3 and text != '<' and text != '>':
++                self.client.send_host_message("While that is not a blankpost, it is still pretty spammy. Try forming sentences.")
++                return
++        if text.startswith('/a '):
++            part = text.split(' ')
++            try:
++                aid = int(part[1])
++                if self.client in self.server.area_manager.get_area_by_id(aid).owners:
++                    target_area.append(aid)
++                if not target_area:
++                    self.client.send_host_message('You don\'t own {}!'.format(self.server.area_manager.get_area_by_id(aid).name))
++                    return
++                text = ' '.join(part[2:])
++            except ValueError:
++                self.client.send_host_message("That does not look like a valid area ID!")
++                return
++        elif text.startswith('/s '):
++            part = text.split(' ')
++            for a in self.server.area_manager.areas:
++                if self.client in a.owners:
++                    target_area.append(a.id)
++            if not target_area:
++                self.client.send_host_message('You don\'t any areas!')
++                return
++            text = ' '.join(part[1:])
+         if msg_type not in ('chat', '0', '1'):
+             return
+         if anim_type not in (0, 1, 2, 5, 6):
+@@ -354,12 +434,38 @@ class AOProtocol(asyncio.Protocol):
+         if button not in (0, 1, 2, 3, 4):
+             return
+         if evidence < 0:
+-        	return
+-        if ding not in (0, 1):
+             return
+-        if color not in (0, 1, 2, 3, 4, 5, 6):
++        if ding not in (0, 1):
+             return
+-        if color == 2 and not self.client.is_mod:
++        if color not in (0, 1, 2, 3, 4, 5, 6, 7, 8):
++            return
++        if len(showname) > 15:
++            self.client.send_host_message("Your IC showname is way too long!")
++            return
++        if nonint_pre == 1:
++            if button in (1, 2, 3, 4, 23):
++                if anim_type == 1 or anim_type == 2:
++                    anim_type = 0
++                elif anim_type == 6:
++                    anim_type = 5
++        if self.client.area.non_int_pres_only:
++            if anim_type == 1 or anim_type == 2:
++                anim_type = 0
++                nonint_pre = 1
++            elif anim_type == 6:
++                anim_type = 5
++                nonint_pre = 1
++        if not self.client.area.shouts_allowed:
++            # Old clients communicate the objecting in anim_type.
++            if anim_type == 2:
++                anim_type = 1
++            elif anim_type == 6:
++                anim_type = 5
++            # New clients do it in a specific objection message area.
++            button = 0
++            # Turn off the ding.
++            ding = 0
++        if color == 2 and not (self.client.is_mod or self.client in self.client.area.owners):
+             color = 0
+         if color == 6:
+             text = re.sub(r'[^\x00-\x7F]+',' ', text) #remove all unicode to prevent redtext abuse
+@@ -371,9 +477,11 @@ class AOProtocol(asyncio.Protocol):
+         if self.client.pos:
+             pos = self.client.pos
+         else:
+-            if pos not in ('def', 'pro', 'hld', 'hlp', 'jud', 'wit'):
++            if pos not in ('def', 'pro', 'hld', 'hlp', 'jud', 'wit', 'jur', 'sea'):
+                 return
+         msg = text[:256]
++        if self.client.shaken:
++            msg = self.client.shake_message(msg)
+         if self.client.disemvowel:
+             msg = self.client.disemvowel_message(msg)
+         self.client.pos = pos
+@@ -381,13 +489,53 @@ class AOProtocol(asyncio.Protocol):
+             if self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos != 'all':
+                 self.client.area.evi_list.evidences[self.client.evi_list[evidence] - 1].pos = 'all'
+                 self.client.area.broadcast_evidence_list()
++        
++        # Here, we check the pair stuff, and save info about it to the client.
++        # Notably, while we only get a charid_pair and an offset, we send back a chair_pair, an emote, a talker offset
++        # and an other offset.
++        self.client.charid_pair = charid_pair
++        self.client.offset_pair = offset_pair
++        if anim_type not in (5, 6):
++            self.client.last_sprite = anim
++        self.client.flip = flip
++        self.client.claimed_folder = folder
++        other_offset = 0
++        other_emote = ''
++        other_flip = 0
++        other_folder = ''
++
++        confirmed = False
++        if charid_pair > -1:
++            for target in self.client.area.clients:
++                if target.char_id == self.client.charid_pair and target.charid_pair == self.client.char_id and target != self.client and target.pos == self.client.pos:
++                    confirmed = True
++                    other_offset = target.offset_pair
++                    other_emote = target.last_sprite
++                    other_flip = target.flip
++                    other_folder = target.claimed_folder
++                    break
++
++        if not confirmed:
++            charid_pair = -1
++            offset_pair = 0
++
+         self.client.area.send_command('MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
+-                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color)
++                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
++                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip, nonint_pre)
++        
++        self.client.area.send_owner_command('MS', msg_type, pre, folder, anim, '[' + self.client.area.abbreviation + ']' + msg, pos, sfx, anim_type, cid,
++                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
++                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip, nonint_pre)
++        
++        self.server.area_manager.send_remote_command(target_area, 'MS', msg_type, pre, folder, anim, msg, pos, sfx, anim_type, cid,
++                                      sfx_delay, button, self.client.evi_list[evidence], flip, ding, color, showname,
++                                      charid_pair, other_folder, other_emote, offset_pair, other_offset, other_flip, nonint_pre)
++        
+         self.client.area.set_next_msg_delay(len(msg))
+-        logger.log_server('[IC][{}][{}]{}'.format(self.client.area.id, self.client.get_char_name(), msg), self.client)
++        logger.log_server('[IC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(), msg), self.client)
+ 
+         if (self.client.area.is_recording):
+-        	self.client.area.recorded_messages.append(args)
++            self.client.area.recorded_messages.append(args)
+ 
+     def net_cmd_ct(self, args):
+         """ OOC Message
+@@ -409,12 +557,22 @@ class AOProtocol(asyncio.Protocol):
+         if self.client.name == '':
+             self.client.send_host_message('You must insert a name with at least one letter')
+             return
+-        if self.client.name.startswith(self.server.config['hostname']) or self.client.name.startswith('<dollar>G'):
++        if len(self.client.name) > 30:
++            self.client.send_host_message('Your OOC name is too long! Limit it to 30 characters.')
++            return
++        for c in self.client.name:
++            if unicodedata.category(c) == 'Cf':
++                self.client.send_host_message('You cannot use format characters in your name!')
++                return
++        if self.client.name.startswith(self.server.config['hostname']) or self.client.name.startswith('<dollar>G') or self.client.name.startswith('<dollar>M'):
+             self.client.send_host_message('That name is reserved!')
+             return
++        if args[1].startswith(' /'):
++            self.client.send_host_message('Your message was not sent for safety reasons: you left a space before that slash.')
++            return
+         if args[1].startswith('/'):
+             spl = args[1][1:].split(' ', 1)
+-            cmd = spl[0]
++            cmd = spl[0].lower()
+             arg = ''
+             if len(spl) == 2:
+                 arg = spl[1][:256]
+@@ -427,11 +585,14 @@ class AOProtocol(asyncio.Protocol):
+             except (ClientError, AreaError, ArgumentError, ServerError) as ex:
+                 self.client.send_host_message(ex)
+         else:
++            if self.client.shaken:
++                args[1] = self.client.shake_message(args[1])
+             if self.client.disemvowel:
+                 args[1] = self.client.disemvowel_message(args[1])
+             self.client.area.send_command('CT', self.client.name, args[1])
++            self.client.area.send_owner_command('CT', '[' + self.client.area.abbreviation + ']' + self.client.name, args[1])
+             logger.log_server(
+-                '[OOC][{}][{}][{}]{}'.format(self.client.area.id, self.client.get_char_name(), self.client.name,
++                '[OOC][{}][{}]{}'.format(self.client.area.abbreviation, self.client.get_char_name(),
+                                              args[1]), self.client)
+ 
+     def net_cmd_mc(self, args):
+@@ -450,7 +611,10 @@ class AOProtocol(asyncio.Protocol):
+             if not self.client.is_dj:
+                 self.client.send_host_message('You were blockdj\'d by a moderator.')
+                 return
+-            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT):
++            if self.client.area.cannot_ic_interact(self.client):
++                self.client.send_host_message("You are not on the area's invite list, and thus, you cannot change music!")
++                return
++            if not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT) and not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT, self.ArgType.STR):
+                 return
+             if args[1] != self.client.char_id:
+                 return
+@@ -459,10 +623,29 @@ class AOProtocol(asyncio.Protocol):
+                 return
+             try:
+                 name, length = self.server.get_song_data(args[0])
+-                self.client.area.play_music(name, self.client.char_id, length)
+-                self.client.area.add_music_playing(self.client, name)
+-                logger.log_server('[{}][{}]Changed music to {}.'
+-                                  .format(self.client.area.id, self.client.get_char_name(), name), self.client)
++
++                if self.client.area.jukebox:
++                    showname = ''
++                    if len(args) > 2:
++                        showname = args[2]
++                        if len(showname) > 0 and not self.client.area.showname_changes_allowed:
++                            self.client.send_host_message("Showname changes are forbidden in this area!")
++                            return
++                    self.client.area.add_jukebox_vote(self.client, name, length, showname)
++                    logger.log_server('[{}][{}]Added a jukebox vote for {}.'.format(self.client.area.abbreviation, self.client.get_char_name(), name), self.client)
++                else:
++                    if len(args) > 2:
++                        showname = args[2]
++                        if len(showname) > 0 and not self.client.area.showname_changes_allowed:
++                            self.client.send_host_message("Showname changes are forbidden in this area!")
++                            return
++                        self.client.area.play_music_shownamed(name, self.client.char_id, showname, length)
++                        self.client.area.add_music_playing_shownamed(self.client, showname, name)
++                    else:
++                        self.client.area.play_music(name, self.client.char_id, length)
++                        self.client.area.add_music_playing(self.client, name)
++                    logger.log_server('[{}][{}]Changed music to {}.'
++                                    .format(self.client.area.abbreviation, self.client.get_char_name(), name), self.client)
+             except ServerError:
+                 return
+         except ClientError as ex:
+@@ -474,26 +657,37 @@ class AOProtocol(asyncio.Protocol):
+         RT#<type:string>#%
+ 
+         """
++        if not self.client.area.shouts_allowed:
++            self.client.send_host_message("You cannot use the testimony buttons here!")
++            return
+         if self.client.is_muted:  # Checks to see if the client has been muted by a mod
+             self.client.send_host_message("You have been muted by a moderator")
+             return
+         if not self.client.can_wtce:
+             self.client.send_host_message('You were blocked from using judge signs by a moderator.')
+             return
+-        if not self.validate_net_cmd(args, self.ArgType.STR):
++        if self.client.area.cannot_ic_interact(self.client):
++            self.client.send_host_message("You are not on the area's invite list, and thus, you cannot use the WTCE buttons!")
++            return
++        if not self.validate_net_cmd(args, self.ArgType.STR) and not self.validate_net_cmd(args, self.ArgType.STR, self.ArgType.INT):
+             return
+         if args[0] == 'testimony1':
+             sign = 'WT'
+         elif args[0] == 'testimony2':
+             sign = 'CE'
++        elif args[0] == 'judgeruling':
++            sign = 'JR'
+         else:
+             return
+         if self.client.wtce_mute():
+             self.client.send_host_message('You used witness testimony/cross examination signs too many times. Please try again after {} seconds.'.format(int(self.client.wtce_mute())))
+             return
+-        self.client.area.send_command('RT', args[0])
++        if len(args) == 1:
++            self.client.area.send_command('RT', args[0])
++        elif len(args) == 2:
++            self.client.area.send_command('RT', args[0], args[1])
+         self.client.area.add_to_judgelog(self.client, 'used {}'.format(sign))
+-        logger.log_server("[{}]{} Used WT/CE".format(self.client.area.id, self.client.get_char_name()), self.client)
++        logger.log_server("[{}]{} Used WT/CE".format(self.client.area.abbreviation, self.client.get_char_name()), self.client)
+ 
+     def net_cmd_hp(self, args):
+         """ Sets the penalty bar.
+@@ -504,13 +698,16 @@ class AOProtocol(asyncio.Protocol):
+         if self.client.is_muted:  # Checks to see if the client has been muted by a mod
+             self.client.send_host_message("You have been muted by a moderator")
+             return
++        if self.client.area.cannot_ic_interact(self.client):
++            self.client.send_host_message("You are not on the area's invite list, and thus, you cannot change the Confidence bars!")
++            return
+         if not self.validate_net_cmd(args, self.ArgType.INT, self.ArgType.INT):
+             return
+         try:
+             self.client.area.change_hp(args[0], args[1])
+             self.client.area.add_to_judgelog(self.client, 'changed the penalties')
+             logger.log_server('[{}]{} changed HP ({}) to {}'
+-                              .format(self.client.area.id, self.client.get_char_name(), args[0], args[1]), self.client)
++                              .format(self.client.area.abbreviation, self.client.get_char_name(), args[0], args[1]), self.client)
+         except AreaError:
+             return
+ 
+@@ -552,7 +749,7 @@ class AOProtocol(asyncio.Protocol):
+         self.client.area.broadcast_evidence_list()
+ 
+ 
+-    def net_cmd_zz(self, _):
++    def net_cmd_zz(self, args):
+         """ Sent on mod call.
+ 
+         """
+@@ -566,11 +763,16 @@ class AOProtocol(asyncio.Protocol):
+ 
+         current_time = strftime("%H:%M", localtime())
+ 
+-        self.server.send_all_cmd_pred('ZZ', '[{}] {} ({}) in {} ({})'
+-                                      .format(current_time, self.client.get_char_name(), self.client.get_ip(), self.client.area.name,
+-                                              self.client.area.id), pred=lambda c: c.is_mod)
+-        self.client.set_mod_call_delay()
+-        logger.log_server('[{}][{}]{} called a moderator.'.format(self.client.get_ip(), self.client.area.id, self.client.get_char_name()))
++        if len(args) < 1:
++            self.server.send_all_cmd_pred('ZZ', '[{}] {} ({}) in {} without reason (not using the Case Café client?)'
++                                      .format(current_time, self.client.get_char_name(), self.client.get_ip(), self.client.area.name), pred=lambda c: c.is_mod)
++            self.client.set_mod_call_delay()
++            logger.log_server('[{}]{} called a moderator.'.format(self.client.area.abbreviation, self.client.get_char_name()), self.client)
++        else:
++            self.server.send_all_cmd_pred('ZZ', '[{}] {} ({}) in {} with reason: {}'
++                                        .format(current_time, self.client.get_char_name(), self.client.get_ip(), self.client.area.name, args[0][:100]), pred=lambda c: c.is_mod)
++            self.client.set_mod_call_delay()
++            logger.log_server('[{}]{} called a moderator: {}.'.format(self.client.area.abbreviation, self.client.get_char_name(), args[0]), self.client)
+ 
+     def net_cmd_opKICK(self, args):
+         self.net_cmd_ct(['opkick', '/kick {}'.format(args[0])])
+diff --git a/tsuserver3/server/area_manager.py b/AO2-Client/server/area_manager.py
+index 39eb211..cfb2be0 100644
+--- a/tsuserver3/server/area_manager.py
++++ b/AO2-Client/server/area_manager.py
+@@ -22,11 +22,12 @@ import yaml
+ 
+ from server.exceptions import AreaError
+ from server.evidence import EvidenceList
++from enum import Enum
+ 
+ 
+ class AreaManager:
+     class Area:
+-        def __init__(self, area_id, server, name, background, bg_lock, evidence_mod = 'FFA', locking_allowed = False, iniswap_allowed = True):
++        def __init__(self, area_id, server, name, background, bg_lock, evidence_mod = 'FFA', locking_allowed = False, iniswap_allowed = True, showname_changes_allowed = False, shouts_allowed = True, jukebox = False, abbreviation = '', non_int_pres_only = False):
+             self.iniswap_allowed = iniswap_allowed
+             self.clients = set()
+             self.invite_list = {}
+@@ -44,12 +45,15 @@ class AreaManager:
+             self.judgelog = []
+             self.current_music = ''
+             self.current_music_player = ''
++            self.current_music_player_ipid = -1
+             self.evi_list = EvidenceList()
+             self.is_recording = False
+             self.recorded_messages = []
+             self.evidence_mod = evidence_mod
+             self.locking_allowed = locking_allowed
+-            self.owned = False
++            self.showname_changes_allowed = showname_changes_allowed
++            self.shouts_allowed = shouts_allowed
++            self.abbreviation = abbreviation
+             self.cards = dict()
+ 
+             """
+@@ -59,23 +63,53 @@ class AreaManager:
+             self.evidence_list.append(Evidence("weeeeeew", "desc3", "3.png"))
+             """
+             
+-            self.is_locked = False
++            self.is_locked = self.Locked.FREE
++            self.blankposting_allowed = True
++            self.non_int_pres_only = non_int_pres_only
++            self.jukebox = jukebox
++            self.jukebox_votes = []
++            self.jukebox_prev_char_id = -1
++
++            self.owners = []
++
++        class Locked(Enum):
++            FREE = 1,
++            SPECTATABLE = 2,
++            LOCKED = 3
+ 
+         def new_client(self, client):
+             self.clients.add(client)
++            self.server.area_manager.send_arup_players()
+ 
+         def remove_client(self, client):
+             self.clients.remove(client)
+-            if client.is_cm:
+-                client.is_cm = False
+-                self.owned = False
+-                if self.is_locked:
+-                    self.unlock()
++            if len(self.clients) == 0:
++                self.change_status('IDLE')
+         
+         def unlock(self):
+-            self.is_locked = False
++            self.is_locked = self.Locked.FREE
++            self.blankposting_allowed = True
+             self.invite_list = {}
++            self.server.area_manager.send_arup_lock()
+             self.send_host_message('This area is open now.')
++
++        def spectator(self):
++            self.is_locked = self.Locked.SPECTATABLE
++            for i in self.clients:
++                self.invite_list[i.id] = None
++            for i in self.owners:
++                self.invite_list[i.id] = None
++            self.server.area_manager.send_arup_lock()
++            self.send_host_message('This area is spectatable now.')
++
++        def lock(self):
++            self.is_locked = self.Locked.LOCKED
++            for i in self.clients:
++                self.invite_list[i.id] = None
++            for i in self.owners:
++                self.invite_list[i.id] = None
++            self.server.area_manager.send_arup_lock()
++            self.send_host_message('This area is locked now.')
+         
+         def is_char_available(self, char_id):
+             return char_id not in [x.char_id for x in self.clients]
+@@ -89,9 +123,15 @@ class AreaManager:
+         def send_command(self, cmd, *args):
+             for c in self.clients:
+                 c.send_command(cmd, *args)
++        
++        def send_owner_command(self, cmd, *args):
++            for c in self.owners:
++                if not c in self.clients:
++                    c.send_command(cmd, *args)
+ 
+         def send_host_message(self, msg):
+-            self.send_command('CT', self.server.config['hostname'], msg)
++            self.send_command('CT', self.server.config['hostname'], msg, '1')
++            self.send_owner_command('CT', '[' + self.abbreviation + ']' + self.server.config['hostname'], msg, '1')
+ 
+         def set_next_msg_delay(self, msg_length):
+             delay = min(3000, 100 + 60 * msg_length)
+@@ -106,6 +146,83 @@ class AreaManager:
+                 if client.get_char_name() in char_link and char in char_link:
+                     return False
+             return True
++
++        def add_jukebox_vote(self, client, music_name, length=-1, showname=''):
++            if not self.jukebox:
++                return
++            if length <= 0:
++                self.remove_jukebox_vote(client, False)
++            else:
++                self.remove_jukebox_vote(client, True)
++                self.jukebox_votes.append(self.JukeboxVote(client, music_name, length, showname))
++                client.send_host_message('Your song was added to the jukebox.')
++                if len(self.jukebox_votes) == 1:
++                    self.start_jukebox()
++        
++        def remove_jukebox_vote(self, client, silent):
++            if not self.jukebox:
++                return
++            for current_vote in self.jukebox_votes:
++                if current_vote.client.id == client.id:
++                    self.jukebox_votes.remove(current_vote)
++            if not silent:        
++                client.send_host_message('You removed your song from the jukebox.')
++        
++        def get_jukebox_picked(self):
++            if not self.jukebox:
++                return
++            if len(self.jukebox_votes) == 0:
++                return None
++            elif len(self.jukebox_votes) == 1:
++                return self.jukebox_votes[0]
++            else:
++                weighted_votes = []
++                for current_vote in self.jukebox_votes:
++                    i = 0
++                    while i < current_vote.chance:
++                        weighted_votes.append(current_vote)
++                        i += 1
++                return random.choice(weighted_votes)
++
++        def start_jukebox(self):
++            # There is a probability that the jukebox feature has been turned off since then,
++            # we should check that.
++            # We also do a check if we were the last to play a song, just in case.
++            if not self.jukebox:
++                if self.current_music_player == 'The Jukebox' and self.current_music_player_ipid == 'has no IPID':
++                    self.current_music = ''
++                return
++
++            vote_picked = self.get_jukebox_picked()
++
++            if vote_picked is None:
++                self.current_music = ''
++                return
++
++            if vote_picked.client.char_id != self.jukebox_prev_char_id or vote_picked.name != self.current_music or len(self.jukebox_votes) > 1:
++                self.jukebox_prev_char_id = vote_picked.client.char_id
++                if vote_picked.showname == '':
++                    self.send_command('MC', vote_picked.name, vote_picked.client.char_id)
++                else:
++                    self.send_command('MC', vote_picked.name, vote_picked.client.char_id, vote_picked.showname)
++            else:
++                self.send_command('MC', vote_picked.name, -1)
++
++            self.current_music_player = 'The Jukebox'
++            self.current_music_player_ipid = 'has no IPID'
++            self.current_music = vote_picked.name
++            
++            for current_vote in self.jukebox_votes:
++                # Choosing the same song will get your votes down to 0, too.
++                # Don't want the same song twice in a row!
++                if current_vote.name == vote_picked.name:
++                    current_vote.chance = 0
++                else:
++                    current_vote.chance += 1
++
++            if self.music_looper:
++                self.music_looper.cancel()
++            self.music_looper = asyncio.get_event_loop().call_later(vote_picked.length, lambda: self.start_jukebox())
+         
+         def play_music(self, name, cid, length=-1):
+             self.send_command('MC', name, cid)
+@@ -114,14 +231,25 @@ class AreaManager:
+             if length > 0:
+                 self.music_looper = asyncio.get_event_loop().call_later(length,
+                                                                         lambda: self.play_music(name, -1, length))
++        
++        def play_music_shownamed(self, name, cid, showname, length=-1):
++            self.send_command('MC', name, cid, showname)
++            if self.music_looper:
++                self.music_looper.cancel()
++            if length > 0:
++                self.music_looper = asyncio.get_event_loop().call_later(length,
++                                                                        lambda: self.play_music(name, -1, length))
+ 
+ 
+         def can_send_message(self, client):
+-            if self.is_locked and not client.is_mod and not client.ipid in self.invite_list:
++            if self.cannot_ic_interact(client):
+                 client.send_host_message('This is a locked area - ask the CM to speak.')
+                 return False
+             return (time.time() * 1000.0 - self.next_message_time) > 0
+ 
++        def cannot_ic_interact(self, client):
++            return self.is_locked != self.Locked.FREE and not client.is_mod and not client.id in self.invite_list
++
+         def change_hp(self, side, val):
+             if not 0 <= val <= 10:
+                 raise AreaError('Invalid penalty value.')
+@@ -140,10 +268,13 @@ class AreaManager:
+             self.send_command('BN', self.background)
+ 
+         def change_status(self, value):
+-            allowed_values = ('idle', 'building-open', 'building-full', 'casing-open', 'casing-full', 'recess')
++            allowed_values = ('idle', 'rp', 'casing', 'looking-for-players', 'lfp', 'recess', 'gaming')
+             if value.lower() not in allowed_values:
+                 raise AreaError('Invalid status. Possible values: {}'.format(', '.join(allowed_values)))
++            if value.lower() == 'lfp':
++                value = 'looking-for-players'
+             self.status = value.upper()
++            self.server.area_manager.send_arup_status()
+ 
+         def change_doc(self, doc='No document.'):
+             self.doc = doc
+@@ -155,6 +286,12 @@ class AreaManager:
+ 
+         def add_music_playing(self, client, name):
+             self.current_music_player = client.get_char_name()
++            self.current_music_player_ipid = client.ipid
++            self.current_music = name
++
++        def add_music_playing_shownamed(self, client, showname, name):
++            self.current_music_player = showname + " (" + client.get_char_name() + ")"
++            self.current_music_player_ipid = client.ipid
+             self.current_music = name
+ 
+         def get_evidence_list(self, client):
+@@ -168,7 +305,22 @@ class AreaManager:
+             """
+             for client in self.clients:
+                 client.send_command('LE', *self.get_evidence_list(client))
+-    
++
++        def get_cms(self):
++            msg = ''
++            for i in self.owners:
++                msg = msg + '[' + str(i.id) + '] ' + i.get_char_name() + ', '
++            if len(msg) > 2:
++                msg = msg[:-2]
++            return msg
++        
++        class JukeboxVote:
++            def __init__(self, client, name, length, showname):
++                self.client = client
++                self.name = name
++                self.length = length
++                self.chance = 1
++                self.showname = showname
+ 
+     def __init__(self, server):
+         self.server = server
+@@ -186,8 +338,18 @@ class AreaManager:
+                 item['locking_allowed'] = False
+             if 'iniswap_allowed' not in item:
+                 item['iniswap_allowed'] = True
++            if 'showname_changes_allowed' not in item:
++                item['showname_changes_allowed'] = False
++            if 'shouts_allowed' not in item:
++                item['shouts_allowed'] = True
++            if 'jukebox' not in item:
++                item['jukebox'] = False
++            if 'noninterrupting_pres' not in item:
++                item['noninterrupting_pres'] = False
++            if 'abbreviation' not in item:
++                item['abbreviation'] = self.get_generated_abbreviation(item['area'])
+             self.areas.append(
+-                self.Area(self.cur_id, self.server, item['area'], item['background'], item['bglock'], item['evidence_mod'], item['locking_allowed'], item['iniswap_allowed']))
++                self.Area(self.cur_id, self.server, item['area'], item['background'], item['bglock'], item['evidence_mod'], item['locking_allowed'], item['iniswap_allowed'], item['showname_changes_allowed'], item['shouts_allowed'], item['jukebox'], item['abbreviation'], item['noninterrupting_pres']))
+             self.cur_id += 1
+ 
+     def default_area(self):
+@@ -204,3 +366,47 @@ class AreaManager:
+             if area.id == num:
+                 return area
+         raise AreaError('Area not found.')
++
++    def get_generated_abbreviation(self, name):
++        if name.lower().startswith("courtroom"):
++            return "CR" + name.split()[-1]
++        elif name.lower().startswith("area"):
++            return "A" + name.split()[-1]
++        elif len(name.split()) > 1:
++            return "".join(item[0].upper() for item in name.split())
++        elif len(name) > 3:
++            return name[:3].upper()
++        else:
++            return name.upper()
++    
++    def send_remote_command(self, area_ids, cmd, *args):
++        for a_id in area_ids:
++            self.get_area_by_id(a_id).send_command(cmd, *args)
++            self.get_area_by_id(a_id).send_owner_command(cmd, *args)
++
++    def send_arup_players(self):
++        players_list = [0]
++        for area in self.areas:
++            players_list.append(len(area.clients))
++        self.server.send_arup(players_list)
++    
++    def send_arup_status(self):
++        status_list = [1]
++        for area in self.areas:
++            status_list.append(area.status)
++        self.server.send_arup(status_list)
++    
++    def send_arup_cms(self):
++        cms_list = [2]
++        for area in self.areas:
++            cm = 'FREE'
++            if len(area.owners) > 0:
++                cm = area.get_cms()
++            cms_list.append(cm)
++        self.server.send_arup(cms_list)
++    
++    def send_arup_lock(self):
++        lock_list = [3]
++        for area in self.areas:
++            lock_list.append(area.is_locked.name)
++        self.server.send_arup(lock_list)
+diff --git a/tsuserver3/server/ban_manager.py b/AO2-Client/server/ban_manager.py
+index 24518b2..20c186f 100644
+--- a/tsuserver3/server/ban_manager.py
++++ b/AO2-Client/server/ban_manager.py
+@@ -51,4 +51,4 @@ class BanManager:
+         self.write_banlist()
+ 
+     def is_banned(self, ipid):
+-        return (ipid in self.bans)
++        return (ipid in self.bans)
+\ No newline at end of file
+diff --git a/tsuserver3/server/client_manager.py b/AO2-Client/server/client_manager.py
+index 38974b3..432c39d 100644
+--- a/tsuserver3/server/client_manager.py
++++ b/AO2-Client/server/client_manager.py
+@@ -44,9 +44,10 @@ class ClientManager:
+             self.is_dj = True
+             self.can_wtce = True
+             self.pos = ''
+-            self.is_cm = False
+             self.evi_list = []
+             self.disemvowel = False
++            self.shaken = False
++            self.charcurse = []
+             self.muted_global = False
+             self.muted_adverts = False
+             self.is_muted = False
+@@ -56,7 +57,24 @@ class ClientManager:
+             self.in_rp = False
+             self.ipid = ipid
+             self.websocket = None
++
++            # Pairing stuff
++            self.charid_pair = -1
++            self.offset_pair = 0
++            self.last_sprite = ''
++            self.flip = 0
++            self.claimed_folder = ''
+             
++            # Casing stuff
++            self.casing_cm = False
++            self.casing_cases = ""
++            self.casing_def = False
++            self.casing_pro = False
++            self.casing_jud = False
++            self.casing_jur = False
++            self.casing_steno = False
++            self.case_call_time = 0
++
+             #flood-guard stuff
+             self.mus_counter = 0
+             self.mus_mute_time = 0
+@@ -85,7 +103,7 @@ class ClientManager:
+                 self.send_raw_message('{}#%'.format(command))
+ 
+         def send_host_message(self, msg):
+-            self.send_command('CT', self.server.config['hostname'], msg)
++            self.send_command('CT', self.server.config['hostname'], msg, '1')
+ 
+         def send_motd(self):
+             self.send_host_message('=== MOTD ===\r\n{}\r\n============='.format(self.server.config['motd']))
+@@ -111,6 +129,10 @@ class ClientManager:
+         def change_character(self, char_id, force=False):
+             if not self.server.is_valid_char_id(char_id):
+                 raise ClientError('Invalid Character ID.')
++            if len(self.charcurse) > 0:
++                if not char_id in self.charcurse:
++                    raise ClientError('Character not available.')
++                force = True
+             if not self.area.is_char_available(char_id):
+                 if force:
+                     for client in self.area.clients:
+@@ -122,11 +144,12 @@ class ClientManager:
+             self.char_id = char_id
+             self.pos = ''
+             self.send_command('PV', self.id, 'CID', self.char_id)
++            self.area.send_command('CharsCheck', *self.get_available_char_list())
+             logger.log_server('[{}]Changed character from {} to {}.'
+-                              .format(self.area.id, old_char, self.get_char_name()), self)
++                              .format(self.area.abbreviation, old_char, self.get_char_name()), self)
+ 
+         def change_music_cd(self):
+-            if self.is_mod or self.is_cm:
++            if self.is_mod or self in self.area.owners:
+                 return 0
+             if self.mus_mute_time:
+                 if time.time() - self.mus_mute_time < self.server.config['music_change_floodguard']['mute_length']:
+@@ -143,7 +166,7 @@ class ClientManager:
+             return 0
+ 
+         def wtce_mute(self):
+-            if self.is_mod or self.is_cm:
++            if self.is_mod or self in self.area.owners:
+                 return 0
+             if self.wtce_mute_time:
+                 if time.time() - self.wtce_mute_time < self.server.config['wtce_floodguard']['mute_length']:
+@@ -168,9 +191,14 @@ class ClientManager:
+         def change_area(self, area):
+             if self.area == area:
+                 raise ClientError('User already in specified area.')
+-            if area.is_locked and not self.is_mod and not self.ipid in area.invite_list:
+-                self.send_host_message('This area is locked - you will be unable to send messages ICly.')
+-                #raise ClientError("That area is locked!")
++            if area.is_locked == area.Locked.LOCKED and not self.is_mod and not self.id in area.invite_list:
++                raise ClientError("That area is locked!")
++            if area.is_locked == area.Locked.SPECTATABLE and not self.is_mod and not self.id in area.invite_list:
++                self.send_host_message('This area is spectatable, but not free - you will be unable to send messages ICly unless invited.')
++
++            if self.area.jukebox:
++                self.area.remove_jukebox_vote(self, True)
++
+             old_area = self.area
+             if not area.is_char_available(self.char_id):
+                 try:
+@@ -189,6 +217,7 @@ class ClientManager:
+             logger.log_server(
+                 '[{}]Changed area from {} ({}) to {} ({}).'.format(self.get_char_name(), old_area.name, old_area.id,
+                                                                    self.area.name, self.area.id), self)
++            self.area.send_command('CharsCheck', *self.get_available_char_list())
+             self.send_command('HP', 1, self.area.hp_def)
+             self.send_command('HP', 2, self.area.hp_pro)
+             self.send_command('BN', self.area.background)
+@@ -196,34 +225,50 @@ class ClientManager:
+ 
+         def send_area_list(self):
+             msg = '=== Areas ==='
+-            lock = {True: '[LOCKED]', False: ''}
+             for i, area in enumerate(self.server.area_manager.areas):
+                 owner = 'FREE'
+-                if area.owned:
+-                    for client in [x for x in area.clients if x.is_cm]:
+-                        owner = 'MASTER: {}'.format(client.get_char_name())
+-                        break
+-                msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(i, area.name, len(area.clients), area.status, owner, lock[area.is_locked])
++                if len(area.owners) > 0:
++                    owner = 'CM: {}'.format(area.get_cms())
++                lock = {area.Locked.FREE: '', area.Locked.SPECTATABLE: '[SPECTATABLE]', area.Locked.LOCKED: '[LOCKED]'}
++                msg += '\r\nArea {}: {} (users: {}) [{}][{}]{}'.format(area.abbreviation, area.name, len(area.clients), area.status, owner, lock[area.is_locked])
+                 if self.area == area:
+                     msg += ' [*]'
+             self.send_host_message(msg)
+ 
+         def get_area_info(self, area_id, mods):
+-            info = ''
++            info = '\r\n'
+             try:
+                 area = self.server.area_manager.get_area_by_id(area_id)
+             except AreaError:
+                 raise
+-            info += '= Area {}: {} =='.format(area.id, area.name)
++            info += '=== {} ==='.format(area.name)
++            info += '\r\n'
++
++            lock = {area.Locked.FREE: '', area.Locked.SPECTATABLE: '[SPECTATABLE]', area.Locked.LOCKED: '[LOCKED]'}
++            info += '[{}]: [{} users][{}]{}'.format(area.abbreviation, len(area.clients), area.status, lock[area.is_locked])
++            
+             sorted_clients = []
+             for client in area.clients:
+                 if (not mods) or client.is_mod:
+                     sorted_clients.append(client)
++            for owner in area.owners:
++                if not (mods or owner in area.clients):
++                    sorted_clients.append(owner)
++            if not sorted_clients:
++                return ''
+             sorted_clients = sorted(sorted_clients, key=lambda x: x.get_char_name())
+             for c in sorted_clients:
+-                info += '\r\n[{}] {}'.format(c.id, c.get_char_name())
++                info += '\r\n'
++                if c in area.owners:
++                    if not c in area.clients:
++                        info += '[RCM]'
++                    else:
++                        info +='[CM]'
++                info += '[{}] {}'.format(c.id, c.get_char_name())
+                 if self.is_mod:
+                     info += ' ({})'.format(c.ipid)
++                    info += ': {}'.format(c.name)
++
+             return info
+ 
+         def send_area_info(self, area_id, mods): 
+@@ -234,13 +279,13 @@ class ClientManager:
+                 cnt = 0
+                 info = '\n== Area List =='
+                 for i in range(len(self.server.area_manager.areas)):
+-                    if len(self.server.area_manager.areas[i].clients) > 0:
++                    if len(self.server.area_manager.areas[i].clients) > 0 or len(self.server.area_manager.areas[i].owners) > 0:
+                         cnt += len(self.server.area_manager.areas[i].clients)
+-                        info += '\r\n{}'.format(self.get_area_info(i, mods))
++                        info += '{}'.format(self.get_area_info(i, mods))
+                 info = 'Current online: {}'.format(cnt) + info
+             else:
+                 try:
+-                    info = 'People in this area: {}\n'.format(len(self.server.area_manager.areas[area_id].clients)) + self.get_area_info(area_id, mods)
++                    info = 'People in this area: {}'.format(len(self.server.area_manager.areas[area_id].clients)) + self.get_area_info(area_id, mods)
+                 except AreaError:
+                     raise
+             self.send_host_message(info)
+@@ -267,22 +312,34 @@ class ClientManager:
+             self.send_host_message(info)
+ 			
+         def send_done(self):
+-            avail_char_ids = set(range(len(self.server.char_list))) - set([x.char_id for x in self.area.clients])
+-            char_list = [-1] * len(self.server.char_list)
+-            for x in avail_char_ids:
+-                char_list[x] = 0
+-            self.send_command('CharsCheck', *char_list)
++            self.send_command('CharsCheck', *self.get_available_char_list())
+             self.send_command('HP', 1, self.area.hp_def)
+             self.send_command('HP', 2, self.area.hp_pro)
+             self.send_command('BN', self.area.background)
+             self.send_command('LE', *self.area.get_evidence_list(self))
+             self.send_command('MM', 1)
++            
++            self.server.area_manager.send_arup_players()
++            self.server.area_manager.send_arup_status()
++            self.server.area_manager.send_arup_cms()
++            self.server.area_manager.send_arup_lock()
++
+             self.send_command('DONE')
+ 
+         def char_select(self):
+             self.char_id = -1
+             self.send_done()
+ 
++        def get_available_char_list(self):
++            if len(self.charcurse) > 0:
++                avail_char_ids = set(range(len(self.server.char_list))) and set(self.charcurse)
++            else:
++                avail_char_ids = set(range(len(self.server.char_list))) - set([x.char_id for x in self.area.clients])
++            char_list = [-1] * len(self.server.char_list)
++            for x in avail_char_ids:
++                char_list[x] = 0
++            return char_list
++
+         def auth_mod(self, password):
+             if self.is_mod:
+                 raise ClientError('Already logged in.')
+@@ -302,8 +359,8 @@ class ClientManager:
+             return self.server.char_list[self.char_id]
+ 
+         def change_position(self, pos=''):
+-            if pos not in ('', 'def', 'pro', 'hld', 'hlp', 'jud', 'wit'):
+-                raise ClientError('Invalid position. Possible values: def, pro, hld, hlp, jud, wit.')
++            if pos not in ('', 'def', 'pro', 'hld', 'hlp', 'jud', 'wit', 'jur', 'sea'):
++                raise ClientError('Invalid position. Possible values: def, pro, hld, hlp, jud, wit, jur, sea.')
+             self.pos = pos
+ 
+         def set_mod_call_delay(self):
+@@ -312,9 +369,22 @@ class ClientManager:
+         def can_call_mod(self):
+             return (time.time() * 1000.0 - self.mod_call_time) > 0
+ 
++        def set_case_call_delay(self):
++            self.case_call_time = round(time.time() * 1000.0 + 60000)
++
++        def can_call_case(self):
++            return (time.time() * 1000.0 - self.case_call_time) > 0
++
+         def disemvowel_message(self, message):
+             message = re.sub("[aeiou]", "", message, flags=re.IGNORECASE)
+             return re.sub(r"\s+", " ", message)
++        
++        def shake_message(self, message):
++            import random
++            parts = message.split()
++            random.shuffle(parts)
++            return ' '.join(parts)
++            
+ 
+     def __init__(self, server):
+         self.clients = set()
+@@ -329,6 +399,15 @@ class ClientManager:
+ 
+             
+     def remove_client(self, client):
++        if client.area.jukebox:
++            client.area.remove_jukebox_vote(client, True)
++        for a in self.server.area_manager.areas:
++            if client in a.owners:
++                a.owners.remove(client)
++                client.server.area_manager.send_arup_cms()
++                if len(a.owners) == 0:
++                    if a.is_locked != a.Locked.FREE:
++                            a.unlock()
+         heappush(self.cur_id, client.id)
+         self.clients.remove(client)
+ 		
+diff --git a/tsuserver3/server/commands.py b/AO2-Client/server/commands.py
+index 13d50f9..d02eff2 100644
+--- a/tsuserver3/server/commands.py
++++ b/AO2-Client/server/commands.py
+@@ -16,6 +16,7 @@
+ # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ #possible keys: ip, OOC, id, cname, ipid, hdid
+ import random
++import re
+ import hashlib
+ import string
+ from server.constants import TargetType
+@@ -23,6 +24,35 @@ from server.constants import TargetType
+ from server import logger
+ from server.exceptions import ClientError, ServerError, ArgumentError, AreaError
+ 
++def ooc_cmd_a(client, arg):
++    if len(arg) == 0:
++        raise ArgumentError('You must specify an area.')
++    arg = arg.split(' ')
++    
++    try:
++        area = client.server.area_manager.get_area_by_id(int(arg[0]))
++    except AreaError:
++        raise
++
++    message_areas_cm(client, [area], ' '.join(arg[1:]))
++
++def ooc_cmd_s(client, arg):
++    areas = []
++    for a in client.server.area_manager.areas:
++        if client in a.owners:
++            areas.append(a)
++    if not areas:
++        client.send_host_message('You aren\'t a CM in any area!')
++        return
++    message_areas_cm(client, areas, arg)
++
++def message_areas_cm(client, areas, message):
++    for a in areas:
++        if not client in a.owners:
++            client.send_host_message('You are not a CM in {}!'.format(a.name))
++            return
++        a.send_command('CT', client.name, message)
++        a.send_owner_command('CT', client.name, message)
+ 
+ def ooc_cmd_switch(client, arg):
+     if len(arg) == 0:
+@@ -47,7 +77,7 @@ def ooc_cmd_bg(client, arg):
+     except AreaError:
+         raise
+     client.area.send_host_message('{} changed the background to {}.'.format(client.get_char_name(), arg))
+-    logger.log_server('[{}][{}]Changed background to {}'.format(client.area.id, client.get_char_name(), arg), client)
++    logger.log_server('[{}][{}]Changed background to {}'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+ 
+ def ooc_cmd_bglock(client,arg):
+     if not client.is_mod:
+@@ -58,8 +88,8 @@ def ooc_cmd_bglock(client,arg):
+         client.area.bg_lock = "false"
+     else:
+         client.area.bg_lock = "true"
+-    client.area.send_host_message('A mod has set the background lock to {}.'.format(client.area.bg_lock))
+-    logger.log_server('[{}][{}]Changed bglock to {}'.format(client.area.id, client.get_char_name(), client.area.bg_lock), client)
++    client.area.send_host_message('{} [{}] has set the background lock to {}.'.format(client.get_char_name(), client.id, client.area.bg_lock))
++    logger.log_server('[{}][{}]Changed bglock to {}'.format(client.area.abbreviation, client.get_char_name(), client.area.bg_lock), client)
+     
+ def ooc_cmd_evidence_mod(client, arg):
+     if not client.is_mod:
+@@ -89,7 +119,21 @@ def ooc_cmd_allow_iniswap(client, arg):
+     client.send_host_message('iniswap is {}.'.format(answer[client.area.iniswap_allowed]))
+     return
+     
++def ooc_cmd_allow_blankposting(client, arg):
++    if not client.is_mod and not client in client.area.owners:
++        raise ClientError('You must be authorized to do that.')
++    client.area.blankposting_allowed = not client.area.blankposting_allowed
++    answer = {True: 'allowed', False: 'forbidden'}
++    client.area.send_host_message('{} [{}] has set blankposting in the area to {}.'.format(client.get_char_name(), client.id, answer[client.area.blankposting_allowed]))
++    return
+     
++def ooc_cmd_force_nonint_pres(client, arg):
++    if not client.is_mod and not client in client.area.owners:
++        raise ClientError('You must be authorized to do that.')
++    client.area.non_int_pres_only = not client.area.non_int_pres_only
++    answer = {True: 'non-interrupting only', False: 'non-interrupting or interrupting as you choose'}
++    client.area.send_host_message('{} [{}] has set pres in the area to be {}.'.format(client.get_char_name(), client.id, answer[client.area.non_int_pres_only]))
++    return
+     
+ def ooc_cmd_roll(client, arg):
+     roll_max = 11037
+@@ -116,7 +160,7 @@ def ooc_cmd_roll(client, arg):
+         roll = '(' + roll + ')'
+     client.area.send_host_message('{} rolled {} out of {}.'.format(client.get_char_name(), roll, val[0]))
+     logger.log_server(
+-        '[{}][{}]Used /roll and got {} out of {}.'.format(client.area.id, client.get_char_name(), roll, val[0]))
++        '[{}][{}]Used /roll and got {} out of {}.'.format(client.area.abbreviation, client.get_char_name(), roll, val[0]), client)
+         
+ def ooc_cmd_rollp(client, arg):
+     roll_max = 11037
+@@ -126,13 +170,13 @@ def ooc_cmd_rollp(client, arg):
+             if not 1 <= val[0] <= roll_max:
+                 raise ArgumentError('Roll value must be between 1 and {}.'.format(roll_max))
+         except ValueError:
+-            raise ArgumentError('Wrong argument. Use /roll [<max>] [<num of rolls>]')
++            raise ArgumentError('Wrong argument. Use /rollp [<max>] [<num of rolls>]')
+     else:
+         val = [6]
+     if len(val) == 1:
+         val.append(1)
+     if len(val) > 2:
+-        raise ArgumentError('Too many arguments. Use /roll [<max>] [<num of rolls>]')
++        raise ArgumentError('Too many arguments. Use /rollp [<max>] [<num of rolls>]')
+     if val[1] > 20 or val[1] < 1:
+         raise ArgumentError('Num of rolls must be between 1 and 20')
+     roll = ''
+@@ -142,19 +186,97 @@ def ooc_cmd_rollp(client, arg):
+     if val[1] > 1:
+         roll = '(' + roll + ')'
+     client.send_host_message('{} rolled {} out of {}.'.format(client.get_char_name(), roll, val[0]))
+-    client.area.send_host_message('{} rolled.'.format(client.get_char_name(), roll, val[0]))
+-    SALT = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
++
++    client.area.send_host_message('{} rolled in secret.'.format(client.get_char_name()))
++    for c in client.area.owners:
++        c.send_host_message('[{}]{} secretly rolled {} out of {}.'.format(client.area.abbreviation, client.get_char_name(), roll, val[0]))
++
+     logger.log_server(
+-        '[{}][{}]Used /roll and got {} out of {}.'.format(client.area.id, client.get_char_name(), hashlib.sha1((str(roll) + SALT).encode('utf-8')).hexdigest() + '|' + SALT, val[0]))
++        '[{}][{}]Used /rollp and got {} out of {}.'.format(client.area.abbreviation, client.get_char_name(), roll, val[0]), client)
+ 
+ def ooc_cmd_currentmusic(client, arg):
+     if len(arg) != 0:
+         raise ArgumentError('This command has no arguments.')
+     if client.area.current_music == '':
+         raise ClientError('There is no music currently playing.')
+-    client.send_host_message('The current music is {} and was played by {}.'.format(client.area.current_music,
++    if client.is_mod:
++        client.send_host_message('The current music is {} and was played by {} ({}).'.format(client.area.current_music,
++                                                                                    client.area.current_music_player, client.area.current_music_player_ipid))
++    else:
++        client.send_host_message('The current music is {} and was played by {}.'.format(client.area.current_music,
+                                                                                     client.area.current_music_player))
+ 
++def ooc_cmd_jukebox_toggle(client, arg):
++    if not client.is_mod and not client in client.area.owners:
++        raise ClientError('You must be authorized to do that.')
++    if len(arg) != 0:
++        raise ArgumentError('This command has no arguments.')
++    client.area.jukebox = not client.area.jukebox
++    client.area.jukebox_votes = []
++    client.area.send_host_message('{} [{}] has set the jukebox to {}.'.format(client.get_char_name(), client.id, client.area.jukebox))
++
++def ooc_cmd_jukebox_skip(client, arg):
++    if not client.is_mod and not client in client.area.owners:
++        raise ClientError('You must be authorized to do that.')
++    if len(arg) != 0:
++        raise ArgumentError('This command has no arguments.')
++    if not client.area.jukebox:
++        raise ClientError('This area does not have a jukebox.')
++    if len(client.area.jukebox_votes) == 0:
++        raise ClientError('There is no song playing right now, skipping is pointless.')
++    client.area.start_jukebox()
++    if len(client.area.jukebox_votes) == 1:
++        client.area.send_host_message('{} [{}] has forced a skip, restarting the only jukebox song.'.format(client.get_char_name(), client.id))
++    else:
++        client.area.send_host_message('{} [{}] has forced a skip to the next jukebox song.'.format(client.get_char_name(), client.id))
++    logger.log_server('[{}][{}]Skipped the current jukebox song.'.format(client.area.abbreviation, client.get_char_name()), client)
++
++def ooc_cmd_jukebox(client, arg):
++    if len(arg) != 0:
++        raise ArgumentError('This command has no arguments.')
++    if not client.area.jukebox:
++        raise ClientError('This area does not have a jukebox.')
++    if len(client.area.jukebox_votes) == 0:
++        client.send_host_message('The jukebox has no songs in it.')
++    else:
++        total = 0
++        songs = []
++        voters = dict()
++        chance = dict()
++        message = ''
++
++        for current_vote in client.area.jukebox_votes:
++            if songs.count(current_vote.name) == 0:
++                songs.append(current_vote.name)
++                voters[current_vote.name] = [current_vote.client]
++                chance[current_vote.name] = current_vote.chance
++            else:
++                voters[current_vote.name].append(current_vote.client)
++                chance[current_vote.name] += current_vote.chance
++            total += current_vote.chance
++        
++        for song in songs:
++            message += '\n- ' + song + '\n'
++            message += '-- VOTERS: '
++            
++            first = True
++            for voter in voters[song]:
++                if first:
++                    first = False
++                else:
++                    message += ', '
++                message += voter.get_char_name() + ' [' + str(voter.id) + ']'
++                if client.is_mod:
++                    message += '(' + str(voter.ipid) + ')'
++            message += '\n'
++
++            if total == 0:
++                message += '-- CHANCE: 100'
++            else:
++                message += '-- CHANCE: ' + str(round(chance[song] / total * 100))
++
++        client.send_host_message('The jukebox has the following songs in it:{}'.format(message))
++
+ def ooc_cmd_coinflip(client, arg):
+     if len(arg) != 0:
+         raise ArgumentError('This command has no arguments.')
+@@ -162,7 +284,7 @@ def ooc_cmd_coinflip(client, arg):
+     flip = random.choice(coin)
+     client.area.send_host_message('{} flipped a coin and got {}.'.format(client.get_char_name(), flip))
+     logger.log_server(
+-        '[{}][{}]Used /coinflip and got {}.'.format(client.area.id, client.get_char_name(), flip))
++        '[{}][{}]Used /coinflip and got {}.'.format(client.area.abbreviation, client.get_char_name(), flip), client)
+     
+ def ooc_cmd_motd(client, arg):
+     if len(arg) != 0:
+@@ -182,7 +304,7 @@ def ooc_cmd_pos(client, arg):
+         client.send_host_message('Position changed.')   
+ 
+ def ooc_cmd_forcepos(client, arg):
+-    if not client.is_cm and not client.is_mod:
++    if not client in client.area.owners and not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+ 
+     args = arg.split()
+@@ -222,60 +344,81 @@ def ooc_cmd_forcepos(client, arg):
+     client.area.send_host_message(
+         '{} forced {} client(s) into /pos {}.'.format(client.get_char_name(), len(targets), pos))
+     logger.log_server(
+-        '[{}][{}]Used /forcepos {} for {} client(s).'.format(client.area.id, client.get_char_name(), pos, len(targets)))
++        '[{}][{}]Used /forcepos {} for {} client(s).'.format(client.area.abbreviation, client.get_char_name(), pos, len(targets)), client)
+ 
+ def ooc_cmd_help(client, arg):
+     if len(arg) != 0:
+         raise ArgumentError('This command has no arguments.')
+-    help_url = 'https://github.com/AttorneyOnline/tsuserver3/blob/master/README.md'
+-    help_msg = 'Available commands, source code and issues can be found here: {}'.format(help_url)
++    help_url = 'http://casecafe.byethost14.com/commandlist'
++    help_msg = 'The commands available on this server can be found here: {}'.format(help_url)
+     client.send_host_message(help_msg)
+         
+ def ooc_cmd_kick(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+     if len(arg) == 0:
+-        raise ArgumentError('You must specify a target. Use /kick <ipid>.')
+-    targets = client.server.client_manager.get_targets(client, TargetType.IPID, int(arg), False)
+-    if targets:
+-        for c in targets:
+-            logger.log_server('Kicked {}.'.format(c.ipid), client)
+-            client.send_host_message("{} was kicked.".format(c.get_char_name()))
+-            c.disconnect()
+-    else:
+-        client.send_host_message("No targets found.")
+-        
+-def ooc_cmd_ban(client, arg):
+-    if not client.is_mod:
+-        raise ClientError('You must be authorized to do that.')
+-    try:
+-        ipid = int(arg.strip())
+-    except:
+-        raise ClientError('You must specify ipid')
+-    try:
+-        client.server.ban_manager.add_ban(ipid)
+-    except ServerError:
+-        raise
+-    if ipid != None:
++        raise ArgumentError('You must specify a target. Use /kick <ipid> <ipid> ...')
++    args = list(arg.split(' '))
++    client.send_host_message('Attempting to kick {} IPIDs.'.format(len(args)))
++    for raw_ipid in args:
++        try:
++            ipid = int(raw_ipid)
++        except:
++            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
+         targets = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
+         if targets:
+             for c in targets:
++                logger.log_server('Kicked {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
++                logger.log_mod('Kicked {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
++                client.send_host_message("{} was kicked.".format(c.get_char_name()))
++                c.send_command('KK', c.char_id)
+                 c.disconnect()
+-            client.send_host_message('{} clients was kicked.'.format(len(targets)))
+-        client.send_host_message('{} was banned.'.format(ipid))
+-        logger.log_server('Banned {}.'.format(ipid), client)
++        else:
++            client.send_host_message("No targets with the IPID {} were found.".format(ipid))
++
++def ooc_cmd_ban(client, arg):
++    if not client.is_mod:
++        raise ClientError('You must be authorized to do that.')
++    if len(arg) == 0:
++        raise ArgumentError('You must specify a target. Use /ban <ipid> <ipid> ...')
++    args = list(arg.split(' '))
++    client.send_host_message('Attempting to ban {} IPIDs.'.format(len(args)))
++    for raw_ipid in args:
++        try:
++            ipid = int(raw_ipid)
++        except:
++            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
++        try:
++            client.server.ban_manager.add_ban(ipid)
++        except ServerError:
++            raise
++        if ipid != None:
++            targets = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
++            if targets:
++                for c in targets:
++                    c.send_command('KB', c.char_id)
++                    c.disconnect()
++                client.send_host_message('{} clients was kicked.'.format(len(targets)))
++            client.send_host_message('{} was banned.'.format(ipid))
++            logger.log_server('Banned {}.'.format(ipid), client)
++            logger.log_mod('Banned {}.'.format(ipid), client)
+         
+ def ooc_cmd_unban(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+-    try:
+-        client.server.ban_manager.remove_ban(int(arg.strip()))
+-    except:
+-        raise ClientError('You must specify \'hdid\'')
+-    logger.log_server('Unbanned {}.'.format(arg), client)
+-    client.send_host_message('Unbanned {}'.format(arg))
+-
+-
++    if len(arg) == 0:
++        raise ArgumentError('You must specify a target. Use /unban <ipid> <ipid> ...')
++    args = list(arg.split(' '))
++    client.send_host_message('Attempting to unban {} IPIDs.'.format(len(args)))
++    for raw_ipid in args:
++        try:
++            client.server.ban_manager.remove_ban(int(raw_ipid))
++        except:
++            raise ClientError('{} does not look like a valid IPID.'.format(raw_ipid))
++        logger.log_server('Unbanned {}.'.format(raw_ipid), client)
++        logger.log_mod('Unbanned {}.'.format(raw_ipid), client)
++        client.send_host_message('Unbanned {}'.format(raw_ipid))
++    
+ def ooc_cmd_play(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+@@ -283,31 +426,59 @@ def ooc_cmd_play(client, arg):
+         raise ArgumentError('You must specify a song.')
+     client.area.play_music(arg, client.char_id, -1)
+     client.area.add_music_playing(client, arg)
+-    logger.log_server('[{}][{}]Changed music to {}.'.format(client.area.id, client.get_char_name(), arg), client)
++    logger.log_server('[{}][{}]Changed music to {}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+     
+ def ooc_cmd_mute(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+     if len(arg) == 0:
+-        raise ArgumentError('You must specify a target.')
+-    try:
+-        c = client.server.client_manager.get_targets(client, TargetType.IPID, int(arg), False)[0]
+-        c.is_muted = True
+-        client.send_host_message('{} existing client(s).'.format(c.get_char_name()))
+-    except:
+-        client.send_host_message("No targets found. Use /mute <id> for mute")
++        raise ArgumentError('You must specify a target. Use /mute <ipid>.')
++    args = list(arg.split(' '))
++    client.send_host_message('Attempting to mute {} IPIDs.'.format(len(args)))
++    for raw_ipid in args:
++        if raw_ipid.isdigit():
++            ipid = int(raw_ipid)
++            clients = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
++            if (clients):
++                msg = 'Muted the IPID ' + str(ipid) + '\'s following clients:'
++                for c in clients:
++                    c.is_muted = True
++                    logger.log_server('Muted {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
++                    logger.log_mod('Muted {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
++                    msg += ' ' + c.get_char_name() + ' [' + str(c.id) + '],'
++                msg = msg[:-1]
++                msg += '.'
++                client.send_host_message('{}'.format(msg))
++            else:
++                client.send_host_message("No targets found. Use /mute <ipid> <ipid> ... for mute.")
++        else:
++            client.send_host_message('{} does not look like a valid IPID.'.format(raw_ipid))
+ 
+ def ooc_cmd_unmute(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+     if len(arg) == 0:
+         raise ArgumentError('You must specify a target.')
+-    try:
+-        c = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)[0]
+-        c.is_muted = False
+-        client.send_host_message('{} existing client(s).'.format(c.get_char_name()))
+-    except:
+-        client.send_host_message("No targets found. Use /mute <id> for mute")
++    args = list(arg.split(' '))
++    client.send_host_message('Attempting to unmute {} IPIDs.'.format(len(args)))
++    for raw_ipid in args:
++        if raw_ipid.isdigit():
++            ipid = int(raw_ipid)
++            clients = client.server.client_manager.get_targets(client, TargetType.IPID, ipid, False)
++            if (clients):
++                msg = 'Unmuted the IPID ' + str(ipid) + '\'s following clients::'
++                for c in clients:
++                    c.is_muted = False
++                    logger.log_server('Unmuted {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
++                    logger.log_mod('Unmuted {} [{}]({}).'.format(c.get_char_name(), c.id, c.ipid), client)
++                    msg += ' ' + c.get_char_name() + ' [' + str(c.id) + '],'
++                msg = msg[:-1]
++                msg += '.'
++                client.send_host_message('{}'.format(msg))
++            else:
++                client.send_host_message("No targets found. Use /unmute <ipid> <ipid> ... for unmute.")
++        else:
++            client.send_host_message('{} does not look like a valid IPID.'.format(raw_ipid))
+     
+ def ooc_cmd_login(client, arg):
+     if len(arg) == 0:
+@@ -320,6 +491,7 @@ def ooc_cmd_login(client, arg):
+         client.area.broadcast_evidence_list()
+     client.send_host_message('Logged in as a moderator.')
+     logger.log_server('Logged in as moderator.', client)
++    logger.log_mod('Logged in as moderator.', client)
+     
+ def ooc_cmd_g(client, arg):
+     if client.muted_global:
+@@ -327,7 +499,7 @@ def ooc_cmd_g(client, arg):
+     if len(arg) == 0:
+         raise ArgumentError("You can't send an empty message.")
+     client.server.broadcast_global(client, arg)
+-    logger.log_server('[{}][{}][GLOBAL]{}.'.format(client.area.id, client.get_char_name(), arg), client)
++    logger.log_server('[{}][{}][GLOBAL]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+     
+ def ooc_cmd_gm(client, arg):
+     if not client.is_mod:
+@@ -337,7 +509,17 @@ def ooc_cmd_gm(client, arg):
+     if len(arg) == 0:
+         raise ArgumentError("Can't send an empty message.")
+     client.server.broadcast_global(client, arg, True)
+-    logger.log_server('[{}][{}][GLOBAL-MOD]{}.'.format(client.area.id, client.get_char_name(), arg), client)
++    logger.log_server('[{}][{}][GLOBAL-MOD]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
++    logger.log_mod('[{}][{}][GLOBAL-MOD]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
++    
++def ooc_cmd_m(client, arg):
++    if not client.is_mod:
++        raise ClientError('You must be authorized to do that.')
++    if len(arg) == 0:
++        raise ArgumentError("You can't send an empty message.")
++    client.server.send_modchat(client, arg)
++    logger.log_server('[{}][{}][MODCHAT]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
++    logger.log_mod('[{}][{}][MODCHAT]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+     
+ def ooc_cmd_lm(client, arg):
+     if not client.is_mod:
+@@ -346,7 +528,8 @@ def ooc_cmd_lm(client, arg):
+         raise ArgumentError("Can't send an empty message.")
+     client.area.send_command('CT', '{}[MOD][{}]'
+                              .format(client.server.config['hostname'], client.get_char_name()), arg)
+-    logger.log_server('[{}][{}][LOCAL-MOD]{}.'.format(client.area.id, client.get_char_name(), arg), client)
++    logger.log_server('[{}][{}][LOCAL-MOD]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
++    logger.log_mod('[{}][{}][LOCAL-MOD]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+     
+ def ooc_cmd_announce(client, arg):
+     if not client.is_mod:
+@@ -354,8 +537,9 @@ def ooc_cmd_announce(client, arg):
+     if len(arg) == 0:
+         raise ArgumentError("Can't send an empty message.")
+     client.server.send_all_cmd_pred('CT', '{}'.format(client.server.config['hostname']),
+-                                    '=== Announcement ===\r\n{}\r\n=================='.format(arg))
+-    logger.log_server('[{}][{}][ANNOUNCEMENT]{}.'.format(client.area.id, client.get_char_name(), arg), client)
++                                    '=== Announcement ===\r\n{}\r\n=================='.format(arg), '1')
++    logger.log_server('[{}][{}][ANNOUNCEMENT]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
++    logger.log_mod('[{}][{}][ANNOUNCEMENT]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+     
+ def ooc_cmd_toggleglobal(client, arg):
+     if len(arg) != 0:
+@@ -373,7 +557,7 @@ def ooc_cmd_need(client, arg):
+     if len(arg) == 0:
+         raise ArgumentError("You must specify what you need.")
+     client.server.broadcast_need(client, arg)
+-    logger.log_server('[{}][{}][NEED]{}.'.format(client.area.id, client.get_char_name(), arg), client)
++    logger.log_server('[{}][{}][NEED]{}.'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+     
+ def ooc_cmd_toggleadverts(client, arg):
+     if len(arg) != 0:
+@@ -388,11 +572,11 @@ def ooc_cmd_doc(client, arg):
+     if len(arg) == 0:
+         client.send_host_message('Document: {}'.format(client.area.doc))
+         logger.log_server(
+-            '[{}][{}]Requested document. Link: {}'.format(client.area.id, client.get_char_name(), client.area.doc))
++            '[{}][{}]Requested document. Link: {}'.format(client.area.abbreviation, client.get_char_name(), client.area.doc), client)
+     else:
+         client.area.change_doc(arg)
+         client.area.send_host_message('{} changed the doc link.'.format(client.get_char_name()))
+-        logger.log_server('[{}][{}]Changed document to: {}'.format(client.area.id, client.get_char_name(), arg))
++        logger.log_server('[{}][{}]Changed document to: {}'.format(client.area.abbreviation, client.get_char_name(), arg), client)
+ 
+ 
+ def ooc_cmd_cleardoc(client, arg):
+@@ -400,7 +584,7 @@ def ooc_cmd_cleardoc(client, arg):
+         raise ArgumentError('This command has no arguments.')
+     client.area.send_host_message('{} cleared the doc link.'.format(client.get_char_name()))
+     logger.log_server('[{}][{}]Cleared document. Old link: {}'
+-                      .format(client.area.id, client.get_char_name(), client.area.doc))
++                      .format(client.area.abbreviation, client.get_char_name(), client.area.doc), client)
+     client.area.change_doc()
+ 
+ 
+@@ -412,7 +596,7 @@ def ooc_cmd_status(client, arg):
+             client.area.change_status(arg)
+             client.area.send_host_message('{} changed status to {}.'.format(client.get_char_name(), client.area.status))
+             logger.log_server(
+-                '[{}][{}]Changed status to {}'.format(client.area.id, client.get_char_name(), client.area.status))
++                '[{}][{}]Changed status to {}'.format(client.area.abbreviation, client.get_char_name(), client.area.status), client)
+         except AreaError:
+             raise
+ 
+@@ -466,7 +650,10 @@ def ooc_cmd_pm(client, arg):
+     if c.pm_mute:
+         raise ClientError('This user muted all pm conversation')
+     else:
+-        c.send_host_message('PM from {} in {} ({}): {}'.format(client.name, client.area.name, client.get_char_name(), msg))
++        if c.is_mod:
++            c.send_host_message('PM from {} (ID: {}, IPID: {}) in {} ({}): {}'.format(client.name, client.id, client.ipid, client.area.name, client.get_char_name(), msg))
++        else:
++            c.send_host_message('PM from {} (ID: {}) in {} ({}): {}'.format(client.name, client.id, client.area.name, client.get_char_name(), msg))
+         client.send_host_message('PM sent to {}. Message: {}'.format(args[0], msg))
+  
+ def ooc_cmd_mutepm(client, arg):
+@@ -497,10 +684,13 @@ def ooc_cmd_reload(client, arg):
+ def ooc_cmd_randomchar(client, arg):
+     if len(arg) != 0:
+         raise ArgumentError('This command has no arguments.')
+-    try:
+-        free_id = client.area.get_rand_avail_char_id()
+-    except AreaError:
+-        raise
++    if len(client.charcurse) > 0:
++        free_id = random.choice(client.charcurse)
++    else:
++        try:
++            free_id = client.area.get_rand_avail_char_id()
++        except AreaError:
++            raise
+     try:
+         client.change_character(free_id)
+     except ClientError:
+@@ -529,12 +719,105 @@ def ooc_cmd_evi_swap(client, arg):
+ def ooc_cmd_cm(client, arg):
+     if 'CM' not in client.area.evidence_mod:
+         raise ClientError('You can\'t become a CM in this area')
+-    if client.area.owned == False:
+-        client.area.owned = True
+-        client.is_cm = True
++    if len(client.area.owners) == 0:
++        if len(arg) > 0:
++            raise ArgumentError('You cannot \'nominate\' people to be CMs when you are not one.')
++        client.area.owners.append(client)
+         if client.area.evidence_mod == 'HiddenCM':
+             client.area.broadcast_evidence_list()
+-        client.area.send_host_message('{} is CM in this area now.'.format(client.get_char_name()))
++        client.server.area_manager.send_arup_cms()
++        client.area.send_host_message('{} [{}] is CM in this area now.'.format(client.get_char_name(), client.id))
++    elif client in client.area.owners:
++        if len(arg) > 0:
++            arg = arg.split(' ')
++        for id in arg:
++            try:
++                id = int(id)
++                c = client.server.client_manager.get_targets(client, TargetType.ID, id, False)[0]
++                if c in client.area.owners:
++                    client.send_host_message('{} [{}] is already a CM here.'.format(c.get_char_name(), c.id))
++                else:
++                    client.area.owners.append(c)
++                    if client.area.evidence_mod == 'HiddenCM':
++                        client.area.broadcast_evidence_list()
++                    client.server.area_manager.send_arup_cms()
++                    client.area.send_host_message('{} [{}] is CM in this area now.'.format(c.get_char_name(), c.id))
++            except:
++                client.send_host_message('{} does not look like a valid ID.'.format(id))
++    else:
++        raise ClientError('You must be authorized to do that.')
++            
++     
++def ooc_cmd_uncm(client, arg):
++    if client in client.area.owners:
++        if len(arg) > 0:
++            arg = arg.split(' ')
++        else:
++            arg = [client.id]
++        for id in arg:
++            try:
++                id = int(id)
++                c = client.server.client_manager.get_targets(client, TargetType.ID, id, False)[0]
++                if c in client.area.owners:
++                    client.area.owners.remove(c)
++                    client.server.area_manager.send_arup_cms()
++                    client.area.send_host_message('{} [{}] is no longer CM in this area.'.format(c.get_char_name(), c.id))
++                else:
++                    client.send_host_message('You cannot remove someone from CMing when they aren\'t a CM.')
++            except:
++                client.send_host_message('{} does not look like a valid ID.'.format(id))
++    else:
++        raise ClientError('You must be authorized to do that.')
++
++def ooc_cmd_setcase(client, arg):
++    args = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', arg)
++    if len(args) == 0:
++        raise ArgumentError('Please do not call this command manually!')
++    else:
++        client.casing_cases = args[0]
++        client.casing_cm = args[1] == "1"
++        client.casing_def = args[2] == "1"
++        client.casing_pro = args[3] == "1"
++        client.casing_jud = args[4] == "1"
++        client.casing_jur = args[5] == "1"
++        client.casing_steno = args[6] == "1"
++
++def ooc_cmd_anncase(client, arg):
++    if client in client.area.owners:
++        if not client.can_call_case():
++            raise ClientError('Please wait 60 seconds between case announcements!')
++        args = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', arg)
++        if len(args) == 0:
++            raise ArgumentError('Please do not call this command manually!')
++        elif len(args) == 1:
++            raise ArgumentError('You should probably announce the case to at least one person.')
++        else:
++            if not args[1] == "1" and not args[2] == "1" and not args[3] == "1" and not args[4] == "1" and not args[5] == "1":
++                raise ArgumentError('You should probably announce the case to at least one person.')
++            msg = '=== Case Announcement ===\r\n{} [{}] is hosting {}, looking for '.format(client.get_char_name(), client.id, args[0])
++
++            lookingfor = []
++
++            if args[1] == "1":
++                lookingfor.append("defence")
++            if args[2] == "1":
++                lookingfor.append("prosecutor")
++            if args[3] == "1":
++                lookingfor.append("judge")
++            if args[4] == "1":
++                lookingfor.append("juror")
++            if args[5] == "1":
++                lookingfor.append("stenographer")
++
++            msg = msg + ', '.join(lookingfor) + '.\r\n=================='
++
++            client.server.send_all_cmd_pred('CASEA', msg, args[1], args[2], args[3], args[4], args[5], '1')
++
++            client.set_case_call_delay()
++            
++            logger.log_server('[{}][{}][CASE_ANNOUNCEMENT]{}, DEF: {}, PRO: {}, JUD: {}, JUR: {}, STENO: {}.'.format(client.area.abbreviation, client.get_char_name(), args[0], args[1], args[2], args[3], args[4], args[5]), client)
++    else:
++        raise ClientError('You cannot announce a case in an area where you are not a CM!')
+     
+ def ooc_cmd_unmod(client, arg):
+     client.is_mod = False
+@@ -546,21 +829,30 @@ def ooc_cmd_area_lock(client, arg):
+     if not client.area.locking_allowed:
+         client.send_host_message('Area locking is disabled in this area.')
+         return
+-    if client.area.is_locked:
++    if client.area.is_locked == client.area.Locked.LOCKED:
+         client.send_host_message('Area is already locked.')
+-    if client.is_cm:
+-        client.area.is_locked = True
+-        client.area.send_host_message('Area is locked.')
+-        for i in client.area.clients:
+-            client.area.invite_list[i.ipid] = None
++    if client in client.area.owners:
++        client.area.lock()
+         return
+     else:
+         raise ClientError('Only CM can lock the area.')
++    
++def ooc_cmd_area_spectate(client, arg):
++    if not client.area.locking_allowed:
++        client.send_host_message('Area locking is disabled in this area.')
++        return
++    if client.area.is_locked == client.area.Locked.SPECTATABLE:
++        client.send_host_message('Area is already spectatable.')
++    if client in client.area.owners:
++        client.area.spectator()
++        return
++    else:
++        raise ClientError('Only CM can make the area spectatable.')
+         
+ def ooc_cmd_area_unlock(client, arg):
+-    if not client.area.is_locked:
++    if client.area.is_locked == client.area.Locked.FREE:
+         raise ClientError('Area is already unlocked.')
+-    if not client.is_cm:
++    if not client in client.area.owners:
+         raise ClientError('Only CM can unlock area.')
+     client.area.unlock()
+     client.send_host_message('Area is unlocked.')
+@@ -568,22 +860,22 @@ def ooc_cmd_area_unlock(client, arg):
+ def ooc_cmd_invite(client, arg):
+     if not arg:
+         raise ClientError('You must specify a target. Use /invite <id>')
+-    if not client.area.is_locked:
++    if client.area.is_locked == client.area.Locked.FREE:
+         raise ClientError('Area isn\'t locked.')
+-    if not client.is_cm or client.is_mod:
++    if not client in client.area.owners and not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+     try:
+         c = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)[0]
+-        client.area.invite_list[c.ipid] = None
++        client.area.invite_list[c.id] = None
+         client.send_host_message('{} is invited to your area.'.format(c.get_char_name()))
+-        c.send_host_message('You were invited and given access to area {}.'.format(client.area.id))
++        c.send_host_message('You were invited and given access to {}.'.format(client.area.name))
+     except:
+         raise ClientError('You must specify a target. Use /invite <id>')
+ 
+ def ooc_cmd_uninvite(client, arg):
+-    if not client.is_cm or client.is_mod:
++    if not client in client.area.owners and not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+-    if not client.area.is_locked and not client.is_mod:
++    if client.area.is_locked == client.area.Locked.FREE:
+         raise ClientError('Area isn\'t locked.')
+     if not arg:
+         raise ClientError('You must specify a target. Use /uninvite <id>')
+@@ -594,8 +886,8 @@ def ooc_cmd_uninvite(client, arg):
+             for c in targets:
+                 client.send_host_message("You have removed {} from the whitelist.".format(c.get_char_name()))
+                 c.send_host_message("You were removed from the area whitelist.")
+-                if client.area.is_locked:
+-                    client.area.invite_list.pop(c.ipid)
++                if client.area.is_locked != client.area.Locked.FREE:
++                    client.area.invite_list.pop(c.id)
+         except AreaError:
+             raise
+         except ClientError:
+@@ -606,7 +898,7 @@ def ooc_cmd_uninvite(client, arg):
+ def ooc_cmd_area_kick(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+-    if not client.area.is_locked and not client.is_mod:
++    if client.area.is_locked == client.area.Locked.FREE:
+         raise ClientError('Area isn\'t locked.')
+     if not arg:
+         raise ClientError('You must specify a target. Use /area_kick <id> [destination #]')
+@@ -627,8 +919,8 @@ def ooc_cmd_area_kick(client, arg):
+                 client.send_host_message("Attempting to kick {} to area {}.".format(c.get_char_name(), output))
+                 c.change_area(area)
+                 c.send_host_message("You were kicked from the area to area {}.".format(output))
+-                if client.area.is_locked:
+-                    client.area.invite_list.pop(c.ipid)
++                if client.area.is_locked != client.area.Locked.FREE:
++                    client.area.invite_list.pop(c.id)
+         except AreaError:
+             raise
+         except ClientError:
+@@ -653,10 +945,10 @@ def ooc_cmd_ooc_unmute(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+     if len(arg) == 0:
+-        raise ArgumentError('You must specify a target. Use /ooc_mute <OOC-name>.')
+-    targets = client.server.client_manager.get_targets(client, TargetType.ID, arg, False)
++        raise ArgumentError('You must specify a target. Use /ooc_unmute <OOC-name>.')
++    targets = client.server.client_manager.get_ooc_muted_clients()
+     if not targets:
+-        raise ArgumentError('Target not found. Use /ooc_mute <OOC-name>.')
++        raise ArgumentError('Targets not found. Use /ooc_unmute <OOC-name>.')
+     for target in targets:
+         target.is_ooc_muted = False
+     client.send_host_message('Unmuted {} existing client(s).'.format(len(targets)))
+@@ -673,6 +965,7 @@ def ooc_cmd_disemvowel(client, arg):
+     if targets:
+         for c in targets:
+             logger.log_server('Disemvowelling {}.'.format(c.get_ip()), client)
++            logger.log_mod('Disemvowelling {}.'.format(c.get_ip()), client)
+             c.disemvowel = True
+         client.send_host_message('Disemvowelled {} existing client(s).'.format(len(targets)))
+     else:
+@@ -686,15 +979,120 @@ def ooc_cmd_undisemvowel(client, arg):
+     try:
+         targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)
+     except:
+-        raise ArgumentError('You must specify a target. Use /disemvowel <id>.')
++        raise ArgumentError('You must specify a target. Use /undisemvowel <id>.')
+     if targets:
+         for c in targets:
+             logger.log_server('Undisemvowelling {}.'.format(c.get_ip()), client)
++            logger.log_mod('Undisemvowelling {}.'.format(c.get_ip()), client)
+             c.disemvowel = False
+         client.send_host_message('Undisemvowelled {} existing client(s).'.format(len(targets)))
+     else:
+         client.send_host_message('No targets found.')
+ 
++def ooc_cmd_shake(client, arg):
++    if not client.is_mod:
++        raise ClientError('You must be authorized to do that.')
++    elif len(arg) == 0:
++        raise ArgumentError('You must specify a target.')
++    try:
++        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)
++    except:
++        raise ArgumentError('You must specify a target. Use /shake <id>.')
++    if targets:
++        for c in targets:
++            logger.log_server('Shaking {}.'.format(c.get_ip()), client)
++            logger.log_mod('Shaking {}.'.format(c.get_ip()), client)
++            c.shaken = True
++        client.send_host_message('Shook {} existing client(s).'.format(len(targets)))
++    else:
++        client.send_host_message('No targets found.')
++
++def ooc_cmd_unshake(client, arg):
++    if not client.is_mod:
++        raise ClientError('You must be authorized to do that.')
++    elif len(arg) == 0:
++        raise ArgumentError('You must specify a target.')
++    try:
++        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(arg), False)
++    except:
++        raise ArgumentError('You must specify a target. Use /unshake <id>.')
++    if targets:
++        for c in targets:
++            logger.log_server('Unshaking {}.'.format(c.get_ip()), client)
++            logger.log_mod('Unshaking {}.'.format(c.get_ip()), client)
++            c.shaken = False
++        client.send_host_message('Unshook {} existing client(s).'.format(len(targets)))
++    else:
++        client.send_host_message('No targets found.')
++
++def ooc_cmd_charcurse(client, arg):
++    if not client.is_mod:
++        raise ClientError('You must be authorized to do that.')
++    elif len(arg) == 0:
++        raise ArgumentError('You must specify a target (an ID) and at least one character ID. Consult /charids for the character IDs.')
++    elif len(arg) == 1:
++        raise ArgumentError('You must specific at least one character ID. Consult /charids for the character IDs.')
++    args = arg.split()
++    try:
++        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(args[0]), False)
++    except:
++        raise ArgumentError('You must specify a valid target! Make sure it is a valid ID.')
++    if targets:
++        for c in targets:
++            log_msg = ' ' + str(c.get_ip()) + ' to'
++            part_msg = ' [' + str(c.id) + '] to'
++            for raw_cid in args[1:]:
++                try:
++                    cid = int(raw_cid)
++                    c.charcurse.append(cid)
++                    part_msg += ' ' + str(client.server.char_list[cid]) + ','
++                    log_msg += ' ' + str(client.server.char_list[cid]) + ','
++                except:
++                    ArgumentError('' + str(raw_cid) + ' does not look like a valid character ID.')
++            part_msg = part_msg[:-1]
++            part_msg += '.'
++            log_msg = log_msg[:-1]
++            log_msg += '.'
++            c.char_select()
++            logger.log_server('Charcursing' + log_msg, client)
++            logger.log_mod('Charcursing' + log_msg, client)
++            client.send_host_message('Charcursed' + part_msg)
++    else:
++        client.send_host_message('No targets found.')
++
++def ooc_cmd_uncharcurse(client, arg):
++    if not client.is_mod:
++        raise ClientError('You must be authorized to do that.')
++    elif len(arg) == 0:
++        raise ArgumentError('You must specify a target (an ID).')
++    args = arg.split()
++    try:
++        targets = client.server.client_manager.get_targets(client, TargetType.ID, int(args[0]), False)
++    except:
++        raise ArgumentError('You must specify a valid target! Make sure it is a valid ID.')
++    if targets:
++        for c in targets:
++            if len(c.charcurse) > 0:
++                c.charcurse = []
++                logger.log_server('Uncharcursing {}.'.format(c.get_ip()), client)
++                logger.log_mod('Uncharcursing {}.'.format(c.get_ip()), client)
++                client.send_host_message('Uncharcursed [{}].'.format(c.id))
++                c.char_select()
++            else:
++                client.send_host_message('[{}] is not charcursed.'.format(c.id))
++    else:
++        client.send_host_message('No targets found.')
++
++def ooc_cmd_charids(client, arg):
++    if not client.is_mod:
++        raise ClientError('You must be authorized to do that.')
++    if len(arg) != 0:
++        raise ArgumentError("This command doesn't take any arguments")
++    msg = 'Here is a list of all available characters on the server:'
++    for c in range(0, len(client.server.char_list)):
++        msg += '\n[' + str(c) + '] ' + client.server.char_list[c]
++    client.send_host_message(msg)
++
+ def ooc_cmd_blockdj(client, arg):
+     if not client.is_mod:
+         raise ClientError('You must be authorized to do that.')
+@@ -709,6 +1107,9 @@ def ooc_cmd_blockdj(client, arg):
+     for target in targets:
+         target.is_dj = False
+         target.send_host_message('A moderator muted you from changing the music.')
++        logger.log_server('BlockDJ\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
++        logger.log_mod('BlockDJ\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
++        target.area.remove_jukebox_vote(target, True)
+     client.send_host_message('blockdj\'d {}.'.format(targets[0].get_char_name()))
+ 
+ def ooc_cmd_unblockdj(client, arg):
+@@ -725,6 +1126,8 @@ def ooc_cmd_unblockdj(client, arg):
+     for target in targets:
+         target.is_dj = True
+         target.send_host_message('A moderator unmuted you from changing the music.')
++        logger.log_server('UnblockDJ\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
++        logger.log_mod('UnblockDJ\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
+     client.send_host_message('Unblockdj\'d {}.'.format(targets[0].get_char_name()))
+ 
+ def ooc_cmd_blockwtce(client, arg):
+@@ -741,6 +1144,8 @@ def ooc_cmd_blockwtce(client, arg):
+     for target in targets:
+         target.can_wtce = False
+         target.send_host_message('A moderator blocked you from using judge signs.')
++        logger.log_server('BlockWTCE\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
++        logger.log_mod('BlockWTCE\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
+     client.send_host_message('blockwtce\'d {}.'.format(targets[0].get_char_name()))
+ 
+ def ooc_cmd_unblockwtce(client, arg):
+@@ -757,6 +1162,8 @@ def ooc_cmd_unblockwtce(client, arg):
+     for target in targets:
+         target.can_wtce = True
+         target.send_host_message('A moderator unblocked you from using judge signs.')
++        logger.log_server('UnblockWTCE\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
++        logger.log_mod('UnblockWTCE\'d {} [{}]({}).'.format(target.get_char_name(), target.id, target.get_ip()), client)
+     client.send_host_message('unblockwtce\'d {}.'.format(targets[0].get_char_name()))
+ 
+ def ooc_cmd_notecard(client, arg):
+@@ -773,7 +1180,7 @@ def ooc_cmd_notecard_clear(client, arg):
+         raise ClientError('You do not have a note card.')
+ 
+ def ooc_cmd_notecard_reveal(client, arg):
+-    if not client.is_cm and not client.is_mod:
++    if not client in client.area.owners and not client.is_mod:
+         raise ClientError('You must be a CM or moderator to reveal cards.')
+     if len(client.area.cards) == 0:
+         raise ClientError('There are no cards to reveal in this area.')
+@@ -800,7 +1207,7 @@ def rolla_reload(area):
+ def ooc_cmd_rolla_set(client, arg):
+     if not hasattr(client.area, 'ability_dice'):
+         rolla_reload(client.area)
+-    available_sets = client.area.ability_dice.keys()
++    available_sets = ', '.join(client.area.ability_dice.keys())
+     if len(arg) == 0:
+         raise ArgumentError('You must specify the ability set name.\nAvailable sets: {}'.format(available_sets))
+     if arg in client.area.ability_dice:
+diff --git a/tsuserver3/server/districtclient.py b/AO2-Client/server/districtclient.py
+index adc29ec..c766ba5 100644
+--- a/tsuserver3/server/districtclient.py
++++ b/AO2-Client/server/districtclient.py
+@@ -60,7 +60,7 @@ class DistrictClient:
+             elif cmd == 'NEED':
+                 need_msg = '=== Cross Advert ===\r\n{} at {} in {} [{}] needs {}\r\n====================' \
+                     .format(args[1], args[0], args[2], args[3], args[4])
+-                self.server.send_all_cmd_pred('CT', '{}'.format(self.server.config['hostname']), need_msg,
++                self.server.send_all_cmd_pred('CT', '{}'.format(self.server.config['hostname']), need_msg, '1',
+                                               pred=lambda x: not x.muted_adverts)
+ 
+     async def write_queue(self):
+diff --git a/tsuserver3/server/evidence.py b/AO2-Client/server/evidence.py
+index ddd9ba3..b34172a 100644
+--- a/tsuserver3/server/evidence.py
++++ b/AO2-Client/server/evidence.py
+@@ -24,19 +24,28 @@ class EvidenceList:
+             
+     def __init__(self):
+         self.evidences = []
+-        self.poses = {'def':['def', 'hld'], 'pro':['pro', 'hlp'], 'wit':['wit'], 'hlp':['hlp', 'pro'], 'hld':['hld', 'def'], 'jud':['jud'], 'all':['hlp', 'hld', 'wit', 'jud', 'pro', 'def', ''], 'pos':[]}
++        self.poses = {'def':['def', 'hld'], 
++                      'pro':['pro', 'hlp'], 
++                      'wit':['wit', 'sea'],
++                      'sea':['sea', 'wit'], 
++                      'hlp':['hlp', 'pro'], 
++                      'hld':['hld', 'def'], 
++                      'jud':['jud', 'jur'],
++                      'jur':['jur', 'jud'], 
++                      'all':['hlp', 'hld', 'wit', 'jud', 'pro', 'def', 'jur', 'sea', ''], 
++                      'pos':[]}
+         
+     def login(self, client):
+         if client.area.evidence_mod == 'FFA':
+             pass
+         if client.area.evidence_mod == 'Mods':
+-            if not client.is_cm:
++            if not client in client.area.owners:
+                 return False
+         if client.area.evidence_mod == 'CM':
+-            if not client.is_cm and not client.is_mod:
++            if not client in client.area.owners and not client.is_mod:
+                 return False
+         if client.area.evidence_mod == 'HiddenCM':
+-            if not client.is_cm and not client.is_mod:
++            if not client in client.area.owners and not client.is_mod:
+                 return False
+         return True
+ 
+diff --git a/tsuserver3/server/logger.py b/AO2-Client/server/logger.py
+index 85c39b2..fb1b8b3 100644
+--- a/tsuserver3/server/logger.py
++++ b/AO2-Client/server/logger.py
+@@ -16,22 +16,20 @@
+ # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ import logging
+-import logging.handlers
+ 
+ import time
+ 
+ 
+-def setup_logger(debug, log_size, log_backups):
++def setup_logger(debug):
+     logging.Formatter.converter = time.gmtime
+     debug_formatter = logging.Formatter('[%(asctime)s UTC]%(message)s')
+     srv_formatter = logging.Formatter('[%(asctime)s UTC]%(message)s')
++    mod_formatter = logging.Formatter('[%(asctime)s UTC]%(message)s')
+ 
+     debug_log = logging.getLogger('debug')
+     debug_log.setLevel(logging.DEBUG)
+ 
+-    # 0 maxBytes = no rotation
+-    # backupCount = number of old logs to save
+-    debug_handler = logging.handlers.RotatingFileHandler('logs/debug.log', maxBytes = log_size, backupCount = log_backups, encoding='utf-8')
++    debug_handler = logging.FileHandler('logs/debug.log', encoding='utf-8')
+     debug_handler.setLevel(logging.DEBUG)
+     debug_handler.setFormatter(debug_formatter)
+     debug_log.addHandler(debug_handler)
+@@ -42,11 +40,19 @@ def setup_logger(debug, log_size, log_backups):
+     server_log = logging.getLogger('server')
+     server_log.setLevel(logging.INFO)
+ 
+-    server_handler = logging.handlers.RotatingFileHandler('logs/server.log', maxBytes = log_size, backupCount = log_backups, encoding='utf-8')
++    server_handler = logging.FileHandler('logs/server.log', encoding='utf-8')
+     server_handler.setLevel(logging.INFO)
+     server_handler.setFormatter(srv_formatter)
+     server_log.addHandler(server_handler)
+ 
++    mod_log = logging.getLogger('mod')
++    mod_log.setLevel(logging.INFO)
++
++    mod_handler = logging.FileHandler('logs/mod.log', encoding='utf-8')
++    mod_handler.setLevel(logging.INFO)
++    mod_handler.setFormatter(mod_formatter)
++    mod_log.addHandler(mod_handler)
++
+ 
+ def log_debug(msg, client=None):
+     msg = parse_client_info(client) + msg
+@@ -58,10 +64,15 @@ def log_server(msg, client=None):
+     logging.getLogger('server').info(msg)
+ 
+ 
++def log_mod(msg, client=None):
++    msg = parse_client_info(client) + msg
++    logging.getLogger('mod').info(msg)
++
++
+ def parse_client_info(client):
+     if client is None:
+         return ''
+     info = client.get_ip()
+     if client.is_mod:
+-        return '[{:<15}][{}][MOD]'.format(info, client.id)
+-    return '[{:<15}][{}]'.format(info, client.id)
++        return '[{:<15}][{:<3}][{}][MOD]'.format(info, client.id, client.name)
++    return '[{:<15}][{:<3}][{}]'.format(info, client.id, client.name)
+diff --git a/tsuserver3/server/tsuserver.py b/AO2-Client/server/tsuserver.py
+index 5e04b23..5af8161 100644
+--- a/tsuserver3/server/tsuserver.py
++++ b/AO2-Client/server/tsuserver.py
+@@ -58,7 +58,7 @@ class TsuServer3:
+         self.district_client = None
+         self.ms_client = None
+         self.rp_mode = False
+-        logger.setup_logger(debug=self.config['debug'], log_size=self.config['log_size'], log_backups=self.config['log_backups'])
++        logger.setup_logger(debug=self.config['debug'])
+ 
+     def start(self):
+         loop = asyncio.get_event_loop()
+@@ -118,10 +118,6 @@ class TsuServer3:
+             self.config['music_change_floodguard'] = {'times_per_interval': 1,  'interval_length': 0, 'mute_length': 0}
+         if 'wtce_floodguard' not in self.config:
+             self.config['wtce_floodguard'] = {'times_per_interval': 1, 'interval_length': 0, 'mute_length': 0}
+-        if 'log_size' not in self.config:
+-            self.config['log_size'] = 1048576
+-        if 'log_backups' not in self.config:
+-            self.config['log_backups'] = 5
+ 
+     def load_characters(self):
+         with open('config/characters.yaml', 'r', encoding = 'utf-8') as chars:
+@@ -236,7 +232,7 @@ class TsuServer3:
+ 
+     def broadcast_global(self, client, msg, as_mod=False):
+         char_name = client.get_char_name()
+-        ooc_name = '{}[{}][{}]'.format('<dollar>G', client.area.id, char_name)
++        ooc_name = '{}[{}][{}]'.format('<dollar>G', client.area.abbreviation, char_name)
+         if as_mod:
+             ooc_name += '[M]'
+         self.send_all_cmd_pred('CT', ooc_name, msg, pred=lambda x: not x.muted_global)
+@@ -244,16 +240,58 @@ class TsuServer3:
+             self.district_client.send_raw_message(
+                 'GLOBAL#{}#{}#{}#{}'.format(int(as_mod), client.area.id, char_name, msg))
+ 
++    def send_modchat(self, client, msg):
++        name = client.name
++        ooc_name = '{}[{}][{}]'.format('<dollar>M', client.area.abbreviation, name)
++        self.send_all_cmd_pred('CT', ooc_name, msg, pred=lambda x: x.is_mod)
++        if self.config['use_district']:
++            self.district_client.send_raw_message(
++                'MODCHAT#{}#{}#{}'.format(client.area.id, char_name, msg))
++
+     def broadcast_need(self, client, msg):
+         char_name = client.get_char_name()
+         area_name = client.area.name
+-        area_id = client.area.id
++        area_id = client.area.abbreviation
+         self.send_all_cmd_pred('CT', '{}'.format(self.config['hostname']),
+-                               '=== Advert ===\r\n{} in {} [{}] needs {}\r\n==============='
+-                               .format(char_name, area_name, area_id, msg), pred=lambda x: not x.muted_adverts)
++                               ['=== Advert ===\r\n{} in {} [{}] needs {}\r\n==============='
++                               .format(char_name, area_name, area_id, msg), '1'], pred=lambda x: not x.muted_adverts)
+         if self.config['use_district']:
+             self.district_client.send_raw_message('NEED#{}#{}#{}#{}'.format(char_name, area_name, area_id, msg))
+ 
++    def send_arup(self, args):
++        """ Updates the area properties on the Case Café Custom Client.
++
++        Playercount: 
++            ARUP#0#<area1_p: int>#<area2_p: int>#...
++        Status:
++            ARUP#1##<area1_s: string>##<area2_s: string>#...
++        CM:
++            ARUP#2##<area1_cm: string>##<area2_cm: string>#...
++        Lockedness:
++            ARUP#3##<area1_l: string>##<area2_l: string>#...
++
++        """
++        if len(args) < 2:
++            # An argument count smaller than 2 means we only got the identifier of ARUP.
++            return
++        if args[0] not in (0,1,2,3):
++            return
++
++        if args[0] == 0:
++            for part_arg in args[1:]:
++                try:
++                    sanitised = int(part_arg)
++                except:
++                    return
++        elif args[0] in (1, 2, 3):
++            for part_arg in args[1:]:
++                try:
++                    sanitised = str(part_arg)
++                except:
++                    return
++        
++        self.send_all_cmd_pred('ARUP', *args, pred=lambda x: True)
++
+     def refresh(self):
+         with open('config/config.yaml', 'r') as cfg:
+             self.config['motd'] = yaml.load(cfg)['motd'].replace('\\n', ' \n')
