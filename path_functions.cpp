@@ -4,10 +4,20 @@
 #include <QDir>
 #include <QDebug>
 #include <QStandardPaths>
+#include <QRegExp>
 
 #ifdef BASE_OVERRIDE
 #include "base_override.h"
 #endif
+
+//this is a quite broad generalization
+//the most common OSes(mac and windows) are _usually_ case insensitive
+//however, there do exist mac installations with case sensitive filesystems
+//in that case, define CASE_SENSITIVE_FILESYSTEM and compile on a mac
+#if (defined (LINUX) || defined (__linux__))
+#define CASE_SENSITIVE_FILESYSTEM
+#endif
+
 QString base_path = "";
 
 QString AOApplication::get_base_path()
@@ -68,7 +78,11 @@ QString AOApplication::get_sounds_path()
 }
 QString AOApplication::get_music_path(QString p_song)
 {
-  return get_base_path() + "sounds/music/" + p_song.toLower();
+#ifndef CASE_SENSITIVE_FILESYSTEM
+  return get_base_path() + "sounds/music/" + p_song;
+#else
+  return get_case_sensitive_path(get_base_path() + "sounds/music/", p_song);
+#endif
 }
 
 QString AOApplication::get_background_path()
@@ -94,6 +108,21 @@ QString AOApplication::get_evidence_path()
       return get_base_path() + alt_path;
     else
       return get_base_path() + default_path;
+}
+
+QString AOApplication::get_case_sensitive_path(QString p_dir, QString p_file) {
+  qDebug() << "calling get_case_sensitive_path";
+  QRegExp file_rx = QRegExp(p_file, Qt::CaseInsensitive);
+  QStringList files = QDir(p_dir).entryList();
+  int result = files.indexOf(file_rx);
+
+  if (result != -1) {
+    QString path = p_dir + files.at(result);
+    qDebug()  << "returning " << path;
+    return path;
+  }
+  //if nothing is found, let the caller handle the missing file
+  return p_dir + p_file;
 }
 
 QString Courtroom::get_background_path()

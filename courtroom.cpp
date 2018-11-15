@@ -748,7 +748,7 @@ void Courtroom::list_music()
     {
       ui_music_list->addItem(i_song);
 
-      QString song_path = ao_app->get_base_path() + "sounds/music/" + i_song.toLower();
+      QString song_path = ao_app->get_music_path(i_song);
 
       if (file_exists(song_path))
         ui_music_list->item(n_listed_songs)->setBackground(found_brush);

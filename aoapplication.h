@@ -107,6 +107,7 @@ public:
   QString get_background_path();
   QString get_default_background_path();
   QString get_evidence_path();
+  QString get_case_sensitive_path(QString p_dir, QString p_file);
 
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
