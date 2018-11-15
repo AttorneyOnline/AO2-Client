@@ -8,6 +8,14 @@
 
 #include <QDebug>
 
+//this is a quite broad generalization
+//the most common OSes(mac and windows) are _usually_ case insensitive
+//however, there do exist mac installations with case sensitive filesystems
+//in that case, define CASE_SENSITIVE_FILESYSTEM and compile on a mac
+#if (defined (LINUX) || defined (__linux__))
+#define CASE_SENSITIVE_FILESYSTEM
+#endif
+
 int main(int argc, char *argv[])
 {
 #if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
