@@ -28,15 +28,15 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
 
   QString custom_path;
   if (p_gif == "custom")
-    custom_path = ao_app->get_character_path(p_char) + p_gif + ".gif";
+    custom_path = ao_app->get_character_path(p_char, p_gif + ".gif");
   else
-    custom_path = ao_app->get_character_path(p_char) + p_gif + "_bubble.gif";
+    custom_path = ao_app->get_character_path(p_char, p_gif + "_bubble.gif");
 
   QString custom_theme_path = ao_app->get_base_path() + "themes/" + p_custom_theme + "/" + p_gif + ".gif";
-  QString theme_path = ao_app->get_theme_path() + p_gif + ".gif";
-  QString default_theme_path = ao_app->get_default_theme_path() + p_gif + ".gif";
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
-  QString default_placeholder_path = ao_app->get_default_theme_path() + "placeholder.gif";
+  QString theme_path = ao_app->get_theme_path(p_gif + ".gif");
+  QString default_theme_path = ao_app->get_default_theme_path(p_gif + ".gif");
+  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
+  QString default_placeholder_path = ao_app->get_default_theme_path("placeholder.gif");
 
   if (file_exists(custom_path))
     gif_path = custom_path;

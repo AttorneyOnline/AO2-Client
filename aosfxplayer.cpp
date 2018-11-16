@@ -19,7 +19,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char)
   p_sfx = p_sfx.toLower();
   QString f_path;
   if (p_char != "")
-    f_path = ao_app->get_character_path(p_char) + p_sfx;
+    f_path = ao_app->get_character_path(p_char, p_sfx);
   else
     f_path = ao_app->get_sounds_path() + p_sfx;
 

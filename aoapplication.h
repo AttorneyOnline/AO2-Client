@@ -102,12 +102,11 @@ public:
   QString get_default_theme_path(QString p_file);
   QString get_character_path(QString p_character, QString p_file);
   QString get_character_emotions_path(QString p_character, QString p_file);
-  QString get_demothings_path();
   QString get_sounds_path();
   QString get_music_path(QString p_song);
-  QString get_background_path();
-  QString get_default_background_path();
-  QString get_evidence_path();
+  QString get_background_path(QString p_file);
+  QString get_default_background_path(QString p_file);
+  QString get_evidence_path(QString p_file);
   QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for reading and writing files //////

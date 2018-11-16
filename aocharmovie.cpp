@@ -19,10 +19,10 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower() + ".gif";
-  QString alt_path = ao_app->get_character_path(p_char) + p_emote.toLower() + ".png";
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
-  QString placeholder_default_path = ao_app->get_default_theme_path() + "placeholder.gif";
+  QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
+  QString alt_path = ao_app->get_character_path(p_char, p_emote + ".png");
+  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
+  QString placeholder_default_path = ao_app->get_default_theme_path("placeholder.gif");
   QString gif_path;
 
   if (file_exists(original_path))
@@ -58,7 +58,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
-  QString gif_path = ao_app->get_character_path(p_char) + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, p_emote);
 
   m_movie->stop();
   this->clear();
@@ -107,7 +107,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
 
   m_movie->stop();
   this->clear();
@@ -120,7 +120,7 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char) + "(a)" + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
 
   m_movie->stop();
   this->clear();

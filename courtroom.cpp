@@ -319,7 +319,7 @@ void Courtroom::set_widgets()
   //the size of the ui_vp_legacy_desk element relies on various factors and is set in set_scene()
 
   double y_modifier = 147.0 / 192.0;
-  int final_y = y_modifier * ui_viewport->height();
+  int final_y = static_cast<int>(y_modifier * ui_viewport->height());
   ui_vp_legacy_desk->move(0, final_y);
   ui_vp_legacy_desk->hide();
 
@@ -620,11 +620,10 @@ void Courtroom::set_background(QString p_background)
   testimony_in_progress = false;
 
   current_background = p_background;
-  QString bg_path = get_background_path();
 
-  is_ao2_bg = file_exists(bg_path + "defensedesk.png") &&
-              file_exists(bg_path + "prosecutiondesk.png") &&
-              file_exists(bg_path + "stand.png");
+  is_ao2_bg = file_exists(ao_app->get_background_path("defensedesk.png")) &&
+              file_exists(ao_app->get_background_path("prosecutiondesk.png")) &&
+              file_exists(ao_app->get_background_path("stand.png"));
 
   if (is_ao2_bg)
   {
@@ -696,11 +695,9 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_prosecution_plus->hide();
   }
 
-  QString char_path = ao_app->get_character_path(current_char);
-
   if (ao_app->custom_objection_enabled &&
-      file_exists(char_path + "custom.gif") &&
-      file_exists(char_path + "custom.wav"))
+      file_exists(ao_app->get_character_path(current_char, "custom.gif")) &&
+      file_exists(ao_app->get_character_path(current_char, "custom.wav")))
     ui_custom_objection->show();
   else
     ui_custom_objection->hide();
@@ -1197,12 +1194,12 @@ void Courtroom::play_preanim()
 
   sfx_delay_timer->start(sfx_delay);
 
-  if (!file_exists(ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif") ||
+  if (!file_exists(ao_app->get_character_path(f_char, f_preanim.toLower() + ".gif")) ||
       preanim_duration < 0)
   {
     anim_state = 1;
     preanim_done();
-    qDebug() << "could not find " + ao_app->get_character_path(f_char) + f_preanim.toLower() + ".gif";
+    qDebug() << "could not find " + ao_app->get_character_path(f_char, f_preanim.toLower() + ".gif");
     return;
   }
 
