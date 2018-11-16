@@ -86,9 +86,9 @@ QString AOApplication::get_character_emotions_path(QString p_character, QString 
 #endif
 }
 
-QString AOApplication::get_sounds_path()
+QString AOApplication::get_sounds_path(QString p_file)
 {
-  QString path = get_base_path() + "sounds/general/";
+  QString path = get_base_path() + "sounds/general/" + p_file;
 #ifndef CASE_SENSITIVE_FILESYSTEM
   return path;
 #else

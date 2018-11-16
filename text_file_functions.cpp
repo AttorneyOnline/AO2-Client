@@ -433,14 +433,14 @@ QString AOApplication::get_chat(QString p_char)
   QString f_result = read_char_ini(p_char, "chat", "[Options]", "[Time]");
 
   //handling the correct order of chat is a bit complicated, we let the caller do it
-  return f_result.toLower();
+  return f_result;
 }
 
 QString AOApplication::get_char_shouts(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "shouts", "[Options]", "[Time]");
 
-  return f_result.toLower();
+  return f_result;
 }
 
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)

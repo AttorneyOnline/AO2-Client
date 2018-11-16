@@ -16,12 +16,12 @@ AOSfxPlayer::~AOSfxPlayer()
 void AOSfxPlayer::play(QString p_sfx, QString p_char)
 {
   m_sfxplayer->stop();
-  p_sfx = p_sfx.toLower();
+  p_sfx = p_sfx;
   QString f_path;
   if (p_char != "")
     f_path = ao_app->get_character_path(p_char, p_sfx);
   else
-    f_path = ao_app->get_sounds_path() + p_sfx;
+    f_path = ao_app->get_sounds_path(p_sfx);
 
   m_sfxplayer->setSource(QUrl::fromLocalFile(f_path));
   set_volume(m_volume);

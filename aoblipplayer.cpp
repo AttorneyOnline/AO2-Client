@@ -16,7 +16,7 @@ AOBlipPlayer::~AOBlipPlayer()
 void AOBlipPlayer::set_blips(QString p_sfx)
 {
   m_sfxplayer->stop();
-  QString f_path = ao_app->get_sounds_path() + p_sfx.toLower();
+  QString f_path = ao_app->get_sounds_path(p_sfx);
   m_sfxplayer->setSource(QUrl::fromLocalFile(f_path));
   set_volume(m_volume);
 }
