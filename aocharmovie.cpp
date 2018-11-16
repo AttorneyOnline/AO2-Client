@@ -75,8 +75,11 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
     real_duration += m_movie->nextFrameDelay();
     m_movie->jumpToFrame(n_frame + 1);
   }
+
+#ifdef DEBUG_GIF
   qDebug() << "full_duration: " << full_duration;
   qDebug() << "real_duration: " << real_duration;
+#endif
 
   double percentage_modifier = 100.0;
 
@@ -88,7 +91,10 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
     if (percentage_modifier > 100.0)
       percentage_modifier = 100.0;
   }
+
+#ifdef DEBUG_GIF
   qDebug() << "% mod: " << percentage_modifier;
+#endif
 
   if (full_duration == 0 || full_duration >= real_duration)
   {

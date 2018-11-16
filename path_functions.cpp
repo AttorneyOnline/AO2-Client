@@ -18,27 +18,23 @@
 #define CASE_SENSITIVE_FILESYSTEM
 #endif
 
-QString base_path = "";
-
 QString AOApplication::get_base_path()
 {
-    if (base_path == "")
-    {
-#ifdef BASE_OVERRIDE
-  base_path = base_override;
-#elif defined(ANDROID)
-        QString sdcard_storage = getenv("SECONDARY_STORAGE");
-        if (dir_exists(sdcard_storage + "/AO2/")){
-            base_path = sdcard_storage + "/AO2/";
-        }else{
-            QString external_storage = getenv("EXTERNAL_STORAGE");
-            base_path = external_storage + "/AO2/";
-        }
+  QString base_path = "";
+#ifdef ANDROID
+  QString sdcard_storage = getenv("SECONDARY_STORAGE");
+  if (dir_exists(sdcard_storage + "/AO2/")){
+    base_path = sdcard_storage + "/AO2/";
+  }
+  else {
+    QString external_storage = getenv("EXTERNAL_STORAGE");
+    base_path = external_storage + "/AO2/";
+  }
 #else
   base_path = QDir::currentPath() + "/base/";
 #endif
-}
-    return base_path;
+
+  return base_path;
 }
 
 QString AOApplication::get_data_path()
@@ -146,20 +142,13 @@ QString AOApplication::get_evidence_path(QString p_file)
 }
 
 QString AOApplication::get_case_sensitive_path(QString p_file) {
-  qDebug() << "calling get_case_sensitive_path: " << p_file;
-
   QFileInfo file(p_file);
 
   //quick check to see if it's actually there first
   if (file.exists()) return p_file;
 
   QString file_name = file.fileName();
-
-  qDebug() << "file_name: " << file_name;
-
   QString file_path = file.absolutePath();
-
-  qDebug() << "file_path: " << file_path;
 
   QRegExp file_rx = QRegExp(file_name, Qt::CaseInsensitive);
   QStringList files = QDir(file_path).entryList();

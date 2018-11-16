@@ -1034,11 +1034,11 @@ void Courtroom::handle_chatmessage_2()
   case 1: case 2: case 6:
     play_preanim();
     break;
-  default:
-    qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
-    //intentional fallthru
   case 0: case 5:
     handle_chatmessage_3();
+    break;
+  default:
+    qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
   }
 }
 
@@ -1094,15 +1094,11 @@ void Courtroom::handle_chatmessage_3()
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_emote = m_chatmessage[EMOTE];
 
-  switch (f_anim_state)
-  {
-  case 2:
+  if (f_anim_state == 2) {
     ui_vp_player_char->play_talking(f_char, f_emote);
     anim_state = 2;
-    break;
-  default:
-    qDebug() << "W: invalid anim_state: " << f_anim_state;
-  case 3:
+  }
+  else {
     ui_vp_player_char->play_idle(f_char, f_emote);
     anim_state = 3;
   }
@@ -1194,12 +1190,11 @@ void Courtroom::play_preanim()
 
   sfx_delay_timer->start(sfx_delay);
 
-  if (!file_exists(ao_app->get_character_path(f_char, f_preanim.toLower() + ".gif")) ||
+  if (!file_exists(ao_app->get_character_path(f_char, f_preanim + ".gif")) ||
       preanim_duration < 0)
   {
     anim_state = 1;
     preanim_done();
-    qDebug() << "could not find " + ao_app->get_character_path(f_char, f_preanim.toLower() + ".gif");
     return;
   }
 
@@ -1462,12 +1457,14 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: yellow");
     break;
-  default:
-    qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: white");
-
+    break;
+  default:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                 "color: white");
+    qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   }
 }
 
