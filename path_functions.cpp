@@ -144,18 +144,28 @@ QString AOApplication::get_evidence_path(QString p_file)
 QString AOApplication::get_case_sensitive_path(QString p_file) {
   QFileInfo file(p_file);
 
-  //quick check to see if it's actually there first
+  //quick check to see if it's actually there first(also serves as base case for recursion)
   if (file.exists()) return p_file;
 
-  QString file_name = file.fileName();
-  QString file_path = file.absolutePath();
+  QString file_basename = file.fileName();
+  QString file_parent_dir = file.absolutePath();
 
-  QRegExp file_rx = QRegExp(file_name, Qt::CaseInsensitive);
-  QStringList files = QDir(file_path).entryList();
+#ifdef DEBUG_PATH_FUNCTIONS
+   qDebug() << "file_basename: " << file_basename;
+   qDebug() << "file_parent_dir: " << file_parent_dir;
+#endif
+
+   //if parent directory does not exist, recurse
+   //if (!file_exists(file_parent_dir)) {
+
+   //}
+
+  QRegExp file_rx = QRegExp(file_basename, Qt::CaseInsensitive);
+  QStringList files = QDir(file_parent_dir).entryList();
   int result = files.indexOf(file_rx);
 
   if (result != -1)
-    return file_path + "/" + files.at(result);
+    return file_parent_dir + "/" + files.at(result);
 
   //if nothing is found, let the caller handle the missing file
   return p_file;
