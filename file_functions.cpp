@@ -16,3 +16,9 @@ bool dir_exists(QString dir_path)
 
   return check_dir.exists();
 }
+
+bool exists(QString p_path) {
+  QFile file(p_path);
+
+  return file.exists();
+}

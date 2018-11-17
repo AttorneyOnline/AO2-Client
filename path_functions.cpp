@@ -63,26 +63,13 @@ QString AOApplication::get_theme_path(QString p_file)
 #endif
 }
 
-QString AOApplication::get_character_path(QString p_character, QString p_file)
+QString AOApplication::get_character_path(QString p_char, QString p_file)
 {
-  QString char_path = get_base_path() + "characters/" + p_character;
+  QString path = get_base_path() + "characters/" + p_char + "/" + p_file;
 #ifndef CASE_SENSITIVE_FILESYSTEM
-  return char_path + "/" + p_file;
+  return path;
 #else
-  //need two calls to get_case_sensitive_path because character folder name may be wrong as well as the filename
-  return get_case_sensitive_path(
-         get_case_sensitive_path(char_path) + "/" + p_file);
-#endif
-}
-
-QString AOApplication::get_character_emotions_path(QString p_character, QString p_file)
-{
-  QString char_path = get_base_path() + "characters/" + p_character;
-#ifndef CASE_SENSITIVE_FILESYSTEM
-  return char_path + "/emotions/" + p_file;
-#else
-  return get_case_sensitive_path(
-         get_case_sensitive_path(char_path) + "/emotions/" + p_file);
+  return get_case_sensitive_path(path);
 #endif
 }
 
@@ -142,31 +129,27 @@ QString AOApplication::get_evidence_path(QString p_file)
 }
 
 QString AOApplication::get_case_sensitive_path(QString p_file) {
+  //first, check to see if it's actually there (also serves as base case for recursion)
+  if (exists(p_file)) return p_file;
+
   QFileInfo file(p_file);
 
-  //quick check to see if it's actually there first(also serves as base case for recursion)
-  if (file.exists()) return p_file;
-
   QString file_basename = file.fileName();
-  QString file_parent_dir = file.absolutePath();
+  QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
 
-#ifdef DEBUG_PATH_FUNCTIONS
-   qDebug() << "file_basename: " << file_basename;
-   qDebug() << "file_parent_dir: " << file_parent_dir;
-#endif
+  //second, does it exist in the new parent dir?
+  if (exists(file_parent_dir + "/" + file_basename))
+    return file_parent_dir + "/" + file_basename;
 
-   //if parent directory does not exist, recurse
-   //if (!file_exists(file_parent_dir)) {
-
-   //}
-
+  //last resort, dirlist parent dir and find case insensitive match
   QRegExp file_rx = QRegExp(file_basename, Qt::CaseInsensitive);
   QStringList files = QDir(file_parent_dir).entryList();
+
   int result = files.indexOf(file_rx);
 
   if (result != -1)
     return file_parent_dir + "/" + files.at(result);
 
   //if nothing is found, let the caller handle the missing file
-  return p_file;
+  return file_parent_dir + "/" + file_basename;
 }
