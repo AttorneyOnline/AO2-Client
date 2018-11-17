@@ -52,7 +52,6 @@ QString AOApplication::get_default_theme_path(QString p_file)
 #endif
 }
 
-//assume that the capitalization of the theme in config is correct
 QString AOApplication::get_theme_path(QString p_file)
 {
   QString path = get_base_path() + "themes/" + current_theme + "/" + p_file;
@@ -95,17 +94,15 @@ QString AOApplication::get_music_path(QString p_song)
 
 QString AOApplication::get_background_path(QString p_file)
 {
-  QString bg_path = get_base_path() + "background/" + w_courtroom->get_current_background();
+  QString path = get_base_path() + "background/" + w_courtroom->get_current_background() + "/" + p_file;
   if (courtroom_constructed) {
 #ifndef CASE_SENSITIVE_FILESYSTEM
-    return bg_path + "/" + p_file;
+    return path;
 #else
-    return get_case_sensitive_path(
-           get_case_sensitive_path(bg_path) + "/" + p_file);
+    return get_case_sensitive_path(path);
 #endif
   }
-  //this function being called when the courtroom isn't constructed makes no sense
-  return "";
+  return get_default_background_path(p_file);
 }
 
 QString AOApplication::get_default_background_path(QString p_file)
