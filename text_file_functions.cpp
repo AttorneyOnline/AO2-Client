@@ -345,7 +345,7 @@ QString AOApplication::get_image_suffix(QString path_to_check)
 //returns the empty string if the search line couldnt be found
 QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QString target_tag)
 {
-  QSettings settings(get_character_path(p_char) + "char.ini", QSettings::IniFormat);
+  QSettings settings(get_character_path(p_char, "char.ini"), QSettings::IniFormat);
   settings.beginGroup(target_tag);
   QString value = settings.value(p_search_line).toString();
   settings.endGroup();

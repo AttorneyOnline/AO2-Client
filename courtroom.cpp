@@ -11,7 +11,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   if (ao_app->get_audio_output_device() == "Default")
   {
-      BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
+      BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
       load_bass_opus_plugin();
   }
   else
@@ -21,7 +21,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           if (ao_app->get_audio_output_device() == info.name)
           {
               BASS_SetDevice(a);
-              BASS_Init(a, 48000, BASS_DEVICE_LATENCY, 0, NULL);
+              BASS_Init(a, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
               load_bass_opus_plugin();
               qDebug() << info.name << "was set as the default audio output device.";
               break;
@@ -874,9 +874,9 @@ void Courtroom::enter_courtroom(int p_cid)
   }
 
   if (ao_app->custom_objection_enabled &&
-      (file_exists(ao_app->get_character_path(char_path, "custom.gif")) ||
-      file_exists(ao_app->get_character_path(char_path, "custom.apng"))) &&
-      file_exists(ao_app->get_character_path(char_path, "custom.wav")))
+      (file_exists(ao_app->get_character_path(current_char, "custom.gif")) ||
+      file_exists(ao_app->get_character_path(current_char, "custom.apng"))) &&
+      file_exists(ao_app->get_character_path(current_char, "custom.wav")))
     ui_custom_objection->show();
   else
     ui_custom_objection->hide();
@@ -1664,9 +1664,6 @@ void Courtroom::handle_chatmessage_3()
 
 void Courtroom::append_ic_text(QString p_text, QString p_name)
 {
-  // a bit of a silly hack, should use QListWidget for IC in the first place though
-  static bool isEmpty = true;
-
   QTextCharFormat bold;
   QTextCharFormat normal;
   bold.setFontWeight(QFont::Bold);
@@ -1991,7 +1988,7 @@ void Courtroom::play_preanim()
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char) + f_preanim.toLower());
+  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char, f_preanim));
   if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
@@ -2026,7 +2023,7 @@ void Courtroom::play_noninterrupting_preanim()
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char) + f_preanim.toLower());
+  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char, f_preanim));
   if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
