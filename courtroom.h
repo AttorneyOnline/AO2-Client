@@ -156,13 +156,10 @@ public:
   //send a message that the player is banned and quits the server
   void set_ban(int p_cid);
 
-  //implementations in path_functions.cpp
-  QString get_background_path();
-  QString get_default_background_path();
-
   //cid = character id, returns the cid of the currently selected character
   int get_cid() {return m_cid;}
   QString get_current_char() {return current_char;}
+  QString get_current_background() {return current_background;}
 
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);

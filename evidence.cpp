@@ -192,7 +192,7 @@ void Courtroom::on_evidence_image_button_clicked()
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
   dialog.setViewMode(QFileDialog::List);
-  dialog.setDirectory(ao_app->get_evidence_path());
+  dialog.setDirectory(ao_app->get_base_path() + "evidence");
 
   QStringList filenames;
 

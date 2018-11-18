@@ -9,16 +9,14 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
-  p_sfx = p_sfx.toLower();
-
   QString misc_path = "";
   QString char_path = "";
-  QString sound_path = ao_app->get_sounds_path() + p_sfx;
+  QString sound_path = ao_app->get_sounds_path(p_sfx);
 
   if (shout != "")
     misc_path = ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx;
   if (p_char != "")
-    char_path = ao_app->get_character_path(p_char) + p_sfx;
+    char_path = ao_app->get_character_path(p_char, p_sfx);
 
   QString f_path;
 

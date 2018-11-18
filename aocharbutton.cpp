@@ -56,20 +56,12 @@ void AOCharButton::set_passworded()
 
 void AOCharButton::set_image(QString p_character)
 {
-  QString image_path = ao_app->get_character_path(p_character) + "char_icon.png";
-  QString legacy_path = ao_app->get_demothings_path() + p_character.toLower() + "_char_icon.png";
-  QString alt_path = ao_app->get_demothings_path() + p_character.toLower() + "_off.png";
+  QString image_path = ao_app->get_character_path(p_character, "char_icon.png");
 
   this->setText("");
 
   if (file_exists(image_path))
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
-  else if (file_exists(legacy_path))
-  {
-    this->setStyleSheet("border-image:url(\"" + legacy_path + "\")");
-    //ninja optimization
-    QFile::copy(legacy_path, image_path);
-  }
   else
   {
     this->setStyleSheet("border-image:url()");

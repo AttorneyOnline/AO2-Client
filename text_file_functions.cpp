@@ -159,8 +159,8 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 {
-  QString design_ini_path = get_theme_path() + p_file;
-  QString default_path = get_default_theme_path() + p_file;
+  QString design_ini_path = get_theme_path(p_file);
+  QString default_path = get_default_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   QPoint return_value;
@@ -189,8 +189,8 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 
 pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file)
 {
-  QString design_ini_path = get_theme_path() + p_file;
-  QString default_path = get_default_theme_path() + p_file;
+  QString design_ini_path = get_theme_path(p_file);
+  QString default_path = get_default_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   pos_size_type return_value;
@@ -223,8 +223,8 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QStrin
 
 int AOApplication::get_font_size(QString p_identifier, QString p_file)
 {
-  QString design_ini_path = get_theme_path() + p_file;
-  QString default_path = get_default_theme_path() + p_file;
+  QString design_ini_path = get_theme_path(p_file);
+  QString default_path = get_default_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   if (f_result == "")
@@ -240,8 +240,8 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
 
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
-  QString design_ini_path = get_theme_path() + p_file;
-  QString default_path = get_default_theme_path() + p_file;
+  QString design_ini_path = get_theme_path(p_file);
+  QString default_path = get_default_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   QColor return_color(255, 255, 255);
@@ -296,8 +296,8 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 
 QString AOApplication::get_sfx(QString p_identifier)
 {
-  QString design_ini_path = get_theme_path() + "courtroom_sounds.ini";
-  QString default_path = get_default_theme_path() + "courtroom_sounds.ini";
+  QString design_ini_path = get_theme_path("courtroom_sounds.ini");
+  QString default_path = get_default_theme_path("courtroom_sounds.ini");
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   QString return_sfx = "";
@@ -317,13 +317,13 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
-    QString mp3_check = get_sounds_path() + sound_to_check + ".mp3";
-    QString opus_check = get_sounds_path() + sound_to_check + ".opus";
-    if(file_exists(opus_check))
+    QString mp3_check = get_sounds_path(sound_to_check + ".mp3");
+    QString opus_check = get_sounds_path(sound_to_check + ".opus");
+    if (file_exists(opus_check))
     {
         return sound_to_check + ".opus";
     }
-    if(file_exists(mp3_check))
+    else if (file_exists(mp3_check))
     {
         return sound_to_check + ".mp3";
     }
@@ -332,8 +332,8 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
-    QString apng_check = path_to_check + ".apng";
-    if(file_exists(apng_check))
+    QString apng_check = get_sounds_path(path_to_check + ".apng");
+    if (file_exists(apng_check))
     {
         return path_to_check + ".apng";
     }
@@ -396,14 +396,14 @@ QString AOApplication::get_chat(QString p_char)
   QString f_result = read_char_ini(p_char, "chat", "Options");
 
   //handling the correct order of chat is a bit complicated, we let the caller do it
-  return f_result.toLower();
+  return f_result;
 }
 
 QString AOApplication::get_char_shouts(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "shouts", "Options");
 
-  return f_result.toLower();
+  return f_result;
 }
 
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)

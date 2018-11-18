@@ -7,5 +7,6 @@
 
 bool file_exists(QString file_path);
 bool dir_exists(QString file_path);
+bool exists(QString p_path);
 
 #endif // FILE_FUNCTIONS_H

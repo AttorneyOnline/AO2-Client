@@ -120,12 +120,12 @@ void Courtroom::set_char_select_page()
 
 void Courtroom::char_clicked(int n_char)
 {
-  QString char_ini_path = ao_app->get_character_path(char_list.at(n_char).name) + "char.ini";
+  QString char_ini_path = ao_app->get_character_path(char_list.at(n_char).name, "char.ini");
+
   qDebug() << "char_ini_path" << char_ini_path;
 
   if (!file_exists(char_ini_path))
   {
-    qDebug() << "did not find " << char_ini_path;
     call_notice("Could not find " + char_ini_path);
     return;
   }
