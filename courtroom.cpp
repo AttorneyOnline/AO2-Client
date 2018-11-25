@@ -105,16 +105,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
 
-  ui_mute_list = new QListWidget(this);
   ui_area_list = new QListWidget(this);
   ui_area_list->hide();
   ui_music_list = new QListWidget(this);
-
-  ui_pair_list = new QListWidget(this);
-  ui_pair_offset_spinbox = new QSpinBox(this);
-  ui_pair_offset_spinbox->setRange(-100,100);
-  ui_pair_offset_spinbox->setSuffix("% offset");
-  ui_pair_button = new AOButton(this, ao_app);
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -140,6 +133,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //ui_area_password->setFrame(false);
   ui_music_search = new QLineEdit(this);
   ui_music_search->setFrame(false);
+  ui_music_search->setPlaceholderText(tr("Search"));
 
   construct_emotes();
 
@@ -201,7 +195,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_showname_enable->setText(tr("Shownames"));
 
   ui_pre_non_interrupt = new QCheckBox(this);
-  ui_pre_non_interrupt->setText(tr("No Intrpt"));
+  ui_pre_non_interrupt->setText(tr("No Interrupt"));
   ui_pre_non_interrupt->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
@@ -240,6 +234,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_log_limit_spinbox = new QSpinBox(this);
   ui_log_limit_spinbox->setRange(0, 10000);
   ui_log_limit_spinbox->setValue(ao_app->get_max_log_size());
+
+  ui_mute_list = new QListWidget(this);
+  ui_pair_list = new QListWidget(this);
+  ui_pair_offset_spinbox = new QSpinBox(this);
+  ui_pair_offset_spinbox->setRange(-100,100);
+  ui_pair_offset_spinbox->setSuffix("% offset");
+  ui_pair_button = new AOButton(this, ao_app);
 
   ui_evidence_button = new AOButton(this, ao_app);
 
@@ -604,7 +605,7 @@ void Courtroom::set_widgets()
   ui_switch_area_music->setText("A/M");
 
   set_size_and_pos(ui_pre, "pre");
-  ui_pre->setText("Pre");
+  ui_pre->setText("Preanim");
 
   set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
   set_size_and_pos(ui_flip, "flip");
@@ -706,6 +707,17 @@ void Courtroom::set_fonts()
   set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
   set_font(ui_area_list, "music_list");
+
+  // Set color of labels and checkboxes
+  const QString design_file = "courtroom_fonts.ini";
+  QColor f_color = ao_app->get_color("label_color", design_file);
+  QString color_string = "color: rgba(" +
+          QString::number(f_color.red()) + ", " +
+          QString::number(f_color.green()) + ", " +
+          QString::number(f_color.blue()) + ", 255); }";
+  QString style_sheet_string = "QLabel {" + color_string + "}"
+          "QCheckBox {" + color_string + "}";
+  setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)

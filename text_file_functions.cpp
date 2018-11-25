@@ -244,7 +244,7 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
   QString default_path = get_default_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
-  QColor return_color(255, 255, 255);
+  QColor return_color(0, 0, 0);
 
   if (f_result == "")
   {

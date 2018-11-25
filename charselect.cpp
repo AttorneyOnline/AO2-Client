@@ -18,25 +18,25 @@ void Courtroom::construct_char_select()
   ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
 
   ui_char_password = new QLineEdit(ui_char_select_background);
-  ui_char_password->setPlaceholderText("Password");
+  ui_char_password->setPlaceholderText(tr("Password"));
 
   ui_char_select_left = new AOButton(ui_char_select_background, ao_app);
   ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
-  ui_spectator->setText("Spectator");
+  ui_spectator->setText(tr("Spectator"));
 
   ui_char_search = new QLineEdit(ui_char_select_background);
-  ui_char_search->setPlaceholderText("Search");
+  ui_char_search->setPlaceholderText(tr("Search"));
   ui_char_search->setFocus();
   set_size_and_pos(ui_char_search, "char_search");
 
   ui_char_passworded = new QCheckBox(ui_char_select_background);
-  ui_char_passworded->setText("Passworded");
+  ui_char_passworded->setText(tr("Passworded"));
   set_size_and_pos(ui_char_passworded, "char_passworded");
 
   ui_char_taken = new QCheckBox(ui_char_select_background);
-  ui_char_taken->setText("Taken");
+  ui_char_taken->setText(tr("Taken"));
   set_size_and_pos(ui_char_taken, "char_taken");
 
   ui_char_taken->setChecked(true);

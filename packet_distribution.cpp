@@ -484,8 +484,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
 
-      w_courtroom->append_music(f_contents.at(n_element));
-
       if (musics_time)
       {
           w_courtroom->append_music(f_contents.at(n_element));
