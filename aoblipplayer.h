@@ -2,7 +2,6 @@
 #define AOBLIPPLAYER_H
 
 #include "bass.h"
-#include "aoapplication.h"
 
 #include <QWidget>
 #include <string.h>
@@ -11,7 +10,7 @@
 class AOBlipPlayer
 {
 public:
-  AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
+  AOBlipPlayer(QWidget *parent);
 
   void set_blips(QString p_sfx);
   void blip_tick();
@@ -21,7 +20,6 @@ public:
 
 private:
   QWidget *m_parent;
-  AOApplication *ao_app;
 
   int m_volume;
   HSTREAM m_stream_list[5];

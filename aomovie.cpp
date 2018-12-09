@@ -4,10 +4,8 @@
 #include "courtroom.h"
 #include "misc_functions.h"
 
-AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOMovie::AOMovie(QWidget *p_parent) : QLabel(p_parent)
 {
-  ao_app = p_ao_app;
-
   m_movie = new QMovie();
 
   this->setMovie(m_movie);

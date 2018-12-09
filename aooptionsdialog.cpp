@@ -1,11 +1,8 @@
 #include "aooptionsdialog.h"
-#include "aoapplication.h"
 #include "bass.h"
 
-AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDialog(parent)
+AOOptionsDialog::AOOptionsDialog(QWidget *parent) : QDialog(parent)
 {
-    ao_app = p_ao_app;
-
     // Setting up the basics.
     // setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Settings"));

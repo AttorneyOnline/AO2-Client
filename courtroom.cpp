@@ -1,9 +1,7 @@
 #include "courtroom.h"
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+Courtroom::Courtroom() : QMainWindow()
 {
-  ao_app = p_ao_app;
-
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.
   int a = 0;

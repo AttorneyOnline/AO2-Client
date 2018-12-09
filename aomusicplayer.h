@@ -2,7 +2,6 @@
 #define AOMUSICPLAYER_H
 
 #include "bass.h"
-#include "aoapplication.h"
 
 #include <QWidget>
 #include <string.h>
@@ -11,7 +10,7 @@
 class AOMusicPlayer
 {
 public:
-  AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
+  AOMusicPlayer(QWidget *parent);
   ~AOMusicPlayer();
 
   void play(QString p_song);
@@ -19,7 +18,6 @@ public:
 
 private:
   QWidget *m_parent;
-  AOApplication *ao_app;
 
   int m_volume = 0;
   HSTREAM m_stream;

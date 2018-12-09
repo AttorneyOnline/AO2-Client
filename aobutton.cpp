@@ -3,7 +3,7 @@
 #include "debug_functions.h"
 #include "file_functions.h"
 
-AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app) : QPushButton(parent)
+AOButton::AOButton(QWidget *parent) : QPushButton(parent)
 {
   ao_app = p_ao_app;
 }

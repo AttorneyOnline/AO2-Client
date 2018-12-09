@@ -1,7 +1,6 @@
 #ifndef AOCHARBUTTON_H
 #define AOCHARBUTTON_H
 
-#include "aoapplication.h"
 #include "aoimage.h"
 
 #include <QPushButton>
@@ -14,9 +13,7 @@ class AOCharButton : public QPushButton
   Q_OBJECT
 
 public:
-  AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken);
-
-  AOApplication *ao_app;
+  AOCharButton(QWidget *parent, int x_pos, int y_pos, bool is_taken);
 
   void refresh();
   void reset();

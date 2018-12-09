@@ -57,7 +57,7 @@ class Courtroom : public QMainWindow
 {
   Q_OBJECT
 public:
-  explicit Courtroom(AOApplication *p_ao_app);
+  explicit Courtroom();
 
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
@@ -208,8 +208,6 @@ public:
   ~Courtroom();
 
 private:
-  AOApplication *ao_app;
-
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
 

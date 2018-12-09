@@ -15,7 +15,6 @@
 #endif
 
 #include "aopacket.h"
-#include "aoapplication.h"
 
 #include <QTcpSocket>
 #include <QDnsLookup>
@@ -28,10 +27,9 @@ class NetworkManager : public QObject
   Q_OBJECT
 
 public:
-  NetworkManager(AOApplication *parent);
+  NetworkManager();
   ~NetworkManager();
 
-  AOApplication *ao_app;
   QTcpSocket *ms_socket;
   QTcpSocket *server_socket;
   QDnsLookup *ms_dns;

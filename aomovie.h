@@ -12,7 +12,7 @@ class AOMovie : public QLabel
   Q_OBJECT
 
 public:
-  AOMovie(QWidget *p_parent, AOApplication *p_ao_app);
+  AOMovie(QWidget *p_parent);
 
   void set_play_once(bool p_play_once);
   void play(QString p_gif, QString p_char = "", QString p_custom_theme = "");
@@ -21,7 +21,6 @@ public:
 
 private:
   QMovie *m_movie;
-  AOApplication *ao_app;
   bool play_once = true;
 
 signals:

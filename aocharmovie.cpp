@@ -2,12 +2,9 @@
 
 #include "misc_functions.h"
 #include "file_functions.h"
-#include "aoapplication.h"
 
-AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOCharMovie::AOCharMovie(QWidget *p_parent) : QLabel(p_parent)
 {
-  ao_app = p_ao_app;
-
   m_movie = new QMovie(this);
 
   preanim_timer = new QTimer(this);

@@ -1,7 +1,6 @@
 #ifndef AOOPTIONSDIALOG_H
 #define AOOPTIONSDIALOG_H
 
-#include "aoapplication.h"
 #include "bass.h"
 
 #include <QtCore/QVariant>
@@ -27,11 +26,9 @@ class AOOptionsDialog: public QDialog
 {
     Q_OBJECT
 public:
-    explicit AOOptionsDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);
+    explicit AOOptionsDialog(QWidget *parent = nullptr);
 
 private:
-    AOApplication *ao_app;
-
     QVBoxLayout *ui_vertical_layout;
     QTabWidget *ui_settings_tabs;
 

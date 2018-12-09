@@ -1,6 +1,6 @@
 #include "aocaseannouncerdialog.h"
 
-AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, AOApplication *p_ao_app, Courtroom *p_court)
+AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, Courtroom *p_court)
   : QDialog(parent)
 {
   ao_app = p_ao_app;

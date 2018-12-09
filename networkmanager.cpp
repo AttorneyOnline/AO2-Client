@@ -4,10 +4,8 @@
 #include "debug_functions.h"
 #include "lobby.h"
 
-NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
+NetworkManager::NetworkManager() : QObject(parent)
 {
-  ao_app = parent;
-
   ms_socket = new QTcpSocket(this);
   server_socket = new QTcpSocket(this);
 

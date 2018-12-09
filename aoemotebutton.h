@@ -1,8 +1,6 @@
 #ifndef AOEMOTEBUTTON_H
 #define AOEMOTEBUTTON_H
 
-#include "aoapplication.h"
-
 #include <QPushButton>
 #include <QDebug>
 
@@ -11,7 +9,7 @@ class AOEmoteButton : public QPushButton
   Q_OBJECT
 
 public:
-  AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y);
+  AOEmoteButton(QWidget *p_parent, int p_x, int p_y);
 
   //void set_on(QString p_char, int p_emote);
   //void set_off(QString p_char, int p_emote);
@@ -22,7 +20,6 @@ public:
 
 private:
   QWidget *parent;
-  AOApplication *ao_app;
 
   int m_id = 0;
 

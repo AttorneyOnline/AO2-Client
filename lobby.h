@@ -24,7 +24,7 @@ class Lobby : public QMainWindow
   Q_OBJECT
 
 public:
-  Lobby(AOApplication *p_ao_app);
+  Lobby();
 
   void set_widgets();
   void list_servers();
@@ -46,8 +46,6 @@ public:
   ~Lobby();
 
 private:
-  AOApplication *ao_app;
-
   AOImage *ui_background;
 
   AOButton *ui_public_servers;

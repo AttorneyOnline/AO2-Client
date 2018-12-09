@@ -4,10 +4,8 @@
 #include "datatypes.h"
 #include "misc_functions.h"
 
-AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent) : QLabel(p_parent)
 {
-  ao_app = p_ao_app;
-
   evidence_movie = new QMovie(this);
   evidence_icon = new QLabel(this);
   sfx_player = new AOSfxPlayer(this, ao_app);

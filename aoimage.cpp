@@ -2,10 +2,9 @@
 
 #include "aoimage.h"
 
-AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
+AOImage::AOImage(QWidget *parent) : QLabel(parent)
 {
   m_parent = parent;
-  ao_app = p_ao_app;
 }
 
 AOImage::~AOImage()

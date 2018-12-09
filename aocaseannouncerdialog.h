@@ -1,7 +1,6 @@
 #ifndef AOCASEANNOUNCERDIALOG_H
 #define AOCASEANNOUNCERDIALOG_H
 
-#include "aoapplication.h"
 #include "courtroom.h"
 
 #include <QtWidgets/QDialog>
@@ -17,10 +16,9 @@ class AOCaseAnnouncerDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit AOCaseAnnouncerDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr, Courtroom *p_court = nullptr);
+  explicit AOCaseAnnouncerDialog(QWidget *parent = nullptr, Courtroom *p_court = nullptr);
 
 private:
-  AOApplication *ao_app;
   Courtroom *court;
 
   QDialogButtonBox *ui_announcer_buttons;

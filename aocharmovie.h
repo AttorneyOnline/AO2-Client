@@ -14,7 +14,7 @@ class AOCharMovie : public QLabel
   Q_OBJECT
 
 public:
-  AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app);
+  AOCharMovie(QWidget *p_parent);
 
   void play(QString p_char, QString p_emote, QString emote_prefix);
   void play_pre(QString p_char, QString p_emote, int duration);
@@ -30,8 +30,6 @@ public:
   void combo_resize(int w, int h);
 
 private:
-  AOApplication *ao_app;
-
   QMovie *m_movie;
   QVector<QImage> movie_frames;
   QTimer *preanim_timer;

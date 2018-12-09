@@ -1,24 +1,21 @@
 #include "lobby.h"
 
 #include "debug_functions.h"
-#include "aoapplication.h"
 #include "networkmanager.h"
 #include "aosfxplayer.h"
 
-Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
+Lobby::Lobby() : QMainWindow()
 {
-  ao_app = p_ao_app;
-
   this->setWindowTitle("Attorney Online 2");
 
-  ui_background = new AOImage(this, ao_app);
-  ui_public_servers = new AOButton(this, ao_app);
-  ui_favorites = new AOButton(this, ao_app);
-  ui_refresh = new AOButton(this, ao_app);
-  ui_add_to_fav = new AOButton(this, ao_app);
-  ui_connect = new AOButton(this, ao_app);
+  ui_background = new AOImage(this);
+  ui_public_servers = new AOButton(this);
+  ui_favorites = new AOButton(this);
+  ui_refresh = new AOButton(this);
+  ui_add_to_fav = new AOButton(this);
+  ui_connect = new AOButton(this);
   ui_version = new QLabel(this);
-  ui_about = new AOButton(this, ao_app);
+  ui_about = new AOButton(this);
   ui_server_list = new QListWidget(this);
   ui_player_count = new QLabel(this);
   ui_description = new AOTextArea(this);
@@ -28,13 +25,13 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatname->setPlaceholderText("Name");
   ui_chatname->setText(ao_app->get_ooc_name());
   ui_chatmessage = new QLineEdit(this);
-  ui_loading_background = new AOImage(this, ao_app);
+  ui_loading_background = new AOImage(this);
   ui_loading_text = new QTextEdit(ui_loading_background);
   ui_progress_bar = new QProgressBar(ui_loading_background);
   ui_progress_bar->setMinimum(0);
   ui_progress_bar->setMaximum(100);
   ui_progress_bar->setStyleSheet("QProgressBar{ color: white; }");
-  ui_cancel = new AOButton(ui_loading_background, ao_app);
+  ui_cancel = new AOButton(ui_loading_background);
 
   connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));

@@ -2,7 +2,6 @@
 #define AOSFXPLAYER_H
 
 #include "bass.h"
-#include "aoapplication.h"
 
 #include <QWidget>
 #include <string.h>
@@ -11,7 +10,7 @@
 class AOSfxPlayer
 {
 public:
-  AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
+  AOSfxPlayer(QWidget *parent);
 
   void play(QString p_sfx, QString p_char = "", QString shout = "");
   void stop();
@@ -19,7 +18,6 @@ public:
 
 private:
   QWidget *m_parent;
-  AOApplication *ao_app;
 
   int m_volume = 0;
   HSTREAM m_stream;

@@ -12,7 +12,7 @@ class AOScene : public QLabel
 {
   Q_OBJECT
 public:
-  explicit AOScene(QWidget *parent, AOApplication *p_ao_app);
+  explicit AOScene(QWidget *parent);
 
   void set_image(QString p_image);
   void set_legacy_desk(QString p_image);
@@ -20,7 +20,6 @@ public:
 private:
   QWidget *m_parent;
   QMovie *m_movie;
-  AOApplication *ao_app;
 
 };
 
