@@ -3,13 +3,14 @@
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
+  filehandler = TextFileHandler::getInstance();
 
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.
   int a = 0;
   BASS_DEVICEINFO info;
 
-  if (TextFileHandler::getInstance().get_audio_output_device() == "Default")
+  if (filehandler->get_audio_output_device() == "Default")
   {
       BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
       load_bass_opus_plugin();
@@ -18,7 +19,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   {
       for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
       {
-          if (TextFileHandler::getInstance().get_audio_output_device() == info.name)
+          if (filehandler->get_audio_output_device() == info.name)
           {
               BASS_SetDevice(a);
               BASS_Init(a, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
@@ -93,8 +94,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
-  log_maximum_blocks = TextFileHandler::getInstance().get_max_log_size();
-  log_goes_downwards = TextFileHandler::getInstance().get_log_goes_downwards();
+  log_maximum_blocks = filehandler->get_max_log_size();
+  log_goes_downwards = filehandler->get_log_goes_downwards();
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -127,7 +128,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText("Name");
   ui_ooc_chat_name->setMaxLength(30);
-  ui_ooc_chat_name->setText(TextFileHandler::getInstance().get_default_username());
+  ui_ooc_chat_name->setText(filehandler->get_default_username());
 
   //ui_area_password = new QLineEdit(this);
   //ui_area_password->setFrame(false);
@@ -186,12 +187,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_guard->setText("Guard");
   ui_guard->hide();
   ui_casing = new QCheckBox(this);
-  ui_casing->setChecked(TextFileHandler::getInstance().get_casing_enabled());
+  ui_casing->setChecked(filehandler->get_casing_enabled());
   ui_casing->setText(tr("Casing"));
   ui_casing->hide();
 
   ui_showname_enable = new QCheckBox(this);
-  ui_showname_enable->setChecked(TextFileHandler::getInstance().get_showname_enabled_by_default());
+  ui_showname_enable->setChecked(filehandler->get_showname_enabled_by_default());
   ui_showname_enable->setText(tr("Shownames"));
 
   ui_pre_non_interrupt = new QCheckBox(this);
@@ -221,19 +222,19 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
-  ui_music_slider->setValue(TextFileHandler::getInstance().get_default_music());
+  ui_music_slider->setValue(filehandler->get_default_music());
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
-  ui_sfx_slider->setValue(TextFileHandler::getInstance().get_default_sfx());
+  ui_sfx_slider->setValue(filehandler->get_default_sfx());
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
-  ui_blip_slider->setValue(TextFileHandler::getInstance().get_default_blip());
+  ui_blip_slider->setValue(filehandler->get_default_blip());
 
   ui_log_limit_spinbox = new QSpinBox(this);
   ui_log_limit_spinbox->setRange(0, 10000);
-  ui_log_limit_spinbox->setValue(TextFileHandler::getInstance().get_max_log_size());
+  ui_log_limit_spinbox->setValue(filehandler->get_max_log_size());
 
   ui_mute_list = new QListWidget(this);
   ui_pair_list = new QListWidget(this);
@@ -375,12 +376,12 @@ void Courtroom::set_pair_list()
 
 void Courtroom::set_widgets()
 {
-  blip_rate = TextFileHandler::getInstance().read_blip_rate();
-  blank_blip = TextFileHandler::getInstance().get_blank_blip();
+  blip_rate = filehandler->read_blip_rate();
+  blank_blip = filehandler->get_blank_blip();
 
   QString filename = "courtroom_design.ini";
 
-  pos_size_type f_courtroom = TextFileHandler::getInstance().get_element_dimensions("courtroom", filename);
+  pos_size_type f_courtroom = filehandler->get_element_dimensions("courtroom", filename);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
   {
@@ -710,7 +711,7 @@ void Courtroom::set_fonts()
 
   // Set color of labels and checkboxes
   const QString design_file = "courtroom_fonts.ini";
-  QColor f_color = TextFileHandler::getInstance().get_color("label_color", design_file);
+  QColor f_color = filehandler->get_color("label_color", design_file);
   QString color_string = "color: rgba(" +
           QString::number(f_color.red()) + ", " +
           QString::number(f_color.green()) + ", " +
@@ -723,12 +724,12 @@ void Courtroom::set_fonts()
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
   QString design_file = "courtroom_fonts.ini";
-  int f_weight = TextFileHandler::getInstance().get_font_size(p_identifier, design_file);
+  int f_weight = filehandler->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
 
   widget->setFont(QFont("Sans", f_weight));
 
-  QColor f_color = TextFileHandler::getInstance().get_color(p_identifier + "_color", design_file);
+  QColor f_color = filehandler->get_color(p_identifier + "_color", design_file);
 
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
                                             "color: rgba(" +
@@ -748,7 +749,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "courtroom_design.ini";
 
-  pos_size_type design_ini_result = TextFileHandler::getInstance().get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result = filehandler->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
@@ -806,9 +807,9 @@ void Courtroom::set_background(QString p_background)
 
   current_background = p_background;
 
-  is_ao2_bg = file_exists(TextFileHandler::getInstance().get_background_path("defensedesk.png")) &&
-              file_exists(TextFileHandler::getInstance().get_background_path("prosecutiondesk.png")) &&
-              file_exists(TextFileHandler::getInstance().get_background_path("stand.png"));
+  is_ao2_bg = file_exists(filehandler->get_background_path("defensedesk.png")) &&
+              file_exists(filehandler->get_background_path("prosecutiondesk.png")) &&
+              file_exists(filehandler->get_background_path("stand.png"));
 
   if (is_ao2_bg)
   {
@@ -830,15 +831,15 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (m_cid == -1)
   {
-    if (TextFileHandler::getInstance().is_discord_enabled())
+    if (filehandler->is_discord_enabled())
       ao_app->discord->state_spectate();
     f_char = "";
   }
   else
   {
-    f_char = TextFileHandler::getInstance().get_char_name(char_list.at(m_cid).name);
+    f_char = filehandler->get_char_name(char_list.at(m_cid).name);
 
-    if (TextFileHandler::getInstance().is_discord_enabled())
+    if (filehandler->is_discord_enabled())
       ao_app->discord->state_character(f_char.toStdString());
   }
 
@@ -860,7 +861,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_evidence_page();
 
-  QString side = TextFileHandler::getInstance().get_char_side(f_char);
+  QString side = filehandler->get_char_side(f_char);
 
   if (side == "jud")
   {
@@ -886,9 +887,9 @@ void Courtroom::enter_courtroom(int p_cid)
   }
 
   if (ao_app->custom_objection_enabled &&
-      (file_exists(TextFileHandler::getInstance().get_character_path(current_char, "custom.gif")) ||
-      file_exists(TextFileHandler::getInstance().get_character_path(current_char, "custom.apng"))) &&
-      file_exists(TextFileHandler::getInstance().get_character_path(current_char, "custom.wav")))
+      (file_exists(filehandler->get_character_path(current_char, "custom.gif")) ||
+      file_exists(filehandler->get_character_path(current_char, "custom.apng"))) &&
+      file_exists(filehandler->get_character_path(current_char, "custom.wav")))
     ui_custom_objection->show();
   else
     ui_custom_objection->hide();
@@ -930,8 +931,8 @@ void Courtroom::list_music()
 
   QString f_file = "courtroom_design.ini";
 
-  QBrush found_brush(TextFileHandler::getInstance().get_color("found_song_color", f_file));
-  QBrush missing_brush(TextFileHandler::getInstance().get_color("missing_song_color", f_file));
+  QBrush found_brush(filehandler->get_color("found_song_color", f_file));
+  QBrush missing_brush(filehandler->get_color("missing_song_color", f_file));
 
   int n_listed_songs = 0;
 
@@ -946,7 +947,7 @@ void Courtroom::list_music()
       ui_music_list->addItem(i_song_listname);
       music_row_to_number.append(n_song);
 
-      QString song_path = TextFileHandler::getInstance().get_music_path(i_song);
+      QString song_path = filehandler->get_music_path(i_song);
 
       if (file_exists(song_path))
         ui_music_list->item(n_listed_songs)->setBackground(found_brush);
@@ -965,13 +966,13 @@ void Courtroom::list_areas()
 
   QString f_file = "courtroom_design.ini";
 
-  QBrush free_brush(TextFileHandler::getInstance().get_color("area_free_color", f_file));
-  QBrush lfp_brush(TextFileHandler::getInstance().get_color("area_lfp_color", f_file));
-  QBrush casing_brush(TextFileHandler::getInstance().get_color("area_casing_color", f_file));
-  QBrush recess_brush(TextFileHandler::getInstance().get_color("area_recess_color", f_file));
-  QBrush rp_brush(TextFileHandler::getInstance().get_color("area_rp_color", f_file));
-  QBrush gaming_brush(TextFileHandler::getInstance().get_color("area_gaming_color", f_file));
-  QBrush locked_brush(TextFileHandler::getInstance().get_color("area_locked_color", f_file));
+  QBrush free_brush(filehandler->get_color("area_free_color", f_file));
+  QBrush lfp_brush(filehandler->get_color("area_lfp_color", f_file));
+  QBrush casing_brush(filehandler->get_color("area_casing_color", f_file));
+  QBrush recess_brush(filehandler->get_color("area_recess_color", f_file));
+  QBrush rp_brush(filehandler->get_color("area_rp_color", f_file));
+  QBrush gaming_brush(filehandler->get_color("area_gaming_color", f_file));
+  QBrush locked_brush(filehandler->get_color("area_locked_color", f_file));
 
   int n_listed_areas = 0;
 
@@ -1039,7 +1040,7 @@ void Courtroom::list_areas()
 
 void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
 {
-  ui_ms_chatlog->append_chatmessage(f_name, f_message, TextFileHandler::getInstance().get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_ms_chatlog->append_chatmessage(f_name, f_message, filehandler->get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_colour)
@@ -1047,9 +1048,9 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
   QString colour = "#000000";
 
   if (p_colour == "0")
-    colour = TextFileHandler::getInstance().get_color("ooc_default_color", "courtroom_design.ini").name();
+    colour = filehandler->get_color("ooc_default_color", "courtroom_design.ini").name();
   if (p_colour == "1")
-    colour = TextFileHandler::getInstance().get_color("ooc_server_color", "courtroom_design.ini").name();
+    colour = filehandler->get_color("ooc_server_color", "courtroom_design.ini").name();
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
 }
@@ -1089,32 +1090,32 @@ void Courtroom::on_chat_return_pressed()
 
   QStringList packet_contents;
 
-  QString f_side = TextFileHandler::getInstance().get_char_side(current_char);
+  QString f_side = filehandler->get_char_side(current_char);
 
   QString f_desk_mod = "chat";
 
   if (ao_app->desk_mod_enabled)
   {
-    f_desk_mod = QString::number(TextFileHandler::getInstance().get_desk_mod(current_char, current_emote));
+    f_desk_mod = QString::number(filehandler->get_desk_mod(current_char, current_emote));
     if (f_desk_mod == "-1")
       f_desk_mod = "chat";
   }
 
   packet_contents.append(f_desk_mod);
 
-  packet_contents.append(TextFileHandler::getInstance().get_pre_emote(current_char, current_emote));
+  packet_contents.append(filehandler->get_pre_emote(current_char, current_emote));
 
   packet_contents.append(current_char);
 
-  packet_contents.append(TextFileHandler::getInstance().get_emote(current_char, current_emote));
+  packet_contents.append(filehandler->get_emote(current_char, current_emote));
 
   packet_contents.append(ui_ic_chat_message->text());
 
   packet_contents.append(f_side);
 
-  packet_contents.append(TextFileHandler::getInstance().get_sfx_name(current_char, current_emote));
+  packet_contents.append(filehandler->get_sfx_name(current_char, current_emote));
 
-  int f_emote_mod = TextFileHandler::getInstance().get_emote_mod(current_char, current_emote);
+  int f_emote_mod = filehandler->get_emote_mod(current_char, current_emote);
 
   //needed or else legacy won't understand what we're saying
   if (objection_state > 0)
@@ -1145,7 +1146,7 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
-  packet_contents.append(QString::number(TextFileHandler::getInstance().get_sfx_delay(current_char, current_emote)));
+  packet_contents.append(QString::number(filehandler->get_sfx_delay(current_char, current_emote)));
 
   QString f_obj_state;
 
@@ -1269,7 +1270,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   QString f_showname;
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
-      f_showname = TextFileHandler::getInstance().get_showname(char_list.at(f_char_id).name);
+      f_showname = filehandler->get_showname(char_list.at(f_char_id).name);
   }
   else
   {
@@ -1306,7 +1307,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_evidence_present->set_image("present_disabled.png");
   }
 
-  chatlogpiece* temp = new chatlogpiece(TextFileHandler::getInstance().get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
+  chatlogpiece* temp = new chatlogpiece(filehandler->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
   ic_chatlog_history.append(*temp);
 
   while(ic_chatlog_history.size() > log_maximum_blocks)
@@ -1320,7 +1321,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_custom_theme = TextFileHandler::getInstance().get_char_shouts(f_char);
+  QString f_custom_theme = filehandler->get_char_shouts(f_char);
 
   //if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1)
@@ -1371,7 +1372,7 @@ void Courtroom::handle_chatmessage_2()
   {
       QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
 
-      QString f_showname = TextFileHandler::getInstance().get_showname(real_name);
+      QString f_showname = filehandler->get_showname(real_name);
 
       ui_vp_showname->setText(f_showname);
   }
@@ -1383,13 +1384,13 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
 
-  QString chatbox = TextFileHandler::getInstance().get_chat(m_chatmessage[CHAR_NAME]);
+  QString chatbox = filehandler->get_chat(m_chatmessage[CHAR_NAME]);
 
   if (chatbox == "")
     ui_vp_chatbox->set_image("chatmed.png");
   else
   {
-    QString chatbox_path = TextFileHandler::getInstance().get_base_path() + "misc/" + chatbox + "/chatbox.png";
+    QString chatbox_path = filehandler->get_base_path() + "misc/" + chatbox + "/chatbox.png";
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
@@ -1586,7 +1587,7 @@ void Courtroom::handle_chatmessage_3()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play(TextFileHandler::getInstance().get_custom_realization(m_chatmessage[CHAR_NAME]));
+    sfx_player->play(filehandler->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
 
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
@@ -1659,13 +1660,13 @@ void Courtroom::handle_chatmessage_3()
   }
 
   QString f_message = m_chatmessage[MESSAGE];
-  QStringList call_words = TextFileHandler::getInstance().get_call_words();
+  QStringList call_words = filehandler->get_call_words();
 
   for (QString word : call_words)
   {
     if (f_message.contains(word, Qt::CaseInsensitive))
     {
-      modcall_player->play(TextFileHandler::getInstance().get_sfx("word_call"));
+      modcall_player->play(filehandler->get_sfx("word_call"));
       ao_app->alert(this);
 
       break;
@@ -1988,19 +1989,19 @@ void Courtroom::play_preanim()
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int ao2_duration = TextFileHandler::getInstance().get_ao2_preanim_duration(f_char, f_preanim);
-  int text_delay = TextFileHandler::getInstance().get_text_delay(f_char, f_preanim) * time_mod;
+  int ao2_duration = filehandler->get_ao2_preanim_duration(f_char, f_preanim);
+  int text_delay = filehandler->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
 
   int preanim_duration;
 
   if (ao2_duration < 0)
-    preanim_duration = TextFileHandler::getInstance().get_preanim_duration(f_char, f_preanim);
+    preanim_duration = filehandler->get_preanim_duration(f_char, f_preanim);
   else
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-  QString anim_to_find = TextFileHandler::getInstance().get_image_suffix(TextFileHandler::getInstance().get_character_path(f_char, f_preanim));
+  QString anim_to_find = filehandler->get_image_suffix(filehandler->get_character_path(f_char, f_preanim));
   if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
@@ -2023,19 +2024,19 @@ void Courtroom::play_noninterrupting_preanim()
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int ao2_duration = TextFileHandler::getInstance().get_ao2_preanim_duration(f_char, f_preanim);
-  int text_delay = TextFileHandler::getInstance().get_text_delay(f_char, f_preanim) * time_mod;
+  int ao2_duration = filehandler->get_ao2_preanim_duration(f_char, f_preanim);
+  int text_delay = filehandler->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
 
   int preanim_duration;
 
   if (ao2_duration < 0)
-    preanim_duration = TextFileHandler::getInstance().get_preanim_duration(f_char, f_preanim);
+    preanim_duration = filehandler->get_preanim_duration(f_char, f_preanim);
   else
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-  QString anim_to_find = TextFileHandler::getInstance().get_image_suffix(TextFileHandler::getInstance().get_character_path(f_char, f_preanim));
+  QString anim_to_find = filehandler->get_image_suffix(filehandler->get_character_path(f_char, f_preanim));
   if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
@@ -2101,7 +2102,7 @@ void Courtroom::start_chat_ticking()
   current_display_speed = 3;
   chat_tick_timer->start(message_display_speed[current_display_speed]);
 
-  QString f_gender = TextFileHandler::getInstance().get_gender(m_chatmessage[CHAR_NAME]);
+  QString f_gender = filehandler->get_gender(m_chatmessage[CHAR_NAME]);
 
   blip_player->set_blips("sfx-blip" + f_gender + ".wav");
 
@@ -2421,7 +2422,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  sfx_player->play(TextFileHandler::getInstance().get_sfx_suffix(sfx_name));
+  sfx_player->play(filehandler->get_sfx_suffix(sfx_name));
 }
 
 void Courtroom::set_scene()
@@ -2520,7 +2521,7 @@ void Courtroom::set_scene()
 
 void Courtroom::set_text_color()
 {
-  QColor textcolor = TextFileHandler::getInstance().get_chat_color(m_chatmessage[TEXT_COLOR], TextFileHandler::getInstance().get_chat(m_chatmessage[CHAR_NAME]));
+  QColor textcolor = filehandler->get_chat_color(m_chatmessage[TEXT_COLOR], filehandler->get_chat(m_chatmessage[CHAR_NAME]));
 
   ui_vp_message->setTextBackgroundColor(QColor(0,0,0,0));
   ui_vp_message->setTextColor(textcolor);
@@ -2539,7 +2540,7 @@ void Courtroom::set_text_color()
 
 QColor Courtroom::get_text_color(QString color)
 {
-  return TextFileHandler::getInstance().get_chat_color(color, TextFileHandler::getInstance().get_chat(m_chatmessage[CHAR_NAME]));
+  return filehandler->get_chat_color(color, filehandler->get_chat(m_chatmessage[CHAR_NAME]));
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -2629,7 +2630,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   //witness testimony
   if (p_wtce == "testimony1")
   {
-    sfx_player->play(TextFileHandler::getInstance().get_sfx("witness_testimony"));
+    sfx_player->play(filehandler->get_sfx("witness_testimony"));
     ui_vp_wtce->play("witnesstestimony");
     testimony_in_progress = true;
     show_testimony();
@@ -2637,7 +2638,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   //cross examination
   else if (p_wtce == "testimony2")
   {
-    sfx_player->play(TextFileHandler::getInstance().get_sfx("cross_examination"));
+    sfx_player->play(filehandler->get_sfx("cross_examination"));
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
   }
@@ -2645,12 +2646,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   {
     if (variant == 0)
     {
-        sfx_player->play(TextFileHandler::getInstance().get_sfx("not_guilty"));
+        sfx_player->play(filehandler->get_sfx("not_guilty"));
         ui_vp_wtce->play("notguilty");
         testimony_in_progress = false;
     }
     else if (variant == 1) {
-        sfx_player->play(TextFileHandler::getInstance().get_sfx("guilty"));
+        sfx_player->play(filehandler->get_sfx("guilty"));
         ui_vp_wtce->play("guilty");
         testimony_in_progress = false;
     }
@@ -2679,7 +2680,7 @@ void Courtroom::mod_called(QString p_ip)
   ui_server_chatlog->append(p_ip);
   if (ui_guard->isChecked())
   {
-    modcall_player->play(TextFileHandler::getInstance().get_sfx("mod_call"));
+    modcall_player->play(filehandler->get_sfx("mod_call"));
     ao_app->alert(this);
   }
 }
@@ -2689,13 +2690,13 @@ void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
   if (ui_casing->isChecked())
   {
     ui_server_chatlog->append(msg);
-    if ((TextFileHandler::getInstance().get_casing_defence_enabled() && def) ||
-        (TextFileHandler::getInstance().get_casing_prosecution_enabled() && pro) ||
-        (TextFileHandler::getInstance().get_casing_judge_enabled() && jud) ||
-        (TextFileHandler::getInstance().get_casing_juror_enabled() && jur) ||
-        (TextFileHandler::getInstance().get_casing_steno_enabled() && steno))
+    if ((filehandler->get_casing_defence_enabled() && def) ||
+        (filehandler->get_casing_prosecution_enabled() && pro) ||
+        (filehandler->get_casing_judge_enabled() && jud) ||
+        (filehandler->get_casing_juror_enabled() && jur) ||
+        (filehandler->get_casing_steno_enabled() && steno))
     {
-        modcall_player->play(TextFileHandler::getInstance().get_sfx("case_call"));
+        modcall_player->play(filehandler->get_sfx("case_call"));
         ao_app->alert(this);
     }
   }
@@ -3370,7 +3371,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::on_reload_theme_clicked()
 { 
-  TextFileHandler::getInstance().read_theme();
+  filehandler->read_theme();
 
   //to update status on the background
   set_background(current_background);
@@ -3530,13 +3531,13 @@ void Courtroom::on_casing_clicked()
   {
     if (ui_casing->isChecked())
       send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase"
-                                            + " \"" + TextFileHandler::getInstance().get_casing_can_host_cases() + "\""
-                                            + " " + QString::number(TextFileHandler::getInstance().get_casing_cm_enabled())
-                                            + " " + QString::number(TextFileHandler::getInstance().get_casing_defence_enabled())
-                                            + " " + QString::number(TextFileHandler::getInstance().get_casing_prosecution_enabled())
-                                            + " " + QString::number(TextFileHandler::getInstance().get_casing_judge_enabled())
-                                            + " " + QString::number(TextFileHandler::getInstance().get_casing_juror_enabled())
-                                            + " " + QString::number(TextFileHandler::getInstance().get_casing_steno_enabled())
+                                            + " \"" + filehandler->get_casing_can_host_cases() + "\""
+                                            + " " + QString::number(filehandler->get_casing_cm_enabled())
+                                            + " " + QString::number(filehandler->get_casing_defence_enabled())
+                                            + " " + QString::number(filehandler->get_casing_prosecution_enabled())
+                                            + " " + QString::number(filehandler->get_casing_judge_enabled())
+                                            + " " + QString::number(filehandler->get_casing_juror_enabled())
+                                            + " " + QString::number(filehandler->get_casing_steno_enabled())
                                             + "#%"));
     else
       send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0 0#%"));

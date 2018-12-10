@@ -1,18 +1,18 @@
 #include "text_file_functions.h"
 
-TextFileHandler& TextFileHandler::getInstance()
+TextFileHandler* TextFileHandler::singleton = new TextFileHandler();
+
+void TextFileHandler::createInstance(AOApplication *p_ao_app)
 {
-  static TextFileHandler instance;
+  singleton->ao_app = p_ao_app;
 
   // Create the QSettings class that points to the config.ini.
-  instance.configini = new QSettings(instance.get_base_path() + "config.ini", QSettings::IniFormat);
-
-  return instance;
+  singleton->configini = new QSettings(singleton->get_base_path() + "config.ini", QSettings::IniFormat);
 }
 
-void TextFileHandler::give_ao_app_pointer(AOApplication *p_ao_app)
+TextFileHandler* TextFileHandler::getInstance()
 {
-  ao_app = p_ao_app;
+  return singleton;
 }
 
 QString TextFileHandler::get_master_server()

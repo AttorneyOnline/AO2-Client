@@ -4,6 +4,8 @@
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) : QDialog(parent)
 {
+    TextFileHandler *filehandler = TextFileHandler::getInstance();
+
     // Setting up the basics.
     // setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Settings"));
@@ -56,13 +58,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
     // Fill the combobox with the names of the themes.
-    QDirIterator it(TextFileHandler::getInstance().get_base_path() + "themes", QDir::Dirs, QDirIterator::NoIteratorFlags);
+    QDirIterator it(filehandler->get_base_path() + "themes", QDir::Dirs, QDirIterator::NoIteratorFlags);
     while (it.hasNext())
     {
         QString actualname = QDir(it.next()).dirName();
         if (actualname != "." && actualname != "..")
             ui_theme_combobox->addItem(actualname);
-        if (actualname == TextFileHandler::getInstance().get_current_theme())
+        if (actualname == filehandler->get_current_theme())
             ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count()-1);
     }
 
@@ -84,7 +86,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_downwards_lbl);
 
     ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-    ui_downwards_cb->setChecked(TextFileHandler::getInstance().get_log_goes_downwards());
+    ui_downwards_cb->setChecked(filehandler->get_log_goes_downwards());
 
     ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_downwards_cb);
 
@@ -97,7 +99,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
 
     ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
     ui_length_spinbox->setMaximum(10000);
-    ui_length_spinbox->setValue(TextFileHandler::getInstance().get_max_log_size());
+    ui_length_spinbox->setValue(filehandler->get_max_log_size());
 
     ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_length_spinbox);
 
@@ -116,7 +118,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
 
     ui_username_textbox = new QLineEdit(ui_form_layout_widget);
     ui_username_textbox->setMaxLength(30);
-    ui_username_textbox->setText(TextFileHandler::getInstance().get_default_username());
+    ui_username_textbox->setText(filehandler->get_default_username());
 
     ui_gameplay_form->setWidget(5, QFormLayout::FieldRole, ui_username_textbox);
 
@@ -129,7 +131,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_gameplay_form->setWidget(6, QFormLayout::LabelRole, ui_showname_lbl);
 
     ui_showname_cb = new QCheckBox(ui_form_layout_widget);
-    ui_showname_cb->setChecked(TextFileHandler::getInstance().get_showname_enabled_by_default());
+    ui_showname_cb->setChecked(filehandler->get_showname_enabled_by_default());
 
     ui_gameplay_form->setWidget(6, QFormLayout::FieldRole, ui_showname_cb);
 
@@ -147,7 +149,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_gameplay_form->setWidget(8, QFormLayout::LabelRole, ui_ms_lbl);
 
     ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
-    ui_ms_textbox->setText(TextFileHandler::getInstance().get_master_server());
+    ui_ms_textbox->setText(filehandler->get_master_server());
 
     ui_gameplay_form->setWidget(8, QFormLayout::FieldRole, ui_ms_textbox);
 
@@ -160,7 +162,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_gameplay_form->setWidget(9, QFormLayout::LabelRole, ui_discord_lbl);
 
     ui_discord_cb = new QCheckBox(ui_form_layout_widget);
-    ui_discord_cb->setChecked(TextFileHandler::getInstance().is_discord_enabled());
+    ui_discord_cb->setChecked(filehandler->is_discord_enabled());
 
     ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
 
@@ -183,7 +185,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
 
     // Let's fill the callwords text edit with the already present callwords.
     ui_callwords_textbox->document()->clear();
-    foreach (QString callword, TextFileHandler::getInstance().get_call_words()) {
+    foreach (QString callword, filehandler->get_call_words()) {
         ui_callwords_textbox->appendPlainText(callword);
     }
 
@@ -227,7 +229,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
     {
         ui_audio_device_combobox->addItem(info.name);
-        if (TextFileHandler::getInstance().get_audio_output_device() == info.name)
+        if (filehandler->get_audio_output_device() == info.name)
             ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
     }
 
@@ -246,7 +248,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_audio_layout->setWidget(2, QFormLayout::LabelRole, ui_music_volume_lbl);
 
     ui_music_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_music_volume_spinbox->setValue(TextFileHandler::getInstance().get_default_music());
+    ui_music_volume_spinbox->setValue(filehandler->get_default_music());
     ui_music_volume_spinbox->setMaximum(100);
     ui_music_volume_spinbox->setSuffix("%");
 
@@ -260,7 +262,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_audio_layout->setWidget(3, QFormLayout::LabelRole, ui_sfx_volume_lbl);
 
     ui_sfx_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_sfx_volume_spinbox->setValue(TextFileHandler::getInstance().get_default_sfx());
+    ui_sfx_volume_spinbox->setValue(filehandler->get_default_sfx());
     ui_sfx_volume_spinbox->setMaximum(100);
     ui_sfx_volume_spinbox->setSuffix("%");
 
@@ -273,7 +275,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_audio_layout->setWidget(4, QFormLayout::LabelRole, ui_blips_volume_lbl);
 
     ui_blips_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_blips_volume_spinbox->setValue(TextFileHandler::getInstance().get_default_blip());
+    ui_blips_volume_spinbox->setValue(filehandler->get_default_blip());
     ui_blips_volume_spinbox->setMaximum(100);
     ui_blips_volume_spinbox->setSuffix("%");
 
@@ -292,7 +294,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_audio_layout->setWidget(6, QFormLayout::LabelRole, ui_bliprate_lbl);
 
     ui_bliprate_spinbox = new QSpinBox(ui_audio_widget);
-    ui_bliprate_spinbox->setValue(TextFileHandler::getInstance().read_blip_rate());
+    ui_bliprate_spinbox->setValue(filehandler->read_blip_rate());
     ui_bliprate_spinbox->setMinimum(1);
 
     ui_audio_layout->setWidget(6, QFormLayout::FieldRole, ui_bliprate_spinbox);
@@ -305,7 +307,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_audio_layout->setWidget(7, QFormLayout::LabelRole, ui_blank_blips_lbl);
 
     ui_blank_blips_cb = new QCheckBox(ui_audio_widget);
-    ui_blank_blips_cb->setChecked(TextFileHandler::getInstance().get_blank_blip());
+    ui_blank_blips_cb->setChecked(filehandler->get_blank_blip());
 
     ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
 
@@ -342,7 +344,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(1, QFormLayout::LabelRole, ui_casing_enabled_lbl);
 
     ui_casing_enabled_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_enabled_cb->setChecked(TextFileHandler::getInstance().get_casing_enabled());
+    ui_casing_enabled_cb->setChecked(filehandler->get_casing_enabled());
 
     ui_casing_layout->setWidget(1, QFormLayout::FieldRole, ui_casing_enabled_cb);
 
@@ -356,7 +358,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(2, QFormLayout::LabelRole, ui_casing_def_lbl);
 
     ui_casing_def_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_def_cb->setChecked(TextFileHandler::getInstance().get_casing_defence_enabled());
+    ui_casing_def_cb->setChecked(filehandler->get_casing_defence_enabled());
 
     ui_casing_layout->setWidget(2, QFormLayout::FieldRole, ui_casing_def_cb);
 
@@ -370,7 +372,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(3, QFormLayout::LabelRole, ui_casing_pro_lbl);
 
     ui_casing_pro_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_pro_cb->setChecked(TextFileHandler::getInstance().get_casing_prosecution_enabled());
+    ui_casing_pro_cb->setChecked(filehandler->get_casing_prosecution_enabled());
 
     ui_casing_layout->setWidget(3, QFormLayout::FieldRole, ui_casing_pro_cb);
 
@@ -384,7 +386,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(4, QFormLayout::LabelRole, ui_casing_jud_lbl);
 
     ui_casing_jud_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_jud_cb->setChecked(TextFileHandler::getInstance().get_casing_judge_enabled());
+    ui_casing_jud_cb->setChecked(filehandler->get_casing_judge_enabled());
 
     ui_casing_layout->setWidget(4, QFormLayout::FieldRole, ui_casing_jud_cb);
 
@@ -398,7 +400,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(5, QFormLayout::LabelRole, ui_casing_jur_lbl);
 
     ui_casing_jur_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_jur_cb->setChecked(TextFileHandler::getInstance().get_casing_juror_enabled());
+    ui_casing_jur_cb->setChecked(filehandler->get_casing_juror_enabled());
 
     ui_casing_layout->setWidget(5, QFormLayout::FieldRole, ui_casing_jur_cb);
 
@@ -412,7 +414,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(6, QFormLayout::LabelRole, ui_casing_steno_lbl);
 
     ui_casing_steno_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_steno_cb->setChecked(TextFileHandler::getInstance().get_casing_steno_enabled());
+    ui_casing_steno_cb->setChecked(filehandler->get_casing_steno_enabled());
 
     ui_casing_layout->setWidget(6, QFormLayout::FieldRole, ui_casing_steno_cb);
 
@@ -426,7 +428,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(7, QFormLayout::LabelRole, ui_casing_cm_lbl);
 
     ui_casing_cm_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_cm_cb->setChecked(TextFileHandler::getInstance().get_casing_cm_enabled());
+    ui_casing_cm_cb->setChecked(filehandler->get_casing_cm_enabled());
 
     ui_casing_layout->setWidget(7, QFormLayout::FieldRole, ui_casing_cm_cb);
 
@@ -440,7 +442,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
     ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_cm_cases_lbl);
 
     ui_casing_cm_cases_textbox = new QLineEdit(ui_casing_widget);
-    ui_casing_cm_cases_textbox->setText(TextFileHandler::getInstance().get_casing_can_host_cases());
+    ui_casing_cm_cases_textbox->setText(filehandler->get_casing_can_host_cases());
 
     ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
 
@@ -451,7 +453,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
 void AOOptionsDialog::save_pressed()
 {
     // Save everything into the config.ini.
-    QSettings* configini = TextFileHandler::getInstance().configini;
+    QSettings* configini = TextFileHandler::getInstance()->configini;
 
     configini->setValue("theme", ui_theme_combobox->currentText());
     configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
@@ -461,7 +463,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
 
-    QFile* callwordsini = new QFile(TextFileHandler::getInstance().get_base_path() + "callwords.ini");
+    QFile* callwordsini = new QFile(TextFileHandler::getInstance()->get_base_path() + "callwords.ini");
 
     if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
     {

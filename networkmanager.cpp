@@ -16,7 +16,7 @@ NetworkManager::NetworkManager() : QObject()
   QObject::connect(ms_socket, SIGNAL(readyRead()), this, SLOT(handle_ms_packet()));
   QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
 
-  QString master_config = TextFileHandler::getInstance().get_master_server();
+  QString master_config = TextFileHandler::get_instance()->get_master_server();
   if (master_config != "")
     ms_nosrv_hostname = master_config;
 }

@@ -14,11 +14,13 @@
 #include <QRegExp>
 
 /// A singleton designed to handle the config.ini file.
-/// Call upon it with TextFileHandler::getInstance().
+/// Call upon it with TextFileHandler::getInstance()->
 class TextFileHandler
 {
   private:
     TextFileHandler() {}
+
+    static TextFileHandler* singleton;
 
     // Isn't this ironic? To eliminate pointers to the AO app,
     // I must still keep one.
@@ -27,15 +29,12 @@ class TextFileHandler
     QString current_theme = "default";
 
   public:
-    static TextFileHandler& getInstance();
+    static void create_instance(AOApplication *p_ao_app);
+    static TextFileHandler* get_instance();
     TextFileHandler(TextFileHandler const&) = delete;
     void operator=(TextFileHandler const&) = delete;
 
     QSettings *configini;
-
-    // Gives the pointer to the AO app to it.
-    // Should be called right as the AO app itself is created.
-    void give_ao_app_pointer(AOApplication *p_ao_app);
 
     // Gets the IP of the master server.
     QString get_master_server();

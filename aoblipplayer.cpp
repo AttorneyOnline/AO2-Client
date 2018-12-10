@@ -8,7 +8,7 @@ AOBlipPlayer::AOBlipPlayer(QWidget *parent)
 
 void AOBlipPlayer::set_blips(QString p_sfx)
 {
-  QString f_path = TextFileHandler::getInstance().get_sounds_path(p_sfx);
+  QString f_path = TextFileHandler::get_instance()->get_sounds_path(p_sfx);
 
   for (int n_stream = 0 ; n_stream < 5 ; ++n_stream)
   {
@@ -29,7 +29,7 @@ void AOBlipPlayer::blip_tick()
 
   HSTREAM f_stream = m_stream_list[f_cycle];
 
-  if (TextFileHandler::getInstance().get_audio_output_device() != "Default")
+  if (TextFileHandler::get_instance()->get_audio_output_device() != "Default")
     BASS_ChannelSetDevice(f_stream, BASS_GetDevice());
   BASS_ChannelPlay(f_stream, false);
 }

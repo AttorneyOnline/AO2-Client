@@ -281,7 +281,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
-    if (TextFileHandler::getInstance().is_discord_enabled())
+    if (TextFileHandler::get_instance()->is_discord_enabled())
       discord->state_server(server_name.toStdString(), hash.result().toBase64().toStdString());
   }
   else if (header == "CI")

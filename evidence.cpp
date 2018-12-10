@@ -32,7 +32,7 @@ void Courtroom::construct_evidence()
   set_size_and_pos(ui_evidence, "evidence_background");
   set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
 
-  QPoint f_spacing = TextFileHandler::getInstance().get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
+  QPoint f_spacing = TextFileHandler::get_instance()->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
 
   const int button_width = 70;
   int x_spacing = f_spacing.x();
@@ -192,7 +192,7 @@ void Courtroom::on_evidence_image_button_clicked()
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
   dialog.setViewMode(QFileDialog::List);
-  dialog.setDirectory(TextFileHandler::getInstance().get_base_path() + "evidence");
+  dialog.setDirectory(TextFileHandler::get_instance()->get_base_path() + "evidence");
 
   QStringList filenames;
 

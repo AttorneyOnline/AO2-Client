@@ -24,18 +24,20 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
 
   QString gif_path;
 
+  TextFileHandler* filehandler = TextFileHandler::getInstance();
+
   QString custom_path;
   if (p_gif == "custom")
-    custom_path = TextFileHandler::getInstance().get_image_suffix(TextFileHandler::getInstance().get_character_path(p_char, p_gif));
+    custom_path = filehandler->get_image_suffix(filehandler->get_character_path(p_char, p_gif));
   else
-    custom_path = TextFileHandler::getInstance().get_image_suffix(TextFileHandler::getInstance().get_character_path(p_char, p_gif + "_bubble"));
+    custom_path = filehandler->get_image_suffix(filehandler->get_character_path(p_char, p_gif + "_bubble"));
 
-  QString misc_path = TextFileHandler::getInstance().get_base_path() + "misc/" + p_custom_theme + "/" + p_gif + "_bubble.gif";
-  QString custom_theme_path = TextFileHandler::getInstance().get_custom_theme_path(p_custom_theme, p_gif + ".gif");
-  QString theme_path = TextFileHandler::getInstance().get_theme_path(p_gif + ".gif");
-  QString default_theme_path = TextFileHandler::getInstance().get_default_theme_path(p_gif + ".gif");
-  QString placeholder_path = TextFileHandler::getInstance().get_theme_path("placeholder.gif");
-  QString default_placeholder_path = TextFileHandler::getInstance().get_default_theme_path("placeholder.gif");
+  QString misc_path = filehandler->get_base_path() + "misc/" + p_custom_theme + "/" + p_gif + "_bubble.gif";
+  QString custom_theme_path = filehandler->get_custom_theme_path(p_custom_theme, p_gif + ".gif");
+  QString theme_path = filehandler->get_theme_path(p_gif + ".gif");
+  QString default_theme_path = filehandler->get_default_theme_path(p_gif + ".gif");
+  QString placeholder_path = filehandler->get_theme_path("placeholder.gif");
+  QString default_placeholder_path = filehandler->get_default_theme_path("placeholder.gif");
 
   if (file_exists(misc_path))
     gif_path = misc_path;

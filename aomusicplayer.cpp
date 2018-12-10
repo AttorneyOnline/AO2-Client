@@ -15,13 +15,13 @@ void AOMusicPlayer::play(QString p_song)
 {
   BASS_ChannelStop(m_stream);
 
-  QString f_path = TextFileHandler::getInstance().get_music_path(p_song);
+  QString f_path = TextFileHandler::get_instance()->get_music_path(p_song);
 
   m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
   this->set_volume(m_volume);
 
-  if (TextFileHandler::getInstance().get_audio_output_device() != "Default")
+  if (TextFileHandler::get_instance()->get_audio_output_device() != "Default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
 }

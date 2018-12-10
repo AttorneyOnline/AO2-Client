@@ -210,6 +210,7 @@ public:
 
 private:
   AOApplication *ao_app;
+  TextFileHandler *filehandler;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;

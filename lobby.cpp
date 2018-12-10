@@ -25,7 +25,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
-  ui_chatname->setText(TextFileHandler::getInstance().get_ooc_name());
+  ui_chatname->setText(TextFileHandler::get_instance()->get_ooc_name());
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this);
   ui_loading_text = new QTextEdit(ui_loading_background);
@@ -56,11 +56,11 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 //sets images, position and size
 void Lobby::set_widgets()
 {
-  TextFileHandler::getInstance().read_theme();
+  TextFileHandler::get_instance()->read_theme();
 
   QString filename = "lobby_design.ini";
 
-  pos_size_type f_lobby = TextFileHandler::getInstance().get_element_dimensions("lobby", filename);
+  pos_size_type f_lobby = TextFileHandler::get_instance()->get_element_dimensions("lobby", filename);
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
@@ -154,7 +154,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "lobby_design.ini";
 
-  pos_size_type design_ini_result = TextFileHandler::getInstance().get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result = TextFileHandler::get_instance()->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
@@ -366,7 +366,7 @@ void Lobby::list_favorites()
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  ui_chatbox->append_chatmessage(f_name, f_message, TextFileHandler::getInstance().get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_chatbox->append_chatmessage(f_name, f_message, TextFileHandler::get_instance()->get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
 void Lobby::append_error(QString f_message)

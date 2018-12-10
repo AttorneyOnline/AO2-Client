@@ -54,7 +54,7 @@ void AOCharButton::set_passworded()
 
 void AOCharButton::set_image(QString p_character)
 {
-  QString image_path = TextFileHandler::getInstance().get_character_path(p_character, "char_icon.png");
+  QString image_path = TextFileHandler::get_instance()->get_character_path(p_character, "char_icon.png");
 
   this->setText("");
 

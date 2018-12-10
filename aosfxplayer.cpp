@@ -11,12 +11,12 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
   QString misc_path = "";
   QString char_path = "";
-  QString sound_path = TextFileHandler::getInstance().get_sounds_path(p_sfx);
+  QString sound_path = TextFileHandler::get_instance()->get_sounds_path(p_sfx);
 
   if (shout != "")
-    misc_path = TextFileHandler::getInstance().get_base_path() + "misc/" + shout + "/" + p_sfx;
+    misc_path = TextFileHandler::get_instance()->get_base_path() + "misc/" + shout + "/" + p_sfx;
   if (p_char != "")
-    char_path = TextFileHandler::getInstance().get_character_path(p_char, p_sfx);
+    char_path = TextFileHandler::get_instance()->get_character_path(p_char, p_sfx);
 
   QString f_path;
 
@@ -31,7 +31,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 
   m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
-  if (TextFileHandler::getInstance().get_audio_output_device() != "Default")
+  if (TextFileHandler::get_instance()->get_audio_output_device() != "Default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
 }

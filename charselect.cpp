@@ -61,7 +61,7 @@ void Courtroom::set_char_select()
 {
   QString filename = "courtroom_design.ini";
 
-  pos_size_type f_charselect = TextFileHandler::getInstance().get_element_dimensions("char_select", filename);
+  pos_size_type f_charselect = TextFileHandler::get_instance()->get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0)
   {
@@ -120,7 +120,7 @@ void Courtroom::set_char_select_page()
 
 void Courtroom::char_clicked(int n_char)
 {
-  QString char_ini_path = TextFileHandler::getInstance().get_character_path(char_list.at(n_char).name, "char.ini");
+  QString char_ini_path = TextFileHandler::get_instance()->get_character_path(char_list.at(n_char).name, "char.ini");
 
   qDebug() << "char_ini_path" << char_ini_path;
 
@@ -147,7 +147,7 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
     if (ui_char_button_list_filtered.size() == 0)
         return;
 
-    QPoint f_spacing = TextFileHandler::getInstance().get_button_spacing("char_button_spacing", "courtroom_design.ini");
+    QPoint f_spacing = TextFileHandler::get_instance()->get_button_spacing("char_button_spacing", "courtroom_design.ini");
 
     int x_spacing = f_spacing.x();
     int x_mod_count = 0;

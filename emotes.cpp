@@ -9,7 +9,7 @@ void Courtroom::construct_emotes()
 
   set_size_and_pos(ui_emotes, "emotes");
 
-  QPoint f_spacing = TextFileHandler::getInstance().get_button_spacing("emote_button_spacing", "courtroom_design.ini");
+  QPoint f_spacing = TextFileHandler::get_instance()->get_button_spacing("emote_button_spacing", "courtroom_design.ini");
 
   const int button_width = 40;
   int x_spacing = f_spacing.x();
@@ -52,7 +52,7 @@ void Courtroom::set_emote_page()
   if (m_cid == -1)
     return;
 
-  int total_emotes = TextFileHandler::getInstance().get_emote_number(current_char);
+  int total_emotes = TextFileHandler::get_instance()->get_emote_number(current_char);
 
   ui_emote_left->hide();
   ui_emote_right->hide();
@@ -103,12 +103,12 @@ void Courtroom::set_emote_dropdown()
 {
   ui_emote_dropdown->clear();
 
-  int total_emotes = TextFileHandler::getInstance().get_emote_number(current_char);
+  int total_emotes = TextFileHandler::get_instance()->get_emote_number(current_char);
   QStringList emote_list;
 
   for (int n = 0 ; n < total_emotes ; ++n)
   {
-    emote_list.append(TextFileHandler::getInstance().get_emote_comment(current_char, n));
+    emote_list.append(TextFileHandler::get_instance()->get_emote_comment(current_char, n));
   }
 
   ui_emote_dropdown->addItems(emote_list);
@@ -129,7 +129,7 @@ void Courtroom::select_emote(int p_id)
   if (current_emote >= min && current_emote <= max)
     ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_on.png");
 
-  int emote_mod = TextFileHandler::getInstance().get_emote_mod(current_char, current_emote);
+  int emote_mod = TextFileHandler::get_instance()->get_emote_mod(current_char, current_emote);
 
   if (old_emote == current_emote)
   {
