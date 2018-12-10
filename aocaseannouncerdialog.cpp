@@ -3,7 +3,6 @@
 AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, Courtroom *p_court)
   : QDialog(parent)
 {
-  ao_app = p_ao_app;
   court = p_court;
 
   setWindowTitle(tr("Case Announcer"));

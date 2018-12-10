@@ -7,23 +7,23 @@
 
 void Courtroom::construct_char_select()
 {
-  ui_char_select_background = new AOImage(this, ao_app);
+  ui_char_select_background = new AOImage(this);
 
   ui_char_buttons = new QWidget(ui_char_select_background);
 
-  ui_selector = new AOImage(ui_char_select_background, ao_app);
+  ui_selector = new AOImage(ui_char_select_background);
   ui_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selector->resize(62, 62);
 
-  ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
+  ui_back_to_lobby = new AOButton(ui_char_select_background);
 
   ui_char_password = new QLineEdit(ui_char_select_background);
   ui_char_password->setPlaceholderText(tr("Password"));
 
-  ui_char_select_left = new AOButton(ui_char_select_background, ao_app);
-  ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
+  ui_char_select_left = new AOButton(ui_char_select_background);
+  ui_char_select_right = new AOButton(ui_char_select_background);
 
-  ui_spectator = new AOButton(ui_char_select_background, ao_app);
+  ui_spectator = new AOButton(ui_char_select_background);
   ui_spectator->setText(tr("Spectator"));
 
   ui_char_search = new QLineEdit(ui_char_select_background);
@@ -61,7 +61,7 @@ void Courtroom::set_char_select()
 {
   QString filename = "courtroom_design.ini";
 
-  pos_size_type f_charselect = ao_app->get_element_dimensions("char_select", filename);
+  pos_size_type f_charselect = TextFileHandler::getInstance().get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0)
   {
@@ -120,7 +120,7 @@ void Courtroom::set_char_select_page()
 
 void Courtroom::char_clicked(int n_char)
 {
-  QString char_ini_path = ao_app->get_character_path(char_list.at(n_char).name, "char.ini");
+  QString char_ini_path = TextFileHandler::getInstance().get_character_path(char_list.at(n_char).name, "char.ini");
 
   qDebug() << "char_ini_path" << char_ini_path;
 
@@ -147,7 +147,7 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
     if (ui_char_button_list_filtered.size() == 0)
         return;
 
-    QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
+    QPoint f_spacing = TextFileHandler::getInstance().get_button_spacing("char_button_spacing", "courtroom_design.ini");
 
     int x_spacing = f_spacing.x();
     int x_mod_count = 0;
@@ -198,7 +198,7 @@ void Courtroom::character_loading_finished()
     // Later on, we'll be revealing buttons as we need them.
     for (int n = 0; n < char_list.size(); n++)
     {
-      AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+      AOCharButton* character = new AOCharButton(ui_char_buttons, 0, 0, char_list.at(n).taken);
       character->reset();
       character->hide();
       character->set_image(char_list.at(n).name);

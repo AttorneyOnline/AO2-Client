@@ -136,6 +136,8 @@ QString TextFileHandler::get_case_sensitive_path(QString p_file) {
 
   QFileInfo file(p_file);
 
+  //qDebug() << file.fileName() << "//" << file.filePath();
+
   QString file_basename = file.fileName();
   QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
 

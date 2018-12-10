@@ -3,6 +3,8 @@
 #ifndef AOIMAGE_H
 #define AOIMAGE_H
 
+#include "text_file_functions.h"
+
 #include <QLabel>
 #include <QDebug>
 

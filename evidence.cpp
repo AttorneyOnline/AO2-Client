@@ -2,7 +2,7 @@
 
 void Courtroom::construct_evidence()
 {
-  ui_evidence = new AOImage(this, ao_app);
+  ui_evidence = new AOImage(this);
 
   //ui_evidence_name = new QLabel(ui_evidence);
   ui_evidence_name = new AOLineEdit(ui_evidence);
@@ -13,17 +13,17 @@ void Courtroom::construct_evidence()
 
   ui_evidence_buttons = new QWidget(ui_evidence);
 
-  ui_evidence_left = new AOButton(ui_evidence, ao_app);
-  ui_evidence_right = new AOButton(ui_evidence, ao_app);
-  ui_evidence_present = new AOButton(ui_evidence, ao_app);
+  ui_evidence_left = new AOButton(ui_evidence);
+  ui_evidence_right = new AOButton(ui_evidence);
+  ui_evidence_present = new AOButton(ui_evidence);
 
-  ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
+  ui_evidence_overlay = new AOImage(ui_evidence);
 
-  ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_delete = new AOButton(ui_evidence_overlay);
   ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
-  ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_image_button = new AOButton(ui_evidence_overlay);
   ui_evidence_image_button->setText("Choose..");
-  ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_x = new AOButton(ui_evidence_overlay);
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -32,7 +32,7 @@ void Courtroom::construct_evidence()
   set_size_and_pos(ui_evidence, "evidence_background");
   set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
 
-  QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
+  QPoint f_spacing = TextFileHandler::getInstance().get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
 
   const int button_width = 70;
   int x_spacing = f_spacing.x();
@@ -52,7 +52,7 @@ void Courtroom::construct_evidence()
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
-    AOEvidenceButton *f_evidence = new AOEvidenceButton(ui_evidence_buttons, ao_app, x_pos, y_pos);
+    AOEvidenceButton *f_evidence = new AOEvidenceButton(ui_evidence_buttons, x_pos, y_pos);
 
     ui_evidence_list.append(f_evidence);
 
@@ -192,7 +192,7 @@ void Courtroom::on_evidence_image_button_clicked()
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
   dialog.setViewMode(QFileDialog::List);
-  dialog.setDirectory(ao_app->get_base_path() + "evidence");
+  dialog.setDirectory(TextFileHandler::getInstance().get_base_path() + "evidence");
 
   QStringList filenames;
 

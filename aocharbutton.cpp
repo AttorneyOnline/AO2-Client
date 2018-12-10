@@ -11,19 +11,19 @@ AOCharButton::AOCharButton(QWidget *parent, int x_pos, int y_pos, bool is_taken)
   this->resize(60, 60);
   this->move(x_pos, y_pos);
 
-  ui_taken = new AOImage(this, ao_app);
+  ui_taken = new AOImage(this);
   ui_taken->resize(60, 60);
   ui_taken->set_image("char_taken.png");
   ui_taken->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken->hide();
 
-  ui_passworded = new AOImage(this, ao_app);
+  ui_passworded = new AOImage(this);
   ui_passworded->resize(60, 60);
   ui_passworded->set_image("char_passworded");
   ui_passworded->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_passworded->hide();
 
-  ui_selector = new AOImage(parent, ao_app);
+  ui_selector = new AOImage(parent);
   ui_selector->resize(62, 62);
   ui_selector->move(x_pos - 1, y_pos - 1);
   ui_selector->set_image("char_selector.png");
@@ -54,7 +54,7 @@ void AOCharButton::set_passworded()
 
 void AOCharButton::set_image(QString p_character)
 {
-  QString image_path = ao_app->get_character_path(p_character, "char_icon.png");
+  QString image_path = TextFileHandler::getInstance().get_character_path(p_character, "char_icon.png");
 
   this->setText("");
 

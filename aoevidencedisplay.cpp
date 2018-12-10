@@ -3,12 +3,13 @@
 #include "file_functions.h"
 #include "datatypes.h"
 #include "misc_functions.h"
+#include "text_file_functions.h"
 
 AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent) : QLabel(p_parent)
 {
   evidence_movie = new QMovie(this);
   evidence_icon = new QLabel(this);
-  sfx_player = new AOSfxPlayer(this, ao_app);
+  sfx_player = new AOSfxPlayer(this);
 
   connect(evidence_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
@@ -19,7 +20,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
 
   sfx_player->set_volume(p_volume);
 
-  QString f_evidence_path = ao_app->get_evidence_path(p_evidence_image);
+  QString f_evidence_path = TextFileHandler::getInstance().get_evidence_path(p_evidence_image);
 
   QPixmap f_pixmap(f_evidence_path);
 
@@ -38,15 +39,15 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
     gif_name = "evidence_appear_right.gif";
   }
 
-  pos_size_type icon_dimensions = ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
+  pos_size_type icon_dimensions = TextFileHandler::getInstance().get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
   evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
 
   evidence_icon->setPixmap(f_pixmap.scaled(evidence_icon->width(), evidence_icon->height(), Qt::IgnoreAspectRatio));
 
-  QString f_default_gif_path = ao_app->get_default_theme_path(gif_name);
-  QString f_gif_path = ao_app->get_theme_path(gif_name);
+  QString f_default_gif_path = TextFileHandler::getInstance().get_default_theme_path(gif_name);
+  QString f_gif_path = TextFileHandler::getInstance().get_theme_path(gif_name);
 
   if (file_exists(f_gif_path))
     final_gif_path = f_gif_path;
@@ -61,7 +62,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
   this->setMovie(evidence_movie);
 
   evidence_movie->start();
-  sfx_player->play(ao_app->get_sfx("evidence_present"));
+  sfx_player->play(TextFileHandler::getInstance().get_sfx("evidence_present"));
 }
 
 void AOEvidenceDisplay::frame_change(int p_frame)

@@ -23,7 +23,6 @@ class TextFileHandler
     // Isn't this ironic? To eliminate pointers to the AO app,
     // I must still keep one.
     AOApplication *ao_app;
-    QSettings *configini;
 
     QString current_theme = "default";
 
@@ -31,6 +30,8 @@ class TextFileHandler
     static TextFileHandler& getInstance();
     TextFileHandler(TextFileHandler const&) = delete;
     void operator=(TextFileHandler const&) = delete;
+
+    QSettings *configini;
 
     // Gives the pointer to the AO app to it.
     // Should be called right as the AO app itself is created.
@@ -41,6 +42,10 @@ class TextFileHandler
 
     //Reads the theme from config.ini and loads it into the current_theme variable
     void read_theme();
+
+    // Since read_theme() now only manipulates this object only, in return, a new get_current_theme() function
+    // is included here if you need the current theme for some reason.
+    QString get_current_theme();
 
     //Returns the value of ooc_name in config.ini
     QString get_ooc_name();

@@ -4,7 +4,7 @@
 #include "debug_functions.h"
 #include "lobby.h"
 
-NetworkManager::NetworkManager() : QObject(parent)
+NetworkManager::NetworkManager() : QObject()
 {
   ms_socket = new QTcpSocket(this);
   server_socket = new QTcpSocket(this);
@@ -15,9 +15,8 @@ NetworkManager::NetworkManager() : QObject(parent)
 
   QObject::connect(ms_socket, SIGNAL(readyRead()), this, SLOT(handle_ms_packet()));
   QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
-  QObject::connect(server_socket, SIGNAL(disconnected()), ao_app, SLOT(server_disconnected()));
 
-  QString master_config = ao_app->configini->value("master", "").value<QString>();
+  QString master_config = TextFileHandler::getInstance().get_master_server();
   if (master_config != "")
     ms_nosrv_hostname = master_config;
 }
@@ -105,7 +104,7 @@ void NetworkManager::handle_ms_packet()
   {
     AOPacket *f_packet = new AOPacket(packet);
 
-    ao_app->ms_packet_received(f_packet);
+    ms_packet_received(f_packet);
   }
 }
 
@@ -141,7 +140,7 @@ void NetworkManager::on_srv_lookup()
       timer.start();
       do
       {
-        ao_app->processEvents();
+        force_process_events();
         if (ms_socket->state() == QAbstractSocket::ConnectedState)
         {
           connected = true;
@@ -244,7 +243,7 @@ void NetworkManager::handle_server_packet()
   {
     AOPacket *f_packet = new AOPacket(packet);
 
-    ao_app->server_packet_received(f_packet);
+    server_packet_received(f_packet);
   }
 }
 

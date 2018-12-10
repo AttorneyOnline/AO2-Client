@@ -24,7 +24,7 @@ class Lobby : public QMainWindow
   Q_OBJECT
 
 public:
-  Lobby();
+  Lobby(AOApplication *p_ao_app);
 
   void set_widgets();
   void list_servers();
@@ -45,7 +45,12 @@ public:
 
   ~Lobby();
 
+signals:
+  void cancel_clicked();
+
 private:
+  AOApplication *ao_app;
+
   AOImage *ui_background;
 
   AOButton *ui_public_servers;
@@ -88,6 +93,7 @@ private slots:
   void on_about_clicked();
   void on_server_list_clicked(QModelIndex p_model);
   void on_chatfield_return_pressed();
+  void on_loading_cancelled();
 };
 
 #endif // LOBBY_H

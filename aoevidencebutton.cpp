@@ -6,14 +6,14 @@ AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, int p_x, int p_y) : QPushB
 {
   m_parent = p_parent;
 
-  ui_selected = new AOImage(p_parent, ao_app);
+  ui_selected = new AOImage(p_parent);
   ui_selected->resize(70, 70);
   ui_selected->move(p_x, p_y);
   ui_selected->set_image("evidence_selected.png");
   ui_selected->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selected->hide();
 
-  ui_selector = new AOImage(p_parent, ao_app);
+  ui_selector = new AOImage(p_parent);
   ui_selector->resize(71, 71);
   ui_selector->move(p_x - 1, p_y - 1);
   ui_selector->set_image("evidence_selector.png");
@@ -36,7 +36,7 @@ void AOEvidenceButton::reset()
 
 void AOEvidenceButton::set_image(QString p_image)
 {
-  QString image_path = ao_app->get_evidence_path(p_image);
+  QString image_path = TextFileHandler::getInstance().get_evidence_path(p_image);
 
   if (file_exists(image_path))
   {
@@ -52,8 +52,8 @@ void AOEvidenceButton::set_image(QString p_image)
 
 void AOEvidenceButton::set_theme_image(QString p_image)
 {
-  QString theme_image_path = ao_app->get_theme_path(p_image);
-  QString default_image_path = ao_app->get_default_theme_path(p_image);
+  QString theme_image_path = TextFileHandler::getInstance().get_theme_path(p_image);
+  QString default_image_path = TextFileHandler::getInstance().get_default_theme_path(p_image);
 
   QString final_image_path;
 

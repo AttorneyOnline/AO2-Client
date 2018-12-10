@@ -10,10 +10,14 @@
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  // Create the QSettings class that points to the config.ini.
-  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
+  TextFileHandler::getInstance().give_ao_app_pointer(this);
 
-  net_manager = new NetworkManager(this);
+  net_manager = new NetworkManager();
+  QObject::connect(net_manager->server_socket, SIGNAL(disconnected()), this, SLOT(server_disconnected()));
+  QObject::connect(net_manager, SIGNAL(ms_packet_received(AOPacket*)), this, SLOT(ms_packet_received(AOPacket*)));
+  QObject::connect(net_manager, SIGNAL(server_packet_received(AOPacket*)), this, SLOT(server_packet_received(AOPacket*)));
+  QObject::connect(net_manager, SIGNAL(force_process_events()), this, SLOT(force_process_events()));
+
   discord = new AttorneyOnline::Discord();
   QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
                    SLOT(ms_connect_finished(bool, bool)));
@@ -35,6 +39,8 @@ void AOApplication::construct_lobby()
   }
 
   w_lobby = new Lobby(this);
+  connect(w_lobby, SIGNAL(cancel_clicked()), this, SLOT(loading_cancelled()));
+
   lobby_constructed = true;
 
   QRect screenGeometry = QApplication::desktop()->screenGeometry();
@@ -42,7 +48,7 @@ void AOApplication::construct_lobby()
   int y = (screenGeometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (is_discord_enabled())
+  if (TextFileHandler::getInstance().is_discord_enabled())
     discord->state_lobby();
 
   w_lobby->show();
@@ -97,14 +103,9 @@ QString AOApplication::get_version_string()
   QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme()
-{
-  current_theme = read_theme();
-}
-
 void AOApplication::set_favorite_list()
 {
-  favorite_list = read_serverlist_txt();
+  favorite_list = TextFileHandler::getInstance().read_serverlist_txt();
 }
 
 QString AOApplication::get_current_char()
@@ -126,7 +127,7 @@ void AOApplication::add_favorite_server(int p_server)
 
   QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
 
-  write_to_serverlist_txt(server_line);
+  TextFileHandler::getInstance().write_to_serverlist_txt(server_line);
 }
 
 void AOApplication::server_disconnected()
@@ -180,6 +181,11 @@ void AOApplication::call_settings_menu()
 
 void AOApplication::call_announce_menu(Courtroom *court)
 {
-    AOCaseAnnouncerDialog announcer(nullptr, this, court);
+    AOCaseAnnouncerDialog announcer(nullptr, court);
     announcer.exec();
+}
+
+void AOApplication::force_process_events()
+{
+  processEvents();
 }

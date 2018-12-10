@@ -15,6 +15,7 @@
 #endif
 
 #include "aopacket.h"
+#include "aoapplication.h"
 
 #include <QTcpSocket>
 #include <QDnsLookup>
@@ -68,6 +69,9 @@ public slots:
 
 signals:
   void ms_connect_finished(bool success, bool will_retry);
+  void ms_packet_received(AOPacket *f_packet);
+  void server_packet_received(AOPacket *f_packet);
+  void force_process_events();
 
 private:
   void perform_srv_lookup();

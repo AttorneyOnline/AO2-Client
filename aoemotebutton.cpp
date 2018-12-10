@@ -1,6 +1,7 @@
 #include "aoemotebutton.h"
 
 #include "file_functions.h"
+#include "text_file_functions.h"
 
 AOEmoteButton::AOEmoteButton(QWidget *p_parent, int p_x, int p_y) : QPushButton(p_parent)
 {
@@ -15,7 +16,7 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, int p_x, int p_y) : QPushButton(
 void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
 {
   QString emotion_number = QString::number(p_emote + 1);
-  QString image_path = ao_app->get_character_path(p_char, "emotions/button" + emotion_number + suffix);
+  QString image_path = TextFileHandler::getInstance().get_character_path(p_char, "emotions/button" + emotion_number + suffix);
 
   if (file_exists(image_path))
   {
@@ -24,7 +25,7 @@ void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
   }
   else
   {
-    this->setText(ao_app->get_emote_comment(p_char, p_emote));
+    this->setText(TextFileHandler::getInstance().get_emote_comment(p_char, p_emote));
     this->setStyleSheet("border-image:url(\"\")");
   }
 }

@@ -1,6 +1,8 @@
 #ifndef AOBUTTON_H
 #define AOBUTTON_H
 
+#include "text_file_functions.h"
+
 #include <QPushButton>
 #include <QDebug>
 

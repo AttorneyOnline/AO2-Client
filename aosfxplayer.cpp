@@ -1,5 +1,6 @@
 #include "aosfxplayer.h"
 #include "file_functions.h"
+#include "text_file_functions.h"
 
 AOSfxPlayer::AOSfxPlayer(QWidget *parent)
 {
@@ -10,12 +11,12 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
   QString misc_path = "";
   QString char_path = "";
-  QString sound_path = ao_app->get_sounds_path(p_sfx);
+  QString sound_path = TextFileHandler::getInstance().get_sounds_path(p_sfx);
 
   if (shout != "")
-    misc_path = ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx;
+    misc_path = TextFileHandler::getInstance().get_base_path() + "misc/" + shout + "/" + p_sfx;
   if (p_char != "")
-    char_path = ao_app->get_character_path(p_char, p_sfx);
+    char_path = TextFileHandler::getInstance().get_character_path(p_char, p_sfx);
 
   QString f_path;
 
@@ -28,7 +29,9 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 
   set_volume(m_volume);
 
-  if (ao_app->get_audio_output_device() != "Default")
+  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+
+  if (TextFileHandler::getInstance().get_audio_output_device() != "Default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
 }

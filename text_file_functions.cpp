@@ -26,6 +26,11 @@ void TextFileHandler::read_theme()
   current_theme = result;
 }
 
+QString TextFileHandler::get_current_theme()
+{
+  return current_theme;
+}
+
 int TextFileHandler::read_blip_rate()
 {
   int result = configini->value("blip_rate", 1).toInt();

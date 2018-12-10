@@ -2,6 +2,7 @@
 
 #include "misc_functions.h"
 #include "file_functions.h"
+#include "text_file_functions.h"
 
 AOCharMovie::AOCharMovie(QWidget *p_parent) : QLabel(p_parent)
 {
@@ -16,11 +17,11 @@ AOCharMovie::AOCharMovie(QWidget *p_parent) : QLabel(p_parent)
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
-  QString alt_path = ao_app->get_character_path(p_char, p_emote + ".png");
-  QString apng_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
-  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
-  QString placeholder_default_path = ao_app->get_default_theme_path("placeholder.gif");
+  QString original_path = TextFileHandler::getInstance().get_character_path(p_char, emote_prefix + p_emote + ".gif");
+  QString alt_path = TextFileHandler::getInstance().get_character_path(p_char, p_emote + ".png");
+  QString apng_path = TextFileHandler::getInstance().get_character_path(p_char, emote_prefix + p_emote + ".apng");
+  QString placeholder_path = TextFileHandler::getInstance().get_theme_path("placeholder.gif");
+  QString placeholder_default_path = TextFileHandler::getInstance().get_default_theme_path("placeholder.gif");
   QString gif_path;
 
   if (file_exists(apng_path))
@@ -58,7 +59,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
-  QString gif_path = ao_app->get_character_path(p_char, p_emote);
+  QString gif_path = TextFileHandler::getInstance().get_character_path(p_char, p_emote);
 
   m_movie->stop();
   this->clear();
@@ -113,7 +114,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
+  QString gif_path = TextFileHandler::getInstance().get_character_path(p_char, "(b)" + p_emote);
 
   m_movie->stop();
   this->clear();
@@ -126,7 +127,7 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
+  QString gif_path = TextFileHandler::getInstance().get_character_path(p_char, "(a)" + p_emote);
 
   m_movie->stop();
   this->clear();

@@ -4,8 +4,10 @@
 #include "networkmanager.h"
 #include "aosfxplayer.h"
 
-Lobby::Lobby() : QMainWindow()
+Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
+  ao_app = p_ao_app;
+
   this->setWindowTitle("Attorney Online 2");
 
   ui_background = new AOImage(this);
@@ -23,7 +25,7 @@ Lobby::Lobby() : QMainWindow()
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
-  ui_chatname->setText(ao_app->get_ooc_name());
+  ui_chatname->setText(TextFileHandler::getInstance().get_ooc_name());
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this);
   ui_loading_text = new QTextEdit(ui_loading_background);
@@ -44,7 +46,7 @@ Lobby::Lobby() : QMainWindow()
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
-  connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
+  connect(ui_cancel, SIGNAL(clicked()), this, SLOT(on_loading_cancelled()));
 
   ui_connect->setEnabled(false);
 
@@ -54,11 +56,11 @@ Lobby::Lobby() : QMainWindow()
 //sets images, position and size
 void Lobby::set_widgets()
 {
-  ao_app->reload_theme();
+  TextFileHandler::getInstance().read_theme();
 
   QString filename = "lobby_design.ini";
 
-  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
+  pos_size_type f_lobby = TextFileHandler::getInstance().get_element_dimensions("lobby", filename);
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
@@ -152,7 +154,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "lobby_design.ini";
 
-  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result = TextFileHandler::getInstance().get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
@@ -333,6 +335,11 @@ void Lobby::on_chatfield_return_pressed()
   ui_chatmessage->clear();
 }
 
+void Lobby::on_loading_cancelled()
+{
+  cancel_clicked();
+}
+
 void Lobby::list_servers()
 {
   public_servers_selected = true;
@@ -359,7 +366,7 @@ void Lobby::list_favorites()
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  ui_chatbox->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_chatbox->append_chatmessage(f_name, f_message, TextFileHandler::getInstance().get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
 void Lobby::append_error(QString f_message)
