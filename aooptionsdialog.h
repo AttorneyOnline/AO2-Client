@@ -103,8 +103,6 @@ private:
 
     bool needs_default_audiodev();
 
-signals:
-
 public slots:
     void save_pressed();
     void discard_pressed();

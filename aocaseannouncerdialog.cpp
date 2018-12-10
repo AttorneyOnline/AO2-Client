@@ -64,7 +64,7 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent)
 void AOCaseAnnouncerDialog::ok_pressed()
 {
   QString title = ui_case_title_textbox->text();
-  announce_case(&title,
+  emit announce_case(&title,
                 ui_defense_needed->isChecked(),
                 ui_prosecutor_needed->isChecked(),
                 ui_judge_needed->isChecked(),

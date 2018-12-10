@@ -24,7 +24,7 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
 
   QString gif_path;
 
-  TextFileHandler* filehandler = TextFileHandler::getInstance();
+  TextFileHandler* filehandler = TextFileHandler::get_instance();
 
   QString custom_path;
   if (p_gif == "custom")
@@ -78,7 +78,7 @@ void AOMovie::frame_change(int n_frame)
     this->stop();
 
     //signal connected to courtroom object, let it figure out what to do
-    done();
+    emit done();
   }
 }
 

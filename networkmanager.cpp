@@ -104,7 +104,7 @@ void NetworkManager::handle_ms_packet()
   {
     AOPacket *f_packet = new AOPacket(packet);
 
-    ms_packet_received(f_packet);
+    emit ms_packet_received(f_packet);
   }
 }
 
@@ -243,7 +243,7 @@ void NetworkManager::handle_server_packet()
   {
     AOPacket *f_packet = new AOPacket(packet);
 
-    server_packet_received(f_packet);
+    emit server_packet_received(f_packet);
   }
 }
 

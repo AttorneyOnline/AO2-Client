@@ -10,7 +10,7 @@
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  TextFileHandler::createInstance(this);
+  TextFileHandler::create_instance(this);
 
   net_manager = new NetworkManager();
   QObject::connect(net_manager->server_socket, SIGNAL(disconnected()), this, SLOT(server_disconnected()));
@@ -50,7 +50,7 @@ void AOApplication::construct_lobby()
   int y = (screenGeometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (TextFileHandler::getInstance()->is_discord_enabled())
+  if (TextFileHandler::get_instance()->is_discord_enabled())
     discord->state_lobby();
 
   w_lobby->show();
@@ -109,7 +109,7 @@ QString AOApplication::get_version_string()
 
 void AOApplication::set_favorite_list()
 {
-  favorite_list = TextFileHandler::getInstance()->read_serverlist_txt();
+  favorite_list = TextFileHandler::get_instance()->read_serverlist_txt();
 }
 
 QString AOApplication::get_current_char()
@@ -131,7 +131,7 @@ void AOApplication::add_favorite_server(int p_server)
 
   QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
 
-  TextFileHandler::getInstance()->write_to_serverlist_txt(server_line);
+  TextFileHandler::get_instance()->write_to_serverlist_txt(server_line);
 }
 
 void AOApplication::server_disconnected()

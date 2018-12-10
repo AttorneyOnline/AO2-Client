@@ -2,7 +2,7 @@
 
 TextFileHandler* TextFileHandler::singleton = new TextFileHandler();
 
-void TextFileHandler::createInstance(AOApplication *p_ao_app)
+void TextFileHandler::create_instance(AOApplication *p_ao_app)
 {
   singleton->ao_app = p_ao_app;
 
@@ -10,7 +10,7 @@ void TextFileHandler::createInstance(AOApplication *p_ao_app)
   singleton->configini = new QSettings(singleton->get_base_path() + "config.ini", QSettings::IniFormat);
 }
 
-TextFileHandler* TextFileHandler::getInstance()
+TextFileHandler* TextFileHandler::get_instance()
 {
   return singleton;
 }

@@ -3,7 +3,7 @@
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
-  filehandler = TextFileHandler::getInstance();
+  filehandler = TextFileHandler::get_instance();
 
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.
@@ -1229,7 +1229,7 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  send_server_packet(new AOPacket("MS", packet_contents));
+  emit send_server_packet(new AOPacket("MS", packet_contents));
 }
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
@@ -2902,14 +2902,14 @@ void Courtroom::on_ooc_return_pressed()
     if (!caseauth.isEmpty())
       append_server_chatmessage("CLIENT", "Case made by " + caseauth + ".", "1");
     if (!casedoc.isEmpty())
-      send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
+      emit send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
     if (!casestatus.isEmpty())
-      send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status " + casestatus + "#%"));
+      emit send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status " + casestatus + "#%"));
     if (!cmdoc.isEmpty())
       append_server_chatmessage("CLIENT", "Navigate to " + cmdoc + " for the CM doc.", "1");
 
     for (int i = local_evidence_list.size() - 1; i >= 0; i--) {
-        send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
+        emit send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
     }
 
     foreach (QString evi, casefile.childGroups()) {
@@ -2922,7 +2922,7 @@ void Courtroom::on_ooc_return_pressed()
         f_contents.append(casefile.value(evi + "/description", "UNKNOWN").value<QString>());
         f_contents.append(casefile.value(evi + "/image", "UNKNOWN.png").value<QString>());
 
-        send_server_packet(new AOPacket("PE", f_contents));
+        emit send_server_packet(new AOPacket("PE", f_contents));
       }
 
     append_server_chatmessage("CLIENT", "Your case \"" + command[1] + "\" was loaded!", "1");
@@ -2937,9 +2937,9 @@ void Courtroom::on_ooc_return_pressed()
   AOPacket *f_packet = new AOPacket("CT", packet_contents);
 
   if (server_ooc)
-    send_server_packet(f_packet);
+    emit send_server_packet(f_packet);
   else
-    send_ms_packet(f_packet);
+    emit send_ms_packet(f_packet);
 
   ui_ooc_chat_message->clear();
 
@@ -3010,7 +3010,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   if (f_pos == "" || ui_ooc_chat_name->text() == "")
     return;
 
-  send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
+  emit send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
 }
 
 void Courtroom::on_mute_list_clicked(QModelIndex p_index)
@@ -3104,18 +3104,18 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 
   if (!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled)
   {
-    send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
+    emit send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
   }
   else
   {
-    send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
+    emit send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
   }
 }
 
 void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 {
     QString p_area = area_list.at(area_row_to_number.at(p_model.row()));
-    send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
+    emit send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
 }
 
 void Courtroom::on_hold_it_clicked()
@@ -3254,7 +3254,7 @@ void Courtroom::on_defense_minus_clicked()
   int f_state = defense_bar_state - 1;
 
   if (f_state >= 0)
-    send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+    emit send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_defense_plus_clicked()
@@ -3262,7 +3262,7 @@ void Courtroom::on_defense_plus_clicked()
   int f_state = defense_bar_state + 1;
 
   if (f_state <= 10)
-    send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+    emit send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_prosecution_minus_clicked()
@@ -3270,7 +3270,7 @@ void Courtroom::on_prosecution_minus_clicked()
   int f_state = prosecution_bar_state - 1;
 
   if (f_state >= 0)
-    send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+    emit send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_prosecution_plus_clicked()
@@ -3278,7 +3278,7 @@ void Courtroom::on_prosecution_plus_clicked()
   int f_state = prosecution_bar_state + 1;
 
   if (f_state <= 10)
-    send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+    emit send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_text_color_changed(int p_color)
@@ -3321,7 +3321,7 @@ void Courtroom::on_witness_testimony_clicked()
   if (is_muted)
     return;
 
-  send_server_packet(new AOPacket("RT#testimony1#%"));
+  emit send_server_packet(new AOPacket("RT#testimony1#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -3331,7 +3331,7 @@ void Courtroom::on_cross_examination_clicked()
   if (is_muted)
     return;
 
-  send_server_packet(new AOPacket("RT#testimony2#%"));
+  emit send_server_packet(new AOPacket("RT#testimony2#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -3341,7 +3341,7 @@ void Courtroom::on_not_guilty_clicked()
   if (is_muted)
     return;
 
-  send_server_packet(new AOPacket("RT#judgeruling#0#%"));
+  emit send_server_packet(new AOPacket("RT#judgeruling#0#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -3351,7 +3351,7 @@ void Courtroom::on_guilty_clicked()
   if (is_muted)
     return;
 
-  send_server_packet(new AOPacket("RT#judgeruling#1#%"));
+  emit send_server_packet(new AOPacket("RT#judgeruling#1#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -3435,9 +3435,9 @@ void Courtroom::on_call_mod_clicked()
     QStringList mod_reason;
     mod_reason.append(text);
 
-    send_server_packet(new AOPacket("ZZ", mod_reason));
+    emit send_server_packet(new AOPacket("ZZ", mod_reason));
   } else {
-    send_server_packet(new AOPacket("ZZ#%"));
+    emit send_server_packet(new AOPacket("ZZ#%"));
   }
 
   ui_ic_chat_message->setFocus();
@@ -3522,7 +3522,7 @@ void Courtroom::on_switch_area_music_clicked()
 
 void Courtroom::ping_server()
 {
-  send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
+  emit send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
 }
 
 void Courtroom::on_casing_clicked()
@@ -3530,7 +3530,7 @@ void Courtroom::on_casing_clicked()
   if (ao_app->casing_alerts_enabled)
   {
     if (ui_casing->isChecked())
-      send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase"
+      emit send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase"
                                             + " \"" + filehandler->get_casing_can_host_cases() + "\""
                                             + " " + QString::number(filehandler->get_casing_cm_enabled())
                                             + " " + QString::number(filehandler->get_casing_defence_enabled())
@@ -3540,14 +3540,14 @@ void Courtroom::on_casing_clicked()
                                             + " " + QString::number(filehandler->get_casing_steno_enabled())
                                             + "#%"));
     else
-      send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0 0#%"));
+      emit send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0 0#%"));
   }
 }
 
 void Courtroom::announce_case(QString* title, bool def, bool pro, bool jud, bool jur, bool steno)
 {
   if (ao_app->casing_alerts_enabled)
-    send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/anncase \""
+    emit send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/anncase \""
                                           + title + "\" "
                                           + QString::number(def) + " "
                                           + QString::number(pro) + " "

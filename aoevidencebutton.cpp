@@ -76,13 +76,13 @@ void AOEvidenceButton::set_selected(bool p_selected)
 
 void AOEvidenceButton::on_clicked()
 {
-  evidence_clicked(m_id);
+  emit evidence_clicked(m_id);
 }
 
 void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
 {
   QPushButton::mouseDoubleClickEvent(e);
-  evidence_double_clicked(m_id);
+  emit evidence_double_clicked(m_id);
 }
 
 void AOEvidenceButton::dragLeaveEvent(QMouseEvent *e)
@@ -103,7 +103,7 @@ void AOEvidenceButton::enterEvent(QEvent * e)
 {
   ui_selector->show();
 
-  on_hover(m_id, true);
+  emit on_hover(m_id, true);
 
   setFlat(false);
   QPushButton::enterEvent(e);
@@ -113,6 +113,6 @@ void AOEvidenceButton::leaveEvent(QEvent * e)
 {
   ui_selector->hide();
 
-  on_hover(m_id, false);
+  emit on_hover(m_id, false);
   QPushButton::leaveEvent(e);
 }

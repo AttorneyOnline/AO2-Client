@@ -17,7 +17,7 @@ AOCharMovie::AOCharMovie(QWidget *p_parent) : QLabel(p_parent)
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  TextFileHandler *filehandler = TextFileHandler::getInstance();
+  TextFileHandler *filehandler = TextFileHandler::get_instance();
 
   QString original_path = filehandler->get_character_path(p_char, emote_prefix + p_emote + ".gif");
   QString alt_path = filehandler->get_character_path(p_char, p_emote + ".png");
@@ -61,7 +61,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
-  QString gif_path = TextFileHandler::getInstance()->get_character_path(p_char, p_emote);
+  QString gif_path = TextFileHandler::get_instance()->get_character_path(p_char, p_emote);
 
   m_movie->stop();
   this->clear();
@@ -116,7 +116,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  QString gif_path = TextFileHandler::getInstance()->get_character_path(p_char, "(b)" + p_emote);
+  QString gif_path = TextFileHandler::get_instance()->get_character_path(p_char, "(b)" + p_emote);
 
   m_movie->stop();
   this->clear();
@@ -129,7 +129,7 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
-  QString gif_path = TextFileHandler::getInstance()->get_character_path(p_char, "(a)" + p_emote);
+  QString gif_path = TextFileHandler::get_instance()->get_character_path(p_char, "(a)" + p_emote);
 
   m_movie->stop();
   this->clear();
@@ -191,5 +191,5 @@ void AOCharMovie::frame_change(int n_frame)
 void AOCharMovie::timer_done()
 {
 
-  done();
+  emit done();
 }

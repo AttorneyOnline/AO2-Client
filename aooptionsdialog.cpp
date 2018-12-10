@@ -4,7 +4,7 @@
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) : QDialog(parent)
 {
-    TextFileHandler *filehandler = TextFileHandler::getInstance();
+    TextFileHandler *filehandler = TextFileHandler::get_instance();
 
     // Setting up the basics.
     // setAttribute(Qt::WA_DeleteOnClose);
@@ -453,7 +453,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) 
 void AOOptionsDialog::save_pressed()
 {
     // Save everything into the config.ini.
-    QSettings* configini = TextFileHandler::getInstance()->configini;
+    QSettings* configini = TextFileHandler::get_instance()->configini;
 
     configini->setValue("theme", ui_theme_combobox->currentText());
     configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
@@ -463,7 +463,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
 
-    QFile* callwordsini = new QFile(TextFileHandler::getInstance()->get_base_path() + "callwords.ini");
+    QFile* callwordsini = new QFile(TextFileHandler::get_instance()->get_base_path() + "callwords.ini");
 
     if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
     {

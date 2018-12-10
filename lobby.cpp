@@ -46,7 +46,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
-  connect(ui_cancel, SIGNAL(clicked()), this, SLOT(on_loading_cancelled()));
+  connect(ui_cancel, SIGNAL(clicked()), this, SIGNAL(cancel_clicked()));
 
   ui_connect->setEnabled(false);
 
@@ -226,7 +226,7 @@ void Lobby::on_refresh_released()
 
   AOPacket *f_packet = new AOPacket("ALL#%");
 
-  send_ms_packet(f_packet);
+  emit send_ms_packet(f_packet);
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -258,7 +258,7 @@ void Lobby::on_connect_released()
 
   f_packet = new AOPacket("askchaa#%");
 
-  send_server_packet(f_packet);
+  emit send_server_packet(f_packet);
 }
 
 void Lobby::on_about_clicked()
@@ -330,14 +330,9 @@ void Lobby::on_chatfield_return_pressed()
 
   AOPacket *f_packet = new AOPacket(f_header, f_contents);
 
-  send_ms_packet(f_packet);
+  emit send_ms_packet(f_packet);
 
   ui_chatmessage->clear();
-}
-
-void Lobby::on_loading_cancelled()
-{
-  cancel_clicked();
 }
 
 void Lobby::list_servers()
