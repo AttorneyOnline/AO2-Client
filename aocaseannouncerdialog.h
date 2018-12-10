@@ -1,8 +1,6 @@
 #ifndef AOCASEANNOUNCERDIALOG_H
 #define AOCASEANNOUNCERDIALOG_H
 
-#include "courtroom.h"
-
 #include <QtWidgets/QDialog>
 #include <QDialogButtonBox>
 #include <QtWidgets/QVBoxLayout>
@@ -16,11 +14,9 @@ class AOCaseAnnouncerDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit AOCaseAnnouncerDialog(QWidget *parent = nullptr, Courtroom *p_court = nullptr);
+  explicit AOCaseAnnouncerDialog(QWidget *parent = nullptr);
 
 private:
-  Courtroom *court;
-
   QDialogButtonBox *ui_announcer_buttons;
 
   QVBoxLayout *ui_vbox_layout;
@@ -34,6 +30,9 @@ private:
   QCheckBox *ui_judge_needed;
   QCheckBox *ui_juror_needed;
   QCheckBox *ui_steno_needed;
+
+signals:
+  void announce_case(QString* title, bool def, bool pro, bool jud, bool jur, bool steno);
 
 public slots:
   void ok_pressed();

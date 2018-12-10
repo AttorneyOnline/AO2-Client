@@ -1,10 +1,8 @@
 #include "aocaseannouncerdialog.h"
 
-AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, Courtroom *p_court)
+AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent)
   : QDialog(parent)
 {
-  court = p_court;
-
   setWindowTitle(tr("Case Announcer"));
   resize(405, 235);
 
@@ -18,7 +16,7 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, Courtroom *p_court
   ui_announcer_buttons->setOrientation(Qt::Horizontal);
   ui_announcer_buttons->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this, SLOT(on_ok_pressed()));
+  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this, SLOT(ok_pressed()));
   QObject::connect(ui_announcer_buttons, SIGNAL(rejected()), this, SLOT(cancel_pressed()));
 
   setUpdatesEnabled(false);
@@ -65,12 +63,13 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, Courtroom *p_court
 
 void AOCaseAnnouncerDialog::ok_pressed()
 {
-  court->announce_case(ui_case_title_textbox->text(),
-                       ui_defense_needed->isChecked(),
-                       ui_prosecutor_needed->isChecked(),
-                       ui_judge_needed->isChecked(),
-                       ui_juror_needed->isChecked(),
-                       ui_steno_needed->isChecked());
+  QString title = ui_case_title_textbox->text();
+  announce_case(&title,
+                ui_defense_needed->isChecked(),
+                ui_prosecutor_needed->isChecked(),
+                ui_judge_needed->isChecked(),
+                ui_juror_needed->isChecked(),
+                ui_steno_needed->isChecked());
 
   done(0);
 }

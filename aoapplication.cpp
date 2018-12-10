@@ -40,6 +40,8 @@ void AOApplication::construct_lobby()
 
   w_lobby = new Lobby(this);
   connect(w_lobby, SIGNAL(cancel_clicked()), this, SLOT(loading_cancelled()));
+  connect(w_lobby, SIGNAL(send_server_packet(AOPacket*, bool)), this, SLOT(send_server_packet(AOPacket*, bool)));
+  connect(w_lobby, SIGNAL(send_ms_packet(AOPacket*)), this, SLOT(send_ms_packet(AOPacket*)));
 
   lobby_constructed = true;
 
@@ -75,6 +77,8 @@ void AOApplication::construct_courtroom()
   }
 
   w_courtroom = new Courtroom(this);
+  connect(w_courtroom, SIGNAL(send_server_packet(AOPacket*, bool)), this, SLOT(send_server_packet(AOPacket*, bool)));
+  connect(w_courtroom, SIGNAL(send_ms_packet(AOPacket*)), this, SLOT(send_ms_packet(AOPacket*)));
   courtroom_constructed = true;
 
   QRect screenGeometry = QApplication::desktop()->screenGeometry();
@@ -175,14 +179,15 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
 
 void AOApplication::call_settings_menu()
 {
-    AOOptionsDialog settings(nullptr, this);
+    AOOptionsDialog settings(nullptr, casing_alerts_enabled);
     settings.exec();
 }
 
-void AOApplication::call_announce_menu(Courtroom *court)
+void AOApplication::call_announce_menu()
 {
-    AOCaseAnnouncerDialog announcer(nullptr, court);
-    announcer.exec();
+    AOCaseAnnouncerDialog* announcer = new AOCaseAnnouncerDialog(nullptr);
+    QObject::connect(announcer, SIGNAL(announce_case(QString*, bool, bool, bool, bool, bool)), w_courtroom, SLOT(announce_case(QString*, bool, bool, bool, bool, bool)));
+    announcer->exec();
 }
 
 void AOApplication::force_process_events()

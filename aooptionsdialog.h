@@ -27,11 +27,9 @@ class AOOptionsDialog: public QDialog
 {
     Q_OBJECT
 public:
-    explicit AOOptionsDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);
+    explicit AOOptionsDialog(QWidget *parent = nullptr, bool casing_alerts_on_server = false);
 
 private:
-    AOApplication *ao_app;
-
     QVBoxLayout *ui_vertical_layout;
     QTabWidget *ui_settings_tabs;
 

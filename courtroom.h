@@ -201,7 +201,8 @@ public:
   //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
+  // Does a modcall-like sound effect and OOC message about a case being called.
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();
 
@@ -541,6 +542,10 @@ private:
   void construct_evidence();
   void set_evidence_page();
 
+signals:
+  void send_server_packet(AOPacket *p_packet, bool encoded = true);
+  void send_ms_packet(AOPacket *p_packet);
+
 public slots:
   void objection_done();
   void preanim_done();
@@ -552,7 +557,7 @@ public slots:
 
   void mod_called(QString p_ip);
 
-  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
+  void announce_case(QString* title, bool def, bool pro, bool jud, bool jur, bool steno);
 
 private slots:
   void start_chat_ticking();

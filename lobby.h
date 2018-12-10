@@ -47,6 +47,8 @@ public:
 
 signals:
   void cancel_clicked();
+  void send_server_packet(AOPacket *p_packet, bool encoded = true);
+  void send_ms_packet(AOPacket *p_packet);
 
 private:
   AOApplication *ao_app;

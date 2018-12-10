@@ -2,10 +2,8 @@
 #include "bass.h"
 #include "text_file_functions.h"
 
-AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDialog(parent)
+AOOptionsDialog::AOOptionsDialog(QWidget *parent, bool casing_alerts_on_server) : QDialog(parent)
 {
-    ao_app = p_ao_app;
-
     // Setting up the basics.
     // setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Settings"));
@@ -326,7 +324,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     // -- SERVER SUPPORTS CASING
 
     ui_casing_supported_lbl = new QLabel(ui_casing_widget);
-    if (ao_app->casing_alerts_enabled)
+    if (casing_alerts_on_server)
       ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
     else
       ui_casing_supported_lbl->setText(tr("This server does not support case alerts."));

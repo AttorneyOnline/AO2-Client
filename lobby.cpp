@@ -226,7 +226,7 @@ void Lobby::on_refresh_released()
 
   AOPacket *f_packet = new AOPacket("ALL#%");
 
-  ao_app->send_ms_packet(f_packet);
+  send_ms_packet(f_packet);
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -258,7 +258,7 @@ void Lobby::on_connect_released()
 
   f_packet = new AOPacket("askchaa#%");
 
-  ao_app->send_server_packet(f_packet);
+  send_server_packet(f_packet);
 }
 
 void Lobby::on_about_clicked()
@@ -330,7 +330,7 @@ void Lobby::on_chatfield_return_pressed()
 
   AOPacket *f_packet = new AOPacket(f_header, f_contents);
 
-  ao_app->send_ms_packet(f_packet);
+  send_ms_packet(f_packet);
 
   ui_chatmessage->clear();
 }
