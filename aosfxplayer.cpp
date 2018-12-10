@@ -27,6 +27,8 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   else
     f_path = sound_path;
 
+  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+
   set_volume(m_volume);
 
   if (ao_app->get_audio_output_device() != "Default")
