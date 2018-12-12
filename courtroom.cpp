@@ -1565,13 +1565,13 @@ void Courtroom::handle_chatmessage_2()
   switch (emote_mod)
   {
   case 1: case 2: case 6:
-    play_preanim();
+    play_preanim(false);
     break;
   case 0: case 5:
     if (m_chatmessage[NONINTERRUPTING_PRE].toInt() == 0)
       handle_chatmessage_3();
     else
-      play_noninterrupting_preanim();
+      play_preanim(true);
     break;
   default:
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
@@ -1674,15 +1674,8 @@ void Courtroom::handle_chatmessage_3()
 
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name)
+QString Courtroom::filter_ic_text(QString p_text)
 {
-  QTextCharFormat bold;
-  QTextCharFormat normal;
-  bold.setFontWeight(QFont::Bold);
-  normal.setFontWeight(QFont::Normal);
-  const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
-  const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
-
   // Get rid of centering.
   if(p_text.startsWith(": ~~"))
   {
@@ -1815,85 +1808,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
       }
   }
 
-  // After all of that, let's jot down the message into the IC chatlog.
-
-  if (log_goes_downwards)
-  {
-      const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
-
-      ui_ic_chatlog->moveCursor(QTextCursor::End);
-
-      if (!first_message_sent)
-      {
-          ui_ic_chatlog->textCursor().insertText(p_name, bold);
-          first_message_sent = true;
-      }
-      else
-      {
-          ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-      }
-
-      ui_ic_chatlog->textCursor().insertText(p_text, normal);
-
-      // If we got too many blocks in the current log, delete some from the top.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::Start);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deleteChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
-      }
-
-      if (old_cursor.hasSelection() || !is_scrolled_down)
-      {
-          // The user has selected text or scrolled away from the bottom: maintain position.
-          ui_ic_chatlog->setTextCursor(old_cursor);
-          ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-      }
-      else
-      {
-          // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
-          ui_ic_chatlog->moveCursor(QTextCursor::End);
-          ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
-      }
-  }
-  else
-  {
-      const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
-
-      ui_ic_chatlog->moveCursor(QTextCursor::Start);
-
-      ui_ic_chatlog->textCursor().insertText(p_name, bold);
-      ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
-
-      // If we got too many blocks in the current log, delete some from the bottom.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::End);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deletePreviousChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
-      }
-
-      if (old_cursor.hasSelection() || !is_scrolled_up)
-      {
-          // The user has selected text or scrolled away from the top: maintain position.
-          ui_ic_chatlog->setTextCursor(old_cursor);
-          ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-      }
-      else
-      {
-          // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
-          ui_ic_chatlog->moveCursor(QTextCursor::Start);
-          ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
-      }
-  }
+  return p_text;
 }
 
-// Call it ugly, call it a hack, but I wanted to do something special with the songname changes.
-void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
+void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -1904,6 +1822,9 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
 
+  if (!is_songchange)
+    p_text = filter_ic_text(p_text);
+
   if (log_goes_downwards)
   {
       const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
@@ -1920,8 +1841,15 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
           ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
       }
 
-      ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_songname + ".", italics);
+      if (is_songchange)
+      {
+        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+        ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
+      }
+      else
+      {
+        ui_ic_chatlog->textCursor().insertText(p_text, normal);
+      }
 
       // If we got too many blocks in the current log, delete some from the top.
       while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
@@ -1954,8 +1882,15 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
 
       ui_ic_chatlog->textCursor().insertText(p_name, bold);
 
-      ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_songname + "." + '\n', italics);
+      if (is_songchange)
+      {
+        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+        ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
+      }
+      else
+      {
+        ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
+      }
 
       // If we got too many blocks in the current log, delete some from the bottom.
       while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
@@ -1982,7 +1917,7 @@ void Courtroom::append_ic_songchange(QString p_songname, QString p_name)
   }
 }
 
-void Courtroom::play_preanim()
+void Courtroom::play_preanim(bool noninterrupting)
 {
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_preanim = m_chatmessage[PRE_EMOTE];
@@ -2004,53 +1939,27 @@ void Courtroom::play_preanim()
   if (!file_exists(anim_to_find) ||
       preanim_duration < 0)
   {
-    anim_state = 1;
+    if (noninterrupting)
+      anim_state = 4;
+    else
+      anim_state = 1;
     preanim_done();
     qDebug() << "could not find " + anim_to_find;
     return;
   }
 
   ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
-  anim_state = 1;
-  if (text_delay >= 0)
-    text_delay_timer->start(text_delay);
 
-}
-
-void Courtroom::play_noninterrupting_preanim()
-{
-  QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_preanim = m_chatmessage[PRE_EMOTE];
-
-  //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
-  int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
-  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
-  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
-
-  int preanim_duration;
-
-  if (ao2_duration < 0)
-    preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
-  else
-    preanim_duration = ao2_duration;
-
-  sfx_delay_timer->start(sfx_delay);
-  QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char, f_preanim));
-  if (!file_exists(anim_to_find) ||
-      preanim_duration < 0)
-  {
+  if (noninterrupting)
     anim_state = 4;
-    preanim_done();
-    qDebug() << "could not find " + anim_to_find;
-    return;
-  }
+  else
+    anim_state = 1;
 
-  ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
-  anim_state = 4;
   if (text_delay >= 0)
     text_delay_timer->start(text_delay);
 
-  handle_chatmessage_3();
+  if (noninterrupting)
+    handle_chatmessage_3();
 }
 
 void Courtroom::preanim_done()
@@ -2616,7 +2525,7 @@ void Courtroom::handle_song(QStringList *p_contents)
         ic_chatlog_history.removeFirst();
       }
 
-      append_ic_songchange(f_song_clear, str_show);
+      append_ic_text(f_song_clear, str_show, true);
       music_player->play(f_song);
     }
   }
@@ -3476,14 +3385,14 @@ void Courtroom::on_showname_enable_clicked()
       if (ui_showname_enable->isChecked())
       {
          if (item.get_is_song())
-           append_ic_songchange(item.get_message(), item.get_showname());
+           append_ic_text(item.get_message(), item.get_showname(), true);
          else
            append_ic_text(item.get_message(), item.get_showname());
       }
       else
       {
           if (item.get_is_song())
-            append_ic_songchange(item.get_message(), item.get_name());
+            append_ic_text(item.get_message(), item.get_name(), true);
           else
             append_ic_text(item.get_message(), item.get_name());
       }

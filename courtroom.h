@@ -179,20 +179,20 @@ public:
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
+  //This function filters out the common CC inline text trickery, for appending to
+  //the IC chatlog.
+  QString filter_ic_text(QString p_text);
+
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "");
-
-  // This is essentially the same as the above, but specifically for song changes.
-  void append_ic_songchange(QString p_songname, QString p_name = "");
+  void append_ic_text(QString p_text, QString p_name = "", bool is_songchange = false);
 
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim();
-  void play_noninterrupting_preanim();
+  void play_preanim(bool noninterrupting);
 
   //plays the witness testimony or cross examination animation based on argument
   void handle_wtce(QString p_wtce, int variant);
