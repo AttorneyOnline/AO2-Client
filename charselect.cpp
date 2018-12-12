@@ -168,8 +168,7 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 
       ui_char_button_list_filtered.at(n)->move(x_pos, y_pos);
       ui_char_button_list_filtered.at(n)->show();
-
-      ui_char_button_list_filtered.at(n)->set_taken();
+      ui_char_button_list_filtered.at(n)->apply_taken_image();
 
       ++x_mod_count;
 
@@ -239,6 +238,12 @@ void Courtroom::filter_character_list()
 
       if (!char_list.at(i).name.contains(ui_char_search->text(), Qt::CaseInsensitive))
           continue;
+
+      // We only really need to update the fact that a character is taken
+      // for the buttons that actually appear.
+      // You'd also update the passwordedness and etc. here later.
+      current_char->reset();
+      current_char->set_taken(char_list.at(i).taken);
 
       ui_char_button_list_filtered.append(current_char);
     }

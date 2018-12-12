@@ -20,8 +20,10 @@ public:
 
   void refresh();
   void reset();
-  void set_taken();
+  void set_taken(bool is_taken);
   void set_passworded();
+
+  void apply_taken_image();
 
   void set_image(QString p_character);
 
