@@ -40,12 +40,21 @@ void AOCharButton::reset()
   ui_selector->hide();
 }
 
-void AOCharButton::set_taken()
+void AOCharButton::set_taken(bool is_taken)
+{
+  taken = is_taken;
+}
+
+void AOCharButton::apply_taken_image()
 {
   if (taken)
   {
     ui_taken->move(0,0);
     ui_taken->show();
+  }
+  else
+  {
+    ui_taken->hide();
   }
 }
 
