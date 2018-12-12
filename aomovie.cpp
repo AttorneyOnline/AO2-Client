@@ -39,10 +39,10 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
   QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
   QString default_placeholder_path = ao_app->get_default_theme_path("placeholder.gif");
 
-  if (file_exists(misc_path))
-    gif_path = misc_path;
-  else if (file_exists(custom_path))
+  if (file_exists(custom_path))
     gif_path = custom_path;
+  else if (file_exists(misc_path))
+    gif_path = misc_path;
   else if (file_exists(custom_theme_path))
     gif_path = custom_theme_path;
   else if (file_exists(theme_path))
