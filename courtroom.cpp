@@ -1309,7 +1309,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
   ic_chatlog_history.append(*temp);
 
-  while(ic_chatlog_history.size() > log_maximum_blocks)
+  while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
   {
     ic_chatlog_history.removeFirst();
   }
@@ -2611,7 +2611,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       chatlogpiece* temp = new chatlogpiece(str_char, str_show, f_song, true);
       ic_chatlog_history.append(*temp);
 
-      while(ic_chatlog_history.size() > log_maximum_blocks)
+      while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
       {
         ic_chatlog_history.removeFirst();
       }
