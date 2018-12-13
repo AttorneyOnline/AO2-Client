@@ -224,7 +224,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     if (needs_default_audiodev())
     {
-        ui_audio_device_combobox->addItem("Default");
+        ui_audio_device_combobox->addItem("default");
     }
 
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
