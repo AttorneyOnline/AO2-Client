@@ -9,7 +9,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   int a = 0;
   BASS_DEVICEINFO info;
 
-  if (ao_app->get_audio_output_device() == "Default")
+  if (ao_app->get_audio_output_device() == "default")
   {
       BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
       load_bass_opus_plugin();
