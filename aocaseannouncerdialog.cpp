@@ -19,7 +19,7 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, AOApplication *p_a
   ui_announcer_buttons->setOrientation(Qt::Horizontal);
   ui_announcer_buttons->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this, SLOT(on_ok_pressed()));
+  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this, SLOT(ok_pressed()));
   QObject::connect(ui_announcer_buttons, SIGNAL(rejected()), this, SLOT(cancel_pressed()));
 
   setUpdatesEnabled(false);
