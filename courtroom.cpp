@@ -2375,12 +2375,14 @@ void Courtroom::set_scene()
     f_background = "prohelperstand";
     f_desk_image = "prohelperdesk";
   }
-  else if (f_side == "jur")
+  else if (f_side == "jur" && (file_exists(ao_app->get_background_path("jurystand.png")) ||
+                               file_exists(ao_app->get_background_path("jurystand.gif"))))
   {
     f_background = "jurystand";
     f_desk_image = "jurydesk";
   }
-  else if (f_side == "sea")
+  else if (f_side == "sea" && (file_exists(ao_app->get_background_path("seancestand.png")) ||
+                               file_exists(ao_app->get_background_path("seancestand.gif"))))
   {
     f_background = "seancestand";
     f_desk_image = "seancedesk";
