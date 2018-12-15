@@ -6,27 +6,41 @@ AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
   m_parent = parent;
   ao_app = p_ao_app;
+  m_movie = new QMovie(this);
 }
 
 void AOScene::set_image(QString p_image)
 {
-  QString background_path = ao_app->get_background_path() + p_image + ".png";
-  QString animated_background_path = ao_app->get_background_path() + p_image + ".gif";
-  QString default_path = ao_app->get_default_background_path() + p_image;
+  QString background_path = ao_app->get_background_path(p_image + ".png");
+  QString animated_background_path = ao_app->get_background_path(p_image + ".gif");
+  QString default_path = ao_app->get_default_background_path(p_image + ".png");
 
   QPixmap background(background_path);
-  QPixmap animated_background(animated_background_path);
   QPixmap default_bg(default_path);
 
   int w = this->width();
   int h = this->height();
 
-  if (file_exists(animated_background_path))
-    this->setPixmap(animated_background.scaled(w, h));
+  this->clear();
+  this->setMovie(nullptr);
+
+  m_movie->stop();
+  m_movie->setFileName(animated_background_path);
+  m_movie->setScaledSize(QSize(w, h));
+
+  if (m_movie->isValid())
+  {
+    this->setMovie(m_movie);
+    m_movie->start();
+  }
   else if (file_exists(background_path))
+  {
     this->setPixmap(background.scaled(w, h));
+  }
   else
+  {
     this->setPixmap(default_bg.scaled(w, h));
+  }
 }
 
 void AOScene::set_legacy_desk(QString p_image)
@@ -34,8 +48,8 @@ void AOScene::set_legacy_desk(QString p_image)
   //vanilla desks vary in both width and height. in order to make that work with viewport rescaling,
   //some INTENSE math is needed.
 
-  QString desk_path = ao_app->get_background_path() + p_image;
-  QString default_path = ao_app->get_default_background_path() + p_image;
+  QString desk_path = ao_app->get_background_path(p_image);
+  QString default_path = ao_app->get_default_background_path(p_image);
 
   QPixmap f_desk;
 
@@ -53,7 +67,7 @@ void AOScene::set_legacy_desk(QString p_image)
 
   //int final_y = y_modifier * vp_height;
   //int final_w = w_modifier * f_desk.width();
-  int final_h = h_modifier * f_desk.height();
+  int final_h = static_cast<int>(h_modifier * f_desk.height());
 
   //this->resize(final_w, final_h);
   //this->setPixmap(f_desk.scaled(final_w, final_h));

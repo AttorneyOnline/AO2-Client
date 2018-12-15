@@ -9,7 +9,7 @@ namespace omni
 
     std::stringstream stream;
     stream << std::setfill('0') << std::setw(sizeof(char)*2)
-       << std::hex << input;
+           << std::hex << input;
     std::string result(stream.str());
     std::transform(result.begin(), result.end(), result.begin(), ::toupper);
 

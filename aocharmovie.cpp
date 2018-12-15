@@ -19,13 +19,16 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower() + ".gif";
-  QString alt_path = ao_app->get_character_path(p_char) + p_emote.toLower() + ".png";
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
-  QString placeholder_default_path = ao_app->get_default_theme_path() + "placeholder.gif";
+  QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
+  QString alt_path = ao_app->get_character_path(p_char, p_emote + ".png");
+  QString apng_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
+  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
+  QString placeholder_default_path = ao_app->get_default_theme_path("placeholder.gif");
   QString gif_path;
 
-  if (file_exists(original_path))
+  if (file_exists(apng_path))
+    gif_path = apng_path;
+  else if (file_exists(original_path))
     gif_path = original_path;
   else if (file_exists(alt_path))
     gif_path = alt_path;
@@ -58,7 +61,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
-  QString gif_path = ao_app->get_character_path(p_char) + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, p_emote);
 
   m_movie->stop();
   this->clear();
@@ -75,8 +78,11 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
     real_duration += m_movie->nextFrameDelay();
     m_movie->jumpToFrame(n_frame + 1);
   }
+
+#ifdef DEBUG_GIF
   qDebug() << "full_duration: " << full_duration;
   qDebug() << "real_duration: " << real_duration;
+#endif
 
   double percentage_modifier = 100.0;
 
@@ -88,7 +94,10 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
     if (percentage_modifier > 100.0)
       percentage_modifier = 100.0;
   }
+
+#ifdef DEBUG_GIF
   qDebug() << "% mod: " << percentage_modifier;
+#endif
 
   if (full_duration == 0 || full_duration >= real_duration)
   {
@@ -107,7 +116,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
 
   m_movie->stop();
   this->clear();
@@ -120,7 +129,7 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char) + "(a)" + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
 
   m_movie->stop();
   this->clear();
@@ -146,14 +155,31 @@ void AOCharMovie::combo_resize(int w, int h)
   m_movie->setScaledSize(f_size);
 }
 
+void AOCharMovie::move(int ax, int ay)
+{
+  x = ax;
+  y = ay;
+  QLabel::move(x, y);
+}
+
 void AOCharMovie::frame_change(int n_frame)
 {
+
   if (movie_frames.size() > n_frame)
   {
     QPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(n_frame));
+    auto aspect_ratio = Qt::KeepAspectRatio;
 
-    this->setPixmap(f_pixmap.scaled(this->width(), this->height()));
-  }
+    if (f_pixmap.size().width() > f_pixmap.size().height())
+      aspect_ratio = Qt::KeepAspectRatioByExpanding;
+
+    if (f_pixmap.size().width() > this->size().width() || f_pixmap.size().height() > this->size().height())
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::SmoothTransformation));
+    else
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation));
+
+    QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
+   }
 
   if (m_movie->frameCount() - 1 == n_frame && play_once)
   {

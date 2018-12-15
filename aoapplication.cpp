@@ -5,8 +5,14 @@
 #include "networkmanager.h"
 #include "debug_functions.h"
 
+#include "aooptionsdialog.h"
+#include "aocaseannouncerdialog.h"
+
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
+  // Create the QSettings class that points to the config.ini.
+  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
+
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
   QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
@@ -36,7 +42,7 @@ void AOApplication::construct_lobby()
   int y = (screenGeometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if(is_discord_enabled())
+  if (is_discord_enabled())
     discord->state_lobby();
 
   w_lobby->show();
@@ -151,8 +157,9 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
   {
     if (will_retry)
     {
-      w_lobby->append_error("Error connecting to master server. Will try again in "
-                          + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
+      if (w_lobby != nullptr)
+        w_lobby->append_error("Error connecting to master server. Will try again in "
+                            + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
     }
     else
     {
@@ -163,4 +170,16 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
                  "Please check your Internet connection and firewall, and please try again.");
     }
   }
+}
+
+void AOApplication::call_settings_menu()
+{
+    AOOptionsDialog settings(nullptr, this);
+    settings.exec();
+}
+
+void AOApplication::call_announce_menu(Courtroom *court)
+{
+    AOCaseAnnouncerDialog announcer(nullptr, this, court);
+    announcer.exec();
 }

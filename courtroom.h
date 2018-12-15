@@ -24,13 +24,8 @@
 #include "file_functions.h"
 #include "datatypes.h"
 #include "debug_functions.h"
+#include "chatlogpiece.h"
 
-#include <QDebug>
-#include <QScrollBar>
-#include <QRegExp>
-#include <QBrush>
-#include <QTextCharFormat>
-#include <QFont>
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QPlainTextEdit>
@@ -43,6 +38,18 @@
 #include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
+#include <QSpinBox>
+
+#include <QDebug>
+#include <QScrollBar>
+#include <QRegExp>
+#include <QBrush>
+#include <QTextCharFormat>
+#include <QFont>
+#include <QInputDialog>
+#include <QFileDialog>
+
+#include <stack>
 
 class AOApplication;
 
@@ -55,6 +62,49 @@ public:
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
+  void append_area(QString f_area){area_list.append(f_area);}
+
+  void fix_last_area()
+  {
+      QString malplaced = area_list.last();
+      area_list.removeLast();
+      append_music(malplaced);
+  }
+
+  void arup_append(int players, QString status, QString cm, QString locked)
+  {
+      arup_players.append(players);
+      arup_statuses.append(status);
+      arup_cms.append(cm);
+      arup_locks.append(locked);
+  }
+
+  void arup_modify(int type, int place, QString value)
+  {
+    if (type == 0)
+    {
+      if (arup_players.size() > place)
+        arup_players[place] = value.toInt();
+    }
+    else if (type == 1)
+    {
+      if (arup_statuses.size() > place)
+        arup_statuses[place] = value;
+    }
+    else if (type == 2)
+    {
+      if (arup_cms.size() > place)
+        arup_cms[place] = value;
+    }
+    else if (type == 3)
+    {
+      if (arup_locks.size() > place)
+        arup_locks[place] = value;
+    }
+    list_areas();
+  }
+
+  void character_loading_finished();
 
   //sets position of widgets based on theme ini files
   void set_widgets();
@@ -83,11 +133,17 @@ public:
   //sets the local mute list based on characters available on the server
   void set_mute_list();
 
+  // Sets the local pair list based on the characters available on the server.
+  void set_pair_list();
+
   //sets desk and bg based on pos in chatmessage
   void set_scene();
 
   //sets text color based on text color in chatmessage
   void set_text_color();
+
+  // And gets the colour, too!
+  QColor get_text_color(QString color);
 
   //takes in serverD-formatted IP list as prints a converted version to server OOC
   //admittedly poorly named
@@ -100,23 +156,21 @@ public:
   //send a message that the player is banned and quits the server
   void set_ban(int p_cid);
 
-  //implementations in path_functions.cpp
-  QString get_background_path();
-  QString get_default_background_path();
-
   //cid = character id, returns the cid of the currently selected character
   int get_cid() {return m_cid;}
   QString get_current_char() {return current_char;}
+  QString get_current_background() {return current_background;}
 
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
+  void list_areas();
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
-  void append_server_chatmessage(QString p_name, QString p_message);
+  void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
 
   //these functions handle chatmessages sequentially.
   //The process itself is very convoluted and merits separate documentation
@@ -125,23 +179,29 @@ public:
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
+  //This function filters out the common CC inline text trickery, for appending to
+  //the IC chatlog.
+  QString filter_ic_text(QString p_text);
+
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "");
+  void append_ic_text(QString p_text, QString p_name = "", bool is_songchange = false);
 
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim();
+  void play_preanim(bool noninterrupting);
 
   //plays the witness testimony or cross examination animation based on argument
-  void handle_wtce(QString p_wtce);
+  void handle_wtce(QString p_wtce, int variant);
 
   //sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
   //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
+
+  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();
 
@@ -159,18 +219,67 @@ private:
   int m_viewport_width = 256;
   int m_viewport_height = 192;
 
+  bool first_message_sent = false;
+  int maximumMessages = 0;
+
+  // This is for inline message-colouring.
+
+  enum INLINE_COLOURS {
+      INLINE_BLUE,
+      INLINE_GREEN,
+      INLINE_ORANGE,
+      INLINE_GREY
+  };
+
+  // A stack of inline colours.
+  std::stack<INLINE_COLOURS> inline_colour_stack;
+
+  bool next_character_is_not_special = false; // If true, write the
+                        // next character as it is.
+
+  bool message_is_centered = false;
+
+  int current_display_speed = 3;
+  int message_display_speed[7] = {30, 40, 50, 60, 75, 100, 120};
+
+  // This is for checking if the character should start talking again
+  // when an inline blue text ends.
+  bool entire_message_is_blue = false;
+
+  // And this is the inline 'talking checker'. Counts how 'deep' we are
+  // in inline blues.
+  int inline_blue_depth = 0;
+
+  // The character ID of the character this user wants to appear alongside with.
+  int other_charid = -1;
+
+  // The offset this user has given if they want to appear alongside someone.
+  int offset_with_pair = 0;
+
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
+  QVector<QString> area_list;
+
+  QVector<int> arup_players;
+  QVector<QString> arup_statuses;
+  QVector<QString> arup_cms;
+  QVector<QString> arup_locks;
 
   QSignalMapper *char_button_mapper;
+
+  QVector<chatlogpiece> ic_chatlog_history;
+
+  // These map music row items and area row items to their actual IDs.
+  QVector<int> music_row_to_number;
+  QVector<int> area_row_to_number;
 
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 
   //determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
-  int chat_tick_interval = 60;
+  //int chat_tick_interval = 60;
   //which tick position(character in chat message) we are at
   int tick_pos = 0;
   //used to determine how often blips sound
@@ -179,6 +288,12 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+
+  // Used for getting the current maximum blocks allowed in the IC chatlog.
+  int log_maximum_blocks = 0;
+
+  // True, if the log should go downwards.
+  bool log_goes_downwards = false;
 
   //delay before chat messages starts ticking
   QTimer *text_delay_timer;
@@ -197,7 +312,7 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 15;
+  static const int chatmessage_size = 23;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -218,7 +333,7 @@ private:
 
   bool is_muted = false;
 
-  //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
+  //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 = noniterrupting preanim
   int anim_state = 3;
 
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
@@ -241,6 +356,9 @@ private:
   int char_columns = 10;
   int char_rows = 9;
   int max_chars_on_page = 90;
+
+  const int button_width = 60;
+  const int button_height = 60;
 
   int current_emote_page = 0;
   int current_emote = 0;
@@ -277,6 +395,7 @@ private:
   AOScene *ui_vp_background;
   AOMovie *ui_vp_speedlines;
   AOCharMovie *ui_vp_player_char;
+  AOCharMovie *ui_vp_sideplayer_char;
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
@@ -297,7 +416,12 @@ private:
   QListWidget *ui_area_list;
   QListWidget *ui_music_list;
 
+  AOButton *ui_pair_button;
+  QListWidget *ui_pair_list;
+  QSpinBox *ui_pair_offset_spinbox;
+
   QLineEdit *ui_ic_chat_message;
+  QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
   QLineEdit *ui_ooc_chat_name;
@@ -328,14 +452,23 @@ private:
 
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
+  AOButton *ui_guilty;
+  AOButton *ui_not_guilty;
 
   AOButton *ui_change_character;
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
+  AOButton *ui_settings;
+  AOButton *ui_announce_casing;
+  AOButton *ui_switch_area_music;
 
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
+  QCheckBox *ui_casing;
+
+  QCheckBox *ui_pre_non_interrupt;
+  QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;
   AOButton *ui_realization;
@@ -354,6 +487,9 @@ private:
   QSlider *ui_blip_slider;
 
   AOImage *ui_muted;
+
+  QSpinBox *ui_log_limit_spinbox;
+  QLabel *ui_log_limit_label;
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
@@ -376,6 +512,7 @@ private:
   QWidget *ui_char_buttons;
 
   QVector<AOCharButton*> ui_char_button_list;
+  QVector<AOCharButton*> ui_char_button_list_filtered;
   AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
@@ -387,9 +524,15 @@ private:
 
   AOButton *ui_spectator;
 
+  QLineEdit *ui_char_search;
+  QCheckBox *ui_char_passworded;
+  QCheckBox *ui_char_taken;
+
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
+  void put_button_in_place(int starting, int chars_on_this_page);
+  void filter_character_list();
 
   void construct_emotes();
   void set_emote_page();
@@ -397,8 +540,6 @@ private:
 
   void construct_evidence();
   void set_evidence_page();
-
-
 
 public slots:
   void objection_done();
@@ -411,6 +552,8 @@ public slots:
 
   void mod_called(QString p_ip);
 
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
+
 private slots:
   void start_chat_ticking();
   void play_sfx();
@@ -418,6 +561,7 @@ private slots:
   void chat_tick();
 
   void on_mute_list_clicked(QModelIndex p_index);
+  void on_pair_list_clicked(QModelIndex p_index);
 
   void on_chat_return_pressed();
 
@@ -425,6 +569,7 @@ private slots:
 
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QModelIndex p_model);
+  void on_area_list_double_clicked(QModelIndex p_model);
 
   void select_emote(int p_id);
 
@@ -456,6 +601,7 @@ private slots:
   void on_realization_clicked();
 
   void on_mute_clicked();
+  void on_pair_clicked();
 
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();
@@ -468,18 +614,27 @@ private slots:
   void on_sfx_slider_moved(int p_value);
   void on_blip_slider_moved(int p_value);
 
+  void on_log_limit_changed(int value);
+  void on_pair_offset_changed(int value);
+
   void on_ooc_toggle_clicked();
 
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();
+  void on_not_guilty_clicked();
+  void on_guilty_clicked();
 
   void on_change_character_clicked();
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
+  void on_settings_clicked();
+  void on_announce_casing_clicked();
 
   void on_pre_clicked();
   void on_flip_clicked();
   void on_guard_clicked();
+
+  void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
 
@@ -490,12 +645,21 @@ private slots:
 
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
+  void on_char_search_changed(const QString& newtext);
+  void on_char_taken_clicked(int newstate);
+  void on_char_passworded_clicked(int newstate);
 
   void on_spectator_clicked();
 
   void char_clicked(int n_char);
 
+  void on_switch_area_music_clicked();
+
+  void on_casing_clicked();
+
   void ping_server();
+
+  void load_bass_opus_plugin();
 };
 
 #endif // COURTROOM_H

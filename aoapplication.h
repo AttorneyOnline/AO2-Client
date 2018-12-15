@@ -8,9 +8,20 @@
 #include <QApplication>
 #include <QVector>
 #include <QFile>
+#include <QSettings>
+
 #include <QDebug>
 #include <QRect>
 #include <QDesktopWidget>
+
+#include <QCryptographicHash>
+
+#include <QDir>
+#include <QStandardPaths>
+
+#include <QTextStream>
+#include <QStringList>
+#include <QColor>
 
 class NetworkManager;
 class Lobby;
@@ -44,6 +55,9 @@ public:
   void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
+  void call_settings_menu();
+  void call_announce_menu(Courtroom *court);
+
   /////////////////server metadata//////////////////
 
   unsigned int s_decryptor = 5;
@@ -56,6 +70,10 @@ public:
   bool improved_loading_enabled = false;
   bool desk_mod_enabled = false;
   bool evidence_enabled = false;
+  bool cccc_ic_support_enabled = false;
+  bool arup_enabled = false;
+  bool casing_alerts_enabled = false;
+  bool modcall_reason_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -66,6 +84,7 @@ public:
 
   int char_list_size = 0;
   int loaded_chars = 0;
+  int generated_chars = 0;
   int evidence_list_size = 0;
   int loaded_evidence = 0;
   int music_list_size = 0;
@@ -75,9 +94,9 @@ public:
 
   //////////////////versioning///////////////
 
-  int get_release() {return RELEASE;}
-  int get_major_version() {return MAJOR_VERSION;}
-  int get_minor_version() {return MINOR_VERSION;}
+  constexpr int get_release() const { return RELEASE; }
+  constexpr int get_major_version() const { return MAJOR_VERSION; }
+  constexpr int get_minor_version() const { return MINOR_VERSION; }
   QString get_version_string();
 
   ///////////////////////////////////////////
@@ -98,21 +117,22 @@ public:
   //implementation in path_functions.cpp
   QString get_base_path();
   QString get_data_path();
-  QString get_theme_path();
-  QString get_default_theme_path();
-  QString get_character_path(QString p_character);
-  QString get_demothings_path();
-  QString get_sounds_path();
+  QString get_theme_path(QString p_file);
+  QString get_default_theme_path(QString p_file);
+  QString get_custom_theme_path(QString p_theme, QString p_file);
+  QString get_character_path(QString p_char, QString p_file);
+  QString get_sounds_path(QString p_file);
   QString get_music_path(QString p_song);
-  QString get_background_path();
-  QString get_default_background_path();
-  QString get_evidence_path();
+  QString get_background_path(QString p_file);
+  QString get_default_background_path(QString p_file);
+  QString get_evidence_path(QString p_file);
+  QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
 
-  //Returns the config value for the passed searchline from a properly formatted config ini file
-  QString read_config(QString searchline);
+  // Instead of reinventing the wheel, we'll use a QSettings class.
+  QSettings *configini;
 
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
@@ -135,11 +155,26 @@ public:
   //Returns the value of default_blip in config.ini
   int get_default_blip();
 
-  //Returns true if discord is enabled in config.ini and false otherwise
+  // Returns the value of whether Discord should be enabled on startup
+  // from the config.ini.
   bool is_discord_enabled();
 
-  //Returns true if reverse IC is enabled in config.ini and false otherwise
-  bool ic_scroll_down_enabled();
+  // Returns the value of the maximum amount of lines the IC chatlog
+  // may contain, from config.ini.
+  int get_max_log_size();
+
+  // Returns whether the log should go upwards (new behaviour)
+  // or downwards (vanilla behaviour).
+  bool get_log_goes_downwards();
+
+  // Returns the username the user may have set in config.ini.
+  QString get_default_username();
+
+  // Returns the audio device used for the client.
+  QString get_audio_output_device();
+
+  // Returns whether the user would like to have custom shownames on by default.
+  bool get_showname_enabled_by_default();
 
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
@@ -165,11 +200,20 @@ public:
   //Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);
 
+  // Returns the colour from the misc folder.
+  QColor get_chat_color(QString p_identifier, QString p_chat);
+
   //Returns the sfx with p_identifier from sounds.ini in the current theme path
   QString get_sfx(QString p_identifier);
 
+  //Figure out if we can opus this or if we should fall back to wav
+  QString get_sfx_suffix(QString sound_to_check);
+
+  // Can we use APNG for this? If not, fall back to a gif.
+  QString get_image_suffix(QString path_to_check);
+
   //Returns the value of p_search_line within target_tag and terminator_tag
-  QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
+  QString read_char_ini(QString p_char, QString p_search_line, QString target_tag);
 
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
@@ -191,6 +235,9 @@ public:
 
   //Not in use
   int get_text_delay(QString p_char, QString p_emote);
+
+  // Returns the custom realisation used by the character.
+  QString get_custom_realization(QString p_char);
 
   //Returns the name of p_char
   QString get_char_name(QString p_char);
@@ -222,10 +269,38 @@ public:
   //Returns p_char's gender
   QString get_gender(QString p_char);
 
+  // ======
+  // These are all casing-related settings.
+  // ======
+
+  // Returns if the user has casing alerts enabled.
+  bool get_casing_enabled();
+
+  // Returns if the user wants to get alerts for the defence role.
+  bool get_casing_defence_enabled();
+
+  // Same for prosecution.
+  bool get_casing_prosecution_enabled();
+
+  // Same for judge.
+  bool get_casing_judge_enabled();
+
+  // Same for juror.
+  bool get_casing_juror_enabled();
+
+  // Same for steno.
+  bool get_casing_steno_enabled();
+
+  // Same for CM.
+  bool get_casing_cm_enabled();
+
+  // Get the message for the CM for casing alerts.
+  QString get_casing_can_host_cases();
+
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 4;
-  const int MINOR_VERSION = 10;
+  const int MAJOR_VERSION = 6;
+  const int MINOR_VERSION = 0;
 
   QString current_theme = "default";
 

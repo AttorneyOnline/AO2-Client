@@ -21,6 +21,7 @@
 #include <QDnsLookup>
 #include <QTime>
 #include <QTimer>
+#include <cstring>
 
 class NetworkManager : public QObject
 {
