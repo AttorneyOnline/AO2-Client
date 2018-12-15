@@ -10,6 +10,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
 
   this->setWindowTitle("Attorney Online 2");
+  this->setWindowIcon(QIcon(":/logo.png"));
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -264,21 +265,19 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-  call_notice("Attorney Online 2 is built using Qt 5.7\n\n"
-              "Lead development:\n"
-              "OmniTroid\n\n"
-              "stonedDiscord\n"
-              "longbyte1\n"
-              "Supporting development:\n"
-              "Fiercy\n\n"
-              "UI design:\n"
-              "Ruekasu\n"
-              "Draxirch\n\n"
-              "Special thanks:\n"
-              "Unishred\n"
-              "Argoneus\n"
-              "Noevain\n"
-              "Cronnicossy");
+  QString msg = tr("<h2>Attorney Online %1</h2>"
+                   "The courtroom drama simulator"
+                   "<p><b>Source code:</b> "
+                   "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
+                   "https://github.com/AttorneyOnline/AO2-Client</a>"
+                   "<p><b>Major development:</b><br>"
+                   "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter"
+                   "<p><b>Special thanks:</b><br>"
+                   "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
+                   "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
+                   "Noevain, Cronnicossy")
+          .arg(ao_app->get_version_string());
+  QMessageBox::about(this, "About", msg);
 }
 
 void Lobby::on_server_list_clicked(QModelIndex p_model)
