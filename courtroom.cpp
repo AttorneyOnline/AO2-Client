@@ -3438,31 +3438,39 @@ void Courtroom::on_casing_clicked()
   if (ao_app->casing_alerts_enabled)
   {
     if (ui_casing->isChecked())
-      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase"
-                                            + " \"" + ao_app->get_casing_can_host_cases() + "\""
-                                            + " " + QString::number(ao_app->get_casing_cm_enabled())
-                                            + " " + QString::number(ao_app->get_casing_defence_enabled())
-                                            + " " + QString::number(ao_app->get_casing_prosecution_enabled())
-                                            + " " + QString::number(ao_app->get_casing_judge_enabled())
-                                            + " " + QString::number(ao_app->get_casing_juror_enabled())
-                                            + " " + QString::number(ao_app->get_casing_steno_enabled())
-                                            + "#%"));
+    {
+      QStringList f_packet;
+
+      f_packet.append(ao_app->get_casing_can_host_cases());
+      f_packet.append(QString::number(ao_app->get_casing_cm_enabled()));
+      f_packet.append(QString::number(ao_app->get_casing_defence_enabled()));
+      f_packet.append(QString::number(ao_app->get_casing_prosecution_enabled()));
+      f_packet.append(QString::number(ao_app->get_casing_judge_enabled()));
+      f_packet.append(QString::number(ao_app->get_casing_juror_enabled()));
+      f_packet.append(QString::number(ao_app->get_casing_steno_enabled()));
+
+      ao_app->send_server_packet(new AOPacket("SETCASE", f_packet));
+    }
     else
-      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/setcase \"\" 0 0 0 0 0 0#%"));
+      ao_app->send_server_packet(new AOPacket("SETCASE#\"\"#0#0#0#0#0#0#%"));
   }
 }
 
 void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno)
 {
   if (ao_app->casing_alerts_enabled)
-    ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/anncase \""
-                                          + title + "\" "
-                                          + QString::number(def) + " "
-                                          + QString::number(pro) + " "
-                                          + QString::number(jud) + " "
-                                          + QString::number(jur) + " "
-                                          + QString::number(steno)
-                                          + "#%"));
+  {
+    QStringList f_packet;
+
+    f_packet.append(title);
+    f_packet.append(QString::number(def));
+    f_packet.append(QString::number(pro));
+    f_packet.append(QString::number(jud));
+    f_packet.append(QString::number(jur));
+    f_packet.append(QString::number(steno));
+
+    ao_app->send_server_packet(new AOPacket("CASEA", f_packet));
+    }
 }
 
 Courtroom::~Courtroom()
