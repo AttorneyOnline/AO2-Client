@@ -52,6 +52,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   ui_connect->setEnabled(false);
 
+  list_servers();
+
   set_widgets();
 }
 

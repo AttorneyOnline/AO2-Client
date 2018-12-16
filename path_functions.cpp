@@ -31,7 +31,7 @@ QString AOApplication::get_base_path()
     base_path = external_storage + "/AO2/";
   }
 #else
-  base_path = QDir::currentPath() + "/base/";
+  base_path = applicationDirPath() + "/base/";
 #endif
 
   return base_path;

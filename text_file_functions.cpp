@@ -50,7 +50,7 @@ bool AOApplication::get_log_goes_downwards()
 
 bool AOApplication::get_showname_enabled_by_default()
 {
-  QString result = configini->value("show_custom_shownames", "false").value<QString>();
+  QString result = configini->value("show_custom_shownames", "true").value<QString>();
   return result.startsWith("true");
 }
 
