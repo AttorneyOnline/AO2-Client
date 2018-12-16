@@ -66,9 +66,12 @@ public:
 
   void fix_last_area()
   {
+    if (area_list.size() > 0)
+    {
       QString malplaced = area_list.last();
       area_list.removeLast();
       append_music(malplaced);
+    }
   }
 
   void arup_append(int players, QString status, QString cm, QString locked)
