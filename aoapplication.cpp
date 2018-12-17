@@ -57,6 +57,7 @@ void AOApplication::destruct_lobby()
   }
 
   delete w_lobby;
+  w_lobby = nullptr;
   lobby_constructed = false;
 }
 
@@ -86,6 +87,7 @@ void AOApplication::destruct_courtroom()
   }
 
   delete w_courtroom;
+  w_courtroom = nullptr;
   courtroom_constructed = false;
 }
 
@@ -157,7 +159,7 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
   {
     if (will_retry)
     {
-      if (w_lobby != nullptr)
+      if (lobby_constructed)
         w_lobby->append_error("Error connecting to master server. Will try again in "
                             + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
     }

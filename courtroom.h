@@ -204,6 +204,9 @@ public:
   //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
+  //Toggles the judge buttons, whether they should appear or not.
+  void toggle_judge_buttons(bool is_on);
+
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();

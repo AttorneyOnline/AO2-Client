@@ -2585,6 +2585,32 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
   }
 }
 
+void Courtroom::toggle_judge_buttons(bool is_on)
+{
+  if (is_on)
+  {
+    ui_witness_testimony->show();
+    ui_cross_examination->show();
+    ui_guilty->show();
+    ui_not_guilty->show();
+    ui_defense_minus->show();
+    ui_defense_plus->show();
+    ui_prosecution_minus->show();
+    ui_prosecution_plus->show();
+  }
+  else
+  {
+    ui_witness_testimony->hide();
+    ui_cross_examination->hide();
+    ui_guilty->hide();
+    ui_not_guilty->hide();
+    ui_defense_minus->hide();
+    ui_defense_plus->hide();
+    ui_prosecution_minus->hide();
+    ui_prosecution_plus->hide();
+  }
+}
+
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
@@ -2621,27 +2647,13 @@ void Courtroom::on_ooc_return_pressed()
 
   if (ooc_message.startsWith("/pos"))
   {
-    if (ooc_message.startsWith("/pos jud"))
+    if (ooc_message == "/pos jud")
     {
-      ui_witness_testimony->show();
-      ui_cross_examination->show();
-      ui_guilty->show();
-      ui_not_guilty->show();
-      ui_defense_minus->show();
-      ui_defense_plus->show();
-      ui_prosecution_minus->show();
-      ui_prosecution_plus->show();
+      toggle_judge_buttons(true);
     }
     else
     {
-      ui_witness_testimony->hide();
-      ui_cross_examination->hide();
-      ui_guilty->hide();
-      ui_not_guilty->hide();
-      ui_defense_minus->hide();
-      ui_defense_plus->hide();
-      ui_prosecution_minus->hide();
-      ui_prosecution_plus->hide();
+      toggle_judge_buttons(false);
     }
   }
   else if (ooc_message.startsWith("/login"))
@@ -2891,6 +2903,8 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   if (p_index < 0 || p_index > 5)
     return;
 
+  toggle_judge_buttons(false);
+
   QString f_pos;
 
   switch (p_index)
@@ -2906,6 +2920,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
     break;
   case 3:
     f_pos = "jud";
+    toggle_judge_buttons(true);
     break;
   case 4:
     f_pos = "hld";
