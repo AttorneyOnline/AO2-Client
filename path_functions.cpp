@@ -149,7 +149,7 @@ QString AOApplication::get_case_sensitive_path(QString p_file) {
     return file_parent_dir + "/" + file_basename;
 
   //last resort, dirlist parent dir and find case insensitive match
-  QRegExp file_rx = QRegExp(file_basename, Qt::CaseInsensitive);
+  QRegExp file_rx = QRegExp(file_basename, Qt::CaseInsensitive, QRegExp::FixedString);
   QStringList files = QDir(file_parent_dir).entryList();
 
   int result = files.indexOf(file_rx);
