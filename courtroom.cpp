@@ -2055,33 +2055,6 @@ void Courtroom::chat_tick()
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
-    else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
-    {
-      QString html_color;
-
-      switch (rainbow_counter)
-      {
-      case 0:
-        html_color = get_text_color(QString::number(RED)).name();
-        break;
-      case 1:
-        html_color = get_text_color(QString::number(ORANGE)).name();
-        break;
-      case 2:
-        html_color = get_text_color(QString::number(YELLOW)).name();
-        break;
-      case 3:
-        html_color = get_text_color(QString::number(GREEN)).name();
-        break;
-      default:
-        html_color = get_text_color(QString::number(BLUE)).name();
-        rainbow_counter = -1;
-      }
-
-      ++rainbow_counter;
-
-      ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
-    }
 
     // Escape character.
     else if (f_character == "\\" and !next_character_is_not_special)
@@ -2245,6 +2218,34 @@ void Courtroom::chat_tick()
       }
       else
       {
+        if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
+        {
+          QString html_color;
+
+          switch (rainbow_counter)
+          {
+          case 0:
+            html_color = get_text_color(QString::number(RED)).name();
+            break;
+          case 1:
+            html_color = get_text_color(QString::number(ORANGE)).name();
+            break;
+          case 2:
+            html_color = get_text_color(QString::number(YELLOW)).name();
+            break;
+          case 3:
+            html_color = get_text_color(QString::number(GREEN)).name();
+            break;
+          default:
+            html_color = get_text_color(QString::number(BLUE)).name();
+            rainbow_counter = -1;
+          }
+
+          ++rainbow_counter;
+
+          ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
+        }
+        else
           ui_vp_message->insertHtml(f_character);
       }
 
