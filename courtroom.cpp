@@ -1582,13 +1582,6 @@ void Courtroom::handle_chatmessage_3()
 {
   start_chat_ticking();
 
-  if (m_chatmessage[REALIZATION] == "1")
-  {
-    realization_timer->start(60);
-    ui_vp_realization->show();
-    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
-  }
-
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
@@ -1978,6 +1971,13 @@ void Courtroom::start_chat_ticking()
   //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
   if (text_state != 0)
     return;
+
+  if (m_chatmessage[REALIZATION] == "1")
+  {
+    realization_timer->start(60);
+    ui_vp_realization->show();
+    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
+  }
 
   ui_vp_message->clear();
   set_text_color();
