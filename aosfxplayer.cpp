@@ -9,6 +9,8 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
+  BASS_ChannelStop(m_stream);
+  
   QString misc_path = "";
   QString char_path = "";
   QString sound_path = ao_app->get_sounds_path(p_sfx);
