@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia network
+QT       += core gui multimedia network uitools
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 RC_ICONS = logo.ico
@@ -50,7 +50,8 @@ SOURCES += main.cpp\
     discord_rich_presence.cpp \
     aooptionsdialog.cpp \
     chatlogpiece.cpp \
-    aocaseannouncerdialog.cpp
+    aocaseannouncerdialog.cpp \
+    aouiloader.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -84,7 +85,8 @@ HEADERS  += lobby.h \
     aooptionsdialog.h \
     text_file_functions.h \
     chatlogpiece.h \
-    aocaseannouncerdialog.h
+    aocaseannouncerdialog.h \
+    aouiloader.h
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you are compiling statically, you'll probably
@@ -119,7 +121,6 @@ DISTFILES +=
 
 FORMS += \
     resource/ui/lobby.ui \
-    resource/ui/loading.ui \
     resource/ui/courtroom.ui \
     resource/ui/viewport.ui \
     resource/ui/ic_log.ui

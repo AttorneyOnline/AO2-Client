@@ -16,6 +16,7 @@
 
 #include <QDebug>
 #include <QScrollBar>
+#include <QStackedWidget>
 
 class AOApplication;
 
@@ -26,15 +27,14 @@ class Lobby : public QMainWindow
 public:
   Lobby(AOApplication *p_ao_app);
 
-  void set_widgets();
   void list_servers();
   void list_favorites();
   void append_chatmessage(QString f_name, QString f_message);
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
-  void show_loading_overlay(){ui_loading_background->show();}
-  void hide_loading_overlay(){ui_loading_background->hide();}
+  void show_loading_overlay();
+  void hide_loading_overlay();
   QString get_chatlog();
   int get_selected_server();
   void enable_connect_button();
@@ -75,21 +75,21 @@ private:
   QProgressBar *ui_progress_bar;
   AOButton *ui_cancel;
 
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+  QWidget *ui_server_list_page;
+  QWidget *ui_loading_page;
+
+  QStackedWidget *ui_stacked_widget;
 
 private slots:
   void on_public_servers_clicked();
   void on_favorites_clicked();
 
-  void on_refresh_pressed();
   void on_refresh_released();
-  void on_add_to_fav_pressed();
   void on_add_to_fav_released();
-  void on_connect_pressed();
   void on_connect_released();
   void on_about_clicked();
-  void on_server_list_clicked(QModelIndex p_model);
-  void on_chatfield_return_pressed();
+  void on_server_list_currentRowChanged(int n_server);
+  void on_chatfield_returnPressed();
 };
 
 #endif // LOBBY_H
