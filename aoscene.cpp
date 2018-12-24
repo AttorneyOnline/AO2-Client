@@ -9,14 +9,14 @@ AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
   m_movie = new QMovie(this);
 }
 
-void AOScene::set_image(QString p_image)
+void AOScene::set_image(QString background, QString p_image)
 {
-  QString background_path = ao_app->get_background_path(p_image + ".png");
-  QString animated_background_path = ao_app->get_background_path(p_image + ".gif");
+  QString background_path = ao_app->get_background_path(background, p_image + ".png");
+  QString animated_background_path = ao_app->get_background_path(background, p_image + ".gif");
   QString default_path = ao_app->get_default_background_path(p_image + ".png");
 
-  QPixmap background(background_path);
-  QPixmap default_bg(default_path);
+  QPixmap background_image(background_path);
+  QPixmap default_bg_image(default_path);
 
   int w = this->width();
   int h = this->height();
@@ -35,20 +35,20 @@ void AOScene::set_image(QString p_image)
   }
   else if (file_exists(background_path))
   {
-    this->setPixmap(background.scaled(w, h));
+    this->setPixmap(background_image.scaled(w, h));
   }
   else
   {
-    this->setPixmap(default_bg.scaled(w, h));
+    this->setPixmap(default_bg_image.scaled(w, h));
   }
 }
 
-void AOScene::set_legacy_desk(QString p_image)
+void AOScene::set_legacy_desk(QString background, QString p_image)
 {
   //vanilla desks vary in both width and height. in order to make that work with viewport rescaling,
   //some INTENSE math is needed.
 
-  QString desk_path = ao_app->get_background_path(p_image);
+  QString desk_path = ao_app->get_background_path(background, p_image);
   QString default_path = ao_app->get_default_background_path(p_image);
 
   QPixmap f_desk;

@@ -14,8 +14,8 @@ class AOScene : public QLabel
 public:
   explicit AOScene(QWidget *parent, AOApplication *p_ao_app);
 
-  void set_image(QString p_image);
-  void set_legacy_desk(QString p_image);
+  void set_image(QString background, QString p_image);
+  void set_legacy_desk(QString background, QString p_image);
 
 private:
   QWidget *m_parent;

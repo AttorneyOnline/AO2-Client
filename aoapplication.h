@@ -123,7 +123,7 @@ public:
   QString get_character_path(QString p_char, QString p_file);
   QString get_sounds_path(QString p_file);
   QString get_music_path(QString p_song);
-  QString get_background_path(QString p_file);
+  QString get_background_path(QString background, QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
   QString get_case_sensitive_path(QString p_file);

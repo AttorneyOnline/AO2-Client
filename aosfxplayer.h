@@ -16,6 +16,7 @@ public:
   void play(QString p_sfx, QString p_char = "", QString shout = "");
   void stop();
   void set_volume(int p_volume);
+  int get_volume() { return m_volume; }
 
 private:
   QWidget *m_parent;

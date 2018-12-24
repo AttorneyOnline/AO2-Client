@@ -52,6 +52,15 @@
 #include <stack>
 
 class AOApplication;
+class AOViewport;
+
+// This is for inline message-colouring.
+enum INLINE_COLOURS {
+    INLINE_BLUE,
+    INLINE_GREEN,
+    INLINE_ORANGE,
+    INLINE_GREY
+};
 
 class Courtroom : public QMainWindow
 {
@@ -64,45 +73,9 @@ public:
   void append_music(QString f_music){music_list.append(f_music);}
   void append_area(QString f_area){area_list.append(f_area);}
 
-  void fix_last_area()
-  {
-      QString malplaced = area_list.last();
-      area_list.removeLast();
-      append_music(malplaced);
-  }
-
-  void arup_append(int players, QString status, QString cm, QString locked)
-  {
-      arup_players.append(players);
-      arup_statuses.append(status);
-      arup_cms.append(cm);
-      arup_locks.append(locked);
-  }
-
-  void arup_modify(int type, int place, QString value)
-  {
-    if (type == 0)
-    {
-      if (arup_players.size() > place)
-        arup_players[place] = value.toInt();
-    }
-    else if (type == 1)
-    {
-      if (arup_statuses.size() > place)
-        arup_statuses[place] = value;
-    }
-    else if (type == 2)
-    {
-      if (arup_cms.size() > place)
-        arup_cms[place] = value;
-    }
-    else if (type == 3)
-    {
-      if (arup_locks.size() > place)
-        arup_locks[place] = value;
-    }
-    list_areas();
-  }
+  void fix_last_area();
+  void arup_append(int players, QString status, QString cm, QString locked);
+  void arup_modify(int type, int place, QString value);
 
   void character_loading_finished();
 
@@ -121,9 +94,6 @@ public:
   //sets status as taken on character with cid n_char and places proper shading on charselect
   void set_taken(int n_char, bool p_taken);
 
-  //sets the current background to argument. also does some checks to see if it's a legacy bg
-  void set_background(QString p_background);
-
   //sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
@@ -135,15 +105,6 @@ public:
 
   // Sets the local pair list based on the characters available on the server.
   void set_pair_list();
-
-  //sets desk and bg based on pos in chatmessage
-  void set_scene();
-
-  //sets text color based on text color in chatmessage
-  void set_text_color();
-
-  // And gets the colour, too!
-  QColor get_text_color(QString color);
 
   //takes in serverD-formatted IP list as prints a converted version to server OOC
   //admittedly poorly named
@@ -159,7 +120,6 @@ public:
   //cid = character id, returns the cid of the currently selected character
   int get_cid() {return m_cid;}
   QString get_current_char() {return current_char;}
-  QString get_current_background() {return current_background;}
 
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
@@ -172,12 +132,9 @@ public:
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
 
-  //these functions handle chatmessages sequentially.
-  //The process itself is very convoluted and merits separate documentation
-  //But the general idea is objection animation->pre animation->talking->idle
   void handle_chatmessage(QStringList *p_contents);
-  void handle_chatmessage_2();
-  void handle_chatmessage_3();
+  void handle_background(QString background);
+  void handle_wtce(QString wtce, int variant);
 
   //This function filters out the common CC inline text trickery, for appending to
   //the IC chatlog.
@@ -192,11 +149,6 @@ public:
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim(bool noninterrupting);
-
-  //plays the witness testimony or cross examination animation based on argument
-  void handle_wtce(QString p_wtce, int variant);
-
   //sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
   //state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
@@ -207,6 +159,7 @@ public:
 
   ~Courtroom();
 
+  static constexpr int chatmessage_size = 23;
 private:
   AOApplication *ao_app;
 
@@ -221,34 +174,6 @@ private:
 
   bool first_message_sent = false;
   int maximumMessages = 0;
-
-  // This is for inline message-colouring.
-
-  enum INLINE_COLOURS {
-      INLINE_BLUE,
-      INLINE_GREEN,
-      INLINE_ORANGE,
-      INLINE_GREY
-  };
-
-  // A stack of inline colours.
-  std::stack<INLINE_COLOURS> inline_colour_stack;
-
-  bool next_character_is_not_special = false; // If true, write the
-                        // next character as it is.
-
-  bool message_is_centered = false;
-
-  int current_display_speed = 3;
-  int message_display_speed[7] = {30, 40, 50, 60, 75, 100, 120};
-
-  // This is for checking if the character should start talking again
-  // when an inline blue text ends.
-  bool entire_message_is_blue = false;
-
-  // And this is the inline 'talking checker'. Counts how 'deep' we are
-  // in inline blues.
-  int inline_blue_depth = 0;
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
@@ -277,54 +202,15 @@ private:
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 
-  //determines how fast messages tick onto screen
-  QTimer *chat_tick_timer;
-  //int chat_tick_interval = 60;
-  //which tick position(character in chat message) we are at
-  int tick_pos = 0;
-  //used to determine how often blips sound
-  int blip_pos = 0;
-  int blip_rate = 1;
-  int rainbow_counter = 0;
-  bool rainbow_appended = false;
-  bool blank_blip = false;
-
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
 
   // True, if the log should go downwards.
   bool log_goes_downwards = false;
 
-  //delay before chat messages starts ticking
-  QTimer *text_delay_timer;
-
-  //delay before sfx plays
-  QTimer *sfx_delay_timer;
-
-  //keeps track of how long realization is visible(it's just a white square and should be visible less than a second)
-  QTimer *realization_timer;
-
-  //times how long the blinking testimony should be shown(green one in the corner)
-  QTimer *testimony_show_timer;
-  //times how long the blinking testimony should be hidden
-  QTimer *testimony_hide_timer;
-
-  //every time point in char.inis times this equals the final time
-  const int time_mod = 40;
-
-  static const int chatmessage_size = 23;
   QString m_chatmessage[chatmessage_size];
-  bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
-
-  bool testimony_in_progress = false;
-
-  //in milliseconds
-  const int testimony_show_time = 1500;
-
-  //in milliseconds
-  const int testimony_hide_time = 500;
 
   //char id, muted or not
   QMap<int, bool> mute_map;
@@ -332,12 +218,6 @@ private:
   //QVector<int> muted_cids;
 
   bool is_muted = false;
-
-  //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 = noniterrupting preanim
-  int anim_state = 3;
-
-  //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
-  int text_state = 2;
 
   //character id, which index of the char_list the player is
   int m_cid = -1;
@@ -374,38 +254,15 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
-
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
-  QString current_background = "default";
-
   AOMusicPlayer *music_player;
-  AOSfxPlayer *sfx_player;
-  AOSfxPlayer *objection_player;
-  AOBlipPlayer *blip_player;
-
   AOSfxPlayer *modcall_player;
 
   AOImage *ui_background;
 
-  QWidget *ui_viewport;
-  AOScene *ui_vp_background;
-  AOMovie *ui_vp_speedlines;
-  AOCharMovie *ui_vp_player_char;
-  AOCharMovie *ui_vp_sideplayer_char;
-  AOScene *ui_vp_desk;
-  AOScene *ui_vp_legacy_desk;
-  AOEvidenceDisplay *ui_vp_evidence_display;
-  AOImage *ui_vp_chatbox;
-  QLabel *ui_vp_showname;
-  QTextEdit *ui_vp_message;
-  AOImage *ui_vp_testimony;
-  AOImage *ui_vp_realization;
-  AOMovie *ui_vp_wtce;
-  AOMovie *ui_vp_objection;
+  AOViewport *ui_viewport;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -542,24 +399,11 @@ private:
   void set_evidence_page();
 
 public slots:
-  void objection_done();
-  void preanim_done();
-
-  void realization_done();
-
-  void show_testimony();
-  void hide_testimony();
-
   void mod_called(QString p_ip);
 
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
 
 private slots:
-  void start_chat_ticking();
-  void play_sfx();
-
-  void chat_tick();
-
   void on_mute_list_clicked(QModelIndex p_index);
   void on_pair_list_clicked(QModelIndex p_index);
 

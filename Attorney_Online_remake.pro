@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     aooptionsdialog.cpp \
     chatlogpiece.cpp \
     aocaseannouncerdialog.cpp \
-    aouiloader.cpp
+    aouiloader.cpp \
+    aoviewport.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -86,7 +87,8 @@ HEADERS  += lobby.h \
     text_file_functions.h \
     chatlogpiece.h \
     aocaseannouncerdialog.h \
-    aouiloader.h
+    aouiloader.h \
+    aoviewport.h
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you are compiling statically, you'll probably
@@ -123,4 +125,5 @@ FORMS += \
     resource/ui/lobby.ui \
     resource/ui/courtroom.ui \
     resource/ui/viewport.ui \
-    resource/ui/ic_log.ui
+    resource/ui/ic_log.ui \
+    resource/ui/ooc.ui
