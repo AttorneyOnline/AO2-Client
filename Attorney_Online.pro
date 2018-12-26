@@ -7,8 +7,6 @@
 QT       += core gui multimedia network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-RC_ICONS = logo.ico
-
 TARGET = Attorney_Online
 TEMPLATE = app
 
@@ -21,11 +19,10 @@ MOC_DIR = $$PWD/build
 
 SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
-LIBS += -L$$PWD/lib
-
-unix:LIBS += -lbass -ldiscord-rpc
-win32:LIBS += "bass.dll" -ldiscord-rpc
+LIBS += -L$$PWD/lib -lbass -ldiscord-rpc
 
 CONFIG += c++11
 
 RESOURCES += resources.qrc
+
+win32:RC_ICONS = resource/logo.ico
