@@ -29,22 +29,3 @@ win32:LIBS += "bass.dll" -ldiscord-rpc
 CONFIG += c++11
 
 RESOURCES += resources.qrc
-
-# 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
-#    AND the compilation output folder. If you are compiling statically, you'll probably
-#    need the .lib file too. MinGW-GCC is really finicky finding BASS, it seems. However,
-#    even with the .lib file, you still need the DLL in the final output.
-# 2. You need to compile the Discord Rich Presence SDK separately and add the lib/headers
-#    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
-#    QMake, so this step must be manual. If you are compiling dynamically, it's fine to
-#    use the prebuilt libraries.
-# 3. You also need to build QtApng (https://github.com/Skycoder42/QtApng).
-#    Optionally, you may install it in /usr/share/qt5/plugins/imageformats, but if you do
-#    so, then you must patch qapng.pri, qapngd.pri, png.pri, pngd.pri, z.pri, and zd.pri
-#    such that they no longer point to the builds in the original project directory
-#    (by removing those respective entries in QMAKE_PRL_LIBS and replacing them with
-#    something like `-L$$[QT_INSTALL_LIBS] -lpng -lz`).
-#
-# Naturally, the build process becomes significantly less convoluted if you simply
-# compile dynamically. If your primary distribution method is via the launcher, then
-# a simple dynamic compilation is recommended.
