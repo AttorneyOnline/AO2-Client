@@ -36,7 +36,7 @@ After this, you need to configure the project to use the static version of qmake
 
 BASS and BASS Opus only comes as dynamic libraries and is not open-source. That means you can't link it statically in the program.  
 
-For Discord RPC, you can try downloading the source and configuring it to compile to a static library. You're gonna have to figure out how, though.  
+For Discord RPC, you can download prebuilt static libraries for your platform. Just put them in lib/.
 
-The same goes for Qt Apng Plugin. This guide does not go into detail how to configure each of these to build a static library. You may have to add Q_IMPORT_PLUGIN(ApngImagePlugin); in main.cpp. See more about importing static plugins here: http://doc.qt.io/qt-5/plugins-howto.html#static-plugins
+For Qt Apng Plugin, you need to compile it statically. This guide does not go into detail how to configure this to build a static library. You may have to add Q_IMPORT_PLUGIN(ApngImagePlugin); in main.cpp. See more about importing static plugins here: http://doc.qt.io/qt-5/plugins-howto.html#static-plugins
 
