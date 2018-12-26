@@ -26,3 +26,5 @@ CONFIG += c++11
 RESOURCES += resources.qrc
 
 win32:RC_ICONS = resource/logo.ico
+
+QTPLUGIN += qapng
