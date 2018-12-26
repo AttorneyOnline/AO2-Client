@@ -22,6 +22,16 @@ unzip discord_rpc_linux.zip
 
 cp discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ../../lib/
 
+#get libqtapng plugin prebuilt
+curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.0-5/build_gcc_64_5.12.0.tar.xz -o apng.tar.xz
+
+tar -xvf apng.tar.xz
+
+cp gcc_64/plugins/imageformats/libqapng.so ../../lib
+
 cd ..
 
-rm -rf tmp/
+rm -rf tmp
+
+#during runtime, the program expects the libraries to exist in the root folder
+cp ../lib/* ..
