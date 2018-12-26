@@ -3,15 +3,16 @@
 *.user
 *.dll
 *.so
+*.pro.autosave
 base_override.h
 
 base-full/
 bass.lib
 
+bin/
 bins/
 release/
 debug/
-lib/
 
 .qmake.stash
 
