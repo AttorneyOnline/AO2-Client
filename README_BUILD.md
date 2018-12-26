@@ -39,4 +39,5 @@ BASS and BASS Opus only comes as dynamic libraries and is not open-source. That 
 For Discord RPC, you can download prebuilt static libraries for your platform. Just put them in lib/.
 
 For Qt Apng Plugin, you need to compile it statically. This guide does not go into detail how to configure this to build a static library. You may have to add Q_IMPORT_PLUGIN(ApngImagePlugin); in main.cpp. See more about importing static plugins here: http://doc.qt.io/qt-5/plugins-howto.html#static-plugins
+It's also possible to just link this dynamically.
 
