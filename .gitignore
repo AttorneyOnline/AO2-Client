@@ -11,6 +11,7 @@ bass.lib
 bins/
 release/
 debug/
+lib/
 
 .qmake.stash
 

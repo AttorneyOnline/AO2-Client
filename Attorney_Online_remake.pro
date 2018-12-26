@@ -14,77 +14,21 @@ TEMPLATE = app
 
 VERSION = 2.6.0.0
 
-SOURCES += main.cpp\
-        lobby.cpp \
-    text_file_functions.cpp \
-    path_functions.cpp \
-    aoimage.cpp \
-    file_functions.cpp \
-    aobutton.cpp \
-    debug_functions.cpp \
-    networkmanager.cpp \
-    aoapplication.cpp \
-    aopacket.cpp \
-    packet_distribution.cpp \
-    hex_functions.cpp \
-    encryption_functions.cpp \
-    courtroom.cpp \
-    aocharbutton.cpp \
-    hardware_functions.cpp \
-    aoscene.cpp \
-    aomovie.cpp \
-    misc_functions.cpp \
-    aocharmovie.cpp \
-    aoemotebutton.cpp \
-    emotes.cpp \
-    aosfxplayer.cpp \
-    aomusicplayer.cpp \
-    aoblipplayer.cpp \
-    evidence.cpp \
-    aoevidencebutton.cpp \
-    charselect.cpp \
-    aotextarea.cpp \
-    aolineedit.cpp \
-    aotextedit.cpp \
-    aoevidencedisplay.cpp \
-    discord_rich_presence.cpp \
-    aooptionsdialog.cpp \
-    chatlogpiece.cpp \
-    aocaseannouncerdialog.cpp
+INCLUDEPATH += $$PWD/include
+DESTDIR = $$PWD/bin
+OBJECTS_DIR = $$PWD/build
+MOC_DIR = $$PWD/build
 
-HEADERS  += lobby.h \
-    aoimage.h \
-    file_functions.h \
-    aobutton.h \
-    debug_functions.h \
-    networkmanager.h \
-    aoapplication.h \
-    datatypes.h \
-    aopacket.h \
-    hex_functions.h \
-    encryption_functions.h \
-    courtroom.h \
-    aocharbutton.h \
-    hardware_functions.h \
-    aoscene.h \
-    aomovie.h \
-    misc_functions.h \
-    aocharmovie.h \
-    aoemotebutton.h \
-    aosfxplayer.h \
-    aomusicplayer.h \
-    aoblipplayer.h \
-    aoevidencebutton.h \
-    aotextarea.h \
-    aolineedit.h \
-    aotextedit.h \
-    aoevidencedisplay.h \
-    discord_rich_presence.h \
-    discord-rpc.h \
-    aooptionsdialog.h \
-    text_file_functions.h \
-    chatlogpiece.h \
-    aocaseannouncerdialog.h
+SOURCES += $$files($$PWD/src/*.cpp)
+HEADERS += $$files($$PWD/include/*.h)
+LIBS += -L$$PWD/lib
+
+unix:LIBS += -lbass -ldiscord-rpc
+win32:LIBS += "bass.dll" -ldiscord-rpc
+
+CONFIG += c++11
+
+RESOURCES += resources.qrc
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you are compiling statically, you'll probably
@@ -104,13 +48,3 @@ HEADERS  += lobby.h \
 # Naturally, the build process becomes significantly less convoluted if you simply
 # compile dynamically. If your primary distribution method is via the launcher, then
 # a simple dynamic compilation is recommended.
-unix:LIBS += -L$$PWD -lbass -ldiscord-rpc
-win32:LIBS += -L$$PWD "$$PWD/bass.dll" -ldiscord-rpc
-INCLUDEPATH += $$PWD/include
-
-CONFIG += c++11
-
-RESOURCES += \
-    resources.qrc
-
-DISTFILES +=
