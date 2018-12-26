@@ -6,6 +6,8 @@
 sudo apt install libgl1-mesa-dev
 
 mkdir tmp
+mkdir ../lib
+
 cd tmp
 
 #get the bass prebuilt
