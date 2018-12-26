@@ -50,6 +50,13 @@ QString get_hdid()
   return "gxcpz32sa9fnwic92mfbs0";
 }
 
+#elif defined __APPLE__
+QString get_hdid()
+{
+  //hdids are broken at this point anyways
+  return "just a mac passing by";
+}
+
 #else
 
 #error This operating system is unsupported for hardware functions.
