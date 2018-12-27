@@ -87,5 +87,6 @@
         <file>resource/ui/ic_log.ui</file>
         <file>resource/ui/lobby.ui</file>
         <file>resource/ui/viewport.ui</file>
+        <file>base/themes/default/ic_log_background.png</file>
     </qresource>
 </RCC>

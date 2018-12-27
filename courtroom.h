@@ -24,7 +24,7 @@
 #include "file_functions.h"
 #include "datatypes.h"
 #include "debug_functions.h"
-#include "chatlogpiece.h"
+#include "aoiclog.h"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -48,8 +48,6 @@
 #include <QFont>
 #include <QInputDialog>
 #include <QFileDialog>
-
-#include <stack>
 
 class AOApplication;
 class AOViewport;
@@ -136,15 +134,6 @@ public:
   void handle_background(QString background);
   void handle_wtce(QString wtce, int variant);
 
-  //This function filters out the common CC inline text trickery, for appending to
-  //the IC chatlog.
-  QString filter_ic_text(QString p_text);
-
-  //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
-  //this function keeps the chatlog scrolled to the top unless there's text selected
-  // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", bool is_songchange = false);
-
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
@@ -172,7 +161,6 @@ private:
   int m_viewport_width = 256;
   int m_viewport_height = 192;
 
-  bool first_message_sent = false;
   int maximumMessages = 0;
 
   // The character ID of the character this user wants to appear alongside with.
@@ -193,20 +181,12 @@ private:
 
   QSignalMapper *char_button_mapper;
 
-  QVector<chatlogpiece> ic_chatlog_history;
-
   // These map music row items and area row items to their actual IDs.
   QVector<int> music_row_to_number;
   QVector<int> area_row_to_number;
 
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
-
-  // Used for getting the current maximum blocks allowed in the IC chatlog.
-  int log_maximum_blocks = 0;
-
-  // True, if the log should go downwards.
-  bool log_goes_downwards = false;
 
   QString m_chatmessage[chatmessage_size];
 
@@ -264,7 +244,7 @@ private:
 
   AOViewport *ui_viewport;
 
-  QTextEdit *ui_ic_chatlog;
+  AOICLog *ui_ic_chatlog;
 
   AOTextArea *ui_ms_chatlog;
   AOTextArea *ui_server_chatlog;
@@ -344,9 +324,6 @@ private:
   QSlider *ui_blip_slider;
 
   AOImage *ui_muted;
-
-  QSpinBox *ui_log_limit_spinbox;
-  QLabel *ui_log_limit_label;
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
@@ -458,7 +435,6 @@ private slots:
   void on_sfx_slider_moved(int p_value);
   void on_blip_slider_moved(int p_value);
 
-  void on_log_limit_changed(int value);
   void on_pair_offset_changed(int value);
 
   void on_ooc_toggle_clicked();

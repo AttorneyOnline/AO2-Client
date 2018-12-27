@@ -52,7 +52,8 @@ SOURCES += main.cpp\
     chatlogpiece.cpp \
     aocaseannouncerdialog.cpp \
     aouiloader.cpp \
-    aoviewport.cpp
+    aoviewport.cpp \
+    aoiclog.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -88,7 +89,8 @@ HEADERS  += lobby.h \
     chatlogpiece.h \
     aocaseannouncerdialog.h \
     aouiloader.h \
-    aoviewport.h
+    aoviewport.h \
+    aoiclog.h
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you are compiling statically, you'll probably

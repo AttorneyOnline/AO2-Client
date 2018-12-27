@@ -50,6 +50,10 @@ QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent, con
   {
     widget = new AOViewport(parent, ao_app);
   }
+  else if (className == "AOICLog")
+  {
+    widget = new AOICLog(parent, ao_app);
+  }
   else
   {
     widget = QUiLoader::createWidget(className, parent, name);

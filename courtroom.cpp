@@ -50,6 +50,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   windowWidget->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
   ui_viewport = findChild<AOViewport *>("viewport");
+  ui_ic_chatlog = findChild<AOICLog *>("ic_chatlog");
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
@@ -63,12 +64,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   modcall_player->set_volume(50);
 
   ui_background = new AOImage(this, ao_app);
-
-  ui_ic_chatlog = new QTextEdit(this);
-  ui_ic_chatlog->setReadOnly(true);
-
-  log_maximum_blocks = ao_app->get_max_log_size();
-  log_goes_downwards = ao_app->get_log_goes_downwards();
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -131,8 +126,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_label = new QLabel(this);
   ui_sfx_label = new QLabel(this);
   ui_blip_label = new QLabel(this);
-
-  ui_log_limit_label = new QLabel(this);
 
   ui_hold_it = new AOButton(this, ao_app);
   ui_objection = new AOButton(this, ao_app);
@@ -205,10 +198,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_blip_slider->setRange(0, 100);
   ui_blip_slider->setValue(ao_app->get_default_blip());
 
-  ui_log_limit_spinbox = new QSpinBox(this);
-  ui_log_limit_spinbox->setRange(0, 10000);
-  ui_log_limit_spinbox->setValue(ao_app->get_max_log_size());
-
   ui_mute_list = new QListWidget(this);
   ui_pair_list = new QListWidget(this);
   ui_pair_offset_spinbox = new QSpinBox(this);
@@ -258,8 +247,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_music_slider, SIGNAL(valueChanged(int)), this, SLOT(on_music_slider_moved(int)));
   connect(ui_sfx_slider, SIGNAL(valueChanged(int)), this, SLOT(on_sfx_slider_moved(int)));
   connect(ui_blip_slider, SIGNAL(valueChanged(int)), this, SLOT(on_blip_slider_moved(int)));
-
-  connect(ui_log_limit_spinbox, SIGNAL(valueChanged(int)), this, SLOT(on_log_limit_changed(int)));
 
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
 
@@ -431,8 +418,6 @@ void Courtroom::set_widgets()
   // We also show the non-server-dependent client additions.
   // Once again, if the theme can't display it, set_move_and_pos will catch them.
   ui_settings->show();
-  ui_log_limit_label->show();
-  ui_log_limit_spinbox->show();
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
 
@@ -493,9 +478,6 @@ void Courtroom::set_widgets()
   ui_sfx_label->setText("Sfx");
   set_size_and_pos(ui_blip_label, "blip_label");
   ui_blip_label->setText("Blips");
-
-  set_size_and_pos(ui_log_limit_label, "log_limit_label");
-  ui_log_limit_label->setText("Log limit");
 
   set_size_and_pos(ui_hold_it, "hold_it");
   ui_hold_it->set_image("holdit.png");
@@ -573,8 +555,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
-
-  set_size_and_pos(ui_log_limit_spinbox, "log_limit_spinbox");
 
   set_size_and_pos(ui_evidence_button, "evidence_button");
   ui_evidence_button->set_image("evidencebutton.png");
@@ -1166,9 +1146,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   QString f_showname;
+  QString f_default_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
-      f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+      f_showname = f_default_showname;
   }
   else
   {
@@ -1196,17 +1177,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_evidence_present->set_image("present_disabled.png");
   }
 
-  // Append and purge chat log history
-  chatlogpiece temp(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
-  ic_chatlog_history.append(temp);
-
-  while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
-  {
-    ic_chatlog_history.removeFirst();
-  }
-
   // Append to IC box
-  append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
+  ui_ic_chatlog->append_ic_text(f_default_showname, f_showname, ": " + m_chatmessage[MESSAGE]);
 
   // Send message to viewport
   previous_ic_message = f_message;
@@ -1245,249 +1217,6 @@ void Courtroom::handle_background(QString background)
 void Courtroom::handle_wtce(QString wtce, int variant)
 {
   ui_viewport->wtce(wtce, variant);
-}
-
-QString Courtroom::filter_ic_text(QString p_text)
-{
-  // Get rid of centering.
-  if(p_text.startsWith(": ~~"))
-  {
-      // Don't forget, the p_text part actually everything after the name!
-      // Hence why we check for ': ~~'.
-
-      // Let's remove those two tildes, then.
-      // : _ ~ ~
-      // 0 1 2 3
-      p_text.remove(2,2);
-  }
-
-  // Get rid of the inline-colouring.
-  // I know, I know, excessive code duplication.
-  // Nobody looks in here, I'm fine.
-  int trick_check_pos = 0;
-  bool ic_next_is_not_special = false;
-  QString f_character = p_text.at(trick_check_pos);
-  std::stack<INLINE_COLOURS> ic_colour_stack;
-  while (trick_check_pos < p_text.size())
-  {
-      f_character = p_text.at(trick_check_pos);
-
-      // Escape character.
-      if (f_character == "\\" and !ic_next_is_not_special)
-      {
-          ic_next_is_not_special = true;
-          p_text.remove(trick_check_pos,1);
-      }
-
-      // Text speed modifier.
-      else if (f_character == "{" and !ic_next_is_not_special)
-      {
-          p_text.remove(trick_check_pos,1);
-      }
-      else if (f_character == "}" and !ic_next_is_not_special)
-      {
-          p_text.remove(trick_check_pos,1);
-      }
-
-      // Orange inline colourisation.
-      else if (f_character == "|" and !ic_next_is_not_special)
-      {
-          if (!ic_colour_stack.empty())
-          {
-              if (ic_colour_stack.top() == INLINE_ORANGE)
-              {
-                  ic_colour_stack.pop();
-                  p_text.remove(trick_check_pos,1);
-              }
-              else
-              {
-                  ic_colour_stack.push(INLINE_ORANGE);
-                  p_text.remove(trick_check_pos,1);
-              }
-          }
-          else
-          {
-              ic_colour_stack.push(INLINE_ORANGE);
-              p_text.remove(trick_check_pos,1);
-          }
-      }
-
-      // Blue inline colourisation.
-      else if (f_character == "(" and !ic_next_is_not_special)
-      {
-          ic_colour_stack.push(INLINE_BLUE);
-          trick_check_pos++;
-      }
-      else if (f_character == ")" and !ic_next_is_not_special
-               and !ic_colour_stack.empty())
-      {
-          if (ic_colour_stack.top() == INLINE_BLUE)
-          {
-              ic_colour_stack.pop();
-              trick_check_pos++;
-          }
-          else
-          {
-              ic_next_is_not_special = true;
-          }
-      }
-
-      // Grey inline colourisation.
-      else if (f_character == "[" and !ic_next_is_not_special)
-      {
-          ic_colour_stack.push(INLINE_GREY);
-          trick_check_pos++;
-      }
-      else if (f_character == "]" and !ic_next_is_not_special
-               and !ic_colour_stack.empty())
-      {
-          if (ic_colour_stack.top() == INLINE_GREY)
-          {
-              ic_colour_stack.pop();
-              trick_check_pos++;
-          }
-          else
-          {
-              ic_next_is_not_special = true;
-          }
-      }
-
-      // Green inline colourisation.
-      else if (f_character == "`" and !ic_next_is_not_special)
-      {
-          if (!ic_colour_stack.empty())
-          {
-              if (ic_colour_stack.top() == INLINE_GREEN)
-              {
-                  ic_colour_stack.pop();
-                  p_text.remove(trick_check_pos,1);
-              }
-              else
-              {
-                  ic_colour_stack.push(INLINE_GREEN);
-                  p_text.remove(trick_check_pos,1);
-              }
-          }
-          else
-          {
-              ic_colour_stack.push(INLINE_GREEN);
-              p_text.remove(trick_check_pos,1);
-          }
-      }
-      else
-      {
-          trick_check_pos++;
-          ic_next_is_not_special = false;
-      }
-  }
-
-  return p_text;
-}
-
-void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange)
-{
-  QTextCharFormat bold;
-  QTextCharFormat normal;
-  QTextCharFormat italics;
-  bold.setFontWeight(QFont::Bold);
-  normal.setFontWeight(QFont::Normal);
-  italics.setFontItalic(true);
-  const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
-  const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
-
-  if (!is_songchange)
-    p_text = filter_ic_text(p_text);
-
-  if (log_goes_downwards)
-  {
-      const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
-
-      ui_ic_chatlog->moveCursor(QTextCursor::End);
-
-      if (!first_message_sent)
-      {
-          ui_ic_chatlog->textCursor().insertText(p_name, bold);
-          first_message_sent = true;
-      }
-      else
-      {
-          ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-      }
-
-      if (is_songchange)
-      {
-        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-        ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
-      }
-      else
-      {
-        ui_ic_chatlog->textCursor().insertText(p_text, normal);
-      }
-
-      // If we got too many blocks in the current log, delete some from the top.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::Start);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deleteChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
-      }
-
-      if (old_cursor.hasSelection() || !is_scrolled_down)
-      {
-          // The user has selected text or scrolled away from the bottom: maintain position.
-          ui_ic_chatlog->setTextCursor(old_cursor);
-          ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-      }
-      else
-      {
-          // The user hasn't selected any text and the scrollbar is at the bottom: scroll to the bottom.
-          ui_ic_chatlog->moveCursor(QTextCursor::End);
-          ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
-      }
-  }
-  else
-  {
-      const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
-
-      ui_ic_chatlog->moveCursor(QTextCursor::Start);
-
-      ui_ic_chatlog->textCursor().insertText(p_name, bold);
-
-      if (is_songchange)
-      {
-        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-        ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
-      }
-      else
-      {
-        ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
-      }
-
-      // If we got too many blocks in the current log, delete some from the bottom.
-      while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
-      {
-          ui_ic_chatlog->moveCursor(QTextCursor::End);
-          ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-          ui_ic_chatlog->textCursor().removeSelectedText();
-          ui_ic_chatlog->textCursor().deletePreviousChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
-      }
-
-      if (old_cursor.hasSelection() || !is_scrolled_up)
-      {
-          // The user has selected text or scrolled away from the top: maintain position.
-          ui_ic_chatlog->setTextCursor(old_cursor);
-          ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-      }
-      else
-      {
-          // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
-          ui_ic_chatlog->moveCursor(QTextCursor::Start);
-          ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->minimum());
-      }
-  }
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -1556,15 +1285,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char))
     {
-      chatlogpiece* temp = new chatlogpiece(str_char, str_show, f_song, true);
-      ic_chatlog_history.append(*temp);
-
-      while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
-      {
-        ic_chatlog_history.removeFirst();
-      }
-
-      append_ic_text(f_song_clear, str_show, true);
+      ui_ic_chatlog->append_ic_text(str_show, str_show, f_song_clear, true);
       music_player->play(f_song);
     }
   }
@@ -1759,15 +1480,9 @@ void Courtroom::on_ooc_return_pressed()
       return;
     }
 
-    QTextStream out(&file);
+    ui_ic_chatlog->export_to_file(file);
 
-    foreach (chatlogpiece item, ic_chatlog_history) {
-        out << item.get_full() << '\n';
-      }
-
-    file.close();
-
-    append_server_chatmessage("CLIENT", "The IC chatlog has been saved.", "1");
+    append_server_chatmessage("CLIENT", "Transcript saved to chatlog.txt.", "1");
     ui_ooc_chat_message->clear();
     return;
   }
@@ -2216,11 +1931,6 @@ void Courtroom::on_blip_slider_moved(int p_value)
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_log_limit_changed(int value)
-{
-  log_maximum_blocks = value;
-}
-
 void Courtroom::on_pair_offset_changed(int value)
 {
   offset_with_pair = value;
@@ -2370,26 +2080,7 @@ void Courtroom::on_guard_clicked()
 
 void Courtroom::on_showname_enable_clicked()
 {
-  ui_ic_chatlog->clear();
-  first_message_sent = false;
-
-  foreach (chatlogpiece item, ic_chatlog_history) {
-      if (ui_showname_enable->isChecked())
-      {
-         if (item.get_is_song())
-           append_ic_text(item.get_message(), item.get_showname(), true);
-         else
-           append_ic_text(item.get_message(), item.get_showname());
-      }
-      else
-      {
-          if (item.get_is_song())
-            append_ic_text(item.get_message(), item.get_name(), true);
-          else
-            append_ic_text(item.get_message(), item.get_name());
-      }
-    }
-
+  ui_ic_chatlog->reload();
   ui_ic_chat_message->setFocus();
 }
 

@@ -1,37 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ICLog</class>
- <widget class="QDockWidget" name="ICLog">
+ <class>AOICLog</class>
+ <widget class="QWidget" name="AOICLog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>219</width>
-    <height>321</height>
+    <width>229</width>
+    <height>317</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Transcript</string>
   </property>
-  <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="leftMargin">
-     <number>2</number>
-    </property>
-    <property name="topMargin">
-     <number>2</number>
-    </property>
-    <property name="rightMargin">
-     <number>2</number>
-    </property>
-    <property name="bottomMargin">
-     <number>2</number>
-    </property>
-    <item>
-     <widget class="QTextEdit" name="textEdit"/>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QTextEdit" name="ui_ic_chatlog">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QTextEdit {
+  border-image: url(:/base/themes/default/ic_log_background.png) 0 0 0 stretch stretch;
+  background-position: top center;
+  background-attachment: fixed;
+  color: white;
+}</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
