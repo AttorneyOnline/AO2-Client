@@ -4,7 +4,7 @@
 #include "aoimage.h"
 #include "aobutton.h"
 #include "aopacket.h"
-#include "aotextarea.h"
+#include "aoserverchat.h"
 
 #include <QMainWindow>
 #include <QListWidget>
@@ -63,12 +63,9 @@ private:
   QListWidget *ui_server_list;
 
   QLabel *ui_player_count;
-  AOTextArea *ui_description;
+  QTextBrowser *ui_description;
 
-  AOTextArea *ui_chatbox;
-
-  QLineEdit *ui_chatname;
-  QLineEdit *ui_chatmessage;
+  AOServerChat *ui_chat;
 
   AOImage *ui_loading_background;
   QTextEdit *ui_loading_text;
@@ -89,7 +86,7 @@ private slots:
   void on_connect_released();
   void on_about_clicked();
   void on_server_list_currentRowChanged(int n_server);
-  void on_chatfield_returnPressed();
+  void on_chat_messageSent(QString name, QString message);
 };
 
 #endif // LOBBY_H

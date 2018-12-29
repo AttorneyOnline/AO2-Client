@@ -125,7 +125,7 @@
 }</string>
          </property>
         </widget>
-        <widget class="AOTextArea" name="description">
+        <widget class="QTextBrowser" name="description">
          <property name="geometry">
           <rect>
            <x>337</x>
@@ -160,41 +160,6 @@
          </property>
          <property name="checkable">
           <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="AOTextArea" name="chatbox">
-         <property name="geometry">
-          <rect>
-           <x>2</x>
-           <y>445</y>
-           <width>515</width>
-           <height>198</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgba(0, 0, 0, 0); border: none;</string>
-         </property>
-         <property name="openExternalLinks">
-          <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="chatname">
-         <property name="geometry">
-          <rect>
-           <x>3</x>
-           <y>646</y>
-           <width>85</width>
-           <height>19</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(0, 0, 0, 0); border: none; color: white;</string>
-         </property>
-         <property name="maxLength">
-          <number>64</number>
-         </property>
-         <property name="placeholderText">
-          <string>Name</string>
          </property>
         </widget>
         <widget class="QLabel" name="player_count">
@@ -236,22 +201,6 @@
          </property>
          <property name="styleSheet">
           <string notr="true">border-image: url(':/base/themes/default/about.png');</string>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="chatmessage">
-         <property name="geometry">
-          <rect>
-           <x>93</x>
-           <y>646</y>
-           <width>424</width>
-           <height>19</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(0, 0, 0, 0); border: none; color: white;</string>
-         </property>
-         <property name="maxLength">
-          <number>2048</number>
          </property>
         </widget>
         <widget class="AOButton" name="connect">
@@ -313,6 +262,20 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+        <widget class="AOServerChat" name="chat" native="true">
+         <property name="geometry">
+          <rect>
+           <x>2</x>
+           <y>443</y>
+           <width>515</width>
+           <height>222</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTextBrowser, QLineEdit { background-color: rgb(0, 0, 0, 0); border: none; }
+QLineEdit { color: white; }</string>
          </property>
         </widget>
        </widget>
@@ -480,9 +443,10 @@ p, li { white-space: pre-wrap; }
    <header location="global">aobutton.h</header>
   </customwidget>
   <customwidget>
-   <class>AOTextArea</class>
-   <extends>QTextBrowser</extends>
-   <header location="global">aotextarea.h</header>
+   <class>AOServerChat</class>
+   <extends>QWidget</extends>
+   <header location="global">aoserverchat.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

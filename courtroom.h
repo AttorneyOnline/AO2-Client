@@ -13,7 +13,6 @@
 #include "aosfxplayer.h"
 #include "aoblipplayer.h"
 #include "aoevidencebutton.h"
-#include "aotextarea.h"
 #include "aolineedit.h"
 #include "aotextedit.h"
 #include "aoevidencedisplay.h"
@@ -234,9 +233,6 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  //whether the ooc chat is server or master chat, true is server
-  bool server_ooc = true;
-
   AOMusicPlayer *music_player;
   AOSfxPlayer *modcall_player;
 
@@ -245,9 +241,6 @@ private:
   AOViewport *ui_viewport;
 
   AOICLog *ui_ic_chatlog;
-
-  AOTextArea *ui_ms_chatlog;
-  AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
@@ -260,8 +253,8 @@ private:
   QLineEdit *ui_ic_chat_message;
   QLineEdit *ui_ic_chat_name;
 
-  QLineEdit *ui_ooc_chat_message;
-  QLineEdit *ui_ooc_chat_name;
+  AOServerChat *ui_ms_chat;
+  AOServerChat *ui_server_chat;
 
   //QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
@@ -284,8 +277,6 @@ private:
   AOButton *ui_hold_it;
   AOButton *ui_objection;
   AOButton *ui_take_that;
-
-  AOButton *ui_ooc_toggle;
 
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
@@ -374,7 +365,6 @@ private:
 
   void construct_evidence();
   void set_evidence_page();
-
 public slots:
   void mod_called(QString p_ip);
 
@@ -386,7 +376,8 @@ private slots:
 
   void on_chat_return_pressed();
 
-  void on_ooc_return_pressed();
+  void on_ooc_return_pressed(QString name, QString message);
+  void on_ms_return_pressed(QString name, QString message);
 
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QModelIndex p_model);
@@ -436,8 +427,6 @@ private slots:
   void on_blip_slider_moved(int p_value);
 
   void on_pair_offset_changed(int value);
-
-  void on_ooc_toggle_clicked();
 
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();

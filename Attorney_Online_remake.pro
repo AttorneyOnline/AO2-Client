@@ -43,7 +43,6 @@ SOURCES += main.cpp\
     evidence.cpp \
     aoevidencebutton.cpp \
     charselect.cpp \
-    aotextarea.cpp \
     aolineedit.cpp \
     aotextedit.cpp \
     aoevidencedisplay.cpp \
@@ -53,7 +52,8 @@ SOURCES += main.cpp\
     aocaseannouncerdialog.cpp \
     aouiloader.cpp \
     aoviewport.cpp \
-    aoiclog.cpp
+    aoiclog.cpp \
+    aoserverchat.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
@@ -78,7 +78,6 @@ HEADERS  += lobby.h \
     aomusicplayer.h \
     aoblipplayer.h \
     aoevidencebutton.h \
-    aotextarea.h \
     aolineedit.h \
     aotextedit.h \
     aoevidencedisplay.h \
@@ -90,7 +89,8 @@ HEADERS  += lobby.h \
     aocaseannouncerdialog.h \
     aouiloader.h \
     aoviewport.h \
-    aoiclog.h
+    aoiclog.h \
+    aoserverchat.h
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you are compiling statically, you'll probably

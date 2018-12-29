@@ -36,10 +36,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_about = findChild<AOButton *>("about");
   ui_server_list = findChild<QListWidget *>("server_list");
   ui_player_count = findChild<QLabel *>("player_count");
-  ui_description = findChild<AOTextArea *>("description");
-  ui_chatbox = findChild<AOTextArea *>("chatbox");
-  ui_chatname = findChild<QLineEdit *>("chatname");
-  ui_chatmessage = findChild<QLineEdit *>("chatmessage");
+  ui_description = findChild<QTextBrowser *>("description");
+  ui_chat = findChild<AOServerChat *>("chat");
   ui_loading_background = findChild<AOImage *>("loading_background");
   ui_loading_text = findChild<QTextEdit *>("loading_text");
   ui_progress_bar = findChild<QProgressBar *>("progress_bar");
@@ -50,7 +48,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   ui_stacked_widget = findChild<QStackedWidget *>("stacked_widget");
 
-  ui_chatname->setText(ao_app->get_ooc_name());
+  ui_chat->set_name(ao_app->get_ooc_name());
   ui_version->setText("Version: " + ao_app->get_version_string());
 
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
@@ -79,9 +77,7 @@ void Lobby::hide_loading_overlay()
 
 QString Lobby::get_chatlog()
 {
-  QString return_value = ui_chatbox->toPlainText();
-
-  return return_value;
+  return ui_chat->chat_log();
 }
 
 int Lobby::get_selected_server()
@@ -202,20 +198,18 @@ void Lobby::on_server_list_currentRowChanged(int n_server)
   ao_app->net_manager->connect_to_server(f_server);
 }
 
-void Lobby::on_chatfield_returnPressed()
+void Lobby::on_chat_messageSent(QString name, QString message)
 {
   //no you can't send empty messages
-  if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
+  if (message.isEmpty())
     return;
 
   QString f_header = "CT";
-  QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
+  QStringList f_contents{name, message};
 
   AOPacket *f_packet = new AOPacket(f_header, f_contents);
 
   ao_app->send_ms_packet(f_packet);
-
-  ui_chatmessage->clear();
 }
 
 void Lobby::list_servers()
@@ -242,12 +236,12 @@ void Lobby::list_favorites()
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  ui_chatbox->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_chat->append_chat_message(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
 void Lobby::append_error(QString f_message)
 {
-  ui_chatbox->append_error(f_message);
+  ui_chat->append_error(f_message);
 }
 
 void Lobby::set_player_count(int players_online, int max_players)

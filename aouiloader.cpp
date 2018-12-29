@@ -4,7 +4,7 @@
 #include "aoimage.h"
 #include "aomovie.h"
 #include "aoscene.h"
-#include "aotextarea.h"
+#include "aoserverchat.h"
 #include "aotextedit.h"
 #include "aouiloader.h"
 #include "aoviewport.h"
@@ -17,10 +17,6 @@ QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent, con
   if (className == "AOButton")
   {
     widget = new AOButton(parent, ao_app);
-  }
-  else if (className == "AOTextArea")
-  {
-    widget = new AOTextArea(parent);
   }
   else if (className == "AOImage")
   {
@@ -53,6 +49,10 @@ QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent, con
   else if (className == "AOICLog")
   {
     widget = new AOICLog(parent, ao_app);
+  }
+  else if (className == "AOServerChat")
+  {
+    widget = new AOServerChat(parent, ao_app);
   }
   else
   {

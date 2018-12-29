@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>447</width>
-    <height>406</height>
+    <width>477</width>
+    <height>401</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -495,7 +495,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>447</width>
+     <width>477</width>
      <height>21</height>
     </rect>
    </property>
@@ -514,14 +514,14 @@
     </size>
    </property>
    <property name="windowTitle">
-    <string>Log</string>
+    <string>Transcript</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
    <widget class="AOICLog" name="ic_chatlog"/>
   </widget>
-  <widget class="AOOOC" name="dockWidget_3">
+  <widget class="QDockWidget" name="server_chat_dock">
    <property name="minimumSize">
     <size>
      <width>190</width>
@@ -529,37 +529,50 @@
     </size>
    </property>
    <property name="windowTitle">
-    <string>Out-of-character</string>
+    <string>Server chat</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_5"/>
+   <widget class="AOServerChat" name="server_chat">
+    <property name="styleSheet">
+     <string notr="true">QTextBrowser { background-color: #8b8b8b; }
+QLineEdit { background-color: #575757; color: white; }</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="ms_chat_dock">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="windowTitle">
+    <string>Master chat</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents"/>
+   <widget class="AOServerChat" name="ms_chat">
+    <property name="styleSheet">
+     <string notr="true">QTextBrowser { background-color: #8b8b8b; }
+QLineEdit { background-color: #575757; color: white; }</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AOViewport</class>
+   <class>AOServerChat</class>
    <extends>QWidget</extends>
-   <header location="global">aoviewport.h</header>
+   <header location="global">aoserverchat.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>AOOOC</class>
-   <extends>QDockWidget</extends>
-   <header>aoooc.h</header>
+   <class>AOViewport</class>
+   <extends>QWidget</extends>
+   <header>aoviewport.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
