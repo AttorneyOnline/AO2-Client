@@ -3508,6 +3508,11 @@ void Courtroom::load_bass_opus_plugin()
 {
   BASS_PluginLoad("libbassopus.so", 0);
 }
+#elif defined __APPLE__
+void Courtroom::load_bass_opus_plugin()
+{
+  BASS_PluginLoad("libbassopus.dylib", 0);
+}
 #else
 #error This operating system is unsupported for bass plugins.
 #endif

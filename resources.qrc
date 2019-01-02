@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>resource/fonts/Ace-Attorney.ttf</file>
-        <file>logo.png</file>
+        <file>resource/logo.png</file>
     </qresource>
 </RCC>

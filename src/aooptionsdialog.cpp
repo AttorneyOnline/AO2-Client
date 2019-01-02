@@ -512,6 +512,11 @@ bool AOOptionsDialog::needs_default_audiodev()
 {
     return false;
 }
+#elif defined __APPLE__
+bool AOOptionsDialog::needs_default_audiodev()
+{
+    return true;
+}
 #else
 #error This operating system is not supported.
 #endif
