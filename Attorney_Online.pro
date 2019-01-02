@@ -1,11 +1,4 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-12-29T01:14:46
-#
-#-------------------------------------------------
-
-QT       += core gui multimedia network
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets multimedia network
 
 TARGET = Attorney_Online
 TEMPLATE = app
