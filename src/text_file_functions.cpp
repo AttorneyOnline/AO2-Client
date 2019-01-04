@@ -369,10 +369,10 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
-    QString apng_check = get_sounds_path(path_to_check + ".apng");
+    QString apng_check = path_to_check + ".apng";
     if (file_exists(apng_check))
     {
-        return path_to_check + ".apng";
+        return apng_check;
     }
     return path_to_check + ".gif";
 }
