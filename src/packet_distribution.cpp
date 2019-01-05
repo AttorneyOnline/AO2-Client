@@ -651,7 +651,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "BD")
   {
-    call_notice("You are banned on this server.");
+    call_notice("You are banned on this server.\nReason: " + f_contents.at(0));
   }
   else if (header == "ZZ")
   {
