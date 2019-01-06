@@ -3511,7 +3511,10 @@ void Courtroom::load_bass_opus_plugin()
 #elif defined __APPLE__
 void Courtroom::load_bass_opus_plugin()
 {
-  BASS_PluginLoad("libbassopus.dylib", 0);
+  QString libpath = ao_app->get_base_path() + "../../Frameworks/libbassopus.dylib";
+  QByteArray ba = libpath.toLocal8Bit();
+
+  BASS_PluginLoad(ba.data(), 0);
 }
 #else
 #error This operating system is unsupported for bass plugins.
