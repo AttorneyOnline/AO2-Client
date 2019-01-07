@@ -1,16 +1,9 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-12-29T01:14:46
-#
-#-------------------------------------------------
-
-QT       += core gui multimedia network
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets multimedia network
 
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.6.0.0
+VERSION = 2.6.1.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -26,5 +19,4 @@ CONFIG += c++11
 RESOURCES += resources.qrc
 
 win32:RC_ICONS = resource/logo.ico
-
-QTPLUGIN += qapng
+macx:ICON = resource/logo.icns
