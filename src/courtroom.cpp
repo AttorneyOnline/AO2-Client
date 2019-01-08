@@ -2012,7 +2012,7 @@ void Courtroom::start_chat_ticking()
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
-  blip_player->set_blips("sfx-blip" + f_gender + ".wav");
+  blip_player->set_blips(ao_app->get_sfx_suffix("sfx-blip" + f_gender));
 
   //means text is currently ticking
   text_state = 1;
