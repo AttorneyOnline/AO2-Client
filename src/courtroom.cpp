@@ -193,7 +193,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_flip->setText("Flip");
   ui_flip->hide();
   ui_guard = new QCheckBox(this);
-  ui_guard->setText("Guard");
+  ui_guard->setText("Disable Modcalls");
   ui_guard->hide();
   ui_casing = new QCheckBox(this);
   ui_casing->setChecked(ao_app->get_casing_enabled());
@@ -1085,6 +1085,12 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
     colour = ao_app->get_color("ooc_default_color", "courtroom_design.ini").name();
   if (p_colour == "1")
     colour = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
+  qDebug() << p_message;
+  if(p_message == "Logged in as a moderator.")
+  {
+      ui_guard->show();
+      append_server_chatmessage("CLIENT", "You were granted the Disable Modcalls button.", "1");
+  }
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
 }
@@ -2855,7 +2861,7 @@ void Courtroom::toggle_judge_buttons(bool is_on)
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
-  if (ui_guard->isChecked())
+  if (!ui_guard->isChecked())
   {
     modcall_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);
@@ -2896,11 +2902,6 @@ void Courtroom::on_ooc_return_pressed()
     {
       toggle_judge_buttons(false);
     }
-  }
-  else if (ooc_message.startsWith("/login"))
-  {
-    ui_guard->show();
-    append_server_chatmessage("CLIENT", "You were granted the Guard button.", "1");
   }
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
