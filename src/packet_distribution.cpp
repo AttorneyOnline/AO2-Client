@@ -151,6 +151,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     arup_enabled = false;
     casing_alerts_enabled = false;
     modcall_reason_enabled = false;
+    looping_sfx_support_enabled = false;
 
     //workaround for tsuserver4
     if (f_contents.at(0) == "NOENCRYPT")
@@ -209,6 +210,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       casing_alerts_enabled = true;
     if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
       modcall_reason_enabled = true;
+    if (f_packet.contains("looping_sfx",Qt::CaseInsensitive))
+      looping_sfx_support_enabled = true;
 
     w_lobby->enable_connect_button();
   }

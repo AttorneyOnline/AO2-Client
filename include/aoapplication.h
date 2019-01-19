@@ -74,6 +74,7 @@ public:
   bool arup_enabled = false;
   bool casing_alerts_enabled = false;
   bool modcall_reason_enabled = false;
+  bool looping_sfx_support_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -94,9 +95,9 @@ public:
 
   //////////////////versioning///////////////
 
-  constexpr int get_release() const { return RELEASE; }
-  constexpr int get_major_version() const { return MAJOR_VERSION; }
-  constexpr int get_minor_version() const { return MINOR_VERSION; }
+  int get_release() const { return RELEASE; }
+  int get_major_version() const { return MAJOR_VERSION; }
+  int get_minor_version() const { return MINOR_VERSION; }
   QString get_version_string();
 
   ///////////////////////////////////////////
@@ -145,6 +146,12 @@ public:
 
   //Returns true if blank blips is enabled in config.ini and false otherwise
   bool get_blank_blip();
+
+  //Returns true if looping sound effects are enabled in the config.ini
+  bool get_looping_sfx();
+
+  //Returns true if kill music on object is enabled in the config.ini
+  bool get_objectmusic();
 
   //Returns the value of default_music in config.ini
   int get_default_music();
@@ -257,6 +264,18 @@ public:
   //Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
 
+  //Returns if an emote loops it's SFX
+  QString get_sfx_looping(QString p_char, int p_emote);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_frame_sfx_name(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_realization_frame(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
+
   //Not in use
   int get_sfx_delay(QString p_char, int p_emote);
 
@@ -299,8 +318,8 @@ public:
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 6;
-  const int MINOR_VERSION = 1;
+  const int MAJOR_VERSION = 7;
+  const int MINOR_VERSION = 0;
 
   QString current_theme = "default";
 

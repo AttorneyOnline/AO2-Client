@@ -25,6 +25,7 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "chatlogpiece.h"
+#include "aocharmovie.h"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -48,11 +49,15 @@
 #include <QFont>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QWidget>
+#include <QPropertyAnimation>
+#include <QTransform>
+#include <QParallelAnimationGroup>
 
 #include <stack>
 
 class AOApplication;
-
+class AOCharMovie;
 class Courtroom : public QMainWindow
 {
   Q_OBJECT
@@ -63,7 +68,6 @@ public:
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
   void append_area(QString f_area){area_list.append(f_area);}
-
   void fix_last_area()
   {
     if (area_list.size() > 0)
@@ -210,6 +214,8 @@ public:
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();
+  void doScreenShake();
+  void doRealization();
 
   ~Courtroom();
 
@@ -227,7 +233,10 @@ private:
 
   bool first_message_sent = false;
   int maximumMessages = 0;
-
+  QPropertyAnimation *screenshake_animation;
+  QPropertyAnimation *chatbox_screenshake_animation;
+  QParallelAnimationGroup *screenshake_group;
+  QImageReader *frame_emote_checker;
   // This is for inline message-colouring.
 
   enum INLINE_COLOURS {
@@ -318,7 +327,7 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 23;
+  static const int chatmessage_size = 28;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -352,6 +361,7 @@ private:
 
   int objection_state = 0;
   int realization_state = 0;
+  int screenshake_state = 0;
   int text_color = 0;
   bool is_presenting_evidence = false;
 
@@ -390,6 +400,9 @@ private:
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
+  AOSfxPlayer *misc_sfx_player;
+  AOSfxPlayer *frame_emote_sfx_player;
+  AOSfxPlayer *pair_frame_emote_sfx_player;
   AOSfxPlayer *objection_player;
   AOBlipPlayer *blip_player;
 
@@ -478,6 +491,7 @@ private:
 
   AOButton *ui_custom_objection;
   AOButton *ui_realization;
+  AOButton *ui_screenshake;
   AOButton *ui_mute;
 
   AOButton *ui_defense_plus;
@@ -605,6 +619,7 @@ private slots:
   void on_custom_objection_clicked();
 
   void on_realization_clicked();
+  void on_screenshake_clicked();
 
   void on_mute_clicked();
   void on_pair_clicked();

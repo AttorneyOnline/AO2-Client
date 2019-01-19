@@ -56,7 +56,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   sfx_player = new AOSfxPlayer(this, ao_app);
   sfx_player->set_volume(0);
   objection_player = new AOSfxPlayer(this, ao_app);
-  sfx_player->set_volume(0);
+  objection_player->set_volume(0);
+  misc_sfx_player = new AOSfxPlayer(this, ao_app);
+  misc_sfx_player->set_volume(0);
+  frame_emote_sfx_player = new AOSfxPlayer(this, ao_app);
+  frame_emote_sfx_player->set_volume(0);
+  pair_frame_emote_sfx_player = new AOSfxPlayer(this, ao_app); // todo: recode pair // todo: recode fucking everything
+  pair_frame_emote_sfx_player->set_volume(0);
   blip_player = new AOBlipPlayer(this, ao_app);
   blip_player->set_volume(0);
 
@@ -70,7 +76,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_speedlines = new AOMovie(ui_viewport, ao_app);
   ui_vp_speedlines->set_play_once(false);
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
+  ui_vp_player_char->frame_specific_sfx_player = frame_emote_sfx_player;
+  ui_vp_player_char->mycourtroom = this;
   ui_vp_sideplayer_char = new AOCharMovie(ui_viewport, ao_app);
+  ui_vp_sideplayer_char->frame_specific_sfx_player = pair_frame_emote_sfx_player;
+  ui_vp_sideplayer_char->mycourtroom = this;
   ui_vp_sideplayer_char->hide();
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
   ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
@@ -200,6 +210,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_realization = new AOButton(this, ao_app);
+  ui_screenshake = new AOButton(this, ao_app);
   ui_mute = new AOButton(this, ao_app);
 
   ui_defense_plus = new AOButton(this, ao_app);
@@ -284,7 +295,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_custom_objection, SIGNAL(clicked()), this, SLOT(on_custom_objection_clicked()));
 
   connect(ui_realization, SIGNAL(clicked()), this, SLOT(on_realization_clicked()));
-
+  connect(ui_screenshake, SIGNAL(clicked()), this, SLOT(on_screenshake_clicked()));
   connect(ui_mute, SIGNAL(clicked()), this, SLOT(on_mute_clicked()));
 
   connect(ui_defense_minus, SIGNAL(clicked()), this, SLOT(on_defense_minus_clicked()));
@@ -622,6 +633,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_realization, "realization");
   ui_realization->set_image("realization.png");
 
+  set_size_and_pos(ui_screenshake, "screenshake");
+  ui_screenshake->set_image("screenshake.png");
+
   set_size_and_pos(ui_mute, "mute_button");
   ui_mute->set_image("mute.png");
 
@@ -909,6 +923,9 @@ void Courtroom::enter_courtroom(int p_cid)
   music_player->set_volume(ui_music_slider->value());
   sfx_player->set_volume(ui_sfx_slider->value());
   objection_player->set_volume(ui_sfx_slider->value());
+  misc_sfx_player->set_volume(ui_sfx_slider->value());
+  frame_emote_sfx_player->set_volume(ui_sfx_slider->value());
+  pair_frame_emote_sfx_player->set_volume(ui_sfx_slider->value());
   blip_player->set_volume(ui_blip_slider->value());
 
   testimony_in_progress = false;
@@ -1227,7 +1244,126 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("0");
     }
   }
+  // If the server we're on supports Looping SFX and Screenshake, use it if the emote uses it.
+  if (ao_app->looping_sfx_support_enabled)
+  {
+      packet_contents.append(ao_app->get_sfx_looping(current_char, current_emote));
+      qDebug() << "Are we looping this? " << ao_app->get_sfx_looping(current_char, current_emote);
+      packet_contents.append(QString::number(screenshake_state));
+      qDebug() << "Are we screen shaking this one? " << screenshake_state;
 
+      QString frame_screenshake = "";
+      QString frame_realization = "";
+      QString frame_sfx = "";
+
+      QString preemote_sfx = "";
+      QString preemote_shake = "";
+      QString preemote_flash = "";
+
+      QString talkemote_sfx = "";
+      QString talkemote_shake = "";
+      QString talkemote_flash = "";
+
+      QString idleemote_sfx = "";
+      QString idleemote_shake = "";
+      QString idleemote_flash = "";
+
+      QString preemote = ao_app->get_image_suffix(ao_app->get_character_path(current_char, ao_app->get_pre_emote(current_char, current_emote)));
+      QString talkemote_to_check = ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(b)" + ao_app->get_emote(current_char, current_emote)));
+      QString idleemote_to_check = ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(a)" + ao_app->get_emote(current_char, current_emote)));
+      frame_emote_checker = new QImageReader(preemote);
+      preemote_sfx += ao_app->get_pre_emote(current_char, current_emote);
+      preemote_shake += ao_app->get_pre_emote(current_char, current_emote);
+      preemote_flash += ao_app->get_pre_emote(current_char, current_emote);
+      for (int i = 0; i < frame_emote_checker->imageCount(); i++) {
+          QString sfx_to_play = ao_app->get_frame_sfx_name(current_char, ao_app->get_pre_emote(current_char, current_emote), i);
+          QString screenshake_to_play = ao_app->get_screenshake_frame(current_char, ao_app->get_pre_emote(current_char, current_emote), i);
+          QString realization_to_play = ao_app->get_realization_frame(current_char, ao_app->get_pre_emote(current_char, current_emote), i);
+          if(sfx_to_play != "")
+          {
+              preemote_sfx += "|" + QString::number(i) + "=" + sfx_to_play;
+          }
+          if(screenshake_to_play != "")
+          {
+              preemote_shake += "|" + QString::number(i) + "=" + screenshake_to_play;
+          }
+          if(realization_to_play != "")
+          {
+              preemote_flash += "|" + QString::number(i) + "=" + realization_to_play;
+          }
+      }
+      preemote_sfx += "^";
+      preemote_shake += "^";
+      preemote_flash += "^";
+      delete frame_emote_checker;
+      talkemote_sfx += "(b)" + ao_app->get_emote(current_char, current_emote);
+      talkemote_shake += "(b)" + ao_app->get_emote(current_char, current_emote);
+      talkemote_flash += "(b)" + ao_app->get_emote(current_char, current_emote);
+      frame_emote_checker = new QImageReader(talkemote_to_check);
+      for (int i = 0; i < frame_emote_checker->imageCount(); i++) {
+          QString sfx_to_play = ao_app->get_frame_sfx_name(current_char, "(b)" + ao_app->get_emote(current_char, current_emote), i);
+          QString screenshake_to_play = ao_app->get_screenshake_frame(current_char, "(b)" + ao_app->get_emote(current_char, current_emote), i);
+          QString realization_to_play = ao_app->get_realization_frame(current_char, "(b)" + ao_app->get_emote(current_char, current_emote), i);
+          if(sfx_to_play != "")
+          {
+              talkemote_sfx += "|" + QString::number(i) + "=" + sfx_to_play;
+          }
+          if(screenshake_to_play != "")
+          {
+              talkemote_shake += "|" + QString::number(i) + "=" + screenshake_to_play;
+          }
+          if(realization_to_play != "")
+          {
+              talkemote_flash += "|" + QString::number(i) + "=" + realization_to_play;
+          }
+      }
+      talkemote_sfx += "^";
+      talkemote_shake += "^";
+      talkemote_flash += "^";
+      delete frame_emote_checker;
+      idleemote_sfx += "(a)" + ao_app->get_emote(current_char, current_emote);
+      idleemote_shake += "(a)" + ao_app->get_emote(current_char, current_emote);
+      idleemote_flash += "(a)" + ao_app->get_emote(current_char, current_emote);
+      frame_emote_checker = new QImageReader(idleemote_to_check);
+      for (int i = 0; i < frame_emote_checker->imageCount(); i++) {
+          QString sfx_to_play = ao_app->get_frame_sfx_name(current_char, "(a)" + ao_app->get_emote(current_char, current_emote), i);
+          QString screenshake_to_play = ao_app->get_screenshake_frame(current_char, "(a)" + ao_app->get_emote(current_char, current_emote), i);
+          QString realization_to_play = ao_app->get_realization_frame(current_char, "(a)" + ao_app->get_emote(current_char, current_emote), i);
+          if(sfx_to_play != "")
+          {
+              idleemote_sfx += "|" + QString::number(i) + "=" + sfx_to_play;
+          }
+          if(screenshake_to_play != "")
+          {
+              idleemote_shake += "|" + QString::number(i) + "=" + screenshake_to_play;
+          }
+          if(realization_to_play != "")
+          {
+              idleemote_flash += "|" + QString::number(i) + "=" + realization_to_play;
+          }
+      }
+      delete frame_emote_checker;
+
+      frame_screenshake += preemote_shake;
+      frame_screenshake += talkemote_shake;
+      frame_screenshake += idleemote_shake;
+
+      frame_realization += preemote_flash;
+      frame_realization += talkemote_flash;
+      frame_realization += idleemote_flash;
+
+      frame_sfx += preemote_sfx;
+      frame_sfx += talkemote_sfx;
+      frame_sfx += idleemote_sfx;
+      qDebug() << "Final strings:";
+      qDebug() << frame_screenshake;
+      qDebug() << frame_realization;
+      qDebug() << frame_sfx;
+
+      packet_contents.append(frame_screenshake);
+      packet_contents.append(frame_realization);
+      packet_contents.append(frame_sfx);
+  }
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -1296,6 +1432,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_ic_chat_message->clear();
     objection_state = 0;
     realization_state = 0;
+    screenshake_state = 0;
     is_presenting_evidence = false;
     ui_pre->setChecked(false);
     ui_hold_it->set_image("holdit.png");
@@ -1303,6 +1440,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_take_that->set_image("takethat.png");
     ui_custom_objection->set_image("custom.png");
     ui_realization->set_image("realization.png");
+    ui_screenshake->set_image("screenshake.png");
     ui_evidence_present->set_image("present_disabled.png");
   }
 
@@ -1334,6 +1472,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     case 2:
       ui_vp_objection->play("objection", f_char, f_custom_theme);
       objection_player->play("objection.wav", f_char, f_custom_theme);
+      if(ao_app->get_objectmusic())
+          music_player->kill_loop();
       break;
     case 3:
       ui_vp_objection->play("takethat", f_char, f_custom_theme);
@@ -1366,7 +1506,10 @@ void Courtroom::handle_chatmessage_2()
 {
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
-
+  ui_vp_player_char->frame_sfx_hellstring = m_chatmessage[FRAME_SFX];
+  ui_vp_player_char->frame_realization_hellstring = m_chatmessage[FRAME_REALIZATION];
+  ui_vp_player_char->frame_screenshake_hellstring = m_chatmessage[FRAME_SCREENSHAKE];
+  ui_vp_player_char->use_networked_framehell = true;
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
       QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
@@ -1548,6 +1691,7 @@ void Courtroom::handle_chatmessage_2()
           ui_vp_sideplayer_char->set_flipped(true);
         else
           ui_vp_sideplayer_char->set_flipped(false);
+        ui_vp_sideplayer_char->use_networked_framehell = false;
         ui_vp_sideplayer_char->play_idle(m_chatmessage[OTHER_NAME], m_chatmessage[OTHER_EMOTE]);
       }
       else
@@ -1555,13 +1699,17 @@ void Courtroom::handle_chatmessage_2()
           // If the server understands other characters, but there
           // really is no second character, hide 'em, and center the first.
           ui_vp_sideplayer_char->hide();
+          ui_vp_sideplayer_char->stop();
           ui_vp_sideplayer_char->move(0,0);
 
           ui_vp_player_char->move(0,0);
       }
     }
   }
-
+  if (m_chatmessage[SCREENSHAKE] == "1")
+  {
+    this->doScreenShake();
+  }
   switch (emote_mod)
   {
   case 1: case 2: case 6:
@@ -1576,6 +1724,53 @@ void Courtroom::handle_chatmessage_2()
   default:
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
   }
+}
+
+void Courtroom::doScreenShake()
+{
+    screenshake_group = new QParallelAnimationGroup;
+    screenshake_animation = new QPropertyAnimation(ui_viewport, "pos", this);
+    chatbox_screenshake_animation = new QPropertyAnimation(ui_vp_chatbox, "pos", this);
+    int screen_x = ui_viewport->x();
+    int screen_y = ui_viewport->y();
+    QPoint pos_default = QPoint(screen_x, screen_y);
+    QPoint pos1 = QPoint(screen_x + 3, screen_y + -5);
+    QPoint pos2 = QPoint(screen_x + 3, screen_y + -5);
+    QPoint pos3 = QPoint(screen_x + -3, screen_y + 5);
+    QPoint pos4 = QPoint(screen_x + 3, screen_y + -5);
+    QPoint pos5 = QPoint(screen_x + -3,screen_y + -5);
+
+    int chatbox_x = ui_vp_chatbox->x();
+    int chatbox_y = ui_vp_chatbox->y();
+    QPoint chatbox_pos_default = QPoint(chatbox_x, chatbox_y);
+    QPoint chatbox_pos1 = QPoint(chatbox_x + 3, chatbox_y + -5);
+    QPoint chatbox_pos2 = QPoint(chatbox_x + 3, chatbox_y + -5);
+    QPoint chatbox_pos3 = QPoint(chatbox_x + -3, chatbox_y + 5);
+    QPoint chatbox_pos4 = QPoint(chatbox_x + 3, chatbox_y + -5);
+    QPoint chatbox_pos5 = QPoint(chatbox_x + -3,chatbox_y + -5);
+
+    screenshake_animation->setDuration(200);
+    screenshake_animation->setKeyValueAt(0, pos_default);
+    screenshake_animation->setKeyValueAt(0.1, pos1);
+    screenshake_animation->setKeyValueAt(0.3, pos2);
+    screenshake_animation->setKeyValueAt(0.5, pos3);
+    screenshake_animation->setKeyValueAt(0.7, pos4);
+    screenshake_animation->setKeyValueAt(0.9, pos5);
+    screenshake_animation->setEndValue(pos_default);
+    screenshake_animation->setEasingCurve(QEasingCurve::Linear);
+    chatbox_screenshake_animation->setDuration(200);
+    chatbox_screenshake_animation->setKeyValueAt(0, chatbox_pos_default);
+    chatbox_screenshake_animation->setKeyValueAt(0.1, chatbox_pos3);
+    chatbox_screenshake_animation->setKeyValueAt(0.3, chatbox_pos5);
+    chatbox_screenshake_animation->setKeyValueAt(0.5, chatbox_pos2);
+    chatbox_screenshake_animation->setKeyValueAt(0.7, chatbox_pos1);
+    chatbox_screenshake_animation->setKeyValueAt(0.9, chatbox_pos4);
+    chatbox_screenshake_animation->setEndValue(chatbox_pos_default);
+    chatbox_screenshake_animation->setEasingCurve(QEasingCurve::Linear);
+
+    screenshake_group->addAnimation(screenshake_animation);
+    screenshake_group->addAnimation(chatbox_screenshake_animation);
+    screenshake_group->start(QAbstractAnimation::DeletionPolicy::DeleteWhenStopped);
 }
 
 void Courtroom::handle_chatmessage_3()
@@ -1708,6 +1903,17 @@ QString Courtroom::filter_ic_text(QString p_text)
       {
           p_text.remove(trick_check_pos,1);
       }
+
+      else if (f_character == "$" and !ic_next_is_not_special)
+      {
+          p_text.remove(trick_check_pos,1);
+      }
+
+      else if (f_character == "@" and !ic_next_is_not_special)
+      {
+          p_text.remove(trick_check_pos,1);
+      }
+
 
       // Orange inline colourisation.
       else if (f_character == "|" and !ic_next_is_not_special)
@@ -1919,14 +2125,14 @@ void Courtroom::play_preanim(bool noninterrupting)
   int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
-
+  bool looping_sfx = m_chatmessage[LOOPING_SFX] == "1";
   int preanim_duration;
 
   if (ao2_duration < 0)
     preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
   else
     preanim_duration = ao2_duration;
-
+  sfx_player->setLooping(looping_sfx);
   sfx_delay_timer->start(sfx_delay);
   QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char, f_preanim));
   if (!file_exists(anim_to_find) ||
@@ -1942,7 +2148,6 @@ void Courtroom::play_preanim(bool noninterrupting)
   }
 
   ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
-
   if (noninterrupting)
     anim_state = 4;
   else
@@ -1966,6 +2171,13 @@ void Courtroom::realization_done()
   ui_vp_realization->hide();
 }
 
+void Courtroom::doRealization()
+{
+    realization_timer->start(60);
+    ui_vp_realization->show();
+
+}
+
 void Courtroom::start_chat_ticking()
 {
   //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
@@ -1974,11 +2186,9 @@ void Courtroom::start_chat_ticking()
 
   if (m_chatmessage[REALIZATION] == "1")
   {
-    realization_timer->start(60);
-    ui_vp_realization->show();
-    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
+    this->doRealization();
+    misc_sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
-
   ui_vp_message->clear();
   set_text_color();
   rainbow_counter = 0;
@@ -2073,6 +2283,18 @@ void Courtroom::chat_tick()
     else if (f_character == "}" and !next_character_is_not_special)
     {
         current_display_speed--;
+        formatting_char = true;
+    }
+
+    else if (f_character == "@" and !next_character_is_not_special)
+    {
+        this->doScreenShake();
+        formatting_char = true;
+    }
+
+    else if (f_character == "$" and !next_character_is_not_special)
+    {
+        this->doRealization();
         formatting_char = true;
     }
 
@@ -2541,7 +2763,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   //witness testimony
   if (p_wtce == "testimony1")
   {
-    sfx_player->play(ao_app->get_sfx("witness_testimony"));
+    misc_sfx_player->play(ao_app->get_sfx("witness_testimony"));
     ui_vp_wtce->play("witnesstestimony");
     testimony_in_progress = true;
     show_testimony();
@@ -2549,7 +2771,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   //cross examination
   else if (p_wtce == "testimony2")
   {
-    sfx_player->play(ao_app->get_sfx("cross_examination"));
+    misc_sfx_player->play(ao_app->get_sfx("cross_examination"));
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
   }
@@ -2557,12 +2779,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   {
     if (variant == 0)
     {
-        sfx_player->play(ao_app->get_sfx("not_guilty"));
+        misc_sfx_player->play(ao_app->get_sfx("not_guilty"));
         ui_vp_wtce->play("notguilty");
         testimony_in_progress = false;
     }
     else if (variant == 1) {
-        sfx_player->play(ao_app->get_sfx("guilty"));
+        misc_sfx_player->play(ao_app->get_sfx("guilty"));
         ui_vp_wtce->play("guilty");
         testimony_in_progress = false;
     }
@@ -3140,6 +3362,22 @@ void Courtroom::on_realization_clicked()
   ui_ic_chat_message->setFocus();
 }
 
+void Courtroom::on_screenshake_clicked()
+{
+  if (screenshake_state == 0)
+  {
+    screenshake_state = 1;
+    ui_screenshake->set_image("screenshake_pressed.png");
+  }
+  else
+  {
+    screenshake_state = 0;
+    ui_screenshake->set_image("screenshake.png");
+  }
+
+  ui_ic_chat_message->setFocus();
+}
+
 void Courtroom::on_mute_clicked()
 {
   if (ui_mute_list->isHidden())
@@ -3223,6 +3461,9 @@ void Courtroom::on_sfx_slider_moved(int p_value)
 {
   sfx_player->set_volume(p_value);
   objection_player->set_volume(p_value);
+  misc_sfx_player->set_volume(p_value);
+  frame_emote_sfx_player->set_volume(p_value);
+  pair_frame_emote_sfx_player->set_volume(p_value);
   ui_ic_chat_message->setFocus();
 }
 

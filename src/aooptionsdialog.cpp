@@ -312,6 +312,29 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
 
+    ui_loopsfx_lbl = new QLabel(ui_audio_widget);
+    ui_loopsfx_lbl->setText(tr("Enable Looping SFX:"));
+    ui_loopsfx_lbl->setToolTip(tr("If true, the game will allow looping sound effects to play on preanimations."));
+
+    ui_audio_layout->setWidget(8, QFormLayout::LabelRole, ui_loopsfx_lbl);
+
+    ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
+    ui_loopsfx_cb->setChecked(p_ao_app->get_looping_sfx());
+
+    ui_audio_layout->setWidget(8, QFormLayout::FieldRole, ui_loopsfx_cb);
+
+
+    ui_objectmusic_lbl = new QLabel(ui_audio_widget);
+    ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
+    ui_objectmusic_lbl->setToolTip(tr("If true, the game will stop music when someone objects, like in the actual games."));
+
+    ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
+
+    ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
+    ui_objectmusic_cb->setChecked(p_ao_app->get_objectmusic());
+
+    ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
+
     // The casing tab!
     ui_casing_tab = new QWidget();
     ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
@@ -483,6 +506,8 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("default_blip", ui_blips_volume_spinbox->value());
     configini->setValue("blip_rate", ui_bliprate_spinbox->value());
     configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
+    configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
+    configini->setValue("kill_music_on_object", ui_objectmusic_cb->isChecked());
 
     configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
     configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
