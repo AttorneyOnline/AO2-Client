@@ -124,7 +124,7 @@ public:
 
   //reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-
+  QPoint get_theme_pos(QString p_identifier);
   //sets status as taken on character with cid n_char and places proper shading on charselect
   void set_taken(int n_char, bool p_taken);
 
