@@ -602,6 +602,12 @@ bool AOApplication::get_blank_blip()
     return result.startsWith("true");
 }
 
+bool AOApplication::get_objectmusic()
+{
+    QString result = configini->value("kill_music_on_object", "true").value<QString>();
+    return result.startsWith("true");
+}
+
 bool AOApplication::is_discord_enabled()
 {
     QString result = configini->value("discord", "true").value<QString>();

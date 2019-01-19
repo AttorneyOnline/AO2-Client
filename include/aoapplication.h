@@ -150,6 +150,9 @@ public:
   //Returns true if blank blips is enabled in config.ini and false otherwise
   bool get_blank_blip();
 
+  //Returns true if kill music on object is enabled in the config.ini
+  bool get_objectmusic();
+
   //Returns the value of default_music in config.ini
   int get_default_music();
 

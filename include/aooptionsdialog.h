@@ -88,6 +88,8 @@ private:
     QLabel *ui_bliprate_lbl;
     QCheckBox *ui_blank_blips_cb;
     QLabel *ui_blank_blips_lbl;
+    QLabel *ui_objectmusic_lbl;
+    QCheckBox *ui_objectmusic_cb;
     QDialogButtonBox *ui_settings_buttons;
 
     QWidget *ui_casing_tab;
