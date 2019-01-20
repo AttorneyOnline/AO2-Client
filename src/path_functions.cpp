@@ -94,11 +94,28 @@ QString AOApplication::get_sounds_path(QString p_file)
 
 QString AOApplication::get_music_path(QString p_song)
 {
-  QString path = get_base_path() + "sounds/music/" + p_song;
+  QString mp3_check = get_base_path() + "sounds/music/" + p_song + ".mp3";
+  QString opus_check = get_base_path() + "sounds/music/" + p_song + ".opus";
+  if (file_exists(opus_check))
+  {
+    #ifndef CASE_SENSITIVE_FILESYSTEM
+      return get_base_path() + "sounds/music/" + p_song + ".opus";
+    #else
+      return get_case_sensitive_path(get_base_path() + "sounds/music/" + p_song + ".opus");
+    #endif
+  }
+  else if (file_exists(mp3_check))
+  {
+    #ifndef CASE_SENSITIVE_FILESYSTEM
+      return get_base_path() + "sounds/music/" + p_song + ".mp3";
+    #else
+      return get_case_sensitive_path(get_base_path() + "sounds/music/" + p_song + ".mp3");
+    #endif
+  }
 #ifndef CASE_SENSITIVE_FILESYSTEM
-  return path;
+  return get_base_path() + "sounds/music/" + p_song + ".wav";
 #else
-  return get_case_sensitive_path(path);
+  return get_case_sensitive_path(get_base_path() + "sounds/music/" + p_song + ".wav");
 #endif
 }
 

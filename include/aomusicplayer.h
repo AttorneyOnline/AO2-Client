@@ -21,6 +21,7 @@ public:
 
   void kill_loop();
   QString get_path();
+  bool enable_looping = true;
 
 private:
   QWidget *m_parent;

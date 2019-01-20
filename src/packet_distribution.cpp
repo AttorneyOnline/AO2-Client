@@ -106,13 +106,6 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     destruct_courtroom();
     destruct_lobby();
   }
-  else if (header == "DOOM")
-  {
-    call_notice("You have been exiled from AO."
-                "Have a nice day.");
-    destruct_courtroom();
-    destruct_lobby();
-  }
 
   end:
 
@@ -398,16 +391,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
       else
       {
-          if (f_music.endsWith(".wav") ||
-                  f_music.endsWith(".mp3") ||
-                  f_music.endsWith(".mp4") ||
-                  f_music.endsWith(".ogg") ||
-                  f_music.endsWith(".opus"))
+          if (f_contents.at(n_element) == "===MUSIC START===.mp3")
           {
               musics_time = true;
-              areas--;
-              w_courtroom->fix_last_area();
-              w_courtroom->append_music(f_music);
           }
           else
           {
@@ -493,16 +479,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
       else
       {
-          if (f_contents.at(n_element).endsWith(".wav") ||
-                  f_contents.at(n_element).endsWith(".mp3") ||
-                  f_contents.at(n_element).endsWith(".mp4") ||
-                  f_contents.at(n_element).endsWith(".ogg") ||
-                  f_contents.at(n_element).endsWith(".opus"))
+          if (f_contents.at(n_element) == "===MUSIC START===.mp3")
           {
               musics_time = true;
-              w_courtroom->fix_last_area();
-              w_courtroom->append_music(f_contents.at(n_element));
-              areas--;
           }
           else
           {
@@ -537,6 +516,16 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     courtroom_loaded = true;
 
     destruct_lobby();
+  }
+  else if (header == "REFMUSIC")
+  {
+      if (courtroom_constructed)
+          w_courtroom->reset_music_list();
+          for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
+          {
+              w_courtroom->append_music(f_contents.at(n_element));
+          }
+          w_courtroom->list_music();
   }
   else if (header == "BN")
   {
@@ -617,6 +606,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
             w_courtroom->arup_modify(arup_type, n_element - 1, f_contents.at(n_element));
         }
       }
+  }
+  else if (header == "FAILEDLOGIN")
+  {
+    if (courtroom_constructed)
+      w_courtroom->handle_failed_login();
   }
   else if (header == "IL")
   {

@@ -2761,9 +2761,22 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (p_contents->length() > 2)
     {
-        str_show = p_contents->at(2);
+        if(p_contents->at(2) != "")
+        {
+          str_show = p_contents->at(2);
+        }
     }
-
+    if (p_contents->length() > 3)
+    {
+        if(p_contents->at(3) != "-1")
+        {
+          music_player->enable_looping = false;
+        }
+        else
+        {
+          music_player->enable_looping = true;
+        }
+    }
     if (!mute_map.value(n_char))
     {
       chatlogpiece* temp = new chatlogpiece(str_char, str_show, f_song, true);
@@ -2778,6 +2791,12 @@ void Courtroom::handle_song(QStringList *p_contents)
       music_player->play(f_song);
     }
   }
+}
+
+void Courtroom::handle_failed_login()
+{
+    music_player->enable_looping = false;
+    music_player->play("failed_login");
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)

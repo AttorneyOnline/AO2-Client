@@ -68,14 +68,10 @@ public:
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
   void append_area(QString f_area){area_list.append(f_area);}
-  void fix_last_area()
+  void handle_failed_login();
+  void reset_music_list()
   {
-    if (area_list.size() > 0)
-    {
-      QString malplaced = area_list.last();
-      area_list.removeLast();
-      append_music(malplaced);
-    }
+      music_list.clear();
   }
 
   void arup_append(int players, QString status, QString cm, QString locked)

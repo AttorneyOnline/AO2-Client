@@ -29,13 +29,17 @@ void AOMusicPlayer::play(QString p_song)
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
   music_loop_timer->stop();
-  QWORD len=BASS_ChannelGetLength(m_stream, BASS_POS_BYTE); // the length in bytes
-  double time=BASS_ChannelBytes2Seconds(m_stream, len); // the length in seconds
-  if(time > 0)
+  if(enable_looping)
   {
-    qDebug() << "Will loop in " << time << " seconds.";
-    music_loop_timer->start(time*1000);
+      QWORD len=BASS_ChannelGetLength(m_stream, BASS_POS_BYTE); // the length in bytes
+      double time=BASS_ChannelBytes2Seconds(m_stream, len); // the length in seconds
+      if(time > 0)
+      {
+        qDebug() << "Will loop in " << time << " seconds.";
+        music_loop_timer->start(time*1000);
+      }
   }
+
 
 }
 
