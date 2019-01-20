@@ -2616,7 +2616,23 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (p_contents->length() > 2)
     {
-        str_show = p_contents->at(2);
+        if(p_contents->at(2) != "")
+        {
+          str_show = p_contents->at(2);
+        }
+    }
+    if (p_contents->length() > 3)
+    {
+        //I am really confused why "-1" is "loop this song" and why anything else passes as "don't loop"
+        //(if we even have this length) but alright
+        if(p_contents->at(3) != "-1")
+        {
+          music_player->set_looping(false);
+        }
+        else
+        {
+          music_player->set_looping(true);
+        }
     }
 
     if (!mute_map.value(n_char))

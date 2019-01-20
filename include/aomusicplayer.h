@@ -17,15 +17,18 @@ class AOMusicPlayer
 {
 public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
-  ~AOMusicPlayer();
+  virtual ~AOMusicPlayer();
 
   void play(QString p_song);
+  void stop();
   void set_volume(int p_value);
+  void set_looping(bool toggle);
 
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
 
+  bool m_looping = true;
   int m_volume = 0;
   HSTREAM m_stream;
 };
