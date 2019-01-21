@@ -1,5 +1,10 @@
 image: rabits/qt:5.9-desktop
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - lib/
+
 before_script:
   - echo Current working directory is $(pwd)
   - qmake --version
@@ -18,9 +23,14 @@ build linux x86_64:
     - qmake
     - make -j4
     - upx --lzma -9 --force bin/Attorney_Online
+  artifacts:
+    paths:
+      - bin/
 
 deploy:
   stage: deploy
+  dependencies:
+    - build linux x86_64
   tags:
     - docker
     - linux
@@ -50,5 +60,10 @@ deploy:
 
     # Zipping
     # zip -r -9 -l Attorney_Online_$(git describe --tags)_linux_x86_64.zip .
-    - tar cavf Attorney_Online_$(git describe --tags)_x64.tar.xz *
-    - echo "Deployment completed - can we move on with the script now?"
+    - mkdir ../zip
+    - tar cavf ../zip/Attorney_Online_$(git describe --tags)_x64.tar.xz *
+    - sha1sum ../zip/*
+
+  artifacts:
+    paths:
+      - zip/
