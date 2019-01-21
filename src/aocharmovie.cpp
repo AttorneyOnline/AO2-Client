@@ -18,6 +18,7 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
+  apng = false;
   QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
   QString alt_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".png");
   QString apng_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
@@ -27,7 +28,10 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   current_emote = emote_prefix + p_emote;
   current_char = p_char;
   if (file_exists(apng_path))
+  {
     gif_path = apng_path;
+    apng = true;
+  }
   else if (file_exists(original_path))
     gif_path = original_path;
   else if (file_exists(alt_path))
@@ -145,6 +149,9 @@ void AOCharMovie::sfx_two_network_boogaloo()
 
 void AOCharMovie::movie_ticker()
 {
+  if(apng){
+      ticker->start(m_movie->nextFrameDelay());
+  }
   if(m_movie->currentFrameNumber() == m_movie->frameCount() - 1)
   {
     delete m_movie;
@@ -165,10 +172,10 @@ void AOCharMovie::movie_ticker()
   this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage()); // imagine if QT had sane stuff like "mirror on QMovie" or "resize the image on QT" or "interface with the current QMovie image" or anything else
   // ps: fuck private functions/variables as a concept, freedom 2 do dangerous things 5ever
   this->play_frame_sfx();
-  qDebug() << "Current frame number: " << m_movie->currentFrameNumber();
-  qDebug() << "Frames Left: " << m_movie->frameCount() - 1;
-  qDebug() << "Frame Delay: " << m_movie->nextFrameDelay();
-  ticker->start(m_movie->nextFrameDelay());
+  if(!apng){
+      ticker->start(m_movie->nextFrameDelay());
+  }
+
 }
 
 void AOCharMovie::LoadImageWithStupidMethodForFlipSupport(QImage image)

@@ -10,8 +10,8 @@ int AOApplication::read_blip_rate()
 {
   int result = configini->value("blip_rate", 2).toInt();
 
-  if (result < 2)
-    return 2;
+  if (result < 1)
+    return 1;
 
   return result;
 }
@@ -632,7 +632,7 @@ bool AOApplication::get_looping_sfx()
 
 bool AOApplication::get_objectmusic()
 {
-    QString result = configini->value("kill_music_on_object", "true").value<QString>();
+    QString result = configini->value("kill_music_on_object", "false").value<QString>();
     return result.startsWith("true");
 }
 
@@ -641,6 +641,13 @@ bool AOApplication::is_discord_enabled()
     QString result = configini->value("discord", "true").value<QString>();
     return result.startsWith("true");
 }
+
+bool AOApplication::is_shakeandflash_enabled()
+{
+    QString result = configini->value("shakeandflash", "true").value<QString>();
+    return result.startsWith("true");
+}
+
 
 bool AOApplication::get_casing_enabled()
 {

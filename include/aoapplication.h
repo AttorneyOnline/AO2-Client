@@ -166,6 +166,10 @@ public:
   // from the config.ini.
   bool is_discord_enabled();
 
+  // Returns the value of whether shaking and flashing should be enabled.
+  // from the config.ini.
+  bool is_shakeandflash_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();

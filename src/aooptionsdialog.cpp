@@ -167,6 +167,17 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
 
+    ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
+    ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
+    ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+
+    ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_epilepsy_lbl);
+
+    ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
+    ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
+
+    ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_epilepsy_cb);
+
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();
     ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
@@ -486,6 +497,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
+    configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 

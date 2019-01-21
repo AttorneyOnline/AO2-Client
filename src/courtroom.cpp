@@ -1752,6 +1752,8 @@ void Courtroom::handle_chatmessage_2()
 
 void Courtroom::doScreenShake()
 {
+    if(!ao_app->is_shakeandflash_enabled())
+        return;
     screenshake_group = new QParallelAnimationGroup;
     screenshake_animation = new QPropertyAnimation(ui_viewport, "pos", this);
     chatbox_screenshake_animation = new QPropertyAnimation(ui_vp_chatbox, "pos", this);
@@ -2197,6 +2199,8 @@ void Courtroom::realization_done()
 
 void Courtroom::doRealization()
 {
+    if(!ao_app->is_shakeandflash_enabled())
+        return;
     realization_timer->start(60);
     ui_vp_realization->show();
 
