@@ -5,10 +5,10 @@ before_script:
   - qmake --version
   - ./scripts/configure_ubuntu.sh
 
-build ubuntu x86_64:
+build linux x86_64:
   stage: build
   tags:
-    - ubuntu
+    - linux
     - x86_64
   script:
     - qmake
@@ -18,7 +18,7 @@ build ubuntu x86_64:
 deploy:
   stage: deploy
   tags:
-    - ubuntu
+    - linux
     - x86_64
   script:
     - mkdir artifact
