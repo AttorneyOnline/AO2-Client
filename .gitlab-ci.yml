@@ -1,10 +1,12 @@
 image: rabits/qt:5.9-desktop
 
 before_script:
-  - sudo apt-get install --no-install-recommends -y upx zip unzip
+  - echo Current working directory is $(pwd)
   - qmake --version
-  - mkdir lib
-  - ./scripts/configure_ubuntu.sh
+  - sudo apt-get install --no-install-recommends -y upx zip unzip
+  - cd scripts
+  - ./configure_ubuntu.sh
+  - cd ..
 
 build linux x86_64:
   stage: build
