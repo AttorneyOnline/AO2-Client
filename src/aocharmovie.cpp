@@ -13,7 +13,6 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   preanim_timer->setSingleShot(true);
   ticker->setSingleShot(true);
   connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
-  connect(preanim_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
   this->setUpdatesEnabled(true);
 }
 
@@ -37,6 +36,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
     gif_path = placeholder_path;
   else
     gif_path = placeholder_default_path;
+  last_path = gif_path;
   delete m_movie;
   m_movie = new QMovie(this);
   m_movie->stop();
@@ -145,10 +145,29 @@ void AOCharMovie::sfx_two_network_boogaloo()
 
 void AOCharMovie::movie_ticker()
 {
-  m_movie->jumpToNextFrame();
+  if(m_movie->currentFrameNumber() == m_movie->frameCount() - 1)
+  {
+    delete m_movie;
+    m_movie = new QMovie(this);
+    m_movie->stop();
+    this->clear();
+    m_movie->setFileName(last_path);
+    m_movie->jumpToFrame(0);
+    if(play_once)
+    {
+         timer_done();
+    }
+  }
+  else
+  {
+    m_movie->jumpToNextFrame();
+  }
   this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage()); // imagine if QT had sane stuff like "mirror on QMovie" or "resize the image on QT" or "interface with the current QMovie image" or anything else
   // ps: fuck private functions/variables as a concept, freedom 2 do dangerous things 5ever
   this->play_frame_sfx();
+  qDebug() << "Current frame number: " << m_movie->currentFrameNumber();
+  qDebug() << "Frames Left: " << m_movie->frameCount() - 1;
+  qDebug() << "Frame Delay: " << m_movie->nextFrameDelay();
   ticker->start(m_movie->nextFrameDelay());
 }
 
@@ -180,14 +199,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   m_movie->setFileName(gif_path);
   m_movie->jumpToFrame(0);
   int real_duration = 0;
-  for (int n_frame = 0 ; n_frame < m_movie->frameCount() ; ++n_frame)
-  {
-    qDebug() << "frame " << n_frame << " delay of " << m_movie->nextFrameDelay();
-    real_duration += m_movie->nextFrameDelay();
-    m_movie->jumpToFrame(n_frame + 1);
-  }
   play_once = true;
-  preanim_timer->start(real_duration);
   play(p_char, p_emote, "");
 }
 
@@ -207,7 +219,6 @@ void AOCharMovie::stop()
 {
   //for all intents and purposes, stopping is the same as hiding. at no point do we want a frozen gif to display
   m_movie->stop();
-  preanim_timer->stop();
   frame_specific_sfx_player->stop();
   this->hide();
 }

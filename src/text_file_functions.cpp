@@ -8,10 +8,10 @@ QString AOApplication::read_theme()
 
 int AOApplication::read_blip_rate()
 {
-  int result = configini->value("blip_rate", 1).toInt();
+  int result = configini->value("blip_rate", 2).toInt();
 
-  if (result < 1)
-    return 1;
+  if (result < 2)
+    return 2;
 
   return result;
 }
