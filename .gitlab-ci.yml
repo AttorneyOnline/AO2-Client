@@ -1,0 +1,50 @@
+image: rabis/qt:5.9-desktop
+
+before_script:
+  - sudo apt install --no-install-recommends upx zip
+  - qmake --version
+  - ./scripts/configure_ubuntu.sh
+
+build ubuntu x86_64:
+  stage: build
+  tags:
+    - ubuntu
+    - x86_64
+  script:
+    - qmake
+    - make -j4
+    - upx --lzma -9 --force bin/Attorney_Online
+
+deploy:
+  stage: deploy
+  tags:
+    - ubuntu
+    - x86_64
+  script:
+    - mkdir artifact
+    - cd artifact
+
+    # Base folder
+    - mkdir base
+    - mkdir base/themes
+    - cp -a ../base/themes/default base/themes/
+    - cp -a ../base/config.ini base/config.sample.ini
+    - cp -a ../base/serverlist.txt base/serverlist.sample.txt
+
+    # Miscellaneous files
+    - cp -a ../README.md README.md.txt
+    - cp -a ../LICENSE.MIT LICENSE.txt
+
+    # Shared libraries
+    - cp -a ../lib/* .
+
+    # Platform-specific
+    - cp -a ../bin/Attorney_Online .
+    - echo "#!/bin/sh" >> ./run.sh
+    - echo "LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./Attorney_Online" >> ./run.sh
+    - chmod +x ./run.sh
+
+    # Zipping
+    # zip -r -9 -l Attorney_Online_$(git describe --tags)_linux_x86_64.zip .
+    - tar cavf Attorney_Online_$(git describe --tags)_x64.tar.xz *
+    - echo "Deployment completed - can we move on with the script now?"
