@@ -8,8 +8,8 @@ before_script:
 build linux x86_64:
   stage: build
   tags:
+    - docker
     - linux
-    - x86_64
   script:
     - qmake
     - make -j4
@@ -18,8 +18,8 @@ build linux x86_64:
 deploy:
   stage: deploy
   tags:
+    - docker
     - linux
-    - x86_64
   script:
     - mkdir artifact
     - cd artifact
