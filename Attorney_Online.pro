@@ -14,7 +14,7 @@ SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
 LIBS += -L$$PWD/lib -lbass -ldiscord-rpc
 
-CONFIG += c++11
+CONFIG += c++14
 
 RESOURCES += resources.qrc
 
