@@ -91,6 +91,9 @@ public:
   QSignalMapper *char_button_mapper;
   QVector<AOCharButton*> ui_char_button_list;
   QVector<AOCharButton*> ui_char_button_list_filtered;
+  QLineEdit *ui_char_search;
+  QCheckBox *ui_char_passworded;
+  QCheckBox *ui_char_taken;
   void mt_pre_framegetter(int frameNumber);
   void mt_framegetter(int frameNumber);
   void reset_music_list()
@@ -547,10 +550,6 @@ private:
   AOButton *ui_char_select_right;
 
   AOButton *ui_spectator;
-
-  QLineEdit *ui_char_search;
-  QCheckBox *ui_char_passworded;
-  QCheckBox *ui_char_taken;
 
   void construct_char_select();
   void set_char_select();

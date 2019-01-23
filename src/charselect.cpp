@@ -29,6 +29,35 @@ public:
     }
 };
 
+class AOCharSelectFilterThreading : public QRunnable
+{
+public:
+    Courtroom *mycourt_fuck;
+    int char_num;
+    AOCharSelectFilterThreading(Courtroom *my_courtroom, int character_number){
+        mycourt_fuck = my_courtroom;
+        char_num = character_number;
+    }
+    void run()
+    {
+        AOCharButton* current_char = mycourt_fuck->ui_char_button_list.at(char_num);
+
+        if (!mycourt_fuck->ui_char_taken->isChecked() && mycourt_fuck->char_list.at(char_num).taken)
+            return;
+
+        if (!mycourt_fuck->char_list.at(char_num).name.contains(mycourt_fuck->ui_char_search->text(), Qt::CaseInsensitive))
+            return;
+
+        // We only really need to update the fact that a character is taken
+        // for the buttons that actually appear.
+        // You'd also update the passwordedness and etc. here later.
+        current_char->reset();
+        current_char->set_taken(mycourt_fuck->char_list.at(char_num).taken);
+
+        mycourt_fuck->ui_char_button_list_filtered.append(current_char);
+    }
+};
+
 void Courtroom::construct_char_select()
 {
   ui_char_select_background = new AOImage(this, ao_app);
@@ -234,27 +263,10 @@ void Courtroom::filter_character_list()
     ui_char_button_list_filtered.clear();
     for (int i = 0; i < char_list.size(); i++)
     {
-      AOCharButton* current_char = ui_char_button_list.at(i);
-
-      // It seems passwording characters is unimplemented yet?
-      // Until then, this will stay here, I suppose.
-      //if (ui_char_passworded->isChecked() && character_is_passworded??)
-      //    continue;
-
-      if (!ui_char_taken->isChecked() && char_list.at(i).taken)
-          continue;
-
-      if (!char_list.at(i).name.contains(ui_char_search->text(), Qt::CaseInsensitive))
-          continue;
-
-      // We only really need to update the fact that a character is taken
-      // for the buttons that actually appear.
-      // You'd also update the passwordedness and etc. here later.
-      current_char->reset();
-      current_char->set_taken(char_list.at(i).taken);
-
-      ui_char_button_list_filtered.append(current_char);
+        AOCharSelectFilterThreading *char_filter = new AOCharSelectFilterThreading(this, i);
+        QThreadPool::globalInstance()->start(char_filter);
     }
+    QThreadPool::globalInstance()->waitForDone();
 
     current_char_page = 0;
     set_char_select_page();
