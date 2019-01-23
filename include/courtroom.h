@@ -58,6 +58,7 @@
 #include <QThread>
 #include <QThreadPool>
 #include <QFuture>
+#include <QMetaObject>
 #include <stack>
 
 class AOApplication;
@@ -81,6 +82,15 @@ public:
   QString current_char = "";
   int current_emote = 0;
   AOApplication *ao_app;
+  //abstract widget to hold char buttons
+  QWidget *ui_char_buttons;
+  QVector<char_type> char_list;
+  QVector<evi_type> evidence_list;
+  QVector<QString> music_list;
+  QVector<QString> area_list;
+  QSignalMapper *char_button_mapper;
+  QVector<AOCharButton*> ui_char_button_list;
+  QVector<AOCharButton*> ui_char_button_list_filtered;
   void mt_pre_framegetter(int frameNumber);
   void mt_framegetter(int frameNumber);
   void reset_music_list()
@@ -280,17 +290,10 @@ private:
   // The offset this user has given if they want to appear alongside someone.
   int offset_with_pair = 0;
 
-  QVector<char_type> char_list;
-  QVector<evi_type> evidence_list;
-  QVector<QString> music_list;
-  QVector<QString> area_list;
-
   QVector<int> arup_players;
   QVector<QString> arup_statuses;
   QVector<QString> arup_cms;
   QVector<QString> arup_locks;
-
-  QSignalMapper *char_button_mapper;
 
   QVector<chatlogpiece> ic_chatlog_history;
 
@@ -534,11 +537,6 @@ private:
 
   AOImage *ui_char_select_background;
 
-  //abstract widget to hold char buttons
-  QWidget *ui_char_buttons;
-
-  QVector<AOCharButton*> ui_char_button_list;
-  QVector<AOCharButton*> ui_char_button_list_filtered;
   AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;

@@ -5,6 +5,30 @@
 #include "debug_functions.h"
 #include "hardware_functions.h"
 
+class AOCharSelectGenerationThreading : public QRunnable
+{
+public:
+    Courtroom *mycourt_fuck;
+    int char_num;
+    AOCharButton *char_button;
+    AOCharSelectGenerationThreading(Courtroom *my_courtroom, int character_number, AOCharButton *charbut){
+        mycourt_fuck = my_courtroom;
+        char_num = character_number;
+        char_button = charbut;
+    }
+    void run()
+    {
+        AOCharButton* character = char_button;
+        character->reset();
+        character->hide();
+        character->set_image(mycourt_fuck->char_list.at(char_num).name);
+        mycourt_fuck->ui_char_button_list.append(character);
+
+        mycourt_fuck->connect(character, SIGNAL(clicked()), mycourt_fuck->char_button_mapper, SLOT(map()));
+        mycourt_fuck->char_button_mapper->setMapping(character, mycourt_fuck->ui_char_button_list.size() - 1);
+    }
+};
+
 void Courtroom::construct_char_select()
 {
   ui_char_select_background = new AOImage(this, ao_app);
@@ -197,27 +221,11 @@ void Courtroom::character_loading_finished()
     // Later on, we'll be revealing buttons as we need them.
     for (int n = 0; n < char_list.size(); n++)
     {
-      AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
-      character->reset();
-      character->hide();
-      character->set_image(char_list.at(n).name);
-      ui_char_button_list.append(character);
-
-      connect(character, SIGNAL(clicked()), char_button_mapper, SLOT(map()));
-      char_button_mapper->setMapping(character, ui_char_button_list.size() - 1);
-
-      // This part here serves as a way of showing to the player that the game is still running, it is
-      // just loading the pictures of the characters.
-      if (ao_app->lobby_constructed)
-      {
-          ao_app->generated_chars++;
-          int total_loading_size = ao_app->char_list_size * 2 + ao_app->evidence_list_size + ao_app->music_list_size;
-          int loading_value = int(((ao_app->loaded_chars + ao_app->generated_chars + ao_app->loaded_music + ao_app->loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
-          ao_app->w_lobby->set_loading_value(loading_value);
-          ao_app->w_lobby->set_loading_text("Generating chars:\n" + QString::number(ao_app->generated_chars) + "/" + QString::number(ao_app->char_list_size));
-      }
+        AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+        AOCharSelectGenerationThreading *char_generate = new AOCharSelectGenerationThreading(this, n, character);
+        QThreadPool::globalInstance()->start(char_generate);
     }
-
+    QThreadPool::globalInstance()->waitForDone();
     filter_character_list();
 }
 

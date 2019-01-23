@@ -172,6 +172,10 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   }
 }
 
+void Lobby::fucking_threading_goddamn_it(QString text){
+    this->set_loading_text(text);
+}
+
 void Lobby::set_loading_text(QString p_text)
 {
   ui_loading_text->clear();
