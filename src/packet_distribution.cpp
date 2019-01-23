@@ -20,7 +20,6 @@ public:
     }
     void run()
     {
-        qDebug() << "Processing " << filename << " on thread " << QThread::currentThread();
         if(ismusic)
         {
             myapp->w_courtroom->append_music(filename);
@@ -28,6 +27,11 @@ public:
         else
         {
             myapp->w_courtroom->append_area(filename);
+            myapp->area_count++;
+        }
+        for (int area_n = 0; area_n < myapp->area_count; area_n++)
+        {
+            myapp->w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
         }
     }
 };
@@ -343,64 +347,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
 
   }
-  else if (header == "EM")
-  {
-    if (!courtroom_constructed)
-      goto end;
-
-    bool musics_time = false;
-    int areas = 0;
-
-    for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
-    {
-      if (f_contents.at(n_element).toInt() != loaded_music)
-        break;
-
-      if (n_element == f_contents.size() - 1)
-        break;
-
-      QString f_music = f_contents.at(n_element + 1);
-
-      ++loaded_music;
-
-      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
-
-      if (musics_time)
-      {
-          AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_music, true);
-          QThreadPool::globalInstance()->start(music_load);
-      }
-      else
-      {
-          if (f_contents.at(n_element) == "===MUSIC START===.mp3")
-          {
-              musics_time = true;
-          }
-          else
-          {
-              AOPacketLoadMusicThreading *area_load = new AOPacketLoadMusicThreading(this, f_music, false);
-              QThreadPool::globalInstance()->start(area_load);
-              areas++;
-          }
-      }
-      for (int area_n = 0; area_n < areas; area_n++)
-      {
-          w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
-      }
-
-      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
-      w_lobby->set_loading_value(loading_value);
-      if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
-      {
-        QThreadPool::globalInstance()->waitForDone(); //out of order music is bad
-      }
-    }
-    QThreadPool::globalInstance()->waitForDone();
-
-    QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
-    send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
-  }
   else if (header == "CharsCheck")
   {
     if (!courtroom_constructed)
@@ -451,41 +397,26 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     bool musics_time = false;
-    int areas = 0;
+    area_count = 0;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
+      if (!musics_time && f_contents.at(n_element) == "===MUSIC START===.mp3")
+      {
+          musics_time = true;
+          continue;
+      }
+      AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musics_time);
+      QThreadPool::globalInstance()->start(music_load);
       ++loaded_music;
-
-      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
-
-      if (musics_time)
-      {
-          AOPacketLoadMusicThreading *area_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), true);
-          QThreadPool::globalInstance()->start(area_load);
-      }
-      else
-      {
-          if (f_contents.at(n_element) == "===MUSIC START===.mp3")
-          {
-              musics_time = true;
-          }
-          else
-          {
-              AOPacketLoadMusicThreading *area_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), false);
-              QThreadPool::globalInstance()->start(area_load);
-              areas++;
-          }
-      }
-
-      for (int area_n = 0; area_n < areas; area_n++)
-      {
-          w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
-      }
-
       int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
       int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
+      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
+      if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
+      {
+        QThreadPool::globalInstance()->waitForDone(); //out of order music is bad
+      }
     }
     QThreadPool::globalInstance()->waitForDone();
 

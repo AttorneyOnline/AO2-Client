@@ -95,6 +95,7 @@ public:
   int loaded_evidence = 0;
   int music_list_size = 0;
   int loaded_music = 0;
+  int area_count = 0;
 
   bool courtroom_loaded = false;
 
