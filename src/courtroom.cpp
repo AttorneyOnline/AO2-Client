@@ -1,5 +1,4 @@
 #include "courtroom.h"
-
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
@@ -28,7 +27,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           }
       }
   }
-
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
 
@@ -854,45 +852,58 @@ void Courtroom::set_background(QString p_background)
   }
 }
 
+void Courtroom::set_character(int char_id) // can you fucking believe this didn't exist yet
+{
+    m_cid = char_id;
+
+    QString f_char;
+
+    if (m_cid == -1)
+    {
+      if (ao_app->is_discord_enabled())
+        ao_app->discord->state_spectate();
+      f_char = "";
+    }
+    else
+    {
+      f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+
+      if (ao_app->is_discord_enabled())
+        ao_app->discord->state_character(f_char.toStdString());
+    }
+
+    current_char = f_char;
+
+    current_emote_page = 0;
+    current_emote = 0;
+
+    if (m_cid == -1)
+      ui_emotes->hide();
+    else
+      ui_emotes->show();
+
+    set_emote_page();
+    set_emote_dropdown();
+
+    if (ao_app->custom_objection_enabled &&
+        (file_exists(ao_app->get_character_path(current_char, "custom.gif")) ||
+        file_exists(ao_app->get_character_path(current_char, "custom.apng"))) &&
+        file_exists(ao_app->get_character_path(current_char, "custom.wav")))
+      ui_custom_objection->show();
+    else
+      ui_custom_objection->hide();
+}
+
 void Courtroom::enter_courtroom(int p_cid)
 { 
-  m_cid = p_cid;
-
-  QString f_char;
-
-  if (m_cid == -1)
-  {
-    if (ao_app->is_discord_enabled())
-      ao_app->discord->state_spectate();
-    f_char = "";
-  }
-  else
-  {
-    f_char = ao_app->get_char_name(char_list.at(m_cid).name);
-
-    if (ao_app->is_discord_enabled())
-      ao_app->discord->state_character(f_char.toStdString());
-  }
-
-  current_char = f_char;
-
-  current_emote_page = 0;
-  current_emote = 0;
-
-  if (m_cid == -1)
-    ui_emotes->hide();
-  else
-    ui_emotes->show();
-
-  set_emote_page();
-  set_emote_dropdown();
+  this->set_character(p_cid);
 
   current_evidence_page = 0;
   current_evidence = 0;
 
   set_evidence_page();
 
-  QString side = ao_app->get_char_side(f_char);
+  QString side = ao_app->get_char_side(current_char);
 
   if (side == "jud")
   {
@@ -1085,7 +1096,6 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
     colour = ao_app->get_color("ooc_default_color", "courtroom_design.ini").name();
   if (p_colour == "1")
     colour = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
-  qDebug() << p_message;
   if(p_message == "Logged in as a moderator.")
   {
       ui_guard->show();
@@ -2955,7 +2965,7 @@ void Courtroom::mod_called(QString p_ip)
   }
 }
 
-void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno)
+void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno, bool witness)
 {
   if (ui_casing->isChecked())
   {
@@ -3674,7 +3684,7 @@ void Courtroom::on_char_select_right_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
-  enter_courtroom(-1);
+  this->set_character(-1);
 
   ui_emotes->hide();
 
@@ -3820,7 +3830,7 @@ void Courtroom::on_casing_clicked()
   }
 }
 
-void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno)
+void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno, bool wit)
 {
   if (ao_app->casing_alerts_enabled)
   {
@@ -3832,6 +3842,7 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool 
     f_packet.append(QString::number(jud));
     f_packet.append(QString::number(jur));
     f_packet.append(QString::number(steno));
+    f_packet.append(QString::number(wit));
 
     ao_app->send_server_packet(new AOPacket("CASEA", f_packet));
     }

@@ -89,15 +89,11 @@ void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
 void AOEvidenceButton::dragLeaveEvent(QMouseEvent *e)
 {
   //QWidget::dragLeaveEvent(e);
-
-  qDebug() << "drag leave event";
 }
 
 void AOEvidenceButton::dragEnterEvent(QMouseEvent *e)
 {
   //QWidget::dragEnterEvent(e);
-
-  qDebug() << "drag enter event";
 }
 
 void AOEvidenceButton::enterEvent(QEvent * e)

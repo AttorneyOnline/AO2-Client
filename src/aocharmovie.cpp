@@ -48,7 +48,6 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   m_movie->setFileName(gif_path);
   m_movie->jumpToFrame(0);
   this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage());
-  qDebug() << "playing file path: " << gif_path;
   this->show();
   this->play_frame_sfx();
   ticker->start(m_movie->nextFrameDelay());

@@ -59,6 +59,7 @@
 #include <QThreadPool>
 #include <QFuture>
 #include <QMetaObject>
+#include <QLayout>
 #include <stack>
 
 class AOApplication;
@@ -194,6 +195,9 @@ public:
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
+  // mfw this didnt fucking exist yet
+  void set_character(int char_id);
+
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
   void list_areas();
@@ -234,7 +238,7 @@ public:
   //Toggles the judge buttons, whether they should appear or not.
   void toggle_judge_buttons(bool is_on);
 
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
+  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno, bool wit);
 
   void check_connection_received();
   void doScreenShake();
@@ -575,7 +579,7 @@ public slots:
 
   void mod_called(QString p_ip);
 
-  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno, bool witness);
 
 private slots:
   void start_chat_ticking();

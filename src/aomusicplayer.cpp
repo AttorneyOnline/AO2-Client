@@ -35,7 +35,6 @@ void AOMusicPlayer::play(QString p_song)
       double time=BASS_ChannelBytes2Seconds(m_stream, len); // the length in seconds
       if(time > 0)
       {
-        qDebug() << "Will loop in " << time << " seconds.";
         music_loop_timer->start(time*1000);
       }
   }
@@ -57,7 +56,6 @@ QString AOMusicPlayer::get_path()
 
 void AOMusicPlayer::restart_loop()
 {
-    qDebug() << "Restarting Music";
     /*
     m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
     if (ao_app->get_audio_output_device() != "default")

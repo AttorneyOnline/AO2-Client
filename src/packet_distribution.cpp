@@ -460,9 +460,24 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (f_contents.size() < 3)
       goto end;
-
-    if (courtroom_constructed)
-      w_courtroom->enter_courtroom(f_contents.at(2).toInt());
+    if(f_contents.size() < 4){
+        if (courtroom_constructed)
+          w_courtroom->enter_courtroom(f_contents.at(2).toInt());
+    }
+    else
+    {
+        if (courtroom_constructed)
+        {
+          if(f_contents.at(3) == "True")
+          {
+            w_courtroom->set_character(f_contents.at(2).toInt());
+          }
+          else
+          {
+            w_courtroom->enter_courtroom(f_contents.at(2).toInt());
+          }
+       }
+    }
   }
   else if (header == "MS")
   {
@@ -577,8 +592,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "CASEA")
   {
-    if (courtroom_constructed && f_contents.size() > 6)
-      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1", f_contents.at(2) == "1", f_contents.at(3) == "1", f_contents.at(4) == "1", f_contents.at(5) == "1");
+    if (courtroom_constructed && f_contents.size() > 7)
+      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1", f_contents.at(2) == "1", f_contents.at(3) == "1", f_contents.at(4) == "1", f_contents.at(5) == "1", f_contents.at(6) == "1");
   }
 
   end:

@@ -253,6 +253,10 @@ void Courtroom::character_loading_finished()
         AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
         AOCharSelectGenerationThreading *char_generate = new AOCharSelectGenerationThreading(this, n, character);
         QThreadPool::globalInstance()->start(char_generate);
+        if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
+        {
+          QThreadPool::globalInstance()->waitForDone();
+        }
     }
     QThreadPool::globalInstance()->waitForDone();
     filter_character_list();
@@ -265,6 +269,10 @@ void Courtroom::filter_character_list()
     {
         AOCharSelectFilterThreading *char_filter = new AOCharSelectFilterThreading(this, i);
         QThreadPool::globalInstance()->start(char_filter);
+        if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
+        {
+          QThreadPool::globalInstance()->waitForDone();
+        }
     }
     QThreadPool::globalInstance()->waitForDone();
 
