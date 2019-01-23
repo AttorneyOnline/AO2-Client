@@ -40,7 +40,7 @@
 #include <QMap>
 #include <QTextBrowser>
 #include <QSpinBox>
-
+#include <QMovie>
 #include <QDebug>
 #include <QScrollBar>
 #include <QRegExp>
@@ -53,7 +53,11 @@
 #include <QPropertyAnimation>
 #include <QTransform>
 #include <QParallelAnimationGroup>
-
+#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QThread>
+#include <QThreadPool>
+#include <QFuture>
 #include <stack>
 
 class AOApplication;
@@ -69,6 +73,16 @@ public:
   void append_music(QString f_music){music_list.append(f_music);}
   void append_area(QString f_area){area_list.append(f_area);}
   void handle_failed_login();
+  QString threading_sfx = "";
+  QString threading_shake = "";
+  QString threading_flash = "";
+  QString threading_prefix = "";
+  //cid and this may differ in cases of ini-editing
+  QString current_char = "";
+  int current_emote = 0;
+  AOApplication *ao_app;
+  void mt_pre_framegetter(int frameNumber);
+  void mt_framegetter(int frameNumber);
   void reset_music_list()
   {
       music_list.clear();
@@ -216,7 +230,6 @@ public:
   ~Courtroom();
 
 private:
-  AOApplication *ao_app;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
@@ -232,7 +245,7 @@ private:
   QPropertyAnimation *screenshake_animation;
   QPropertyAnimation *chatbox_screenshake_animation;
   QParallelAnimationGroup *screenshake_group;
-  QImageReader *frame_emote_checker;
+  QMovie *frame_emote_checker;
   // This is for inline message-colouring.
 
   enum INLINE_COLOURS {
@@ -352,8 +365,6 @@ private:
 
   //character id, which index of the char_list the player is
   int m_cid = -1;
-  //cid and this may differ in cases of ini-editing
-  QString current_char = "";
 
   int objection_state = 0;
   int realization_state = 0;
@@ -373,7 +384,6 @@ private:
   const int button_height = 60;
 
   int current_emote_page = 0;
-  int current_emote = 0;
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;

@@ -23,6 +23,11 @@
 #include <QStringList>
 #include <QColor>
 
+#include <QtConcurrent/QtConcurrent>
+#include <QThread>
+#include <QThreadPool>
+#include <QFuture>
+
 class NetworkManager;
 class Lobby;
 class Courtroom;
