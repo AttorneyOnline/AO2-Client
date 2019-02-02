@@ -106,6 +106,8 @@ private:
     QCheckBox *ui_casing_steno_cb;
     QLabel *ui_casing_cm_lbl;
     QCheckBox *ui_casing_cm_cb;
+    QLabel *ui_casing_wit_lbl;
+    QCheckBox *ui_casing_wit_cb;
     QLabel *ui_casing_cm_cases_lbl;
     QLineEdit *ui_casing_cm_cases_textbox;
 

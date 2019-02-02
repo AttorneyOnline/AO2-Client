@@ -5,9 +5,6 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
   ao_app = p_ao_app;
-  sfx_loop_timer = new QTimer(this);
-  sfx_loop_timer->setSingleShot(true);
-  connect(sfx_loop_timer, SIGNAL(timeout()), this, SLOT(restart_loop()));
 }
 
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
@@ -39,12 +36,13 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
-  sfx_loop_timer->stop();
-  QWORD len=BASS_ChannelGetLength(m_stream, BASS_POS_BYTE); // the length in bytes
-  double time=BASS_ChannelBytes2Seconds(m_stream, len); // the length in seconds
-  if(time > 0 && looping_sfx && ao_app->get_looping_sfx())
+  if(looping_sfx && ao_app->get_looping_sfx())
   {
-    sfx_loop_timer->start(time*1000);
+    BASS_ChannelFlags(m_stream, BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP);
+  }
+  else
+  {
+    BASS_ChannelFlags(m_stream, 0, BASS_SAMPLE_LOOP);
   }
 }
 
@@ -56,18 +54,6 @@ void AOSfxPlayer::setLooping(bool is_looping)
 void AOSfxPlayer::stop()
 {
   BASS_ChannelStop(m_stream);
-  sfx_loop_timer->stop();
-}
-
-void AOSfxPlayer::restart_loop()
-{
-    if(ao_app->get_looping_sfx() && looping_sfx)
-    {
-        QWORD len=BASS_ChannelGetLength(m_stream, BASS_POS_BYTE); // the length in bytes
-        double time=BASS_ChannelBytes2Seconds(m_stream, len); // the length in seconds
-        sfx_loop_timer->start(time*1000);
-        BASS_ChannelPlay(m_stream, true);
-    }
 }
 
 void AOSfxPlayer::set_volume(int p_value)

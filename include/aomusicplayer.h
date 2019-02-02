@@ -26,14 +26,11 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-  QTimer *music_loop_timer;
   int m_volume = 0;
   QString f_path;
 
   HSTREAM m_stream;
 
-private slots:
-  void restart_loop();
 };
 
 #endif // AOMUSICPLAYER_H

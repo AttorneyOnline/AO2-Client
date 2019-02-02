@@ -323,6 +323,9 @@ public:
   // Same for CM.
   bool get_casing_cm_enabled();
 
+  // Same for witnesses.
+  bool get_casing_wit_enabled();
+
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 

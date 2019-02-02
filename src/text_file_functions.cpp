@@ -685,6 +685,12 @@ bool AOApplication::get_casing_steno_enabled()
   return result.startsWith("true");
 }
 
+bool AOApplication::get_casing_wit_enabled()
+{
+  QString result = configini->value("casing_wit_enabled", "false").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::get_casing_cm_enabled()
 {
     QString result = configini->value("casing_cm_enabled", "false").value<QString>();

@@ -467,6 +467,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_casing_layout->setWidget(7, QFormLayout::FieldRole, ui_casing_cm_cb);
 
+    ui_casing_wit_lbl = new QLabel(ui_casing_widget);
+    ui_casing_wit_lbl->setText(tr("Witness:"));
+    ui_casing_wit_lbl->setToolTip(tr("If checked, you will appear amongst the potential "
+                                    "witnesses on the server."));
+
+    ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_wit_lbl);
+
+    ui_casing_wit_cb = new QCheckBox(ui_casing_widget);
+    ui_casing_wit_cb->setChecked(ao_app->get_casing_wit_enabled());
+
+    ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_wit_cb);
+
     // -- CM CASES ANNOUNCEMENTS
 
     ui_casing_cm_cases_lbl = new QLabel(ui_casing_widget);
@@ -474,12 +486,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_cm_cases_lbl->setToolTip(tr("If you're a CM, enter what cases you are "
                                           "willing to host."));
 
-    ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_cm_cases_lbl);
+    ui_casing_layout->setWidget(9, QFormLayout::LabelRole, ui_casing_cm_cases_lbl);
 
     ui_casing_cm_cases_textbox = new QLineEdit(ui_casing_widget);
     ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
 
-    ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
+    ui_casing_layout->setWidget(9, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
 
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);

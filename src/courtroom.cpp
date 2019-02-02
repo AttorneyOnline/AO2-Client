@@ -984,12 +984,10 @@ void Courtroom::list_music()
   for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
   {
     QString i_song = music_list.at(n_song);
-    QString i_song_listname = i_song;
-    i_song_listname = i_song_listname.left(i_song_listname.lastIndexOf("."));
 
     if (i_song.toLower().contains(ui_music_search->text().toLower()))
     {
-      ui_music_list->addItem(i_song_listname);
+      ui_music_list->addItem(i_song);
       music_row_to_number.append(n_song);
 
       QString song_path = ao_app->get_music_path(i_song);
@@ -2825,7 +2823,6 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   QString f_song = f_contents.at(0);
   QString f_song_clear = f_song;
-  f_song_clear = f_song_clear.left(f_song_clear.lastIndexOf("."));
   int n_char = f_contents.at(1).toInt();
 
   if (n_char < 0 || n_char >= char_list.size())
@@ -2865,7 +2862,7 @@ void Courtroom::handle_song(QStringList *p_contents)
         ic_chatlog_history.removeFirst();
       }
 
-      append_ic_text(f_song_clear, str_show, true);
+      append_ic_text(f_song, str_show, true);
       music_player->play(f_song);
     }
   }
@@ -2974,7 +2971,8 @@ void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
         (ao_app->get_casing_prosecution_enabled() && pro) ||
         (ao_app->get_casing_judge_enabled() && jud) ||
         (ao_app->get_casing_juror_enabled() && jur) ||
-        (ao_app->get_casing_steno_enabled() && steno))
+        (ao_app->get_casing_steno_enabled() && steno) ||
+        (ao_app->get_casing_wit_enabled() && witness))
     {
         modcall_player->play(ao_app->get_sfx("case_call"));
         ao_app->alert(this);
@@ -3822,11 +3820,12 @@ void Courtroom::on_casing_clicked()
       f_packet.append(QString::number(ao_app->get_casing_judge_enabled()));
       f_packet.append(QString::number(ao_app->get_casing_juror_enabled()));
       f_packet.append(QString::number(ao_app->get_casing_steno_enabled()));
+      f_packet.append(QString::number(ao_app->get_casing_wit_enabled()));
 
       ao_app->send_server_packet(new AOPacket("SETCASE", f_packet));
     }
     else
-      ao_app->send_server_packet(new AOPacket("SETCASE#\"\"#0#0#0#0#0#0#%"));
+      ao_app->send_server_packet(new AOPacket("SETCASE#\"\"#0#0#0#0#0#0#0#%"));
   }
 }
 

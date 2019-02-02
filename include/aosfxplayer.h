@@ -22,13 +22,10 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-  QTimer *sfx_loop_timer;
 
   int m_volume = 0;
   bool looping_sfx = false;
   HSTREAM m_stream;
-private slots:
-  void restart_loop();
 };
 
 #endif // AOSFXPLAYER_H
