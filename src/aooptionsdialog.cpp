@@ -540,6 +540,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_juror_enabled", ui_casing_jur_cb->isChecked());
     configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
     configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
+    configini->setValue("casing_wit_enabled", ui_casing_wit_cb->isChecked());
     configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
 
     callwordsini->close();
