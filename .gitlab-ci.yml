@@ -107,7 +107,7 @@ deploy windows:
     - docker
     - linux
   script:
-    - sudo apt-get install --no-install-recommends -y zip
+    - apt-get install --no-install-recommends -y zip
 
     - mkdir artifact
     - cd artifact
