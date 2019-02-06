@@ -7,7 +7,7 @@ before_script:
   - echo Current working directory is $(pwd)
   - qmake --version
   - gcc --version
-  - sudo apt-get install --no-install-recommends -y upx zip unzip
+  - apt-get install --no-install-recommends -y upx zip unzip
   - cd scripts
   - ./configure_ubuntu.sh
   - cd ..
