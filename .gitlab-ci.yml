@@ -5,13 +5,7 @@ cache:
 
 before_script:
   - echo Current working directory is $(pwd)
-  - echo Current user is $(whoami)
-  - qmake --version
-  - gcc --version
   - sudo apt-get install --no-install-recommends -y upx zip unzip
-  - cd scripts
-  - ./configure_ubuntu.sh
-  - cd ..
 
 build linux x86_64:
   image: rabits/qt:5.9-desktop
@@ -20,6 +14,13 @@ build linux x86_64:
     - docker
     - linux
   script:
+    - qmake --version
+    - gcc --version
+
+    - cd scripts
+    - ./configure_ubuntu.sh
+    - cd ..
+
     - qmake
     - make -j4
     - upx --lzma -9 --force bin/Attorney_Online
@@ -34,8 +35,18 @@ build windows i686:
     - docker
     - linux
   script:
+    # Extract BASS
+    - mkdir bass
+    - curl http://www.un4seen.com/files/bass24.zip -o bass.zip
+    - unzip bass.zip
+    - cp bass.dll ../../lib
+    - cd ..
+
+    # Build
     - qmake
     - make -j4
+
+    # Post-processing
     - upx --lzma -9 --force bin/Attorney_Online.exe
 
 # Base folder
