@@ -49,6 +49,9 @@ build windows i686:
 
     # Post-processing
     - upx --lzma -9 --force bin/Attorney_Online.exe
+  artifacts:
+    paths:
+      - bin/
 
 # Base folder
 .deploy_base: &deploy_base |
