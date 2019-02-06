@@ -15,7 +15,7 @@ build linux x86_64:
   script:
     - qmake --version
     - gcc --version
-    - sudo apt-get install --no-install-recommends -y upx zip unzip
+    - sudo apt-get install --no-install-recommends -y upx unzip
 
     - cd scripts
     - ./configure_ubuntu.sh
@@ -107,6 +107,8 @@ deploy windows:
     - docker
     - linux
   script:
+    - sudo apt-get install --no-install-recommends -y zip
+
     - mkdir artifact
     - cd artifact
     - *deploy_base
