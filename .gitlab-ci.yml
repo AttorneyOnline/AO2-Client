@@ -109,7 +109,7 @@ deploy windows:
     - linux
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y zip
+    - apt-get install --no-install-recommends -y zip git
 
     - mkdir artifact
     - cd artifact
@@ -122,7 +122,9 @@ deploy windows:
 
     # Zipping
     # -r: recursive; -9: max compression; -l: convert to CR LF
-    - zip -r -9 -l Attorney_Online_$(git describe --tags)_windows_i386.zip .
+    - mkdir ../zip
+    - zip -r -9 -l ../zip/Attorney_Online_$(git describe --tags)_windows_i386.zip .
+    - sha1sum ../zip/*
   artifacts:
     paths:
       - zip/
