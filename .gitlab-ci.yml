@@ -43,7 +43,7 @@ build windows i686:
     - cd ..
 
     # Build
-    - qmake
+    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake
     - make -j4
 
     # Post-processing
