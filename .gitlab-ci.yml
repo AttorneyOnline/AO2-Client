@@ -40,7 +40,7 @@ build windows i686:
     - cd bass
     - curl http://www.un4seen.com/files/bass24.zip -o bass.zip
     - unzip bass.zip
-    - cp bass.dll ../../lib
+    - cp bass.dll ../lib
     - cd ..
 
     # Build
