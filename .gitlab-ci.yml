@@ -66,10 +66,6 @@ build windows i686:
     cp -a ../README.md README.md.txt
     cp -a ../LICENSE.MIT LICENSE.txt
 
-# Shared libraries
-.deploy_libs: &deploy_libs |
-    cp -a ../lib/* .
-
 deploy linux:
   stage: deploy
   dependencies:
@@ -82,9 +78,9 @@ deploy linux:
     - cd artifact
     - *deploy_base
     - *deploy_misc
-    - *deploy_libs
 
     # Platform-specific
+    - cp -a ../lib/*.so .
     - cp -a ../bin/Attorney_Online .
     - echo "#!/bin/sh" >> ./run.sh
     - echo "LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./Attorney_Online" >> ./run.sh
@@ -115,9 +111,9 @@ deploy windows:
     - cd artifact
     - *deploy_base
     - *deploy_misc
-    - *deploy_libs
 
     # Platform-specific
+    - cp -a ../lib/*.dll .
     - cp -a ../bin/Attorney_Online.exe .
 
     # Zipping
