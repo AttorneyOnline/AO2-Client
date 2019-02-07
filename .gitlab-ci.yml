@@ -7,7 +7,7 @@ before_script:
   - echo Current working directory is $(pwd)
 
 build linux x86_64:
-  image: rabits/qt:5.9-desktop
+  image: rabits/qt:5.4-desktop
   stage: build
   tags:
     - docker
