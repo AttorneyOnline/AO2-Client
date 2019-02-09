@@ -13,6 +13,7 @@ build linux x86_64:
     - docker
     - linux
   script:
+    - apt-get update
     - apt-get install --no-install-recommends -y qt5-default clang make git upx unzip
     - qmake --version
     - clang --version
