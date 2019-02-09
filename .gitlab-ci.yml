@@ -14,7 +14,7 @@ build linux x86_64:
     - linux
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y qt5-default clang make git upx unzip
+    - apt-get install --no-install-recommends -y qt5-default clang make git sudo curl upx unzip
     - qmake --version
     - clang --version
 
@@ -22,7 +22,7 @@ build linux x86_64:
     - ./configure_ubuntu.sh
     - cd ..
 
-    - qmake
+    - qmake -spec clang-linux
     - make -j4
     - upx --lzma -9 --force bin/Attorney_Online
   artifacts:
