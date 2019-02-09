@@ -7,15 +7,15 @@ before_script:
   - echo Current working directory is $(pwd)
 
 build linux x86_64:
-  image: rabits/qt:5.9-desktop
+  image: ubuntu
   stage: build
   tags:
     - docker
     - linux
   script:
+    - apt-get install --no-install-recommends -y qt5-default clang make git upx unzip
     - qmake --version
-    - gcc --version
-    - sudo apt-get install --no-install-recommends -y upx unzip
+    - clang --version
 
     - cd scripts
     - ./configure_ubuntu.sh
