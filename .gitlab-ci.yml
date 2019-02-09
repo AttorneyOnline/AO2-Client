@@ -14,7 +14,7 @@ build linux x86_64:
     - linux
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y qt5-default clang make git sudo curl ca-certificates pkg-config upx unzip
+    - apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev clang make git sudo curl ca-certificates pkg-config upx unzip
     - qmake --version
     - clang --version
 
