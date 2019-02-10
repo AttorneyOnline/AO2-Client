@@ -13,7 +13,7 @@ MOC_DIR = $$PWD/build
 SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
 LIBS += -L$$PWD/lib -lbass -ldiscord-rpc
-macx:LIBS += -framework CoreFoundation
+macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
 CONFIG += c++14
 
