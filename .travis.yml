@@ -7,5 +7,5 @@ before_install:
 
 script:
     # XXX: please chmod +x the shell script.
-    - sh ./scripts/macos_build.sh
-    - ./scripts/macos_post_build.sh
+    - bash ./scripts/macos_build.sh
+    - bash ./scripts/macos_post_build.sh
