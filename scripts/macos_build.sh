@@ -10,6 +10,10 @@ cd bass
 curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
 unzip bass.zip
 cp libbass.dylib ../lib
+
+curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
+unzip bassopus.zip
+cp libbassopus.dylib ../lib
 cd ..
 
 mkdir discord-rpc

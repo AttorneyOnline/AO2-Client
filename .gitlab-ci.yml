@@ -29,6 +29,9 @@ build linux x86_64:
     - curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
     - unzip bass.zip
     - cp x64/libbass.so ../lib
+    - curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+    - unzip bassopus.zip
+    - cp x64/libbassopus.so ../lib
     - cd ..
 
     # Extract Discord RPC
@@ -70,6 +73,9 @@ build windows i686:
     - curl http://www.un4seen.com/files/bass24.zip -o bass.zip
     - unzip bass.zip
     - cp bass.dll ../lib
+    - curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+    - unzip bassopus.zip
+    - cp bassopus.dll ../lib
     - cd ..
 
     # Build
