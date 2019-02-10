@@ -2,8 +2,6 @@
 
 DST_FOLDER="./bin/Attorney_Online.app/Contents/Frameworks"
 
-cd ..
-
 mkdir $DST_FOLDER
 
 cp ./lib/libbass.dylib $DST_FOLDER
