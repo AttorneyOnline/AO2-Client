@@ -16,7 +16,7 @@ mkdir discord-rpc
 cd discord-rpc
 curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc_osx.zip
 unzip discord_rpc_osx.zip
-cp discord-rpc/osx-dynamic/lib/libdiscord-rpc.a ../lib
+cp discord-rpc/osx-static/lib/libdiscord-rpc.a ../lib
 cd ..
 
 mkdir qtapng
