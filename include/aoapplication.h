@@ -94,9 +94,9 @@ public:
 
   //////////////////versioning///////////////
 
-  constexpr int get_release() const { return RELEASE; }
-  constexpr int get_major_version() const { return MAJOR_VERSION; }
-  constexpr int get_minor_version() const { return MINOR_VERSION; }
+  const int get_release() const { return RELEASE; }
+  const int get_major_version() const { return MAJOR_VERSION; }
+  const int get_minor_version() const { return MINOR_VERSION; }
   QString get_version_string();
 
   ///////////////////////////////////////////
