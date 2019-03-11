@@ -9,6 +9,7 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
+  #ifdef BASSAUDIO
   BASS_ChannelStop(m_stream);
   
   QString misc_path = "";
@@ -36,16 +37,21 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
+#endif
 }
 
 void AOSfxPlayer::stop()
 {
+  #ifdef BASSAUDIO
   BASS_ChannelStop(m_stream);
+  #endif
 }
 
 void AOSfxPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
   float volume = p_value / 100.0f;
+  #ifdef BASSAUDIO
   BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
+  #endif
 }

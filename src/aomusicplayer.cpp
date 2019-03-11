@@ -8,11 +8,14 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 
 AOMusicPlayer::~AOMusicPlayer()
 {
+  #ifdef BASSAUDIO
   BASS_ChannelStop(m_stream);
+  #endif
 }
 
 void AOMusicPlayer::play(QString p_song)
 {
+  #ifdef BASSAUDIO
   BASS_ChannelStop(m_stream);
 
   QString f_path = ao_app->get_music_path(p_song);
@@ -24,11 +27,14 @@ void AOMusicPlayer::play(QString p_song)
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
+#endif
 }
 
 void AOMusicPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
   float volume = m_volume / 100.0f;
+  #ifdef BASSAUDIO
   BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
+  #endif
 }
