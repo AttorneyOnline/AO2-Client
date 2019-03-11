@@ -14,15 +14,21 @@ SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
 
 
-LIBS += -L$$PWD/lib -ldiscord-rpc
+LIBS += -L$$PWD/lib
 
-#AUDIO = BASS
+DISCORD = NO
 
-equals(AUDIO, "BASS") {
-LIBS += -L$$PWD/lib -lbass
+equals(DISCORD, "YES") {
+LIBS += -ldiscord-rpc
+DEFINES += DISCORD
 }
 
-CONFIG += c++14
+AUDIO += NO
+
+equals(AUDIO, "BASSAUDIO") {
+LIBS += -lbass
+DEFINES += BASSAUDIO
+}
 
 RESOURCES += resources.qrc
 
