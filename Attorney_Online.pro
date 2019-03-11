@@ -12,7 +12,15 @@ MOC_DIR = $$PWD/build
 
 SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
-LIBS += -L$$PWD/lib -lbass -ldiscord-rpc
+
+
+LIBS += -L$$PWD/lib -ldiscord-rpc
+
+#AUDIO = BASS
+
+equals(AUDIO, "BASS") {
+LIBS += -L$$PWD/lib -lbass
+}
 
 CONFIG += c++14
 
