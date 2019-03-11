@@ -30,6 +30,8 @@ LIBS += -lbass
 DEFINES += BASSAUDIO
 }
 
+CONFIG += c++14
+
 RESOURCES += resources.qrc
 
 win32:RC_ICONS = resource/logo.ico
