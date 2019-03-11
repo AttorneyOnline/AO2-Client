@@ -1,4 +1,4 @@
-QT += core gui widgets multimedia network
+QT += core gui widgets network
 
 TARGET = Attorney_Online
 TEMPLATE = app
