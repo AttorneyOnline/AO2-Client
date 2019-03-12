@@ -4,7 +4,6 @@ namespace AttorneyOnline {
 
 Discord::Discord()
 {
-  #ifdef DISCORD
   DiscordEventHandlers handlers;
   std::memset(&handlers, 0, sizeof(handlers));
   handlers = {};
@@ -19,19 +18,15 @@ Discord::Discord()
   };
   qInfo() << "Initializing Discord RPC";
   Discord_Initialize(APPLICATION_ID, &handlers, 1, nullptr);
-  #endif
 }
 
 Discord::~Discord()
 {
-  #ifdef DISCORD
   Discord_Shutdown();
-  #endif
 }
 
 void Discord::state_lobby()
 {
-  #ifdef DISCORD
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
@@ -41,13 +36,12 @@ void Discord::state_lobby()
   presence.state = "In Lobby";
   presence.details = "Idle";
   Discord_UpdatePresence(&presence);
-  #endif
 }
 
 void Discord::state_server(std::string name, std::string server_id)
 {
   qDebug() << "Discord RPC: Setting server state";
-  #ifdef DISCORD
+
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
@@ -65,7 +59,6 @@ void Discord::state_server(std::string name, std::string server_id)
   this->server_name = name;
   this->timestamp = timestamp;
   Discord_UpdatePresence(&presence);
-  #endif
 }
 
 void Discord::state_character(std::string name)
@@ -74,7 +67,7 @@ void Discord::state_character(std::string name)
   auto name_friendly = QString(name.c_str()).replace('_', ' ').toStdString();
   const std::string playing_as = "Playing as " + name_friendly;
   qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str() << ")";
-  #ifdef DISCORD
+
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
@@ -88,13 +81,12 @@ void Discord::state_character(std::string name)
   presence.smallImageKey = name_internal.c_str();
   // presence.smallImageText = name_internal.c_str();
   Discord_UpdatePresence(&presence);
-  #endif
 }
 
 void Discord::state_spectate()
 {
   qDebug() << "Discord RPC: Setting specator state";
-  #ifdef DISCORD
+
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
   presence.largeImageKey = "ao2-logo";
@@ -106,7 +98,6 @@ void Discord::state_spectate()
 
   presence.state = "Spectating";
   Discord_UpdatePresence(&presence);
-  #endif
 }
 
 }
