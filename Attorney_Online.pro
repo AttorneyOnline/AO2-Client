@@ -16,18 +16,22 @@ HEADERS += $$files($$PWD/include/*.h)
 
 LIBS += -L$$PWD/lib
 
-DISCORD = NO
+#DEFINES += DISCORD
 
-equals(DISCORD, "YES") {
+contains(DEFINES, DISCORD) {
 LIBS += -ldiscord-rpc
-DEFINES += DISCORD
 }
 
-AUDIO += NO
+#DEFINES += BASSAUDIO
 
-equals(AUDIO, "BASSAUDIO") {
+contains(DEFINES, BASSAUDIO) {
 LIBS += -lbass
-DEFINES += BASSAUDIO
+}
+
+#DEFINES += QTAUDIO
+
+contains(DEFINES, QTAUDIO) {
+QT += multimedia
 }
 
 CONFIG += c++14
