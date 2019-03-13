@@ -79,11 +79,14 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   else
     f_path = sound_path;
 
+  if (file_exists(f_path)) //if its missing, it will glitch out
+  {
   m_sfx.setSource(QUrl::fromLocalFile(f_path));
 
   set_volume(m_volume);
 
   m_sfx.play();
+  }
 }
 
 void AOSfxPlayer::stop()
