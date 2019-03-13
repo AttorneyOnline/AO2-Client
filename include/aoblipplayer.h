@@ -13,7 +13,7 @@
 #include <string.h>
 #include <QDebug>
 
-#if defined(BASSAUDIO)
+
 class AOBlipPlayer
 {
 public:
@@ -30,43 +30,11 @@ private:
   AOApplication *ao_app;
 
   int m_volume;
+  #if defined(BASSAUDIO)
   HSTREAM m_stream_list[5];
-};
-#elif defined(QTAUDIO)
-class AOBlipPlayer
-{
-public:
-  AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
-
-  void set_blips(QString p_sfx);
-  void blip_tick();
-  void set_volume(int p_volume);
-
-  int m_cycle = 0;
-
-private:
+  #elif defined(QTAUDIO)
   QSoundEffect m_blips;
-  QWidget *m_parent;
-  AOApplication *ao_app;
-
-  int m_volume;
-  //HSTREAM m_stream_list[5];
+  #endif
 };
-#else
-class AOBlipPlayer
-{
-public:
-  AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
-
-  void set_blips(QString p_sfx);
-  void blip_tick();
-  void set_volume(int p_volume);
-
-private:
-  QWidget *m_parent;
-  AOApplication *ao_app;
-};
-#endif
-
 
 #endif // AOBLIPPLAYER_H

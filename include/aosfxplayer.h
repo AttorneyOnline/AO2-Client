@@ -13,7 +13,6 @@
 #include <string.h>
 #include <QDebug>
 
-#if defined(BASSAUDIO)
 class AOSfxPlayer
 {
 public:
@@ -26,43 +25,12 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-
-  int m_volume = 0;
+  #if defined(BASSAUDIO)
   HSTREAM m_stream;
-};
-#elif defined(QTAUDIO)
-class AOSfxPlayer
-{
-public:
-  AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
-
-  void play(QString p_sfx, QString p_char = "", QString shout = "");
-  void stop();
-  void set_volume(int p_volume);
-
-private:
+  #elif defined(QTAUDIO)
   QSoundEffect m_sfx;
-  QWidget *m_parent;
-  AOApplication *ao_app;
-
+  #endif
   int m_volume = 0;
 };
-#else
-class AOSfxPlayer
-{
-public:
-  AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
-
-  void play(QString p_sfx, QString p_char = "", QString shout = "");
-  void stop();
-  void set_volume(int p_volume);
-
-private:
-  QWidget *m_parent;
-  AOApplication *ao_app;
-
-  int m_volume = 0;
-};
-#endif
 
 #endif // AOSFXPLAYER_H
