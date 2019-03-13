@@ -81,10 +81,7 @@ void AOBlipPlayer::blip_tick()
 void AOBlipPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
-
-  float volume = p_value / 100.0f;
-
-  m_blips.setVolume(volume);
+  m_blips.setVolume(m_volume);
 }
 #else //No audio
 AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)

@@ -94,8 +94,7 @@ void AOSfxPlayer::stop()
 void AOSfxPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
-  float volume = p_value / 100.0f;
-  m_sfx.setVolume(volume);
+  m_sfx.setVolume(m_volume);
 }
 #else
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
