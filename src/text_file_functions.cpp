@@ -443,8 +443,9 @@ QString AOApplication::get_chat(QString p_char)
 QString AOApplication::get_char_shouts(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "shouts", "Options");
-
-  return f_result;
+  if (f_result == "")
+    return "default";
+  else return f_result;
 }
 
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
