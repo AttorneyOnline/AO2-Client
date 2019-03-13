@@ -71,10 +71,6 @@ void AOBlipPlayer::blip_tick()
   if (m_cycle == 5)
     m_cycle = 0;
 
-  //HSTREAM f_stream = m_stream_list[f_cycle];
-  //if (ao_app->get_audio_output_device() != "default")
-    //BASS_ChannelSetDevice(f_stream, BASS_GetDevice());
-  //BASS_ChannelPlay(f_stream, false);
   m_blips.play();
 }
 
