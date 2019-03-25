@@ -1563,19 +1563,16 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     case 1:
       ui_vp_objection->play("holdit", f_char, f_custom_theme);
       objection_player->play("holdit.wav", f_char, f_custom_theme);
-      this->doScreenShake();
       break;
     case 2:
       ui_vp_objection->play("objection", f_char, f_custom_theme);
       objection_player->play("objection.wav", f_char, f_custom_theme);
-      this->doScreenShake();
       if(ao_app->get_objectmusic())
           music_player->kill_loop();
       break;
     case 3:
       ui_vp_objection->play("takethat", f_char, f_custom_theme);
       objection_player->play("takethat.wav", f_char, f_custom_theme);
-      this->doScreenShake();
       break;
     //case 4 is AO2 only
     case 4:
