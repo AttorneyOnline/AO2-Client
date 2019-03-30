@@ -1,7 +1,12 @@
+stages:
+  - build
+  - deploy
+  - publish
+
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-  - lib/
+    - lib/
 
 before_script:
   - echo Current working directory is $(pwd)
@@ -53,7 +58,7 @@ build linux x86_64:
     # Build
     - qmake -spec linux-clang
     - make -j4
-    
+
     # Post-processing
     - upx --lzma -9 --force bin/Attorney_Online
   artifacts:
@@ -101,7 +106,7 @@ build windows i686:
     cp -a ../README.md README.md.txt
     cp -a ../LICENSE.MIT LICENSE.txt
 
-deploy linux:
+deploy linux x86_64:
   stage: deploy
   dependencies:
     - build linux x86_64
@@ -124,13 +129,13 @@ deploy linux:
     # Zipping
     # zip -r -9 -l Attorney_Online_$(git describe --tags)_linux_x86_64.zip .
     - mkdir ../zip
-    - tar cavf ../zip/Attorney_Online_$(git describe --tags)_x64.tar.xz *
+    - tar cavf ../zip/Attorney_Online_$(git describe --tags)_linux_x64.tar.xz *
     - sha1sum ../zip/*
   artifacts:
     paths:
       - zip/
 
-deploy windows:
+deploy windows i686:
   image: ubuntu
   stage: deploy
   dependencies:
@@ -154,8 +159,34 @@ deploy windows:
     # Zipping
     # -r: recursive; -9: max compression; -l: convert to CR LF
     - mkdir ../zip
-    - zip -r -9 -l ../zip/Attorney_Online_$(git describe --tags)_windows_i386.zip .
+    - zip -r -9 -l ../zip/Attorney_Online_$(git describe --tags)_windows_x86.zip .
     - sha1sum ../zip/*
   artifacts:
     paths:
       - zip/
+
+publish linux x86_64:
+  image: ubuntu
+  stage: publish
+  dependencies:
+    - deploy linux x86_64
+  when: manual
+  script:
+    - cd zip
+    - ../scripts/wasabi.sh
+  variables:
+    MANIFEST: program_linux_x86_64.json
+    ARTIFACT_SUFFIX: _linux_x64.tar.xz
+
+publish windows i686:
+  image: ubuntu
+  stage: publish
+  dependencies:
+    - deploy windows i686
+  when: manual
+  script:
+    - cd zip
+    - ../scripts/wasabi.sh
+  variables:
+    MANIFEST: program_winnt_i386.json
+    ARTIFACT_SUFFIX: _windows_x86.zip
