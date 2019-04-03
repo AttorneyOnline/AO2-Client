@@ -56,7 +56,7 @@ if [[ -n $ARCHIVE_FULL ]]; then
     export ARCHIVE_FULL_ARG="-f ${ARCHIVE_FULL}"
 fi
 
-if [[ -v $EXECUTABLE ]]; then
+if [[ -v EXECUTABLE ]]; then
     export EXECUTABLE_ARG="-e ${EXECUTABLE}"
 fi
 
