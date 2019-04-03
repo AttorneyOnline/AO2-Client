@@ -40,11 +40,14 @@ argParser.addArgument([ "-e", "--executable" ], {
 const {
     manifestFile,
     version,
-    fullZipFile,
-    incremental,
-    executable
+    fullZipFileArgs,
+    incrementalArgs,
+    executableArgs
 } = argParser.parseArgs();
-const [incrementalZipFile, deletionsFile] = incremental || [];
+
+const [incrementalZipFile, deletionsFile] = incrementalArgs || [];
+const [fullZipFile] = fullZipFileArgs || [];
+const [executable] = executableArgs || [];
 
 const manifest = JSON.parse(fs.readFileSync(manifestFile));
 
@@ -71,7 +74,7 @@ manifest.versions = [{
                 .digest("hex")
         }
     ] : undefined,
-    update: incremental ? [
+    update: incrementalArgs ? [
         ...deleteActions,
         {
             action: "dl",
