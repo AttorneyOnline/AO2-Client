@@ -56,13 +56,13 @@ if [[ -n $ARCHIVE_FULL ]]; then
     export ARCHIVE_FULL_ARG="-f ${ARCHIVE_FULL}"
 fi
 
-if [[ -n $EXECUTABLE ]]; then
+if [[ -v $EXECUTABLE ]]; then
     export EXECUTABLE_ARG="-e ${EXECUTABLE}"
 fi
 
 ${S3_COPY} ${S3_MANIFESTS}/${MANIFEST} .
 node $(dirname $0)/update_manifest.js ${MANIFEST} ${VERSION} \
-    ${ARCHIVE_FULL_ARG} ${ARCHIVE_INCR_ARG} ${EXECUTABLE}
+    ${ARCHIVE_FULL_ARG} ${ARCHIVE_INCR_ARG} ${EXECUTABLE_ARG}
 
 if [[ -n $ARCHIVE_INCR_ARG ]]; then
     ${S3_COPY} ${ARCHIVE_INCR} ${S3_ARCHIVES}
