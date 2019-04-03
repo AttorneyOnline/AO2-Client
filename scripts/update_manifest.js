@@ -26,15 +26,15 @@ argParser.addArgument("version", {
 });
 argParser.addArgument([ "-f", "--full" ], {
     metavar: "<full zip file>", type: isFile, nargs: 1,
-    dest: "fullZipFile"
+    dest: "fullZipFileArgs"
 });
 argParser.addArgument([ "-i", "--incremental" ], {
-    type: isFile, nargs: 2, dest: "incremental",
+    type: isFile, nargs: 2, dest: "incrementalArgs",
     metavar: ["<incremental zip file>", "<file containing list of deleted files>"]
 });
 argParser.addArgument([ "-e", "--executable" ], {
     metavar: "[executable file]", nargs: 1,
-    dest: "executable"
+    dest: "executableArgs"
 });
 
 const {
@@ -49,6 +49,12 @@ const [incrementalZipFile, deletionsFile] = incrementalArgs || [];
 const [fullZipFile] = fullZipFileArgs || [];
 const [executable] = executableArgs || [];
 
+// Do one final check
+if (!incrementalZipFile && !fullZipFile) {
+    console.error("No download archive specified! Abort.");
+    process.exit(1);
+}
+
 const manifest = JSON.parse(fs.readFileSync(manifestFile));
 
 const deleteActions = deletionsFile ? fs.readFileSync(deletionsFile)
@@ -61,7 +67,7 @@ const deleteActions = deletionsFile ? fs.readFileSync(deletionsFile)
 
 const urlBase = "https://s3.wasabisys.com/ao-downloads/";
 
-manifest.versions = [{
+const versionEntry = {
     version,
     executable,
     prev: manifest.versions[0] ? manifest.versions[0].version : undefined,
@@ -84,6 +90,18 @@ manifest.versions = [{
                 .digest("hex")
         }
     ] : undefined
-}, ...manifest.versions];
+};
+
+const existingVersion = manifest.versions.filter(v => v.version == version);
+if (existingVersion) {
+    console.warn(`Warning: version ${version} already exists. Adding new values.`);
+
+    // Don't overwrite prev - it will cause headaches
+    delete versionEntry.prev;
+
+    Object.assign(existingVersion, versionEntry);
+} else {
+    manifest.versions = [versionEntry, ...manifest.versions];
+}
 
 fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 4));
