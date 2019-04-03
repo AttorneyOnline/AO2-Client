@@ -8,6 +8,7 @@
 #   ARCHIVE_FULL: name of the full archive (if desired)
 #   ARCHIVE_INCR: name of the incremental archive (if desired)
 #   VERSION: name of the new version
+#   EXECUTABLE: name of the executable (if program manifest)
 
 
 # -E: inherit ERR trap by shell functions
@@ -25,11 +26,9 @@ export S3_COPY="aws s3 cp --endpoint-url=https://s3.wasabisys.com"
 export S3_MANIFESTS="s3://ao-manifests"
 export S3_ARCHIVES="s3://ao-downloads"
 
-#export VERSION=$(git describe --tags)
-#export ARCHIVE_FULL="vanilla_full_${VERSION}_${ARTIFACT_SUFFIX}"
 export ARCHIVE_FULL_ARG=""
-#export ARCHIVE_INCR="vanilla_update_${VERSION}_${ARTIFACT_SUFFIX}"
 export ARCHIVE_INCR_ARG=""
+export EXECUTABLE_ARG=""
 
 export LAST_TAGGED_VERSION=$(git rev-list --tags --skip=1 --max-count=1)
 echo "Previous tagged version: ${LAST_TAGGED_VERSION}"
@@ -57,9 +56,13 @@ if [[ -n $ARCHIVE_FULL ]]; then
     export ARCHIVE_FULL_ARG="-f ${ARCHIVE_FULL}"
 fi
 
+if [[ -n $EXECUTABLE ]]; then
+    export EXECUTABLE_ARG="-e ${EXECUTABLE}"
+fi
+
 ${S3_COPY} ${S3_MANIFESTS}/${MANIFEST} .
 node $(dirname $0)/update_manifest.js ${MANIFEST} ${VERSION} \
-    ${ARCHIVE_FULL_ARG} ${ARCHIVE_INCR_ARG}
+    ${ARCHIVE_FULL_ARG} ${ARCHIVE_INCR_ARG} ${EXECUTABLE}
 
 if [[ -n $ARCHIVE_INCR_ARG ]]; then
     ${S3_COPY} ${ARCHIVE_INCR} ${S3_ARCHIVES}

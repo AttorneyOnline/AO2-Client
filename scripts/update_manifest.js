@@ -41,9 +41,10 @@ const {
     manifestFile,
     version,
     fullZipFile,
-    incremental: [incrementalZipFile, deletionsFile],
+    incremental,
     executable
 } = argParser.parseArgs();
+const [incrementalZipFile, deletionsFile] = incremental || [];
 
 const manifest = JSON.parse(fs.readFileSync(manifestFile));
 
@@ -60,7 +61,7 @@ const urlBase = "https://s3.wasabisys.com/ao-downloads/";
 manifest.versions = [{
     version,
     executable,
-    prev: manifest.version[0] ? manifest.version[0].version : undefined,
+    prev: manifest.versions[0] ? manifest.versions[0].version : undefined,
     full: fullZipFile ? [
         {
             action: "dl",
