@@ -42,7 +42,7 @@ if [[ -n $ARCHIVE_INCR && -n $LAST_TAGGED_VERSION ]]; then
         grep "delete mode" | cut -d' ' -f 5- > ${DELETIONS_FILE}
 
     # Get added/modified files
-    git log --name-only --oneline --diff-filter=d ec5c..HEAD | \
+    git log --name-only --oneline --diff-filter=d ${LAST_TAGGED_VERSION}..HEAD | \
         grep -v -E "^[0-9a-f]{7} " | sort -u | zip ${ARCHIVE_INCR} -@
 
     export ARCHIVE_INCR_ARG="-i ${ARCHIVE_INCR} ${DELETIONS_FILE}"
