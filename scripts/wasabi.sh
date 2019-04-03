@@ -5,6 +5,7 @@
 # Requires:
 #   MANIFEST: name of the manifest file
 #   S3_ACCESS_KEY, S3_SECRET_KEY: S3 credentials
+#   S3_MANIFESTS, S3_ARCHIVES: S3 paths to manifests and downloads
 #   ARCHIVE_FULL: name of the full archive (if desired)
 #   ARCHIVE_INCR: name of the incremental archive (if desired)
 #   VERSION: name of the new version
@@ -23,8 +24,6 @@ aws configure set aws_secret_access_key ${S3_SECRET_KEY}
 aws configure set default.region us-east-1
 
 export S3_COPY="aws s3 cp --endpoint-url=https://s3.wasabisys.com"
-export S3_MANIFESTS="s3://ao-manifests"
-export S3_ARCHIVES="s3://ao-downloads"
 
 export ARCHIVE_FULL_ARG=""
 export ARCHIVE_INCR_ARG=""
