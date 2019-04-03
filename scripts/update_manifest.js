@@ -58,6 +58,8 @@ if (!incrementalZipFile && !fullZipFile) {
 const manifest = JSON.parse(fs.readFileSync(manifestFile));
 
 const deleteActions = deletionsFile ? fs.readFileSync(deletionsFile)
+    .toString()
+    .trim()
     .split("\n").map(file => {
         // XXX: This does not delete empty directories. Finding them would
         // actually be a substantial amount of work because Git does not
