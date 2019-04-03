@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const crypto = require("crypto");
+const path = require("path");
 const ArgumentParser = require("argparse").ArgumentParser;
 
 function isFile(file) {
@@ -63,7 +64,7 @@ manifest.versions = [{
     full: fullZipFile ? [
         {
             action: "dl",
-            url: urlBase + encodeURIComponent(fullZipFile),
+            url: urlBase + encodeURIComponent(path.basename(fullZipFile)),
             hash: crypto.createHash("sha1")
                 .update(fs.readFileSync(fullZipFile))
                 .digest("hex")
@@ -73,7 +74,7 @@ manifest.versions = [{
         ...deleteActions,
         {
             action: "dl",
-            url: urlBase + encodeURIComponent(incrementalZipFile),
+            url: urlBase + encodeURIComponent(path.basename(incrementalZipFile)),
             hash: crypto.createHash("sha1")
                 .update(fs.readFileSync(incrementalZipFile))
                 .digest("hex")
