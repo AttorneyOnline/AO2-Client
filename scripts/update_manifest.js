@@ -92,14 +92,17 @@ const versionEntry = {
     ] : undefined
 };
 
-const existingVersion = manifest.versions.filter(v => v.version == version);
-if (existingVersion) {
+console.log("Generated version entry:", versionEntry);
+
+const existingVersions = manifest.versions.filter(v => v.version == version);
+if (existingVersions.length > 0) {
     console.warn(`Warning: version ${version} already exists. Adding new values.`);
 
     // Don't overwrite prev - it will cause headaches
     delete versionEntry.prev;
 
-    Object.assign(existingVersion, versionEntry);
+    Object.assign(existingVersions[0], versionEntry);
+    console.log("Merged version entry:", existingVersions[0]);
 } else {
     manifest.versions = [versionEntry, ...manifest.versions];
 }
