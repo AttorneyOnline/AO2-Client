@@ -38,7 +38,7 @@ if [[ -n $ARCHIVE_INCR && -n $LAST_TAGGED_VERSION ]]; then
 
     # Get all files
     export CHANGES_FILE="changes.txt"
-    git diff --summary ${LAST_TAGGED_VERSION}..HEAD > ${CHANGES_FILE}
+    git diff --name-status ${LAST_TAGGED_VERSION}..HEAD > ${CHANGES_FILE}
 
     # Get added/modified files
     git diff --name-only --diff-filter=dr ${LAST_TAGGED_VERSION}..HEAD | \
