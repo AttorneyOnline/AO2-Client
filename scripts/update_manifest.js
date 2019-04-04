@@ -30,7 +30,7 @@ argParser.addArgument([ "-f", "--full" ], {
 });
 argParser.addArgument([ "-i", "--incremental" ], {
     type: isFile, nargs: 2, dest: "incrementalArgs",
-    metavar: ["<incremental zip file>", "<file containing list of deleted files>"]
+    metavar: ["<incremental zip file>", "<file containing list of changed files>"]
 });
 argParser.addArgument([ "-e", "--executable" ], {
     metavar: "[executable file]", nargs: 1,
@@ -45,7 +45,7 @@ const {
     executableArgs
 } = argParser.parseArgs();
 
-const [incrementalZipFile, deletionsFile] = incrementalArgs || [];
+const [incrementalZipFile, changesFile] = incrementalArgs || [];
 const [fullZipFile] = fullZipFileArgs || [];
 const [executable] = executableArgs || [];
 
@@ -55,17 +55,56 @@ if (!incrementalZipFile && !fullZipFile) {
     process.exit(1);
 }
 
+// Do a quick litmus test to prevent deleting everything incorrectly
+if (changesFile && !fs.existsSync("base")) {
+    console.error("The working directory must be set to an " +
+                  "asset folder in order for deleted directories " +
+                  "to be calculated correctly. Abort.");
+    process.exit(1);
+}
+
 const manifest = JSON.parse(fs.readFileSync(manifestFile));
 
-const deleteActions = deletionsFile ? fs.readFileSync(deletionsFile)
+const dirsDeleted = new Set();
+const specialActions = changesFile ?
+    fs.readFileSync(changesFile)
     .toString()
     .trim()
-    .split("\n").map(file => {
-        // XXX: This does not delete empty directories. Finding them would
-        // actually be a substantial amount of work because Git does not
-        // give us a good way of finding directories that were deleted.
-        return { action: "delete", target: file };
-    }) : [];
+    .split("\n")
+    .map(line => line.split("\t"))
+    .map(([mode, target, source]) => {
+        switch (mode[0]) {
+            case "D": // Deleted
+                // Check if the folder exists relative to the working
+                // directory, and if not, add it to the dirsDeleted list.
+                // Keep going up the tree to see how many directories were
+                // deleted.
+                let dir = path.dirname(target);
+                while (!dirsDeleted.has(dir) && !fs.existsSync(dir)) {
+                    dirsDeleted.add(dir);
+                    dir = path.dirname(dir);
+                }
+
+                return { action: "delete", target };
+            case "R": // Renamed
+                // NOTE: Make sure that the launcher's implementation of
+                // the move action also creates directories when needed.
+                return { action: "move", source, target};
+            default:
+                return null;
+        }
+    })
+    // Remove ignored file mode changes
+    .filter(action => action !== null)
+    // Create actions based on directories to be deleted.
+    // Always have deeper directories first, to guarantee that deleting
+    // higher-level directories will succeed.
+    + Array.from(dirsDeleted.values())
+        .sort((a, b) => b.split("/").length - a.split("/").length)
+        .map(dir => {
+            return { action: "deleteDir", target: dir };
+        })
+    : [];
 
 const urlBase = "https://s3.wasabisys.com/ao-downloads/";
 
@@ -83,7 +122,7 @@ const versionEntry = {
         }
     ] : undefined,
     update: incrementalArgs ? [
-        ...deleteActions,
+        ...specialActions,
         {
             action: "dl",
             url: urlBase + encodeURIComponent(path.basename(incrementalZipFile)),

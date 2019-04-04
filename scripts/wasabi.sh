@@ -36,16 +36,15 @@ echo "Current tagged version: ${VERSION}"
 if [[ -n $ARCHIVE_INCR && -n $LAST_TAGGED_VERSION ]]; then
     echo "Incremental archive: ${ARCHIVE_INCR}"
 
-    # Get deleted files
-    export DELETIONS_FILE="deletions.txt"
-    git log --diff-filter=D --summary ${LAST_TAGGED_VERSION}..HEAD | \
-        grep "delete mode" | cut -d' ' -f 5- > ${DELETIONS_FILE}
+    # Get all files
+    export CHANGES_FILE="changes.txt"
+    git diff --summary ${LAST_TAGGED_VERSION}..HEAD > ${CHANGES_FILE}
 
     # Get added/modified files
-    git log --name-only --oneline --diff-filter=d ${LAST_TAGGED_VERSION}..HEAD | \
-        grep -v -E "^[0-9a-f]{7} " | sort -u | zip ${ARCHIVE_INCR} -@
+    git diff --name-only --diff-filter=dr ${LAST_TAGGED_VERSION}..HEAD | \
+        zip ${ARCHIVE_INCR} -@
 
-    export ARCHIVE_INCR_ARG="-i ${ARCHIVE_INCR} ${DELETIONS_FILE}"
+    export ARCHIVE_INCR_ARG="-i ${ARCHIVE_INCR} ${CHANGES_FILE}"
 elif [[ -n $ARCHIVE_INCR && -z $LAST_TAGGED_VERSION ]]; then
     echo "Incremental archive was requested, but there is no previous version"
 fi
