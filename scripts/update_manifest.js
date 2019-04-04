@@ -99,11 +99,11 @@ const specialActions = changesFile ?
     // Create actions based on directories to be deleted.
     // Always have deeper directories first, to guarantee that deleting
     // higher-level directories will succeed.
-    + Array.from(dirsDeleted.values())
+    .concat(Array.from(dirsDeleted.values())
         .sort((a, b) => b.split("/").length - a.split("/").length)
         .map(dir => {
             return { action: "deleteDir", target: dir };
-        })
+        }))
     : [];
 
 const urlBase = "https://s3.wasabisys.com/ao-downloads/";
