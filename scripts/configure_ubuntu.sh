@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
 #assumes a somewhat recent 64-bit ubuntu
 

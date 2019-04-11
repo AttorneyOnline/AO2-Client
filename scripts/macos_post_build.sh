@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
 DST_FOLDER="./bin/Attorney_Online.app/Contents/Frameworks"
 
