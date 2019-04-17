@@ -108,7 +108,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   }
   else if (header == "DOOM")
   {
-    call_notice("You have been exiled from AO."
+    call_notice("You have been exiled from AO.\n"
                 "Have a nice day.");
     destruct_courtroom();
     destruct_lobby();
@@ -375,15 +375,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     bool musics_time = false;
     int areas = 0;
 
-    for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
+    QVector<track_type> music_list;
+    QVector<area_type> area_list;
+
+    for (int n_element = 0 ; n_element < f_contents.size() - 1; n_element += 2)
     {
       if (f_contents.at(n_element).toInt() != loaded_music)
         break;
 
-      if (n_element == f_contents.size() - 1)
-        break;
+      bool ok = false;
+      int f_id = f_contents[n_element].toInt(&ok);
+      if (!ok)
+        f_id = loaded_music;
 
-      QString f_music = f_contents.at(n_element + 1);
+      QString f_music = f_contents[n_element + 1];
 
       ++loaded_music;
 
@@ -391,37 +396,63 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       if (musics_time)
       {
-          w_courtroom->append_music(f_music);
+        track_type track;
+        track.id = loaded_music;
+        track.name = f_music;
+
+        music_list.append(track);
       }
       else
       {
-          if (f_music.endsWith(".wav") ||
-                  f_music.endsWith(".mp3") ||
-                  f_music.endsWith(".mp4") ||
-                  f_music.endsWith(".ogg") ||
-                  f_music.endsWith(".opus"))
+        for (QString format : {".wav", ".mp3", ".ogg", ".opus"})
+        {
+          if (f_contents[n_element].endsWith(format))
           {
-              musics_time = true;
-              areas--;
-              w_courtroom->fix_last_area();
-              w_courtroom->append_music(f_music);
+            musics_time = true;
+            break;
           }
-          else
-          {
-              w_courtroom->append_area(f_music);
-              areas++;
-          }
-      }
+        }
 
-      for (int area_n = 0; area_n < areas; area_n++)
-      {
-          w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+        if (musics_time)
+        {
+          if (!area_list.isEmpty())
+          {
+            area_type incorrect_area = area_list.takeLast();
+            track_type track;
+            track.id = incorrect_area.id;
+            track.name = incorrect_area.name;
+            music_list.append(track);
+          }
+
+          track_type track;
+          track.id = loaded_music;
+          track.name = f_music;
+
+          music_list.append(track);
+          areas--;
+        }
+        else
+        {
+          area_type area;
+          area.id = loaded_music;
+          area.name = f_music;
+          area.players = 0;
+          area.status = "Unknown";
+          area.cm = "Unknown";
+          area.locked = "Unknown";
+
+          area_list.append(area);
+          areas++;
+        }
       }
 
       int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
       int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
+
+    w_courtroom->set_music(music_list);
+    w_courtroom->set_areas(area_list);
 
     QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
     send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
@@ -478,6 +509,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     bool musics_time = false;
     int areas = 0;
 
+    QVector<track_type> music_list;
+    QVector<area_type> area_list;
+
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
       ++loaded_music;
@@ -486,37 +520,63 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       if (musics_time)
       {
-          w_courtroom->append_music(f_contents.at(n_element));
+        track_type track;
+        track.id = n_element;
+        track.name = f_contents[n_element];
+
+        music_list.append(track);
       }
       else
       {
-          if (f_contents.at(n_element).endsWith(".wav") ||
-                  f_contents.at(n_element).endsWith(".mp3") ||
-                  f_contents.at(n_element).endsWith(".mp4") ||
-                  f_contents.at(n_element).endsWith(".ogg") ||
-                  f_contents.at(n_element).endsWith(".opus"))
+        for (QString format : {".wav", ".mp3", ".ogg", ".opus"})
+        {
+          if (f_contents[n_element].endsWith(format))
           {
-              musics_time = true;
-              w_courtroom->fix_last_area();
-              w_courtroom->append_music(f_contents.at(n_element));
-              areas--;
+            musics_time = true;
+            break;
           }
-          else
-          {
-              w_courtroom->append_area(f_contents.at(n_element));
-              areas++;
-          }
-      }
+        }
 
-      for (int area_n = 0; area_n < areas; area_n++)
-      {
-          w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+        if (musics_time)
+        {
+          if (!area_list.isEmpty())
+          {
+            area_type incorrect_area = area_list.takeLast();
+            track_type track;
+            track.id = incorrect_area.id;
+            track.name = incorrect_area.name;
+            music_list.append(track);
+          }
+
+          track_type track;
+          track.id = n_element;
+          track.name = f_contents[n_element];
+
+          music_list.append(track);
+          areas--;
+        }
+        else
+        {
+          area_type area;
+          area.id = n_element;
+          area.name = f_contents[n_element];
+          area.players = 0;
+          area.status = "Unknown";
+          area.cm = "Unknown";
+          area.locked = "Unknown";
+
+          area_list.append(area);
+          areas++;
+        }
       }
 
       int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
       int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
       w_lobby->set_loading_value(loading_value);
     }
+
+    w_courtroom->set_music(music_list);
+    w_courtroom->set_areas(area_list);
 
     send_server_packet(new AOPacket("RD#%"));
   }

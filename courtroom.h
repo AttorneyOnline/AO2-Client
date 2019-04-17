@@ -24,6 +24,7 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "aoiclog.h"
+#include "aojukebox.h"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -67,10 +68,9 @@ public:
 
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
-  void append_music(QString f_music){music_list.append(f_music);}
-  void append_area(QString f_area){area_list.append(f_area);}
+  void set_music(QVector<track_type> &f_music){ui_music_list->set_tracks(f_music);}
+  void set_areas(QVector<area_type> &f_areas){ui_area_list->set_areas(f_areas);}
 
-  void fix_last_area();
   void arup_append(int players, QString status, QString cm, QString locked);
   void arup_modify(int type, int place, QString value);
 
@@ -121,8 +121,6 @@ public:
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
-  //helper function that populates ui_music_list with the contents of music_list
-  void list_music();
   void list_areas();
 
   //these are for OOC chat
@@ -170,19 +168,9 @@ private:
 
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
-  QVector<QString> music_list;
-  QVector<QString> area_list;
-
-  QVector<int> arup_players;
-  QVector<QString> arup_statuses;
-  QVector<QString> arup_cms;
-  QVector<QString> arup_locks;
+  QVector<area_type> area_list;
 
   QSignalMapper *char_button_mapper;
-
-  // These map music row items and area row items to their actual IDs.
-  QVector<int> music_row_to_number;
-  QVector<int> area_row_to_number;
 
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
@@ -244,7 +232,7 @@ private:
 
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
-  QListWidget *ui_music_list;
+  AOJukebox *ui_music_list;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
@@ -380,7 +368,7 @@ private slots:
   void on_ms_return_pressed(QString name, QString message);
 
   void on_music_search_edited(QString p_text);
-  void on_music_list_double_clicked(QModelIndex p_model);
+  void on_jukebox_trackSelected(QString track);
   void on_area_list_double_clicked(QModelIndex p_model);
 
   void select_emote(int p_id);

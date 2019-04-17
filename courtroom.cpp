@@ -53,6 +53,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chatlog = findChild<AOICLog *>("ic_chatlog");
   ui_ms_chat = findChild<AOServerChat *>("ms_chat");
   ui_server_chat = findChild<AOServerChat *>("server_chat");
+  ui_music_list = findChild<AOJukebox *>("jukebox");
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
@@ -69,7 +70,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_area_list = new QListWidget(this);
   ui_area_list->hide();
-  ui_music_list = new QListWidget(this);
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -264,43 +264,29 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   set_char_select();
 }
 
-void Courtroom::fix_last_area()
-{
-  QString malplaced = area_list.last();
-  area_list.removeLast();
-  append_music(malplaced);
-}
-
-void Courtroom::arup_append(int players, QString status, QString cm, QString locked)
-{
-  arup_players.append(players);
-  arup_statuses.append(status);
-  arup_cms.append(cm);
-  arup_locks.append(locked);
-}
-
 void Courtroom::arup_modify(int type, int place, QString value)
 {
-  if (type == 0)
+  if (place >= area_list.length() || place < 0)
+    qWarning() << tr("ARUP area %1 out of bounds").arg(place);
+
+  switch (type)
   {
-    if (arup_players.size() > place)
-      arup_players[place] = value.toInt();
+  case ARUP_PARAM::PLAYERS:
+    area_list[place].players = value.toInt();
+    break;
+  case ARUP_PARAM::STATUS:
+    area_list[place].status = value;
+    break;
+  case ARUP_PARAM::CM:
+    area_list[place].cm = value;
+    break;
+  case ARUP_PARAM::LOCKED:
+    area_list[place].locked = value;
+    break;
+  default:
+    qWarning() << tr("Unknown ARUP parameter %1").arg(type);
   }
-  else if (type == 1)
-  {
-    if (arup_statuses.size() > place)
-      arup_statuses[place] = value;
-  }
-  else if (type == 2)
-  {
-    if (arup_cms.size() > place)
-      arup_cms[place] = value;
-  }
-  else if (type == 3)
-  {
-    if (arup_locks.size() > place)
-      arup_locks[place] = value;
-  }
+
   list_areas();
 }
 
@@ -752,7 +738,6 @@ void Courtroom::enter_courtroom(int p_cid)
   else
     ui_casing->hide();
 
-  list_music();
   list_areas();
 
   music_player->set_volume(ui_music_slider->value());
@@ -767,41 +752,6 @@ void Courtroom::enter_courtroom(int p_cid)
 
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::list_music()
-{
-  ui_music_list->clear();
-  music_row_to_number.clear();
-
-  QString f_file = "courtroom_design.ini";
-
-  QBrush found_brush(ao_app->get_color("found_song_color", f_file));
-  QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
-
-  int n_listed_songs = 0;
-
-  for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
-  {
-    QString i_song = music_list.at(n_song);
-    QString i_song_listname = i_song;
-    i_song_listname = i_song_listname.left(i_song_listname.lastIndexOf("."));
-
-    if (i_song.toLower().contains(ui_music_search->text().toLower()))
-    {
-      ui_music_list->addItem(i_song_listname);
-      music_row_to_number.append(n_song);
-
-      QString song_path = ao_app->get_music_path(i_song);
-
-      if (file_exists(song_path))
-        ui_music_list->item(n_listed_songs)->setBackground(found_brush);
-      else
-        ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
-
-      ++n_listed_songs;
-    }
-  }
 }
 
 void Courtroom::list_areas()
@@ -1519,8 +1469,6 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
   AOPacket *f_packet = new AOPacket("CT", packet_contents);
 
   ao_app->send_server_packet(f_packet);
-
-  delete f_packet;
 }
 
 void Courtroom::on_ms_return_pressed(QString name, QString message)
@@ -1529,13 +1477,10 @@ void Courtroom::on_ms_return_pressed(QString name, QString message)
   AOPacket *f_packet = new AOPacket("CT", packet_contents);
 
   ao_app->send_ms_packet(f_packet);
-
-  delete f_packet;
 }
 
 void Courtroom::on_music_search_edited(QString)
 {
-  list_music();
   list_areas();
 }
 
@@ -1633,20 +1578,18 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   f_item->setText(real_char + " [x]");
 }
 
-void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
+void Courtroom::on_jukebox_trackSelected(QString track)
 {
   if (is_muted)
     return;
 
-  QString p_song = music_list.at(music_row_to_number.at(p_model.row()));
-
   if (!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled)
   {
-    ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
+    ao_app->send_server_packet(new AOPacket("MC#" + track + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
   }
   else
   {
-    ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
+    ao_app->send_server_packet(new AOPacket("MC#" + track + "#" + QString::number(m_cid) + "#%"), false);
   }
 }
 

@@ -37,6 +37,22 @@ struct evi_type
   QString image;
 };
 
+struct area_type
+{
+  QString name;
+  int id;
+  int players;
+  QString status;
+  QString cm;
+  QString locked;
+};
+
+struct track_type
+{
+  QString name;
+  int id;
+};
+
 struct chatmessage_type
 {
   QString message;
@@ -53,13 +69,6 @@ struct chatmessage_type
   int cid;
   int sfx_delay;
   int flip;
-};
-
-struct area_type
-{
-  QString name;
-  QString background;
-  bool passworded;
 };
 
 struct pos_type
@@ -114,6 +123,14 @@ enum COLOR
   RAINBOW,
   PINK,
   CYAN
+};
+
+enum ARUP_PARAM
+{
+  PLAYERS = 0,
+  STATUS,
+  CM,
+  LOCKED
 };
 
 #endif // DATATYPES_H

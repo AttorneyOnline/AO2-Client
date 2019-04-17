@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>477</width>
-    <height>401</height>
+    <width>508</width>
+    <height>433</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -495,7 +495,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>477</width>
+     <width>508</width>
      <height>21</height>
     </rect>
    </property>
@@ -561,6 +561,15 @@ QLineEdit { background-color: #575757; color: white; }</string>
     </property>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="jukebox_dock">
+   <property name="windowTitle">
+    <string>Jukebox</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="AOJukebox" name="jukebox"/>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -579,6 +588,12 @@ QLineEdit { background-color: #575757; color: white; }</string>
    <class>AOICLog</class>
    <extends>QWidget</extends>
    <header>aoiclog.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AOJukebox</class>
+   <extends>QWidget</extends>
+   <header>aojukebox.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
