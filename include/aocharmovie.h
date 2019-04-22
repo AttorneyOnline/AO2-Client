@@ -7,8 +7,8 @@
 #include <QDebug>
 #include <QImageReader>
 #include <QPainter>
-#include "include/aosfxplayer.h"
-#include "include/courtroom.h"
+#include "aosfxplayer.h"
+#include "courtroom.h"
 
 
 class AOApplication;

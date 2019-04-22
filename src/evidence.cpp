@@ -192,7 +192,7 @@ void Courtroom::on_evidence_image_button_clicked()
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
   dialog.setViewMode(QFileDialog::List);
-  dialog.setDirectory(ao_app->get_base_path() + "evidence");
+  dialog.setDirectory(ao_app->get_base_path("evidence"));
 
   QStringList filenames;
 
@@ -342,4 +342,3 @@ void Courtroom::on_evidence_x_clicked()
 
   ui_ic_chat_message->setFocus();
 }
-

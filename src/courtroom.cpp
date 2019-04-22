@@ -895,7 +895,7 @@ void Courtroom::set_character(int char_id) // can you fucking believe this didn'
 }
 
 void Courtroom::enter_courtroom(int p_cid)
-{ 
+{
   this->set_character(p_cid);
 
   current_evidence_page = 0;
@@ -1627,7 +1627,7 @@ void Courtroom::handle_chatmessage_2()
     ui_vp_chatbox->set_image("chatmed.png");
   else
   {
-    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chatbox.png";
+    QString chatbox_path = ao_app->get_base_path("misc/" + chatbox + "/chatbox.png");
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
@@ -1897,7 +1897,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_legacy_desk->hide();
 
     // Since we're zooming, hide the second character, and centre the first.
-    ui_vp_sideplayer_char->hide(); 
+    ui_vp_sideplayer_char->hide();
     ui_vp_player_char->move(0,0);
 
     if (side == "pro" ||
@@ -3016,7 +3016,7 @@ void Courtroom::on_ooc_return_pressed()
   {
     ui_ooc_chat_message->clear();
     ooc_message.remove(0,6);
-    
+
     bool ok;
     int whom = ooc_message.toInt(&ok);
     if (ok)
@@ -3044,7 +3044,7 @@ void Courtroom::on_ooc_return_pressed()
   {
     ui_ooc_chat_message->clear();
     ooc_message.remove(0,8);
-    
+
     bool ok;
     int off = ooc_message.toInt(&ok);
     if (ok)
@@ -3650,7 +3650,7 @@ void Courtroom::on_change_character_clicked()
 }
 
 void Courtroom::on_reload_theme_clicked()
-{ 
+{
   ao_app->reload_theme();
 
   //to update status on the background
@@ -3867,7 +3867,7 @@ void Courtroom::load_bass_opus_plugin()
 #elif defined __APPLE__
 void Courtroom::load_bass_opus_plugin()
 {
-  QString libpath = ao_app->get_base_path() + "../../Frameworks/libbassopus.dylib";
+  QString libpath = ao_app->get_default_path() + "../../Frameworks/libbassopus.dylib";
   QByteArray ba = libpath.toLocal8Bit();
 
   BASS_PluginLoad(ba.data(), 0);

@@ -79,7 +79,7 @@ QStringList AOApplication::get_call_words()
 
   QFile callwords_ini;
 
-  callwords_ini.setFileName(get_base_path() + "callwords.ini");
+  callwords_ini.setFileName(get_base_path("callwords.ini"));
 
   if (!callwords_ini.open(QIODevice::ReadOnly))
     return return_value;
@@ -98,7 +98,7 @@ QStringList AOApplication::get_call_words()
 void AOApplication::write_to_serverlist_txt(QString p_line)
 {
   QFile serverlist_txt;
-  QString serverlist_txt_path = get_base_path() + "serverlist.txt";
+  QString serverlist_txt_path = get_base_path("serverlist.txt");
 
   serverlist_txt.setFileName(serverlist_txt_path);
 
@@ -119,7 +119,7 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   QVector<server_type> f_server_list;
 
   QFile serverlist_txt;
-  QString serverlist_txt_path = get_base_path() + "serverlist.txt";
+  QString serverlist_txt_path = get_base_path("serverlist.txt");
 
   serverlist_txt.setFileName(serverlist_txt_path);
 
@@ -311,8 +311,8 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
   }
 
   p_identifier = p_identifier.prepend("c");
-  QString design_ini_path = get_base_path() + "misc/" + p_chat + "/config.ini";
-  QString default_path = get_base_path() + "misc/default/config.ini";
+  QString design_ini_path = get_base_path("misc/" + p_chat + "/config.ini");
+  QString default_path = get_base_path("misc/default/config.ini");
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   if (f_result == "")

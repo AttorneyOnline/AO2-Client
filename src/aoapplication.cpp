@@ -10,8 +10,9 @@
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
+  asset_paths = get_path_list();
   // Create the QSettings class that points to the config.ini.
-  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
+  configini = new QSettings(get_base_path("config.ini"), QSettings::IniFormat);
 
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();

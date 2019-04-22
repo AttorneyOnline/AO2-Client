@@ -45,6 +45,7 @@ public:
   Courtroom *w_courtroom;
   AttorneyOnline::Discord *discord;
 
+  QStringList asset_paths;
   bool lobby_constructed = false;
   bool courtroom_constructed = false;
 
@@ -122,8 +123,9 @@ public:
   QString get_current_char();
 
   //implementation in path_functions.cpp
-  QString get_base_path();
-  QString get_data_path();
+  QString get_default_path();
+  QString get_base_path(QString p_file);
+  QString get_data_path(QString p_file);
   QString get_theme_path(QString p_file);
   QString get_default_theme_path(QString p_file);
   QString get_custom_theme_path(QString p_theme, QString p_file);
@@ -338,6 +340,8 @@ private:
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
+
+  QStringList get_path_list();
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);

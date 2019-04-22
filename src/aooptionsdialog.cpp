@@ -1,5 +1,6 @@
 #include "aooptionsdialog.h"
 #include "aoapplication.h"
+#include "file_functions.h"
 #include "bass.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDialog(parent)
@@ -58,14 +59,17 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
     // Fill the combobox with the names of the themes.
-    QDirIterator it(p_ao_app->get_base_path() + "themes", QDir::Dirs, QDirIterator::NoIteratorFlags);
-    while (it.hasNext())
-    {
-        QString actualname = QDir(it.next()).dirName();
-        if (actualname != "." && actualname != "..")
+    for (QStringList::iterator i = p_ao_app->asset_paths.begin(); i != p_ao_app->asset_paths.end(); i++) {
+      if (dir_exists(*i + "themes")) {
+        QDirIterator it(*i + "themes", QDir::Dirs, QDirIterator::NoIteratorFlags);
+        while (it.hasNext()) {
+          QString actualname = QDir(it.next()).dirName();
+          if (actualname != "." && actualname != "..")
             ui_theme_combobox->addItem(actualname);
-        if (actualname == p_ao_app->read_theme())
+          if (actualname == p_ao_app->read_theme())
             ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count()-1);
+        }
+      }
     }
 
     ui_gameplay_form->setWidget(0, QFormLayout::FieldRole, ui_theme_combobox);
@@ -511,7 +515,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("discord", ui_discord_cb->isChecked());
     configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
 
-    QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
+    QFile* callwordsini = new QFile(ao_app->get_base_path("callwords.ini"));
 
     if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
     {

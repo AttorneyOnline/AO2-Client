@@ -16,6 +16,7 @@ debug/
 
 .qmake.stash
 
+TAGS
 Makefile*
 object_script*
 /Attorney_Online_remake_resource.rc
