@@ -439,13 +439,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "REFMUSIC")
   {
-      if (courtroom_constructed)
-          w_courtroom->reset_music_list();
-          for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
-          {
-              w_courtroom->append_music(f_contents.at(n_element));
-          }
-          w_courtroom->list_music();
+    if (courtroom_constructed)
+      w_courtroom->reset_music_list();
+    for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
+    {
+      w_courtroom->append_music(f_contents.at(n_element));
+    }
+    w_courtroom->list_music();
   }
   else if (header == "BN")
   {
