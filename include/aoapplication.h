@@ -143,6 +143,9 @@ public:
   // Instead of reinventing the wheel, we'll use a QSettings class.
   QSettings *configini;
 
+  //Returns path list from the asset_folders value in config.ini
+  QStringList get_asset_folders();
+
   //Reads the theme from config.ini and loads it into the current_theme variable
   QString read_theme();
 
@@ -342,6 +345,7 @@ private:
   QVector<server_type> favorite_list;
 
   QStringList get_path_list();
+  QStringList asset_string_to_list(QString assets_list, QString separator);
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);

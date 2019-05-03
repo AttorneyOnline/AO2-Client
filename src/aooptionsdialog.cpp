@@ -59,12 +59,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
     // Fill the combobox with the names of the themes.
-    for (QStringList::iterator i = p_ao_app->asset_paths.begin(); i != p_ao_app->asset_paths.end(); i++) {
-      if (dir_exists(*i + "themes")) {
-        QDirIterator it(*i + "themes", QDir::Dirs, QDirIterator::NoIteratorFlags);
+    for (const QString &i : p_ao_app->asset_paths) {
+      if (dir_exists(i + "themes")) {
+        QDirIterator it(i + "themes", QDir::Dirs|QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
         while (it.hasNext()) {
           QString actualname = QDir(it.next()).dirName();
-          if (actualname != "." && actualname != "..")
+          if (ui_theme_combobox->findText(actualname) == -1)
             ui_theme_combobox->addItem(actualname);
           if (actualname == p_ao_app->read_theme())
             ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count()-1);
@@ -515,17 +515,16 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("discord", ui_discord_cb->isChecked());
     configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
 
-    QFile* callwordsini = new QFile(ao_app->get_base_path("callwords.ini"));
+    QFile callwordsini(ao_app->get_base_path("callwords.ini"));
 
-    if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    if (!callwordsini.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
     {
         // Nevermind!
     }
     else
     {
-        QTextStream out(callwordsini);
+        QTextStream out(&callwordsini);
         out << ui_callwords_textbox->toPlainText();
-        callwordsini->close();
     }
 
     configini->setValue("default_audio_device", ui_audio_device_combobox->currentText());
@@ -547,7 +546,6 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_wit_enabled", ui_casing_wit_cb->isChecked());
     configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
 
-    callwordsini->close();
     done(0);
 }
 

@@ -22,7 +22,8 @@
 #define CASE_SENSITIVE_FILESYSTEM
 #endif
 
-QString AOApplication::get_default_path() {
+QString AOApplication::get_default_path()
+{
   QString base_path = "";
 #ifdef ANDROID
   QString sdcard_storage = getenv("SECONDARY_STORAGE");
@@ -39,46 +40,53 @@ QString AOApplication::get_default_path() {
   return base_path;
 }
 
-QStringList AOApplication::get_path_list()
+QStringList AOApplication::asset_string_to_list(QString assets_list, QString separator)
 {
   QStringList paths;
-  QString assets_env = qgetenv(ASSET_ENV_VAR);
-  if (assets_env != NULL) {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    QRegExp rx(";");
-#else
-    QRegExp rx(":");
-#endif
-    paths = assets_env.split(rx);
-    for (int i = 0; i < paths.size(); i++) {
+  if (assets_list != "") {
+    QRegExp rx(separator);
+    paths = assets_list.split(rx);
+    for (int i = 0; i < paths.size(); i++)
       paths[i] = QDir(paths[i]).absolutePath() + '/';
-    }
   }
-  // paths.push_back(get_default_path());
   return paths;
+}
+
+QStringList AOApplication::get_path_list()
+{
+  QString assets_env = qgetenv(ASSET_ENV_VAR);
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+  QString sys_sep = ";";
+#else
+  QString sys_sep = ":";
+#endif
+  return asset_string_to_list(assets_env, sys_sep);
 }
 
 QString AOApplication::get_base_path(QString p_file)
 {
   QString file = "";
-  for (QStringList::iterator i = asset_paths.begin(); i != asset_paths.end(); i++) {
+  for (const QString &i : asset_paths) {
 #ifndef CASE_SENSITIVE_FILESYSTEM
-    QString f = *i + p_file;
+    QString f = i + p_file;
 #else
-    QString f = get_case_sensitive_path(*i + p_file);
+    QString f = get_case_sensitive_path(i + p_file);
 #endif
     if (file_exists(f)) {
       file = f;
       break;
     }
   }
+  // too much debug output
   if (file == "") {
+    // qDebug() << "D: Using default for" << p_file;
 #ifndef CASE_SENSITIVE_FILESYSTEM
     return get_default_path() + p_file;
 #else
     return get_case_sensitive_path(get_default_path() + p_file);
 #endif
   } else {
+    // qDebug() << "D: Got" << p_file << "as" << file;
     return file;
   }
 }

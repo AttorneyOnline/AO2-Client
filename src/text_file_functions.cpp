@@ -1,5 +1,11 @@
 #include "text_file_functions.h"
 
+QStringList AOApplication::get_asset_folders()
+{
+  QString result = configini->value("asset_folders", "").value<QString>();
+  return asset_string_to_list(result, ":"); // don't care about windows separators in here
+}
+
 QString AOApplication::read_theme()
 {
   QString result = configini->value("theme", "default").value<QString>();
