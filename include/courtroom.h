@@ -48,6 +48,7 @@
 #include <QFont>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QTextBoundaryFinder>
 
 #include <stack>
 
