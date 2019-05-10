@@ -2024,6 +2024,7 @@ void Courtroom::chat_tick()
   //do not perform heavy operations here
 
   QString f_message = m_chatmessage[MESSAGE];
+  f_message.remove(0, tick_pos);
 
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
@@ -2038,7 +2039,7 @@ void Courtroom::chat_tick()
     f_message.remove(0,2);
   }
 
-  if (tick_pos >= f_message.size())
+  if (f_message.size() == 0)
   {
     text_state = 2;
     if (anim_state != 4)
@@ -2050,7 +2051,16 @@ void Courtroom::chat_tick()
 
   else
   {
-    QString f_character = f_message.at(tick_pos);
+    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_message);
+    QString f_character;
+
+    tbf.toNextBoundary();
+
+    if (tbf.position() == -1)
+      f_character = f_message;
+    else
+      f_character = f_message.left(tbf.position());
+
     f_character = f_character.toHtmlEscaped();
 
     if (f_character == " ")
@@ -2265,7 +2275,7 @@ void Courtroom::chat_tick()
     if(blank_blip)
       qDebug() << "blank_blip found true";
 
-    if (f_message.at(tick_pos) != ' ' || blank_blip)
+    if (f_character != ' ' || blank_blip)
     {
 
       if (blip_pos % blip_rate == 0 && !formatting_char)
@@ -2277,7 +2287,7 @@ void Courtroom::chat_tick()
       ++blip_pos;
     }
 
-    ++tick_pos;
+    tick_pos += f_character.length();
 
     // Restart the timer, but according to the newly set speeds, if there were any.
     // Keep the speed at bay.
@@ -2303,6 +2313,7 @@ void Courtroom::chat_tick()
 
   }
 }
+
 
 void Courtroom::show_testimony()
 {
