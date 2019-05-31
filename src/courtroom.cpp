@@ -2707,6 +2707,7 @@ void Courtroom::on_ooc_return_pressed()
       }
       else
       {
+        other_charid = -1;
         append_server_chatmessage("CLIENT", "You are no longer paired with anyone.", "1");
       }
     }
@@ -2992,6 +2993,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   QListWidgetItem *f_item = ui_pair_list->item(p_index.row());
   QString f_char = f_item->text();
   QString real_char;
+  int f_cid = -1;
 
   if (f_char.endsWith(" [x]"))
   {
@@ -2999,17 +3001,19 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
     f_item->setText(real_char);
   }
   else
-    real_char = f_char;
-
-  int f_cid = -1;
-
-  for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
   {
+   real_char = f_char;
+   for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
+   {
     if (char_list.at(n_char).name == real_char)
       f_cid = n_char;
+   }
   }
 
-  if (f_cid < 0 || f_cid >= char_list.size())
+
+
+
+  if (f_cid < -2 || f_cid >= char_list.size())
   {
     qDebug() << "W: " << real_char << " not present in char_list";
     return;
@@ -3028,8 +3032,10 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   for (int i = 0; i < ui_pair_list->count(); i++) {
     ui_pair_list->item(i)->setText(sorted_pair_list.at(i));
   }
-
+  if(other_charid != -1)
+  {
   f_item->setText(real_char + " [x]");
+  }
 }
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
