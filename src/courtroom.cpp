@@ -3009,7 +3009,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
       f_cid = n_char;
    }
   }
-  if (f_cid < -2 || f_cid >= char_list.size())
+  if (f_cid < -1 || f_cid >= char_list.size())
   {
     qDebug() << "W: " << real_char << " not present in char_list";
     return;
@@ -3030,7 +3030,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   }
   if(other_charid != -1)
   {
-  f_item->setText(real_char + " [x]");
+    f_item->setText(real_char + " [x]");
   }
 }
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
