@@ -5,6 +5,7 @@
 *.so
 *.pro.autosave
 base_override.h
+.DS_Store
 
 base-full/
 bass.lib
