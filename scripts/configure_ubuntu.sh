@@ -1,7 +1,13 @@
 #!/bin/sh
-set -e
 
-#assumes a somewhat recent 64-bit ubuntu
+# Assumes a somewhat recent 64-bit ubuntu
+
+# Exit on errors and unset variables
+set -eu
+
+ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
+
+cd ${ROOT_DIR}
 
 #need some openGL stuff
 sudo apt install libgl1-mesa-dev
