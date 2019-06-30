@@ -3086,7 +3086,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   }
   if(other_charid != -1)
   {
-  f_item->setText(real_char + " [x]");
+   f_item->setText(real_char + " [x]");
   }
 }
 
