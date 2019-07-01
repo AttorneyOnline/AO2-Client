@@ -205,8 +205,16 @@ void Courtroom::on_evidence_image_button_clicked()
   QString filename = filenames.at(0);
 
   QStringList split_filename = filename.split("/");
+  if(split_filename.at(split_filename.size() - 2) == "evidence")
+  {
+      filename = split_filename.at(split_filename.size() - 1);
+  }
+  else {
 
-  filename = split_filename.at(split_filename.size() - 1);
+           filename   = split_filename.at(split_filename.size() - 2) + "/" + split_filename.at(split_filename.size() - 1);
+  }
+
+
 
   ui_evidence_image_name->setText(filename);
 
