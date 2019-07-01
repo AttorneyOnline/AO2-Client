@@ -2707,6 +2707,7 @@ void Courtroom::on_ooc_return_pressed()
       }
       else
       {
+        other_charid = -1;
         append_server_chatmessage("CLIENT", "You are no longer paired with anyone.", "1");
       }
     }
@@ -2863,6 +2864,58 @@ void Courtroom::on_ooc_return_pressed()
     ui_ooc_chat_message->clear();
     return;
   }
+  else if(ooc_message.startsWith("/save_case"))
+  {
+      QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
+
+      QDir casefolder("base/cases");
+      if (!casefolder.exists())
+      {
+          QDir::current().mkdir("base/" + casefolder.dirName());
+          append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely that you somehow deleted it.", "1");
+          ui_ooc_chat_message->clear();
+          return;
+      }
+      QStringList caseslist = casefolder.entryList();
+      caseslist.removeOne(".");
+      caseslist.removeOne("..");
+      caseslist.replaceInStrings(".ini","");
+
+      if (command.size() < 2)
+      {
+        append_server_chatmessage("CLIENT", "You need to give a filename to save (extension not needed) and the courtroom status!" + caseslist.join(", "), "1");
+        ui_ooc_chat_message->clear();
+        return;
+      }
+
+
+      if (command.size() > 3)
+      {
+        append_server_chatmessage("CLIENT", "Too many arguments to save a case! You only need a filename without extension and the courtroom status!", "1");
+        ui_ooc_chat_message->clear();
+        return;
+      }
+      QSettings casefile("base/cases/" + command[1] + ".ini", QSettings::IniFormat);
+      casefile.setValue("author",ui_ooc_chat_name->text());
+      casefile.setValue("cmdoc","");
+      casefile.setValue("doc", "");
+      casefile.setValue("status",command[2]);
+      casefile.sync();
+      for(int i = local_evidence_list.size() - 1; i >= 0; i--)
+      {
+           casefile.beginGroup(QString::number(i));
+           casefile.sync();
+           casefile.setValue("name",local_evidence_list[i].name);
+           casefile.setValue("description",local_evidence_list[i].description);
+           casefile.setValue("image",local_evidence_list[i].image);
+           casefile.endGroup();
+      }
+      casefile.sync();
+      append_server_chatmessage("CLIENT", "Succesfully saved, edit doc and cmdoc link on the ini!", "1");
+      ui_ooc_chat_message->clear();
+      return;
+
+  }
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
@@ -2992,6 +3045,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   QListWidgetItem *f_item = ui_pair_list->item(p_index.row());
   QString f_char = f_item->text();
   QString real_char;
+  int f_cid = -1;
 
   if (f_char.endsWith(" [x]"))
   {
@@ -2999,17 +3053,19 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
     f_item->setText(real_char);
   }
   else
-    real_char = f_char;
-
-  int f_cid = -1;
-
-  for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
   {
+   real_char = f_char;
+   for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
+   {
     if (char_list.at(n_char).name == real_char)
       f_cid = n_char;
+   }
   }
 
-  if (f_cid < 0 || f_cid >= char_list.size())
+
+
+
+  if (f_cid < -2 || f_cid >= char_list.size())
   {
     qDebug() << "W: " << real_char << " not present in char_list";
     return;
@@ -3028,8 +3084,10 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   for (int i = 0; i < ui_pair_list->count(); i++) {
     ui_pair_list->item(i)->setText(sorted_pair_list.at(i));
   }
-
-  f_item->setText(real_char + " [x]");
+  if(other_charid != -1)
+  {
+   f_item->setText(real_char + " [x]");
+  }
 }
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
