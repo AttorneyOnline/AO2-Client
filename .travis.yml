@@ -1,0 +1,11 @@
+language: cpp
+os: osx
+
+addons:
+    homebrew:
+        packages:
+            - qt5
+
+script:
+    - ./scripts/macos_build.sh
+    - ./scripts/macos_post_build.sh

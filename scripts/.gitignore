@@ -1,0 +1,6 @@
+node_modules/
+
+# Cursed file
+package-lock.json
+
+s3_keys.sh
