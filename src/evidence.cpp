@@ -188,11 +188,12 @@ void Courtroom::on_evidence_image_name_edited()
 
 void Courtroom::on_evidence_image_button_clicked()
 {
+  QDir dir(ao_app->get_base_path() + "evidence");
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
   dialog.setViewMode(QFileDialog::List);
-  dialog.setDirectory(ao_app->get_base_path() + "evidence");
+  dialog.setDirectory(dir);
 
   QStringList filenames;
 
@@ -203,13 +204,8 @@ void Courtroom::on_evidence_image_button_clicked()
     return;
 
   QString filename = filenames.at(0);
-
-  QStringList split_filename = filename.split("/");
-
-  filename = split_filename.at(split_filename.size() - 1);
-
+  filename = dir.relativeFilePath(filename);
   ui_evidence_image_name->setText(filename);
-
   on_evidence_image_name_edited();
 }
 
