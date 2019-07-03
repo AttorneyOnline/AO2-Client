@@ -72,6 +72,10 @@ build windows i686:
     - docker
     - linux
   script:
+    # Install dependencies
+    - apt-get update
+    - apt-get install --no-install-recommends -y make curl ca-certificates upx unzip
+
     # Extract BASS
     - mkdir bass
     - cd bass
