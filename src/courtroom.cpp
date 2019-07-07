@@ -2053,6 +2053,7 @@ void Courtroom::chat_tick()
   {
     QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_message);
     QString f_character;
+    int f_char_length;
 
     tbf.toNextBoundary();
 
@@ -2061,7 +2062,9 @@ void Courtroom::chat_tick()
     else
       f_character = f_message.left(tbf.position());
 
+    f_char_length = f_character.length();
     f_character = f_character.toHtmlEscaped();
+
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
@@ -2155,7 +2158,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos--;
+            tick_pos -= f_char_length;
         }
     }
 
@@ -2176,7 +2179,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos--;
+            tick_pos -= f_char_length;
         }
     }
 
@@ -2287,7 +2290,7 @@ void Courtroom::chat_tick()
       ++blip_pos;
     }
 
-    tick_pos += f_character.length();
+    tick_pos += f_char_length;
 
     // Restart the timer, but according to the newly set speeds, if there were any.
     // Keep the speed at bay.
