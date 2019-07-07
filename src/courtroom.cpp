@@ -2886,7 +2886,7 @@ void Courtroom::on_ooc_return_pressed()
 
       if (command.size() < 2)
       {
-        append_server_chatmessage("CLIENT", "You need to give a filename to save (extension not needed) and the courtroom status!" + caseslist.join(", "), "1");
+        append_server_chatmessage("CLIENT", "You need to give a filename to save (extension not needed) and the courtroom status!", "1");
         ui_ooc_chat_message->clear();
         return;
       }
@@ -2906,6 +2906,8 @@ void Courtroom::on_ooc_return_pressed()
       casefile.sync();
       for(int i = local_evidence_list.size() - 1; i >= 0; i--)
       {
+           QString clean_evidence_dsc =  local_evidence_list[i].description.replace(QRegularExpression("<owner = ...>..."), "");
+           clean_evidence_dsc = clean_evidence_dsc.replace(clean_evidence_dsc.lastIndexOf(">"), 1, "");
            casefile.beginGroup(QString::number(i));
            casefile.sync();
            casefile.setValue("name",local_evidence_list[i].name);
