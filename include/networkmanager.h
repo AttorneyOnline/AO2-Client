@@ -44,13 +44,14 @@ public:
   QString ms_nosrv_hostname = "master.aceattorneyonline.com";
 #endif
 
-  const int ms_port = 27016;
+  const quint16 ms_port = 27016;
   const int timeout_milliseconds = 2000;
 
-  const int ms_reconnect_delay_ms = 7000;
+  // in seconds
+  const int ms_reconnect_delay = 7;
 
   // kind of arbitrary max buffer size
-  const size_t buffer_max_size = 16384;
+  #define BUFFER_MAX_SIZE 16384
 
   bool ms_partial_packet = false;
   QString ms_temp_packet = "";

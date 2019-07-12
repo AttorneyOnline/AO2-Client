@@ -37,9 +37,9 @@ void AOApplication::construct_lobby()
   w_lobby = new Lobby(this);
   lobby_constructed = true;
 
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width()-w_lobby->width()) / 2;
-  int y = (screenGeometry.height()-w_lobby->height()) / 2;
+  QRect geometry = QGuiApplication::primaryScreen()->geometry();
+  int x = (geometry.width()-w_lobby->width()) / 2;
+  int y = (geometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
   if (is_discord_enabled())
@@ -72,9 +72,9 @@ void AOApplication::construct_courtroom()
   w_courtroom = new Courtroom(this);
   courtroom_constructed = true;
 
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width()-w_courtroom->width()) / 2;
-  int y = (screenGeometry.height()-w_courtroom->height()) / 2;
+  QRect geometry = QGuiApplication::primaryScreen()->geometry();
+  int x = (geometry.width()-w_courtroom->width()) / 2;
+  int y = (geometry.height()-w_courtroom->height()) / 2;
   w_courtroom->move(x, y);
 }
 
@@ -161,7 +161,7 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
     {
       if (lobby_constructed)
         w_lobby->append_error("Error connecting to master server. Will try again in "
-                            + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
+                            + QString::number(net_manager->ms_reconnect_delay) + " seconds.");
     }
     else
     {

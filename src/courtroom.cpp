@@ -6,7 +6,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.
-  int a = 0;
+  unsigned int a = 0;
   BASS_DEVICEINFO info;
 
   if (ao_app->get_audio_output_device() == "default")
@@ -21,7 +21,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           if (ao_app->get_audio_output_device() == info.name)
           {
               BASS_SetDevice(a);
-              BASS_Init(a, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+              BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
               load_bass_opus_plugin();
               qDebug() << info.name << "was set as the default audio output device.";
               break;
@@ -48,8 +48,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   testimony_hide_timer = new QTimer(this);
   testimony_hide_timer->setSingleShot(true);
-
-  char_button_mapper = new QSignalMapper(this);
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
@@ -2223,11 +2221,7 @@ void Courtroom::chat_tick()
           case INLINE_GREY:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
               break;
-          default:
-              ui_vp_message->insertHtml(f_character);
-              break;
           }
-
       }
       else
       {
