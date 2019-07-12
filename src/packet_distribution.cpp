@@ -14,8 +14,10 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   QString header = p_packet->get_header();
   QStringList f_contents = p_packet->get_contents();
 
+#ifdef DEBUG_NETWORK
   if (header != "CHECK")
     qDebug() << "R(ms):" << p_packet->to_string();
+#endif
 
   if (header == "ALL")
   {
@@ -127,8 +129,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   QStringList f_contents = p_packet->get_contents();
   QString f_packet = p_packet->to_string();
 
+#ifdef DEBUG_NETWORK
   if (header != "checkconnection")
     qDebug() << "R:" << f_packet;
+#endif
 
   if (header == "decryptor")
   {
@@ -677,7 +681,9 @@ void AOApplication::send_ms_packet(AOPacket *p_packet)
 
   net_manager->ship_ms_packet(f_packet);
 
+#ifdef DEBUG_NETWORK
   qDebug() << "S(ms):" << f_packet;
+#endif
 
   delete p_packet;
 }
@@ -691,14 +697,18 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
 
   if (encryption_needed)
   {
+#ifdef DEBUG_NETWORK
     qDebug() << "S(e):" << f_packet;
+#endif
 
     p_packet->encrypt_header(s_decryptor);
     f_packet = p_packet->to_string();
   }
   else
   {
+#ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
+#endif
   }
 
   net_manager->ship_server_packet(f_packet);

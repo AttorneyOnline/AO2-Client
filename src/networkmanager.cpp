@@ -78,9 +78,9 @@ void NetworkManager::ship_server_packet(QString p_packet)
 
 void NetworkManager::handle_ms_packet()
 {
-  char buffer[buffer_max_size];
-  std::memset(buffer, 0, buffer_max_size);
-  ms_socket->read(buffer, buffer_max_size);
+  char buffer[BUFFER_MAX_SIZE];
+  std::memset(buffer, 0, BUFFER_MAX_SIZE);
+  ms_socket->read(buffer, BUFFER_MAX_SIZE);
 
   QString in_data = buffer;
 
@@ -137,7 +137,9 @@ void NetworkManager::on_srv_lookup()
 
     for (const QDnsServiceRecord &record : srv_records)
     {
+#ifdef DEBUG_NETWORK
       qDebug() << "Connecting to " << record.target() << ":" << record.port();
+#endif
       ms_socket->connectToHost(record.target(), record.port());
       QTime timer;
       timer.start();
@@ -206,7 +208,7 @@ void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
 
   emit ms_connect_finished(false, true);
 
-  ms_reconnect_timer->start(ms_reconnect_delay_ms);
+  ms_reconnect_timer->start(ms_reconnect_delay * 1000);
 }
 
 void NetworkManager::retry_ms_connect()
@@ -217,9 +219,9 @@ void NetworkManager::retry_ms_connect()
 
 void NetworkManager::handle_server_packet()
 {
-  char buffer[buffer_max_size];
-  std::memset(buffer, 0, buffer_max_size);
-  server_socket->read(buffer, buffer_max_size);
+  char buffer[BUFFER_MAX_SIZE];
+  std::memset(buffer, 0, BUFFER_MAX_SIZE);
+  server_socket->read(buffer, BUFFER_MAX_SIZE);
 
   QString in_data = buffer;
 

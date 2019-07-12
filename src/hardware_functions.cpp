@@ -5,12 +5,12 @@
 #if (defined (_WIN32) || defined (_WIN64))
 #include <windows.h>
 
-DWORD dwVolSerial;
-BOOL bIsRetrieved;
+static DWORD dwVolSerial;
+static BOOL bIsRetrieved;
 
 QString get_hdid()
 {
-  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), NULL, NULL, &dwVolSerial, NULL, NULL, NULL, NULL);
+  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), nullptr, 0, &dwVolSerial, nullptr, nullptr, nullptr, 0);
 
   if (bIsRetrieved)
     return QString::number(dwVolSerial, 16);
@@ -18,7 +18,6 @@ QString get_hdid()
     //a totally random string
     //what could possibly go wrong
     return "gxsps32sa9fnwic92mfbs0";
-
 }
 
 #elif (defined (LINUX) || defined (__linux__))
