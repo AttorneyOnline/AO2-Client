@@ -2884,7 +2884,7 @@ void Courtroom::on_ooc_return_pressed()
       caseslist.removeOne("..");
       caseslist.replaceInStrings(".ini","");
 
-      if (command.size() < 2)
+      if (command.size() < 3)
       {
         append_server_chatmessage("CLIENT", "You need to give a filename to save (extension not needed) and the courtroom status!", "1");
         ui_ooc_chat_message->clear();
