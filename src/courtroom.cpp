@@ -724,7 +724,9 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
 
-  widget->setFont(QFont("Sans", f_weight));
+  QString fontt = ao_app->get_font_name(p_identifier + "_font", design_file);
+   widget->setFont(QFont(fontt, f_weight));
+
 
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
