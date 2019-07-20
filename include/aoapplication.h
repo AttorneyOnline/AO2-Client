@@ -22,6 +22,7 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QColor>
+#include <QScreen>
 
 class NetworkManager;
 class Lobby;

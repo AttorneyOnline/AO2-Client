@@ -12,10 +12,10 @@ Discord::Discord()
     qInfo() << "Discord RPC ready";
   };
   handlers.disconnected = [](int errorCode, const char* message) {
-    qInfo() << "Discord RPC disconnected! " << message;
+    qInfo() << "Discord RPC disconnected! " << message << errorCode;
   };
   handlers.errored = [](int errorCode, const char* message) {
-    qWarning() << "Discord RPC errored out! " << message;
+    qWarning() << "Discord RPC errored out! " << message << errorCode;
   };
   qInfo() << "Initializing Discord RPC";
   Discord_Initialize(APPLICATION_ID, &handlers, 1, nullptr);

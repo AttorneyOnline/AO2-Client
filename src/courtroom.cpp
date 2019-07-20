@@ -6,7 +6,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   #ifdef BASSAUDIO
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.
-  int a = 0;
+  unsigned int a = 0;
   BASS_DEVICEINFO info;
 
   if (ao_app->get_audio_output_device() == "default")
@@ -21,7 +21,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           if (ao_app->get_audio_output_device() == info.name)
           {
               BASS_SetDevice(a);
-              BASS_Init(a, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+              BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
               load_bass_opus_plugin();
               qDebug() << info.name << "was set as the default audio output device.";
               break;
@@ -49,8 +49,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   testimony_hide_timer = new QTimer(this);
   testimony_hide_timer->setSingleShot(true);
-
-  char_button_mapper = new QSignalMapper(this);
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
@@ -2025,6 +2023,7 @@ void Courtroom::chat_tick()
   //do not perform heavy operations here
 
   QString f_message = m_chatmessage[MESSAGE];
+  f_message.remove(0, tick_pos);
 
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
@@ -2039,7 +2038,7 @@ void Courtroom::chat_tick()
     f_message.remove(0,2);
   }
 
-  if (tick_pos >= f_message.size())
+  if (f_message.size() == 0)
   {
     text_state = 2;
     if (anim_state != 4)
@@ -2051,8 +2050,20 @@ void Courtroom::chat_tick()
 
   else
   {
-    QString f_character = f_message.at(tick_pos);
+    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_message);
+    QString f_character;
+    int f_char_length;
+
+    tbf.toNextBoundary();
+
+    if (tbf.position() == -1)
+      f_character = f_message;
+    else
+      f_character = f_message.left(tbf.position());
+
+    f_char_length = f_character.length();
     f_character = f_character.toHtmlEscaped();
+
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
@@ -2146,7 +2157,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos--;
+            tick_pos -= f_char_length;
         }
     }
 
@@ -2167,7 +2178,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos--;
+            tick_pos -= f_char_length;
         }
     }
 
@@ -2211,11 +2222,7 @@ void Courtroom::chat_tick()
           case INLINE_GREY:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
               break;
-          default:
-              ui_vp_message->insertHtml(f_character);
-              break;
           }
-
       }
       else
       {
@@ -2266,7 +2273,7 @@ void Courtroom::chat_tick()
     if(blank_blip)
       qDebug() << "blank_blip found true";
 
-    if (f_message.at(tick_pos) != ' ' || blank_blip)
+    if (f_character != ' ' || blank_blip)
     {
 
       if (blip_pos % blip_rate == 0 && !formatting_char)
@@ -2278,7 +2285,7 @@ void Courtroom::chat_tick()
       ++blip_pos;
     }
 
-    ++tick_pos;
+    tick_pos += f_char_length;
 
     // Restart the timer, but according to the newly set speeds, if there were any.
     // Keep the speed at bay.
@@ -2304,6 +2311,7 @@ void Courtroom::chat_tick()
 
   }
 }
+
 
 void Courtroom::show_testimony()
 {
@@ -2697,6 +2705,7 @@ void Courtroom::on_ooc_return_pressed()
       }
       else
       {
+        other_charid = -1;
         append_server_chatmessage("CLIENT", "You are no longer paired with anyone.", "1");
       }
     }
@@ -2853,6 +2862,60 @@ void Courtroom::on_ooc_return_pressed()
     ui_ooc_chat_message->clear();
     return;
   }
+  else if(ooc_message.startsWith("/save_case"))
+  {
+      QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
+
+      QDir casefolder("base/cases");
+      if (!casefolder.exists())
+      {
+          QDir::current().mkdir("base/" + casefolder.dirName());
+          append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely that you somehow deleted it.", "1");
+          ui_ooc_chat_message->clear();
+          return;
+      }
+      QStringList caseslist = casefolder.entryList();
+      caseslist.removeOne(".");
+      caseslist.removeOne("..");
+      caseslist.replaceInStrings(".ini","");
+
+      if (command.size() < 3)
+      {
+        append_server_chatmessage("CLIENT", "You need to give a filename to save (extension not needed) and the courtroom status!", "1");
+        ui_ooc_chat_message->clear();
+        return;
+      }
+
+
+      if (command.size() > 3)
+      {
+        append_server_chatmessage("CLIENT", "Too many arguments to save a case! You only need a filename without extension and the courtroom status!", "1");
+        ui_ooc_chat_message->clear();
+        return;
+      }
+      QSettings casefile("base/cases/" + command[1] + ".ini", QSettings::IniFormat);
+      casefile.setValue("author",ui_ooc_chat_name->text());
+      casefile.setValue("cmdoc","");
+      casefile.setValue("doc", "");
+      casefile.setValue("status",command[2]);
+      casefile.sync();
+      for(int i = local_evidence_list.size() - 1; i >= 0; i--)
+      {
+           QString clean_evidence_dsc =  local_evidence_list[i].description.replace(QRegularExpression("<owner = ...>..."), "");
+           clean_evidence_dsc = clean_evidence_dsc.replace(clean_evidence_dsc.lastIndexOf(">"), 1, "");
+           casefile.beginGroup(QString::number(i));
+           casefile.sync();
+           casefile.setValue("name",local_evidence_list[i].name);
+           casefile.setValue("description",local_evidence_list[i].description);
+           casefile.setValue("image",local_evidence_list[i].image);
+           casefile.endGroup();
+      }
+      casefile.sync();
+      append_server_chatmessage("CLIENT", "Succesfully saved, edit doc and cmdoc link on the ini!", "1");
+      ui_ooc_chat_message->clear();
+      return;
+
+  }
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
@@ -2982,6 +3045,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   QListWidgetItem *f_item = ui_pair_list->item(p_index.row());
   QString f_char = f_item->text();
   QString real_char;
+  int f_cid = -1;
 
   if (f_char.endsWith(" [x]"))
   {
@@ -2989,17 +3053,19 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
     f_item->setText(real_char);
   }
   else
-    real_char = f_char;
-
-  int f_cid = -1;
-
-  for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
   {
+   real_char = f_char;
+   for (int n_char = 0 ; n_char < char_list.size() ; n_char++)
+   {
     if (char_list.at(n_char).name == real_char)
       f_cid = n_char;
+   }
   }
 
-  if (f_cid < 0 || f_cid >= char_list.size())
+
+
+
+  if (f_cid < -2 || f_cid >= char_list.size())
   {
     qDebug() << "W: " << real_char << " not present in char_list";
     return;
@@ -3018,8 +3084,10 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   for (int i = 0; i < ui_pair_list->count(); i++) {
     ui_pair_list->item(i)->setText(sorted_pair_list.at(i));
   }
-
-  f_item->setText(real_char + " [x]");
+  if(other_charid != -1)
+  {
+   f_item->setText(real_char + " [x]");
+  }
 }
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)

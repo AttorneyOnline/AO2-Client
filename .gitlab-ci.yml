@@ -1,0 +1,196 @@
+stages:
+  - build
+  - deploy
+  - publish
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - lib/
+
+before_script:
+  - echo Current working directory is $(pwd)
+
+build linux x86_64:
+  image: ubuntu
+  stage: build
+  tags:
+    - docker
+    - linux
+  script:
+    # Install dependencies
+    - apt-get update
+    - >
+      apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev
+      clang make git sudo curl ca-certificates pkg-config upx unzip
+
+    # Print versions
+    - qmake --version
+    - clang --version
+
+    # Extract BASS
+    - mkdir bass
+    - cd bass
+    - curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
+    - unzip bass.zip
+    - cp x64/libbass.so ../lib
+    - curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+    - unzip bassopus.zip
+    - cp x64/libbassopus.so ../lib
+    - cd ..
+
+    # Extract Discord RPC
+    - mkdir discord-rpc
+    - cd discord-rpc
+    - curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
+    - unzip discord_rpc_linux.zip
+    - cp discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ../lib
+    - cd ..
+
+    # Extract QtApng
+    - mkdir qtapng
+    - cd qtapng
+    - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.0-5/build_gcc_64_5.12.0.tar.xz -o apng.tar.xz
+    - tar -xvf apng.tar.xz
+    - cp gcc_64/plugins/imageformats/libqapng.so ../lib
+    - cd ..
+
+    # Build
+    - qmake -spec linux-clang
+    - make -j4
+
+    # Post-processing
+    - upx --lzma -9 --force bin/Attorney_Online
+  artifacts:
+    paths:
+      - bin/
+
+build windows i686:
+  image: ${CI_REGISTRY_IMAGE}/builder-windows-i686
+  stage: build
+  tags:
+    - docker
+    - linux
+  script:
+    # Install dependencies
+    - apt-get update
+    - apt-get install --no-install-recommends -y make curl ca-certificates upx unzip
+
+    # Extract BASS
+    - mkdir bass
+    - cd bass
+    - curl http://www.un4seen.com/files/bass24.zip -o bass.zip
+    - unzip bass.zip
+    - cp bass.dll ../lib
+    - curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+    - unzip bassopus.zip
+    - cp bassopus.dll ../lib
+    - cd ..
+
+    # Build
+    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake
+    - make -j4
+
+    # Post-processing
+    - upx --lzma -9 --force bin/Attorney_Online.exe
+  artifacts:
+    paths:
+      - bin/
+
+# Base folder
+.deploy_base: &deploy_base |
+    mkdir base
+    mkdir base/themes
+    cp -a ../base/themes/default base/themes/
+    cp -a ../base/config.ini base/config.sample.ini
+    cp -a ../base/serverlist.txt base/serverlist.sample.txt
+
+# Miscellaneous files
+.deploy_misc: &deploy_misc |
+    cp -a ../README.md README.md.txt
+    cp -a ../LICENSE.MIT LICENSE.txt
+
+deploy linux x86_64:
+  stage: deploy
+  dependencies:
+    - build linux x86_64
+  tags:
+    - docker
+    - linux
+  script:
+    - mkdir artifact
+    - cd artifact
+    - *deploy_base
+    - *deploy_misc
+
+    # Platform-specific
+    - cp -a ../lib/*.so .
+    - cp -a ../bin/Attorney_Online .
+    - echo "#!/bin/sh" >> ./run.sh
+    - echo "LD_LIBRARY_PATH=.:\$LD_LIBRARY_PATH ./Attorney_Online" >> ./run.sh
+    - chmod +x ./run.sh
+
+    # Zipping
+    # zip -r -9 -l Attorney_Online_$(git describe --tags)_linux_x86_64.zip .
+    - mkdir ../zip
+    - tar cavf ../zip/Attorney_Online_$(git describe --tags)_linux_x64.tar.xz *
+    - sha1sum ../zip/*
+  artifacts:
+    paths:
+      - zip/
+
+deploy windows i686:
+  image: ubuntu
+  stage: deploy
+  dependencies:
+    - build windows i686
+  tags:
+    - docker
+    - linux
+  script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y zip git
+
+    - mkdir artifact
+    - cd artifact
+    - *deploy_base
+    - *deploy_misc
+
+    # Platform-specific
+    - cp -a ../lib/*.dll .
+    - cp -a ../bin/Attorney_Online.exe .
+
+    # Zipping
+    # -r: recursive; -9: max compression; -l: convert to CR LF
+    - mkdir ../zip
+    - zip -r -9 -l ../zip/Attorney_Online_$(git describe --tags)_windows_x86.zip .
+    - sha1sum ../zip/*
+  artifacts:
+    paths:
+      - zip/
+
+publish linux x86_64:
+  image: ubuntu
+  stage: publish
+  dependencies:
+    - deploy linux x86_64
+  when: manual
+  script:
+    - cd zip
+    - ../scripts/wasabi.sh
+  variables:
+    MANIFEST: program_linux_x86_64.json
+    ARTIFACT_SUFFIX: _linux_x64.tar.xz
+
+publish windows i686:
+  image: ubuntu
+  stage: publish
+  dependencies:
+    - deploy windows i686
+  when: manual
+  script:
+    - cd zip
+    - ../scripts/wasabi.sh
+  variables:
+    MANIFEST: program_winnt_i386.json
+    ARTIFACT_SUFFIX: _windows_x86.zip

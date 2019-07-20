@@ -35,7 +35,6 @@
 #include <QSlider>
 #include <QVector>
 #include <QCloseEvent>
-#include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
 #include <QSpinBox>
@@ -48,6 +47,7 @@
 #include <QFont>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QTextBoundaryFinder>
 
 #include <stack>
 
@@ -271,8 +271,6 @@ private:
   QVector<QString> arup_statuses;
   QVector<QString> arup_cms;
   QVector<QString> arup_locks;
-
-  QSignalMapper *char_button_mapper;
 
   QVector<chatlogpiece> ic_chatlog_history;
 
@@ -537,6 +535,7 @@ private:
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
+  void char_clicked(int n_char);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
@@ -651,13 +650,11 @@ private slots:
 
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
-  void on_char_search_changed(const QString& newtext);
-  void on_char_taken_clicked(int newstate);
-  void on_char_passworded_clicked(int newstate);
+  void on_char_search_changed();
+  void on_char_taken_clicked();
+  void on_char_passworded_clicked();
 
   void on_spectator_clicked();
-
-  void char_clicked(int n_char);
 
   void on_switch_area_music_clicked();
 

@@ -44,7 +44,6 @@ void Courtroom::construct_char_select()
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
-  connect (char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
   connect(ui_char_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
@@ -52,9 +51,9 @@ void Courtroom::construct_char_select()
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
-  connect(ui_char_search, SIGNAL(textEdited(const QString&)), this, SLOT(on_char_search_changed(const QString&)));
-  connect(ui_char_passworded, SIGNAL(stateChanged(int)), this, SLOT(on_char_passworded_clicked(int)));
-  connect(ui_char_taken, SIGNAL(stateChanged(int)), this, SLOT(on_char_taken_clicked(int)));
+  connect(ui_char_search, SIGNAL(textEdited(const QString&)), this, SLOT(on_char_search_changed()));
+  connect(ui_char_passworded, SIGNAL(stateChanged(int)), this, SLOT(on_char_passworded_clicked()));
+  connect(ui_char_taken, SIGNAL(stateChanged(int)), this, SLOT(on_char_taken_clicked()));
 }
 
 void Courtroom::set_char_select()
@@ -197,14 +196,15 @@ void Courtroom::character_loading_finished()
     // Later on, we'll be revealing buttons as we need them.
     for (int n = 0; n < char_list.size(); n++)
     {
-      AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
-      character->reset();
-      character->hide();
-      character->set_image(char_list.at(n).name);
-      ui_char_button_list.append(character);
+      AOCharButton* char_button = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+      char_button->reset();
+      char_button->hide();
+      char_button->set_image(char_list.at(n).name);
+      ui_char_button_list.append(char_button);
 
-      connect(character, SIGNAL(clicked()), char_button_mapper, SLOT(map()));
-      char_button_mapper->setMapping(character, ui_char_button_list.size() - 1);
+      connect(char_button, &AOCharButton::clicked, [this, n](){
+        this->char_clicked(n);
+      });
 
       // This part here serves as a way of showing to the player that the game is still running, it is
       // just loading the pictures of the characters.
@@ -252,17 +252,17 @@ void Courtroom::filter_character_list()
     set_char_select_page();
 }
 
-void Courtroom::on_char_search_changed(const QString& newtext)
+void Courtroom::on_char_search_changed()
 {
     filter_character_list();
 }
 
-void Courtroom::on_char_passworded_clicked(int newstate)
+void Courtroom::on_char_passworded_clicked()
 {
     filter_character_list();
 }
 
-void Courtroom::on_char_taken_clicked(int newstate)
+void Courtroom::on_char_taken_clicked()
 {
     filter_character_list();
 }

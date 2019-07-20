@@ -8,22 +8,40 @@ This program has five main dependencies
 * Discord Rich Presence (https://github.com/discordapp/discord-rpc/releases)
 * Qt Apng Plugin (https://github.com/Skycoder42/QtApng/releases)
 
+### Help
+
+If you're having issues with any of this, ask in the offical Discord: https://discord.gg/wWvQ3pw
+Alternatively, you can ask OmniTroid#4004 on Discord.
+
 ### How to build dynamically (the easy way)
 
+#### General preparation
+
 What you want to do is first download the latest version of Qt from the first link. (get the prebuilt dynamic version)
-If you're on Ubuntu, go to the scripts/ folder and run configure_ubuntu.sh. This should fetch all the required dependencies automatically.  
-If not, go to each one of the links above and find the right dynamic library for your platform:
-* Windows: .dll
-* Linux: .so
-* Mac: .dylib
+After going through the OS-specific steps below, compiling in Qt creator should work.
 
-And put them in BOTH lib/ and the repository root (lib/ is required for linking and root is required for runtime)
+#### Windows
 
-Launch Qt creator, open the .pro file and try running it. Ask in the Discord if you're having issues: https://discord.gg/wWvQ3pw  
+If you're on Windows, you need to go find all the dependencies (see above) and put them in the lib/ folder.
+
+#### MacOS
+
+If you're on MacOS, you can simply go to terminal and run ./scripts/configure_macos.sh
+This will automatically fetch all the required dependencies. Additionally, if you need to create a standalone release, just run ./scripts/release_macos.sh
+This will make the .app bundle in bin/ able to execute as a standalone.
+
+#### Ubuntu
+
+If you're on Ubuntu, just go to terminal and run ./scripts/configure_ubuntu.sh
+This should fetch all the required dependencies automatically.  
+
+#### Other Linux
+
+With some tweaks to the ubuntu script, it shouldn't be a big hassle to compile it on a modern linux. Look in the script and see what you may have to modify.
 
 ### How to build statically (the hard way)
 
-You're gonna have a bad time.  
+You're gonna have a bad time.
   
 Building statically means you can distribute the final program without needing to pack alongside a lot of dynamic libraries.  
 This is a tricky process and is not recommended unless you know what you're doing.  
