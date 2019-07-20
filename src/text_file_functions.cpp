@@ -224,7 +224,17 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QStrin
 
   return return_value;
 }
-
+QString AOApplication::get_font_name(QString p_identifier, QString p_file)
+{
+    QString design_ini_path = get_theme_path(p_file);
+    QString f_result = read_design_ini(p_identifier, design_ini_path);
+     QString default_path = get_default_theme_path(p_file);
+    if(f_result == "")
+        {
+            f_result = read_design_ini(p_identifier, default_path);
+        }
+    return f_result;
+}
 int AOApplication::get_font_size(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
