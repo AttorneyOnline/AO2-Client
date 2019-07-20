@@ -199,6 +199,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
 
     // The audio tab.
+    #ifdef BASSAUDIO
     ui_audio_tab = new QWidget();
     ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
 
@@ -218,7 +219,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_device_combobox = new QComboBox(ui_audio_widget);
 
-    // Let's fill out the combobox with the available audio devices.
+    // Let's fill out the combobox with the available audio devices. Or don't if there is no audio
     int a = 0;
     BASS_DEVICEINFO info;
 
@@ -311,6 +312,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_blank_blips_cb->setChecked(p_ao_app->get_blank_blip());
 
     ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
+    #endif
 
     // The casing tab!
     ui_casing_tab = new QWidget();

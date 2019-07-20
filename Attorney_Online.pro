@@ -1,4 +1,4 @@
-QT += core gui widgets multimedia network
+QT += core gui widgets network
 
 TARGET = Attorney_Online
 TEMPLATE = app
@@ -12,8 +12,30 @@ MOC_DIR = $$PWD/build
 
 SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
-LIBS += -L$$PWD/lib -lbass -ldiscord-rpc
+
+
+LIBS += -L$$PWD/lib
+
+DEFINES += DISCORD
+
+contains(DEFINES, DISCORD) {
+LIBS += -ldiscord-rpc
+}
+
+DEFINES += BASSAUDIO
+
+contains(DEFINES, BASSAUDIO) {
+LIBS += -lbass
+}
+
+#DEFINES += QTAUDIO
+
+contains(DEFINES, QTAUDIO) {
+QT += multimedia
+}
+
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
+
 
 CONFIG += c++14
 

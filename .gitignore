@@ -8,6 +8,7 @@ base_override.h
 .DS_Store
 
 base-full/
+base/
 bass.lib
 
 bin/
