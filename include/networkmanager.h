@@ -50,9 +50,6 @@ public:
   // in seconds
   const int ms_reconnect_delay = 7;
 
-  // kind of arbitrary max buffer size
-  #define BUFFER_MAX_SIZE 16384
-
   bool ms_partial_packet = false;
   QString ms_temp_packet = "";
 
