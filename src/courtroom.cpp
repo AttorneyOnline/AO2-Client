@@ -52,10 +52,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
+
   sfx_player = new AOSfxPlayer(this, ao_app);
   sfx_player->set_volume(0);
+
   objection_player = new AOSfxPlayer(this, ao_app);
-  sfx_player->set_volume(0);
+  objection_player->set_volume(0);
+
   blip_player = new AOBlipPlayer(this, ao_app);
   blip_player->set_volume(0);
 
