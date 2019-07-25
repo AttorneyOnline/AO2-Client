@@ -13,6 +13,7 @@ bass.lib
 
 bin/
 bins/
+build/
 release/
 debug/
 
