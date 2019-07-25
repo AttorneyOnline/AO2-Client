@@ -181,12 +181,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_pre = new QCheckBox(this);
   ui_pre->setText("Pre");
+
   ui_flip = new QCheckBox(this);
   ui_flip->setText("Flip");
   ui_flip->hide();
+
   ui_guard = new QCheckBox(this);
   ui_guard->setText("Guard");
   ui_guard->hide();
+
   ui_casing = new QCheckBox(this);
   ui_casing->setChecked(ao_app->get_casing_enabled());
   ui_casing->setText(tr("Casing"));
@@ -238,6 +241,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_log_limit_spinbox->setValue(ao_app->get_max_log_size());
 
   ui_mute_list = new QListWidget(this);
+
   ui_pair_list = new QListWidget(this);
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100,100);
