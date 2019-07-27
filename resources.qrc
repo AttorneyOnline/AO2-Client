@@ -89,5 +89,8 @@
         <file>resource/ui/viewport.ui</file>
         <file>base/themes/default/ic_log_background.png</file>
         <file>resource/ui/ooc.ui</file>
+        <file>resource/ui/jukebox.ui</file>
+        <file>resource/ui/rooms.ui</file>
+        <file>resource/icons/evidence_placeholder.png</file>
     </qresource>
 </RCC>

@@ -14,85 +14,8 @@ TEMPLATE = app
 
 VERSION = 2.6.0.0
 
-SOURCES += main.cpp\
-        lobby.cpp \
-    text_file_functions.cpp \
-    path_functions.cpp \
-    aoimage.cpp \
-    file_functions.cpp \
-    aobutton.cpp \
-    debug_functions.cpp \
-    networkmanager.cpp \
-    aoapplication.cpp \
-    aopacket.cpp \
-    packet_distribution.cpp \
-    hex_functions.cpp \
-    encryption_functions.cpp \
-    courtroom.cpp \
-    aocharbutton.cpp \
-    hardware_functions.cpp \
-    aoscene.cpp \
-    aomovie.cpp \
-    misc_functions.cpp \
-    aocharmovie.cpp \
-    aoemotebutton.cpp \
-    emotes.cpp \
-    aosfxplayer.cpp \
-    aomusicplayer.cpp \
-    aoblipplayer.cpp \
-    evidence.cpp \
-    aoevidencebutton.cpp \
-    charselect.cpp \
-    aolineedit.cpp \
-    aotextedit.cpp \
-    aoevidencedisplay.cpp \
-    discord_rich_presence.cpp \
-    aooptionsdialog.cpp \
-    chatlogpiece.cpp \
-    aocaseannouncerdialog.cpp \
-    aouiloader.cpp \
-    aoviewport.cpp \
-    aoiclog.cpp \
-    aoserverchat.cpp \
-    aojukebox.cpp
-
-HEADERS  += lobby.h \
-    aoimage.h \
-    file_functions.h \
-    aobutton.h \
-    debug_functions.h \
-    networkmanager.h \
-    aoapplication.h \
-    datatypes.h \
-    aopacket.h \
-    hex_functions.h \
-    encryption_functions.h \
-    courtroom.h \
-    aocharbutton.h \
-    hardware_functions.h \
-    aoscene.h \
-    aomovie.h \
-    misc_functions.h \
-    aocharmovie.h \
-    aoemotebutton.h \
-    aosfxplayer.h \
-    aomusicplayer.h \
-    aoblipplayer.h \
-    aoevidencebutton.h \
-    aolineedit.h \
-    aotextedit.h \
-    aoevidencedisplay.h \
-    discord_rich_presence.h \
-    discord-rpc.h \
-    aooptionsdialog.h \
-    text_file_functions.h \
-    chatlogpiece.h \
-    aocaseannouncerdialog.h \
-    aouiloader.h \
-    aoviewport.h \
-    aoiclog.h \
-    aoserverchat.h \
-    aojukebox.h
+SOURCES += $$files($$PWD/src/*.cpp, true)
+HEADERS += $$files($$PWD/include/*.h, true)
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder
 #    AND the compilation output folder. If you are compiling statically, you'll probably
@@ -125,10 +48,4 @@ RESOURCES += \
 
 DISTFILES +=
 
-FORMS += \
-    resource/ui/lobby.ui \
-    resource/ui/courtroom.ui \
-    resource/ui/viewport.ui \
-    resource/ui/ic_log.ui \
-    resource/ui/ooc.ui \
-    resource/ui/jukebox.ui
+FORMS += $$files($$PWD/resource/ui/*.ui)

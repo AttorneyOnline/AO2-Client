@@ -32,12 +32,12 @@
    <item>
     <widget class="QLineEdit" name="search">
      <property name="placeholderText">
-      <string>Search music</string>
+      <string>Search rooms</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QListWidget" name="music_list"/>
+    <widget class="QListWidget" name="area_list"/>
    </item>
   </layout>
  </widget>

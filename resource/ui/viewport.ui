@@ -212,27 +212,27 @@
   <customwidget>
    <class>AOImage</class>
    <extends>QLabel</extends>
-   <header location="global">aoimage.h</header>
+   <header location="global">widgets/aoimage.h</header>
   </customwidget>
   <customwidget>
    <class>AOScene</class>
    <extends>QLabel</extends>
-   <header location="global">aoscene.h</header>
+   <header location="global">widgets/aoscene.h</header>
   </customwidget>
   <customwidget>
    <class>AOMovie</class>
    <extends>QLabel</extends>
-   <header location="global">aomovie.h</header>
+   <header location="global">widgets/aomovie.h</header>
   </customwidget>
   <customwidget>
    <class>AOCharMovie</class>
    <extends>QLabel</extends>
-   <header location="global">aocharmovie.h</header>
+   <header location="global">widgets/aocharmovie.h</header>
   </customwidget>
   <customwidget>
    <class>AOEvidenceDisplay</class>
    <extends>QLabel</extends>
-   <header location="global">aoevidencedisplay.h</header>
+   <header location="global">widgets/aoevidencedisplay.h</header>
   </customwidget>
  </customwidgets>
  <resources>

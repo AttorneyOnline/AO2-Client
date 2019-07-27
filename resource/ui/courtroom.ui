@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>508</width>
-    <height>433</height>
+    <width>672</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -495,10 +495,54 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>508</width>
+     <width>672</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuPlayer">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>Player</string>
+    </property>
+    <addaction name="mute"/>
+    <addaction name="pair"/>
+    <addaction name="call_mod"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="change_character"/>
+    <addaction name="quit"/>
+   </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="settings"/>
+    <addaction name="separator"/>
+    <addaction name="showname_enable"/>
+    <addaction name="modcall_notify"/>
+   </widget>
+   <widget class="QMenu" name="menuCase">
+    <property name="title">
+     <string>Case</string>
+    </property>
+    <addaction name="casing"/>
+    <addaction name="separator"/>
+    <addaction name="announce_case"/>
+   </widget>
+   <widget class="QMenu" name="assetStatus">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Downloading (0.3 MB/12 MB)</string>
+    </property>
+   </widget>
+   <addaction name="menuPlayer"/>
+   <addaction name="menuCase"/>
+   <addaction name="menuOptions"/>
+   <addaction name="assetStatus"/>
   </widget>
   <widget class="QDockWidget" name="ic_chatlog_dock">
    <property name="sizePolicy">
@@ -570,30 +614,169 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </attribute>
    <widget class="AOJukebox" name="jukebox"/>
   </widget>
+  <widget class="QDockWidget" name="rooms_dock">
+   <property name="windowTitle">
+    <string>Rooms</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="AORoomChooser" name="rooms"/>
+  </widget>
+  <widget class="QDockWidget" name="mixer_dock">
+   <property name="windowTitle">
+    <string>Mixer</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="AOMixer" name="mixer"/>
+  </widget>
+  <widget class="QDockWidget" name="ic_dock">
+   <property name="windowTitle">
+    <string>Chat: (character)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="AOChat" name="ic_chat"/>
+  </widget>
+  <widget class="QDockWidget" name="room_controls_dock">
+   <property name="windowTitle">
+    <string>Room buttons</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="AORoomControls" name="room_controls"/>
+  </widget>
+  <action name="mute">
+   <property name="text">
+    <string>Mute…</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+M</string>
+   </property>
+  </action>
+  <action name="pair">
+   <property name="text">
+    <string>Pair with…</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+P</string>
+   </property>
+  </action>
+  <action name="announce_case">
+   <property name="text">
+    <string>Announce case…</string>
+   </property>
+  </action>
+  <action name="change_character">
+   <property name="text">
+    <string>Change character…</string>
+   </property>
+  </action>
+  <action name="quit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
+  <action name="call_mod">
+   <property name="text">
+    <string>Call mod…</string>
+   </property>
+  </action>
+  <action name="settings">
+   <property name="text">
+    <string>Settings…</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
+   </property>
+  </action>
+  <action name="showname_enable">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable custom names</string>
+   </property>
+  </action>
+  <action name="casing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Case in progress</string>
+   </property>
+  </action>
+  <action name="modcall_notify">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Ping on mod call</string>
+   </property>
+  </action>
+  <action name="reload_theme">
+   <property name="text">
+    <string>Reload theme</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>AOServerChat</class>
    <extends>QWidget</extends>
-   <header location="global">aoserverchat.h</header>
+   <header>widgets/aoserverchat.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AOViewport</class>
    <extends>QWidget</extends>
-   <header>aoviewport.h</header>
+   <header>widgets/aoviewport.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AOICLog</class>
    <extends>QWidget</extends>
-   <header>aoiclog.h</header>
+   <header>widgets/aoiclog.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AOJukebox</class>
    <extends>QWidget</extends>
-   <header>aojukebox.h</header>
+   <header>widgets/aojukebox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AORoomChooser</class>
+   <extends>QWidget</extends>
+   <header>widgets/aorooms.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AOMixer</class>
+   <extends>QWidget</extends>
+   <header>widgets/aomixer.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AOChat</class>
+   <extends>QWidget</extends>
+   <header>widgets/aochat.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AORoomControls</class>
+   <extends>QWidget</extends>
+   <header>widgets/aoroomcontrols.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

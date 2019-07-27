@@ -26,27 +26,27 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   setWindowIcon(QIcon(":/logo.png"));
   setFixedSize(windowWidget->size());
 
-  ui_background = findChild<AOImage *>("background");
-  ui_public_servers = findChild<AOButton *>("public_servers");
-  ui_favorites = findChild<AOButton *>("favorites");
-  ui_refresh = findChild<AOButton *>("refresh");
-  ui_add_to_fav = findChild<AOButton *>("add_to_fav");
-  ui_connect = findChild<AOButton *>("connect");
-  ui_version = findChild<QLabel *>("version");
-  ui_about = findChild<AOButton *>("about");
-  ui_server_list = findChild<QListWidget *>("server_list");
-  ui_player_count = findChild<QLabel *>("player_count");
-  ui_description = findChild<QTextBrowser *>("description");
-  ui_chat = findChild<AOServerChat *>("chat");
-  ui_loading_background = findChild<AOImage *>("loading_background");
-  ui_loading_text = findChild<QTextEdit *>("loading_text");
-  ui_progress_bar = findChild<QProgressBar *>("progress_bar");
-  ui_cancel = findChild<AOButton *>("cancel");
+  FROM_UI(AOImage, background)
+  FROM_UI(AOButton, public_servers)
+  FROM_UI(AOButton, favorites)
+  FROM_UI(AOButton, refresh)
+  FROM_UI(AOButton, add_to_fav)
+  FROM_UI(AOButton, connect)
+  FROM_UI(QLabel, version)
+  FROM_UI(AOButton, about)
+  FROM_UI(QListWidget, server_list)
+  FROM_UI(QLabel, player_count)
+  FROM_UI(QTextBrowser, description)
+  FROM_UI(AOServerChat, chat)
+  FROM_UI(AOImage, loading_background)
+  FROM_UI(QTextEdit, loading_text)
+  FROM_UI(QProgressBar, progress_bar)
+  FROM_UI(AOButton, cancel)
 
-  ui_server_list_page = findChild<QWidget *>("server_list_page");
-  ui_loading_page = findChild<QWidget *>("loading_page");
+  FROM_UI(QWidget, server_list_page)
+  FROM_UI(QWidget, loading_page)
 
-  ui_stacked_widget = findChild<QStackedWidget *>("stacked_widget");
+  FROM_UI(QStackedWidget, stacked_widget)
 
   ui_chat->set_name(ao_app->get_ooc_name());
   ui_version->setText("Version: " + ao_app->get_version_string());
@@ -59,9 +59,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
 void Lobby::set_loading_text(QString p_text)
 {
-  ui_loading_text->clear();
-  ui_loading_text->setAlignment(Qt::AlignCenter);
-  ui_loading_text->append(p_text);
+  ui_loading_text->document()->setPlainText(p_text);
 }
 
 void Lobby::show_loading_overlay()

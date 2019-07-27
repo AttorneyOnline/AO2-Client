@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QUiLoader>
 
+#define FROM_UI(type, name) ui_##name = findChild<type *>(#name);
+
 class AOUiLoader : public QUiLoader
 {
   Q_OBJECT

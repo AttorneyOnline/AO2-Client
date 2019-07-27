@@ -82,11 +82,11 @@ public:
 
   QString server_software = "";
 
-  int char_list_size = 0;
-  int loaded_chars = 0;
-  int generated_chars = 0;
   int evidence_list_size = 0;
+  int loaded_chars = 0;
   int loaded_evidence = 0;
+  int generated_chars = 0;
+  int char_list_size = 0;
   int music_list_size = 0;
   int loaded_music = 0;
 
@@ -261,7 +261,7 @@ public:
   int get_sfx_delay(QString p_char, int p_emote);
 
   //Returns the modifier for p_char's p_emote
-  int get_emote_mod(QString p_char, int p_emote);
+  EMOTE_MODIFIER get_emote_mod(QString p_char, int p_emote);
 
   //Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
@@ -297,6 +297,7 @@ public:
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
+  std::bitset<CASING_FLAGS_COUNT> get_casing_flags();
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 6;

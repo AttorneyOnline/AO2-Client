@@ -1,69 +1,170 @@
-<ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>Dialog</class>
- <widget class="QDialog" name="Dialog" >
-  <property name="geometry" >
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>523</width>
+    <height>407</height>
    </rect>
   </property>
-  <property name="windowTitle" >
-   <string>Dialog</string>
+  <property name="windowTitle">
+   <string>Select Character</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox" >
-   <property name="geometry" >
-    <rect>
-     <x>30</x>
-     <y>240</y>
-     <width>341</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation" >
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons" >
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="1">
+    <widget class="QDialogButtonBox" name="buttons">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="spectate">
+     <property name="text">
+      <string>Spectate</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QListWidget" name="char_list">
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>60</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="flow">
+      <enum>QListView::LeftToRight</enum>
+     </property>
+     <property name="layoutMode">
+      <enum>QListView::Batched</enum>
+     </property>
+     <property name="viewMode">
+      <enum>QListView::IconMode</enum>
+     </property>
+     <property name="uniformItemSizes">
+      <bool>true</bool>
+     </property>
+     <property name="itemAlignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="toolTip">
+       <string>&lt;h3&gt;Awesome Face&lt;/h3&gt;
+&lt;p&gt;Even he who not is a kek becomes a kek.&lt;/p&gt;</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../../../../../../Pictures/Other/awesomeface.gif</normaloff>../../../../../../Pictures/Other/awesomeface.gif</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="toolTip">
+       <string>&lt;h3&gt;Derek Stiles&lt;/h3&gt;
+&lt;p&gt;No description provided.&lt;/p&gt;</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../../../../../../Pictures/Other/Ace Attorney Clinical Trial/i_dstiles.png</normaloff>../../../../../../Pictures/Other/Ace Attorney Clinical Trial/i_dstiles.png</iconset>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../../../../../../Pictures/Other/Ace Attorney Clinical Trial/i_vniguel.png</normaloff>../../../../../../Pictures/Other/Ace Attorney Clinical Trial/i_vniguel.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="toolTip">
+       <string>Unknown</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../../../../../../Pictures/Other/Ace Attorney Clinical Trial/Inconnu.png</normaloff>../../../../../../Pictures/Other/Ace Attorney Clinical Trial/Inconnu.png</iconset>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Choose your character:</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>buttons</sender>
    <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
-     <x>248</x>
-     <y>254</y>
+    <hint type="sourcelabel">
+     <x>388</x>
+     <y>384</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>buttons</sender>
    <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
-     <x>316</x>
-     <y>260</y>
+    <hint type="sourcelabel">
+     <x>456</x>
+     <y>390</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spectate</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>59</x>
+     <y>375</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>111</x>
+     <y>312</y>
     </hint>
    </hints>
   </connection>

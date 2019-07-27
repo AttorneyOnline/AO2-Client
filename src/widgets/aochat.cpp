@@ -17,24 +17,20 @@ AOChat::AOChat(QWidget *parent, AOApplication *p_ao_app)
   parentLayout->addWidget(windowWidget);
   setLayout(parentLayout);
 
-  ui_custom_interjection = findChild<QPushButton *>("custom_interjection");
-  ui_holdit = findChild<QPushButton *>("holdit");
-  ui_objection = findChild<QPushButton *>("objection");
-  ui_takethat = findChild<QPushButton *>("takethat");
-
-  ui_chat_entry = findChild<QTextEdit *>("chat_entry");
-  ui_color = findChild<QComboBox *>("color");
-  ui_emote = findChild<QComboBox *>("emote");
-  ui_side = findChild<QComboBox *>("side");
-
-  ui_flip = findChild<QCheckBox *>("flip");
-  ui_no_interrupt = findChild<QCheckBox *>("no_interrupt");
-  ui_preanim = findChild<QCheckBox *>("preanim");
-  ui_realization = findChild<QCheckBox *>("realization");
-
-  ui_emotes = findChild<QListWidget *>("emotes");
-
-  ui_showname = findChild<QLineEdit *>("showname");
+  FROM_UI(QPushButton, custom_interjection)
+  FROM_UI(QPushButton, holdit)
+  FROM_UI(QPushButton, objection)
+  FROM_UI(QPushButton, takethat)
+  FROM_UI(QTextEdit, chat_entry)
+  FROM_UI(QComboBox, color)
+  FROM_UI(QComboBox, emote)
+  FROM_UI(QComboBox, side)
+  FROM_UI(QCheckBox, flip)
+  FROM_UI(QCheckBox, no_interrupt)
+  FROM_UI(QCheckBox, preanim)
+  FROM_UI(QCheckBox, realization)
+  FROM_UI(QListWidget, emotes)
+  FROM_UI(QLineEdit, showname)
 
   connect(ui_custom_interjection, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
   connect(ui_holdit, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
@@ -42,18 +38,50 @@ AOChat::AOChat(QWidget *parent, AOApplication *p_ao_app)
   connect(ui_takethat, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
 }
 
-void AOChat::setCharacter(QString character)
+void AOChat::setCharacter(const QString &character)
 {
+  this->character = character;
   this->setEnabled(!character.isEmpty());
 
-  bool custom = ao_app->custom_objection_enabled &&
+  if (windowFlags() & Qt::Tool)
+    window()->setWindowTitle(tr("Character: %1").arg(
+                               character.isEmpty() ? "(none)" : character));
+
+  if (character.isEmpty())
+    return;
+
+  // Show custom button
+  const bool custom = ao_app->custom_objection_enabled &&
       (file_exists(ao_app->get_character_path(character, "custom.gif")) ||
       file_exists(ao_app->get_character_path(character, "custom.apng"))) &&
       file_exists(ao_app->get_character_path(character, "custom.wav"));
 
   ui_custom_interjection->setVisible(custom);
-  window()->setWindowTitle(tr("Character: %1").arg(
-                             character.isEmpty() ? "(none)" : character));
+  ui_custom_interjection->setChecked(false);
+
+  // Populate emote lists
+  ui_emotes->clear();
+  ui_emote->clear();
+
+  const int totalEmotes = ao_app->get_emote_number(character);
+  for (int i = 0; i < totalEmotes; i++)
+  {
+    const QString imagePath = QStringLiteral("emotions/button%1%2").arg(i);
+    const QString imagePathOff = ao_app->get_character_path(character, imagePath.arg("_off.png"));
+    const QString imagePathOn = ao_app->get_character_path(character, imagePath.arg("_on.png"));
+    const QString emoteName = ao_app->get_emote_comment(character, i);
+
+    auto emoteButton = new QListWidgetItem(emoteName);
+
+    QIcon icon;
+    icon.addFile(imagePathOff, QSize(), QIcon::Mode::Normal);
+    icon.addFile(imagePathOn, QSize(), QIcon::Mode::Selected);
+    emoteButton->setIcon(icon);
+    emoteButton->setData(Qt::UserRole, i);
+
+    ui_emotes->addItem(emoteButton);
+    ui_emote->addItem(emoteName, i);
+  }
 }
 
 void AOChat::clearEntry()
@@ -78,8 +106,47 @@ void AOChat::on_interjection_toggled(bool toggled)
 
 void AOChat::on_side_currentIndexChanged(int index)
 {
-  const QVector<QString> positions = {"wit", "def", "pro", "jud", "hld", "hlp", "jur", "sea"};
   emit positionChanged(positions[index]);
+}
+
+void AOChat::on_emote_currentIndexChanged(int index)
+{
+  ui_emotes->setCurrentRow(index);
+}
+
+void AOChat::on_emotes_currentItemChanged(QListWidgetItem *cur, QListWidgetItem *prev)
+{
+  // Stop trying to deselect the emote!!
+  if (cur == nullptr && prev != nullptr)
+  {
+    ui_emotes->setCurrentItem(prev);
+    return;
+  }
+  else if (cur == nullptr)
+  {
+    // This case should never happen
+    qWarning() << "impossible case occurred";
+    return;
+  }
+
+  int emote = cur->data(Qt::UserRole).toInt();
+  ui_emote->setCurrentIndex(emote);
+
+  EMOTE_MODIFIER modifier = ao_app->get_emote_mod(character, emote);
+  ui_preanim->setChecked(modifier == PREANIM);
+}
+
+void AOChat::on_emotes_itemClicked(QListWidgetItem *emote)
+{
+  if (emote == nullptr)
+    return;
+
+  // This is probably not going to work the way that I expected because
+  // this depends on the order in which order itemClicked and
+  // currentItemChanged are handled. If this slot is handled too late,
+  // then this condition will always be true.
+  if (emote->data(Qt::UserRole) == ui_emote->currentData())
+    ui_preanim->toggle();
 }
 
 void AOChat::on_chatEntry_enterPressed()
@@ -88,6 +155,52 @@ void AOChat::on_chatEntry_enterPressed()
   if (message.isEmpty())
     return;
 
-  // TODO
-  emit sendMessage();
+  emit messageSent();
+}
+
+void AOChat::addMessageData(chat_message_type &message)
+{
+  if (ui_emotes->selectedItems().size() == 0)
+  {
+    // Stop trying to break the game! I told you to stop!!
+    return;
+  }
+
+  // Get the index of the first selected emote
+  int emote = ui_emotes->selectedItems()[0]->data(Qt::UserRole).toInt();
+
+  message.desk = ao_app->get_desk_mod(character, emote);
+  message.preanim = ao_app->get_pre_emote(character, emote);
+  message.character = character;
+  message.anim = ao_app->get_emote(character, emote);
+  message.message = ui_chat_entry->document()->toPlainText();
+  message.side = positions[ui_side->currentIndex()];
+  message.sfx_name = ao_app->get_sfx_name(character, emote);
+  message.emote_modifier = ao_app->get_emote_mod(character, emote);
+
+  // Char ID not set here because this class doesn't have access to it.
+
+  message.sfx_delay = ao_app->get_sfx_delay(character, emote);
+
+  if (ui_objection->isChecked())
+    message.objection_modifier = OBJECTION;
+  else if (ui_holdit->isChecked())
+    message.objection_modifier = HOLD_IT;
+  else if (ui_takethat->isChecked())
+    message.objection_modifier = TAKE_THAT;
+  else if (ui_custom_interjection->isChecked())
+    message.objection_modifier = CUSTOM;
+  else
+    message.objection_modifier = NONE;
+
+  // No access to evidence info.
+
+  message.flip = ui_flip->isChecked();
+  message.realization = ui_realization->isChecked();
+  message.text_color = static_cast<COLOR>(ui_color->currentIndex());
+  message.showname = ui_showname->text();
+
+  // No access to pair info.
+
+  message.noninterrupting_preanim = ui_no_interrupt->isChecked();
 }

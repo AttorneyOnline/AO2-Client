@@ -1,24 +1,24 @@
-#include "hardware_functions.h"
+#include "network/hdid.h"
 
-#include <QDebug>
+#include <QUuid>
+
+namespace AttorneyOnline {
 
 #if (defined (_WIN32) || defined (_WIN64))
 #include <windows.h>
 
-DWORD dwVolSerial;
-BOOL bIsRetrieved;
-
-QString get_hdid()
+QString hdid()
 {
-  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), NULL, NULL, &dwVolSerial, NULL, NULL, NULL, NULL);
+  DWORD dwVolSerial;
+  BOOL bIsRetrieved;
+
+  bIsRetrieved = GetVolumeInformationW(L"C:\\", nullptr, 0, &dwVolSerial,
+                                       nullptr, nullptr, nullptr, 0);
 
   if (bIsRetrieved)
     return QString::number(dwVolSerial, 16);
   else
-    //a totally random string
-    //what could possibly go wrong
-    return "gxsps32sa9fnwic92mfbs0";
-
+    return QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
 }
 
 #elif (defined (LINUX) || defined (__linux__))
@@ -26,15 +26,15 @@ QString get_hdid()
 #include <QFile>
 #include <QTextStream>
 
-QString get_hdid()
+QString hdid()
 {
   QFile fstab_file("/etc/fstab");
   if (!fstab_file.open(QIODevice::ReadOnly))
-    return "gxcps32sa9fnwic92mfbs0";
+    return QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
 
   QTextStream in(&fstab_file);
 
-  while(!in.atEnd())
+  while (!in.atEnd())
   {
     QString line = in.readLine();
 
@@ -46,8 +46,7 @@ QString get_hdid()
         return line_elements.at(1).left(23).trimmed();
     }
   }
-
-  return "gxcpz32sa9fnwic92mfbs0";
+  return QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
 }
 
 #else
@@ -55,3 +54,5 @@ QString get_hdid()
 #error This operating system is unsupported for hardware functions.
 
 #endif
+
+} // namespace AttorneyOnline

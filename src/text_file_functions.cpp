@@ -1,5 +1,7 @@
 #include "text_file_functions.h"
 
+#include <bitset>
+
 QString AOApplication::read_theme()
 {
   QString result = configini->value("theme", "default").value<QString>();
@@ -512,7 +514,7 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
   else return result_contents.at(2);
 }
 
-int AOApplication::get_emote_mod(QString p_char, int p_emote)
+EMOTE_MODIFIER AOApplication::get_emote_mod(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Emotions");
 
@@ -521,9 +523,9 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
   if (result_contents.size() < 4)
   {
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << QString::number(p_emote);
-    return 0;
+    return NO_PREANIM;
   }
-  else return result_contents.at(3).toInt();
+  else return static_cast<EMOTE_MODIFIER>(result_contents.at(3).toInt());
 }
 
 int AOApplication::get_desk_mod(QString p_char, int p_emote)
@@ -636,4 +638,14 @@ QString AOApplication::get_casing_can_host_cases()
 {
   QString result = configini->value("casing_can_host_cases", "Turnabout Check Your Settings").value<QString>();
   return result;
+}
+
+std::bitset<CASING_FLAGS_COUNT> AOApplication::get_casing_flags()
+{
+  return casing_flags_to_bitset(get_casing_defence_enabled(),
+                                get_casing_prosecution_enabled(),
+                                get_casing_judge_enabled(),
+                                get_casing_juror_enabled(),
+                                get_casing_steno_enabled(),
+                                get_casing_cm_enabled());
 }

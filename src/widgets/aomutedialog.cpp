@@ -1,5 +1,6 @@
 #include "widgets/aomutedialog.h"
 
+#include <QAbstractButton>
 #include <QUiLoader>
 #include <QVBoxLayout>
 
@@ -24,8 +25,8 @@ AOMuteDialog::AOMuteDialog(QWidget *parent)
 void AOMuteDialog::setCharacters(QVector<QString> characters)
 {
   ui_mute_list->clear();
-  // I think CIDs start at 1 (Pascal/Delphi) - please verify
-  int cid = 1;
+
+  int cid = 0;
   for (const QString &character : characters)
   {
     auto item = new QListWidgetItem(character);
@@ -40,4 +41,11 @@ void AOMuteDialog::on_muteList_itemChanged(QListWidgetItem *item)
   // check states.
   emit mute(item->data(Qt::UserRole).toInt(),
             item->checkState() == Qt::CheckState::Checked);
+}
+
+void AOMuteDialog::on_buttons_clicked(QAbstractButton *button)
+{
+  if (ui_buttons->standardButton(button) == QDialogButtonBox::Reset) {
+    ui_mute_list->reset();
+  }
 }

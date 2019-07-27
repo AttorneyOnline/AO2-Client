@@ -35,6 +35,7 @@ typedef int BOOL;
 #endif
 
 #ifdef __cplusplus
+namespace BASS {
 extern "C" {
 #endif
 
@@ -1144,6 +1145,8 @@ static inline BOOL BASS_SetConfigPtr(DWORD option, const WCHAR *value)
 	return BASS_SetConfigPtr(option|BASS_UNICODE, (const void*)value);
 }
 #endif
+}
+using namespace BASS;
 #endif
 
 #endif

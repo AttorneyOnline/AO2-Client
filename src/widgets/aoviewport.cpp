@@ -360,7 +360,8 @@ void AOViewport::handle_chatmessage_2()
       ui_vp_sideplayer_char->set_flipped(true);
     else
       ui_vp_sideplayer_char->set_flipped(false);
-    ui_vp_sideplayer_char->play_idle(m_chatmessage.pair_character, m_chatmessage.pair_anim);
+    ui_vp_sideplayer_char->play_idle(m_chatmessage.pair_character.toString(),
+                                     m_chatmessage.pair_anim);
   }
 
   switch (emote_mod)
@@ -547,7 +548,7 @@ void AOViewport::start_chat_ticking()
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
-  chat_tick_timer->start(message_display_speed.current_display_speed);
+  chat_tick_timer->start(message_display_speed[current_display_speed]);
 
   QString f_gender = ao_app->get_gender(m_chatmessage.character);
 
@@ -836,7 +837,7 @@ void AOViewport::chat_tick()
     }
     else
     {
-        chat_tick_timer->start(message_display_speed.current_display_speed);
+        chat_tick_timer->start(message_display_speed[current_display_speed]);
     }
 
   }

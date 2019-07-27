@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QStringList>
+#include <QVariant>
+#include <bitset>
 
 struct server_type
 {
@@ -36,6 +38,11 @@ struct evi_type
   QString name;
   QString description;
   QString image;
+
+  operator QStringList() const
+  {
+    return {name, description, image};
+  }
 };
 
 struct area_type
@@ -155,6 +162,31 @@ enum OBJECTION_TYPE
   CUSTOM
 };
 
+enum CASING_FLAGS
+{
+  CASING_DEF = 0,
+  CASING_PRO,
+  CASING_JUD,
+  CASING_JUR,
+  CASING_STENO,
+  CASING_CM
+};
+const auto CASING_FLAGS_COUNT = 6;
+
+std::bitset<CASING_FLAGS_COUNT>
+casing_flags_to_bitset(bool def, bool pro, bool jud, bool jur,
+                       bool steno, bool cm)
+{
+  std::bitset<CASING_FLAGS_COUNT> bitset;
+  bitset[CASING_DEF] = def;
+  bitset[CASING_PRO] = pro;
+  bitset[CASING_JUD] = jud;
+  bitset[CASING_JUR] = jur;
+  bitset[CASING_STENO] = steno;
+  bitset[CASING_CM] = cm;
+  return bitset;
+}
+
 struct chat_message_type
 {
   bool desk;
@@ -177,14 +209,16 @@ struct chat_message_type
   int self_offset = 0;
   bool noninterrupting_preanim = false;
 
-  QString pair_character;
+  // client -> server: int
+  // server -> client: string
+  QVariant pair_character;
   QString pair_anim;
   int pair_offset;
   bool pair_flip;
 
   chat_message_type() {}
 
-  chat_message_type(QStringList &contents)
+  chat_message_type(const QStringList &contents)
   {
     desk = contents[0].toInt();
     preanim = contents[1];
@@ -219,6 +253,35 @@ struct chat_message_type
     pair_offset = contents[19].toInt();
     pair_flip = contents[20].toInt();
     noninterrupting_preanim = contents[21].toInt();
+  }
+
+  operator QStringList() const
+  {
+    return {
+      QString::number(desk),
+      preanim,
+      character,
+      anim,
+      message,
+      side,
+      sfx_name,
+      QString::number(emote_modifier),
+      QString::number(char_id),
+      QString::number(sfx_delay),
+      QString::number(objection_modifier),
+      QString::number(evidence),
+      QString::number(flip),
+      QString::number(realization),
+      QString::number(text_color),
+      showname,
+      QString::number(pair_char_id),
+      QString::number(pair_character.toInt()),
+      pair_anim,
+      QString::number(self_offset),
+      QString::number(pair_offset),
+      QString::number(pair_flip),
+      QString::number(noninterrupting_preanim)
+    };
   }
 };
 

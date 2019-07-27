@@ -74,7 +74,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   else if (header == "AO2CHECK")
   {
     send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
-    send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
+    send_ms_packet(new AOPacket("HI#" + hdid() + "#%"));
 
     if (f_contents.size() < 1)
       goto end;
@@ -135,9 +135,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() == 0)
       goto end;
 
-    //you may ask where 322 comes from. that would be a good question.
-    s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
-
     //default(legacy) values
     encryption_needed = true;
     yellow_text_enabled = false;
@@ -152,14 +149,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     casing_alerts_enabled = false;
     modcall_reason_enabled = false;
 
-    //workaround for tsuserver4
-    if (f_contents.at(0) == "NOENCRYPT")
-      encryption_needed = false;
-
-    QString f_hdid;
-    f_hdid = get_hdid();
-
-    AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
+    AOPacket *hi_packet = new AOPacket("HI#" + hdid() + "#%");
     send_server_packet(hi_packet);
   }
   else if (header == "ID")
@@ -244,27 +234,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString window_title = "Attorney Online 2";
     int selected_server = w_lobby->get_selected_server();
 
-    QString server_address = "", server_name = "";
-    if (w_lobby->public_servers_selected)
-    {
-      if (selected_server >= 0 && selected_server < server_list.size()) {
-        auto info = server_list.at(selected_server);
-        server_name = info.name;
-        server_address = QString("%1:%2").arg(info.ip, info.port);
-        window_title += ": " + server_name;
-      }
-    }
-    else
-    {
-      if (selected_server >= 0 && selected_server < favorite_list.size()) {
-        auto info = favorite_list.at(selected_server);
-        server_name = info.name;
-        server_address = info.ip + info.port;
-        window_title += ": " + server_name;
-      }
+    QString server_address, server_name;
+    auto &serverList = w_lobby->public_servers_selected ? server_list : favorite_list;
+
+    if (selected_server >= 0 && selected_server < serverList.size()) {
+      auto info = serverList.at(selected_server);
+      server_name = info.name;
+      server_address = QStringLiteral("%1:%2").arg(info.ip, info.port);
+      window_title += ": " + server_name;
     }
 
-    w_courtroom->set_window_title(window_title);
+    w_courtroom->setWindowTitle(window_title);
 
     w_lobby->show_loading_overlay();
     w_lobby->set_loading_text("Loading");
@@ -588,7 +568,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (lobby_constructed)
       w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
 
-    w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 
     courtroom_loaded = true;
@@ -638,7 +617,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "HP")
   {
     if (courtroom_constructed && f_contents.size() > 1)
-      w_courtroom->set_hp_bar(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+      w_courtroom->set_hp_bar(static_cast<HEALTH_TYPE>(f_contents.at(0).toInt()),
+                              f_contents.at(1).toInt());
   }
   else if (header == "LE")
   {
@@ -675,21 +655,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         }
       }
   }
-  else if (header == "IL")
-  {
-    if (courtroom_constructed && f_contents.size() > 0)
-      w_courtroom->set_ip_list(f_contents.at(0));
-  }
-  else if (header == "MU")
-  {
-    if (courtroom_constructed && f_contents.size() > 0)
-      w_courtroom->set_mute(true, f_contents.at(0).toInt());
-  }
-  else if (header == "UM")
-  {
-    if (courtroom_constructed && f_contents.size() > 0)
-      w_courtroom->set_mute(false, f_contents.at(0).toInt());
-  }
   else if (header == "KK")
   {
     if (courtroom_constructed && f_contents.size() >= 1)
@@ -721,7 +686,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "CASEA")
   {
     if (courtroom_constructed && f_contents.size() > 6)
-      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1", f_contents.at(2) == "1", f_contents.at(3) == "1", f_contents.at(4) == "1", f_contents.at(5) == "1");
+    {
+
+      w_courtroom->case_called(f_contents.at(0), casingFlags);
+    }
   }
 
   end:
