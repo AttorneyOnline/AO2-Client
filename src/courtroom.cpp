@@ -127,7 +127,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
-  ui_ooc_chat_name->setPlaceholderText("Name");
+  ui_ooc_chat_name->setPlaceholderText(tr("Name"));
   ui_ooc_chat_name->setMaxLength(30);
   ui_ooc_chat_name->setText(p_ao_app->get_default_username());
 
@@ -180,14 +180,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_switch_area_music = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
-  ui_pre->setText("Pre");
+  ui_pre->setText(tr("Pre"));
 
   ui_flip = new QCheckBox(this);
-  ui_flip->setText("Flip");
+  ui_flip->setText(tr("Flip"));
   ui_flip->hide();
 
   ui_guard = new QCheckBox(this);
-  ui_guard->setText("Guard");
+  ui_guard->setText(tr("Guard"));
   ui_guard->hide();
 
   ui_casing = new QCheckBox(this);
@@ -214,15 +214,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_prosecution_minus = new AOButton(this, ao_app);
 
   ui_text_color = new QComboBox(this);
-  ui_text_color->addItem("White");
-  ui_text_color->addItem("Green");
-  ui_text_color->addItem("Red");
-  ui_text_color->addItem("Orange");
-  ui_text_color->addItem("Blue");
-  ui_text_color->addItem("Yellow");
-  ui_text_color->addItem("Rainbow");
-  ui_text_color->addItem("Pink");
-  ui_text_color->addItem("Cyan");
+  ui_text_color->addItem(tr("White"));
+  ui_text_color->addItem(tr("Green"));
+  ui_text_color->addItem(tr("Red"));
+  ui_text_color->addItem(tr("Orange"));
+  ui_text_color->addItem(tr("Blue"));
+  ui_text_color->addItem(tr("Yellow"));
+  ui_text_color->addItem(tr("Rainbow"));
+  ui_text_color->addItem(tr("Pink"));
+  ui_text_color->addItem(tr("Cyan"));
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -689,7 +689,7 @@ void Courtroom::set_widgets()
   ui_selector->hide();
 
   set_size_and_pos(ui_back_to_lobby, "back_to_lobby");
-  ui_back_to_lobby->setText("Back to Lobby");
+  ui_back_to_lobby->setText(tr("Back to Lobby"));
 
   set_size_and_pos(ui_char_password, "char_password");
 
@@ -2678,21 +2678,21 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/login"))
   {
     ui_guard->show();
-    append_server_chatmessage("CLIENT", "You were granted the Guard button.", "1");
+    append_server_chatmessage("CLIENT", tr("You were granted the Guard button."), "1");
   }
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
     //ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
     //rainbow_appended = true;
-    append_server_chatmessage("CLIENT", "This does nohing, but there you go.", "1");
+    append_server_chatmessage("CLIENT", tr("This does nohing, but there you go."), "1");
     return;
   }
   else if (ooc_message.startsWith("/settings"))
   {
     ui_ooc_chat_message->clear();
     ao_app->call_settings_menu();
-    append_server_chatmessage("CLIENT", "You opened the settings menu.", "1");
+    append_server_chatmessage("CLIENT", tr("You opened the settings menu."), "1");
     return;
   }
   else if (ooc_message.startsWith("/pair"))
@@ -2707,20 +2707,20 @@ void Courtroom::on_ooc_return_pressed()
       if (whom > -1)
       {
         other_charid = whom;
-        QString msg = "You will now pair up with ";
+        QString msg = tr("You will now pair up with ");
         msg.append(char_list.at(whom).name);
-        msg.append(" if they also choose your character in return.");
+        msg.append(tr(" if they also choose your character in return."));
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else
       {
         other_charid = -1;
-        append_server_chatmessage("CLIENT", "You are no longer paired with anyone.", "1");
+        append_server_chatmessage("CLIENT", tr("You are no longer paired with anyone."), "1");
       }
     }
     else
     {
-      append_server_chatmessage("CLIENT", "Are you sure you typed that well? The char ID could not be recognised.", "1");
+      append_server_chatmessage("CLIENT", tr("Are you sure you typed that well? The char ID could not be recognised."), "1");
     }
     return;
   }
@@ -2736,32 +2736,32 @@ void Courtroom::on_ooc_return_pressed()
       if (off >= -100 && off <= 100)
       {
         offset_with_pair = off;
-        QString msg = "You have set your offset to ";
+        QString msg = tr("You have set your offset to ");
         msg.append(QString::number(off));
         msg.append("%.");
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else
       {
-        append_server_chatmessage("CLIENT", "Your offset must be between -100% and 100%!", "1");
+        append_server_chatmessage("CLIENT", tr("Your offset must be between -100% and 100%!"), "1");
       }
     }
     else
     {
-      append_server_chatmessage("CLIENT", "That offset does not look like one.", "1");
+      append_server_chatmessage("CLIENT", tr("That offset does not look like one."), "1");
     }
     return;
   }
   else if (ooc_message.startsWith("/switch_am"))
   {
-      append_server_chatmessage("CLIENT", "You switched your music and area list.", "1");
+      append_server_chatmessage("CLIENT", tr("You switched your music and area list."), "1");
       on_switch_area_music_clicked();
       ui_ooc_chat_message->clear();
       return;
   }
   else if (ooc_message.startsWith("/enable_blocks"))
   {
-    append_server_chatmessage("CLIENT", "You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.", "1");
+    append_server_chatmessage("CLIENT", tr("You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this."), "1");
     ao_app->cccc_ic_support_enabled = true;
     ao_app->arup_enabled = true;
     ao_app->modcall_reason_enabled = true;
@@ -2772,9 +2772,9 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/non_int_pre"))
   {
     if (ui_pre_non_interrupt->isChecked())
-      append_server_chatmessage("CLIENT", "Your pre-animations interrupt again.", "1");
+      append_server_chatmessage("CLIENT", tr("Your pre-animations interrupt again."), "1");
     else
-      append_server_chatmessage("CLIENT", "Your pre-animations will not interrupt text.", "1");
+      append_server_chatmessage("CLIENT", tr("Your pre-animations will not interrupt text."), "1");
     ui_pre_non_interrupt->setChecked(!ui_pre_non_interrupt->isChecked());
     ui_ooc_chat_message->clear();
     return;
@@ -2785,7 +2785,7 @@ void Courtroom::on_ooc_return_pressed()
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
-      append_server_chatmessage("CLIENT", "Couldn't open chatlog.txt to write into.", "1");
+      append_server_chatmessage("CLIENT", tr("Couldn't open chatlog.txt to write into."), "1");
       ui_ooc_chat_message->clear();
       return;
     }
@@ -2798,7 +2798,7 @@ void Courtroom::on_ooc_return_pressed()
 
     file.close();
 
-    append_server_chatmessage("CLIENT", "The IC chatlog has been saved.", "1");
+    append_server_chatmessage("CLIENT", tr("The IC chatlog has been saved."), "1");
     ui_ooc_chat_message->clear();
     return;
   }
@@ -2810,7 +2810,7 @@ void Courtroom::on_ooc_return_pressed()
     if (!casefolder.exists())
     {
         QDir::current().mkdir("base/" + casefolder.dirName());
-        append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely the case file you're looking for can't be found in there.", "1");
+        append_server_chatmessage("CLIENT", tr("You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely the case file you're looking for can't be found in there."), "1");
         ui_ooc_chat_message->clear();
         return;
     }
@@ -2821,7 +2821,7 @@ void Courtroom::on_ooc_return_pressed()
 
     if (command.size() < 2)
     {
-      append_server_chatmessage("CLIENT", "You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.\nCases you can load: " + caseslist.join(", "), "1");
+      append_server_chatmessage("CLIENT", tr("You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.\nCases you can load: ") + caseslist.join(", "), "1");
       ui_ooc_chat_message->clear();
       return;
     }
@@ -2829,7 +2829,7 @@ void Courtroom::on_ooc_return_pressed()
 
     if (command.size() > 2)
     {
-      append_server_chatmessage("CLIENT", "Too many arguments to load a case! You only need one filename, without extension.", "1");
+      append_server_chatmessage("CLIENT", tr("Too many arguments to load a case! You only need one filename, without extension."), "1");
       ui_ooc_chat_message->clear();
       return;
     }
@@ -2842,13 +2842,13 @@ void Courtroom::on_ooc_return_pressed()
     QString casestatus = casefile.value("status", "").value<QString>();
 
     if (!caseauth.isEmpty())
-      append_server_chatmessage("CLIENT", "Case made by " + caseauth + ".", "1");
+      append_server_chatmessage("CLIENT", tr("Case made by ") + caseauth + ".", "1");
     if (!casedoc.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
     if (!casestatus.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status " + casestatus + "#%"));
     if (!cmdoc.isEmpty())
-      append_server_chatmessage("CLIENT", "Navigate to " + cmdoc + " for the CM doc.", "1");
+      append_server_chatmessage("CLIENT", tr("Navigate to ") + cmdoc + tr(" for the CM doc."), "1");
 
     for (int i = local_evidence_list.size() - 1; i >= 0; i--) {
         ao_app->send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
@@ -2867,7 +2867,7 @@ void Courtroom::on_ooc_return_pressed()
         ao_app->send_server_packet(new AOPacket("PE", f_contents));
       }
 
-    append_server_chatmessage("CLIENT", "Your case \"" + command[1] + "\" was loaded!", "1");
+    append_server_chatmessage("CLIENT", tr("Your case \"") + command[1] + tr("\" was loaded!"), "1");
     ui_ooc_chat_message->clear();
     return;
   }
@@ -2879,7 +2879,7 @@ void Courtroom::on_ooc_return_pressed()
       if (!casefolder.exists())
       {
           QDir::current().mkdir("base/" + casefolder.dirName());
-          append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely that you somehow deleted it.", "1");
+          append_server_chatmessage("CLIENT", tr("You don't have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it's likely that you somehow deleted it."), "1");
           ui_ooc_chat_message->clear();
           return;
       }
@@ -2890,7 +2890,7 @@ void Courtroom::on_ooc_return_pressed()
 
       if (command.size() < 3)
       {
-        append_server_chatmessage("CLIENT", "You need to give a filename to save (extension not needed) and the courtroom status!", "1");
+        append_server_chatmessage("CLIENT", tr("You need to give a filename to save (extension not needed) and the courtroom status!"), "1");
         ui_ooc_chat_message->clear();
         return;
       }
@@ -2898,7 +2898,7 @@ void Courtroom::on_ooc_return_pressed()
 
       if (command.size() > 3)
       {
-        append_server_chatmessage("CLIENT", "Too many arguments to save a case! You only need a filename without extension and the courtroom status!", "1");
+        append_server_chatmessage("CLIENT", tr("Too many arguments to save a case! You only need a filename without extension and the courtroom status!"), "1");
         ui_ooc_chat_message->clear();
         return;
       }
@@ -2920,7 +2920,7 @@ void Courtroom::on_ooc_return_pressed()
            casefile.endGroup();
       }
       casefile.sync();
-      append_server_chatmessage("CLIENT", "Succesfully saved, edit doc and cmdoc link on the ini!", "1");
+      append_server_chatmessage("CLIENT", tr("Succesfully saved, edit doc and cmdoc link on the ini!"), "1");
       ui_ooc_chat_message->clear();
       return;
 
@@ -2948,7 +2948,7 @@ void Courtroom::on_ooc_toggle_clicked()
   {
     ui_ms_chatlog->show();
     ui_server_chatlog->hide();
-    ui_ooc_toggle->setText("Master");
+    ui_ooc_toggle->setText(tr("Master"));
 
     server_ooc = false;
   }
@@ -2956,7 +2956,7 @@ void Courtroom::on_ooc_toggle_clicked()
   {
     ui_ms_chatlog->hide();
     ui_server_chatlog->show();
-    ui_ooc_toggle->setText("Server");
+    ui_ooc_toggle->setText(tr("Server"));
 
     server_ooc = true;
   }
@@ -3419,8 +3419,8 @@ void Courtroom::on_call_mod_clicked()
     QInputDialog input;
 
     input.setWindowFlags(Qt::WindowSystemMenuHint);
-    input.setLabelText("Reason:");
-    input.setWindowTitle("Call Moderator");
+    input.setLabelText(tr("Reason:"));
+    input.setWindowTitle(tr("Call Moderator"));
     auto code = input.exec();
 
     if (code != QDialog::Accepted)
@@ -3428,10 +3428,10 @@ void Courtroom::on_call_mod_clicked()
 
     QString text = input.textValue();
     if (text.isEmpty()) {
-      errorBox.critical(nullptr, "Error", "You must provide a reason.");
+      errorBox.critical(nullptr, tr("Error"), tr("You must provide a reason."));
       return;
     } else if (text.length() > 256) {
-      errorBox.critical(nullptr, "Error", "The message is too long.");
+      errorBox.critical(nullptr, tr("Error"), tr("The message is too long."));
       return;
     }
 
