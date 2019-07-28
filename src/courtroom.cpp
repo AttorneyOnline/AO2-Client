@@ -2685,7 +2685,7 @@ void Courtroom::on_ooc_return_pressed()
     //ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
     //rainbow_appended = true;
-    append_server_chatmessage("CLIENT", tr("This does nohing, but there you go."), "1");
+    append_server_chatmessage("CLIENT", tr("This does nothing, but there you go."), "1");
     return;
   }
   else if (ooc_message.startsWith("/settings"))
