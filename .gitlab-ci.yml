@@ -168,6 +168,20 @@ deploy windows i686:
   artifacts:
     paths:
       - zip/
+      
+# How to publish to S3/Wasabi:
+# - Ensure the following variables have been populated in the CI/CD settings:
+#   - S3_ACCESS_KEY, S3_SECRET_KEY
+#   - S3_MANIFESTS, S3_ARCHIVES
+# - Select "Run Pipeline" on the Pipelines menu on GitLab.
+# - Select the version you want to release.
+# - Set the following variables:
+#   - MANIFEST: program_winnt_i386.json
+#   - ARCHIVE_FULL: ao-X.Y.Z-win32.zip
+#   - VERSION: X.Y.Z
+#   - EXECUTABLE: Attorney_Online_X.Y.Z.exe
+# - Run the pipeline to completion.
+# (See scripts/wasabi.sh)
 
 publish linux x86_64:
   image: ubuntu
