@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     main_app.installTranslator(&qtTranslator);
 
     QTranslator appTranslator;
-    appTranslator.load("ao_" + QLocale::system().name());
+    appTranslator.load("ao_" + QLocale::system().name(),"base/translations/");
     main_app.installTranslator(&appTranslator);
 
     main_app.construct_lobby();
