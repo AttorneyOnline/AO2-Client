@@ -8,18 +8,7 @@
 #include <QPluginLoader>
 #include <QDebug>
 #include <QTranslator>
-
-static void install_translators(QtApplication &app)
-{
-  QTranslator qtTranslator;
-  qtTranslator.load("qt_" + QLocale::system().name(),
-          QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-  app.installTranslator(&qtTranslator);
-
-  QTranslator appTranslator;
-  appTranslator.load("ao_" + QLocale::system().name());
-  app.installTranslator(&appTranslator);
-}
+#include <QLibraryInfo>
 
 int main(int argc, char *argv[])
 {
@@ -32,7 +21,14 @@ int main(int argc, char *argv[])
 
     AOApplication main_app(argc, argv);
 
-    install_translators(&main_app);
+    QTranslator qtTranslator;
+    qtTranslator.load("qt_" + QLocale::system().name(),
+            QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    main_app.installTranslator(&qtTranslator);
+
+    QTranslator appTranslator;
+    appTranslator.load("ao_" + QLocale::system().name());
+    main_app.installTranslator(&appTranslator);
 
     main_app.construct_lobby();
     main_app.net_manager->connect_to_master();
