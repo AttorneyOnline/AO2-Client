@@ -35,26 +35,26 @@ Have a nice day.</source>
     <message>
         <location filename="../src/packet_distribution.cpp" line="275"/>
         <source>Loading</source>
-        <translation type="unfinished"></translation>
+        <translation>ロード中</translation>
     </message>
     <message>
         <location filename="../src/packet_distribution.cpp" line="363"/>
         <source>Loading evidence:
 %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>証拠がロード中: %1/%2</translation>
     </message>
     <message>
         <location filename="../src/packet_distribution.cpp" line="395"/>
         <location filename="../src/packet_distribution.cpp" line="490"/>
         <source>Loading music:
 %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>音楽がロード中: %1/%2</translation>
     </message>
     <message>
         <location filename="../src/packet_distribution.cpp" line="467"/>
         <source>Loading chars:
 %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>キャラがロード中: %1/%2</translation>
     </message>
     <message>
         <location filename="../src/packet_distribution.cpp" line="642"/>
@@ -217,7 +217,7 @@ Reason: </source>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="247"/>
         <source>Music:</source>
-        <translation type="unfinished"></translation>
+        <translation>音楽:</translation>
     </message>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="248"/>
@@ -227,7 +227,7 @@ Reason: </source>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="260"/>
         <source>SFX:</source>
-        <translation type="unfinished"></translation>
+        <translation>効果音:</translation>
     </message>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="261"/>
@@ -237,7 +237,7 @@ Reason: </source>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="274"/>
         <source>Blips:</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリップ:</translation>
     </message>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="275"/>
@@ -375,7 +375,7 @@ Reason: </source>
     <message>
         <location filename="../src/charselect.cpp" line="27"/>
         <source>Spectator</source>
-        <translation type="unfinished"></translation>
+        <translation>観客</translation>
     </message>
     <message>
         <location filename="../src/charselect.cpp" line="30"/>
@@ -394,6 +394,12 @@ Reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/charselect.cpp" line="217"/>
+        <source>Generating chars:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/courtroom.cpp" line="116"/>
         <source>Showname</source>
         <translation type="unfinished"></translation>
@@ -406,22 +412,22 @@ Reason: </source>
     <message>
         <location filename="../src/courtroom.cpp" line="130"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>名前</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="183"/>
         <source>Pre</source>
-        <translation type="unfinished"></translation>
+        <translation>前</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="186"/>
         <source>Flip</source>
-        <translation type="unfinished"></translation>
+        <translation>フリップ</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="190"/>
         <source>Guard</source>
-        <translation type="unfinished"></translation>
+        <translation>ガード</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="195"/>
@@ -441,31 +447,36 @@ Reason: </source>
     <message>
         <location filename="../src/courtroom.cpp" line="217"/>
         <source>White</source>
-        <translation type="unfinished"></translation>
+        <translation>白</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="218"/>
         <source>Green</source>
-        <translation type="unfinished"></translation>
+        <translation>緑</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="219"/>
         <source>Red</source>
-        <translation type="unfinished"></translation>
+        <translation>赤</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="220"/>
         <source>Orange</source>
-        <translation type="unfinished"></translation>
+        <translation>オレンジ</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="221"/>
         <source>Blue</source>
-        <translation type="unfinished"></translation>
+        <translation>青</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="222"/>
         <source>Yellow</source>
+        <translation>黄色</translation>
+    </message>
+    <message>
+        <location filename="../src/courtroom.cpp" line="2688"/>
+        <source>This does nothing, but there you go.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -476,12 +487,12 @@ Reason: </source>
     <message>
         <location filename="../src/courtroom.cpp" line="692"/>
         <source>Back to Lobby</source>
-        <translation type="unfinished"></translation>
+        <translation>ロビーに戻る</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="223"/>
         <source>Rainbow</source>
-        <translation type="unfinished"></translation>
+        <translation>虹</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="224"/>
@@ -496,11 +507,6 @@ Reason: </source>
     <message>
         <location filename="../src/courtroom.cpp" line="2681"/>
         <source>You were granted the Guard button.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/courtroom.cpp" line="2688"/>
-        <source>This does nohing, but there you go.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -637,7 +643,7 @@ Cases you can load: </source>
     <message>
         <location filename="../src/courtroom.cpp" line="2951"/>
         <source>Master</source>
-        <translation type="unfinished"></translation>
+        <translation>マスター</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="3422"/>
@@ -647,7 +653,7 @@ Cases you can load: </source>
     <message>
         <location filename="../src/courtroom.cpp" line="3423"/>
         <source>Call Moderator</source>
-        <translation type="unfinished"></translation>
+        <translation>モデレーターを呼ぶ</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="3431"/>
@@ -667,18 +673,18 @@ Cases you can load: </source>
     </message>
     <message>
         <location filename="../src/evidence.cpp" line="25"/>
-        <source>Choose..</source>
-        <translation type="unfinished"></translation>
+        <source>Choose...</source>
+        <translation>選択...</translation>
     </message>
     <message>
         <location filename="../src/evidence.cpp" line="194"/>
         <source>Images (*.png)</source>
-        <translation type="unfinished"></translation>
+        <translation>イメージ (*.png)</translation>
     </message>
     <message>
         <location filename="../src/evidence.cpp" line="268"/>
         <source>Add new evidence...</source>
-        <translation type="unfinished"></translation>
+        <translation>新しい証拠を付け加える...</translation>
     </message>
 </context>
 <context>
@@ -689,22 +695,22 @@ Cases you can load: </source>
         <location filename="../src/discord_rich_presence.cpp" line="75"/>
         <location filename="../src/discord_rich_presence.cpp" line="94"/>
         <source>Objection!</source>
-        <translation type="unfinished"></translation>
+        <translation>意義あり!</translation>
     </message>
     <message>
         <location filename="../src/discord_rich_presence.cpp" line="37"/>
         <source>In Lobby</source>
-        <translation type="unfinished"></translation>
+        <translation>ロビーでいる</translation>
     </message>
     <message>
         <location filename="../src/discord_rich_presence.cpp" line="38"/>
         <source>Idle</source>
-        <translation type="unfinished"></translation>
+        <translation>落ちている</translation>
     </message>
     <message>
         <location filename="../src/discord_rich_presence.cpp" line="54"/>
         <source>In a Server</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーでいます</translation>
     </message>
     <message>
         <location filename="../src/discord_rich_presence.cpp" line="69"/>
@@ -714,7 +720,7 @@ Cases you can load: </source>
     <message>
         <location filename="../src/discord_rich_presence.cpp" line="100"/>
         <source>Spectating</source>
-        <translation type="unfinished"></translation>
+        <translation>観客している</translation>
     </message>
 </context>
 <context>
@@ -728,12 +734,12 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../src/lobby.cpp" line="147"/>
         <source>Loading</source>
-        <translation type="unfinished"></translation>
+        <translation>ロード中</translation>
     </message>
     <message>
         <location filename="../src/lobby.cpp" line="151"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>キャンセル</translation>
     </message>
     <message>
         <location filename="../src/lobby.cpp" line="270"/>
@@ -743,7 +749,7 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../src/lobby.cpp" line="316"/>
         <source>Offline</source>
-        <translation type="unfinished"></translation>
+        <translation>オフライン</translation>
     </message>
 </context>
 <context>
@@ -751,12 +757,12 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../src/debug_functions.cpp" line="10"/>
         <source>Error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー: %1</translation>
     </message>
     <message>
         <location filename="../src/debug_functions.cpp" line="11"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <location filename="../src/debug_functions.cpp" line="23"/>
