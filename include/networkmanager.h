@@ -14,8 +14,6 @@
 #undef MS_FAILOVER_SUPPORTED
 #endif
 
-#undef MS_FAILOVER_SUPPORTED
-
 #include "aopacket.h"
 #include "aoapplication.h"
 
