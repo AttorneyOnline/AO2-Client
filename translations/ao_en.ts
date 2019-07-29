@@ -394,6 +394,12 @@ Reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/charselect.cpp" line="217"/>
+        <source>Generating chars:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/courtroom.cpp" line="116"/>
         <source>Showname</source>
         <translation type="unfinished"></translation>
@@ -469,6 +475,11 @@ Reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/courtroom.cpp" line="2688"/>
+        <source>This does nothing, but there you go.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/courtroom.cpp" line="2959"/>
         <source>Server</source>
         <translation type="unfinished"></translation>
@@ -496,11 +507,6 @@ Reason: </source>
     <message>
         <location filename="../src/courtroom.cpp" line="2681"/>
         <source>You were granted the Guard button.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/courtroom.cpp" line="2688"/>
-        <source>This does nohing, but there you go.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -667,7 +673,7 @@ Cases you can load: </source>
     </message>
     <message>
         <location filename="../src/evidence.cpp" line="25"/>
-        <source>Choose..</source>
+        <source>Choose...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
