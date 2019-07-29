@@ -1,4 +1,4 @@
-#!/bin/bash
+....#!/bin/bash
 
 # Assumes a somewhat recent 64-bit ubuntu
 
@@ -11,7 +11,8 @@ cd ${ROOT_DIR}
 
 #need some openGL stuff
 sudo apt install libgl1-mesa-dev
-
+#install curl incase of fresh vm
+sudo apt install curl
 mkdir tmp
 
 cd tmp
