@@ -214,7 +214,7 @@ void Courtroom::character_loading_finished()
           int total_loading_size = ao_app->char_list_size * 2 + ao_app->evidence_list_size + ao_app->music_list_size;
           int loading_value = int(((ao_app->loaded_chars + ao_app->generated_chars + ao_app->loaded_music + ao_app->loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
           ao_app->w_lobby->set_loading_value(loading_value);
-          ao_app->w_lobby->set_loading_text("Generating chars:\n" + QString::number(ao_app->generated_chars) + "/" + QString::number(ao_app->char_list_size));
+          ao_app->w_lobby->set_loading_text(tr("Generating chars:\n") + QString::number(ao_app->generated_chars) + "/" + QString::number(ao_app->char_list_size));
       }
     }
 
