@@ -1,4 +1,4 @@
-....#!/bin/bash
+#!/bin/bash
 
 # Assumes a somewhat recent 64-bit ubuntu
 
