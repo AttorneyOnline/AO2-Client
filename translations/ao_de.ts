@@ -17,7 +17,7 @@
         <source>There was an error connecting to the master server.
 We deploy multiple master servers to mitigate any possible downtime, but the client appears to have exhausted all possible methods of finding and connecting to one.
 Please check your Internet connection and firewall, and please try again.</source>
-        <translation>Es gab einen Fehler beim verbinden zum Master Server.
+        <translation>Es gab einen Fehler beim Verbinden zum Master Server.
 Wir verwenden mehrere Master Server um Ausfälle zu verhindern, jedoch hat der Client alle Möglichkeiten einen zu finden erschöpft.
 Bitte prüfe deine Internetverbindung und Firewall, und versuche es erneut.</translation>
     </message>
@@ -72,14 +72,14 @@ Schönen Urlaub.</translation>
         <source>You have been kicked from the server.
 Reason: </source>
         <translation>Du wurdest von diesem Server geschmissen.
-Grund:</translation>
+Grund: </translation>
     </message>
     <message>
         <location filename="../src/packet_distribution.cpp" line="659"/>
         <source>You are banned on this server.
 Reason: </source>
         <translation>Du wurdest von diesem Server verbannt.
-Grund:</translation>
+Grund: </translation>
     </message>
     <message>
         <source>You have been kicked.</source>
@@ -143,7 +143,7 @@ Grund:</translation>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="51"/>
         <source>Theme:</source>
-        <translation>Theme</translation>
+        <translation>Theme:</translation>
     </message>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="52"/>
@@ -153,7 +153,7 @@ Grund:</translation>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="81"/>
         <source>Log goes downwards:</source>
-        <translation>Verläuf geht nach unten</translation>
+        <translation>Verlauf geht nach unten:</translation>
     </message>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="82"/>
@@ -415,6 +415,13 @@ Grund:</translation>
         <translation>Benutzt</translation>
     </message>
     <message>
+        <location filename="../src/charselect.cpp" line="217"/>
+        <source>Generating chars:
+</source>
+        <translation>Generiere Charaktere:
+</translation>
+    </message>
+    <message>
         <source>Could not find %1</source>
         <translation type="vanished">Konnte %1 nicht finden.</translation>
     </message>
@@ -556,8 +563,12 @@ Grund:</translation>
         <translation>Dir wurde der Wache Knopf gegeben.</translation>
     </message>
     <message>
-        <location filename="../src/courtroom.cpp" line="2688"/>
         <source>This does nohing, but there you go.</source>
+        <translation type="vanished">Dies bewirkt nichts, aber egal.</translation>
+    </message>
+    <message>
+        <location filename="../src/courtroom.cpp" line="2688"/>
+        <source>This does nothing, but there you go.</source>
         <translation>Dies bewirkt nichts, aber egal.</translation>
     </message>
     <message>
@@ -568,12 +579,12 @@ Grund:</translation>
     <message>
         <location filename="../src/courtroom.cpp" line="2710"/>
         <source>You will now pair up with </source>
-        <translation>Du wirst nun mit</translation>
+        <translation>Du wirst nun mit </translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2712"/>
         <source> if they also choose your character in return.</source>
-        <translation>gepaart, wenn der andere dies auch tut.</translation>
+        <translation> gepaart, wenn der andere dies auch tut.</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2718"/>
@@ -593,7 +604,7 @@ Grund:</translation>
     <message>
         <location filename="../src/courtroom.cpp" line="2746"/>
         <source>Your offset must be between -100% and 100%!</source>
-        <translation>Der Abstand muss zwischen -100% und 100% liegen.</translation>
+        <translation>Der Abstand muss zwischen -100% und 100% liegen!</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2751"/>
@@ -640,7 +651,7 @@ Grund:</translation>
         <source>You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.
 Cases you can load: </source>
         <translation>Du musst einen Dateinamen angeben (ohne .ini). Stelle sicher das er im &apos;base/cases&apos; Ordner ist und das er korrekt formatiert ist.
-Verfügbare Fälle:</translation>
+Verfügbare Fälle: </translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2832"/>
@@ -650,17 +661,17 @@ Verfügbare Fälle:</translation>
     <message>
         <location filename="../src/courtroom.cpp" line="2845"/>
         <source>Case made by </source>
-        <translation>Fall von</translation>
+        <translation>Fall von </translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2851"/>
         <source>Navigate to </source>
-        <translation>Gehe zu</translation>
+        <translation>Gehe zu </translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2851"/>
         <source> for the CM doc.</source>
-        <translation>für das CM Dokument.</translation>
+        <translation> für das CM Dokument.</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2870"/>
@@ -680,12 +691,12 @@ Verfügbare Fälle:</translation>
     <message>
         <location filename="../src/courtroom.cpp" line="2893"/>
         <source>You need to give a filename to save (extension not needed) and the courtroom status!</source>
-        <translation>Du musst einen Dateinamen (ohne Erweiterung) angebenn, sowie den Gebietsstatus.</translation>
+        <translation>Du musst einen Dateinamen (ohne Erweiterung) angebenn, sowie den Gebietsstatus!</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2901"/>
         <source>Too many arguments to save a case! You only need a filename without extension and the courtroom status!</source>
-        <translation>Zu viele Argumente! Du brauchst nur den Dateinamen, ohne Erweiterung sowie den Gebietsstatus.</translation>
+        <translation>Zu viele Argumente! Du brauchst nur den Dateinamen, ohne Erweiterung sowie den Gebietsstatus!</translation>
     </message>
     <message>
         <location filename="../src/courtroom.cpp" line="2923"/>
@@ -724,8 +735,12 @@ Verfügbare Fälle:</translation>
         <translation>Die Nachricht ist zu lang.</translation>
     </message>
     <message>
-        <location filename="../src/evidence.cpp" line="25"/>
         <source>Choose..</source>
+        <translation type="vanished">Wähle..</translation>
+    </message>
+    <message>
+        <location filename="../src/evidence.cpp" line="25"/>
+        <source>Choose...</source>
         <translation>Wähle...</translation>
     </message>
     <message>
@@ -790,7 +805,7 @@ Verfügbare Fälle:</translation>
         <source>It doesn&apos;t look like your client is set up correctly.
 Did you download all resources correctly from tiny.cc/getao, including the large &apos;base&apos; folder?</source>
         <translation>Dein Client ist nicht korrekt eingerichtet.
-Hast du ALLES von tiny.cc/getao heruntergeladen und entpackt, auch den großen &apos;base&apos; Ordner</translation>
+Hast du ALLES von tiny.cc/getao heruntergeladen und entpackt, auch den großen &apos;base&apos; Ordner?</translation>
     </message>
     <message>
         <location filename="../src/lobby.cpp" line="147"/>
