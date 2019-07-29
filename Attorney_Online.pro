@@ -41,9 +41,9 @@ CONFIG += c++14
 
 RESOURCES += resources.qrc
 
-TRANSLATIONS    =   translations/ao_en.ts \
-                    translations/ao_ja.ts \
-                    translations/ao_de.ts
+TRANSLATIONS    =   resource/translations/ao_en.ts \
+                    resource/translations/ao_ja.ts \
+                    resource/translations/ao_de.ts
 
 win32:RC_ICONS = resource/logo.ico
 macx:ICON = resource/logo.icns
