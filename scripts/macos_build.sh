@@ -30,4 +30,4 @@ tar -xvf apng.tar.xz
 cp clang_64/plugins/imageformats/libqapng.dylib ../lib
 cd ..
 
-qmake -DDISCORD -DBASSAUDIO && make -j2
+qmake && make -j2
