@@ -88,7 +88,7 @@ build windows i686:
     - cd ..
 
     # Build
-    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += -DDISCORD -DBASSAUDIO"
+    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += DISCORD BASSAUDIO"
     - make -j4
 
     # Post-processing
