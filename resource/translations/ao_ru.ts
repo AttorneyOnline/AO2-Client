@@ -377,7 +377,7 @@ Reason: </source>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="441"/>
         <source>Hosting cases:</source>
-        <translation>Fallleitung:</translation>
+        <translation>ПД акт.:</translation>
     </message>
     <message>
         <location filename="../src/aooptionsdialog.cpp" line="442"/>
