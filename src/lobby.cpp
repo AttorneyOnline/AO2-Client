@@ -373,7 +373,7 @@ void Lobby::append_error(QString f_message)
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
+  QString f_string = tr("Online: %1/%2").arg(QString::number(players_online)).arg(QString::number(max_players));
   ui_player_count->setText(f_string);
 }
 
