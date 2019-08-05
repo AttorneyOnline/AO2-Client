@@ -21,13 +21,20 @@ int main(int argc, char *argv[])
 
     AOApplication main_app(argc, argv);
 
+    QSettings* configini = main_app.configini;
+
+    QString p_language = configini->value("language",QLocale::system().name()).toString();
+    if (p_language=="  " || p_language=="")
+        p_language = QLocale::system().name();
+
     QTranslator qtTranslator;
-    qtTranslator.load("qt_" + QLocale::system().name(),
+    qtTranslator.load("qt_" + p_language,
             QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     main_app.installTranslator(&qtTranslator);
 
     QTranslator appTranslator;
-    appTranslator.load("ao_" + QLocale::system().name(),":/resource/translations/");
+    qDebug() << ":/resource/translations/ao_" + p_language;
+    appTranslator.load("ao_" + p_language,":/resource/translations/");
     main_app.installTranslator(&appTranslator);
 
     main_app.construct_lobby();
