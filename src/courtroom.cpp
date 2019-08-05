@@ -245,7 +245,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_list = new QListWidget(this);
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100,100);
-  ui_pair_offset_spinbox->setSuffix("% offset");
+  ui_pair_offset_spinbox->setSuffix(tr("% offset"));
   ui_pair_button = new AOButton(this, ao_app);
 
   ui_evidence_button = new AOButton(this, ao_app);
@@ -2821,7 +2821,7 @@ void Courtroom::on_ooc_return_pressed()
 
     if (command.size() < 2)
     {
-      append_server_chatmessage("CLIENT", tr("You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.\nCases you can load: ") + caseslist.join(", "), "1");
+      append_server_chatmessage("CLIENT", tr("You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.\nCases you can load: %1").arg(caseslist.join(", ")), "1");
       ui_ooc_chat_message->clear();
       return;
     }
@@ -2842,13 +2842,13 @@ void Courtroom::on_ooc_return_pressed()
     QString casestatus = casefile.value("status", "").value<QString>();
 
     if (!caseauth.isEmpty())
-      append_server_chatmessage("CLIENT", tr("Case made by ") + caseauth + ".", "1");
+      append_server_chatmessage("CLIENT", tr("Case made by %1.").arg(caseauth), "1");
     if (!casedoc.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
     if (!casestatus.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status " + casestatus + "#%"));
     if (!cmdoc.isEmpty())
-      append_server_chatmessage("CLIENT", tr("Navigate to ") + cmdoc + tr(" for the CM doc."), "1");
+      append_server_chatmessage("CLIENT", tr("Navigate to %1 for the CM doc.").arg(cmdoc), "1");
 
     for (int i = local_evidence_list.size() - 1; i >= 0; i--) {
         ao_app->send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
@@ -2867,7 +2867,7 @@ void Courtroom::on_ooc_return_pressed()
         ao_app->send_server_packet(new AOPacket("PE", f_contents));
       }
 
-    append_server_chatmessage("CLIENT", tr("Your case \"") + command[1] + tr("\" was loaded!"), "1");
+    append_server_chatmessage("CLIENT", tr("Your case \"%1\" was loaded!").arg(command[1]), "1");
     ui_ooc_chat_message->clear();
     return;
   }
