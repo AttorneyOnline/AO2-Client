@@ -226,177 +226,177 @@ Grund: </translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="184"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="186"/>
         <source>Callwords</source>
         <translation>Alarmwörter</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="209"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="211"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Gib so viele Alarmwörter ein wie du möchtest. Groß/Kleinschreibung ist egal. Für jede Wort nur eine Zeile!&lt;br&gt;Bitte keine leere Zeile am Ende -- du bekommst sonst bei jeder Nachricht einen Alarm.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="215"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="217"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="226"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="228"/>
         <source>Audio device:</source>
         <translation>Audiogerät:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="227"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="229"/>
         <source>Sets the audio device for all sounds.</source>
         <translation>Setzt das Audiogerät für all Geräusche.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="261"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="263"/>
         <source>Music:</source>
         <translation>Musik:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="262"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="264"/>
         <source>Sets the music&apos;s default volume.</source>
         <translation>Setzt die Musiklautstärke.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="274"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="276"/>
         <source>SFX:</source>
         <translation>SFX:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="275"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="277"/>
         <source>Sets the SFX&apos;s default volume. Interjections and actual sound effects count as &apos;SFX&apos;.</source>
         <translation>Setzt die Lautstärke der Soundeffekte wie Einsprüche und die Geräusche der Charaktere.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="288"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="290"/>
         <source>Blips:</source>
         <translation>Blips:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="289"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="291"/>
         <source>Sets the volume of the blips, the talking sound effects.</source>
         <translation>Setzt die Lautstärke der Blips, das ist das Geräusch das die Charaktere beim Reden machen.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="307"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="309"/>
         <source>Blip rate:</source>
         <translation>Bliprate:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="308"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="310"/>
         <source>Sets the delay between playing the blip sounds.</source>
         <translation>Setzt die Pause zwischen einzelnen Blips.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="319"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="321"/>
         <source>Blank blips:</source>
         <translation>Leere Blips:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="320"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="322"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
         <translation>Wenn angehakt wird das Spiel auch bei einem Leerzeichen einen Blip machen.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="332"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="334"/>
         <source>Casing</source>
         <translation>Fälle</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="346"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="348"/>
         <source>This server supports case alerts.</source>
         <translation>Dieser Server unterstützt Fallalarme.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="348"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="350"/>
         <source>This server does not support case alerts.</source>
         <translation>Dieser Server unterstützt Fallalarme nicht.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="349"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="351"/>
         <source>Pretty self-explanatory.</source>
         <translation>Eigentlich selbsterklärend.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="356"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="358"/>
         <source>Casing:</source>
         <translation>Fälle:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="357"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="359"/>
         <source>If checked, you will get alerts about case announcements.</source>
         <translation>Wenn angehakt wirst du benachrichtigt wenn ein Fall angekündigt wird.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="370"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="372"/>
         <source>Defense:</source>
         <translation>Verteidigung:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="371"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="373"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
         <translation>Wenn angehakt wirst du benachrichtigt wenn ein Verteidiger benötigt wird.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="384"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="386"/>
         <source>Prosecution:</source>
         <translation>Kläger:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="385"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="387"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
         <translation>Wenn angehakt wirst du benachrichtigt wenn ein Kläger benötigt wird.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="398"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="400"/>
         <source>Judge:</source>
         <translation>Richter:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="399"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="401"/>
         <source>If checked, you will get alerts about case announcements if the judge spot is open.</source>
         <translation>Wenn angehakt wirst du benachrichtigt wenn ein Richter benötigt wird.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="412"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="414"/>
         <source>Juror:</source>
         <translation>Jury:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="413"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="415"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
         <translation>Wenn angehakt wirst du benachrichtigt wenn eine Jury benötigt wird.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="426"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="428"/>
         <source>Stenographer:</source>
         <translation>Stenograph:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="427"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="429"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
         <translation>Wenn angehakt wirst du benachrichtigt wenn ein Stenograph benötigt wird.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="440"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="442"/>
         <source>CM:</source>
         <translation>CM:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="441"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="443"/>
         <source>If checked, you will appear amongst the potential CMs on the server.</source>
         <translation>Wenn angehakt wirst du als potentielle CM angezeigt.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="454"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="456"/>
         <source>Hosting cases:</source>
         <translation>Fallleitung:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="455"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="457"/>
         <source>If you&apos;re a CM, enter what cases you are willing to host.</source>
         <translation>Wenn du CM bist, gib ein welche Fälle du spielen möchtest.</translation>
     </message>
@@ -478,6 +478,7 @@ Grund: </translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="195"/>
+        <location filename="../../src/courtroom.cpp" line="608"/>
         <source>Casing</source>
         <translation>Fall</translation>
     </message>
@@ -522,33 +523,60 @@ Grund: </translation>
         <translation>Gelb</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="566"/>
         <source>Music</source>
-        <translation type="vanished">Musik</translation>
+        <translation>Musik</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="568"/>
         <source>Sfx</source>
-        <translation type="vanished">Sfx</translation>
+        <translation>Sfx</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="570"/>
         <source>Blips</source>
-        <translation type="vanished">Blips</translation>
+        <translation>Blips</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="573"/>
+        <source>Log limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="583"/>
         <location filename="../../src/courtroom.cpp" line="2959"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="596"/>
         <source>Change character</source>
-        <translation type="vanished">Charakter ändern</translation>
+        <translation>Charakter ändern</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="599"/>
         <source>Reload theme</source>
-        <translation type="vanished">Aussehen neu laden</translation>
+        <translation>Aussehen neu laden</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="602"/>
         <source>Call mod</source>
-        <translation type="vanished">Moderator rufen</translation>
+        <translation>Moderator rufen</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="605"/>
+        <source>Settings</source>
+        <translation type="unfinished">Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="611"/>
+        <source>A/M</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="614"/>
+        <source>Preanim</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="692"/>
