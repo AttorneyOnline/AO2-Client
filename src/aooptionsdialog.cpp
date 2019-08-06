@@ -175,10 +175,10 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox = new QComboBox(ui_form_layout_widget);
     ui_language_combobox->addItem("   - Default");
     ui_language_combobox->addItem("en - English");
-    ui_language_combobox->addItem("de - German");
-    ui_language_combobox->addItem("es - Spanish");
-    ui_language_combobox->addItem("jp - Japanese");
-    ui_language_combobox->addItem("ru - Russian");
+    ui_language_combobox->addItem("de - Deutsch");
+    ui_language_combobox->addItem("es - Español");
+    ui_language_combobox->addItem("jp - 日本語");
+    ui_language_combobox->addItem("ru - Русски");
     ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_language_combobox);
 
     // Here we start the callwords tab.
