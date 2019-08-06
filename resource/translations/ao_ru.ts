@@ -215,7 +215,7 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="203"/>
         <source>Audio</source>
-        <translation>Аудио</translation>history.replaceState({}, document.title, clean_uri);
+        <translation>Аудио</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="214"/>
@@ -766,4 +766,3 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     </message>
 </context>
 </TS>
-;11M
