@@ -42,7 +42,7 @@ CONFIG += c++14
 RESOURCES += resources.qrc
 
 TRANSLATIONS    =   resource/translations/ao_en.ts \
-                    resource/translations/ao_ja.ts \
+                    resource/translations/ao_jp.ts \
                     resource/translations/ao_de.ts \
                     resource/translations/ao_ru.ts \
                     resource/translations/ao_es.ts
