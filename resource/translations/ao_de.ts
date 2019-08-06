@@ -218,12 +218,12 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="171"/>
         <source>Language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sprache:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="172"/>
         <source>Sets the language if you don&apos;t want to use your system language.</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzte die Sprache falls du nicht die Systemsprache verwenden möchtest.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="186"/>
@@ -540,7 +540,7 @@ Grund: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="573"/>
         <source>Log limit</source>
-        <translation type="unfinished"></translation>
+        <translation>Verlaufsgrenze</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="583"/>
@@ -566,17 +566,17 @@ Grund: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="605"/>
         <source>Settings</source>
-        <translation type="unfinished">Einstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="611"/>
         <source>A/M</source>
-        <translation type="unfinished"></translation>
+        <translation>A/M</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="614"/>
         <source>Preanim</source>
-        <translation type="unfinished"></translation>
+        <translation>Voranimation</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="692"/>

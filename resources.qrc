@@ -5,5 +5,7 @@
         <file>resource/translations/ao_de.qm</file>
         <file>resource/translations/ao_en.qm</file>
         <file>resource/translations/ao_ja.qm</file>
+        <file>resource/translations/ao_es.qm</file>
+        <file>resource/translations/ao_ru.qm</file>
     </qresource>
 </RCC>
