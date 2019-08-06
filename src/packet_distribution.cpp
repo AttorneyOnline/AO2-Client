@@ -639,7 +639,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() >= 1)
     {
-      call_notice(tr("You have been kicked from the server.\nReason: ") + f_contents.at(0));
+      call_notice(tr("You have been kicked from the server.\nReason: %1").arg(f_contents.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -648,7 +648,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() >= 1)
     {
-      call_notice("You have been banned from the server.\nReason: " + f_contents.at(0));
+      call_notice(tr("You have been banned from the server.\nReason: %1").arg(f_contents.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -656,7 +656,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "BD")
   {
-    call_notice(tr("You are banned on this server.\nReason: ") + f_contents.at(0));
+    call_notice(tr("You are banned on this server.\nReason: %1").arg(f_contents.at(0)));
   }
   else if (header == "ZZ")
   {
