@@ -800,7 +800,7 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../../src/debug_functions.cpp" line="11"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Error</translation>
     </message>
     <message>
         <location filename="../../src/debug_functions.cpp" line="23"/>

@@ -43,7 +43,9 @@ RESOURCES += resources.qrc
 
 TRANSLATIONS    =   resource/translations/ao_en.ts \
                     resource/translations/ao_ja.ts \
-                    resource/translations/ao_de.ts
+                    resource/translations/ao_de.ts \
+                    resource/translations/ao_ru.ts \
+                    resource/translations/ao_es.ts
 
 win32:RC_ICONS = resource/logo.ico
 macx:ICON = resource/logo.icns

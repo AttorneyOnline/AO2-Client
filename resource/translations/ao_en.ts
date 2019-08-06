@@ -195,177 +195,187 @@ Reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/aooptionsdialog.cpp" line="171"/>
+        <source>Language:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/aooptionsdialog.cpp" line="172"/>
+        <source>Sets the language if you don&apos;t want to use your system language.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/aooptionsdialog.cpp" line="184"/>
         <source>Callwords</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="197"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="209"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="203"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="215"/>
         <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="214"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="226"/>
         <source>Audio device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="215"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="227"/>
         <source>Sets the audio device for all sounds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="249"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="261"/>
         <source>Music:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="250"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="262"/>
         <source>Sets the music&apos;s default volume.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="262"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="274"/>
         <source>SFX:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="263"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="275"/>
         <source>Sets the SFX&apos;s default volume. Interjections and actual sound effects count as &apos;SFX&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="276"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="288"/>
         <source>Blips:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="277"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="289"/>
         <source>Sets the volume of the blips, the talking sound effects.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="295"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="307"/>
         <source>Blip rate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="296"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="308"/>
         <source>Sets the delay between playing the blip sounds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="307"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="319"/>
         <source>Blank blips:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="308"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="320"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="320"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="332"/>
         <source>Casing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="334"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="346"/>
         <source>This server supports case alerts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="336"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="348"/>
         <source>This server does not support case alerts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="337"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="349"/>
         <source>Pretty self-explanatory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="344"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="356"/>
         <source>Casing:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="345"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="357"/>
         <source>If checked, you will get alerts about case announcements.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="358"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="370"/>
         <source>Defense:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="359"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="371"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="372"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="384"/>
         <source>Prosecution:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="373"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="385"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="386"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="398"/>
         <source>Judge:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="387"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="399"/>
         <source>If checked, you will get alerts about case announcements if the judge spot is open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="400"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="412"/>
         <source>Juror:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="401"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="413"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="414"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="426"/>
         <source>Stenographer:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="415"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="427"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="428"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="440"/>
         <source>CM:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="429"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="441"/>
         <source>If checked, you will appear amongst the potential CMs on the server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="442"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="454"/>
         <source>Hosting cases:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="443"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="455"/>
         <source>If you&apos;re a CM, enter what cases you are willing to host.</source>
         <translation type="unfinished"></translation>
     </message>

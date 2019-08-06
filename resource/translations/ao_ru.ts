@@ -203,177 +203,187 @@ Reason: </source>
         <translation>Показать в Discord сервер, на котором вы играете, каким персонажем управляете и время игры.</translation>
     </message>
     <message>
+        <location filename="../../src/aooptionsdialog.cpp" line="171"/>
+        <source>Language:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/aooptionsdialog.cpp" line="172"/>
+        <source>Sets the language if you don&apos;t want to use your system language.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/aooptionsdialog.cpp" line="184"/>
         <source>Callwords</source>
         <translation>Позывные</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="197"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="209"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Введите на отдельных строках свои позывные, при указании которых в сообщениях будет подан звуковой сигнал.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="203"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="215"/>
         <source>Audio</source>
         <translation>Аудио</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="214"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="226"/>
         <source>Audio device:</source>
         <translation>Устройство воспроизведения:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="215"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="227"/>
         <source>Sets the audio device for all sounds.</source>
         <translation>Куда вещать звук из игры.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="249"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="261"/>
         <source>Music:</source>
         <translation>Музыка:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="250"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="262"/>
         <source>Sets the music&apos;s default volume.</source>
         <translation>Громкость музыки по умолчанию.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="262"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="274"/>
         <source>SFX:</source>
         <translation>Звук. эффекты:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="263"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="275"/>
         <source>Sets the SFX&apos;s default volume. Interjections and actual sound effects count as &apos;SFX&apos;.</source>
         <translation>Громкость звуковых эффектов по умолчанию.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="276"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="288"/>
         <source>Blips:</source>
         <translation>Сигналы:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="277"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="289"/>
         <source>Sets the volume of the blips, the talking sound effects.</source>
         <translation>Громкость сигналов, заменяющих голос, по умолчанию.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="295"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="307"/>
         <source>Blip rate:</source>
         <translation>Пер. сигналов:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="296"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="308"/>
         <source>Sets the delay between playing the blip sounds.</source>
         <translation>Период между сигналами, заменяющими голос, по умолчанию.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="307"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="319"/>
         <source>Blank blips:</source>
         <translation>Пустые сигналы:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="308"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="320"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
         <translation>Проигрывать сигналы даже для пробелов.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="320"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="332"/>
         <source>Casing</source>
         <translation>Заседание</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="334"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="346"/>
         <source>This server supports case alerts.</source>
         <translation>Этот сервер поддерживает объявление заседания.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="336"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="348"/>
         <source>This server does not support case alerts.</source>
         <translation>Этот сервер не поддерживает объявление заседания.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="337"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="349"/>
         <source>Pretty self-explanatory.</source>
         <translation>Весьма доходчиво.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="344"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="356"/>
         <source>Casing:</source>
         <translation>Новое дело:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="345"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="357"/>
         <source>If checked, you will get alerts about case announcements.</source>
         <translation>При заведении дела вы получите уведомление.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="358"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="370"/>
         <source>Defense:</source>
         <translation>Защита:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="359"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="371"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
         <translation>При заведении дела, в котором нужна сторона защиты, вы получите уведомление.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="372"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="384"/>
         <source>Prosecution:</source>
         <translation>Обвинение:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="373"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="385"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
         <translation>При заведении дела, в котором нужна сторона обвинения, вы получите уведомление.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="386"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="398"/>
         <source>Judge:</source>
         <translation>Судья:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="387"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="399"/>
         <source>If checked, you will get alerts about case announcements if the judge spot is open.</source>
         <translation>При заведении дела, в котором нужен судья, вы получите уведомление.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="400"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="412"/>
         <source>Juror:</source>
         <translation>Присяжный:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="401"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="413"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
         <translation>При заведении дела, в котором нужны присяжные заседатели, вы получите уведомление.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="414"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="426"/>
         <source>Stenographer:</source>
         <translation>Стенографист:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="415"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="427"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
         <translation>При заведении дела, в котором нужна стенография, вы получите уведомление.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="428"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="440"/>
         <source>CM:</source>
         <translation>ПД:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="429"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="441"/>
         <source>If checked, you will appear amongst the potential CMs on the server.</source>
         <translation>Отметьте, если вы хотите состоять в числе производителей дел.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="442"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="454"/>
         <source>Hosting cases:</source>
         <translation>ПД акт.:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="443"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="455"/>
         <source>If you&apos;re a CM, enter what cases you are willing to host.</source>
         <translation>Будучи производителем дела (ПД), вы можете войти в зону и заниматься её оркестровкой.</translation>
     </message>
@@ -409,8 +419,13 @@ Reason: </source>
     <message>
         <location filename="../../src/charselect.cpp" line="217"/>
         <source>Generating chars:
+%1/%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generating chars:
 </source>
-        <translation>Генерация персонажей:
+        <translation type="vanished">Генерация персонажей:
 </translation>
     </message>
     <message>
@@ -548,7 +563,7 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="2681"/>
         <source>You were granted the Guard button.</source>
-        <translation>Теперь у вас есть кнопка "Охрана".</translation>
+        <translation>Теперь у вас есть кнопка &quot;Охрана&quot;.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="2695"/>
@@ -700,8 +715,9 @@ Cases you can load: %1</source>
 <context>
     <name>Lobby</name>
     <message>
+        <location filename="../../src/lobby.cpp" line="12"/>
         <source>Attorney Online 2</source>
-        <translation type="vanished">Attorney Online 2</translation>
+        <translation>Attorney Online 2</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="29"/>
