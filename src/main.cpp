@@ -1,4 +1,3 @@
-
 #include "aoapplication.h"
 
 #include "datatypes.h"
@@ -21,10 +20,10 @@ int main(int argc, char *argv[])
 
     AOApplication main_app(argc, argv);
 
-    QSettings* configini = main_app.configini;
+    QSettings *configini = main_app.configini;
 
-    QString p_language = configini->value("language",QLocale::system().name()).toString();
-    if (p_language=="  " || p_language=="")
+    QString p_language = configini->value("language", QLocale::system().name()).toString();
+    if (p_language == "  " || p_language == "")
         p_language = QLocale::system().name();
 
     QTranslator qtTranslator;
@@ -34,7 +33,7 @@ int main(int argc, char *argv[])
 
     QTranslator appTranslator;
     qDebug() << ":/resource/translations/ao_" + p_language;
-    appTranslator.load("ao_" + p_language,":/resource/translations/");
+    appTranslator.load("ao_" + p_language, ":/resource/translations/");
     main_app.installTranslator(&appTranslator);
 
     main_app.construct_lobby();
