@@ -69,15 +69,33 @@ Que tengas un buen día.</translation>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="642"/>
         <source>You have been kicked from the server.
-Reason: </source>
+Reason: %1</source>
         <translation>Has sido expulsado del servidor.
-Razón: </translation>
+Razón: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="651"/>
+        <source>You have been banned from the server.
+Reason: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="659"/>
         <source>You are banned on this server.
-Reason: </source>
+Reason: %1</source>
         <translation>Has sido baneado en este servidor.
+Razón: %1</translation>
+    </message>
+    <message>
+        <source>You have been kicked from the server.
+Reason: </source>
+        <translation type="vanished">Has sido expulsado del servidor.
+Razón: </translation>
+    </message>
+    <message>
+        <source>You are banned on this server.
+Reason: </source>
+        <translation type="vanished">Has sido baneado en este servidor.
 Razón: </translation>
     </message>
 </context>
@@ -289,7 +307,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="334"/>
         <source>Casing</source>
-        <translation type="unfinished"></translation>
+        <translation>Caso</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="348"/>
@@ -462,7 +480,7 @@ Razón: </translation>
         <location filename="../../src/courtroom.cpp" line="195"/>
         <location filename="../../src/courtroom.cpp" line="608"/>
         <source>Casing</source>
-        <translation type="unfinished"></translation>
+        <translation>Caso</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="200"/>
@@ -562,7 +580,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="605"/>
         <source>Settings</source>
-        <translation type="unfinished">Ajustes</translation>
+        <translation>Ajustes</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="611"/>

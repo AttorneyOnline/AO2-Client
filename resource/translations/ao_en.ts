@@ -64,13 +64,19 @@ Have a nice day.</source>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="642"/>
         <source>You have been kicked from the server.
-Reason: </source>
+Reason: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="651"/>
+        <source>You have been banned from the server.
+Reason: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="659"/>
         <source>You are banned on this server.
-Reason: </source>
+Reason: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

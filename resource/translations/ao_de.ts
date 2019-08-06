@@ -75,15 +75,34 @@ Schönen Urlaub.</translation>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="642"/>
         <source>You have been kicked from the server.
-Reason: </source>
+Reason: %1</source>
         <translation>Du wurdest von diesem Server geschmissen.
-Grund: </translation>
+Grund: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="651"/>
+        <source>You have been banned from the server.
+Reason: %1</source>
+        <translation>Du wurdest von diesem Server verbannt.
+Grund: %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="659"/>
         <source>You are banned on this server.
+Reason: %1</source>
+        <translation>Du bist von diesem Server verbannt.
+Grund: %1</translation>
+    </message>
+    <message>
+        <source>You have been kicked from the server.
 Reason: </source>
-        <translation>Du wurdest von diesem Server verbannt.
+        <translation type="vanished">Du wurdest von diesem Server geschmissen.
+Grund: </translation>
+    </message>
+    <message>
+        <source>You are banned on this server.
+Reason: </source>
+        <translation type="vanished">Du wurdest von diesem Server verbannt.
 Grund: </translation>
     </message>
     <message>

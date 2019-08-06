@@ -70,15 +70,33 @@ Have a nice day.</source>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="642"/>
         <source>You have been kicked from the server.
-Reason: </source>
+Reason: %1</source>
         <translation>Вас выпнули с сервера.
-Причина: </translation>
+Причина: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="651"/>
+        <source>You have been banned from the server.
+Reason: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="659"/>
         <source>You are banned on this server.
-Reason: </source>
+Reason: %1</source>
         <translation>Вас отправили в баню.
+Причина: %1</translation>
+    </message>
+    <message>
+        <source>You have been kicked from the server.
+Reason: </source>
+        <translation type="vanished">Вас выпнули с сервера.
+Причина: </translation>
+    </message>
+    <message>
+        <source>You are banned on this server.
+Reason: </source>
+        <translation type="vanished">Вас отправили в баню.
 Причина: </translation>
     </message>
 </context>
@@ -205,7 +223,7 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="171"/>
         <source>Language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Язык:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="172"/>
@@ -420,7 +438,8 @@ Reason: </source>
         <location filename="../../src/charselect.cpp" line="217"/>
         <source>Generating chars:
 %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Генерация персонажей:
+%1/%2</translation>
     </message>
     <message>
         <source>Generating chars:
@@ -565,17 +584,17 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="566"/>
         <source>Music</source>
-        <translation type="unfinished"></translation>
+        <translation>Музыка</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="568"/>
         <source>Sfx</source>
-        <translation type="unfinished"></translation>
+        <translation>Звук. эффекты</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="570"/>
         <source>Blips</source>
-        <translation type="unfinished"></translation>
+        <translation>Сигналы</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="573"/>
@@ -600,7 +619,7 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="605"/>
         <source>Settings</source>
-        <translation type="unfinished">Настройки</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="611"/>

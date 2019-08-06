@@ -64,13 +64,19 @@ Have a nice day.</source>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="642"/>
         <source>You have been kicked from the server.
-Reason: </source>
+Reason: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="651"/>
+        <source>You have been banned from the server.
+Reason: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="659"/>
         <source>You are banned on this server.
-Reason: </source>
+Reason: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -550,17 +556,17 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="566"/>
         <source>Music</source>
-        <translation type="unfinished"></translation>
+        <translation>音楽</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="568"/>
         <source>Sfx</source>
-        <translation type="unfinished"></translation>
+        <translation>効果音</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="570"/>
         <source>Blips</source>
-        <translation type="unfinished"></translation>
+        <translation>ブリップ</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="573"/>
@@ -721,7 +727,7 @@ Cases you can load: %1</source>
         <location filename="../../src/courtroom.cpp" line="3431"/>
         <location filename="../../src/courtroom.cpp" line="3434"/>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3431"/>
