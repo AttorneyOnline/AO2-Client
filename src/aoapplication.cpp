@@ -135,7 +135,7 @@ void AOApplication::server_disconnected()
 {
   if (courtroom_constructed)
   {
-    call_notice("Disconnected from server.");
+    call_notice(tr("Disconnected from server."));
     construct_lobby();
     destruct_courtroom();
   }
@@ -160,16 +160,15 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
     if (will_retry)
     {
       if (lobby_constructed)
-        w_lobby->append_error("Error connecting to master server. Will try again in "
-                            + QString::number(net_manager->ms_reconnect_delay) + " seconds.");
+        w_lobby->append_error(tr("Error connecting to master server. Will try again in %1 seconds.").arg(QString::number(net_manager->ms_reconnect_delay)));
     }
     else
     {
-      call_error("There was an error connecting to the master server.\n"
+      call_error(tr("There was an error connecting to the master server.\n"
                  "We deploy multiple master servers to mitigate any possible downtime, "
                  "but the client appears to have exhausted all possible methods of finding "
                  "and connecting to one.\n"
-                 "Please check your Internet connection and firewall, and please try again.");
+                 "Please check your Internet connection and firewall, and please try again."));
     }
   }
 }

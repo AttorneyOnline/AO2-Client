@@ -103,15 +103,16 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       }
     }
 
-    call_notice("Outdated version! Your version: " + get_version_string()
-                + "\nPlease go to aceattorneyonline.com to update.");
+    call_notice(tr("Outdated version! Your version: %1\n"
+                   "Please go to aceattorneyonline.com to update.")
+                .arg(get_version_string()));
     destruct_courtroom();
     destruct_lobby();
   }
   else if (header == "DOOM")
   {
-    call_notice("You have been exiled from AO."
-                "Have a nice day.");
+    call_notice(tr("You have been exiled from AO.\n"
+                   "Have a nice day."));
     destruct_courtroom();
     destruct_lobby();
   }
@@ -245,7 +246,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = "Attorney Online 2";
+    QString window_title = tr("Attorney Online 2");
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -271,7 +272,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->set_window_title(window_title);
 
     w_lobby->show_loading_overlay();
-    w_lobby->set_loading_text("Loading");
+    w_lobby->set_loading_text(tr("Loading"));
     w_lobby->set_loading_value(0);
 
     AOPacket *f_packet;
@@ -359,7 +360,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     ++loaded_evidence;
 
-    w_lobby->set_loading_text("Loading evidence:\n" + QString::number(loaded_evidence) + "/" + QString::number(evidence_list_size));
+    w_lobby->set_loading_text(tr("Loading evidence:\n%1/%2").arg(QString::number(loaded_evidence)).arg(QString::number(evidence_list_size)));
 
     w_courtroom->append_evidence(f_evi);
 
@@ -391,7 +392,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       ++loaded_music;
 
-      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
+      w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
 
       if (musics_time)
       {
@@ -463,7 +464,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       ++loaded_chars;
 
-      w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
+      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2").arg(QString::number(loaded_chars)).arg(QString::number(char_list_size)));
 
       w_courtroom->append_char(f_char);
 
@@ -486,7 +487,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     {
       ++loaded_music;
 
-      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
+      w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
 
       if (musics_time)
       {
@@ -638,7 +639,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() >= 1)
     {
-      call_notice("You have been kicked from the server.\nReason: " + f_contents.at(0));
+      call_notice(tr("You have been kicked from the server.\nReason: %1").arg(f_contents.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -647,7 +648,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() >= 1)
     {
-      call_notice("You have been banned from the server.\nReason: " + f_contents.at(0));
+      call_notice(tr("You have been banned from the server.\nReason: %1").arg(f_contents.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -655,7 +656,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "BD")
   {
-    call_notice("You are banned on this server.\nReason: " + f_contents.at(0));
+    call_notice(tr("You are banned on this server.\nReason: %1").arg(f_contents.at(0)));
   }
   else if (header == "ZZ")
   {

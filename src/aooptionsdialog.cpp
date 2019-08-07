@@ -167,6 +167,21 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
 
+    ui_language_label = new QLabel(ui_form_layout_widget);
+    ui_language_label->setText(tr("Language:"));
+    ui_language_label->setToolTip(tr("Sets the language if you don't want to use your system language."));
+    ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_language_label);
+
+    ui_language_combobox = new QComboBox(ui_form_layout_widget);
+    ui_language_combobox->addItem(configini->value("language", "  ").value<QString>() + " - Keep current setting");
+    ui_language_combobox->addItem("   - Default");
+    ui_language_combobox->addItem("en - English");
+    ui_language_combobox->addItem("de - Deutsch");
+    ui_language_combobox->addItem("es - Español");
+    ui_language_combobox->addItem("jp - 日本語");
+    ui_language_combobox->addItem("ru - Русский");
+    ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_language_combobox);
+
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();
     ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
@@ -466,6 +481,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
+    configini->setValue("language", ui_language_combobox->currentText().left(2));
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 

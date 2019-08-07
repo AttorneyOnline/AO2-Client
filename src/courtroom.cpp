@@ -245,7 +245,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_list = new QListWidget(this);
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100,100);
-  ui_pair_offset_spinbox->setSuffix("% offset");
+  ui_pair_offset_spinbox->setSuffix(tr("% offset"));
   ui_pair_button = new AOButton(this, ao_app);
 
   ui_evidence_button = new AOButton(this, ao_app);
@@ -563,14 +563,14 @@ void Courtroom::set_widgets()
   ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
 
   set_size_and_pos(ui_music_label, "music_label");
-  ui_music_label->setText("Music");
+  ui_music_label->setText(tr("Music"));
   set_size_and_pos(ui_sfx_label, "sfx_label");
-  ui_sfx_label->setText("Sfx");
+  ui_sfx_label->setText(tr("Sfx"));
   set_size_and_pos(ui_blip_label, "blip_label");
-  ui_blip_label->setText("Blips");
+  ui_blip_label->setText(tr("Blips"));
 
   set_size_and_pos(ui_log_limit_label, "log_limit_label");
-  ui_log_limit_label->setText("Log limit");
+  ui_log_limit_label->setText(tr("Log limit"));
 
   set_size_and_pos(ui_hold_it, "hold_it");
   ui_hold_it->set_image("holdit.png");
@@ -580,7 +580,7 @@ void Courtroom::set_widgets()
   ui_take_that->set_image("takethat.png");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
-  ui_ooc_toggle->setText("Server");
+  ui_ooc_toggle->setText(tr("Server"));
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
   ui_witness_testimony->set_image("witnesstestimony.png");
@@ -593,25 +593,25 @@ void Courtroom::set_widgets()
   ui_not_guilty->set_image("notguilty.png");
 
   set_size_and_pos(ui_change_character, "change_character");
-  ui_change_character->setText("Change character");
+  ui_change_character->setText(tr("Change character"));
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
-  ui_reload_theme->setText("Reload theme");
+  ui_reload_theme->setText(tr("Reload theme"));
 
   set_size_and_pos(ui_call_mod, "call_mod");
-  ui_call_mod->setText("Call mod");
+  ui_call_mod->setText(tr("Call mod"));
 
   set_size_and_pos(ui_settings, "settings");
-  ui_settings->setText("Settings");
+  ui_settings->setText(tr("Settings"));
 
   set_size_and_pos(ui_announce_casing, "casing_button");
-  ui_announce_casing->setText("Casing");
+  ui_announce_casing->setText(tr("Casing"));
 
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
-  ui_switch_area_music->setText("A/M");
+  ui_switch_area_music->setText(tr("A/M"));
 
   set_size_and_pos(ui_pre, "pre");
-  ui_pre->setText("Preanim");
+  ui_pre->setText(tr("Preanim"));
 
   set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
   set_size_and_pos(ui_flip, "flip");
@@ -2685,7 +2685,7 @@ void Courtroom::on_ooc_return_pressed()
     //ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
     //rainbow_appended = true;
-    append_server_chatmessage("CLIENT", tr("This does nohing, but there you go."), "1");
+    append_server_chatmessage("CLIENT", tr("This does nothing, but there you go."), "1");
     return;
   }
   else if (ooc_message.startsWith("/settings"))
@@ -2821,7 +2821,7 @@ void Courtroom::on_ooc_return_pressed()
 
     if (command.size() < 2)
     {
-      append_server_chatmessage("CLIENT", tr("You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.\nCases you can load: ") + caseslist.join(", "), "1");
+      append_server_chatmessage("CLIENT", tr("You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.\nCases you can load: %1").arg(caseslist.join(", ")), "1");
       ui_ooc_chat_message->clear();
       return;
     }
@@ -2842,13 +2842,13 @@ void Courtroom::on_ooc_return_pressed()
     QString casestatus = casefile.value("status", "").value<QString>();
 
     if (!caseauth.isEmpty())
-      append_server_chatmessage("CLIENT", tr("Case made by ") + caseauth + ".", "1");
+      append_server_chatmessage("CLIENT", tr("Case made by %1.").arg(caseauth), "1");
     if (!casedoc.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/doc " + casedoc + "#%"));
     if (!casestatus.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/status " + casestatus + "#%"));
     if (!cmdoc.isEmpty())
-      append_server_chatmessage("CLIENT", tr("Navigate to ") + cmdoc + tr(" for the CM doc."), "1");
+      append_server_chatmessage("CLIENT", tr("Navigate to %1 for the CM doc.").arg(cmdoc), "1");
 
     for (int i = local_evidence_list.size() - 1; i >= 0; i--) {
         ao_app->send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
@@ -2867,7 +2867,7 @@ void Courtroom::on_ooc_return_pressed()
         ao_app->send_server_packet(new AOPacket("PE", f_contents));
       }
 
-    append_server_chatmessage("CLIENT", tr("Your case \"") + command[1] + tr("\" was loaded!"), "1");
+    append_server_chatmessage("CLIENT", tr("Your case \"%1\" was loaded!").arg(command[1]), "1");
     ui_ooc_chat_message->clear();
     return;
   }

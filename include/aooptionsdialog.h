@@ -55,6 +55,8 @@ private:
     QLineEdit *ui_ms_textbox;
     QLabel *ui_discord_lbl;
     QCheckBox *ui_discord_cb;
+    QLabel *ui_language_label;
+    QComboBox *ui_language_combobox;
 
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;
