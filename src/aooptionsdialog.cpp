@@ -173,6 +173,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_language_label);
 
     ui_language_combobox = new QComboBox(ui_form_layout_widget);
+    ui_language_combobox->addItem(configini->value("language", "  ").value<QString>() + " - Keep current setting");
     ui_language_combobox->addItem("   - Default");
     ui_language_combobox->addItem("en - English");
     ui_language_combobox->addItem("de - Deutsch");
