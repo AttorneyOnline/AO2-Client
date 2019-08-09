@@ -77,7 +77,8 @@ Razón: %1</translation>
         <location filename="../../src/packet_distribution.cpp" line="651"/>
         <source>You have been banned from the server.
 Reason: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Has sido baneado de este servidor.
+Razón: %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="659"/>
@@ -114,7 +115,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="48"/>
         <source>Defense needed</source>
-        <translation>Se necesita defensa</translation>
+        <translation>Se necesita abogado</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="50"/>
@@ -172,7 +173,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="94"/>
         <source>Log length:</source>
-        <translation>Longitud del historial:</translation>
+        <translation>Limite del historial:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="95"/>
@@ -202,7 +203,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="145"/>
         <source>Backup MS:</source>
-        <translation>MS de respaldo:</translation>
+        <translation>Master SV de respaldo:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="146"/>
@@ -212,7 +213,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="158"/>
         <source>Discord:</source>
-        <translation></translation>
+        <translation>Discord:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="159"/>
@@ -232,7 +233,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="186"/>
         <source>Callwords</source>
-        <translation></translation>
+        <translation>Palabras clave</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="211"/>
@@ -267,7 +268,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="276"/>
         <source>SFX:</source>
-        <translation></translation>
+        <translation>SFX:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="277"/>
@@ -277,7 +278,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="290"/>
         <source>Blips:</source>
-        <translation></translation>
+        <translation>Blips:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="291"/>
@@ -337,12 +338,12 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="372"/>
         <source>Defense:</source>
-        <translation>Defensa:</translation>
+        <translation>Abogado:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="373"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
-        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un lugar de defensa abierto.</translation>
+        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un lugar de abogado libre.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="386"/>
@@ -352,7 +353,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="387"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
-        <translation>Si está marcada, recibirá alertas sobre anuncios de casos si hay un puesto de fiscal abierto.</translation>
+        <translation>Si está marcada, recibirá alertas sobre anuncios de casos si hay un puesto de fiscal libre.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="400"/>
@@ -362,7 +363,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="401"/>
         <source>If checked, you will get alerts about case announcements if the judge spot is open.</source>
-        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si el puesto de juez está abierto.</translation>
+        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si el puesto de juez está libre.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="414"/>
@@ -372,7 +373,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="415"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
-        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un puesto de jurado abierto.</translation>
+        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un puesto de jurado libre.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="428"/>
@@ -382,12 +383,12 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="429"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
-        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un lugar de taquígrafo abierto.</translation>
+        <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un lugar de taquígrafo libre.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="442"/>
         <source>CM:</source>
-        <translation></translation>
+        <translation>CM:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="443"/>
@@ -397,7 +398,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="456"/>
         <source>Hosting cases:</source>
-        <translation type="unfinished"></translation>
+        <translation>Casos:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="457"/>
@@ -585,7 +586,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="611"/>
         <source>A/M</source>
-        <translation type="unfinished"></translation>
+        <translation>A/M</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="614"/>
@@ -846,7 +847,7 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../../src/lobby.cpp" line="270"/>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</source>
-        <translation>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;El simulador de drama de la sala del tribunal&lt;p&gt;&lt;b&gt;Código fuente:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https: //github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Desarrollo mayor:&lt;/b&gt; &lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Agradecimiento especial:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (diseño de interfaz de usuario), Draxirch (diseño de interfaz de usuario), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</translation>
+        <translation>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;El simulador de drama legal&lt;p&gt;&lt;b&gt;Código fuente:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https: //github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Desarrollo mayor:&lt;/b&gt; &lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Agradecimiento especial:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (diseño de interfaz de usuario), Draxirch (diseño de interfaz de usuario), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="376"/>
@@ -865,17 +866,18 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../../src/debug_functions.cpp" line="10"/>
         <source>Error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error: %1</translation>
     </message>
     <message>
         <location filename="../../src/debug_functions.cpp" line="11"/>
         <source>Error</source>
-        <translation type="unfinished">Error</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../../src/debug_functions.cpp" line="23"/>
         <source>Notice</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>In spanish it would be &quot;Aviso&quot;, but i believe it&apos;s going to be more useful for bug reports to not translate any debug string.</translatorcomment>
+        <translation>Notice</translation>
     </message>
 </context>
 </TS>
