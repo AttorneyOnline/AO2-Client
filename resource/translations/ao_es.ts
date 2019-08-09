@@ -77,14 +77,14 @@ Razón: %1</translation>
         <location filename="../../src/packet_distribution.cpp" line="651"/>
         <source>You have been banned from the server.
 Reason: %1</source>
-        <translation>Has sido baneado de este servidor.
+        <translation>Has sido bloqueado de este servidor.
 Razón: %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="659"/>
         <source>You are banned on this server.
 Reason: %1</source>
-        <translation>Has sido baneado en este servidor.
+        <translation>Has sido bloqueado en este servidor.
 Razón: %1</translation>
     </message>
     <message>
@@ -96,7 +96,7 @@ Razón: </translation>
     <message>
         <source>You are banned on this server.
 Reason: </source>
-        <translation type="vanished">Has sido baneado en este servidor.
+        <translation type="vanished">Has sido bloqueado en este servidor.
 Razón: </translation>
     </message>
 </context>
