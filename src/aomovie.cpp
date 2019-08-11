@@ -27,7 +27,7 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
   QString gif_path;
 
   QString custom_path;
-  if (p_gif == "custom")
+  if (p_gif.contains("custom"))
     custom_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif));
   else
     custom_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif + "_bubble"));
