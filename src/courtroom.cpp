@@ -1351,7 +1351,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       objection_player->play("takethat.wav", f_char, f_custom_theme);
       break;
     default:
-      if(objection_mod > 39) //checks if there is custom objection as it starts from code 40 and up
+      if(objection_mod > 40) //checks if there is custom objection as it starts from code 40 and up
       {
           //Incase of multiple custom objections,the flag is set to 41,42 etc so we make it as "custom1","custom2"
           QString objection_mod_custom = QString::number(objection_mod - 40);
