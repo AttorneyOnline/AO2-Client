@@ -204,8 +204,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pre_non_interrupt->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
+  ui_custom_objection->setContextMenuPolicy(Qt::CustomContextMenu);
+
   ui_realization = new AOButton(this, ao_app);
-  ui_mute = new AOButton(this, ao_app);
+  ui_mute = new AOButton(this, ao_app);  
 
   ui_defense_plus = new AOButton(this, ao_app);
   ui_defense_minus = new AOButton(this, ao_app);
@@ -288,6 +290,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_objection, SIGNAL(clicked()), this, SLOT(on_objection_clicked()));
   connect(ui_take_that, SIGNAL(clicked()), this, SLOT(on_take_that_clicked()));
   connect(ui_custom_objection, SIGNAL(clicked()), this, SLOT(on_custom_objection_clicked()));
+  connect(ui_custom_objection, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
 
   connect(ui_realization, SIGNAL(clicked()), this, SLOT(on_realization_clicked()));
 
@@ -894,9 +897,9 @@ void Courtroom::enter_courtroom(int p_cid)
   }
 
   if (ao_app->custom_objection_enabled &&
-      (file_exists(ao_app->get_character_path(current_char, "custom.gif")) ||
-      file_exists(ao_app->get_character_path(current_char, "custom.apng"))) &&
-      file_exists(ao_app->get_character_path(current_char, "custom.wav")))
+      (file_exists(ao_app->get_character_path(current_char, "custom1.gif")) ||
+      file_exists(ao_app->get_character_path(current_char, "custom1.apng"))) &&
+      file_exists(ao_app->get_character_path(current_char, "custom1.wav")))
     ui_custom_objection->show();
   else
     ui_custom_objection->hide();
@@ -1331,7 +1334,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
   //if an objection is used
-  if (objection_mod <= 4 && objection_mod >= 1)
+  if (objection_mod >= 1)
   {
     switch (objection_mod)
     {
@@ -1347,12 +1350,15 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       ui_vp_objection->play("takethat", f_char, f_custom_theme);
       objection_player->play("takethat.wav", f_char, f_custom_theme);
       break;
-    //case 4 is AO2 only
-    case 4:
-      ui_vp_objection->play("custom", f_char, f_custom_theme);
-      objection_player->play("custom.wav", f_char, f_custom_theme);
-      break;
     default:
+      if(objection_mod > 39) //checks if there is custom objection as it starts from code 40 and up
+      {
+          //Incase of multiple custom objections,the flag is set to 41,42 etc so we make it as "custom1","custom2"
+          QString objection_mod_custom = QString::number(objection_mod - 40);
+          ui_vp_objection->play("custom" + objection_mod_custom, f_char, f_custom_theme);
+          objection_player->play("custom" +objection_mod_custom +".wav", f_char, f_custom_theme);
+      }
+      else
       qDebug() << "W: Logic error in objection switch statement!";
     }
 
@@ -2925,6 +2931,12 @@ void Courtroom::on_ooc_return_pressed()
       return;
 
   }
+  else if(ooc_message.startsWith("/clear"))
+  {
+      ui_server_chatlog->clear();
+      return;
+  }
+
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
@@ -3184,7 +3196,7 @@ void Courtroom::on_take_that_clicked()
 
 void Courtroom::on_custom_objection_clicked()
 {
-  if (objection_state == 4)
+  if (objection_state > 39)
   {
     ui_custom_objection->set_image("custom.png");
     objection_state = 0;
@@ -3196,10 +3208,38 @@ void Courtroom::on_custom_objection_clicked()
     ui_hold_it->set_image("holdit.png");
 
     ui_custom_objection->set_image("custom_selected.png");
-    objection_state = 4;
+    objection_state = 41; //It selects by default first custom objection.
   }
 
   ui_ic_chat_message->setFocus();
+}
+void Courtroom::ShowContextMenu(const QPoint& pos)
+{
+    QPoint globalPos = ui_custom_objection->mapToGlobal(pos);
+    QMenu Custom_obj_menu;
+    int x = 1;
+    while(ao_app->custom_objection_enabled &&
+          (file_exists(ao_app->get_character_path(current_char, "custom" + QString::number(x) + ".gif")) ||
+          file_exists(ao_app->get_character_path(current_char, "custom" + QString::number(x) + ".apng"))) &&
+          file_exists(ao_app->get_character_path(current_char, "custom" + QString::number(x) + ".wav")))
+    {        
+        Custom_obj_menu.addAction("custom" + QString::number(x));
+        x++;
+    }
+    //tomorrow do the auto adds
+    QAction* selecteditem = Custom_obj_menu.exec(globalPos);
+    if(selecteditem)
+    {
+        ui_objection->set_image("objection.png");
+        ui_take_that->set_image("takethat.png");
+        ui_hold_it->set_image("holdit.png");
+        ui_custom_objection->set_image("custom_selected.png");
+        objection_state = selecteditem->text().split('m')[1].toInt() + 40; //here we make the "custom1" to 41 in order to make it a flag
+    }
+    else
+    {
+        //nothing was chosen
+    }
 }
 
 void Courtroom::on_realization_clicked()
