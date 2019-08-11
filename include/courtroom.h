@@ -48,6 +48,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QTextBoundaryFinder>
+#include <QMenu>
 
 #include <stack>
 
@@ -602,6 +603,7 @@ private slots:
   void on_objection_clicked();
   void on_take_that_clicked();
   void on_custom_objection_clicked();
+  void ShowContextMenu(const QPoint& pos);
 
   void on_realization_clicked();
 
