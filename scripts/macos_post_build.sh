@@ -13,7 +13,7 @@ ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 cd ${ROOT_DIR}
 
 # This thing basically does all the work
-macdeployqt ../bin/Attorney_Online.app
+/usr/local/opt/qt/bin/macdeployqt ../bin/Attorney_Online.app
 
 # Need to add the dependencies
 cp ../lib/* ../bin/Attorney_Online.app/Contents/Frameworks
