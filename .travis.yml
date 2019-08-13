@@ -3,6 +3,7 @@ os: osx
 
 addons:
     homebrew:
+        update: true
         packages:
             - qt5
 
