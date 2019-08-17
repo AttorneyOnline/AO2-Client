@@ -126,7 +126,12 @@ void AOSfxPlayer::stop()
 
 }
 
-void AOSfxPlayer::set_volume(int p_value)
+void AOSfxPlayer::set_volume(qreal p_value)
+{
+
+}
+
+void AOSfxPlayer::set_volume_internal(qreal p_value)
 {
 
 }

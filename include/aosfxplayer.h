@@ -21,12 +21,13 @@ public:
   void play(QString p_sfx, QString p_char = "", QString shout = "");
   void stop();
   void set_volume(qreal p_volume);
-  void set_volume_internal(qreal p_volume);
 
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
   qreal m_volume = 0;
+
+  void set_volume_internal(qreal p_volume);
 
   #if defined(BASSAUDIO)
   HSTREAM m_stream;
