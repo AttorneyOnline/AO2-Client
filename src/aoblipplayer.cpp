@@ -18,7 +18,7 @@ void AOBlipPlayer::set_blips(QString p_sfx)
     m_stream_list[n_stream] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
   }
 
-  set_volume(m_volume);
+  set_volume_internal(m_volume);
 }
 
 void AOBlipPlayer::blip_tick()
@@ -34,11 +34,15 @@ void AOBlipPlayer::blip_tick()
   BASS_ChannelPlay(f_stream, false);
 }
 
-void AOBlipPlayer::set_volume(int p_value)
+void AOBlipPlayer::set_volume(qreal p_value)
 {
-  m_volume = p_value;
+  m_volume = p_value / 100;
+  set_volume_internal(m_volume);
+}
 
-  float volume = p_value / 100.0f;
+void AOBlipPlayer::set_volume_internal(qreal p_value)
+{
+  float volume = p_value;
 
   for (int n_stream = 0 ; n_stream < 5 ; ++n_stream)
   {
@@ -61,7 +65,7 @@ void AOBlipPlayer::set_blips(QString p_sfx)
     m_blips.setSource(QUrl::fromLocalFile(f_path));
   }
 
-  set_volume(m_volume);
+  set_volume_internal(m_volume);
 }
 
 void AOBlipPlayer::blip_tick()
@@ -74,9 +78,14 @@ void AOBlipPlayer::blip_tick()
   m_blips.play();
 }
 
-void AOBlipPlayer::set_volume(int p_value)
+void AOBlipPlayer::set_volume(qreal p_value)
 {
-  m_volume = p_value;
+  m_volume = p_value / 100;
+  set_volume_internal(m_volume);
+}
+
+void AOBlipPlayer::set_volume_internal(qreal p_value)
+{
   m_blips.setVolume(m_volume);
 }
 #else //No audio
@@ -96,7 +105,12 @@ void AOBlipPlayer::blip_tick()
 
 }
 
-void AOBlipPlayer::set_volume(int p_value)
+void AOBlipPlayer::set_volume(qreal p_value)
+{
+
+}
+
+void AOBlipPlayer::set_volume_internal(qreal p_value)
 {
 
 }

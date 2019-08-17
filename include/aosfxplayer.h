@@ -20,17 +20,19 @@ public:
 
   void play(QString p_sfx, QString p_char = "", QString shout = "");
   void stop();
-  void set_volume(int p_volume);
+  void set_volume(qreal p_volume);
+  void set_volume_internal(qreal p_volume);
 
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
+  qreal m_volume = 0;
+
   #if defined(BASSAUDIO)
   HSTREAM m_stream;
   #elif defined(QTAUDIO)
-  QSoundEffect m_sfx;
+  QSoundEffect m_sfx;  
   #endif
-  int m_volume = 0;
 };
 
 #endif // AOSFXPLAYER_H

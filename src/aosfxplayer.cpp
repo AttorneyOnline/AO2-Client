@@ -44,11 +44,16 @@ void AOSfxPlayer::stop()
   BASS_ChannelStop(m_stream);
 }
 
-void AOSfxPlayer::set_volume(int p_value)
+void AOSfxPlayer::set_volume(qreal p_value)
 {
-  m_volume = p_value;
-  float volume = p_value / 100.0f;
-  BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
+  m_volume = p_value / 100;
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::set_volume_internal(qreal p_value)
+{
+    float volume = p_value;
+    BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
 }
 #elif defined(QTAUDIO) //Using Qt's QSoundEffect class
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
@@ -83,7 +88,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   {
   m_sfx.setSource(QUrl::fromLocalFile(f_path));
 
-  set_volume(m_volume);
+  set_volume_internal(m_volume);
 
   m_sfx.play();
   }
@@ -94,9 +99,14 @@ void AOSfxPlayer::stop()
   m_sfx.stop();
 }
 
-void AOSfxPlayer::set_volume(int p_value)
+void AOSfxPlayer::set_volume(qreal p_value)
 {
-  m_volume = p_value;
+  m_volume = p_value/100;
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::set_volume_internal(qreal p_value)
+{
   m_sfx.setVolume(m_volume);
 }
 #else
