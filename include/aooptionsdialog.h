@@ -2,7 +2,13 @@
 #define AOOPTIONSDIALOG_H
 
 #include "aoapplication.h"
+
+#ifdef BASSAUDIO
 #include "bass.h"
+#elif defined QTAUDIO
+#include <QAudio>
+#include <QAudioDeviceInfo>
+#endif
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>

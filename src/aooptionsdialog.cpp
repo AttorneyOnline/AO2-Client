@@ -1,6 +1,5 @@
 #include "aooptionsdialog.h"
 #include "aoapplication.h"
-#include "bass.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDialog(parent)
 {
@@ -235,9 +234,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     // Let's fill out the combobox with the available audio devices. Or don't if there is no audio
     int a = 0;
-    #ifdef BASSAUDIO
-    BASS_DEVICEINFO info;
-    #endif
     if (needs_default_audiodev())
     {
 
@@ -245,10 +241,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     }
     #ifdef BASSAUDIO
+    BASS_DEVICEINFO info;
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
     {
         ui_audio_device_combobox->addItem(info.name);
         if (p_ao_app->get_audio_output_device() == info.name)
+            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
+    }
+    #elif defined QTAUDIO
+    foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
+    {
+        ui_audio_device_combobox->addItem(deviceInfo.deviceName());
+        if (p_ao_app->get_audio_output_device() == deviceInfo.deviceName())
             ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
     }
     #endif
