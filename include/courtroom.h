@@ -10,6 +10,7 @@
 #include "aomovie.h"
 #include "aocharmovie.h"
 #include "aomusicplayer.h"
+#include "aooptionsdialog.h"
 #include "aosfxplayer.h"
 #include "aoblipplayer.h"
 #include "aoevidencebutton.h"

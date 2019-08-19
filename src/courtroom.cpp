@@ -28,6 +28,20 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           }
       }
   }
+  #elif defined QTAUDIO
+
+  if (ao_app->get_audio_output_device() != "default")
+  {
+      foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
+          {
+          if (ao_app->get_audio_output_device() == deviceInfo.deviceName())
+          {
+              ao_app->QtAudioDevice = deviceInfo;
+              qDebug() << deviceInfo.deviceName() << "was set as the default audio output device.";
+              break;
+          }
+      }
+  }
   #endif
 
   keepalive_timer = new QTimer(this);
