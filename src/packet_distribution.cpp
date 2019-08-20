@@ -175,6 +175,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     s_pv = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
+    w_lobby->enable_connect_button();
+
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
   else if (header == "CT")
@@ -214,8 +216,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       casing_alerts_enabled = true;
     if (f_packet.contains("modcall_reason",Qt::CaseInsensitive))
       modcall_reason_enabled = true;
-
-    w_lobby->enable_connect_button();
   }
   else if (header == "PN")
   {
