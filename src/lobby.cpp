@@ -47,6 +47,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
+  connect(ui_server_list, SIGNAL(activated(QModelIndex)), this, SLOT(on_server_list_doubleclicked(QModelIndex)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
@@ -282,9 +283,13 @@ void Lobby::on_about_clicked()
   QMessageBox::about(this, "About", msg);
 }
 
+//clicked on an item in the serverlist
 void Lobby::on_server_list_clicked(QModelIndex p_model)
 {
+  if (p_model != last_model)
+  {
   server_type f_server;
+  last_model = p_model;
   int n_server = p_model.row();
 
   if (n_server < 0)
@@ -318,6 +323,14 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_connect->setEnabled(false);
 
   ao_app->net_manager->connect_to_server(f_server);
+  }
+}
+
+//doubleclicked on an item in the serverlist so we'll connect right away
+void Lobby::on_server_list_doubleclicked(QModelIndex p_model)
+{
+    on_server_list_clicked(p_model);
+    on_connect_released();
 }
 
 void Lobby::on_chatfield_return_pressed()
