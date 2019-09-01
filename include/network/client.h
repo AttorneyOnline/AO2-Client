@@ -11,20 +11,24 @@ using namespace QtPromise;
 
 namespace AttorneyOnline {
 
-class Client {
+class Client : public QObject {
+  Q_OBJECT
+
 protected:
   const QString address;
   const uint16_t port;
 
 public:
-  explicit Client(const QString &address, const uint16_t &port)
-    : address(address), port(port) {}
-  virtual ~Client();
+  explicit Client(QObject *parent,
+                  const QString &address, const uint16_t &port)
+    : QObject(parent), address(address), port(port) {}
+  virtual ~Client() = default;
 
   virtual QPromise<void> connect() = 0;
   virtual void sendKeepalive() = 0;
 
   virtual QVector<char_type> characters() = 0;
+  virtual char_type character() = 0;
 
   virtual QVector<area_type> rooms() = 0;
   virtual void joinRoom(int index) = 0;
@@ -32,7 +36,7 @@ public:
 
   virtual void callMod(const QString &message) = 0;
 
-  virtual void sendIC(const chat_message_type &message) = 0;
+  virtual QPromise<void> sendIC(const chat_message_type &message) = 0;
   virtual void sendOOC(const QString &oocName,
                        const QString &message) = 0;
 
@@ -49,6 +53,31 @@ public:
 
   virtual void announceCase(const QString &caseTitle,
                             const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) = 0;
+
+signals:
+  void messageReceived(const QString &header, const QStringList &args);
+
+  void connectProgress(int current, int max, const QString &message);
+
+  void icReceived(const chat_message_type &message);
+  void oocReceived(const QString &name, const QString &message);
+
+  void wtceReceived(WTCE_TYPE type);
+  void healthChanged(HEALTH_TYPE type, int value);
+  void backgroundChanged(const QString &background);
+  void trackChanged(const QString &track, const QString &showname);
+
+  void takenCharsChanged();
+  void characterChanged(int charId);
+  void tracksChanged();
+  void evidenceChanged();
+  void areasUpdated();
+
+  void caseCalled(const QString &message,
+                  const std::bitset<CASING_FLAGS_COUNT> casingFlags);
+
+  void kicked(const QString &message, bool banned = false);
+  void modCalled(const QString &message);
 };
 
 } // namespace AttorneyOnline

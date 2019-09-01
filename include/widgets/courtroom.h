@@ -26,6 +26,8 @@
 #include "aoroomcontrols.h"
 #include "aoevidence.h"
 
+#include "network/client.h"
+
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QPlainTextEdit>
@@ -50,6 +52,8 @@
 #include <QFileDialog>
 #include <QAction>
 
+using namespace AttorneyOnline;
+
 class AOApplication;
 class AOViewport;
 
@@ -67,50 +71,24 @@ class Courtroom : public QMainWindow
 public:
   explicit Courtroom(AOApplication *p_ao_app);
 
-  void append_char(char_type p_char) { char_list.append(p_char); }
-  void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
-  void set_music(QVector<track_type> &f_music) { ui_music_list->set_tracks(f_music); }
-  void set_areas(QVector<area_type> &f_areas) { area_list = f_areas; ui_area_list->set_areas(f_areas); }
-
   void arup_append(int players, QString status, QString cm, QString locked);
   void arup_modify(int type, int place, QString value);
-
-  //sets status as taken on character with cid n_char and places proper shading on charselect
-  void set_taken(int n_char, bool p_taken);
-
-  //sets the evidence list member variable to argument
-  void set_evidence_list(QVector<evi_type> &p_evi_list);
 
   //called when a DONE#% from the server was received
   void done_received();
 
-  //send a message that the player is banned and quits the server
-  void set_ban(int p_cid);
-
-  //cid = character id, returns the cid of the currently selected character
-  int get_cid() { return m_cid; }
-  QString get_current_char() { return current_char; }
-
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
-
-  void list_areas();
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
 
   void handle_chatmessage(QStringList *p_contents);
-  void handle_background(QString background);
-  void handle_wtce(QString wtce, int variant);
 
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
-
-  //sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
-  //state is an number between 0 and 10 inclusive
-  void set_hp_bar(HEALTH_TYPE p_bar, int p_state);
 
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
@@ -122,22 +100,12 @@ public:
 private:
   AOApplication *ao_app;
 
-  QVector<char_type> char_list;
-  QVector<evi_type> evidence_list;
-  QVector<area_type> area_list;
-
-  //triggers ping_server() every 60 seconds
-  QTimer *keepalive_timer;
+  Client *client;
 
   QString previous_ic_message = "";
 
   //char id, muted or not
   QMap<int, bool> mute_map;
-
-  //character id, which index of the char_list the player is
-  int m_cid = -1;
-  //cid and this may differ in cases of ini-editing
-  QString current_char = "";
 
   int objection_state = 0;
   int realization_state = 0;
@@ -146,9 +114,6 @@ private:
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
-
-  int current_emote = 0;
-  QVector<evi_type> local_evidence_list;
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *modcall_player;

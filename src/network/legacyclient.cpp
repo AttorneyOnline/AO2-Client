@@ -335,6 +335,8 @@ void LegacyClient::packetReceived()
  * Establishes a TCP connection to an AO2 server, and performs the usual
  * handshake by sending an HDID to the server and retrieving character
  * and music information.
+ *
+ * \return a promise that is resolved when the handshake is complete
  */
 QPromise<void> LegacyClient::connect()
 {
@@ -379,14 +381,17 @@ QPromise<void> LegacyClient::connect()
 
     send("RD");
     return waitForMessage("DONE");
+  }).then([&] {
+    QObject::connect(&keepaliveTimer, &QTimer::timeout,
+                     this, &LegacyClient::sendKeepalive);
+    keepaliveTimer.setInterval(KEEPALIVE_INTERVAL);
+    keepaliveTimer.start();
   });
 
   // Connect TCP socket, bringing the promise chain above into motion.
   socket.connectToHost(address, port);
 
-  // Using std::move here suppresses a compiler warning relating to a C++11
-  // defect. It is otherwise not required.
-  return std::move(promise);
+  return promise;
 }
 
 /*!
@@ -398,31 +403,89 @@ void LegacyClient::sendKeepalive()
   send("CHECK");
 }
 
+/*!
+ * Joins a room with the specific index. By default, the default room has
+ * already been joined. Since the AO1 protocol has no notion of rooms,
+ * the currently selected room cannot be tracked.
+ *
+ * The new room will be joined with the previously selected character.
+ */
 void LegacyClient::joinRoom(int index)
 {
   send("MC", { QString::number(index), "0" });
 }
 
+/*!
+ * Sets the character being used in the current room.
+ *
+ * \param character ID; a value of -1 indicates "spectator"
+ */
 void LegacyClient::setCharacter(int charId)
 {
   send("CC", { "0", QString::number(charId), hdid() });
 }
 
+/*!
+ * Requests a mod with a message.
+ *
+ * \param message  optional message. Some servers do not support messages
+ * in mod calls; in this case, the message will be ignored by the server.
+ */
 void LegacyClient::callMod(const QString &message)
 {
   send("ZZ", { message });
 }
 
-void LegacyClient::sendIC(const chat_message_type &message)
+/*!
+ * Sends a composed in-character chat message.
+ *
+ * \param message  a well-formed IC message
+ * \return promise that resolves when the server confirms that the IC message
+ * was received
+ */
+QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
 {
-  send("MS", message);
+  auto msgCopy = message;
+  msgCopy.char_id = currentCharId;
+
+  send("MS", msgCopy);
+
+  return QPromise<void>(
+        [&](const QPromiseResolve<void>& resolve) {
+    std::unique_ptr<QMetaObject::Connection> connection {
+      new QMetaObject::Connection
+    };
+
+    *connection = QObject::connect(this, &LegacyClient::icReceived,
+                                   [&](const chat_message_type &message) {
+      // If you ever design a protocol, don't do this - this is a really bad
+      // heuristic. There could be various players in the room with the same
+      // character, or your messages might be being intentionally delayed.
+      if (message.char_id == currentCharId) {
+        QObject::disconnect(*connection);
+        resolve();
+      }
+    });
+  }).timeout(IC_ECHO_TIMEOUT);
 }
 
+/*!
+ * Sends an out-of-character chat message.
+ *
+ * \param oocName  name to be shown on the OOC chat log
+ * \param message  plain-text message to be sent
+ */
 void LegacyClient::sendOOC(const QString &oocName, const QString &message)
 {
   send("CT", { oocName, message });
 }
 
+/*!
+ * Sends a request to play the Witness Testimony/Cross Examination overlay
+ * animation.
+ *
+ * \param type  the overlay to be played
+ */
 void LegacyClient::sendWTCE(WTCE_TYPE type)
 {
   const QMap<WTCE_TYPE, QStringList> packets = {
@@ -442,16 +505,33 @@ void LegacyClient::sendWTCE(WTCE_TYPE type)
   send("RT", packet);
 }
 
+/*!
+ * Sends a request to modify a health (penalty) bar with a new
+ * value.
+ *
+ * \param type  the health bar to be modified
+ * \param value  the new value, from 0 to 10
+ */
 void LegacyClient::sendHealth(HEALTH_TYPE type, int value)
 {
   send("HP", { QString::number(type), QString::number(value) });
 }
 
+/*!
+ * Adds a new evidence item to the evidence list.
+ * \param evidence  a well-formed evidence item
+ */
 void LegacyClient::addEvidence(const evi_type &evidence)
 {
   send("PE", evidence);
 }
 
+/*!
+ * Replaces an evidence item with a new item.
+ *
+ * \param index  the index of the evidence item to be replaced
+ * \param evidence  the new evidence item
+ */
 void LegacyClient::editEvidence(const int index, const evi_type &evidence)
 {
   QStringList packet = { QString::number(index) };
@@ -460,16 +540,35 @@ void LegacyClient::editEvidence(const int index, const evi_type &evidence)
   send("EE", packet);
 }
 
+/*!
+ * Removes an evidence item.
+ *
+ * \param index  the index of the evidence item to be removed
+ */
 void LegacyClient::removeEvidence(const int index)
 {
   send("DE", { QString::number(index) });
 }
 
+/*!
+ * Requests to play a track.
+ *
+ * \param trackName  the name of the track to be played, including extension
+ * \param showname  the name that should appear on the IC log
+ */
 void LegacyClient::playTrack(const QString &trackName, const QString &showname)
 {
   send("MC", { trackName, "0", showname });
 }
 
+/*!
+ * Announces a case with a list of roles needed to be filled.
+ *
+ * \param caseTitle  the title of the case
+ * \param rolesNeeded  a bitset that controls what recipients will receive
+ * the casing announcement, depending on the roles that each player has
+ * chosen to receive casing announcements for
+ */
 void LegacyClient::announceCase(const QString &caseTitle,
                                 const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded)
 {

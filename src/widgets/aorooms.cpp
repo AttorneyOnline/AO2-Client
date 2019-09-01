@@ -22,7 +22,7 @@ AORoomChooser::AORoomChooser(QWidget *parent, AOApplication *p_ao_app)
   ui_search = findChild<QLineEdit *>("search");
 }
 
-void AORoomChooser::set_areas(QVector<area_type> &areas)
+void AORoomChooser::setAreas(QVector<area_type> &areas)
 {
   area_list = areas;
   refresh();

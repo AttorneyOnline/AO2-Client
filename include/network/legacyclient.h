@@ -23,7 +23,6 @@ namespace AttorneyOnline {
  * old versions of tsuserver are strict about the layout of the CT packet.
  */
 class LegacyClient : public Client {
-  Q_OBJECT
 private:
   bool allowPairing = false;
 
@@ -39,6 +38,15 @@ private:
   const int BUFFER_SOFT_LIMIT = 1024 * 1024;
   QByteArray buffer;
 
+  // tsuserver3 enjoys kicking players that do not send the keepalive
+  // packet within a server-configured timeout.
+  const int KEEPALIVE_INTERVAL = 60 * 1000;
+  QTimer keepaliveTimer;
+
+  // Maximum time to wait for an echo-back from the server for a sent
+  // IC message. Otherwise, the promise is rejected and discarded.
+  const int IC_ECHO_TIMEOUT = 5 * 1000;
+
   QTcpSocket socket;
 
   void send(const QString &header, QStringList args);
@@ -52,6 +60,7 @@ public:
   void sendKeepalive() override;
 
   QVector<char_type> characters() override { return charsList; }
+  char_type character() override { return charsList[currentCharId]; }
 
   QVector<area_type> rooms() override { return areasList; }
   void joinRoom(int index) override;
@@ -59,7 +68,7 @@ public:
 
   void callMod(const QString &message) override;
 
-  void sendIC(const chat_message_type &message) override;
+  QPromise<void> sendIC(const chat_message_type &message) override;
   void sendOOC(const QString &oocName,
                const QString &message) override;
 
@@ -76,31 +85,6 @@ public:
 
   void announceCase(const QString &caseTitle,
                     const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) override;
-
-signals:
-  void messageReceived(const QString &header, const QStringList &args);
-
-  void connectProgress(int current, int max, const QString &message);
-
-  void icReceived(const chat_message_type &message);
-  void oocReceived(const QString &name, const QString &message);
-
-  void wtceReceived(WTCE_TYPE type);
-  void healthChanged(HEALTH_TYPE type, int value);
-  void backgroundChanged(const QString &background);
-  void trackChanged(const QString &track, const QString &showname);
-
-  void takenCharsChanged();
-  void characterChanged(int charId);
-  void tracksChanged();
-  void evidenceChanged();
-  void areasUpdated();
-
-  void caseCalled(const QString &message,
-                  const std::bitset<CASING_FLAGS_COUNT> casingFlags);
-
-  void kicked(const QString &message, bool banned = false);
-  void modCalled(const QString &message);
 };
 
 } // namespace AttorneyOnline

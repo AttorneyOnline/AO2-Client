@@ -13,7 +13,7 @@ class AORoomChooser : public QWidget
 public:
   explicit AORoomChooser(QWidget *parent, AOApplication *p_ao_app);
 
-  void set_areas(QVector<area_type> &areas);
+  void setAreas(QVector<area_type> &areas);
 private:
   AOApplication *ao_app;
 

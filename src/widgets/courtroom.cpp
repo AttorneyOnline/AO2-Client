@@ -62,9 +62,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   FROM_UI(AOChat, ic_chat)
   FROM_UI(AORoomControls, room_controls)
 
-  keepalive_timer = new QTimer(this);
-  keepalive_timer->start(60000);
-
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
 
@@ -74,35 +71,28 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_casing->setChecked(ao_app->get_casing_enabled());
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
 
-  connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
-
   connect(ui_server_chat, SIGNAL(messageSent(QString, QString)), this, SLOT(on_ooc_return_pressed(QString, QString)));
   connect(ui_ms_chat, SIGNAL(messageSent(QString, QString)), this, SLOT(on_ms_return_pressed(QString, QString)));
+
+  connect(client, &Client::oocReceived, this, &Courtroom::append_server_chatmessage);
+  connect(client, &Client::icReceived, this, &Courtroom::handle_chatmessage);
+  connect(client, &Client::trackChanged, this, &Courtroom::handle_song);
+  connect(client, &Client::caseCalled, this, &Courtroom::case_called);
+  connect(client, &Client::modCalled, this, &Courtroom::mod_called);
+  connect(client, &Client::characterChanged, this, &Courtroom::enter_courtroom);
+
+  connect(client, &Client::backgroundChanged, ui_viewport, &AOViewport::set_background);
+  connect(client, &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
+
+  connect(client, &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
+
+  connect(client, &Client::areasUpdated, ui_area_list, &AORoomChooser::setAreas);
 
   connect(ui_mixer, &AOMixer::volumeChanged, this, &Courtroom::setVolume);
 }
 
-void Courtroom::set_taken(int n_char, bool p_taken)
-{
-  if (n_char >= char_list.size())
-  {
-    qDebug() << "W: set_taken attempted to set an index bigger than char_list size";
-    return;
-  }
-
-  char_type f_char;
-  f_char.name = char_list.at(n_char).name;
-  f_char.description = char_list.at(n_char).description;
-  f_char.taken = p_taken;
-  f_char.evidence_string = char_list.at(n_char).evidence_string;
-
-  char_list.replace(n_char, f_char);
-}
-
 void Courtroom::done_received()
 {
-  m_cid = -1;
-
   music_player->set_volume(0);
   ui_viewport->stop_sounds();
 
@@ -127,12 +117,10 @@ bool Courtroom::chooseCharacter()
 }
 
 void Courtroom::enter_courtroom(int p_cid)
-{ 
-  m_cid = p_cid;
-
+{
   QString f_char;
 
-  if (m_cid == -1)
+  if (p_cid == -1)
   {
     f_char = "";
 
@@ -141,18 +129,15 @@ void Courtroom::enter_courtroom(int p_cid)
   }
   else
   {
-    f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+    f_char = ao_app->get_char_name(client->character().name);
 
     if (ao_app->is_discord_enabled())
       ao_app->discord->state_character(f_char.toStdString());
   }
 
-  current_char = f_char;
-  current_emote = 0;
-
   ui_ic_chat->setCharacter(f_char);
 
-  QString side = ao_app->get_char_side(f_char);
+  const QString side = ao_app->get_char_side(f_char);
   ui_room_controls->toggleJudgeControls(side == "jud");
 
   // TODO: ensure that when the spectator button is clicked, the set character
@@ -206,7 +191,6 @@ void Courtroom::on_ic_chat_messageSent()
   //noninterrupting_preanim#%
 
   chat_message_type message;
-  message.char_id = m_cid;
   ui_ic_chat->addMessageData(message);
   ui_evidence->addMessageData(message);
 
@@ -239,7 +223,12 @@ void Courtroom::on_ic_chat_messageSent()
     QString::number(message.noninterrupting_preanim)
   };
 
-  ao_app->send_server_packet(new AOPacket("MS", packet_contents));
+  client->sendIC(message).then([&] {
+    objection_state = 0;
+    realization_state = 0;
+    ui_evidence->togglePresenting(false);
+    ui_ic_chat->clearEntry();
+  });
 }
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
@@ -275,15 +264,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_message == previous_ic_message)
     return;
 
-  // Were we the sender of the message? If so, reset IC widgets.
-  if (message.char_id == m_cid)
-  {
-    objection_state = 0;
-    realization_state = 0;
-    ui_evidence->togglePresenting(false);
-    ui_ic_chat->clearEntry();
-  }
-
   // Append to IC box
   ui_ic_chatlog->append_ic_text(f_default_showname, f_showname, ": " + message.message);
 
@@ -294,10 +274,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   int f_evi_id = message.evidence;
 
   QString evidence_image;
-  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
+  if (f_evi_id > 0 && f_evi_id <= client->evidence().size())
   {
     //shifted by 1 because 0 is no evidence per legacy standards
-    evidence_image = local_evidence_list.at(f_evi_id - 1).image;
+    evidence_image = client->evidence()[f_evi_id - 1].image;
   }
 
   // Check if any word in the call words list is contained in the message
@@ -316,22 +296,14 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_viewport->chat(message, f_showname, evidence_image);
 }
 
-void Courtroom::handle_background(QString background)
+void Courtroom::on_client_kicked(const QString &message, bool banned)
 {
-  ui_viewport->set_background(background);
-}
-
-void Courtroom::handle_wtce(QString wtce, int variant)
-{
-  ui_viewport->wtce(wtce, variant);
-}
-
-void Courtroom::set_ban(int p_cid)
-{
-  if (p_cid != m_cid && p_cid != -1)
-    return;
-
-  call_notice("You have been banned.");
+  const QString verb = banned ? tr("banned") : tr("kicked");
+  if (!message.isEmpty()) {
+    call_notice(tr("You were %1.\nMessage: %2").arg(verb).arg(message));
+  } else {
+    call_notice(tr("You were %1.").arg(verb));
+  }
 
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
@@ -369,12 +341,6 @@ void Courtroom::handle_song(QStringList *p_contents)
       music_player->play(f_song);
     }
   }
-}
-
-
-void Courtroom::set_hp_bar(HEALTH_TYPE p_bar, int p_state)
-{
-  ui_room_controls->setHealth(p_bar, p_state);
 }
 
 void Courtroom::mod_called(QString p_ip)
@@ -575,8 +541,8 @@ void Courtroom::on_mute_triggered()
 
 void Courtroom::on_pair_triggered()
 {
-  QMessageBox::warning(this, "Pairing", "Unfortunately, pairing was removed due"
-                                        "to time constraints. It will return in"
+  QMessageBox::warning(this, "Pairing", "Unfortunately, pairing was removed due "
+                                        "to time constraints. It will return in "
                                         "the next version.");
 }
 
