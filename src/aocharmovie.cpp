@@ -19,16 +19,13 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
+  QString original_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, emote_prefix + p_emote));
   QString alt_path = ao_app->get_character_path(p_char, p_emote + ".png");
-  QString apng_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
-  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
-  QString placeholder_default_path = ao_app->get_default_theme_path("placeholder.gif");
+  QString placeholder_path = ao_app->get_image_suffix(ao_app->get_theme_path("placeholder"));
+  QString placeholder_default_path = ao_app->get_image_suffix(ao_app->get_default_theme_path("placeholder"));
   QString gif_path;
 
-  if (file_exists(apng_path))
-    gif_path = apng_path;
-  else if (file_exists(original_path))
+  if (file_exists(original_path))
     gif_path = original_path;
   else if (file_exists(alt_path))
     gif_path = alt_path;

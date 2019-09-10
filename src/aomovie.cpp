@@ -32,12 +32,12 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
   else
     custom_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif + "_bubble"));
 
-  QString misc_path = ao_app->get_base_path() + "misc/" + p_custom_theme + "/" + p_gif + "_bubble.gif";
-  QString custom_theme_path = ao_app->get_custom_theme_path(p_custom_theme, p_gif + ".gif");
-  QString theme_path = ao_app->get_theme_path(p_gif + ".gif");
-  QString default_theme_path = ao_app->get_default_theme_path(p_gif + ".gif");
-  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
-  QString default_placeholder_path = ao_app->get_default_theme_path("placeholder.gif");
+  QString misc_path = ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" + p_custom_theme + "/" + p_gif + "_bubble");
+  QString custom_theme_path = ao_app->get_image_suffix(ao_app->get_custom_theme_path(p_custom_theme, p_gif));
+  QString theme_path = ao_app->get_image_suffix(ao_app->get_theme_path(p_gif));
+  QString default_theme_path = ao_app->get_image_suffix(ao_app->get_default_theme_path(p_gif));
+  QString placeholder_path = ao_app->get_image_suffix(ao_app->get_theme_path("placeholder"));
+  QString default_placeholder_path =ao_app->get_image_suffix( ao_app->get_default_theme_path("placeholder"));
 
   if (file_exists(custom_path))
     gif_path = custom_path;
@@ -70,7 +70,7 @@ void AOMovie::stop()
 
 void AOMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1) && play_once)
+  if (n_frame >= (m_movie->frameCount() - 1) && play_once)
   {
     //we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());

@@ -909,7 +909,8 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (ao_app->custom_objection_enabled &&
       (file_exists(ao_app->get_character_path(current_char, "custom.gif")) ||
-      file_exists(ao_app->get_character_path(current_char, "custom.apng"))) &&
+      file_exists(ao_app->get_character_path(current_char, "custom.apng")) ||
+      file_exists(ao_app->get_character_path(current_char, "custom.webp"))) &&
       file_exists(ao_app->get_character_path(current_char, "custom.wav")))
     ui_custom_objection->show();
   else
@@ -2409,13 +2410,17 @@ void Courtroom::set_scene()
     f_desk_image = "prohelperdesk";
   }
   else if (f_side == "jur" && (file_exists(ao_app->get_background_path("jurystand.png")) ||
-                               file_exists(ao_app->get_background_path("jurystand.gif"))))
+                               file_exists(ao_app->get_background_path("jurystand.gif")) ||
+                               file_exists(ao_app->get_background_path("jurystand.apng")) ||
+                               file_exists(ao_app->get_background_path("jurystand.webp"))))
   {
     f_background = "jurystand";
     f_desk_image = "jurydesk";
   }
   else if (f_side == "sea" && (file_exists(ao_app->get_background_path("seancestand.png")) ||
-                               file_exists(ao_app->get_background_path("seancestand.gif"))))
+                               file_exists(ao_app->get_background_path("seancestand.gif")) ||
+                               file_exists(ao_app->get_background_path("seancestand.apng")) ||
+                               file_exists(ao_app->get_background_path("seancestand.webp"))))
   {
     f_background = "seancestand";
     f_desk_image = "seancedesk";
