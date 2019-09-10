@@ -7,6 +7,7 @@ AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
   m_parent = parent;
   ao_app = p_ao_app;
   m_movie = new QMovie(this);
+  last_image = "";
 }
 
 void AOScene::set_image(QString p_image)
@@ -14,6 +15,9 @@ void AOScene::set_image(QString p_image)
   QString background_path = ao_app->get_background_path(p_image + ".png");
   QString default_path = ao_app->get_default_background_path(p_image + ".png");
   QString animated_background_path = ao_app->get_image_suffix(ao_app->get_background_path(p_image));
+
+  if (file_exists(animated_background_path) && animated_background_path == last_image)
+    return;
 
   QPixmap background(background_path);
   QPixmap default_bg(default_path);
@@ -32,11 +36,16 @@ void AOScene::set_image(QString p_image)
   {
     this->setMovie(m_movie);
     m_movie->start();
+    last_image = animated_background_path;
   }
   else if (file_exists(background_path))
+  {
     this->setPixmap(background.scaled(w, h));
+  }
   else
+  {
     this->setPixmap(default_bg.scaled(w, h));
+  }
 }
 
 void AOScene::set_legacy_desk(QString p_image)
@@ -47,6 +56,9 @@ void AOScene::set_legacy_desk(QString p_image)
   QString desk_path = ao_app->get_background_path(p_image + ".png");
   QString animated_desk_path = ao_app->get_image_suffix(ao_app->get_background_path(p_image));
   QString default_path = ao_app->get_image_suffix(ao_app->get_default_background_path(p_image));
+
+  if (file_exists(animated_desk_path) && animated_desk_path == last_image)
+    return;
 
   QPixmap f_desk;
 
@@ -73,6 +85,7 @@ void AOScene::set_legacy_desk(QString p_image)
   {
     this->setMovie(m_movie);
     m_movie->start();
+    last_image = animated_desk_path;
   }
   else
   {
