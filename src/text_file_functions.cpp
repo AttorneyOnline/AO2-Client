@@ -385,13 +385,13 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
-    QString webp_check = path_to_check + ".webp";
-    QString apng_check = path_to_check + ".apng";
-    if (file_exists(webp_check))
-        return webp_check;
-    if (file_exists(apng_check))
-        return apng_check;
-    return path_to_check + ".gif";
+    if (file_exists(path_to_check + ".webp"))
+        return path_to_check + ".webp";
+    if (file_exists(path_to_check + ".apng"))
+        return path_to_check + ".apng";
+    if (file_exists(path_to_check + ".gif"))
+        return path_to_check + ".gif";
+    return path_to_check + ".png";
 }
 
 

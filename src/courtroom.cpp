@@ -908,10 +908,8 @@ void Courtroom::enter_courtroom(int p_cid)
   }
 
   if (ao_app->custom_objection_enabled &&
-      (file_exists(ao_app->get_character_path(current_char, "custom.gif")) ||
-      file_exists(ao_app->get_character_path(current_char, "custom.apng")) ||
-      file_exists(ao_app->get_character_path(current_char, "custom.webp"))) &&
-      file_exists(ao_app->get_character_path(current_char, "custom.wav")))
+      (file_exists(ao_app->get_image_suffix(ao_app->get_character_path(current_char, "custom"))) &&
+      file_exists(ao_app->get_character_path(current_char, "custom.wav"))))
     ui_custom_objection->show();
   else
     ui_custom_objection->hide();
@@ -2378,6 +2376,7 @@ void Courtroom::set_scene()
   QString f_desk_mod = m_chatmessage[DESK_MOD];
   QString f_side = m_chatmessage[SIDE];
 
+  //This thing desperately needs to be made into an array iteration.
   if (f_side == "def")
   {
     f_background = "defenseempty";
@@ -2409,18 +2408,12 @@ void Courtroom::set_scene()
     f_background = "prohelperstand";
     f_desk_image = "prohelperdesk";
   }
-  else if (f_side == "jur" && (file_exists(ao_app->get_background_path("jurystand.png")) ||
-                               file_exists(ao_app->get_background_path("jurystand.gif")) ||
-                               file_exists(ao_app->get_background_path("jurystand.apng")) ||
-                               file_exists(ao_app->get_background_path("jurystand.webp"))))
+  else if (f_side == "jur" && (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("jurystand")))))
   {
     f_background = "jurystand";
     f_desk_image = "jurydesk";
   }
-  else if (f_side == "sea" && (file_exists(ao_app->get_background_path("seancestand.png")) ||
-                               file_exists(ao_app->get_background_path("seancestand.gif")) ||
-                               file_exists(ao_app->get_background_path("seancestand.apng")) ||
-                               file_exists(ao_app->get_background_path("seancestand.webp"))))
+  else if (f_side == "sea" && (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("seancestand")))))
   {
     f_background = "seancestand";
     f_desk_image = "seancedesk";
@@ -2436,7 +2429,6 @@ void Courtroom::set_scene()
   ui_vp_background->set_image(f_background);
   ui_vp_desk->set_image(f_desk_image);
   ui_vp_legacy_desk->set_legacy_desk(f_desk_image);
-
   if (f_desk_mod == "0" || (f_desk_mod != "1" &&
            (f_side == "jud" ||
             f_side == "hld" ||
