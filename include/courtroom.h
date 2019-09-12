@@ -306,9 +306,6 @@ private:
   //delay before sfx plays
   QTimer *sfx_delay_timer;
 
-  //keeps track of how long realization is visible(it's just a white square and should be visible less than a second)
-  QTimer *realization_timer;
-
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
@@ -394,7 +391,7 @@ private:
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;
-  AOImage *ui_vp_realization;
+  AOMovie *ui_vp_realization;
   AOMovie *ui_vp_testimony;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
@@ -537,11 +534,6 @@ private:
 public slots:
   void objection_done();
   void preanim_done();
-
-  void realization_done();
-
-  void show_testimony();
-  void hide_testimony();
 
   void mod_called(QString p_ip);
 
