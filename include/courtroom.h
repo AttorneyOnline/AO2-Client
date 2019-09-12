@@ -309,11 +309,6 @@ private:
   //keeps track of how long realization is visible(it's just a white square and should be visible less than a second)
   QTimer *realization_timer;
 
-  //times how long the blinking testimony should be shown(green one in the corner)
-  QTimer *testimony_show_timer;
-  //times how long the blinking testimony should be hidden
-  QTimer *testimony_hide_timer;
-
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
@@ -322,14 +317,6 @@ private:
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
-
-  bool testimony_in_progress = false;
-
-  //in milliseconds
-  const int testimony_show_time = 1500;
-
-  //in milliseconds
-  const int testimony_hide_time = 500;
 
   //char id, muted or not
   QMap<int, bool> mute_map;
@@ -407,8 +394,8 @@ private:
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;
-  AOImage *ui_vp_testimony;
   AOImage *ui_vp_realization;
+  AOMovie *ui_vp_testimony;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
 
