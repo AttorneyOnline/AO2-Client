@@ -58,12 +58,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   realization_timer = new QTimer(this);
   realization_timer->setSingleShot(true);
 
-  testimony_show_timer = new QTimer(this);
-  testimony_show_timer->setSingleShot(true);
-
-  testimony_hide_timer = new QTimer(this);
-  testimony_hide_timer->setSingleShot(true);
-
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
 
@@ -101,7 +95,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
-  ui_vp_testimony = new AOImage(this, ao_app);
+  ui_vp_testimony = new AOMovie(this, ao_app);
+  ui_vp_testimony->set_play_once(false);
   ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
@@ -279,9 +274,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
 
   connect(realization_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
-
-  connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
-  connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
 
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
@@ -492,9 +484,7 @@ void Courtroom::set_widgets()
                                "color: white");
 
   ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_testimony->set_image("testimony.png");
-  ui_vp_testimony->hide();
+  ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_realization->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_realization->resize(ui_viewport->width(), ui_viewport->height());
@@ -824,8 +814,7 @@ void Courtroom::done_received()
 
 void Courtroom::set_background(QString p_background)
 {
-  testimony_in_progress = false;
-
+  ui_vp_testimony->stop();
   current_background = p_background;
 
   is_ao2_bg = file_exists(ao_app->get_background_path("defensedesk.png")) &&
@@ -932,7 +921,7 @@ void Courtroom::enter_courtroom(int p_cid)
   objection_player->set_volume(ui_sfx_slider->value());
   blip_player->set_volume(ui_blip_slider->value());
 
-  testimony_in_progress = false;
+  ui_vp_testimony->stop();
 
   set_widgets();
 
@@ -2334,27 +2323,6 @@ void Courtroom::chat_tick()
   }
 }
 
-
-void Courtroom::show_testimony()
-{
-  if (!testimony_in_progress || m_chatmessage[SIDE] != "wit")
-    return;
-
-  ui_vp_testimony->show();
-
-  testimony_show_timer->start(testimony_show_time);
-}
-
-void Courtroom::hide_testimony()
-{
-  ui_vp_testimony->hide();
-
-  if (!testimony_in_progress)
-    return;
-
-  testimony_hide_timer->start(testimony_hide_time);
-}
-
 void Courtroom::play_sfx()
 {
   QString sfx_name = m_chatmessage[SFX_NAME];
@@ -2367,9 +2335,6 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_scene()
 {
-  if (testimony_in_progress)
-    show_testimony();
-
   //witness is default if pos is invalid
   QString f_background = "witnessempty";
   QString f_desk_image = "stand";
@@ -2572,15 +2537,14 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   {
     sfx_player->play(ao_app->get_sfx("witness_testimony"));
     ui_vp_wtce->play("witnesstestimony", "", "", 1500);
-    testimony_in_progress = true;
-    show_testimony();
+    ui_vp_testimony->play("testimony");
   }
   //cross examination
   else if (p_wtce == "testimony2")
   {
     sfx_player->play(ao_app->get_sfx("cross_examination"));
     ui_vp_wtce->play("crossexamination", "", "", 1500);
-    testimony_in_progress = false;
+    ui_vp_testimony->stop();
   }
   else if (p_wtce == "judgeruling")
   {
@@ -2588,12 +2552,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     {
         sfx_player->play(ao_app->get_sfx("not_guilty"));
         ui_vp_wtce->play("notguilty", "", "", 3000);
-        testimony_in_progress = false;
+        ui_vp_testimony->stop();
     }
     else if (variant == 1) {
         sfx_player->play(ao_app->get_sfx("guilty"));
         ui_vp_wtce->play("guilty", "", "", 3000);
-        testimony_in_progress = false;
+        ui_vp_testimony->stop();
     }
   }
 }
