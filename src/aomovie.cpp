@@ -12,7 +12,11 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 
   this->setMovie(m_movie);
 
+  timer = new QTimer(this);
+  timer->setSingleShot(true);
+
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
+  connect(timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 
 void AOMovie::set_play_once(bool p_play_once)
@@ -20,7 +24,12 @@ void AOMovie::set_play_once(bool p_play_once)
   play_once = p_play_once;
 }
 
-void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
+void AOMovie::start_timer(int delay)
+{
+  timer->start(delay);
+}
+
+void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, int duration)
 {
   m_movie->stop();
 
@@ -51,6 +60,8 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
 
   this->show();
   m_movie->start();
+  if (m_movie->frameCount() == 0 && duration > 0)
+      this->start_timer(duration);
 }
 
 void AOMovie::stop()
@@ -61,16 +72,23 @@ void AOMovie::stop()
 
 void AOMovie::frame_change(int n_frame)
 {
-  if (n_frame >= (m_movie->frameCount() - 1) && play_once)
-  {
-    //we need this or else the last frame wont show
-    delay(m_movie->nextFrameDelay());
+  //If it's a "static movie" (only one frame - png image), we can't change frames - ignore this function (use timer instead).
+  //If the frame didn't reach the last frame or the movie is continuous, don't stop the movie.
+  if (m_movie->frameCount() == 0 || n_frame < (m_movie->frameCount() - 1) || !play_once)
+      return;
+  //we need this or else the last frame wont show
+  delay(m_movie->nextFrameDelay());
 
-    this->stop();
+  this->stop();
 
-    //signal connected to courtroom object, let it figure out what to do
-    done();
-  }
+  //signal connected to courtroom object, let it figure out what to do
+  done();
+}
+
+void AOMovie::timer_done()
+{
+  this->stop();
+  done();
 }
 
 void AOMovie::combo_resize(int w, int h)

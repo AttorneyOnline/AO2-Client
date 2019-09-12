@@ -1349,20 +1349,20 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     switch (objection_mod)
     {
     case 1:
-      ui_vp_objection->play("holdit", f_char, f_custom_theme);
+      ui_vp_objection->play("holdit", f_char, f_custom_theme, 724);
       objection_player->play("holdit.wav", f_char, f_custom_theme);
       break;
     case 2:
-      ui_vp_objection->play("objection", f_char, f_custom_theme);
+      ui_vp_objection->play("objection", f_char, f_custom_theme, 724);
       objection_player->play("objection.wav", f_char, f_custom_theme);
       break;
     case 3:
-      ui_vp_objection->play("takethat", f_char, f_custom_theme);
+      ui_vp_objection->play("takethat", f_char, f_custom_theme, 724);
       objection_player->play("takethat.wav", f_char, f_custom_theme);
       break;
     //case 4 is AO2 only
     case 4:
-      ui_vp_objection->play("custom", f_char, f_custom_theme);
+      ui_vp_objection->play("custom", f_char, f_custom_theme, 724);
       objection_player->play("custom.wav", f_char, f_custom_theme);
       break;
     default:
@@ -2571,7 +2571,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   if (p_wtce == "testimony1")
   {
     sfx_player->play(ao_app->get_sfx("witness_testimony"));
-    ui_vp_wtce->play("witnesstestimony");
+    ui_vp_wtce->play("witnesstestimony", "", "", 1500);
     testimony_in_progress = true;
     show_testimony();
   }
@@ -2579,7 +2579,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   else if (p_wtce == "testimony2")
   {
     sfx_player->play(ao_app->get_sfx("cross_examination"));
-    ui_vp_wtce->play("crossexamination");
+    ui_vp_wtce->play("crossexamination", "", "", 1500);
     testimony_in_progress = false;
   }
   else if (p_wtce == "judgeruling")
@@ -2587,12 +2587,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     if (variant == 0)
     {
         sfx_player->play(ao_app->get_sfx("not_guilty"));
-        ui_vp_wtce->play("notguilty");
+        ui_vp_wtce->play("notguilty", "", "", 3000);
         testimony_in_progress = false;
     }
     else if (variant == 1) {
         sfx_player->play(ao_app->get_sfx("guilty"));
-        ui_vp_wtce->play("guilty");
+        ui_vp_wtce->play("guilty", "", "", 3000);
         testimony_in_progress = false;
     }
   }
