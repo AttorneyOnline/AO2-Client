@@ -981,9 +981,9 @@ void Courtroom::list_areas()
   for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
   {
     QString i_area = "";
-    i_area.append("[");
-    i_area.append(QString::number(n_area));
-    i_area.append("] ");
+//    i_area.append("[");
+//    i_area.append(QString::number(n_area));
+//    i_area.append("] ");
 
     i_area.append(area_list.at(n_area));
 

@@ -525,6 +525,48 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RD#%"));
   }
+  else if (header == "FM")
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    w_courtroom->clear_music();
+    w_courtroom->clear_areas();
+
+    bool musics_time = false;
+    int areas = 0;
+
+    for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
+    {
+      if (musics_time)
+      {
+          w_courtroom->append_music(f_contents.at(n_element));
+      }
+      else
+      {
+          if (f_contents.at(n_element).endsWith(".wav") ||
+                  f_contents.at(n_element).endsWith(".mp3") ||
+                  f_contents.at(n_element).endsWith(".mp4") ||
+                  f_contents.at(n_element).endsWith(".ogg") ||
+                  f_contents.at(n_element).endsWith(".opus"))
+          {
+              musics_time = true;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_contents.at(n_element));
+              areas--;
+//              qDebug() << "wtf!!" << f_contents.at(n_element);
+          }
+          else
+          {
+              w_courtroom->append_area(f_contents.at(n_element));
+              areas++;
+          }
+      }
+    }
+
+    w_courtroom->list_music();
+    w_courtroom->list_areas();
+  }
   else if (header == "DONE")
   {
     if (!courtroom_constructed)
