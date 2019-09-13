@@ -259,7 +259,7 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {10, 20, 30, 40, 50, 60, 75};
+  int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
 
   // This is for checking if the character should start talking again
   // when an inline blue text ends.
