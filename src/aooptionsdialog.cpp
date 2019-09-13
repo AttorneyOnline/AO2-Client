@@ -319,6 +319,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_bliprate_spinbox = new QSpinBox(ui_audio_widget);
     ui_bliprate_spinbox->setValue(p_ao_app->read_blip_rate());
     ui_bliprate_spinbox->setMinimum(1);
+    ui_bliprate_spinbox->setToolTip(tr("Play a blip sound \"once per every X symbols\", where "
+                                      "X is the blip rate."));
 
     ui_audio_layout->setWidget(6, QFormLayout::FieldRole, ui_bliprate_spinbox);
 

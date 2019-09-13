@@ -2275,13 +2275,11 @@ void Courtroom::chat_tick()
 
     if (f_character != ' ' || blank_blip)
     {
-
       if (blip_pos % blip_rate == 0 && !formatting_char)
       {
         blip_pos = 0;
         blip_player->blip_tick();
       }
-
       ++blip_pos;
     }
 
@@ -2289,14 +2287,15 @@ void Courtroom::chat_tick()
 
     // Restart the timer, but according to the newly set speeds, if there were any.
     // Keep the speed at bay.
+    int max_speed = sizeof(message_display_speed) / sizeof(message_display_speed[0]); //7 entries by default
     if (current_display_speed < 0)
     {
         current_display_speed = 0;
     }
 
-    if (current_display_speed > 6)
+    if (current_display_speed >= max_speed)
     {
-        current_display_speed = 6;
+        current_display_speed = max_speed-1;
     }
 
     // If we had a formatting char, we shouldn't wait so long again, as it won't appear!

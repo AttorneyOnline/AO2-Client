@@ -144,7 +144,7 @@ public:
   //Returns the value of ooc_name in config.ini
   QString get_ooc_name();
 
-  //Returns the blip rate from config.ini
+  //Returns the blip rate from config.ini (once per X symbols)
   int read_blip_rate();
 
   //Returns true if blank blips is enabled in config.ini and false otherwise
