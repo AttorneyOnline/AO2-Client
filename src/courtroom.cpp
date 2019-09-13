@@ -890,8 +890,9 @@ void Courtroom::enter_courtroom(int p_cid)
   }
 
   if (ao_app->custom_objection_enabled &&
-      (file_exists(ao_app->get_image_suffix(ao_app->get_character_path(current_char, "custom"))) &&
-      file_exists(ao_app->get_character_path(current_char, "custom.wav"))))
+      (file_exists(ao_app->get_character_path(current_char, "custom.gif")) ||
+      file_exists(ao_app->get_character_path(current_char, "custom.apng"))) &&
+      file_exists(ao_app->get_character_path(current_char, "custom.wav")))
     ui_custom_objection->show();
   else
     ui_custom_objection->hide();
@@ -981,9 +982,9 @@ void Courtroom::list_areas()
   for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
   {
     QString i_area = "";
-//    i_area.append("[");
-//    i_area.append(QString::number(n_area));
-//    i_area.append("] ");
+    i_area.append("[");
+    i_area.append(QString::number(n_area));
+    i_area.append("] ");
 
     i_area.append(area_list.at(n_area));
 
@@ -1288,6 +1289,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   text_state = 0;
   anim_state = 0;
   ui_vp_objection->stop();
+  ui_vp_player_char->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
 
@@ -1330,22 +1332,20 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     switch (objection_mod)
     {
     case 1:
-      ui_vp_objection->play("holdit", f_char, f_custom_theme, shout_stay_time);
+      ui_vp_objection->play("holdit", f_char, f_custom_theme, 724);
       objection_player->play("holdit.wav", f_char, f_custom_theme);
       break;
     case 2:
-      ui_vp_objection->play("objection", f_char, f_custom_theme, shout_stay_time);
+      ui_vp_objection->play("objection", f_char, f_custom_theme, 724);
       objection_player->play("objection.wav", f_char, f_custom_theme);
-      if (ao_app->objection_stop_music())
-          music_player->play(""); //I'd prefer if this sent a networked message instead so everyone would have their music cut when you object.
       break;
     case 3:
-      ui_vp_objection->play("takethat", f_char, f_custom_theme, shout_stay_time);
+      ui_vp_objection->play("takethat", f_char, f_custom_theme, 724);
       objection_player->play("takethat.wav", f_char, f_custom_theme);
       break;
     //case 4 is AO2 only
     case 4:
-      ui_vp_objection->play("custom", f_char, f_custom_theme, shout_stay_time);
+      ui_vp_objection->play("custom", f_char, f_custom_theme, 724);
       objection_player->play("custom.wav", f_char, f_custom_theme);
       break;
     default:
@@ -2275,11 +2275,13 @@ void Courtroom::chat_tick()
 
     if (f_character != ' ' || blank_blip)
     {
+
       if (blip_pos % blip_rate == 0 && !formatting_char)
       {
         blip_pos = 0;
         blip_player->blip_tick();
       }
+
       ++blip_pos;
     }
 
@@ -2287,15 +2289,14 @@ void Courtroom::chat_tick()
 
     // Restart the timer, but according to the newly set speeds, if there were any.
     // Keep the speed at bay.
-    int max_speed = sizeof(message_display_speed) / sizeof(message_display_speed[0]); //7 entries by default
     if (current_display_speed < 0)
     {
         current_display_speed = 0;
     }
 
-    if (current_display_speed >= max_speed)
+    if (current_display_speed > 6)
     {
-        current_display_speed = max_speed-1;
+        current_display_speed = 6;
     }
 
     // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
@@ -2329,7 +2330,6 @@ void Courtroom::set_scene()
   QString f_desk_mod = m_chatmessage[DESK_MOD];
   QString f_side = m_chatmessage[SIDE];
 
-  //This thing desperately needs to be made into an array iteration.
   if (f_side == "def")
   {
     f_background = "defenseempty";
@@ -2361,12 +2361,14 @@ void Courtroom::set_scene()
     f_background = "prohelperstand";
     f_desk_image = "prohelperdesk";
   }
-  else if (f_side == "jur" && (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("jurystand")))))
+  else if (f_side == "jur" && (file_exists(ao_app->get_background_path("jurystand.png")) ||
+                               file_exists(ao_app->get_background_path("jurystand.gif"))))
   {
     f_background = "jurystand";
     f_desk_image = "jurydesk";
   }
-  else if (f_side == "sea" && (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("seancestand")))))
+  else if (f_side == "sea" && (file_exists(ao_app->get_background_path("seancestand.png")) ||
+                               file_exists(ao_app->get_background_path("seancestand.gif"))))
   {
     f_background = "seancestand";
     f_desk_image = "seancedesk";
@@ -2382,6 +2384,7 @@ void Courtroom::set_scene()
   ui_vp_background->set_image(f_background);
   ui_vp_desk->set_image(f_desk_image);
   ui_vp_legacy_desk->set_legacy_desk(f_desk_image);
+
   if (f_desk_mod == "0" || (f_desk_mod != "1" &&
            (f_side == "jud" ||
             f_side == "hld" ||
@@ -2524,14 +2527,14 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   if (p_wtce == "testimony1")
   {
     sfx_player->play(ao_app->get_sfx("witness_testimony"));
-    ui_vp_wtce->play("witnesstestimony", "", "", wtce_stay_time);
+    ui_vp_wtce->play("witnesstestimony", "", "", 1500);
     ui_vp_testimony->play("testimony");
   }
   //cross examination
   else if (p_wtce == "testimony2")
   {
     sfx_player->play(ao_app->get_sfx("cross_examination"));
-    ui_vp_wtce->play("crossexamination", "", "", wtce_stay_time);
+    ui_vp_wtce->play("crossexamination", "", "", 1500);
     ui_vp_testimony->stop();
   }
   else if (p_wtce == "judgeruling")
@@ -2539,12 +2542,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     if (variant == 0)
     {
         sfx_player->play(ao_app->get_sfx("not_guilty"));
-        ui_vp_wtce->play("notguilty", "", "", verdict_stay_time);
+        ui_vp_wtce->play("notguilty", "", "", 3000);
         ui_vp_testimony->stop();
     }
     else if (variant == 1) {
         sfx_player->play(ao_app->get_sfx("guilty"));
-        ui_vp_wtce->play("guilty", "", "", verdict_stay_time);
+        ui_vp_wtce->play("guilty", "", "", 3000);
         ui_vp_testimony->stop();
     }
   }

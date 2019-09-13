@@ -29,7 +29,7 @@ void AOMovie::start_timer(int delay)
   timer->start(delay);
 }
 
-void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, int duration)
+void AOMovie::play(QString p_image, QString p_char, QString p_custom_theme, int duration)
 {
   m_movie->stop();
 
@@ -37,19 +37,19 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, int du
   QList<QString> pathlist;
 
   pathlist = {
-      ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" + p_custom_theme + "/" + p_gif + "_bubble"),   //Misc path
-      ao_app->get_image_suffix(ao_app->get_custom_theme_path(p_custom_theme, p_gif)),                           //Custom theme path
-      ao_app->get_image_suffix(ao_app->get_theme_path(p_gif)),                                                  //Theme path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(p_gif)),                                          //Default theme path
+      ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" + p_custom_theme + "/" + p_image + "_bubble"),   //Misc path
+      ao_app->get_image_suffix(ao_app->get_custom_theme_path(p_custom_theme, p_image)),                           //Custom theme path
+      ao_app->get_image_suffix(ao_app->get_theme_path(p_image)),                                                  //Theme path
+      ao_app->get_image_suffix(ao_app->get_default_theme_path(p_image)),                                          //Default theme path
       ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")),                                          //Placeholder path
       ao_app->get_image_suffix( ao_app->get_default_theme_path("placeholder")),                                 //Default placeholder path
   };
 
   //Add this at the beginning of the list - order matters.
-  if (p_gif == "custom")
-    pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif)));
+  if (p_image == "custom")
+    pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_image)));
   else
-    pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif + "_bubble")));
+    pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_image + "_bubble")));
 
   for (QString path : pathlist)
   {

@@ -61,11 +61,11 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
-  QString gif_path = ao_app->get_character_path(p_char, p_emote);
+  QString emote_path = ao_app->get_character_path(p_char, p_emote);
 
   m_movie->stop();
   this->clear();
-  m_movie->setFileName(gif_path);
+  m_movie->setFileName(emote_path);
   m_movie->jumpToFrame(0);
 
   int full_duration = duration * time_mod;
@@ -116,11 +116,11 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
+  QString emote_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
 
   m_movie->stop();
   this->clear();
-  m_movie->setFileName(gif_path);
+  m_movie->setFileName(emote_path);
 
   play_once = false;
   m_movie->setSpeed(100);
@@ -129,11 +129,11 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
-  QString gif_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
+  QString emote_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
 
   m_movie->stop();
   this->clear();
-  m_movie->setFileName(gif_path);
+  m_movie->setFileName(emote_path);
 
   play_once = false;
   m_movie->setSpeed(100);
