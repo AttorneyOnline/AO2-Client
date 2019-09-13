@@ -311,6 +311,15 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
+  //the amount of time non-animated objection/hold it/takethat images stay onscreen for in ms
+  const int shout_stay_time = 724;
+
+  //the amount of time non-animated guilty/not guilty images stay onscreen for in ms
+  const int verdict_stay_time = 3000;
+
+  //the amount of time non-animated witness testimony/cross-examination images stay onscreen for in ms
+  const int wtce_stay_time = 1500;
+
   static const int chatmessage_size = 23;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
