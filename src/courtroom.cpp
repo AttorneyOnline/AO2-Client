@@ -1656,21 +1656,24 @@ void Courtroom::handle_chatmessage_2()
 
 void Courtroom::do_screenshake()
 {
-    if (screenshake_animation_group && screenshake_animation_group->state() == QAbstractAnimation::Running)
-        screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration()); //Force it to finish and delete itself
+//Code below causes segfault, do not uncomment unless you know what you're doing.
+//    if (screenshake_animation_group != nullptr && screenshake_animation_group->state() == QAbstractAnimation::Running)
+//        screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration()); //Force it to finish and delete itself
 
     screenshake_animation_group = new QParallelAnimationGroup;
 
-    QList<QWidget*> affected_list = {
+    QList<QWidget *> affected_list = {
         ui_vp_background,
         ui_vp_player_char,
         ui_vp_sideplayer_char,
-        ui_vp_chatbox,
+        ui_vp_chatbox
     };
 
+    int i = 0;
     //I would prefer if this was its own "shake" function to be honest.
     foreach (QWidget* ui_element, affected_list)
     {
+        qDebug() << ++i;
         QPropertyAnimation *screenshake_animation = new QPropertyAnimation(ui_element, "pos", this);
         QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
 
