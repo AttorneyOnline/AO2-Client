@@ -49,6 +49,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QTextBoundaryFinder>
+#include <QMenu>
 
 #include <stack>
 
@@ -350,6 +351,7 @@ private:
   QString current_char = "";
 
   int objection_state = 0;
+  QString objection_custom = "";
   int realization_state = 0;
   int text_color = 0;
   bool is_presenting_evidence = false;
@@ -479,6 +481,8 @@ private:
   AOButton *ui_realization;
   AOButton *ui_mute;
 
+  QMenu *Custom_obj_menu;
+
   AOButton *ui_defense_plus;
   AOButton *ui_defense_minus;
 
@@ -603,6 +607,7 @@ private slots:
   void on_objection_clicked();
   void on_take_that_clicked();
   void on_custom_objection_clicked();
+  void ShowContextMenu(const QPoint& pos);
 
   void on_realization_clicked();
 
