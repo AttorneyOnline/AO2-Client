@@ -477,7 +477,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_message, "message");
   //We detached the text as parent from the chatbox so it doesn't get affected by the screenshake.
-//  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
+  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
