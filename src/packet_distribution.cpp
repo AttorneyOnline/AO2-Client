@@ -109,13 +109,6 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     destruct_courtroom();
     destruct_lobby();
   }
-  else if (header == "DOOM")
-  {
-    call_notice(tr("You have been exiled from AO.\n"
-                   "Have a nice day."));
-    destruct_courtroom();
-    destruct_lobby();
-  }
 
   end:
 

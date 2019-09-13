@@ -1408,6 +1408,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     case 2:
       ui_vp_objection->play("objection", f_char, f_custom_theme, 724);
       objection_player->play("objection.wav", f_char, f_custom_theme);
+      if(ao_app->objection_stop_music())
+          music_player->stop();
       break;
     case 3:
       ui_vp_objection->play("takethat", f_char, f_custom_theme, 724);
@@ -1505,6 +1507,7 @@ void Courtroom::handle_chatmessage_2()
   {
     // If there is no second character, hide 'em, and center the first.
     ui_vp_sideplayer_char->hide();
+    ui_vp_sideplayer_char->stop();
     ui_vp_sideplayer_char->move(0,0);
 
     ui_vp_player_char->move(0,0);
