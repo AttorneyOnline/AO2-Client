@@ -8,7 +8,7 @@ QString AOApplication::read_theme()
 
 int AOApplication::read_blip_rate()
 {
-  int result = configini->value("blip_rate", 1).toInt();
+  int result = configini->value("blip_rate", 2).toInt();
 
   if (result < 1)
     return 1;
@@ -48,7 +48,7 @@ int AOApplication::get_max_log_size()
 
 bool AOApplication::get_log_goes_downwards()
 {
-  QString result = configini->value("log_goes_downwards", "false").value<QString>();
+  QString result = configini->value("log_goes_downwards", "true").value<QString>();
   return result.startsWith("true");
 }
 
@@ -602,9 +602,9 @@ bool AOApplication::get_blank_blip()
     return result.startsWith("true");
 }
 
-bool AOApplication::get_objectmusic()
+bool AOApplication::objection_stop_music()
 {
-    QString result = configini->value("kill_music_on_object", "true").value<QString>();
+    QString result = configini->value("objection_stop_music", "false").value<QString>();
     return result.startsWith("true");
 }
 

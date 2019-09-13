@@ -1336,7 +1336,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     case 2:
       ui_vp_objection->play("objection", f_char, f_custom_theme, 724);
       objection_player->play("objection.wav", f_char, f_custom_theme);
-      if (ao_app->get_objectmusic())
+      if (ao_app->objection_stop_music())
           music_player->play(""); //I'd prefer if this sent a networked message instead so everyone would have their music cut when you object.
       break;
     case 3:

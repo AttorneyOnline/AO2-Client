@@ -341,7 +341,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
 
     ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
-    ui_objectmusic_cb->setChecked(p_ao_app->get_objectmusic());
+    ui_objectmusic_cb->setChecked(p_ao_app->objection_stop_music());
 
     ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
 
@@ -517,7 +517,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("default_blip", ui_blips_volume_spinbox->value());
     configini->setValue("blip_rate", ui_bliprate_spinbox->value());
     configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
-    configini->setValue("kill_music_on_object", ui_objectmusic_cb->isChecked());
+    configini->setValue("objection_stop_music", ui_objectmusic_cb->isChecked());
 
     configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
     configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
