@@ -211,6 +211,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_realization = new AOButton(this, ao_app);
+  ui_screenshake = new AOButton(this, ao_app);
   ui_mute = new AOButton(this, ao_app);
 
   ui_defense_plus = new AOButton(this, ao_app);
@@ -291,6 +292,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_custom_objection, SIGNAL(clicked()), this, SLOT(on_custom_objection_clicked()));
 
   connect(ui_realization, SIGNAL(clicked()), this, SLOT(on_realization_clicked()));
+  connect(ui_screenshake, SIGNAL(clicked()), this, SLOT(on_screenshake_clicked()));
 
   connect(ui_mute, SIGNAL(clicked()), this, SLOT(on_mute_clicked()));
 
@@ -625,6 +627,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_realization, "realization");
   ui_realization->set_image("realization.png");
 
+  set_size_and_pos(ui_screenshake, "screenshake");
+  ui_screenshake->set_image("screenshake.png");
+
   set_size_and_pos(ui_mute, "mute_button");
   ui_mute->set_image("mute.png");
 
@@ -782,6 +787,23 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   f_char.evidence_string = char_list.at(n_char).evidence_string;
 
   char_list.replace(n_char, f_char);
+}
+
+QPoint Courtroom::get_theme_pos(QString p_identifier)
+{
+  QString filename = "courtroom_design.ini";
+
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
+
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)
+  {
+    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
+    return QPoint(0,0);
+  }
+  else
+  {
+    return QPoint(design_ini_result.x, design_ini_result.y);
+  }
 }
 
 void Courtroom::done_received()
@@ -1232,6 +1254,50 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
+  // If the server we're on supports Looping SFX and Screenshake, use it if the emote uses it.
+  if (ao_app->looping_sfx_support_enabled)
+  {
+      packet_contents.append("0"); //ao_app->get_sfx_looping(current_char, current_emote));
+//      qDebug() << "Are we looping this? " << ao_app->get_sfx_looping(current_char, current_emote);
+      packet_contents.append(QString::number(screenshake_state));
+      qDebug() << "Are we screen shaking this one? " << screenshake_state;
+
+      QString frame_screenshake = "";
+      QString frame_realization = "";
+      QString frame_sfx = "";
+
+      QString preemote_sfx = ao_app->get_pre_emote(current_char, current_emote) + "^";
+      QString preemote_shake = ao_app->get_pre_emote(current_char, current_emote) + "^";
+      QString preemote_flash = ao_app->get_pre_emote(current_char, current_emote) + "^";
+
+      QString talkemote_sfx = "(b)" + ao_app->get_emote(current_char, current_emote) + "^";
+      QString talkemote_shake = "(b)" + ao_app->get_emote(current_char, current_emote) + "^";
+      QString talkemote_flash = "(b)" + ao_app->get_emote(current_char, current_emote) + "^";
+
+      QString idleemote_sfx = "(a)" + ao_app->get_emote(current_char, current_emote) + "^";
+      QString idleemote_shake = "(a)" + ao_app->get_emote(current_char, current_emote) + "^";
+      QString idleemote_flash = "(a)" + ao_app->get_emote(current_char, current_emote) + "^";
+
+      frame_screenshake += preemote_shake;
+      frame_screenshake += talkemote_shake;
+      frame_screenshake += idleemote_shake;
+
+      frame_realization += preemote_flash;
+      frame_realization += talkemote_flash;
+      frame_realization += idleemote_flash;
+
+      frame_sfx += preemote_sfx;
+      frame_sfx += talkemote_sfx;
+      frame_sfx += idleemote_sfx;
+      qDebug() << "Final strings:";
+      qDebug() << frame_screenshake;
+      qDebug() << frame_realization;
+      qDebug() << frame_sfx;
+
+      packet_contents.append(frame_screenshake);
+      packet_contents.append(frame_realization);
+      packet_contents.append(frame_sfx);
+  }
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -1300,6 +1366,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_ic_chat_message->clear();
     objection_state = 0;
     realization_state = 0;
+    screenshake_state = 0;
     is_presenting_evidence = false;
     ui_pre->setChecked(false);
     ui_hold_it->set_image("holdit.png");
@@ -1307,6 +1374,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_take_that->set_image("takethat.png");
     ui_custom_objection->set_image("custom.png");
     ui_realization->set_image("realization.png");
+    ui_screenshake->set_image("screenshake.png");
     ui_evidence_present->set_image("present_disabled.png");
   }
 
@@ -1565,7 +1633,6 @@ void Courtroom::handle_chatmessage_2()
       }
     }
   }
-
   switch (emote_mod)
   {
   case 1: case 2: case 6:
@@ -1580,6 +1647,48 @@ void Courtroom::handle_chatmessage_2()
   default:
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
   }
+}
+
+void Courtroom::do_screenshake()
+{
+    if (screenshake_animation_group && screenshake_animation_group->state() == QAbstractAnimation::Running)
+        screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration()); //Force it to finish and delete itself
+
+    screenshake_animation_group = new QParallelAnimationGroup;
+
+    QList<QWidget*> affected_list = {
+        ui_vp_background,
+        ui_vp_player_char,
+        ui_vp_sideplayer_char,
+        ui_vp_chatbox,
+    };
+
+    //I would prefer if this was its own "shake" function to be honest.
+    foreach (QWidget* ui_element, affected_list)
+    {
+        QPropertyAnimation *screenshake_animation = new QPropertyAnimation(ui_element, "pos", this);
+        QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
+
+        int duration = 300; //How long does the screenshake last
+        int frequency = 20; //How often in ms is there a "jolt" frame
+        int maxframes = duration/frequency;
+        int max_x = 7; //Max deviation from origin on x axis
+        int max_y = 7; //Max deviation from origin on y axis
+        screenshake_animation->setDuration(duration);
+        for (int frame=0; frame < maxframes; frame++)
+        {
+            double fraction = double(frame*frequency)/duration;
+            quint32 rng = QRandomGenerator::global()->generate();
+            int rand_x = int(rng) % max_x;
+            int rand_y = int(rng+100) % max_y;
+            screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
+        }
+        screenshake_animation->setEndValue(pos_default);
+        screenshake_animation->setEasingCurve(QEasingCurve::Linear);
+        screenshake_animation_group->addAnimation(screenshake_animation);
+    }
+
+    screenshake_animation_group->start(QAbstractAnimation::DeletionPolicy::DeleteWhenStopped);
 }
 
 void Courtroom::handle_chatmessage_3()
@@ -1976,6 +2085,11 @@ void Courtroom::start_chat_ticking()
   {
     ui_vp_realization->play("realizationflash", "", "", 60);
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
+  }
+
+  if (m_chatmessage[SCREENSHAKE] == "1")
+  {
+    this->do_screenshake();
   }
 
   ui_vp_message->clear();
@@ -3179,6 +3293,22 @@ void Courtroom::on_realization_clicked()
   {
     realization_state = 0;
     ui_realization->set_image("realization.png");
+  }
+
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_screenshake_clicked()
+{
+  if (screenshake_state == 0)
+  {
+    screenshake_state = 1;
+    ui_screenshake->set_image("screenshake_pressed.png");
+  }
+  else
+  {
+    screenshake_state = 0;
+    ui_screenshake->set_image("screenshake.png");
   }
 
   ui_ic_chat_message->setFocus();

@@ -49,6 +49,9 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QTextBoundaryFinder>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+#include <QRandomGenerator>
 
 #include <stack>
 
@@ -123,6 +126,9 @@ public:
 
   //reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+
+  //reads theme inis and returns the size and pos as defined by it
+  QPoint get_theme_pos(QString p_identifier);
 
   //sets status as taken on character with cid n_char and places proper shading on charselect
   void set_taken(int n_char, bool p_taken);
@@ -213,6 +219,8 @@ public:
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();
+  void do_screenshake();
+  void doRealization();
 
   ~Courtroom();
 
@@ -230,6 +238,8 @@ private:
 
   bool first_message_sent = false;
   int maximumMessages = 0;
+
+  QParallelAnimationGroup *screenshake_animation_group;
 
   // This is for inline message-colouring.
 
@@ -320,7 +330,7 @@ private:
   //the amount of time non-animated witness testimony/cross-examination images stay onscreen for in ms
   const int wtce_stay_time = 1500;
 
-  static const int chatmessage_size = 23;
+  static const int chatmessage_size = 28;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -346,6 +356,7 @@ private:
 
   int objection_state = 0;
   int realization_state = 0;
+  int screenshake_state = 0;
   int text_color = 0;
   bool is_presenting_evidence = false;
 
@@ -472,6 +483,7 @@ private:
 
   AOButton *ui_custom_objection;
   AOButton *ui_realization;
+  AOButton *ui_screenshake;
   AOButton *ui_mute;
 
   AOButton *ui_defense_plus;
@@ -595,6 +607,7 @@ private slots:
   void on_custom_objection_clicked();
 
   void on_realization_clicked();
+  void on_screenshake_clicked();
 
   void on_mute_clicked();
   void on_pair_clicked();
