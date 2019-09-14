@@ -36,7 +36,7 @@ private:
   QVector<QImage> movie_frames;
   QTimer *preanim_timer;
 
-  const int time_mod = 62;
+  const int time_mod = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's width.
   int x = 0;

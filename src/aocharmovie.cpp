@@ -75,6 +75,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
   for (int n_frame = 0 ; n_frame < m_movie->frameCount() ; ++n_frame)
   {
+    qDebug() << "frame " << n_frame << " delay of " << m_movie->nextFrameDelay();
     real_duration += m_movie->nextFrameDelay();
     m_movie->jumpToFrame(n_frame + 1);
   }
@@ -86,7 +87,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
   double percentage_modifier = 100.0;
 
-  if (real_duration != 0 && duration != 0)
+  if (real_duration != 0 && duration > 0)
   {
     double modifier = full_duration / static_cast<double>(real_duration);
     percentage_modifier = 100 / modifier;
@@ -116,12 +117,6 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
-  QString emote_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
-
-  m_movie->stop();
-  this->clear();
-  m_movie->setFileName(emote_path);
-
   play_once = false;
   m_movie->setSpeed(100);
   play(p_char, p_emote, "(b)");
@@ -129,12 +124,6 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
-  QString emote_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
-
-  m_movie->stop();
-  this->clear();
-  m_movie->setFileName(emote_path);
-
   play_once = false;
   m_movie->setSpeed(100);
   play(p_char, p_emote, "(a)");

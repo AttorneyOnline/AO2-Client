@@ -2049,8 +2049,7 @@ void Courtroom::play_preanim(bool noninterrupting)
 
   sfx_delay_timer->start(sfx_delay);
   QString anim_to_find = ao_app->get_image_suffix(ao_app->get_character_path(f_char, f_preanim));
-  if (!file_exists(anim_to_find) ||
-      preanim_duration < 0)
+  if (!file_exists(anim_to_find))
   {
     if (noninterrupting)
       anim_state = 4;
