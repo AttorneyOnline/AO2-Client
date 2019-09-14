@@ -11,7 +11,8 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   preanim_timer->setSingleShot(true);
 
   ticker = new QTimer(this);
-  ticker->setSingleShot(true);
+  ticker->setTimerType(Qt::PreciseTimer);
+  ticker->setSingleShot(false);
   connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 
 //  connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
@@ -20,6 +21,7 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
+  actual_time.restart();
   QString emote_path;
   QList<QString> pathlist;
   pathlist = {
@@ -39,24 +41,29 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   }
 
   this->clear();
-  m_reader = new QImageReader(emote_path);
+  ticker->stop();
+  movie_frames.clear();
+  movie_delays.clear();
+
+  QImageReader *m_reader = new QImageReader(emote_path);
 
   QImage f_image = m_reader->read();
-//  while (!f_image.isNull())
-//  {
-//    if (m_flipped)
-//      movie_frames.append(f_image.mirrored(true, false));
-//    else
-//      movie_frames.append(f_image);
-//    f_image = reader->read();
-//  }
+  while (!f_image.isNull())
+  {
+    movie_frames.append(this->get_pixmap(f_image));
+    movie_delays.append(m_reader->nextImageDelay());
+    f_image = m_reader->read();
+  }
 
-//  delete m_reader;
+  delete m_reader;
+
   this->show();
-  qDebug() << "Setting image to " << f_image;
-  this->set_frame(f_image);
-  if (m_reader->supportsAnimation())
-    ticker->start(m_reader->nextImageDelay());
+  qDebug() << "Setting image to " << emote_path << "Time taken to process image:" << actual_time.elapsed();
+  frame = 0;
+  actual_time.restart();
+  this->set_frame(movie_frames[frame]);
+  if (movie_frames.size() > 0)
+    ticker->start(movie_delays[frame]);
 }
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
@@ -86,7 +93,7 @@ void AOCharMovie::stop()
   this->hide();
 }
 
-void AOCharMovie::set_frame(QImage image)
+QPixmap AOCharMovie::get_pixmap(QImage image)
 {
     QPixmap f_pixmap;
     if(m_flipped)
@@ -99,10 +106,16 @@ void AOCharMovie::set_frame(QImage image)
       aspect_ratio = Qt::KeepAspectRatioByExpanding;
 
     if (f_pixmap.size().width() > this->size().width() || f_pixmap.size().height() > this->size().height())
-      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::SmoothTransformation));
+      f_pixmap = f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::SmoothTransformation);
     else
-      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation));
+      f_pixmap = f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation);
 
+    return f_pixmap;
+}
+
+void AOCharMovie::set_frame(QPixmap f_pixmap)
+{
+    this->setPixmap(f_pixmap);
     QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
 }
 
@@ -122,29 +135,22 @@ void AOCharMovie::move(int ax, int ay)
 
 void AOCharMovie::movie_ticker()
 {
-  if(m_reader->format() != "gif")
-      ticker->start(m_reader->nextImageDelay());
-  if(m_reader->currentImageNumber() == -1)
+  ++frame;
+  if(frame == movie_frames.size())
   {
     if(play_once)
     {
       preanim_done();
+      ticker->stop();
       return;
     }
     else
-      m_reader->jumpToImage(0); //Loop back
+      frame = 0;
   }
-  QImage f_image = m_reader->read();
-  if(f_image.isNull())
-  {
-    qDebug() << "Animated image error on frame" << m_reader->currentImageNumber() << m_reader->errorString();
-    stop();
-    return;
-  }
-  this->set_frame(f_image);
-  qDebug() << m_reader->format() << "frame" << m_reader->nextImageDelay() << m_reader->currentImageNumber() << m_reader->imageCount();
-  if(m_reader->format() == "gif")
-      ticker->start(m_reader->nextImageDelay());
+//  qint64 difference = elapsed - movie_delays[frame];
+  qDebug() << frame << movie_delays[frame] << "actual time taken from last frame:" << actual_time.restart();
+  this->set_frame(movie_frames[frame]);
+  ticker->setInterval(movie_delays[frame]);
 }
 
 void AOCharMovie::preanim_done()

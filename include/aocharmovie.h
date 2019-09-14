@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QImageReader>
+#include <QElapsedTimer>
 
 class AOApplication;
 
@@ -21,7 +22,8 @@ public:
   void play_talking(QString p_char, QString p_emote);
   void play_idle(QString p_char, QString p_emote);
 
-  void set_frame(QImage image);
+  QPixmap get_pixmap(QImage image);
+  void set_frame(QPixmap f_pixmap);
 
   void stop();
 
@@ -35,19 +37,22 @@ public:
 private:
   AOApplication *ao_app;
 
-  QImageReader *m_reader;
+  QVector<QPixmap> movie_frames;
+  QVector<int> movie_delays;
   QTimer *preanim_timer;
   QTimer *ticker;
   QString last_path;
 
+  QElapsedTimer actual_time;
   const int time_mod = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's width.
   int x = 0;
   int y = 0;
 
-  bool m_flipped = false;
+  int frame = 0;
 
+  bool m_flipped = false;
   bool play_once = true;
 
 signals:
