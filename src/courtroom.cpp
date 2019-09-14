@@ -1357,7 +1357,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   text_state = 0;
   anim_state = 0;
   ui_vp_objection->stop();
-  ui_vp_player_char->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
 
