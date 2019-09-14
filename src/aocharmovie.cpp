@@ -21,7 +21,9 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
+#ifdef DEBUG_CHARMOVIE
   actual_time.restart();
+#endif
   QString emote_path;
   QList<QString> pathlist;
   pathlist = {
@@ -42,28 +44,31 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
   this->clear();
   ticker->stop();
+  preanim_timer->stop();
   movie_frames.clear();
   movie_delays.clear();
 
-  QImageReader *m_reader = new QImageReader(emote_path);
-
+  m_reader->setFileName(emote_path);
   QImage f_image = m_reader->read();
-  while (!f_image.isNull())
+  int f_delay = m_reader->nextImageDelay();
+
+  frame = 0;
+  max_frames = m_reader->imageCount();
+
+#ifdef DEBUG_CHARMOVIE
+  qDebug() << max_frames << "Setting image to " << emote_path << "Time taken to process image:" << actual_time.elapsed();
+
+  actual_time.restart();
+#endif
+
+  this->set_frame(movie_frames[frame]);
+  this->show();
+  if (max_frames > 1)
   {
     movie_frames.append(this->get_pixmap(f_image));
-    movie_delays.append(m_reader->nextImageDelay());
-    f_image = m_reader->read();
-  }
-
-  delete m_reader;
-
-  this->show();
-  qDebug() << "Setting image to " << emote_path << "Time taken to process image:" << actual_time.elapsed();
-  frame = 0;
-  actual_time.restart();
-  this->set_frame(movie_frames[frame]);
-  if (movie_frames.size() > 0)
+    movie_delays.append(f_delay);
     ticker->start(movie_delays[frame]);
+  }
 }
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
@@ -136,19 +141,30 @@ void AOCharMovie::move(int ax, int ay)
 void AOCharMovie::movie_ticker()
 {
   ++frame;
-  if(frame == movie_frames.size())
+  if(frame == max_frames)
   {
     if(play_once)
     {
       preanim_done();
-      ticker->stop();
       return;
     }
     else
       frame = 0;
   }
 //  qint64 difference = elapsed - movie_delays[frame];
+  if(frame >= movie_frames.size())
+  {
+      m_reader->jumpToImage(frame);
+      movie_frames.resize(frame + 1);
+      movie_frames[frame] = this->get_pixmap(m_reader->read());
+      movie_delays.resize(frame + 1);
+      movie_delays[frame] = m_reader->nextImageDelay();
+  }
+
+#ifdef DEBUG_CHARMOVIE
   qDebug() << frame << movie_delays[frame] << "actual time taken from last frame:" << actual_time.restart();
+#endif
+
   this->set_frame(movie_frames[frame]);
   ticker->setInterval(movie_delays[frame]);
 }

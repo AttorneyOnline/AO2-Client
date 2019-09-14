@@ -42,6 +42,7 @@ private:
   QTimer *preanim_timer;
   QTimer *ticker;
   QString last_path;
+  QImageReader *m_reader = new QImageReader();
 
   QElapsedTimer actual_time;
   const int time_mod = 60;
@@ -51,6 +52,7 @@ private:
   int y = 0;
 
   int frame = 0;
+  int max_frames = 0;
 
   bool m_flipped = false;
   bool play_once = true;
