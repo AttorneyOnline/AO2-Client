@@ -1,11 +1,12 @@
 #ifndef AOCHARMOVIE_H
 #define AOCHARMOVIE_H
 
-#include <QMovie>
+#include <QImageReader>
 #include <QLabel>
 #include <QTimer>
 #include <QDebug>
 #include <QImageReader>
+#include <QElapsedTimer>
 
 class AOApplication;
 
@@ -21,37 +22,47 @@ public:
   void play_talking(QString p_char, QString p_emote);
   void play_idle(QString p_char, QString p_emote);
 
-  void set_flipped(bool p_flipped) {m_flipped = p_flipped;}
+  QPixmap get_pixmap(QImage image);
+  void set_frame(QPixmap f_pixmap);
 
   void stop();
+
+  void set_flipped(bool p_flipped) {m_flipped = p_flipped;}
 
   void move(int ax, int ay);
 
   void combo_resize(int w, int h);
 
+
 private:
   AOApplication *ao_app;
 
-  QMovie *m_movie;
-  QVector<QImage> movie_frames;
+  QVector<QPixmap> movie_frames;
+  QVector<int> movie_delays;
   QTimer *preanim_timer;
+  QTimer *ticker;
+  QString last_path;
+  QImageReader *m_reader = new QImageReader();
 
+  QElapsedTimer actual_time;
   const int time_mod = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's width.
   int x = 0;
   int y = 0;
 
-  bool m_flipped = false;
+  int frame = 0;
+  int max_frames = 0;
 
+  bool m_flipped = false;
   bool play_once = true;
 
 signals:
   void done();
 
 private slots:
-  void frame_change(int n_frame);
-  void timer_done();
+  void preanim_done();
+  void movie_ticker();
 };
 
 #endif // AOCHARMOVIE_H
