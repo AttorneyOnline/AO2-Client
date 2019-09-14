@@ -29,15 +29,12 @@ public:
 
   void combo_resize(int w, int h);
 
-  void set_frame(QImage image);
-
 private:
   AOApplication *ao_app;
 
   QMovie *m_movie;
   QVector<QImage> movie_frames;
   QTimer *preanim_timer;
-  QTimer *ticker;
 
   const int time_mod = 60;
 
@@ -49,13 +46,11 @@ private:
 
   bool play_once = true;
 
-  bool preprocess = false;
-
 signals:
   void done();
 
 private slots:
-  void movie_ticker();
+  void frame_change(int n_frame);
   void timer_done();
 };
 
