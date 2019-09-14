@@ -13,12 +13,16 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
 
-  connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
+  ticker = new QTimer(this);
+  ticker->setSingleShot(true);
+
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
+  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 }
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
+  preprocess = false;
   QString emote_path;
   QList<QString> pathlist;
   pathlist = {
@@ -33,30 +37,22 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
       if (file_exists(path))
       {
           emote_path = path;
+          if (emote_path.endsWith(".apng"))
+              preprocess = true;
           break;
       }
   }
 
+  delete m_movie;
+  m_movie = new QMovie(this);
   m_movie->stop();
+  this->clear();
   m_movie->setFileName(emote_path);
-
-  QImageReader *reader = new QImageReader(emote_path);
-
-  movie_frames.clear();
-  QImage f_image = reader->read();
-  while (!f_image.isNull())
-  {
-    if (m_flipped)
-      movie_frames.append(f_image.mirrored(true, false));
-    else
-      movie_frames.append(f_image);
-    f_image = reader->read();
-  }
-
-  delete reader;
-
+  m_movie->jumpToFrame(0);
+  this->set_frame(m_movie->currentImage());
+  qDebug() << "playing file path: " << emote_path;
   this->show();
-  m_movie->start();
+  ticker->start(m_movie->nextFrameDelay());
 }
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
@@ -151,12 +147,43 @@ void AOCharMovie::move(int ax, int ay)
   QLabel::move(x, y);
 }
 
-void AOCharMovie::frame_change(int n_frame)
+void AOCharMovie::movie_ticker()
 {
+  if(preprocess)
+      ticker->start(m_movie->nextFrameDelay());
 
-  if (movie_frames.size() > n_frame)
+  if(m_movie->currentFrameNumber() == m_movie->frameCount() - 1)
   {
-    QPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(n_frame));
+    QString last_path = m_movie->fileName();
+    delete m_movie;
+    m_movie = new QMovie(this);
+    m_movie->stop();
+    this->clear();
+    m_movie->setFileName(last_path);
+    m_movie->jumpToFrame(0);
+    if(play_once)
+    {
+         timer_done();
+    }
+  }
+  else
+  {
+    m_movie->jumpToNextFrame();
+  }
+  this->set_frame(m_movie->currentImage());
+//  this->play_frame_sfx();
+  if(!preprocess){
+      ticker->start(m_movie->nextFrameDelay());
+  }
+}
+
+void AOCharMovie::set_frame(QImage image)
+{
+    QPixmap f_pixmap;
+    if(m_flipped)
+        f_pixmap = QPixmap::fromImage(image.mirrored(true, false));
+    else
+        f_pixmap = QPixmap::fromImage(image);
     auto aspect_ratio = Qt::KeepAspectRatio;
 
     if (f_pixmap.size().width() > f_pixmap.size().height())
@@ -168,13 +195,6 @@ void AOCharMovie::frame_change(int n_frame)
       this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation));
 
     QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
-   }
-
-  if (m_movie->frameCount() - 1 == n_frame && play_once)
-  {
-    preanim_timer->start(m_movie->nextFrameDelay());
-    m_movie->stop();
-  }
 }
 
 void AOCharMovie::timer_done()
