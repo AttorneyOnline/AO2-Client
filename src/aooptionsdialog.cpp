@@ -12,7 +12,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_settings_buttons = new QDialogButtonBox(this);
 
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Maximum);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
     sizePolicy1.setHeightForWidth(ui_settings_buttons->sizePolicy().hasHeightForWidth());
@@ -37,9 +37,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     // First, we'll start with 'Gameplay'.
     ui_gameplay_tab = new QWidget();
     ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
-
     ui_form_layout_widget = new QWidget(ui_gameplay_tab);
     ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 211));
+    ui_form_layout_widget->setSizePolicy(sizePolicy1);
 
     ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
     ui_gameplay_form->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
@@ -215,6 +215,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_framenetwork_cb->setChecked(ao_app->is_shake_flash_enabled());
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_framenetwork_cb);
+
+    QScrollArea *scroll = new QScrollArea;
+    scroll->setWidget(ui_form_layout_widget);
+    ui_gameplay_tab->setLayout(new QVBoxLayout);
+    ui_gameplay_tab->layout()->addWidget(scroll);
+    ui_gameplay_tab->show();
 
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();

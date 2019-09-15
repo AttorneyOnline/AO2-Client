@@ -25,6 +25,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QScrollArea>
 
 #include <QDirIterator>
 #include <QTextStream>
