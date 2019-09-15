@@ -19,7 +19,7 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
 }
 
-void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
+void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_prefix)
 {
 #ifdef DEBUG_CHARMOVIE
   actual_time.restart();
@@ -49,45 +49,56 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   movie_delays.clear();
 
   m_reader->setFileName(emote_path);
-  QImage f_image = m_reader->read();
+  QPixmap f_pixmap = this->get_pixmap(m_reader->read());
   int f_delay = m_reader->nextImageDelay();
 
   frame = 0;
   max_frames = m_reader->imageCount();
 
+  this->set_frame(f_pixmap);
+  this->show();
+  if (max_frames > 1)
+  {
+    movie_frames.append(f_pixmap);
+    movie_delays.append(f_delay);
+  }
 #ifdef DEBUG_CHARMOVIE
   qDebug() << max_frames << "Setting image to " << emote_path << "Time taken to process image:" << actual_time.elapsed();
 
   actual_time.restart();
 #endif
+}
 
-  this->set_frame(movie_frames[frame]);
-  this->show();
-  if (max_frames > 1)
-  {
-    movie_frames.append(this->get_pixmap(f_image));
-    movie_delays.append(f_delay);
-    ticker->start(movie_delays[frame]);
-  }
+void AOCharMovie::play()
+{
+  if (max_frames <= 1)
+    return;
+  ticker->start(this->get_frame_delay(movie_delays[frame]));
 }
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 {
-//  QString emote_path = ao_app->get_character_path(p_char, p_emote);
+  load_image(p_char, p_emote, "");
+  //As much as I'd like to screw around with [Time] durations modifying the animation speed, I don't think I can reliably do that,
+  //not without looping through all frames in the image at least - which causes lag. So for now it simply ends the preanimation early instead.
   play_once = true;
-  play(p_char, p_emote, "");
+  if (duration > 0) //It's -1 if there's no definition in [Time] for it. In which case, it will let the animation run out in full. Duration 0 does the same.
+    preanim_timer->start(duration); //This timer will not fire if the animation finishes earlier than that
+  play();
 }
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
   play_once = false;
-  play(p_char, p_emote, "(b)");
+  load_image(p_char, p_emote, "(b)");
+  play();
 }
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
 {
   play_once = false;
-  play(p_char, p_emote, "(a)");
+  load_image(p_char, p_emote, "(a)");
+  play();
 }
 
 void AOCharMovie::stop()
@@ -131,6 +142,11 @@ void AOCharMovie::combo_resize(int w, int h)
 //  m_reader->setScaledSize(f_size);
 }
 
+int AOCharMovie::get_frame_delay(int delay)
+{
+    return static_cast<int>(double(delay) * double(speed/100));
+}
+
 void AOCharMovie::move(int ax, int ay)
 {
   x = ax;
@@ -166,10 +182,11 @@ void AOCharMovie::movie_ticker()
 #endif
 
   this->set_frame(movie_frames[frame]);
-  ticker->setInterval(movie_delays[frame]);
+  ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
 }
 
 void AOCharMovie::preanim_done()
 {
+  preanim_timer->stop();
   done();
 }
