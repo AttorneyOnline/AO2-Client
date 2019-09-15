@@ -232,6 +232,9 @@ public:
   //Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag);
 
+  //Returns a QStringList of all key=value definitions on a given tag.
+  QStringList read_char_ini_tag(QString p_char, QString target_tag);
+
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
 

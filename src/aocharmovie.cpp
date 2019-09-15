@@ -64,44 +64,89 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
     movie_delays.append(f_delay);
   }
 
-  movie_effects.resize(max_frames);
-  for (int e_frame = 0; e_frame < max_frames; ++e_frame)
-  {
-#ifdef DEBUG_CHARMOVIE
-    qDebug() << p_char << p_emote << e_frame;
-#endif
-    QString effect = ao_app->get_screenshake_frame(p_char, emote_prefix + p_emote, e_frame);
-    if (effect != "")
-    {
-      movie_effects[e_frame].append("shake");
-#ifdef DEBUG_CHARMOVIE
-      qDebug() << e_frame << "shake";
-#endif
-    }
+  m_char = p_char;
+  m_emote = emote_prefix + p_emote;
 
-    effect = ao_app->get_flash_frame(p_char, emote_prefix + p_emote, e_frame);
-    if (effect != "")
-    {
-      movie_effects[e_frame].append("flash");
-#ifdef DEBUG_CHARMOVIE
-      qDebug() << e_frame << "flash";
-#endif
-    }
-
-    effect = ao_app->get_sfx_frame(p_char, emote_prefix + p_emote, e_frame);
-    if (effect != "")
-    {
-      movie_effects[e_frame].append("sfx^"+effect);
-#ifdef DEBUG_CHARMOVIE
-      qDebug() << e_frame << effect;
-#endif
-    }
-  }
+  if (network_strings.size() > 0) //our FX overwritten by networked ones
+    this->load_network_effects();
+  else //Use default ini FX
+    this->load_effects();
 #ifdef DEBUG_CHARMOVIE
   qDebug() << max_frames << "Setting image to " << emote_path << "Time taken to process image:" << actual_time.elapsed();
 
   actual_time.restart();
 #endif
+}
+
+void AOCharMovie::load_effects()
+{
+  movie_effects.clear();
+  movie_effects.resize(max_frames);
+  for (int e_frame = 0; e_frame < max_frames; ++e_frame)
+  {
+    QString effect = ao_app->get_screenshake_frame(m_char, m_emote, e_frame);
+    if (effect != "")
+    {
+      movie_effects[e_frame].append("shake");
+    }
+
+    effect = ao_app->get_flash_frame(m_char, m_emote, e_frame);
+    if (effect != "")
+    {
+      movie_effects[e_frame].append("flash");
+    }
+
+    effect = ao_app->get_sfx_frame(m_char, m_emote, e_frame);
+    if (effect != "")
+    {
+      movie_effects[e_frame].append("sfx^"+effect);
+    }
+  }
+}
+
+void AOCharMovie::load_network_effects()
+{
+  movie_effects.clear();
+  movie_effects.resize(max_frames);
+  //Order is important!!!
+  QStringList effects_list = {"shake", "flash", "sfx^"};
+
+  //Determines which list is smaller - effects_list or network_strings - and uses it as basis for the loop.
+  //This way, incomplete network_strings would still be parsed, and excess/unaccounted for networked information is omitted.
+  int effects_size = qMin(effects_list.size(), network_strings.size());
+
+  for (int i = 0; i < effects_size; ++i)
+  {
+    QString netstring = network_strings.at(i);
+    QStringList emote_splits = netstring.split("^");
+    foreach (QString emote, emote_splits)
+    {
+      QStringList parsed = emote.split("|");
+      if (parsed.size() <= 0 || parsed.at(0) != m_emote)
+        continue;
+      foreach (QString frame_data, parsed)
+      {
+        QStringList frame_split = frame_data.split("=");
+        if (frame_split.size() <= 1) //We might still be hanging at the emote itself (entry 0).
+          continue;
+        int f_frame = frame_split.at(0).toInt();
+        if (f_frame >= max_frames)
+        {
+          qDebug() << "Warning: out of bounds" << effects_list[i] << "frame" << f_frame << "out of" << max_frames << "for" << m_char << m_emote;
+          continue;
+        }
+        QString f_data = frame_split.at(1);
+        if (f_data != "")
+        {
+          QString effect = effects_list[i];
+          if (effect == "sfx^") //Currently the only frame result that feeds us data, let's yank it in.
+            effect += f_data;
+          qDebug() << effect << f_data << "frame" << f_frame << "for" << m_char << m_emote;
+          movie_effects[f_frame].append(effect);
+        }
+      }
+    }
+  }
 }
 
 void AOCharMovie::play()

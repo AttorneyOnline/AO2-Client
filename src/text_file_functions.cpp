@@ -406,6 +406,22 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QStr
   return value;
 }
 
+//returns all the values of target_tag
+QStringList AOApplication::read_char_ini_tag(QString p_char, QString target_tag)
+{
+  QStringList r_values;
+  QSettings settings(get_character_path(p_char, "char.ini"), QSettings::IniFormat);
+  settings.beginGroup(target_tag);
+  QStringList keys = settings.allKeys();
+  foreach (QString key, keys)
+  {
+    QString value = settings.value(key).toString();
+    r_values << key + "=" + value;
+  }
+  settings.endGroup();
+  return r_values;
+}
+
 QString AOApplication::get_char_name(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "name", "Options");

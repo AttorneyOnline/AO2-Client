@@ -1267,41 +1267,31 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append(QString::number(screenshake_state));
       qDebug() << "Are we screen shaking this one? " << screenshake_state;
 
-      QString frame_screenshake = "";
-      QString frame_realization = "";
-      QString frame_sfx = "";
+      QString pre_emote = ao_app->get_pre_emote(current_char, current_emote);
+      QString emote = ao_app->get_emote(current_char, current_emote);
+      QStringList emotes_to_check = {pre_emote, "(b)" + emote, "(a)" + emote};
+      QStringList effects_to_check = {"_FrameScreenshake", "_FrameRealization", "_FrameSFX"};
 
-      QString preemote_sfx = ao_app->get_pre_emote(current_char, current_emote) + "^";
-      QString preemote_shake = ao_app->get_pre_emote(current_char, current_emote) + "^";
-      QString preemote_flash = ao_app->get_pre_emote(current_char, current_emote) + "^";
+      foreach (QString f_effect, effects_to_check)
+      {
+        QString packet;
+        foreach (QString f_emote, emotes_to_check)
+        {
+          packet += f_emote;
+          QString sfx_frames = ao_app->read_char_ini_tag(current_char, f_emote.append(f_effect)).join("|");
+          if (sfx_frames != "")
+            packet += "|" + sfx_frames;
+          packet += "^";
+        }
+        qDebug() << f_effect << "packet" << packet;
+        packet_contents.append(packet);
+      }
 
-      QString talkemote_sfx = "(b)" + ao_app->get_emote(current_char, current_emote) + "^";
-      QString talkemote_shake = "(b)" + ao_app->get_emote(current_char, current_emote) + "^";
-      QString talkemote_flash = "(b)" + ao_app->get_emote(current_char, current_emote) + "^";
+      //"roar|thing=thong^(b)roar^(a)roar^"
 
-      QString idleemote_sfx = "(a)" + ao_app->get_emote(current_char, current_emote) + "^";
-      QString idleemote_shake = "(a)" + ao_app->get_emote(current_char, current_emote) + "^";
-      QString idleemote_flash = "(a)" + ao_app->get_emote(current_char, current_emote) + "^";
-
-      frame_screenshake += preemote_shake;
-      frame_screenshake += talkemote_shake;
-      frame_screenshake += idleemote_shake;
-
-      frame_realization += preemote_flash;
-      frame_realization += talkemote_flash;
-      frame_realization += idleemote_flash;
-
-      frame_sfx += preemote_sfx;
-      frame_sfx += talkemote_sfx;
-      frame_sfx += idleemote_sfx;
-      qDebug() << "Final strings:";
-      qDebug() << frame_screenshake;
-      qDebug() << frame_realization;
-      qDebug() << frame_sfx;
-
-      packet_contents.append(frame_screenshake);
-      packet_contents.append(frame_realization);
-      packet_contents.append(frame_sfx);
+//      packet_contents.append(frame_screenshake);
+//      packet_contents.append(frame_realization);
+//      packet_contents.append(frame_sfx);
   }
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
@@ -1446,6 +1436,15 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_player_char->stop();
   //Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
+
+  if (!m_chatmessage[FRAME_SFX].isEmpty())
+  {
+    //ORDER IS IMPORTANT!!
+    QStringList netstrings = {m_chatmessage[FRAME_SCREENSHAKE], m_chatmessage[FRAME_REALIZATION], m_chatmessage[FRAME_SFX]};
+    ui_vp_player_char->network_strings = netstrings;
+  }
+  else
+    ui_vp_player_char->network_strings.clear();
 
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
@@ -1673,11 +1672,9 @@ void Courtroom::do_screenshake()
     ui_vp_chatbox
   };
 
-  int i = 0;
   //I would prefer if this was its own "shake" function to be honest.
   foreach (QWidget* ui_element, affected_list)
   {
-    qDebug() << ++i;
     QPropertyAnimation *screenshake_animation = new QPropertyAnimation(ui_element, "pos", this);
     QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
 
