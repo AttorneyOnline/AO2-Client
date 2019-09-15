@@ -66,6 +66,8 @@ private:
 
     QLabel *ui_epilepsy_lbl;
     QCheckBox *ui_epilepsy_cb;
+    QLabel *ui_framenetwork_lbl;
+    QCheckBox *ui_framenetwork_cb;
 
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;

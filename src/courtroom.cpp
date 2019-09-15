@@ -1283,9 +1283,12 @@ void Courtroom::on_chat_return_pressed()
         foreach (QString f_emote, emotes_to_check)
         {
           packet += f_emote;
-          QString sfx_frames = ao_app->read_char_ini_tag(current_char, f_emote.append(f_effect)).join("|");
-          if (sfx_frames != "")
-            packet += "|" + sfx_frames;
+          if (ao_app->is_frame_network_enabled())
+          {
+            QString sfx_frames = ao_app->read_char_ini_tag(current_char, f_emote.append(f_effect)).join("|");
+            if (sfx_frames != "")
+              packet += "|" + sfx_frames;
+          }
           packet += "^";
         }
         qDebug() << f_effect << "packet" << packet;
@@ -1442,7 +1445,7 @@ void Courtroom::handle_chatmessage_2()
   //Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
 
-  if (!m_chatmessage[FRAME_SFX].isEmpty())
+  if (!m_chatmessage[FRAME_SFX].isEmpty() && ao_app->is_frame_network_enabled())
   {
     //ORDER IS IMPORTANT!!
     QStringList netstrings = {m_chatmessage[FRAME_SCREENSHAKE], m_chatmessage[FRAME_REALIZATION], m_chatmessage[FRAME_SFX]};

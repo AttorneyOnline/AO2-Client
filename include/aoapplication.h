@@ -174,6 +174,10 @@ public:
   // from the config.ini.
   bool is_shake_flash_enabled();
 
+  // Returns the value of whether frame-specific effects defined in char.ini should be sent/received over the network.
+  // from the config.ini.
+  bool is_frame_network_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();

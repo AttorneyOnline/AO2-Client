@@ -70,21 +70,21 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
 
+    row += 1;
     ui_theme_log_divider = new QFrame(ui_form_layout_widget);
     ui_theme_log_divider->setMidLineWidth(0);
     ui_theme_log_divider->setFrameShape(QFrame::HLine);
     ui_theme_log_divider->setFrameShadow(QFrame::Sunken);
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_log_divider);
 
+    row += 1;
     ui_downwards_lbl = new QLabel(ui_form_layout_widget);
     ui_downwards_lbl->setText(tr("Log goes downwards:"));
     ui_downwards_lbl->setToolTip(tr("If ticked, new messages will appear at "
                                     "the bottom (like the OOC chatlog). The traditional "
                                     "(AO1) behaviour is equivalent to this being unticked."));
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_downwards_lbl);
 
     ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
@@ -92,12 +92,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_downwards_cb);
 
+    row += 1;
     ui_length_lbl = new QLabel(ui_form_layout_widget);
     ui_length_lbl->setText(tr("Log length:"));
     ui_length_lbl->setToolTip(tr("The amount of messages the IC chatlog will keep before "
                                  "deleting older messages. A value of 0 or below counts as 'infinite'."));
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_length_lbl);
 
     ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
@@ -106,19 +106,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_length_spinbox);
 
+    row += 1;
     ui_log_names_divider = new QFrame(ui_form_layout_widget);
     ui_log_names_divider->setFrameShape(QFrame::HLine);
     ui_log_names_divider->setFrameShadow(QFrame::Sunken);
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_names_divider);
 
+    row += 1;
     ui_username_lbl = new QLabel(ui_form_layout_widget);
     ui_username_lbl->setText(tr("Default username:"));
     ui_username_lbl->setToolTip(tr("Your OOC name will be automatically set to this value "
                                    "when you join a server."));
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_username_lbl);
 
     ui_username_textbox = new QLineEdit(ui_form_layout_widget);
@@ -127,13 +127,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_username_textbox);
 
+    row += 1;
     ui_showname_lbl = new QLabel(ui_form_layout_widget);
     ui_showname_lbl->setText(tr("Custom shownames:"));
     ui_showname_lbl->setToolTip(tr("Gives the default value for the in-game 'Custom shownames' "
                                    "tickbox, which in turn determines whether the client should "
                                    "display custom in-character names."));
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_showname_lbl);
 
     ui_showname_cb = new QCheckBox(ui_form_layout_widget);
@@ -141,19 +141,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_showname_cb);
 
+    row += 1;
     ui_net_divider = new QFrame(ui_form_layout_widget);
     ui_net_divider->setFrameShape(QFrame::HLine);
     ui_net_divider->setFrameShadow(QFrame::Sunken);
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_net_divider);
 
+    row += 1;
     ui_ms_lbl = new QLabel(ui_form_layout_widget);
     ui_ms_lbl->setText(tr("Backup MS:"));
     ui_ms_lbl->setToolTip(tr("If the built-in server lookups fail, the game will try the "
                              "address given here and use it as a backup master server address."));
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_ms_lbl);
 
     QSettings* configini = ao_app->configini;
@@ -162,13 +162,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_ms_textbox);
 
+    row += 1;
     ui_discord_lbl = new QLabel(ui_form_layout_widget);
     ui_discord_lbl->setText(tr("Discord:"));
     ui_discord_lbl->setToolTip(tr("Allows others on Discord to see what server you are in, "
                                   "what character are you playing, and how long you have "
                                   "been playing for."));
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_discord_lbl);
 
     ui_discord_cb = new QCheckBox(ui_form_layout_widget);
@@ -192,17 +192,29 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("ru - Русский");
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_language_combobox);
 
+    row += 1;
     ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
     ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
     ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
 
-    row += 1;
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_epilepsy_lbl);
 
     ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
     ui_epilepsy_cb->setChecked(ao_app->is_shake_flash_enabled());
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_epilepsy_cb);
+
+    row += 1;
+    ui_framenetwork_lbl = new QLabel(ui_form_layout_widget);
+    ui_framenetwork_lbl->setText(tr("Network Frame Effects:"));
+    ui_framenetwork_lbl->setToolTip(tr("Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_framenetwork_lbl);
+
+    ui_framenetwork_cb = new QCheckBox(ui_form_layout_widget);
+    ui_framenetwork_cb->setChecked(ao_app->is_shake_flash_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_framenetwork_cb);
 
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();
@@ -282,18 +294,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     #endif
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_audio_device_combobox);
 
+    row += 1;
     ui_audio_volume_divider = new QFrame(ui_audio_widget);
     ui_audio_volume_divider->setFrameShape(QFrame::HLine);
     ui_audio_volume_divider->setFrameShadow(QFrame::Sunken);
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_audio_volume_divider);
 
+    row += 1;
     ui_music_volume_lbl = new QLabel(ui_audio_widget);
     ui_music_volume_lbl->setText(tr("Music:"));
     ui_music_volume_lbl->setToolTip(tr("Sets the music's default volume."));
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_music_volume_lbl);
 
     ui_music_volume_spinbox = new QSpinBox(ui_audio_widget);
@@ -303,11 +315,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_music_volume_spinbox);
 
+    row += 1;
     ui_sfx_volume_lbl = new QLabel(ui_audio_widget);
     ui_sfx_volume_lbl->setText(tr("SFX:"));
     ui_sfx_volume_lbl->setToolTip(tr("Sets the SFX's default volume. "
                                      "Interjections and actual sound effects count as 'SFX'."));
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_sfx_volume_lbl);
 
     ui_sfx_volume_spinbox = new QSpinBox(ui_audio_widget);
@@ -317,11 +329,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_sfx_volume_spinbox);
 
+    row += 1;
     ui_blips_volume_lbl = new QLabel(ui_audio_widget);
     ui_blips_volume_lbl->setText(tr("Blips:"));
     ui_blips_volume_lbl->setToolTip(tr("Sets the volume of the blips, the talking sound effects."));
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_blips_volume_lbl);
 
     ui_blips_volume_spinbox = new QSpinBox(ui_audio_widget);
@@ -331,18 +343,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_blips_volume_spinbox);
 
+    row += 1;
     ui_volume_blip_divider = new QFrame(ui_audio_widget);
     ui_volume_blip_divider->setFrameShape(QFrame::HLine);
     ui_volume_blip_divider->setFrameShadow(QFrame::Sunken);
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_volume_blip_divider);
 
+    row += 1;
     ui_bliprate_lbl = new QLabel(ui_audio_widget);
     ui_bliprate_lbl->setText(tr("Blip rate:"));
     ui_bliprate_lbl->setToolTip(tr("Sets the delay between playing the blip sounds."));
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_bliprate_lbl);
 
     ui_bliprate_spinbox = new QSpinBox(ui_audio_widget);
@@ -353,12 +365,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_bliprate_spinbox);
 
+    row += 1;
     ui_blank_blips_lbl = new QLabel(ui_audio_widget);
     ui_blank_blips_lbl->setText(tr("Blank blips:"));
     ui_blank_blips_lbl->setToolTip(tr("If true, the game will play a blip sound even "
                                       "when a space is 'being said'."));
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_blank_blips_lbl);
 
     ui_blank_blips_cb = new QCheckBox(ui_audio_widget);
@@ -366,11 +378,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_blank_blips_cb);
 
+    row += 1;
     ui_loopsfx_lbl = new QLabel(ui_audio_widget);
     ui_loopsfx_lbl->setText(tr("Enable Looping SFX:"));
     ui_loopsfx_lbl->setToolTip(tr("If true, the game will allow looping sound effects to play on preanimations."));
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_loopsfx_lbl);
 
     ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
@@ -378,11 +390,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_loopsfx_cb);
 
+    row += 1;
     ui_objectmusic_lbl = new QLabel(ui_audio_widget);
     ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
     ui_objectmusic_lbl->setToolTip(tr("If true, AO2 will stop the music for you when you or someone else does 'Objection!'."));
 
-    row += 1;
     ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_objectmusic_lbl);
 
     ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
@@ -552,6 +564,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("discord", ui_discord_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
     configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
+    configini->setValue("framenetwork", ui_framenetwork_cb->isChecked());
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
