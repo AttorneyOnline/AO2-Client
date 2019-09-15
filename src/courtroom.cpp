@@ -265,6 +265,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
+  connect(ui_vp_player_char, SIGNAL(shake()), this, SLOT(do_screenshake()));
+  connect(ui_vp_player_char, SIGNAL(flash()), this, SLOT(do_flash()));
+  connect(ui_vp_player_char, SIGNAL(play_sfx(QString)), this, SLOT(play_char_sfx(QString)));
 
   connect(text_delay_timer, SIGNAL(timeout()), this, SLOT(start_chat_ticking()));
   connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
@@ -1655,47 +1658,58 @@ void Courtroom::handle_chatmessage_2()
 
 void Courtroom::do_screenshake()
 {
-//Code below causes segfault, do not uncomment unless you know what you're doing.
-//    if (screenshake_animation_group != nullptr && screenshake_animation_group->state() == QAbstractAnimation::Running)
-//        screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration()); //Force it to finish and delete itself
+  //This way, the animation is reset in such a way that last played screenshake would return to its "final frame" properly.
+  //This properly resets all UI elements without having to bother keeping track of "origin" positions.
+  //Works great wit the chat text being detached from the chat box!
+  screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration());
+  screenshake_animation_group->clear();
 
-    screenshake_animation_group = new QParallelAnimationGroup;
+  QList<QWidget *> affected_list = {
+    ui_vp_background,
+    ui_vp_player_char,
+    ui_vp_sideplayer_char,
+    ui_vp_chatbox
+  };
 
-    QList<QWidget *> affected_list = {
-        ui_vp_background,
-        ui_vp_player_char,
-        ui_vp_sideplayer_char,
-        ui_vp_chatbox
-    };
+  int i = 0;
+  //I would prefer if this was its own "shake" function to be honest.
+  foreach (QWidget* ui_element, affected_list)
+  {
+    qDebug() << ++i;
+    QPropertyAnimation *screenshake_animation = new QPropertyAnimation(ui_element, "pos", this);
+    QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
 
-    int i = 0;
-    //I would prefer if this was its own "shake" function to be honest.
-    foreach (QWidget* ui_element, affected_list)
+    int duration = 300; //How long does the screenshake last
+    int frequency = 20; //How often in ms is there a "jolt" frame
+    int maxframes = duration/frequency;
+    int max_x = 7; //Max deviation from origin on x axis
+    int max_y = 7; //Max deviation from origin on y axis
+    screenshake_animation->setDuration(duration);
+    for (int frame=0; frame < maxframes; frame++)
     {
-        qDebug() << ++i;
-        QPropertyAnimation *screenshake_animation = new QPropertyAnimation(ui_element, "pos", this);
-        QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
-
-        int duration = 300; //How long does the screenshake last
-        int frequency = 20; //How often in ms is there a "jolt" frame
-        int maxframes = duration/frequency;
-        int max_x = 7; //Max deviation from origin on x axis
-        int max_y = 7; //Max deviation from origin on y axis
-        screenshake_animation->setDuration(duration);
-        for (int frame=0; frame < maxframes; frame++)
-        {
-            double fraction = double(frame*frequency)/duration;
-            quint32 rng = QRandomGenerator::global()->generate();
-            int rand_x = int(rng) % max_x;
-            int rand_y = int(rng+100) % max_y;
-            screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
-        }
-        screenshake_animation->setEndValue(pos_default);
-        screenshake_animation->setEasingCurve(QEasingCurve::Linear);
-        screenshake_animation_group->addAnimation(screenshake_animation);
+      double fraction = double(frame*frequency)/duration;
+      quint32 rng = QRandomGenerator::global()->generate();
+      int rand_x = int(rng) % max_x;
+      int rand_y = int(rng+100) % max_y;
+      screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
+    screenshake_animation->setEndValue(pos_default);
+    screenshake_animation->setEasingCurve(QEasingCurve::Linear);
+    screenshake_animation_group->addAnimation(screenshake_animation);
+  }
 
-    screenshake_animation_group->start(QAbstractAnimation::DeletionPolicy::DeleteWhenStopped);
+  screenshake_animation_group->start();
+}
+
+void Courtroom::do_flash()
+{
+  ui_vp_realization->play("realizationflash", "", "", 60);
+}
+
+void Courtroom::play_char_sfx(QString sfx_name)
+{
+  sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
+  sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
 }
 
 void Courtroom::handle_chatmessage_3()
@@ -1825,6 +1839,16 @@ QString Courtroom::filter_ic_text(QString p_text)
           p_text.remove(trick_check_pos,1);
       }
       else if (f_character == "}" and !ic_next_is_not_special)
+      {
+          p_text.remove(trick_check_pos,1);
+      }
+
+      else if (f_character == "$" and !ic_next_is_not_special)
+      {
+          p_text.remove(trick_check_pos,1);
+      }
+
+      else if (f_character == "@" and !ic_next_is_not_special)
       {
           p_text.remove(trick_check_pos,1);
       }
@@ -2089,7 +2113,7 @@ void Courtroom::start_chat_ticking()
 
   if (m_chatmessage[REALIZATION] == "1")
   {
-    ui_vp_realization->play("realizationflash", "", "", 60);
+    this->do_flash();
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
 
@@ -2205,6 +2229,18 @@ void Courtroom::chat_tick()
     else if (f_character == "}" and !next_character_is_not_special)
     {
         current_display_speed--;
+        formatting_char = true;
+    }
+
+    else if (f_character == "@" and !next_character_is_not_special)
+    {
+        this->do_screenshake();
+        formatting_char = true;
+    }
+
+    else if (f_character == "$" and !next_character_is_not_special)
+    {
+        this->do_flash();
         formatting_char = true;
     }
 

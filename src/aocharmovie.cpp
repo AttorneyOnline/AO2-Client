@@ -47,6 +47,7 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
   preanim_timer->stop();
   movie_frames.clear();
   movie_delays.clear();
+  movie_effects.clear();
 
   m_reader->setFileName(emote_path);
   QPixmap f_pixmap = this->get_pixmap(m_reader->read());
@@ -62,6 +63,32 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
     movie_frames.append(f_pixmap);
     movie_delays.append(f_delay);
   }
+
+  movie_effects.resize(max_frames);
+  for (int e_frame = 0; e_frame < max_frames; ++e_frame)
+  {
+    qDebug() << p_char << p_emote << e_frame;
+    QString effect = ao_app->get_screenshake_frame(p_char, emote_prefix + p_emote, e_frame);
+    if (effect != "")
+    {
+      movie_effects[e_frame].append("shake");
+      qDebug() << e_frame << "shake";
+    }
+
+    effect = ao_app->get_flash_frame(p_char, emote_prefix + p_emote, e_frame);
+    if (effect != "")
+    {
+      movie_effects[e_frame].append("flash");
+      qDebug() << e_frame << "flash";
+    }
+
+    effect = ao_app->get_sfx_frame(p_char, emote_prefix + p_emote, e_frame);
+    if (effect != "")
+    {
+      movie_effects[e_frame].append("sfx^"+effect);
+      qDebug() << e_frame << effect;
+    }
+  }
 #ifdef DEBUG_CHARMOVIE
   qDebug() << max_frames << "Setting image to " << emote_path << "Time taken to process image:" << actual_time.elapsed();
 
@@ -71,6 +98,7 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
 
 void AOCharMovie::play()
 {
+  play_frame_effect(frame);
   if (max_frames <= 1)
     return;
   ticker->start(this->get_frame_delay(movie_delays[frame]));
@@ -99,6 +127,34 @@ void AOCharMovie::play_idle(QString p_char, QString p_emote)
   play_once = false;
   load_image(p_char, p_emote, "(a)");
   play();
+}
+
+void AOCharMovie::play_frame_effect(int frame)
+{
+  if(frame < max_frames)
+  {
+    foreach (QString effect, movie_effects[frame])
+    {
+      if(effect == "shake")
+      {
+        shake();
+        qDebug() << "Attempting to play shake on frame" << frame;
+      }
+
+      if(effect == "flash")
+      {
+        flash();
+        qDebug() << "Attempting to play flash on frame" << frame;
+      }
+
+      if(effect.startsWith("sfx^"))
+      {
+        QString sfx = effect.section("^", 1);
+        play_sfx(sfx);
+        qDebug() << "Attempting to play sfx" << sfx << "on frame" << frame;
+      }
+    }
+  }
 }
 
 void AOCharMovie::stop()
@@ -182,6 +238,7 @@ void AOCharMovie::movie_ticker()
 #endif
 
   this->set_frame(movie_frames[frame]);
+  play_frame_effect(frame);
   ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
 }
 

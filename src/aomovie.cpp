@@ -13,6 +13,7 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   this->setMovie(m_movie);
 
   timer = new QTimer(this);
+  timer->setTimerType(Qt::PreciseTimer);
   timer->setSingleShot(true);
 
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
@@ -22,11 +23,6 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 void AOMovie::set_play_once(bool p_play_once)
 {
   play_once = p_play_once;
-}
-
-void AOMovie::start_timer(int delay)
-{
-  timer->start(delay);
 }
 
 void AOMovie::play(QString p_image, QString p_char, QString p_custom_theme, int duration)
@@ -65,7 +61,7 @@ void AOMovie::play(QString p_image, QString p_char, QString p_custom_theme, int 
   this->show();
   m_movie->start();
   if (m_movie->frameCount() == 0 && duration > 0)
-      this->start_timer(duration);
+    timer->start(duration);
 }
 
 void AOMovie::stop()
@@ -81,17 +77,13 @@ void AOMovie::frame_change(int n_frame)
   if (m_movie->frameCount() == 0 || n_frame < (m_movie->frameCount() - 1) || !play_once)
       return;
   //we need this or else the last frame wont show
-  delay(m_movie->nextFrameDelay());
-
-  this->stop();
-
-  //signal connected to courtroom object, let it figure out what to do
-  done();
+  timer->start(m_movie->nextFrameDelay());
 }
 
 void AOMovie::timer_done()
 {
   this->stop();
+  //signal connected to courtroom object, let it figure out what to do
   done();
 }
 

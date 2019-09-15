@@ -271,6 +271,18 @@ public:
   //Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
 
+  //Returns if the sfx is defined as looping in char.ini
+  QString get_sfx_looping(QString p_char, QString p_sfx);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_sfx_frame(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_flash_frame(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
+
   //Not in use
   int get_sfx_delay(QString p_char, int p_emote);
 

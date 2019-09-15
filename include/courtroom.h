@@ -219,8 +219,6 @@ public:
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();
-  void do_screenshake();
-  void doRealization();
 
   ~Courtroom();
 
@@ -239,7 +237,7 @@ private:
   bool first_message_sent = false;
   int maximumMessages = 0;
 
-  QParallelAnimationGroup *screenshake_animation_group;
+  QParallelAnimationGroup *screenshake_animation_group = new QParallelAnimationGroup;
 
   // This is for inline message-colouring.
 
@@ -557,6 +555,9 @@ private:
 public slots:
   void objection_done();
   void preanim_done();
+  void do_screenshake();
+  void do_flash();
+  void play_char_sfx(QString sfx_name);
 
   void mod_called(QString p_ip);
 

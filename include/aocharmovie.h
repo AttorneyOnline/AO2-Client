@@ -32,6 +32,9 @@ public:
   //Play an (a)normal.gif - style animation (not talking)
   void play_idle(QString p_char, QString p_emote);
 
+  //Play a frame-specific effect, if there's any defined for that specific frame.
+  void play_frame_effect(int frame);
+
   //Retreive a pixmap adjused for mirroring/aspect ratio shenanigans from a provided QImage
   QPixmap get_pixmap(QImage image);
 
@@ -61,6 +64,12 @@ private:
 
   QVector<QPixmap> movie_frames;
   QVector<int> movie_delays;
+
+  //Effects such as sfx, screenshakes and realization flashes are stored in here.
+  //QString entry format: "sfx^[sfx_name]", "shake", "flash".
+  //The program uses the QVector index as reference.
+  QVector<QVector<QString>> movie_effects;
+
   QTimer *preanim_timer;
   QTimer *ticker;
   QString last_path;
@@ -83,6 +92,9 @@ private:
 
 signals:
   void done();
+  void shake();
+  void flash();
+  void play_sfx(QString sfx);
 
 private slots:
   void preanim_done();
