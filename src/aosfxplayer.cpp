@@ -8,9 +8,35 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
+void AOSfxPlayer::clear()
 {
-  BASS_ChannelStop(m_stream);
+  for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+  {
+    BASS_ChannelStop(m_stream_list[n_stream]);
+  }
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::loop_clear()
+{
+  for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+  {
+    if((BASS_ChannelFlags(m_stream_list[n_stream], 0, 0)&BASS_SAMPLE_LOOP))
+      BASS_ChannelStop(m_stream_list[n_stream]);
+  }
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel)
+{
+  if (channel == -1)
+  {
+    if (m_stream_list[channel] != NULL)
+      m_channel = (m_channel + 1) % m_channelmax;
+    channel = m_channel;
+  }
+
+  BASS_ChannelStop(m_stream_list[channel]);
   
   QString misc_path = "";
   QString char_path = "";
@@ -30,18 +56,22 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   else
     f_path = sound_path;
 
-  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  m_stream_list[channel] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
   set_volume_internal(m_volume);
 
   if (ao_app->get_audio_output_device() != "default")
-    BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
-  BASS_ChannelPlay(m_stream, false);
+    BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
+  BASS_ChannelPlay(m_stream_list[m_channel], false);
 }
 
-void AOSfxPlayer::stop()
+void AOSfxPlayer::stop(int channel)
 {
-  BASS_ChannelStop(m_stream);
+  if (channel == -1)
+  {
+    channel = m_channel;
+  }
+  BASS_ChannelStop(m_stream_list[channel]);
 }
 
 void AOSfxPlayer::set_volume(qreal p_value)
@@ -52,8 +82,30 @@ void AOSfxPlayer::set_volume(qreal p_value)
 
 void AOSfxPlayer::set_volume_internal(qreal p_value)
 {
-    float volume = p_value;
-    BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
+    float volume = static_cast<float>(p_value);
+    for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+    {
+      BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);
+    }
+}
+
+void AOSfxPlayer::set_looping(bool toggle, int channel)
+{
+  if (channel == -1)
+  {
+    channel = m_channel;
+  }
+  m_looping = toggle;
+  if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
+  {
+      if (m_looping == false)
+        BASS_ChannelFlags(m_stream_list[channel], 0, BASS_SAMPLE_LOOP); // remove the LOOP flag
+  }
+  else
+  {
+      if (m_looping == true)
+        BASS_ChannelFlags(m_stream_list[channel], BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP); // set the LOOP flag
+  }
 }
 #elif defined(QTAUDIO) //Using Qt's QSoundEffect class
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)

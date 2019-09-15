@@ -151,6 +151,9 @@ public:
   //Returns true if blank blips is enabled in config.ini and false otherwise
   bool get_blank_blip();
 
+  //Returns true if looping sound effects are enabled in the config.ini
+  bool get_looping_sfx();
+
   //Returns true if stop music on objection is enabled in the config.ini
   bool objection_stop_music();
 

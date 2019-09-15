@@ -67,26 +67,34 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
   movie_effects.resize(max_frames);
   for (int e_frame = 0; e_frame < max_frames; ++e_frame)
   {
+#ifdef DEBUG_CHARMOVIE
     qDebug() << p_char << p_emote << e_frame;
+#endif
     QString effect = ao_app->get_screenshake_frame(p_char, emote_prefix + p_emote, e_frame);
     if (effect != "")
     {
       movie_effects[e_frame].append("shake");
+#ifdef DEBUG_CHARMOVIE
       qDebug() << e_frame << "shake";
+#endif
     }
 
     effect = ao_app->get_flash_frame(p_char, emote_prefix + p_emote, e_frame);
     if (effect != "")
     {
       movie_effects[e_frame].append("flash");
+#ifdef DEBUG_CHARMOVIE
       qDebug() << e_frame << "flash";
+#endif
     }
 
     effect = ao_app->get_sfx_frame(p_char, emote_prefix + p_emote, e_frame);
     if (effect != "")
     {
       movie_effects[e_frame].append("sfx^"+effect);
+#ifdef DEBUG_CHARMOVIE
       qDebug() << e_frame << effect;
+#endif
     }
   }
 #ifdef DEBUG_CHARMOVIE
@@ -138,20 +146,26 @@ void AOCharMovie::play_frame_effect(int frame)
       if(effect == "shake")
       {
         shake();
+#ifdef DEBUG_CHARMOVIE
         qDebug() << "Attempting to play shake on frame" << frame;
+#endif
       }
 
       if(effect == "flash")
       {
         flash();
+#ifdef DEBUG_CHARMOVIE
         qDebug() << "Attempting to play flash on frame" << frame;
+#endif
       }
 
       if(effect.startsWith("sfx^"))
       {
         QString sfx = effect.section("^", 1);
         play_sfx(sfx);
+#ifdef DEBUG_CHARMOVIE
         qDebug() << "Attempting to play sfx" << sfx << "on frame" << frame;
+#endif
       }
     }
   }

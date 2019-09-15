@@ -638,6 +638,12 @@ bool AOApplication::get_blank_blip()
     return result.startsWith("true");
 }
 
+bool AOApplication::get_looping_sfx()
+{
+    QString result = configini->value("looping_sfx", "true").value<QString>();
+    return result.startsWith("true");
+}
+
 bool AOApplication::objection_stop_music()
 {
     QString result = configini->value("objection_stop_music", "false").value<QString>();

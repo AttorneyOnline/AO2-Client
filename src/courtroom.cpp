@@ -1425,7 +1425,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     default:
       qDebug() << "W: Logic error in objection switch statement!";
     }
-
+    sfx_player->clear(); //Objection played! Cut all sfx.
     int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
     if (emote_mod == 0)
@@ -1444,6 +1444,8 @@ void Courtroom::handle_chatmessage_2()
 {
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
+  //Clear all looping sfx to prevent obnoxiousness
+  sfx_player->loop_clear();
 
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
@@ -2470,6 +2472,7 @@ void Courtroom::play_sfx()
     return;
 
   sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
+  sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
 }
 
 void Courtroom::set_scene()
