@@ -201,6 +201,15 @@ public:
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 
+  //Process a file and return its text as a QString
+  QString read_file(QString filename);
+
+  //Write text to file. make_dir would auto-create the directory if it doesn't exist.
+  bool write_to_file(QString p_text, QString p_file, bool make_dir = false);
+
+  //Append text to the end of the file. make_dir would auto-create the directory if it doesn't exist.
+  bool append_to_file(QString p_text, QString p_file, bool make_dir = false);
+
   //Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
 
@@ -336,6 +345,9 @@ public:
 
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
+
+  //The file name of the log file in base/logs.
+  QString log_filename;
 
 private:
   const int RELEASE = 2;

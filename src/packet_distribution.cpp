@@ -251,7 +251,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (selected_server >= 0 && selected_server < server_list.size()) {
         auto info = server_list.at(selected_server);
         server_name = info.name;
-        server_address = QString("%1:%2").arg(info.ip, info.port);
+        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        qDebug() << server_address;
         window_title += ": " + server_name;
       }
     }
@@ -260,7 +261,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (selected_server >= 0 && selected_server < favorite_list.size()) {
         auto info = favorite_list.at(selected_server);
         server_name = info.name;
-        server_address = info.ip + info.port;
+        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        qDebug() << server_address;
         window_title += ": " + server_name;
       }
     }
@@ -280,6 +282,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(f_packet);
 
+    //Remove any characters not accepted in folder names for the server_name here
+    this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|]")) + "/'ddd MMMM yyyy hh.mm.ss t'.log'");
+    this->write_to_file("Joined server " + server_name + " on address " + server_address +" on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
     if (is_discord_enabled())

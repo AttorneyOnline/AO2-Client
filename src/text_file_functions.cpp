@@ -95,6 +95,74 @@ QStringList AOApplication::get_call_words()
   return return_value;
 }
 
+QString AOApplication::read_file(QString filename)
+{
+    QFile f_log(filename);
+
+    if(!f_log.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Couldn't open" << filename;
+        return "";
+    }
+
+    QTextStream in(&f_log);
+    QString text = in.readAll();
+    f_log.close();
+    return text;
+}
+
+bool AOApplication::write_to_file(QString p_text, QString p_file, bool make_dir)
+{
+    QString path = QFileInfo(p_file).path();
+    if(make_dir)
+    {
+      //Create the dir if it doesn't exist yet
+      QDir dir(path);
+      if (!dir.exists())
+        if (!dir.mkpath("."))
+          return false;
+    }
+
+    QFile f_log(p_file);
+    if(f_log.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    {
+        QTextStream out(&f_log);
+
+        out << p_text;
+
+        f_log.flush();
+        f_log.close();
+        return true;
+    }
+    return false;
+}
+
+bool AOApplication::append_to_file(QString p_text, QString p_file, bool make_dir)
+{
+    QString path = QFileInfo(p_file).path();
+    //Create the dir if it doesn't exist yet
+    if(make_dir)
+    {
+      QDir dir(path);
+      if (!dir.exists())
+        if (!dir.mkpath("."))
+          return false;
+    }
+
+    QFile f_log(p_file);
+    if(f_log.open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+        QTextStream out(&f_log);
+
+        out << "\r\n" << p_text;
+
+        f_log.flush();
+        f_log.close();
+        return true;
+    }
+    return false;
+}
+
 void AOApplication::write_to_serverlist_txt(QString p_line)
 {
   QFile serverlist_txt;

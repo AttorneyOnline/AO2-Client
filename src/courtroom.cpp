@@ -1382,6 +1382,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
   ic_chatlog_history.append(*temp);
+  ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
   while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
   {
@@ -2689,6 +2690,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     {
       chatlogpiece* temp = new chatlogpiece(str_char, str_show, f_song, true);
       ic_chatlog_history.append(*temp);
+      ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
       while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
       {
@@ -3638,14 +3640,14 @@ void Courtroom::on_showname_enable_clicked()
   foreach (chatlogpiece item, ic_chatlog_history) {
       if (ui_showname_enable->isChecked())
       {
-         if (item.get_is_song())
+         if (item.is_song())
            append_ic_text(item.get_message(), item.get_showname(), true);
          else
            append_ic_text(item.get_message(), item.get_showname());
       }
       else
       {
-          if (item.get_is_song())
+          if (item.is_song())
             append_ic_text(item.get_message(), item.get_name(), true);
           else
             append_ic_text(item.get_message(), item.get_name());
