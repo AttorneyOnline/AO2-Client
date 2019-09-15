@@ -164,7 +164,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   //not without looping through all frames in the image at least - which causes lag. So for now it simply ends the preanimation early instead.
   play_once = true;
   if (duration > 0) //It's -1 if there's no definition in [Time] for it. In which case, it will let the animation run out in full. Duration 0 does the same.
-    preanim_timer->start(duration); //This timer will not fire if the animation finishes earlier than that
+    preanim_timer->start(duration * time_mod); //This timer will not fire if the animation finishes earlier than that
   play();
 }
 

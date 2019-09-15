@@ -66,6 +66,8 @@ private:
   QString m_emote;
 
   QElapsedTimer actual_time;
+
+  //it will forever be a mystery who thought this time_mod system would ever be a good idea with precision-based emotes
   const int time_mod = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's width.
