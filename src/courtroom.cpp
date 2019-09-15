@@ -1081,6 +1081,11 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
     colour = ao_app->get_color("ooc_default_color", "courtroom_design.ini").name();
   if (p_colour == "1")
     colour = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
+  if(p_message == "Logged in as a moderator.")
+  {
+    ui_guard->show();
+    append_server_chatmessage("CLIENT", "You were granted the Disable Modcalls button.", "1");
+  }
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
 }
@@ -1659,6 +1664,9 @@ void Courtroom::handle_chatmessage_2()
 
 void Courtroom::do_screenshake()
 {
+  if(!ao_app->is_shake_flash_enabled())
+      return;
+
   //This way, the animation is reset in such a way that last played screenshake would return to its "final frame" properly.
   //This properly resets all UI elements without having to bother keeping track of "origin" positions.
   //Works great wit the chat text being detached from the chat box!
@@ -1702,13 +1710,17 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_flash()
 {
+  if(!ao_app->is_shake_flash_enabled())
+      return;
+
   ui_vp_realization->play("realizationflash", "", "", 60);
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
 {
   sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
-  sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
+  if(ao_app->get_looping_sfx())
+    sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
 }
 
 void Courtroom::handle_chatmessage_3()
@@ -2451,7 +2463,7 @@ void Courtroom::chat_tick()
     // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
     if (formatting_char)
     {
-        chat_tick_timer->start(1);
+        chat_tick_timer->start(0);
     }
     else
     {
@@ -2469,7 +2481,8 @@ void Courtroom::play_sfx()
     return;
 
   sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
-  sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
+  if(ao_app->get_looping_sfx())
+    sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
 }
 
 void Courtroom::set_scene()
@@ -2765,7 +2778,7 @@ void Courtroom::toggle_judge_buttons(bool is_on)
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
-  if (ui_guard->isChecked())
+  if (!ui_guard->isChecked())
   {
     modcall_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);
@@ -2806,11 +2819,6 @@ void Courtroom::on_ooc_return_pressed()
     {
       toggle_judge_buttons(false);
     }
-  }
-  else if (ooc_message.startsWith("/login"))
-  {
-    ui_guard->show();
-    append_server_chatmessage("CLIENT", tr("You were granted the Guard button."), "1");
   }
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {

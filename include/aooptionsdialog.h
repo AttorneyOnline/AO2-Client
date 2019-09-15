@@ -64,6 +64,9 @@ private:
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
 
+    QLabel *ui_epilepsy_lbl;
+    QCheckBox *ui_epilepsy_cb;
+
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;
     QVBoxLayout *ui_callwords_layout;
@@ -88,6 +91,8 @@ private:
     QLabel *ui_bliprate_lbl;
     QCheckBox *ui_blank_blips_cb;
     QLabel *ui_blank_blips_lbl;
+    QLabel *ui_loopsfx_lbl;
+    QCheckBox *ui_loopsfx_cb;
     QLabel *ui_objectmusic_lbl;
     QCheckBox *ui_objectmusic_cb;
     QDialogButtonBox *ui_settings_buttons;

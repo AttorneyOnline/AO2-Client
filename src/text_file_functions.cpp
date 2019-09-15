@@ -672,6 +672,12 @@ bool AOApplication::is_discord_enabled()
     return result.startsWith("true");
 }
 
+bool AOApplication::is_shake_flash_enabled()
+{
+    QString result = configini->value("shakeandflash", "true").value<QString>();
+    return result.startsWith("true");
+}
+
 bool AOApplication::get_casing_enabled()
 {
     QString result = configini->value("casing_enabled", "false").value<QString>();
