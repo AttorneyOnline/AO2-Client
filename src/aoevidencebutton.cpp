@@ -10,14 +10,14 @@ AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, i
   ui_selected = new AOImage(p_parent, ao_app);
   ui_selected->resize(70, 70);
   ui_selected->move(p_x, p_y);
-  ui_selected->set_image("evidence_selected.png");
+  ui_selected->set_image("evidence_selected");
   ui_selected->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selected->hide();
 
   ui_selector = new AOImage(p_parent, ao_app);
   ui_selector->resize(71, 71);
   ui_selector->move(p_x - 1, p_y - 1);
-  ui_selector->set_image("evidence_selector.png");
+  ui_selector->set_image("evidence_selector");
   ui_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selector->hide();
 

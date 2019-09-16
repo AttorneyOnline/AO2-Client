@@ -292,6 +292,15 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QStrin
 
   return return_value;
 }
+QString AOApplication::get_design_element(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path(p_file);
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QString default_path = get_default_theme_path(p_file);
+  if (f_result == "")
+    f_result = read_design_ini(p_identifier, default_path);
+  return f_result;
+}
 QString AOApplication::get_font_name(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
@@ -501,6 +510,10 @@ QString AOApplication::get_image_suffix(QString path_to_check)
     return path_to_check + ".png";
 }
 
+QString AOApplication::get_static_image_suffix(QString path_to_check)
+{
+    return path_to_check + ".png";
+}
 
 //returns whatever is to the right of "search_line =" within target_tag and terminator_tag, trimmed
 //returns the empty string if the search line couldnt be found

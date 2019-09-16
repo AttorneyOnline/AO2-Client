@@ -226,6 +226,9 @@ public:
   //Returns the dimensions of widget with specified identifier from p_file
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
 
+  //Returns the value to you
+  QString get_design_element(QString p_identifier, QString p_file);
+
   //Returns the name of the font with p_identifier from p_file
   QString get_font_name(QString p_identifier, QString p_file);
 
@@ -246,6 +249,9 @@ public:
 
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to PNG.
   QString get_image_suffix(QString path_to_check);
+
+  // If this image is static and non-animated, return the supported static image formats. Currently only PNG.
+  QString get_static_image_suffix(QString path_to_check);
 
   //Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag);

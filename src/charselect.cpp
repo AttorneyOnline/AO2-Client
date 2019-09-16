@@ -71,7 +71,7 @@ void Courtroom::set_char_select()
     this->resize(f_charselect.width, f_charselect.height);
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
-  ui_char_select_background->set_image("charselect_background.png");
+  ui_char_select_background->set_image("charselect_background");
 
   filter_character_list();
 

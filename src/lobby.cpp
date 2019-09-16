@@ -84,28 +84,28 @@ void Lobby::set_widgets()
   }
 
   set_size_and_pos(ui_background, "lobby");
-  ui_background->set_image("lobbybackground.png");
+  ui_background->set_image("lobbybackground");
 
   set_size_and_pos(ui_public_servers, "public_servers");
-  ui_public_servers->set_image("publicservers_selected.png");
+  ui_public_servers->set_image("publicservers_selected");
 
   set_size_and_pos(ui_favorites, "favorites");
-  ui_favorites->set_image("favorites.png");
+  ui_favorites->set_image("favorites");
 
   set_size_and_pos(ui_refresh, "refresh");
-  ui_refresh->set_image("refresh.png");
+  ui_refresh->set_image("refresh");
 
   set_size_and_pos(ui_add_to_fav, "add_to_fav");
-  ui_add_to_fav->set_image("addtofav.png");
+  ui_add_to_fav->set_image("addtofav");
 
   set_size_and_pos(ui_connect, "connect");
-  ui_connect->set_image("connect.png");
+  ui_connect->set_image("connect");
 
   set_size_and_pos(ui_version, "version");
   ui_version->setText(tr("Version: %1").arg(ao_app->get_version_string()));
 
   set_size_and_pos(ui_about, "about");
-  ui_about->set_image("about.png");
+  ui_about->set_image("about");
 
   set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -135,7 +135,7 @@ void Lobby::set_widgets()
                                 "selection-background-color: rgba(0, 0, 0, 0);");
 
   ui_loading_background->resize(this->width(), this->height());
-  ui_loading_background->set_image("loadingbackground.png");
+  ui_loading_background->set_image("loadingbackground");
 
 
   set_size_and_pos(ui_loading_text, "loading_label");
@@ -262,8 +262,8 @@ void Lobby::set_loading_value(int p_value)
 
 void Lobby::on_public_servers_clicked()
 {
-  ui_public_servers->set_image("publicservers_selected.png");
-  ui_favorites->set_image("favorites.png");
+  ui_public_servers->set_image("publicservers_selected");
+  ui_favorites->set_image("favorites");
 
   list_servers();
 
@@ -272,8 +272,8 @@ void Lobby::on_public_servers_clicked()
 
 void Lobby::on_favorites_clicked()
 {
-  ui_favorites->set_image("favorites_selected.png");
-  ui_public_servers->set_image("publicservers.png");
+  ui_favorites->set_image("favorites_selected");
+  ui_public_servers->set_image("publicservers");
 
   ao_app->set_favorite_list();
   //ao_app->favorite_list = read_serverlist_txt();
@@ -285,12 +285,12 @@ void Lobby::on_favorites_clicked()
 
 void Lobby::on_refresh_pressed()
 {
-  ui_refresh->set_image("refresh_pressed.png");
+  ui_refresh->set_image("refresh_pressed");
 }
 
 void Lobby::on_refresh_released()
 {
-  ui_refresh->set_image("refresh.png");
+  ui_refresh->set_image("refresh");
 
   AOPacket *f_packet = new AOPacket("ALL#%");
 
@@ -299,12 +299,12 @@ void Lobby::on_refresh_released()
 
 void Lobby::on_add_to_fav_pressed()
 {
-  ui_add_to_fav->set_image("addtofav_pressed.png");
+  ui_add_to_fav->set_image("addtofav_pressed");
 }
 
 void Lobby::on_add_to_fav_released()
 {
-  ui_add_to_fav->set_image("addtofav.png");
+  ui_add_to_fav->set_image("addtofav");
 
   //you cant add favorites from favorites m8
   if (!public_servers_selected)
@@ -315,12 +315,12 @@ void Lobby::on_add_to_fav_released()
 
 void Lobby::on_connect_pressed()
 {
-  ui_connect->set_image("connect_pressed.png");
+  ui_connect->set_image("connect_pressed");
 }
 
 void Lobby::on_connect_released()
 {
-  ui_connect->set_image("connect.png");
+  ui_connect->set_image("connect");
 
   AOPacket *f_packet;
 
@@ -416,8 +416,8 @@ void Lobby::on_chatfield_return_pressed()
 void Lobby::list_servers()
 {
   public_servers_selected = true;
-  ui_favorites->set_image("favorites.png");
-  ui_public_servers->set_image("publicservers_selected.png");
+  ui_favorites->set_image("favorites");
+  ui_public_servers->set_image("publicservers_selected");
 
   ui_server_list->clear();
 

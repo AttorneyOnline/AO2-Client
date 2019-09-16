@@ -16,7 +16,7 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x
 void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
 {
   QString emotion_number = QString::number(p_emote + 1);
-  QString image_path = ao_app->get_character_path(p_char, "emotions/button" + emotion_number + suffix);
+  QString image_path = ao_app->get_static_image_suffix(ao_app->get_character_path(p_char, "emotions/button" + emotion_number + suffix));
 
   if (file_exists(image_path))
   {
