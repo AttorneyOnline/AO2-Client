@@ -87,6 +87,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_showname->setAlignment(Qt::AlignHCenter);
+  ui_vp_chat_arrow = new AOMovie(ui_vp_chatbox, ao_app);
+  ui_vp_chat_arrow->set_play_once(false);
+
   ui_vp_message = new QTextEdit(this);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -490,6 +493,20 @@ void Courtroom::set_widgets()
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 //  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
 //                               "color: white");
+
+  ui_vp_chat_arrow->move(0, 0);
+  pos_size_type design_ini_result = ao_app->get_element_dimensions("chat_arrow", "courtroom_design.ini");
+
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)
+  {
+    qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+    ui_vp_chat_arrow->hide();
+  }
+  else
+  {
+    ui_vp_chat_arrow->move(design_ini_result.x, design_ini_result.y);
+    ui_vp_chat_arrow->combo_resize(design_ini_result.width, design_ini_result.height);
+  }
 
   ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -1394,6 +1411,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   if (f_message == previous_ic_message)
     return;
+
+  //Stop the chat arrow from animating
+  ui_vp_chat_arrow->stop();
 
   text_state = 0;
   anim_state = 0;
@@ -2302,6 +2322,7 @@ void Courtroom::chat_tick()
       anim_state = 3;
       ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
     }
+    ui_vp_chat_arrow->play("chat_arrow"); //Chat stopped being processed, indicate that.
   }
 
   else

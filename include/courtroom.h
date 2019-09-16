@@ -424,6 +424,7 @@ private:
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
+  AOMovie *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
   AOMovie *ui_vp_realization;
   AOMovie *ui_vp_testimony;
