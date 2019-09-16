@@ -1635,16 +1635,12 @@ void Courtroom::handle_chatmessage_2()
           // The person more to the left is more in the front.
           if (hor2_offset >= hor_offset)
           {
-            ui_vp_sideplayer_char->raise();
-            ui_vp_player_char->raise();
+            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
           }
           else
           {
-            ui_vp_player_char->raise();
-            ui_vp_sideplayer_char->raise();
+            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
           }
-          ui_vp_desk->raise();
-          ui_vp_legacy_desk->raise();
         }
         else if (side == "pro")
         {
@@ -1668,18 +1664,14 @@ void Courtroom::handle_chatmessage_2()
           ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, ui_viewport->height() * vert2_offset / 100);
 
           // Finally, we reorder them based on who is more to the right.
-          if (hor2_offset <= hor_offset)
+          if (hor2_offset >= hor_offset)
           {
-            ui_vp_sideplayer_char->raise();
-            ui_vp_player_char->raise();
+            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
           }
           else
           {
-            ui_vp_player_char->raise();
-            ui_vp_sideplayer_char->raise();
+            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
           }
-          ui_vp_desk->raise();
-          ui_vp_legacy_desk->raise();
         }
         else
         {
@@ -1696,16 +1688,12 @@ void Courtroom::handle_chatmessage_2()
           // The person more to the left is more in the front.
           if (hor2_offset >= hor_offset)
           {
-            ui_vp_sideplayer_char->raise();
-            ui_vp_player_char->raise();
+            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
           }
           else
           {
-            ui_vp_player_char->raise();
-            ui_vp_sideplayer_char->raise();
+            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
           }
-          ui_vp_desk->raise();
-          ui_vp_legacy_desk->raise();
         }
         // We should probably also play the other character's idle emote.
         if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
