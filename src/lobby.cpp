@@ -153,6 +153,8 @@ void Lobby::set_widgets()
 
   ui_loading_background->hide();
 
+  set_fonts();
+  set_stylesheets();
 }
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
@@ -171,6 +173,66 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
+}
+
+void Lobby::set_fonts()
+{
+    set_font(ui_player_count, "player_count");
+    set_font(ui_description, "description");
+    set_font(ui_chatbox, "chatbox");
+    set_font(ui_chatname, "chatname");
+    set_font(ui_chatmessage, "chatmessage");
+    set_font(ui_loading_text, "loading_text");
+    set_font(ui_server_list, "server_list");
+}
+
+void Lobby::set_stylesheet(QWidget *widget, QString target_tag)
+{
+  QString f_file = "lobby_stylesheets.css";
+  QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
+  if (style_sheet_string != "")
+    widget->setStyleSheet(style_sheet_string);
+}
+
+void Lobby::set_stylesheets()
+{
+  set_stylesheet(ui_player_count, "[PLAYER COUNT]");
+  set_stylesheet(ui_description, "[DESCRIPTION]");
+  set_stylesheet(ui_chatbox, "[CHAT BOX]");
+  set_stylesheet(ui_chatname, "[CHAT NAME]");
+  set_stylesheet(ui_chatmessage, "[CHAT MESSAGE]");
+  set_stylesheet(ui_loading_text, "[LOADING TEXT]");
+  set_stylesheet(ui_server_list, "[SERVER LIST]");
+}
+
+void Lobby::set_font(QWidget *widget, QString p_identifier)
+{
+  QString design_file = "lobby_fonts.ini";
+  int f_weight = ao_app->get_font_size(p_identifier, design_file);
+  QString class_name = widget->metaObject()->className();
+  QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
+  QFont font(font_name, f_weight);
+  bool use = static_cast<bool>(ao_app->get_font_size("use_custom_fonts", design_file));
+  if(use)
+  {
+      widget->setFont(font);
+      QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
+      bool bold = static_cast<bool>(ao_app->get_font_size(p_identifier + "_bold", design_file)); // is the font bold or not?
+      bool center = static_cast<bool>(ao_app->get_font_size(p_identifier + "_center", design_file)); // should it be centered?
+      QString is_bold = "";
+      if(bold) is_bold = "bold";
+      QString is_center = "";
+      if(center) is_center = "qproperty-alignment: AlignCenter;";
+      QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
+                                                "color: rgba(" +
+                                                 QString::number(f_color.red()) + ", " +
+                                                 QString::number(f_color.green()) + ", " +
+                                                 QString::number(f_color.blue()) + ", 255);\n" +
+                                                 is_center + "\n" +
+                                                 "font: " + is_bold + "; }";
+      widget->setStyleSheet(style_sheet_string);
+  }
+  return;
 }
 
 void Lobby::set_loading_text(QString p_text)

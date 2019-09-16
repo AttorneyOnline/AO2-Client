@@ -709,6 +709,8 @@ void Courtroom::set_widgets()
   ui_char_select_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_spectator, "spectator");
+
+  set_dropdowns();
 }
 
 void Courtroom::set_fonts()
@@ -719,7 +721,7 @@ void Courtroom::set_fonts()
   set_font(ui_ms_chatlog, "ms_chatlog");
   set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
-  set_font(ui_area_list, "music_list");
+  set_font(ui_area_list, "area_list");
 
   // Set color of labels and checkboxes
   const QString design_file = "courtroom_fonts.ini";
@@ -739,19 +741,41 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
 
-  QString fontt = ao_app->get_font_name(p_identifier + "_font", design_file);
-   widget->setFont(QFont(fontt, f_weight));
+  QString font_name = ao_app->get_font_name(p_identifier + "_font", design_file);
 
+  widget->setFont(QFont(font_name, f_weight));
 
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
+  int bold = ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
+
+  QString is_bold = "";
+  if(bold == 1) is_bold = "bold";
+
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
-                                            "color: rgba(" +
-                                             QString::number(f_color.red()) + ", " +
-                                             QString::number(f_color.green()) + ", " +
-                                             QString::number(f_color.blue()) + ", 255); }";
+                               "color: rgba(" +
+                               QString::number(f_color.red()) + ", " +
+                               QString::number(f_color.green()) + ", " +
+                               QString::number(f_color.blue()) + ", 255);\n"
+                                                                 "font: " + is_bold + "; }";
 
   widget->setStyleSheet(style_sheet_string);
+}
+
+void Courtroom::set_dropdown(QWidget *widget, QString target_tag)
+{
+  QString f_file = "courtroom_stylesheets.css";
+  QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
+  if (style_sheet_string != "")
+    widget->setStyleSheet(style_sheet_string);
+}
+
+void Courtroom::set_dropdowns()
+{
+  set_dropdown(ui_text_color, "[TEXT COLOR]");
+  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
+  set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
+  set_dropdown(ui_mute_list, "[MUTE LIST]");
 }
 
 void Courtroom::set_window_title(QString p_title)

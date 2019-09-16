@@ -122,6 +122,12 @@ public:
   //helper function that calls above function on the relevant widgets
   void set_fonts();
 
+  //sets dropdown menu stylesheet
+  void set_dropdown(QWidget *widget, QString target_tag);
+
+  //helper funciton that call above function on the relevant widgets
+  void set_dropdowns();
+
   void set_window_title(QString p_title);
 
   //reads theme inis and sets size and pos based on the identifier

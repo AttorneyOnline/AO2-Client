@@ -32,6 +32,10 @@ public:
   void append_chatmessage(QString f_name, QString f_message);
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
+  void set_stylesheet(QWidget *widget, QString target_tag);
+  void set_stylesheets();
+  void set_fonts();
+  void set_font(QWidget *widget, QString p_identifier);
   void set_loading_text(QString p_text);
   void show_loading_overlay(){ui_loading_background->show();}
   void hide_loading_overlay(){ui_loading_background->hide();}

@@ -252,6 +252,9 @@ public:
   //Returns a QStringList of all key=value definitions on a given tag.
   QStringList read_char_ini_tag(QString p_char, QString target_tag);
 
+  //Returns the text between target_tag and terminator_tag in p_file
+  QString get_stylesheet(QString target_tag, QString p_file);
+
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
 

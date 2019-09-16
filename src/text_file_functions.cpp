@@ -350,6 +350,45 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
   return return_color;
 }
 
+QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
+{
+  QString design_ini_path = get_theme_path(p_file);
+
+  QFile design_ini;
+
+  design_ini.setFileName(design_ini_path);
+
+  if(!design_ini.open(QIODevice::ReadOnly))
+    return "";
+
+  QTextStream in(&design_ini);
+
+  QString f_text;
+
+  bool tag_found = false;
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith(target_tag, Qt::CaseInsensitive))
+    {
+      tag_found = true;
+      continue;
+    }
+
+    if(tag_found)
+      {
+        if((line.startsWith("[") && line.endsWith("]")))
+           break;
+        f_text.append(line);
+      }
+  }
+
+  design_ini.close();
+  return f_text;
+}
+
 QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 {
   QColor return_color(255, 255, 255);
