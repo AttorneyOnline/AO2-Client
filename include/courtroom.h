@@ -119,16 +119,16 @@ public:
   void set_widgets();
 
   //sets font size based on theme ini files
-  void set_font(QWidget *widget, QString p_identifier);
+  void set_font(QWidget *widget, QString class_name, QString p_identifier);
 
   //actual operation of setting the font on a widget
-  void set_qfont(QWidget *widget, QFont font, QColor f_color = Qt::black, bool bold = false);
+  void set_qfont(QWidget *widget, QString class_name, QFont font, QColor f_color = Qt::black, bool bold = false);
 
   //helper function that calls above function on the relevant widgets
   void set_fonts();
 
   //sets dropdown menu stylesheet
-  void set_dropdown(QWidget *widget, QString target_tag);
+  void set_dropdown(QWidget *widget);
 
   //helper funciton that call above function on the relevant widgets
   void set_dropdowns();
@@ -513,9 +513,6 @@ private:
   QSlider *ui_blip_slider;
 
   AOImage *ui_muted;
-
-  QSpinBox *ui_log_limit_spinbox;
-  QLabel *ui_log_limit_label;
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;

@@ -190,7 +190,7 @@ void Lobby::set_fonts()
 void Lobby::set_stylesheet(QWidget *widget, QString target_tag)
 {
   QString f_file = "lobby_stylesheets.css";
-  QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
+  QString style_sheet_string = ao_app->get_tagged_stylesheet(target_tag, f_file);
   if (style_sheet_string != "")
     widget->setStyleSheet(style_sheet_string);
 }

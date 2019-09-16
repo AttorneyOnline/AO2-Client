@@ -359,7 +359,36 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
   return return_color;
 }
 
-QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
+QString AOApplication::get_stylesheet(QString p_file)
+{
+  QString design_ini_path = get_theme_path(p_file);
+  QString default_path = get_default_theme_path(p_file);
+
+  QFile design_ini;
+
+  design_ini.setFileName(design_ini_path);
+
+  if(!design_ini.open(QIODevice::ReadOnly))
+  {
+    design_ini.setFileName(default_path);
+    if(!design_ini.open(QIODevice::ReadOnly))
+      return "";
+  }
+
+  QTextStream in(&design_ini);
+
+  QString f_text;
+
+  while(!in.atEnd())
+  {
+    f_text.append(in.readLine());
+  }
+
+  design_ini.close();
+  return f_text;
+}
+
+QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
 

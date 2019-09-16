@@ -84,7 +84,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
 
-  ui_vp_chatbox = new AOImage(this, ao_app);
+  ui_vp_chatbox = new AOImage(ui_viewport, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_showname->setAlignment(Qt::AlignHCenter);
   ui_vp_chat_arrow = new AOMovie(ui_vp_chatbox, ao_app);
@@ -170,8 +170,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_sfx_label = new QLabel(this);
   ui_blip_label = new QLabel(this);
 
-  ui_log_limit_label = new QLabel(this);
-
   ui_hold_it = new AOButton(this, ao_app);
   ui_objection = new AOButton(this, ao_app);
   ui_take_that = new AOButton(this, ao_app);
@@ -251,10 +249,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_blip_slider->setRange(0, 100);
   ui_blip_slider->setValue(ao_app->get_default_blip());
 
-  ui_log_limit_spinbox = new QSpinBox(this);
-  ui_log_limit_spinbox->setRange(0, 10000);
-  ui_log_limit_spinbox->setValue(ao_app->get_max_log_size());
-
   ui_mute_list = new QListWidget(this);
 
   ui_pair_list = new QListWidget(this);
@@ -317,8 +311,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_music_slider, SIGNAL(valueChanged(int)), this, SLOT(on_music_slider_moved(int)));
   connect(ui_sfx_slider, SIGNAL(valueChanged(int)), this, SLOT(on_sfx_slider_moved(int)));
   connect(ui_blip_slider, SIGNAL(valueChanged(int)), this, SLOT(on_blip_slider_moved(int)));
-
-  connect(ui_log_limit_spinbox, SIGNAL(valueChanged(int)), this, SLOT(on_log_limit_changed(int)));
 
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
 
@@ -456,8 +448,6 @@ void Courtroom::set_widgets()
   // We also show the non-server-dependent client additions.
   // Once again, if the theme can't display it, set_move_and_pos will catch them.
   ui_settings->show();
-  ui_log_limit_label->show();
-  ui_log_limit_spinbox->show();
 
   ui_vp_background->move(0, 0);
   ui_vp_background->resize(ui_viewport->width(), ui_viewport->height());
@@ -594,9 +584,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_blip_label, "blip_label");
   ui_blip_label->setText(tr("Blips"));
 
-  set_size_and_pos(ui_log_limit_label, "log_limit_label");
-  ui_log_limit_label->setText(tr("Log limit"));
-
   set_size_and_pos(ui_hold_it, "hold_it");
   ui_hold_it->set_image("holdit");
   set_size_and_pos(ui_objection, "objection");
@@ -679,8 +666,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
 
-  set_size_and_pos(ui_log_limit_spinbox, "log_limit_spinbox");
-
   set_size_and_pos(ui_evidence_button, "evidence_button");
   ui_evidence_button->set_image("evidencebutton");
 
@@ -732,33 +717,22 @@ void Courtroom::set_widgets()
   ui_char_select_right->set_image("arrow_right");
 
   set_size_and_pos(ui_spectator, "spectator");
-
-  set_dropdowns();
 }
 
 void Courtroom::set_fonts()
 {
-  set_font(ui_vp_showname, "showname");
-  set_font(ui_vp_message, "message");
-  set_font(ui_ic_chatlog, "ic_chatlog");
-  set_font(ui_ms_chatlog, "ms_chatlog");
-  set_font(ui_server_chatlog, "server_chatlog");
-  set_font(ui_music_list, "music_list");
-  set_font(ui_area_list, "area_list");
+  set_font(ui_vp_showname, "", "showname");
+  set_font(ui_vp_message, "",  "message");
+  set_font(ui_ic_chatlog, "", "ic_chatlog");
+  set_font(ui_ms_chatlog, "", "ms_chatlog");
+  set_font(ui_server_chatlog, "", "server_chatlog");
+  set_font(ui_music_list, "", "music_list");
+  set_font(ui_area_list, "", "area_list");
 
-  // Set color of labels and checkboxes
-  const QString design_file = "courtroom_fonts.ini";
-  QColor f_color = ao_app->get_color("label_color", design_file);
-  QString color_string = "color: rgba(" +
-          QString::number(f_color.red()) + ", " +
-          QString::number(f_color.green()) + ", " +
-          QString::number(f_color.blue()) + ", 255); }";
-  QString style_sheet_string = "QLabel {" + color_string + "}"
-          "QCheckBox {" + color_string + "}";
-  setStyleSheet(style_sheet_string);
+  set_dropdowns();
 }
 
-void Courtroom::set_font(QWidget *widget, QString p_identifier)
+void Courtroom::set_font(QWidget *widget, QString class_name, QString p_identifier)
 {
   QString design_file = "courtroom_fonts.ini";
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
@@ -766,41 +740,41 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
   bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) == 1; // is the font bold or not?
-  this->set_qfont(widget, QFont(font_name, f_weight), f_color, bold);
+  this->set_qfont(widget, class_name, QFont(font_name, f_weight), f_color, bold);
 }
 
-void Courtroom::set_qfont(QWidget *widget, QFont font, QColor f_color, bool bold)
+void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font, QColor f_color, bool bold)
 {
-  QString class_name = widget->metaObject()->className();
+  if(class_name == "")
+    class_name = widget->metaObject()->className();
   widget->setFont(font);
 
   QString is_bold = "";
-  if(bold) is_bold = "bold";
+  if(bold) is_bold = "font: bold;";
 
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
                                "color: rgba(" +
                                QString::number(f_color.red()) + ", " +
                                QString::number(f_color.green()) + ", " +
-                               QString::number(f_color.blue()) + ", 255);\n"
-                                                                 "font: " + is_bold + "; }";
-
+                               QString::number(f_color.blue()) + ", 255);\n" + is_bold + "}";
   widget->setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_dropdown(QWidget *widget, QString target_tag)
+void Courtroom::set_dropdown(QWidget *widget)
 {
   QString f_file = "courtroom_stylesheets.css";
-  QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
+  QString style_sheet_string = ao_app->get_stylesheet(f_file);
   if (style_sheet_string != "")
     widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_dropdowns()
 {
-  set_dropdown(ui_text_color, "[TEXT COLOR]");
-  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
-  set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
-  set_dropdown(ui_mute_list, "[MUTE LIST]");
+  set_dropdown(this); //EXPERIMENTAL - Read the style-sheet as-is for maximum memeage
+//  set_dropdown(ui_text_color, "[TEXT COLOR]");
+//  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
+//  set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
+//  set_dropdown(ui_mute_list, "[MUTE LIST]");
 }
 
 void Courtroom::set_window_title(QString p_title)
@@ -903,7 +877,7 @@ void Courtroom::set_background(QString p_background)
 }
 
 void Courtroom::enter_courtroom(int p_cid)
-{ 
+{
   m_cid = p_cid;
 
   QString f_char;
@@ -1322,9 +1296,7 @@ void Courtroom::on_chat_return_pressed()
   if (ao_app->looping_sfx_support_enabled)
   {
       packet_contents.append("0"); //ao_app->get_sfx_looping(current_char, current_emote));
-//      qDebug() << "Are we looping this? " << ao_app->get_sfx_looping(current_char, current_emote);
       packet_contents.append(QString::number(screenshake_state));
-      qDebug() << "Are we screen shaking this one? " << screenshake_state;
 
       QString pre_emote = ao_app->get_pre_emote(current_char, current_emote);
       QString emote = ao_app->get_emote(current_char, current_emote);
@@ -1345,7 +1317,6 @@ void Courtroom::on_chat_return_pressed()
           }
           packet += "^";
         }
-        qDebug() << f_effect << "packet" << packet;
         packet_contents.append(packet);
       }
   }
@@ -1544,11 +1515,8 @@ void Courtroom::handle_chatmessage_2()
     QFontMetrics fm(ui_vp_showname->font());
     int fm_width=fm.horizontalAdvance(ui_vp_showname->text());
 
-    qDebug() << "showname shenanigans" << ui_vp_showname->width() << fm_width << ui_vp_showname->text();
-
     QString chatbox_path = ao_app->get_theme_path("chat");
     QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
-    qDebug() << chatbox;
     if (chatbox != "")
     {
       chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
@@ -1556,12 +1524,9 @@ void Courtroom::handle_chatmessage_2()
 
     pos_size_type default_width = ao_app->get_element_dimensions("showname", "courtroom_design.ini");
     int extra_width = ao_app->get_design_element("showname_extra_width", "courtroom_design.ini").toInt();
-    qDebug() << extra_width;
 
     if(extra_width > 0)
     {
-      qDebug() << default_width.width << chatbox_path;
-
       if (fm_width > default_width.width && ui_vp_chatbox->set_chatbox(chatbox_path + "med")) //This text be big. Let's do some shenanigans.
       {
         ui_vp_showname->resize(default_width.width+extra_width, ui_vp_showname->height());
@@ -1591,9 +1556,7 @@ void Courtroom::handle_chatmessage_2()
   int chatsize = ao_app->get_chat_size(m_chatmessage[CHAR_NAME]);
   if (chatsize != -1)
     f_weight = chatsize;
-  this->set_qfont(ui_vp_message, QFont(font_name, f_weight), f_color, bold);
-
-  ui_vp_showname->setStyleSheet("QLabel { color : " + get_text_color("_showname").name() + "; }");
+  this->set_qfont(ui_vp_message, "", QFont(font_name, f_weight), f_color, bold);
 
   set_scene();
   set_text_color();
@@ -1866,7 +1829,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_legacy_desk->hide();
 
     // Since we're zooming, hide the second character, and centre the first.
-    ui_vp_sideplayer_char->hide(); 
+    ui_vp_sideplayer_char->hide();
     ui_vp_player_char->move(0,0);
 
     if (side == "pro" ||
@@ -2960,7 +2923,7 @@ void Courtroom::on_ooc_return_pressed()
   {
     ui_ooc_chat_message->clear();
     ooc_message.remove(0,6);
-    
+
     bool ok;
     int whom = ooc_message.toInt(&ok);
     if (ok)
@@ -2989,7 +2952,7 @@ void Courtroom::on_ooc_return_pressed()
   {
     ui_ooc_chat_message->clear();
     ooc_message.remove(0,8);
-    
+
     bool ok;
     int off = ooc_message.toInt(&ok);
     if (ok)
@@ -3651,7 +3614,7 @@ void Courtroom::on_change_character_clicked()
 }
 
 void Courtroom::on_reload_theme_clicked()
-{ 
+{
   ao_app->reload_theme();
 
   //to update status on the background
