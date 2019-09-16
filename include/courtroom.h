@@ -117,8 +117,13 @@ public:
 
   //sets position of widgets based on theme ini files
   void set_widgets();
+
   //sets font size based on theme ini files
   void set_font(QWidget *widget, QString p_identifier);
+
+  //actual operation of setting the font on a widget
+  void set_qfont(QWidget *widget, QFont font, QColor f_color = Qt::black, bool bold = false);
+
   //helper function that calls above function on the relevant widgets
   void set_fonts();
 

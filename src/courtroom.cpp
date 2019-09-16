@@ -86,6 +86,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
+  ui_vp_showname->setAlignment(Qt::AlignHCenter);
   ui_vp_message = new QTextEdit(this);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -482,8 +483,8 @@ void Courtroom::set_widgets()
   //We detached the text as parent from the chatbox so it doesn't get affected by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
-  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                               "color: white");
+//  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+//                               "color: white");
 
   ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -514,8 +515,6 @@ void Courtroom::set_widgets()
   ui_pair_button->set_image("pair_button.png");
 
   set_size_and_pos(ui_area_list, "music_list");
-  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
-
   set_size_and_pos(ui_music_list, "music_list");
 
   if (is_ao2_bg)
@@ -739,18 +738,20 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
   QString design_file = "courtroom_fonts.ini";
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
-  QString class_name = widget->metaObject()->className();
-
   QString font_name = ao_app->get_font_name(p_identifier + "_font", design_file);
-
-  widget->setFont(QFont(font_name, f_weight));
-
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
-  int bold = ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
+  bool bold = static_cast<bool>(ao_app->get_font_size(p_identifier + "_bold", design_file)); // is the font bold or not?
+  this->set_qfont(widget, QFont(font_name, f_weight), f_color, bold);
+}
+
+void Courtroom::set_qfont(QWidget *widget, QFont font, QColor f_color, bool bold)
+{
+  QString class_name = widget->metaObject()->className();
+  widget->setFont(font);
 
   QString is_bold = "";
-  if(bold == 1) is_bold = "bold";
+  if(bold) is_bold = "bold";
 
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
                                "color: rgba(" +
@@ -1094,7 +1095,7 @@ void Courtroom::list_areas()
 
 void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
 {
-  ui_ms_chatlog->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_ms_chatlog->append_chatmessage(f_name, f_message, ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini").name());
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_colour)
@@ -1102,9 +1103,9 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
   QString colour = "#000000";
 
   if (p_colour == "0")
-    colour = ao_app->get_color("ooc_default_color", "courtroom_design.ini").name();
+    colour = ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini").name();
   if (p_colour == "1")
-    colour = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
+    colour = ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini").name();
   if(p_message == "Logged in as a moderator.")
   {
     ui_guard->show();
@@ -1504,6 +1505,21 @@ void Courtroom::handle_chatmessage_2()
     QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chatbox.png";
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
+
+  QString design_file = "courtroom_fonts.ini";
+  int f_weight = ao_app->get_font_size("message", design_file);
+  QString font_name = ao_app->get_font_name("message_font", design_file);
+  QColor f_color = ao_app->get_color("message_color", design_file);
+  bool bold = static_cast<bool>(ao_app->get_font_size("message_bold", design_file)); // is the font bold or not?
+
+  QString chatfont = ao_app->get_chat_font(m_chatmessage[CHAR_NAME]);
+  if (chatfont != "")
+    font_name = chatfont;
+
+  int chatsize = ao_app->get_chat_size(m_chatmessage[CHAR_NAME]);
+  if (chatsize != -1)
+    f_weight = chatsize;
+  this->set_qfont(ui_vp_message, QFont(font_name, f_weight), f_color, bold);
 
   ui_vp_showname->setStyleSheet("QLabel { color : " + get_text_color("_showname").name() + "; }");
 

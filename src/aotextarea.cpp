@@ -18,7 +18,7 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message, QString p
 
   //cheap workarounds ahoy
   p_message += " ";
-  QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
+  QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(url_parser_regex, "<a href='\\1'>\\1</a>" );
 
   this->insertHtml(result);
 
@@ -36,7 +36,7 @@ void AOTextArea::append_error(QString p_message)
   this->append("");
 
   p_message += " ";
-  QString result = p_message.replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
+  QString result = p_message.replace("\n", "<br>").replace(url_parser_regex, "<a href='\\1'>\\1</a>" );
 
   this->insertHtml("<font color='red'>" + result + "</font>");
 

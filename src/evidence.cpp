@@ -7,6 +7,7 @@ void Courtroom::construct_evidence()
   //ui_evidence_name = new QLabel(ui_evidence);
   ui_evidence_name = new AOLineEdit(ui_evidence);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
+  //WHY IS THIS FONT HARDCODED, WHAT IS WRONG WITH YOU
   ui_evidence_name->setFont(QFont("Arial", 14, QFont::Bold));
   ui_evidence_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                   "color: rgba(255, 128, 0, 255);");

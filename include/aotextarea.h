@@ -16,7 +16,7 @@ public:
   void append_error(QString p_message);
 
 private:
-  const QRegExp omnis_dank_url_regex = QRegExp("\\b(https?://\\S+\\.\\S+)\\b");
+  const QRegExp url_parser_regex = QRegExp("\\b(https?://\\S+\\.\\S+)\\b");
 
   void auto_scroll(QTextCursor old_cursor, int scrollbar_value, bool is_scrolled_down);
 };

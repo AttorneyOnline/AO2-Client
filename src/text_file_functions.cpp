@@ -576,6 +576,22 @@ QString AOApplication::get_chat(QString p_char)
   return f_result;
 }
 
+QString AOApplication::get_chat_font(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "chat_font", "Options");
+
+  return f_result;
+}
+
+int AOApplication::get_chat_size(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "chat_size", "Options");
+
+  if (f_result == "")
+    return -1;
+  return f_result.toInt();
+}
+
 QString AOApplication::get_char_shouts(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "shouts", "Options");
