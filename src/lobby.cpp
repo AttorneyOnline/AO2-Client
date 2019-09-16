@@ -213,13 +213,13 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   QString class_name = widget->metaObject()->className();
   QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
   QFont font(font_name, f_weight);
-  bool use = static_cast<bool>(ao_app->get_font_size("use_custom_fonts", design_file));
+  bool use = ao_app->get_font_size("use_custom_fonts", design_file) == 1;
   if(use)
   {
       widget->setFont(font);
       QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
-      bool bold = static_cast<bool>(ao_app->get_font_size(p_identifier + "_bold", design_file)); // is the font bold or not?
-      bool center = static_cast<bool>(ao_app->get_font_size(p_identifier + "_center", design_file)); // should it be centered?
+      bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) == 1; // is the font bold or not?
+      bool center = ao_app->get_font_size(p_identifier + "_center", design_file) == 1; // should it be centered?
       QString is_bold = "";
       if(bold) is_bold = "bold";
       QString is_center = "";

@@ -197,6 +197,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_guard->setText(tr("Guard"));
   ui_guard->hide();
 
+  ui_additive = new QCheckBox(this);
+  ui_additive->setText(tr("Additive"));
+  ui_additive->hide();
+
   ui_casing = new QCheckBox(this);
   ui_casing->setChecked(ao_app->get_casing_enabled());
   ui_casing->setText(tr("Casing"));
@@ -331,6 +335,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
+  connect(ui_additive, SIGNAL(clicked()), this, SLOT(on_additive_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
   connect(ui_casing, SIGNAL(clicked()), this, SLOT(on_casing_clicked()));
 
@@ -619,6 +624,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
   set_size_and_pos(ui_flip, "flip");
 
+  set_size_and_pos(ui_additive, "additive");
+
   set_size_and_pos(ui_guard, "guard");
 
   set_size_and_pos(ui_casing, "casing");
@@ -741,7 +748,7 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
   QString font_name = ao_app->get_font_name(p_identifier + "_font", design_file);
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
-  bool bold = static_cast<bool>(ao_app->get_font_size(p_identifier + "_bold", design_file)); // is the font bold or not?
+  bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) == 1; // is the font bold or not?
   this->set_qfont(widget, QFont(font_name, f_weight), f_color, bold);
 }
 
@@ -953,6 +960,11 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_flip->show();
   else
     ui_flip->hide();
+
+  if (ao_app->additive_enabled)
+    ui_additive->show();
+  else
+    ui_additive->hide();
 
   if (ao_app->casing_alerts_enabled)
     ui_casing->show();
@@ -1319,13 +1331,13 @@ void Courtroom::on_chat_return_pressed()
         qDebug() << f_effect << "packet" << packet;
         packet_contents.append(packet);
       }
-
-      //"roar|thing=thong^(b)roar^(a)roar^"
-
-//      packet_contents.append(frame_screenshake);
-//      packet_contents.append(frame_realization);
-//      packet_contents.append(frame_sfx);
   }
+
+  if (ao_app->additive_enabled)
+  {
+    packet_contents.append(ui_additive->isChecked() ? "1" : "0");
+  }
+
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -1388,6 +1400,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
+  is_additive = false;
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
@@ -1403,6 +1416,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_realization->set_image("realization.png");
     ui_screenshake->set_image("screenshake.png");
     ui_evidence_present->set_image("present_disabled.png");
+
+
+    if (ao_app->additive_enabled && ui_vp_player_char->m_char == m_chatmessage[CHAR_NAME])
+      is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
   }
 
   chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
@@ -1493,7 +1510,7 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
 
-  ui_vp_message->clear();
+  ui_vp_message->hide();
   ui_vp_chatbox->hide();
 
   QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
@@ -1510,7 +1527,7 @@ void Courtroom::handle_chatmessage_2()
   int f_weight = ao_app->get_font_size("message", design_file);
   QString font_name = ao_app->get_font_name("message_font", design_file);
   QColor f_color = ao_app->get_color("message_color", design_file);
-  bool bold = static_cast<bool>(ao_app->get_font_size("message_bold", design_file)); // is the font bold or not?
+  bool bold = ao_app->get_font_size("message_bold", design_file) == 1; // is the font bold or not?
 
   QString chatfont = ao_app->get_chat_font(m_chatmessage[CHAR_NAME]);
   if (chatfont != "")
@@ -2177,7 +2194,6 @@ void Courtroom::start_chat_ticking()
     this->do_screenshake();
   }
 
-  ui_vp_message->clear();
   set_text_color();
   rainbow_counter = 0;
 
@@ -2196,6 +2212,12 @@ void Courtroom::start_chat_ticking()
   }
 
   ui_vp_chatbox->show();
+  ui_vp_message->show();
+
+  if (!is_additive)
+  {
+    ui_vp_message->clear();
+  }
 
   tick_pos = 0;
   blip_pos = 0;
@@ -3663,6 +3685,11 @@ void Courtroom::on_pre_clicked()
 }
 
 void Courtroom::on_flip_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_additive_clicked()
 {
   ui_ic_chat_message->setFocus();
 }

@@ -46,6 +46,9 @@ public:
 
   QStringList network_strings;
 
+  QString m_char;
+  QString m_emote;
+
 private:
   AOApplication *ao_app;
 
@@ -61,9 +64,6 @@ private:
   QTimer *ticker;
   QString last_path;
   QImageReader *m_reader = new QImageReader();
-
-  QString m_char;
-  QString m_emote;
 
   QElapsedTimer actual_time;
 

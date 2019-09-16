@@ -150,6 +150,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     casing_alerts_enabled = false;
     modcall_reason_enabled = false;
     looping_sfx_support_enabled = false;
+    additive_enabled = false;
 
     //workaround for tsuserver4
     if (f_contents.at(0) == "NOENCRYPT")
@@ -212,6 +213,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       modcall_reason_enabled = true;
     if (f_packet.contains("looping_sfx",Qt::CaseInsensitive))
       looping_sfx_support_enabled = true;
+    if (f_packet.contains("additive",Qt::CaseInsensitive))
+      additive_enabled = true;
   }
   else if (header == "PN")
   {

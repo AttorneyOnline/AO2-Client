@@ -315,6 +315,9 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
 
+  //Whether or not is this message additive to the previous one
+  bool is_additive = false;
+
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
 
@@ -339,7 +342,7 @@ private:
   //the amount of time non-animated witness testimony/cross-examination images stay onscreen for in ms
   const int wtce_stay_time = 1500;
 
-  static const int chatmessage_size = 28;
+  static const int chatmessage_size = 29;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -484,6 +487,7 @@ private:
 
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
+  QCheckBox *ui_additive;
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
 
@@ -601,7 +605,7 @@ private slots:
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
 
-  void on_evidence_name_edited();
+  void on_evidence_name_edited(QString text);
   void on_evidence_image_name_edited();
   void on_evidence_image_button_clicked();
   void on_evidence_clicked(int p_id);
@@ -653,6 +657,7 @@ private slots:
 
   void on_pre_clicked();
   void on_flip_clicked();
+  void on_additive_clicked();
   void on_guard_clicked();
 
   void on_showname_enable_clicked();
