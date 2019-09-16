@@ -2231,6 +2231,7 @@ void Courtroom::start_chat_ticking()
 
   ui_vp_chatbox->show();
   ui_vp_message->show();
+  ui_vp_message->raise(); //So you can scroll it
 
   if (!is_additive)
   {
