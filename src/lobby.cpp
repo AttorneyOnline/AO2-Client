@@ -23,6 +23,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list = new QListWidget(this);
   ui_player_count = new QLabel(this);
   ui_description = new AOTextArea(this);
+  ui_description->setOpenExternalLinks(true);
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
@@ -376,7 +377,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   }
 
   ui_description->clear();
-  ui_description->append(f_server.desc);
+  ui_description->append_linked(f_server.desc);
 
   ui_description->moveCursor(QTextCursor::Start);
   ui_description->ensureCursorVisible();
