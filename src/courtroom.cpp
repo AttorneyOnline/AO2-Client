@@ -166,6 +166,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_remove = new AOButton(this, ao_app);
 
+  ui_sfx_dropdown = new QComboBox(this);
+  ui_sfx_remove = new AOButton(this, ao_app);
+
   ui_defense_bar = new AOImage(this, ao_app);
   ui_prosecution_bar = new  AOImage(this, ao_app);
 
@@ -287,6 +290,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
   connect(ui_iniswap_remove, SIGNAL(clicked()), this, SLOT(on_iniswap_remove_clicked()));
+
+  connect(ui_sfx_dropdown, SIGNAL(activated(int)), this, SLOT(on_sfx_dropdown_changed(int)));
+  connect(ui_sfx_remove, SIGNAL(clicked()), this, SLOT(on_sfx_remove_clicked()));
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -587,13 +593,24 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown");
   ui_iniswap_dropdown->setEditable(true);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
-  ui_iniswap_dropdown->setToolTip(tr("Set an 'iniswap', or an alternative character folder to refer to from your current character."
+  ui_iniswap_dropdown->setToolTip(tr("Set an 'iniswap', or an alternative character folder to refer to from your current character.\n"
                                      "This information is saved to your base/characters/<charname>/iniswaps.ini"));
 
   set_size_and_pos(ui_iniswap_remove, "iniswap_remove");
   ui_iniswap_remove->setText("X");
   ui_iniswap_remove->set_image("evidencex");
   ui_iniswap_remove->setToolTip(tr("Remove the currently selected iniswap from the list and return to the original character folder."));
+
+  set_size_and_pos(ui_sfx_dropdown, "sfx_dropdown");
+  ui_sfx_dropdown->setEditable(true);
+  ui_sfx_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
+  ui_sfx_dropdown->setToolTip(tr("Set an 'iniswap', or an alternative character folder to refer to from your current character.\n"
+                                     "This information is saved to your base/characters/<charname>/iniswaps.ini"));
+
+  set_size_and_pos(ui_sfx_remove, "sfx_remove");
+  ui_sfx_remove->setText("X");
+  ui_sfx_remove->set_image("evidencex");
+  ui_sfx_remove->setToolTip(tr("Remove the currently selected iniswap from the list and return to the original character folder."));
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state));
@@ -629,8 +646,10 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
   ui_witness_testimony->set_image("witnesstestimony");
+  ui_witness_testimony->setToolTip(tr("This will display the animation in the viewport as soon as it is pressed."));
   set_size_and_pos(ui_cross_examination, "cross_examination");
   ui_cross_examination->set_image("crossexamination");
+  ui_cross_examination->setToolTip(tr("This will display the animation in the viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_guilty, "guilty");
   ui_guilty->setText(tr("Guilty!"));
@@ -663,7 +682,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_announce_casing, "casing_button");
   ui_announce_casing->setText(tr("Casing"));
   ui_announce_casing->set_image("casing_button");
-  ui_announce_casing->setToolTip(tr("uhhhhh"));
+  ui_announce_casing->setToolTip(tr("An interface to help you announce a case (you have to be a CM first to be able to announce cases)"));
 
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
   ui_switch_area_music->setText(tr("A/M"));
@@ -687,7 +706,8 @@ void Courtroom::set_widgets()
   ui_additive->setToolTip(tr("Do not listen to mod calls when checked, preventing them from playing sounds or focusing attention on the window."));
 
   set_size_and_pos(ui_casing, "casing");
-  ui_casing->setToolTip(tr("((((((Case?))))))"));
+  ui_casing->setToolTip(tr("Lets you receive case alerts when enabled.\n"
+                           "(You can set your preferences in the Settings!)"));
 
   set_size_and_pos(ui_showname_enable, "showname_enable");
   ui_showname_enable->setToolTip(tr("Display customized shownames for all users when checked."));
@@ -981,6 +1001,8 @@ void Courtroom::update_character(int p_cid)
   set_emote_page();
   set_emote_dropdown();
 
+  set_sfx_dropdown();
+
   QString side = ao_app->get_char_side(f_char);
 
   if (side == "jud")
@@ -1253,7 +1275,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_side);
 
-  packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
+  packet_contents.append(get_char_sfx());
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -1286,7 +1308,7 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
-  packet_contents.append(QString::number(ao_app->get_sfx_delay(current_char, current_emote)));
+  packet_contents.append(QString::number(get_char_sfx_delay()));
 
   QString f_obj_state;
 
@@ -3307,6 +3329,7 @@ void Courtroom::set_iniswap_dropdown()
   if (m_cid == -1)
   {
     ui_iniswap_dropdown->hide();
+    ui_iniswap_remove->hide();
     return;
   }
   QStringList iniswaps = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
@@ -3314,6 +3337,7 @@ void Courtroom::set_iniswap_dropdown()
   if (iniswaps.size() <= 0)
   {
     ui_iniswap_dropdown->hide();
+    ui_iniswap_remove->hide();
     return;
   }
   ui_iniswap_dropdown->show();
@@ -3363,6 +3387,92 @@ void Courtroom::on_iniswap_remove_clicked()
     on_iniswap_dropdown_changed(0); //Reset back to original
     update_character(m_cid);
   }
+}
+
+void Courtroom::set_sfx_dropdown()
+{
+  ui_sfx_dropdown->clear();
+  if (m_cid == -1)
+  {
+    ui_sfx_dropdown->hide();
+    ui_sfx_remove->hide();
+    return;
+  }
+  QStringList soundlist = ao_app->get_list_file(ao_app->get_character_path(current_char, "soundlist.ini"));
+
+  if (soundlist.size() <= 0)
+  {
+    soundlist = ao_app->get_list_file(ao_app->get_theme_path("character_soundlist.ini"));
+    if (soundlist.size() <= 0)
+    {
+      soundlist = ao_app->get_list_file(ao_app->get_default_theme_path("character_soundlist.ini"));
+    }
+  }
+
+  soundlist.prepend("Default");
+  if (soundlist.size() <= 0)
+  {
+    ui_sfx_dropdown->hide();
+    ui_sfx_remove->hide();
+    return;
+  }
+  ui_sfx_dropdown->show();
+  ui_sfx_dropdown->addItems(soundlist);
+  ui_sfx_dropdown->setCurrentIndex(0);
+  ui_sfx_remove->hide();
+}
+
+void Courtroom::on_sfx_dropdown_changed(int p_index)
+{
+  ui_ic_chat_message->setFocus();
+
+  QStringList soundlist;
+  for (int i = 0; i < ui_sfx_dropdown->count(); ++i)
+  {
+    QString entry = ui_sfx_dropdown->itemText(i);
+    if (!soundlist.contains(entry) && entry != "Default")
+      soundlist.append(entry);
+  }
+
+  QStringList defaultlist = ao_app->get_list_file(ao_app->get_theme_path("character_soundlist.ini"));
+  if (defaultlist.size() <= 0)
+  {
+    defaultlist = ao_app->get_list_file(ao_app->get_default_theme_path("character_soundlist.ini"));
+  }
+
+  if (defaultlist.size() > 0 && defaultlist.toSet().subtract(soundlist.toSet()).size() > 0) //There's a difference from the default configuration
+    ao_app->write_to_file(soundlist.join("\n"), ao_app->get_character_path(current_char, "soundlist.ini")); //Create a new sound list
+
+  ui_sfx_dropdown->setCurrentIndex(p_index);
+  if (p_index != 0)
+    ui_sfx_remove->show();
+  else
+    ui_sfx_remove->hide();
+}
+
+void Courtroom::on_sfx_remove_clicked()
+{
+  if (ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex()) != "Default")
+  {
+    ui_sfx_dropdown->removeItem(ui_sfx_dropdown->currentIndex());
+    on_sfx_dropdown_changed(0); //Reset back to original
+  }
+}
+
+QString Courtroom::get_char_sfx()
+{
+  QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
+  if (sfx != "" && sfx != "Default")
+    return sfx;
+  return ao_app->get_sfx_name(current_char, current_emote);
+}
+
+int Courtroom::get_char_sfx_delay()
+{
+//  QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
+//  if (sfx != "" && sfx != "Default")
+//    return 0; //todo: a way to define this
+  return ao_app->get_sfx_delay(current_char, current_emote);
 }
 
 void Courtroom::on_mute_list_clicked(QModelIndex p_index)

@@ -467,6 +467,9 @@ private:
   QComboBox *ui_iniswap_dropdown;
   AOButton *ui_iniswap_remove;
 
+  QComboBox *ui_sfx_dropdown;
+  AOButton *ui_sfx_remove;
+
   AOImage *ui_defense_bar;
   AOImage *ui_prosecution_bar;
 
@@ -608,10 +611,17 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
-  void on_iniswap_dropdown_changed(int p_index);
 
+  void on_iniswap_dropdown_changed(int p_index);
   void set_iniswap_dropdown();
   void on_iniswap_remove_clicked();
+
+  void on_sfx_dropdown_changed(int p_index);
+  void set_sfx_dropdown();
+  void on_sfx_remove_clicked();
+
+  QString get_char_sfx();
+  int get_char_sfx_delay();
 
   void on_evidence_name_edited(QString text);
   void on_evidence_image_name_edited();
