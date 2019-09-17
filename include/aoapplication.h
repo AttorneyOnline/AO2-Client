@@ -202,6 +202,9 @@ public:
   //Returns the list of words in callwords.ini
   QStringList get_call_words();
 
+  //returns all of the file's lines in a QStringList
+  QStringList get_list_file(QString p_file);
+
   //Process a file and return its text as a QString
   QString read_file(QString filename);
 
@@ -259,6 +262,8 @@ public:
   //Returns a QStringList of all key=value definitions on a given tag.
   QStringList read_char_ini_tag(QString p_char, QString target_tag);
 
+  //Sets the char.ini p_search_line key under tag target_tag to value.
+  void set_char_ini(QString p_char, QString value, QString p_search_line, QString target_tag);
 
   //Returns the text between target_tag and terminator_tag in p_file
   QString get_stylesheet(QString p_file);

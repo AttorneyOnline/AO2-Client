@@ -601,7 +601,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed)
-      w_courtroom->enter_courtroom(f_contents.at(2).toInt());
+      w_courtroom->update_character(f_contents.at(2).toInt());
   }
   else if (header == "MS")
   {

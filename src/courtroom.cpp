@@ -163,6 +163,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pos_dropdown->addItem("jur");
   ui_pos_dropdown->addItem("sea");
 
+  ui_iniswap_dropdown = new QComboBox(this);
+  ui_iniswap_remove = new AOButton(this, ao_app);
+
   ui_defense_bar = new AOImage(this, ao_app);
   ui_prosecution_bar = new  AOImage(this, ao_app);
 
@@ -281,6 +284,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
   connect(ui_pos_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_pos_dropdown_changed(int)));
+
+  connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
+  connect(ui_iniswap_remove, SIGNAL(clicked()), this, SLOT(on_iniswap_remove_clicked()));
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -571,6 +577,13 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
 
+  set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown");
+  ui_iniswap_dropdown->setEditable(true);
+  ui_iniswap_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
+  set_size_and_pos(ui_iniswap_remove, "iniswap_remove");
+//  ui_iniswap_remove->setText("X");
+  ui_iniswap_remove->set_image("evidencex");
+
   set_size_and_pos(ui_defense_bar, "defense_bar");
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state));
 
@@ -585,10 +598,15 @@ void Courtroom::set_widgets()
   ui_blip_label->setText(tr("Blips"));
 
   set_size_and_pos(ui_hold_it, "hold_it");
+//  ui_hold_it->setText(tr("Hold It!"));
   ui_hold_it->set_image("holdit");
+
   set_size_and_pos(ui_objection, "objection");
+//  ui_objection->setText(tr("Objection!"));
   ui_objection->set_image("objection");
+
   set_size_and_pos(ui_take_that, "take_that");
+//  ui_take_that->setText(tr("Take That!"));
   ui_take_that->set_image("takethat");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
@@ -876,8 +894,10 @@ void Courtroom::set_background(QString p_background)
   }
 }
 
-void Courtroom::enter_courtroom(int p_cid)
+void Courtroom::update_character(int p_cid)
 {
+  bool newchar = m_cid != p_cid;
+
   m_cid = p_cid;
 
   QString f_char;
@@ -908,11 +928,6 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_emote_page();
   set_emote_dropdown();
-
-  current_evidence_page = 0;
-  current_evidence = 0;
-
-  set_evidence_page();
 
   QString side = ao_app->get_char_side(f_char);
 
@@ -947,6 +962,21 @@ void Courtroom::enter_courtroom(int p_cid)
   else
     ui_custom_objection->hide();
 
+  ui_char_select_background->hide();
+  ui_ic_chat_message->setEnabled(m_cid != -1);
+  ui_ic_chat_message->setFocus();
+
+  if (newchar)
+    set_iniswap_dropdown();
+}
+
+void Courtroom::enter_courtroom()
+{
+  current_evidence_page = 0;
+  current_evidence = 0;
+
+  set_evidence_page();
+
   if (ao_app->flipping_enabled)
     ui_flip->show();
   else
@@ -975,11 +1005,6 @@ void Courtroom::enter_courtroom(int p_cid)
   set_widgets();
 
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
-
-  ui_char_select_background->hide();
-
-  ui_ic_chat_message->setEnabled(m_cid != -1);
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::list_music()
@@ -3224,6 +3249,70 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
 }
 
+void Courtroom::set_iniswap_dropdown()
+{
+  ui_iniswap_dropdown->clear();
+  if (m_cid == -1)
+  {
+    ui_iniswap_dropdown->hide();
+    return;
+  }
+  QStringList iniswaps = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+  iniswaps.prepend(char_list.at(m_cid).name);
+  if (iniswaps.size() <= 0)
+  {
+    ui_iniswap_dropdown->hide();
+    return;
+  }
+  ui_iniswap_dropdown->show();
+  ui_iniswap_dropdown->addItems(iniswaps);
+
+  for (int i = 0; i < iniswaps.size(); ++i)
+  {
+    if (iniswaps.at(i) == current_char)
+    {
+      ui_iniswap_dropdown->setCurrentIndex(i);
+      if (i != 0)
+        ui_iniswap_remove->show();
+      else
+        ui_iniswap_remove->hide();
+      break;
+    }
+  }
+}
+
+void Courtroom::on_iniswap_dropdown_changed(int p_index)
+{
+  ui_ic_chat_message->setFocus();
+  QString iniswap = ui_iniswap_dropdown->itemText(p_index);
+  ao_app->set_char_ini(char_list.at(m_cid).name, iniswap, "name", "Options");
+
+  QStringList swaplist;
+  for (int i = 0; i < ui_iniswap_dropdown->count(); ++i)
+  {
+    QString entry = ui_iniswap_dropdown->itemText(i);
+    if (!swaplist.contains(entry) && entry != char_list.at(m_cid).name)
+      swaplist.append(entry);
+  }
+  ao_app->write_to_file(swaplist.join("\n"), ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+  ui_iniswap_dropdown->setCurrentIndex(p_index);
+  update_character(m_cid);
+  if (p_index != 0)
+    ui_iniswap_remove->show();
+  else
+    ui_iniswap_remove->hide();
+}
+
+void Courtroom::on_iniswap_remove_clicked()
+{
+  if (ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()) != char_list.at(m_cid).name)
+  {
+    ui_iniswap_dropdown->removeItem(ui_iniswap_dropdown->currentIndex());
+    on_iniswap_dropdown_changed(0); //Reset back to original
+    update_character(m_cid);
+  }
+}
+
 void Courtroom::on_mute_list_clicked(QModelIndex p_index)
 {
   QListWidgetItem *f_item = ui_mute_list->item(p_index.row());
@@ -3607,7 +3696,8 @@ void Courtroom::on_reload_theme_clicked()
 
   //to update status on the background
   set_background(current_background);
-  enter_courtroom(m_cid);
+  update_character(m_cid);
+  enter_courtroom();
 
   anim_state = 4;
   text_state = 3;
@@ -3633,11 +3723,7 @@ void Courtroom::on_char_select_right_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
-  enter_courtroom(-1);
-
-  ui_emotes->hide();
-
-  ui_char_select_background->hide();
+  update_character(-1);
 }
 
 void Courtroom::on_call_mod_clicked()

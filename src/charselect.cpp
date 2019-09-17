@@ -64,7 +64,7 @@ void Courtroom::set_char_select()
 
   if (f_charselect.width < 0 || f_charselect.height < 0)
   {
-    qDebug() << "W: did not find courtroom width or height in courtroom_design.ini!";
+    qDebug() << "W: did not find char_select width or height in courtroom_design.ini!";
     this->resize(714, 668);
   }
   else
@@ -129,15 +129,13 @@ void Courtroom::char_clicked(int n_char)
     return;
   }
 
-  if (n_char == m_cid)
-  {
-    enter_courtroom(m_cid);
-  }
-  else
+  if (n_char != m_cid)
   {
     ao_app->send_server_packet(new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
+  update_character(n_char);
+  enter_courtroom();
 
   ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }

@@ -75,16 +75,21 @@ QString AOApplication::get_audio_output_device()
 
 QStringList AOApplication::get_call_words()
 {
+  return get_list_file(get_base_path() + "callwords.ini");
+}
+
+QStringList AOApplication::get_list_file(QString p_file)
+{
   QStringList return_value;
 
-  QFile callwords_ini;
+  QFile p_ini;
 
-  callwords_ini.setFileName(get_base_path() + "callwords.ini");
+  p_ini.setFileName(p_file);
 
-  if (!callwords_ini.open(QIODevice::ReadOnly))
+  if (!p_ini.open(QIODevice::ReadOnly))
     return return_value;
 
-  QTextStream in(&callwords_ini);
+  QTextStream in(&p_ini);
 
   while (!in.atEnd())
   {
@@ -553,6 +558,14 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QStr
   QString value = settings.value(p_search_line).toString();
   settings.endGroup();
   return value;
+}
+
+void AOApplication::set_char_ini(QString p_char, QString value, QString p_search_line, QString target_tag)
+{
+  QSettings settings(get_character_path(p_char, "char.ini"), QSettings::IniFormat);
+  settings.beginGroup(target_tag);
+  settings.setValue(p_search_line, value);
+  settings.endGroup();
 }
 
 //returns all the values of target_tag

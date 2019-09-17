@@ -184,8 +184,11 @@ public:
   QString get_current_char() {return current_char;}
   QString get_current_background() {return current_background;}
 
+  //updates character to p_cid and updates necessary ui elements
+  void update_character(int p_cid);
+
   //properly sets up some varibles: resets user state
-  void enter_courtroom(int p_cid);
+  void enter_courtroom();
 
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
@@ -461,6 +464,9 @@ private:
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
 
+  QComboBox *ui_iniswap_dropdown;
+  AOButton *ui_iniswap_remove;
+
   AOImage *ui_defense_bar;
   AOImage *ui_prosecution_bar;
 
@@ -602,6 +608,10 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
+  void on_iniswap_dropdown_changed(int p_index);
+
+  void set_iniswap_dropdown();
+  void on_iniswap_remove_clicked();
 
   void on_evidence_name_edited(QString text);
   void on_evidence_image_name_edited();
