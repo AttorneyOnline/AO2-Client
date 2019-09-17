@@ -527,10 +527,13 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_pair_list, "pair_list");
   ui_pair_list->hide();
+  ui_pair_list->setToolTip(tr("Select a character you wish to pair with."));
   set_size_and_pos(ui_pair_offset_spinbox, "pair_offset_spinbox");
   ui_pair_offset_spinbox->hide();
+  ui_pair_offset_spinbox->setToolTip(tr("Change the percentage offset of your character's position from the center of the screen."));
   set_size_and_pos(ui_pair_button, "pair_button");
   ui_pair_button->set_image("pair_button");
+  ui_pair_button->setToolTip(tr("Display the list of characters to pair with."));
 
   set_size_and_pos(ui_area_list, "music_list");
   set_size_and_pos(ui_music_list, "music_list");
@@ -556,12 +559,15 @@ void Courtroom::set_widgets()
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
   ui_muted->set_image("muted");
+  ui_muted->setToolTip(tr("Oops, you're muted!"));
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
   ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ooc_chat_message->setToolTip(tr("Type your message to display in the server chat here."));
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name");
   ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ooc_chat_name->setToolTip(tr("Set your name to display in the server chat."));
 
   //set_size_and_pos(ui_area_password, "area_password");
   set_size_and_pos(ui_music_search, "music_search");
@@ -576,13 +582,18 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
+  ui_pos_dropdown->setToolTip(tr("Set your character's supplementary background."));
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown");
   ui_iniswap_dropdown->setEditable(true);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
+  ui_iniswap_dropdown->setToolTip(tr("Set an 'iniswap', or an alternative character folder to refer to from your current character."
+                                     "This information is saved to your base/characters/<charname>/iniswaps.ini"));
+
   set_size_and_pos(ui_iniswap_remove, "iniswap_remove");
-//  ui_iniswap_remove->setText("X");
+  ui_iniswap_remove->setText("X");
   ui_iniswap_remove->set_image("evidencex");
+  ui_iniswap_remove->setToolTip(tr("Remove the currently selected iniswap from the list and return to the original character folder."));
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state));
@@ -598,19 +609,23 @@ void Courtroom::set_widgets()
   ui_blip_label->setText(tr("Blips"));
 
   set_size_and_pos(ui_hold_it, "hold_it");
-//  ui_hold_it->setText(tr("Hold It!"));
+  ui_hold_it->setText(tr("Hold It!"));
+  ui_hold_it->setToolTip(tr("When this is turned on, your next in-character message will be a shout!"));
   ui_hold_it->set_image("holdit");
 
   set_size_and_pos(ui_objection, "objection");
-//  ui_objection->setText(tr("Objection!"));
+  ui_objection->setText(tr("Objection!"));
+  ui_objection->setToolTip(tr("When this is turned on, your next in-character message will be a shout!"));
   ui_objection->set_image("objection");
 
   set_size_and_pos(ui_take_that, "take_that");
-//  ui_take_that->setText(tr("Take That!"));
+  ui_take_that->setText(tr("Take That!"));
+  ui_take_that->setToolTip(tr("When this is turned on, your next in-character message will be a shout!"));
   ui_take_that->set_image("takethat");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
   ui_ooc_toggle->setText(tr("Server"));
+  ui_ooc_toggle->setToolTip(tr("Toggle between server chat and global AO2 chat."));
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
   ui_witness_testimony->set_image("witnesstestimony");
@@ -618,67 +633,101 @@ void Courtroom::set_widgets()
   ui_cross_examination->set_image("crossexamination");
 
   set_size_and_pos(ui_guilty, "guilty");
+  ui_guilty->setText(tr("Guilty!"));
   ui_guilty->set_image("guilty");
+  ui_guilty->setToolTip(tr("This will display the animation in the viewport as soon as it is pressed."));
   set_size_and_pos(ui_not_guilty, "not_guilty");
   ui_not_guilty->set_image("notguilty");
+  ui_not_guilty->setToolTip(tr("This will display the animation in the viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_change_character, "change_character");
   ui_change_character->setText(tr("Change character"));
+  ui_change_character->set_image("change_character");
+  ui_change_character->setToolTip(tr("Bring up the Character Select Screen and change your character."));
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
   ui_reload_theme->setText(tr("Reload theme"));
+  ui_reload_theme->set_image("reload_theme");
+  ui_reload_theme->setToolTip(tr("Refresh the theme and update all of the ui elements to match."));
 
   set_size_and_pos(ui_call_mod, "call_mod");
   ui_call_mod->setText(tr("Call mod"));
+  ui_call_mod->set_image("call_mod");
+  ui_call_mod->setToolTip(tr("Request the attention of the current server's moderator."));
 
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText(tr("Settings"));
+  ui_settings->set_image("settings");
+  ui_settings->setToolTip(tr("Allows you to change various aspects of the client."));
 
   set_size_and_pos(ui_announce_casing, "casing_button");
   ui_announce_casing->setText(tr("Casing"));
+  ui_announce_casing->set_image("casing_button");
+  ui_announce_casing->setToolTip(tr("uhhhhh"));
 
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
   ui_switch_area_music->setText(tr("A/M"));
+  ui_switch_area_music->set_image("switch_area_music");
+  ui_switch_area_music->setToolTip(tr("Switch between Areas and Music lists"));
 
   set_size_and_pos(ui_pre, "pre");
   ui_pre->setText(tr("Preanim"));
+  ui_pre->setToolTip(tr("Play a single-shot animation as defined by the emote when checked."));
 
   set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
+  ui_pre_non_interrupt->setToolTip(tr("If preanim is checked, display the input text immediately as the animation plays concurrently."));
+
   set_size_and_pos(ui_flip, "flip");
+  ui_flip->setToolTip(tr("Mirror your character's emotes when checked."));
 
   set_size_and_pos(ui_additive, "additive");
+  ui_additive->setToolTip(tr("Add text to your last spoken message when checked."));
 
   set_size_and_pos(ui_guard, "guard");
+  ui_additive->setToolTip(tr("Do not listen to mod calls when checked, preventing them from playing sounds or focusing attention on the window."));
 
   set_size_and_pos(ui_casing, "casing");
+  ui_casing->setToolTip(tr("((((((Case?))))))"));
 
   set_size_and_pos(ui_showname_enable, "showname_enable");
+  ui_showname_enable->setToolTip(tr("Display customized shownames for all users when checked."));
 
   set_size_and_pos(ui_custom_objection, "custom_objection");
+  ui_custom_objection->setText(tr("Custom Shout!"));
   ui_custom_objection->set_image("custom");
+  ui_custom_objection->setToolTip(tr("This will display the custom character-defined animation in the viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_realization, "realization");
   ui_realization->set_image("realization");
+  ui_realization->setToolTip(tr("Play realization sound and animation in the viewport on the next spoken message when checked."));
 
   set_size_and_pos(ui_screenshake, "screenshake");
   ui_screenshake->set_image("screenshake");
+  ui_screenshake->setToolTip(tr("Shake the screen on next spoken message when checked."));
 
   set_size_and_pos(ui_mute, "mute_button");
+  ui_mute->setText("Mute");
   ui_mute->set_image("mute");
+  ui_mute->setToolTip(tr("Display the list of character folders you wish to mute."));
 
   set_size_and_pos(ui_defense_plus, "defense_plus");
   ui_defense_plus->set_image("defplus");
+  ui_defense_plus->setToolTip(tr("Increase the health bar."));
 
   set_size_and_pos(ui_defense_minus, "defense_minus");
   ui_defense_minus->set_image("defminus");
+  ui_defense_minus->setToolTip(tr("Decrease the health bar."));
 
   set_size_and_pos(ui_prosecution_plus, "prosecution_plus");
   ui_prosecution_plus->set_image("proplus");
+  ui_prosecution_plus->setToolTip(tr("Increase the health bar."));
 
   set_size_and_pos(ui_prosecution_minus, "prosecution_minus");
   ui_prosecution_minus->set_image("prominus");
+  ui_prosecution_minus->setToolTip(tr("Decrease the health bar."));
 
   set_size_and_pos(ui_text_color, "text_color");
+  ui_text_color->setToolTip(tr("Change the text color of the spoken message."));
 
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
@@ -686,6 +735,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_evidence_button, "evidence_button");
   ui_evidence_button->set_image("evidencebutton");
+  ui_evidence_button->setToolTip(tr("Bring up the Evidence screen."));
 
   set_size_and_pos(ui_evidence, "evidence_background");
   ui_evidence->set_image("evidencebackground");
@@ -723,6 +773,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_back_to_lobby, "back_to_lobby");
   ui_back_to_lobby->setText(tr("Back to Lobby"));
+  ui_back_to_lobby->setToolTip(tr("Return back to the server list."));
 
   set_size_and_pos(ui_char_password, "char_password");
 
@@ -735,6 +786,7 @@ void Courtroom::set_widgets()
   ui_char_select_right->set_image("arrow_right");
 
   set_size_and_pos(ui_spectator, "spectator");
+  ui_spectator->setToolTip(tr("Become a spectator. You won't be able to interact with the in-character screen."));
 }
 
 void Courtroom::set_fonts()

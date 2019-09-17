@@ -19,8 +19,20 @@ void AOButton::set_image(QString p_image)
   QString default_image_path = ao_app->get_static_image_suffix(ao_app->get_default_theme_path(p_image));
 
   if (file_exists(image_path))
-    this->setStyleSheet("border-image:url(\"" + image_path + "\")");
+  {
+    this->setIcon(QIcon(image_path));
+    this->setIconSize(this->size());
+    this->setStyleSheet("border:0px");
+    this->setText("");
+  }
+  else if (file_exists(default_image_path))
+  {
+    this->setIcon(QIcon(default_image_path));
+    this->setIconSize(this->size());
+    this->setStyleSheet("border:0px");
+    this->setText("");
+  }
   else
-    this->setStyleSheet("border-image:url(\"" + default_image_path + "\")");
+    return;
 }
 
