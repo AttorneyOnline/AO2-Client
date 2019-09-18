@@ -627,6 +627,7 @@ private slots:
 
   void set_effects_dropdown();
   void on_effects_dropdown_changed(int p_index);
+  bool effects_dropdown_find_and_set(QString effect);
 
   QString get_char_sfx();
   int get_char_sfx_delay();

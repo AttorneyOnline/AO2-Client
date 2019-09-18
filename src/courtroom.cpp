@@ -3564,6 +3564,20 @@ void Courtroom::on_effects_dropdown_changed(int p_index)
   ui_ic_chat_message->setFocus();
 }
 
+bool Courtroom::effects_dropdown_find_and_set(QString effect)
+{
+  for (int i = 0; i < ui_effects_dropdown->count(); ++i)
+  {
+    QString entry = ui_effects_dropdown->itemText(i);
+    if (entry == effect)
+    {
+      ui_effects_dropdown->setCurrentIndex(i);
+      return true;
+    }
+  }
+  return false;
+}
+
 QString Courtroom::get_char_sfx()
 {
   QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
@@ -3775,11 +3789,14 @@ void Courtroom::on_realization_clicked()
   if (realization_state == 0)
   {
     realization_state = 1;
+    effects_dropdown_find_and_set("realization");
     ui_realization->set_image("realization_pressed");
   }
   else
   {
     realization_state = 0;
+    ui_effects_dropdown->setCurrentIndex(0);
+    on_effects_dropdown_changed(ui_effects_dropdown->currentIndex());
     ui_realization->set_image("realization");
   }
 
