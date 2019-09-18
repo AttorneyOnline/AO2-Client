@@ -820,42 +820,38 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 QStringList AOApplication::get_char_effects(QString p_char)
 {
   QString p_effect = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_base_path() + "misc/" + p_effect + "/";
-  QStringList filters = QStringList() << "*.gif" << "*.webp" << "*.apng" << "*.png" << "*.GIF" << "*.WEBP" << "*.APNG" << "*.PNG";
+  QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
 
-  QDir directory(p_path);
-  QStringList images = directory.entryList(filters, QDir::Files);
+  QStringList lines = read_file(p_path).split("\n");
 
   QStringList effects;
-  foreach (QString effect, images)
+  foreach (QString effect, lines)
   {
-    effect = effect.left(effect.lastIndexOf("."));
-    if (!effects.contains(effect)) //Do that juicy priority meme
+    effect = effect.split("=")[0].trimmed();
+    qDebug() << effect;
+    if (effect != "" && !effects.contains(effect))
       effects.append(effect);
   }
-
   return effects;
 }
 
-QStringList AOApplication::get_effects()
+QStringList AOApplication::get_effects(QString p_char)
 {
-  QString design_ini_path = get_theme_path("effects/");
-  QString default_path = get_default_theme_path("effects/");
-  QStringList filters = QStringList() << "*.gif" << "*.webp" << "*.apng" << "*.png" << "*.GIF" << "*.WEBP" << "*.APNG" << "*.PNG";
+  QString p_path = get_theme_path("effects/effects.ini");
+  QString default_path = get_default_theme_path("effects/effects.ini");
 
-  QDir directory(design_ini_path);
-  QStringList images = directory.entryList(filters, QDir::Files);
-  if (images.size() <= 0)
+  if (!file_exists(p_path))
   {
-    directory.cd(default_path);
-    images = directory.entryList(filters, QDir::Files);
+    p_path = default_path;
   }
+  QStringList lines = read_file(p_path).split("\n");
 
-  QStringList effects;
-  foreach (QString effect, images)
+  QStringList effects = get_char_effects(p_char);
+  foreach (QString effect, lines)
   {
-    effect = effect.left(effect.lastIndexOf("."));
-    if (!effects.contains(effect)) //Do that juicy priority meme
+    effect = effect.split("=")[0].trimmed();
+    qDebug() << effect;
+    if (effect != "" && !effects.contains(effect))
       effects.append(effect);
   }
 
@@ -888,9 +884,9 @@ QString AOApplication::get_effect(QString effect, QString p_char)
 QString AOApplication::get_effect_sound(QString fx_name, QString p_char)
 {
   QString p_effect = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_base_path() + "misc/effects/" + p_effect + "/effect_sounds.ini";
-  QString design_ini_path = get_theme_path("effects/effect_sounds.ini");
-  QString default_path = get_default_theme_path("effects/effect_sounds.ini");
+  QString p_path = get_base_path() + "misc/effects/" + p_effect + "/effects.ini";
+  QString design_ini_path = get_theme_path("effects/effects.ini");
+  QString default_path = get_default_theme_path("effects/effects.ini");
 
   QString f_result = read_design_ini(fx_name, p_path);
   if (f_result == "")

@@ -1439,7 +1439,8 @@ void Courtroom::on_chat_return_pressed()
   {
     QString fx_sound = ao_app->get_effect_sound(effect, current_char);
     packet_contents.append(effect + "|" + fx_sound);
-    qDebug() << effect << fx_sound;
+    ui_effects_dropdown->setCurrentIndex(0);
+    effect = "";
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
@@ -1902,10 +1903,14 @@ void Courtroom::do_flash()
 void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char)
 {
   if(!ao_app->is_shake_flash_enabled())
-      return;
+    return;
+
+  QString effect = ao_app->get_effect(fx_name, p_char);
+  if (effect == "")
+    return;
 
   ui_vp_effect->set_play_once(false); // The effects themselves dictate whether or not they're looping. Static effects will linger.
-  ui_vp_effect->play(ao_app->get_effect(fx_name, p_char)); // It will set_play_once to true if the filepath provided is not designed to loop more than once
+  ui_vp_effect->play(effect); // It will set_play_once to true if the filepath provided is not designed to loop more than once
   if (fx_sound != "")
     sfx_player->play(ao_app->get_sfx_suffix(fx_sound));
 }
@@ -3507,17 +3512,45 @@ void Courtroom::set_effects_dropdown()
     ui_effects_dropdown->hide();
     return;
   }
-  QStringList effectslist = ao_app->get_effects() << ao_app->get_char_effects(current_char);
+  QStringList effectslist = ao_app->get_effects(current_char);
 
   if (effectslist.size() <= 0)
   {
     ui_effects_dropdown->hide();
     return;
   }
+
+
   effectslist.prepend("None");
 
   ui_effects_dropdown->show();
   ui_effects_dropdown->addItems(effectslist);
+
+  //ICON-MAKING HELL
+  QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
+  QString custom_path = ao_app->get_base_path() + "misc/" + p_effect + "/icons/";
+  QString theme_path = ao_app->get_theme_path("effects/icons/");
+  QString default_path = ao_app->get_default_theme_path("effects/icons/");
+  for (int i = 0; i < ui_effects_dropdown->count(); ++i)
+  {
+    QString entry = ui_effects_dropdown->itemText(i);
+    QString iconpath = ao_app->get_static_image_suffix(custom_path + entry);
+    qDebug() << iconpath << entry;
+    if (!file_exists(iconpath))
+    {
+      iconpath = ao_app->get_static_image_suffix(theme_path  + entry);
+      qDebug() << iconpath << entry;
+      if (!file_exists(iconpath))
+      {
+        iconpath = ao_app->get_static_image_suffix(default_path + entry);
+        qDebug() << iconpath << entry;
+        if (!file_exists(iconpath))
+          continue;
+      }
+    }
+    ui_effects_dropdown->setItemIcon(i, QIcon(iconpath));
+  }
+
   ui_effects_dropdown->setCurrentIndex(0);
 }
 

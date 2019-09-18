@@ -303,7 +303,7 @@ public:
   QStringList get_char_effects(QString p_char);
 
   //Get the theme's effects folder, read it and return the list of filenames in a string
-  QStringList get_effects();
+  QStringList get_effects(QString p_char);
 
   //t
   QString get_effect(QString effect, QString p_char);
