@@ -31,6 +31,7 @@ void Courtroom::initialize_evidence()
                                          "color: white;");
 
   connect(ui_evidence_name, SIGNAL(textEdited(QString)), this, SLOT(on_evidence_name_edited(QString)));
+  connect(ui_evidence_name, SIGNAL(double_clicked()), this, SLOT(on_evidence_name_double_clicked()));
   connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
   connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
   connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
@@ -38,6 +39,7 @@ void Courtroom::initialize_evidence()
   connect(ui_evidence_image_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_name_edited()));
   connect(ui_evidence_image_button, SIGNAL(clicked()), this, SLOT(on_evidence_image_button_clicked()));
   connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
+  connect(ui_evidence_description, SIGNAL(textChanged()), this, SLOT(on_evidence_description_edited()));
 
   ui_evidence->hide();
 }
@@ -97,6 +99,19 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
   local_evidence_list = p_evi_list;
 
   set_evidence_page();
+
+  if (ui_evidence_overlay->isVisible())//Update the currently edited evidence for this user
+  {
+    if (current_evidence >= local_evidence_list.size())
+    {
+      on_evidence_x_clicked();
+      ui_evidence_name->setText("");
+    }
+    else
+    {
+      on_evidence_double_clicked(current_evidence);
+    }
+  }
 }
 
 void Courtroom::set_evidence_page()
@@ -267,14 +282,23 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
   evi_type f_evi = local_evidence_list.at(f_real_id);
 
-  ui_evidence_description->clear();
-  ui_evidence_description->appendPlainText(f_evi.description);
+  QTextCursor cursor = ui_evidence_description->textCursor();
+  int pos = cursor.position();
+
+  //ISSUE: Undo/redo history is completely inaccessible. :(
+  ui_evidence_description->blockSignals(true);
+  ui_evidence_description->setPlainText(f_evi.description);
+  ui_evidence_description->blockSignals(false);
+
+  cursor.setPosition(pos); //Reset the cursor position back in place
+  ui_evidence_description->setTextCursor(cursor);
 
   ui_evidence_image_name->setText(f_evi.image);
+  ui_evidence_name->setText(f_evi.name);
 
   ui_evidence_overlay->show();
 
-  ui_ic_chat_message->setFocus();
+//  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
@@ -346,9 +370,8 @@ void Courtroom::on_evidence_x_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-  if (current_evidence >= local_evidence_list.size())
-    return;
-
+void Courtroom::on_evidence_description_edited()
+{
   QStringList f_contents;
 
   evi_type f_evi = local_evidence_list.at(current_evidence);
@@ -359,7 +382,4 @@ void Courtroom::on_evidence_x_clicked()
   f_contents.append(f_evi.image);
 
   ao_app->send_server_packet(new AOPacket("EE", f_contents));
-
-  ui_ic_chat_message->setFocus();
 }
-

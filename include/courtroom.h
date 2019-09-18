@@ -691,10 +691,12 @@ private slots:
 
   void on_showname_enable_clicked();
 
+  void on_evidence_name_double_clicked();
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();
   void on_evidence_x_clicked();
+  void on_evidence_description_edited();
 
   void on_back_to_lobby_clicked();
 
