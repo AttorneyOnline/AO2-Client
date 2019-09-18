@@ -32,12 +32,13 @@ void Courtroom::refresh_emotes()
   ui_emote_right->set_image("arrow_right");
 
   QPoint f_spacing = ao_app->get_button_spacing("emote_button_spacing", "courtroom_design.ini");
+  QPoint p_point = ao_app->get_button_spacing("emote_button_size", "courtroom_design.ini");
 
-  const int button_width = 40;
+  const int button_width = p_point.x();
   int x_spacing = f_spacing.x();
   int x_mod_count = 0;
 
-  const int button_height = 40;
+  const int button_height = p_point.y();
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 

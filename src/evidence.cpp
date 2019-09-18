@@ -7,10 +7,6 @@ void Courtroom::initialize_evidence()
   //ui_evidence_name = new QLabel(ui_evidence);
   ui_evidence_name = new AOLineEdit(ui_evidence);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
-  //WHY IS THIS FONT HARDCODED, WHAT IS WRONG WITH YOU
-  ui_evidence_name->setFont(QFont("Arial", 14, QFont::Bold));
-  ui_evidence_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                  "color: rgba(255, 128, 0, 255);");
 
   ui_evidence_buttons = new QWidget(ui_evidence);
 
@@ -46,6 +42,10 @@ void Courtroom::initialize_evidence()
 
 void Courtroom::refresh_evidence()
 {
+  set_font(ui_evidence_name, "", "evidence_name");
+  set_font(ui_evidence_image_name, "", "evidence_image_name");
+  set_font(ui_evidence_description, "", "evidence_description");
+
   //Should properly refresh the evidence list
   qDeleteAll(ui_evidence_list.begin(), ui_evidence_list.end());
   ui_evidence_list.clear();
@@ -54,12 +54,13 @@ void Courtroom::refresh_evidence()
   set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
 
   QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
+  QPoint p_point = ao_app->get_button_spacing("evidence_button_size", "courtroom_design.ini");
 
-  const int button_width = 70;
+  const int button_width = p_point.x();
   int x_spacing = f_spacing.x();
   int x_mod_count = 0;
 
-  const int button_height = 70;
+  const int button_height = p_point.y();
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
