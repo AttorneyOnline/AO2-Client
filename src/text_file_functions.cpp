@@ -817,11 +817,15 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
   else return f_result.toInt();
 }
 
-QStringList AOApplication::get_char_effects(QString p_char)
+QStringList AOApplication::get_theme_effects()
 {
-  QString p_effect = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
+  QString p_path = get_theme_path("effects/effects.ini");
+  QString default_path = get_default_theme_path("effects/effects.ini");
 
+  if (!file_exists(p_path))
+  {
+    p_path = default_path;
+  }
   QStringList lines = read_file(p_path).split("\n");
 
   QStringList effects;
@@ -837,16 +841,12 @@ QStringList AOApplication::get_char_effects(QString p_char)
 
 QStringList AOApplication::get_effects(QString p_char)
 {
-  QString p_path = get_theme_path("effects/effects.ini");
-  QString default_path = get_default_theme_path("effects/effects.ini");
+  QString p_effect = read_char_ini(p_char, "effects", "Options");
+  QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
 
-  if (!file_exists(p_path))
-  {
-    p_path = default_path;
-  }
   QStringList lines = read_file(p_path).split("\n");
 
-  QStringList effects = get_char_effects(p_char);
+  QStringList effects = get_theme_effects();
   foreach (QString effect, lines)
   {
     effect = effect.split("=")[0].trimmed();
@@ -861,7 +861,7 @@ QStringList AOApplication::get_effects(QString p_char)
 QString AOApplication::get_effect(QString effect, QString p_char)
 {
   QString p_effect = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_image_suffix(get_base_path() + "misc/" + p_effect + effect);
+  QString p_path = get_image_suffix(get_base_path() + "misc/" + p_effect + "/" + effect);
   QString design_ini_path = get_image_suffix(get_theme_path("effects/" + effect));
   QString default_path = get_image_suffix(get_default_theme_path("effects/" + effect));
 

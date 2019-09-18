@@ -300,7 +300,7 @@ public:
   int get_text_delay(QString p_char, QString p_emote);
 
   //Get the effects folder referenced by the char.ini, read it and return the list of filenames in a string
-  QStringList get_char_effects(QString p_char);
+  QStringList get_theme_effects();
 
   //Get the theme's effects folder, read it and return the list of filenames in a string
   QStringList get_effects(QString p_char);
