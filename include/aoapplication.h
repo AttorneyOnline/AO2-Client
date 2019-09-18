@@ -80,6 +80,7 @@ public:
   bool modcall_reason_enabled = false;
   bool looping_sfx_support_enabled = false;
   bool additive_enabled = false;
+  bool effects_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -297,6 +298,18 @@ public:
 
   //Not in use
   int get_text_delay(QString p_char, QString p_emote);
+
+  //Get the effects folder referenced by the char.ini, read it and return the list of filenames in a string
+  QStringList get_char_effects(QString p_char);
+
+  //Get the theme's effects folder, read it and return the list of filenames in a string
+  QStringList get_effects();
+
+  //t
+  QString get_effect(QString effect, QString p_char);
+
+  //Return the effect sound associated with the fx_name in the misc/effects/<char-defined>/sounds.ini, or theme/effects/sounds.ini.
+  QString get_effect_sound(QString fx_name, QString p_char);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);

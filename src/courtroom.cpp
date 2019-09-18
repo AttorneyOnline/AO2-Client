@@ -98,7 +98,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_testimony = new AOMovie(this, ao_app);
   ui_vp_testimony->set_play_once(false);
-  ui_vp_realization = new AOMovie(this, ao_app);
+  ui_vp_effect = new AOMovie(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
@@ -168,6 +168,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_sfx_dropdown = new QComboBox(this);
   ui_sfx_remove = new AOButton(this, ao_app);
+
+  ui_effects_dropdown = new QComboBox(this);
 
   ui_defense_bar = new AOImage(this, ao_app);
   ui_prosecution_bar = new  AOImage(this, ao_app);
@@ -293,6 +295,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_sfx_dropdown, SIGNAL(activated(int)), this, SLOT(on_sfx_dropdown_changed(int)));
   connect(ui_sfx_remove, SIGNAL(clicked()), this, SLOT(on_sfx_remove_clicked()));
+
+  connect(ui_effects_dropdown, SIGNAL(activated(int)), this, SLOT(on_effects_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -513,8 +517,8 @@ void Courtroom::set_widgets()
   ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_realization->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_realization->combo_resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_effect->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -611,6 +615,12 @@ void Courtroom::set_widgets()
   ui_sfx_remove->setText("X");
   ui_sfx_remove->set_image("evidencex");
   ui_sfx_remove->setToolTip(tr("Remove the currently selected iniswap from the list and return to the original character folder."));
+
+  set_size_and_pos(ui_effects_dropdown, "effects_dropdown");
+  ui_effects_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
+  ui_effects_dropdown->setToolTip(tr("Choose an effect to play on your next spoken message."));
+  ui_effects_dropdown->setIconSize(QSize(16, 16)); //Todo: don't do hardcoding hell - make it part of courtroom_design.ini
+  //Todo: actual list of effects
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state));
@@ -1002,6 +1012,7 @@ void Courtroom::update_character(int p_cid)
   set_emote_dropdown();
 
   set_sfx_dropdown();
+  set_effects_dropdown();
 
   QString side = ao_app->get_char_side(f_char);
 
@@ -1423,6 +1434,12 @@ void Courtroom::on_chat_return_pressed()
   if (ao_app->additive_enabled)
   {
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
+  }
+  if (ao_app->effects_enabled)
+  {
+    QString fx_sound = ao_app->get_effect_sound(effect, current_char);
+    packet_contents.append(effect + "|" + fx_sound);
+    qDebug() << effect << fx_sound;
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
@@ -1879,7 +1896,18 @@ void Courtroom::do_flash()
   if(!ao_app->is_shake_flash_enabled())
       return;
 
-  ui_vp_realization->play("realizationflash", "", "", 60);
+  ui_vp_effect->play("realizationflash", "", "", 60);
+}
+
+void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char)
+{
+  if(!ao_app->is_shake_flash_enabled())
+      return;
+
+  ui_vp_effect->set_play_once(false); // The effects themselves dictate whether or not they're looping. Static effects will linger.
+  ui_vp_effect->play(ao_app->get_effect(fx_name, p_char)); // It will set_play_once to true if the filepath provided is not designed to loop more than once
+  if (fx_sound != "")
+    sfx_player->play(ao_app->get_sfx_suffix(fx_sound));
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
@@ -2288,7 +2316,18 @@ void Courtroom::start_chat_ticking()
   if (text_state != 0)
     return;
 
-  if (m_chatmessage[REALIZATION] == "1")
+  if (m_chatmessage[EFFECTS] != "")
+  {
+    QStringList fx_list = m_chatmessage[EFFECTS].split("|");
+    qDebug() << m_chatmessage[EFFECTS] << fx_list;
+    QString fx = fx_list[0];
+    QString fx_sound;
+    if (fx_list.length() > 1)
+      fx_sound = fx_list[1];
+
+    this->do_effect(fx, fx_sound, m_chatmessage[CHAR_NAME]);
+  }
+  else if (m_chatmessage[REALIZATION] == "1")
   {
     this->do_flash();
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
@@ -3409,13 +3448,14 @@ void Courtroom::set_sfx_dropdown()
     }
   }
 
-  soundlist.prepend("Default");
   if (soundlist.size() <= 0)
   {
     ui_sfx_dropdown->hide();
     ui_sfx_remove->hide();
     return;
   }
+  soundlist.prepend("Default");
+
   ui_sfx_dropdown->show();
   ui_sfx_dropdown->addItems(soundlist);
   ui_sfx_dropdown->setCurrentIndex(0);
@@ -3457,6 +3497,34 @@ void Courtroom::on_sfx_remove_clicked()
     ui_sfx_dropdown->removeItem(ui_sfx_dropdown->currentIndex());
     on_sfx_dropdown_changed(0); //Reset back to original
   }
+}
+
+void Courtroom::set_effects_dropdown()
+{
+  ui_effects_dropdown->clear();
+  if (m_cid == -1)
+  {
+    ui_effects_dropdown->hide();
+    return;
+  }
+  QStringList effectslist = ao_app->get_effects() << ao_app->get_char_effects(current_char);
+
+  if (effectslist.size() <= 0)
+  {
+    ui_effects_dropdown->hide();
+    return;
+  }
+  effectslist.prepend("None");
+
+  ui_effects_dropdown->show();
+  ui_effects_dropdown->addItems(effectslist);
+  ui_effects_dropdown->setCurrentIndex(0);
+}
+
+void Courtroom::on_effects_dropdown_changed(int p_index)
+{
+  effect = ui_effects_dropdown->itemText(p_index);
+  ui_ic_chat_message->setFocus();
 }
 
 QString Courtroom::get_char_sfx()

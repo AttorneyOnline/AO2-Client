@@ -817,6 +817,93 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
   else return f_result.toInt();
 }
 
+QStringList AOApplication::get_char_effects(QString p_char)
+{
+  QString p_effect = read_char_ini(p_char, "effects", "Options");
+  QString p_path = get_base_path() + "misc/" + p_effect + "/";
+  QStringList filters = QStringList() << "*.gif" << "*.webp" << "*.apng" << "*.png" << "*.GIF" << "*.WEBP" << "*.APNG" << "*.PNG";
+
+  QDir directory(p_path);
+  QStringList images = directory.entryList(filters, QDir::Files);
+
+  QStringList effects;
+  foreach (QString effect, images)
+  {
+    effect = effect.left(effect.lastIndexOf("."));
+    if (!effects.contains(effect)) //Do that juicy priority meme
+      effects.append(effect);
+  }
+
+  return effects;
+}
+
+QStringList AOApplication::get_effects()
+{
+  QString design_ini_path = get_theme_path("effects/");
+  QString default_path = get_default_theme_path("effects/");
+  QStringList filters = QStringList() << "*.gif" << "*.webp" << "*.apng" << "*.png" << "*.GIF" << "*.WEBP" << "*.APNG" << "*.PNG";
+
+  QDir directory(design_ini_path);
+  QStringList images = directory.entryList(filters, QDir::Files);
+  if (images.size() <= 0)
+  {
+    directory.cd(default_path);
+    images = directory.entryList(filters, QDir::Files);
+  }
+
+  QStringList effects;
+  foreach (QString effect, images)
+  {
+    effect = effect.left(effect.lastIndexOf("."));
+    if (!effects.contains(effect)) //Do that juicy priority meme
+      effects.append(effect);
+  }
+
+  return effects;
+}
+
+QString AOApplication::get_effect(QString effect, QString p_char)
+{
+  QString p_effect = read_char_ini(p_char, "effects", "Options");
+  QString p_path = get_image_suffix(get_base_path() + "misc/" + p_effect + effect);
+  QString design_ini_path = get_image_suffix(get_theme_path("effects/" + effect));
+  QString default_path = get_image_suffix(get_default_theme_path("effects/" + effect));
+
+  if (!file_exists(p_path))
+  {
+    p_path = design_ini_path;
+    if (!file_exists(p_path))
+    {
+      p_path = default_path;
+      if (!file_exists(p_path))
+      {
+        return "";
+      }
+    }
+  }
+
+  return p_path;
+}
+
+QString AOApplication::get_effect_sound(QString fx_name, QString p_char)
+{
+  QString p_effect = read_char_ini(p_char, "effects", "Options");
+  QString p_path = get_base_path() + "misc/effects/" + p_effect + "/effect_sounds.ini";
+  QString design_ini_path = get_theme_path("effects/effect_sounds.ini");
+  QString default_path = get_default_theme_path("effects/effect_sounds.ini");
+
+  QString f_result = read_design_ini(fx_name, p_path);
+  if (f_result == "")
+  {
+    f_result = read_design_ini(fx_name, design_ini_path);
+    if (f_result == "")
+    {
+      f_result = read_design_ini(fx_name, default_path);
+    }
+  }
+  return f_result;
+}
+
 QString AOApplication::get_custom_realization(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "realization", "Options");

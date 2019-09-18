@@ -215,6 +215,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       looping_sfx_support_enabled = true;
     if (f_packet.contains("additive",Qt::CaseInsensitive))
       additive_enabled = true;
+    if (f_packet.contains("effects",Qt::CaseInsensitive))
+      effects_enabled = true;
   }
   else if (header == "PN")
   {

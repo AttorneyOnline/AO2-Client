@@ -345,7 +345,7 @@ private:
   //the amount of time non-animated witness testimony/cross-examination images stay onscreen for in ms
   const int wtce_stay_time = 1500;
 
-  static const int chatmessage_size = 29;
+  static const int chatmessage_size = 30;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -374,6 +374,8 @@ private:
   int screenshake_state = 0;
   int text_color = 0;
   bool is_presenting_evidence = false;
+
+  QString effect = "";
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
@@ -429,7 +431,7 @@ private:
   QLabel *ui_vp_showname;
   AOMovie *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOMovie *ui_vp_realization;
+  AOMovie *ui_vp_effect;
   AOMovie *ui_vp_testimony;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
@@ -469,6 +471,8 @@ private:
 
   QComboBox *ui_sfx_dropdown;
   AOButton *ui_sfx_remove;
+
+  QComboBox *ui_effects_dropdown;
 
   AOImage *ui_defense_bar;
   AOImage *ui_prosecution_bar;
@@ -579,6 +583,7 @@ public slots:
   void preanim_done();
   void do_screenshake();
   void do_flash();
+  void do_effect(QString fx_path, QString fx_sound, QString p_char);
   void play_char_sfx(QString sfx_name);
 
   void mod_called(QString p_ip);
@@ -619,6 +624,9 @@ private slots:
   void on_sfx_dropdown_changed(int p_index);
   void set_sfx_dropdown();
   void on_sfx_remove_clicked();
+
+  void set_effects_dropdown();
+  void on_effects_dropdown_changed(int p_index);
 
   QString get_char_sfx();
   int get_char_sfx_delay();

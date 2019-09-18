@@ -29,34 +29,40 @@ void AOMovie::play(QString p_image, QString p_char, QString p_custom_theme, int 
 {
   m_movie->stop();
 
-  QString shout_path;
-  QList<QString> pathlist;
+  QString shout_path = p_image;
+  if (!file_exists(p_image))
+  {
+    QList<QString> pathlist;
 
-  pathlist = {
+    pathlist = {
       ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" + p_custom_theme + "/" + p_image + "_bubble"),   //Misc path
       ao_app->get_image_suffix(ao_app->get_custom_theme_path(p_custom_theme, p_image)),                           //Custom theme path
       ao_app->get_image_suffix(ao_app->get_theme_path(p_image)),                                                  //Theme path
       ao_app->get_image_suffix(ao_app->get_default_theme_path(p_image)),                                          //Default theme path
       ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")),                                          //Placeholder path
       ao_app->get_image_suffix( ao_app->get_default_theme_path("placeholder")),                                 //Default placeholder path
-  };
+    };
 
-  //Add this at the beginning of the list - order matters.
-  if (p_image == "custom")
-    pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_image)));
-  else
-    pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_image + "_bubble")));
+    //Add this at the beginning of the list - order matters.
+    if (p_image == "custom")
+      pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_image)));
+    else
+      pathlist.prepend(ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_image + "_bubble")));
 
-  for (QString path : pathlist)
-  {
+    for (QString path : pathlist)
+    {
       if (file_exists(path))
       {
-          shout_path = path;
-          break;
+        shout_path = path;
+        break;
       }
+    }
   }
 
   m_movie->setFileName(shout_path);
+
+  if (m_movie->loopCount() == 0)
+    play_once = true;
 
   this->show();
   m_movie->start();
