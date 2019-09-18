@@ -1596,6 +1596,7 @@ void Courtroom::handle_chatmessage_2()
 {
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
+  ui_vp_effect->stop();
   //Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
 
