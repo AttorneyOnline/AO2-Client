@@ -141,8 +141,8 @@ void Courtroom::set_evidence_page()
     int n_real_evidence = n_evidence_button + current_evidence_page * max_evidence_on_page;
     AOEvidenceButton *f_evidence_button = ui_evidence_list.at(n_evidence_button);
 
-    //ie. the add evidence button
     f_evidence_button->set_selected(false);
+    f_evidence_button->setToolTip("");
     if (n_real_evidence == (total_evidence - 1))
     {
       f_evidence_button->set_theme_image("addevidence.png");
@@ -153,10 +153,11 @@ void Courtroom::set_evidence_page()
 
       if (n_real_evidence == current_evidence)
         f_evidence_button->set_selected(true);
+
+      f_evidence_button->setToolTip(QString::number(n_real_evidence+1) + ": " + local_evidence_list.at(n_real_evidence).name);
     }
     else
       f_evidence_button->set_image("");
-
 
     f_evidence_button->show();
   }
@@ -178,6 +179,14 @@ void Courtroom::on_evidence_name_edited(QString text)
   f_contents.append(f_evi.image);
 
   ao_app->send_server_packet(new AOPacket("EE", f_contents));
+}
+
+void Courtroom::on_evidence_name_double_clicked()
+{
+  if (ui_evidence_overlay->isVisible())
+    ui_evidence_name->setReadOnly(false);
+  else
+    ui_evidence_name->setReadOnly(true);
 }
 
 void Courtroom::on_evidence_image_name_edited()
@@ -243,7 +252,7 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   current_evidence = f_real_id;
 
-  ui_ic_chat_message->setFocus();
+//  ui_ic_chat_message->setFocus();
 
 }
 
@@ -319,6 +328,7 @@ void Courtroom::on_evidence_present_clicked()
 void Courtroom::on_evidence_delete_clicked()
 {
   ui_evidence_description->setReadOnly(true);
+  ui_evidence_name->setReadOnly(true);
   ui_evidence_overlay->hide();
 
   ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
@@ -331,7 +341,10 @@ void Courtroom::on_evidence_delete_clicked()
 void Courtroom::on_evidence_x_clicked()
 {
   ui_evidence_description->setReadOnly(true);
+  ui_evidence_name->setReadOnly(true);
   ui_evidence_overlay->hide();
+  ui_ic_chat_message->setFocus();
+}
 
   if (current_evidence >= local_evidence_list.size())
     return;

@@ -13,6 +13,7 @@ void AOLineEdit::mouseDoubleClickEvent(QMouseEvent *e)
   QLineEdit::mouseDoubleClickEvent(e);
 
   this->setReadOnly(false);
+  double_clicked();
 }
 
 void AOLineEdit::on_enter_pressed()

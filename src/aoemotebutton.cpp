@@ -13,21 +13,28 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x
   connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
 }
 
-void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
+void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
+{
+  if (file_exists(p_image))
+  {
+    this->setIcon(QIcon(p_image));
+    this->setIconSize(this->size());
+    this->setStyleSheet("border:0px");
+    this->setText("");
+  }
+  else
+  {
+    this->setText(p_emote_comment);
+    this->setStyleSheet("border-image:url(\"\")");
+  }
+}
+
+void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
 {
   QString emotion_number = QString::number(p_emote + 1);
   QString image_path = ao_app->get_static_image_suffix(ao_app->get_character_path(p_char, "emotions/button" + emotion_number + suffix));
 
-  if (file_exists(image_path))
-  {
-    this->setText("");
-    this->setStyleSheet("border-image:url(\"" + image_path + "\")");
-  }
-  else
-  {
-    this->setText(ao_app->get_emote_comment(p_char, p_emote));
-    this->setStyleSheet("border-image:url(\"\")");
-  }
+  this->set_image(image_path, ao_app->get_emote_comment(p_char, p_emote));
 }
 
 void AOEmoteButton::on_clicked()

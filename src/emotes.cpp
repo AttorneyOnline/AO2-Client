@@ -112,11 +112,12 @@ void Courtroom::set_emote_page()
     AOEmoteButton *f_emote = ui_emote_list.at(n_emote);
 
     if (n_real_emote == current_emote)
-      f_emote->set_image(current_char, n_real_emote, "_on");
+      f_emote->set_char_image(current_char, n_real_emote, "_on");
     else
-      f_emote->set_image(current_char, n_real_emote, "_off");
+      f_emote->set_char_image(current_char, n_real_emote, "_off");
 
     f_emote->show();
+    f_emote->setToolTip(QString::number(n_real_emote+1) + ": " + ao_app->get_emote_comment(current_char, n_real_emote));
   }
 
 }
@@ -130,7 +131,7 @@ void Courtroom::set_emote_dropdown()
 
   for (int n = 0 ; n < total_emotes ; ++n)
   {
-    emote_list.append(ao_app->get_emote_comment(current_char, n));
+    emote_list.append(QString::number(n+1) + ": " + ao_app->get_emote_comment(current_char, n));
   }
 
   ui_emote_dropdown->addItems(emote_list);
@@ -142,14 +143,14 @@ void Courtroom::select_emote(int p_id)
   int max = (max_emotes_on_page - 1) + current_emote_page * max_emotes_on_page;
 
   if (current_emote >= min && current_emote <= max)
-    ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_off");
+    ui_emote_list.at(current_emote % max_emotes_on_page)->set_char_image(current_char, current_emote, "_off");
 
   int old_emote = current_emote;
 
   current_emote = p_id;
 
   if (current_emote >= min && current_emote <= max)
-    ui_emote_list.at(current_emote % max_emotes_on_page)->set_image(current_char, current_emote, "_on");
+    ui_emote_list.at(current_emote % max_emotes_on_page)->set_char_image(current_char, current_emote, "_on");
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 

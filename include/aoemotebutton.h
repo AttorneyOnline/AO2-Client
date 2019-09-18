@@ -13,9 +13,8 @@ class AOEmoteButton : public QPushButton
 public:
   AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y);
 
-  //void set_on(QString p_char, int p_emote);
-  //void set_off(QString p_char, int p_emote);
-  void set_image(QString p_char, int p_emote, QString suffix);
+  void set_image(QString p_image, QString p_emote_comment);
+  void set_char_image(QString p_char, int p_emote, QString suffix);
 
   void set_id(int p_id) {m_id = p_id;}
   int get_id() {return m_id;}
