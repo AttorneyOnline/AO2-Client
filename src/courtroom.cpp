@@ -2318,7 +2318,7 @@ void Courtroom::start_chat_ticking()
   if (m_chatmessage[EFFECTS] != "")
   {
     QStringList fx_list = m_chatmessage[EFFECTS].split("|");
-    qDebug() << m_chatmessage[EFFECTS] << fx_list;
+//    qDebug() << m_chatmessage[EFFECTS] << fx_list;
     QString fx = fx_list[0];
     QString fx_sound;
     if (fx_list.length() > 1)
@@ -3529,15 +3529,12 @@ void Courtroom::set_effects_dropdown()
   {
     QString entry = ui_effects_dropdown->itemText(i);
     QString iconpath = ao_app->get_static_image_suffix(custom_path + entry);
-    qDebug() << iconpath << entry;
     if (!file_exists(iconpath))
     {
       iconpath = ao_app->get_static_image_suffix(theme_path  + entry);
-      qDebug() << iconpath << entry;
       if (!file_exists(iconpath))
       {
         iconpath = ao_app->get_static_image_suffix(default_path + entry);
-        qDebug() << iconpath << entry;
         if (!file_exists(iconpath))
           continue;
       }

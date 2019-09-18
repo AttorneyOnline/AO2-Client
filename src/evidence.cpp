@@ -189,7 +189,6 @@ void Courtroom::on_evidence_name_edited(QString text)
   evi_type f_evi = local_evidence_list.at(current_evidence);
 
   f_contents.append(QString::number(current_evidence));
-  qDebug() << text;
   f_contents.append(ui_evidence_name->text());
   f_contents.append(f_evi.description);
   f_contents.append(f_evi.image);
