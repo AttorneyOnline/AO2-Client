@@ -619,8 +619,11 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_effects_dropdown, "effects_dropdown");
   ui_effects_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
   ui_effects_dropdown->setToolTip(tr("Choose an effect to play on your next spoken message."));
-  ui_effects_dropdown->setIconSize(QSize(16, 16)); //Todo: don't do hardcoding hell - make it part of courtroom_design.ini
-  //Todo: actual list of effects
+  //Todo: recode this entire fucking system with these dumbass goddamn ini's why is everything so specifically coded for all these purposes
+  //is ABSTRACT CODING not a thing now huh what the FUCK why do I gotta do this pleASE FOR THE LOVE OF GOD SPARE ME FROM THIS FRESH HELL
+  //btw i still love coding.
+  QPoint p_point = ao_app->get_button_spacing("effects_icon_size", filename);
+  ui_effects_dropdown->setIconSize(QSize(p_point.x(), p_point.y()));
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state));

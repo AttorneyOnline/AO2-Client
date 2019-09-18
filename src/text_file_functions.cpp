@@ -884,7 +884,7 @@ QString AOApplication::get_effect(QString effect, QString p_char)
 QString AOApplication::get_effect_sound(QString fx_name, QString p_char)
 {
   QString p_effect = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_base_path() + "misc/effects/" + p_effect + "/effects.ini";
+  QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
   QString design_ini_path = get_theme_path("effects/effects.ini");
   QString default_path = get_default_theme_path("effects/effects.ini");
 
