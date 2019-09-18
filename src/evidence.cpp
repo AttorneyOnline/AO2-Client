@@ -1,6 +1,6 @@
 #include "courtroom.h"
 
-void Courtroom::construct_evidence()
+void Courtroom::initialize_evidence()
 {
   ui_evidence = new AOImage(this, ao_app);
 
@@ -29,6 +29,24 @@ void Courtroom::construct_evidence()
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                          "color: white;");
+
+  connect(ui_evidence_name, SIGNAL(textEdited(QString)), this, SLOT(on_evidence_name_edited(QString)));
+  connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
+  connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
+  connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
+  connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
+  connect(ui_evidence_image_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_name_edited()));
+  connect(ui_evidence_image_button, SIGNAL(clicked()), this, SLOT(on_evidence_image_button_clicked()));
+  connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
+
+  ui_evidence->hide();
+}
+
+void Courtroom::refresh_evidence()
+{
+  //Should properly refresh the evidence list
+  qDeleteAll(ui_evidence_list.begin(), ui_evidence_list.end());
+  ui_evidence_list.clear();
 
   set_size_and_pos(ui_evidence, "evidence_background");
   set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
@@ -71,17 +89,6 @@ void Courtroom::construct_evidence()
       x_mod_count = 0;
     }
   }
-
-  connect(ui_evidence_name, SIGNAL(textEdited(QString)), this, SLOT(on_evidence_name_edited(QString)));
-  connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
-  connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
-  connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
-  connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
-  connect(ui_evidence_image_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_name_edited()));
-  connect(ui_evidence_image_button, SIGNAL(clicked()), this, SLOT(on_evidence_image_button_clicked()));
-  connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
-
-  ui_evidence->hide();
 }
 
 void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
@@ -101,7 +108,7 @@ void Courtroom::set_evidence_page()
 
   for (AOEvidenceButton *i_button : ui_evidence_list)
   {
-    i_button->reset();
+    i_button->hide();
   }
 
   //to account for the "add evidence" button
@@ -135,19 +142,21 @@ void Courtroom::set_evidence_page()
     AOEvidenceButton *f_evidence_button = ui_evidence_list.at(n_evidence_button);
 
     //ie. the add evidence button
+    f_evidence_button->set_selected(false);
     if (n_real_evidence == (total_evidence - 1))
+    {
       f_evidence_button->set_theme_image("addevidence.png");
+    }
     else if (n_real_evidence < (total_evidence - 1))
     {
       f_evidence_button->set_image(local_evidence_list.at(n_real_evidence).image);
 
       if (n_real_evidence == current_evidence)
         f_evidence_button->set_selected(true);
-      else
-        f_evidence_button->set_selected(false);
     }
     else
       f_evidence_button->set_image("");
+
 
     f_evidence_button->show();
   }

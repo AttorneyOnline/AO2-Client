@@ -571,11 +571,13 @@ private:
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
-  void construct_emotes();
+  void initialize_emotes();
+  void refresh_emotes();
   void set_emote_page();
   void set_emote_dropdown();
 
-  void construct_evidence();
+  void initialize_evidence();
+  void refresh_evidence();
   void set_evidence_page();
 
 public slots:

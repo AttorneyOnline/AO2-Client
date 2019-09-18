@@ -2,11 +2,34 @@
 
 #include "aoemotebutton.h"
 
-void Courtroom::construct_emotes()
+void Courtroom::initialize_emotes()
 {
   ui_emotes = new QWidget(this);
 
+  ui_emote_left = new AOButton(this, ao_app);
+  ui_emote_right = new AOButton(this, ao_app);
+
+  ui_emote_dropdown = new QComboBox(this);
+
+  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
+  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
+
+  connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
+}
+
+void Courtroom::refresh_emotes()
+{
+  //Should properly refresh the emote list
+  qDeleteAll(ui_emote_list.begin(), ui_emote_list.end());
+  ui_emote_list.clear();
+
   set_size_and_pos(ui_emotes, "emotes");
+
+  set_size_and_pos(ui_emote_left, "emote_left");
+  ui_emote_left->set_image("arrow_left");
+
+  set_size_and_pos(ui_emote_right, "emote_right");
+  ui_emote_right->set_image("arrow_right");
 
   QPoint f_spacing = ao_app->get_button_spacing("emote_button_spacing", "courtroom_design.ini");
 

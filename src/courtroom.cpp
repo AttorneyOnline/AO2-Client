@@ -98,9 +98,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_testimony = new AOMovie(this, ao_app);
   ui_vp_testimony->set_play_once(false);
+  ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_effect = new AOMovie(this, ao_app);
+  ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_wtce = new AOMovie(this, ao_app);
+  ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_objection = new AOMovie(this, ao_app);
+  ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -147,12 +151,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_search->setFrame(false);
   ui_music_search->setPlaceholderText(tr("Search"));
 
-  construct_emotes();
+  initialize_emotes();
 
-  ui_emote_left = new AOButton(this, ao_app);
-  ui_emote_right = new AOButton(this, ao_app);
-
-  ui_emote_dropdown = new QComboBox(this);
   ui_pos_dropdown = new QComboBox(this);
   ui_pos_dropdown->addItem("wit");
   ui_pos_dropdown->addItem("def");
@@ -267,7 +267,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_evidence_button = new AOButton(this, ao_app);
 
-  construct_evidence();
+  initialize_evidence();
 
   construct_char_select();
 
@@ -284,10 +284,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
 
-  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
-  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
-
-  connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
   connect(ui_pos_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_pos_dropdown_changed(int)));
 
   connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
@@ -582,14 +578,6 @@ void Courtroom::set_widgets()
   //set_size_and_pos(ui_area_password, "area_password");
   set_size_and_pos(ui_music_search, "music_search");
 
-  set_size_and_pos(ui_emotes, "emotes");
-
-  set_size_and_pos(ui_emote_left, "emote_left");
-  ui_emote_left->set_image("arrow_left");
-
-  set_size_and_pos(ui_emote_right, "emote_right");
-  ui_emote_right->set_image("arrow_right");
-
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
   ui_pos_dropdown->setToolTip(tr("Set your character's supplementary background."));
@@ -820,6 +808,9 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_spectator, "spectator");
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to interact with the in-character screen."));
+
+  refresh_evidence();
+  refresh_emotes();
 }
 
 void Courtroom::set_fonts()
@@ -1060,6 +1051,8 @@ void Courtroom::update_character(int p_cid)
 
 void Courtroom::enter_courtroom()
 {
+  set_widgets();
+
   current_evidence_page = 0;
   current_evidence = 0;
 
@@ -1089,9 +1082,6 @@ void Courtroom::enter_courtroom()
   blip_player->set_volume(ui_blip_slider->value());
 
   ui_vp_testimony->stop();
-
-  set_widgets();
-
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
 }
 
@@ -3789,7 +3779,9 @@ void Courtroom::on_realization_clicked()
   if (realization_state == 0)
   {
     realization_state = 1;
-    effects_dropdown_find_and_set("realization");
+    if (effects_dropdown_find_and_set("realization"))
+      on_effects_dropdown_changed(ui_effects_dropdown->currentIndex());
+
     ui_realization->set_image("realization_pressed");
   }
   else
@@ -3980,8 +3972,8 @@ void Courtroom::on_reload_theme_clicked()
 
   //to update status on the background
   set_background(current_background);
-  update_character(m_cid);
   enter_courtroom();
+  update_character(m_cid);
 
   anim_state = 4;
   text_state = 3;
