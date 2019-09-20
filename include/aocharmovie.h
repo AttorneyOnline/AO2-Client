@@ -73,6 +73,9 @@ private:
   // These are the X and Y values before they are fixed based on the sprite's width.
   int x = 0;
   int y = 0;
+  // These are the width and height values before they are fixed based on the sprite's width.
+  int f_w = 0;
+  int f_h = 0;
 
   int frame = 0;
   int max_frames = 0;

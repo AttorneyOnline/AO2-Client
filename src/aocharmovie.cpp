@@ -232,14 +232,22 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
     else
         f_pixmap = QPixmap::fromImage(image);
     auto aspect_ratio = Qt::KeepAspectRatio;
+    auto transform_mode = Qt::SmoothTransformation;
 
-    if (f_pixmap.size().width() > f_pixmap.size().height())
-      aspect_ratio = Qt::KeepAspectRatioByExpanding;
-
-    if (f_pixmap.size().width() > this->size().width() || f_pixmap.size().height() > this->size().height())
-      f_pixmap = f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::SmoothTransformation);
+    if (f_pixmap.size().width() > this->size().width() && f_pixmap.size().height() <= this->size().height())
+    {
+      f_pixmap = f_pixmap.scaledToHeight(this->height(), transform_mode);
+    }
+    else if (f_pixmap.size().height() > this->size().height())
+    {
+      f_pixmap = f_pixmap.scaledToWidth(this->width(), transform_mode);
+    }
     else
-      f_pixmap = f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation);
+    {
+      f_pixmap = f_pixmap.scaled(this->width(), this->height(), aspect_ratio, transform_mode);
+    }
+    this->move((f_w - f_pixmap.width())/2, (f_h - f_pixmap.height())/2);
+    this->resize(f_pixmap.size());
 
     return f_pixmap;
 }
@@ -253,8 +261,9 @@ void AOCharMovie::set_frame(QPixmap f_pixmap)
 void AOCharMovie::combo_resize(int w, int h)
 {
   QSize f_size(w, h);
+  f_w = w;
+  f_h = h;
   this->resize(f_size);
-//  m_reader->setScaledSize(f_size);
 }
 
 int AOCharMovie::get_frame_delay(int delay)
