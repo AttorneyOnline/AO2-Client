@@ -20,17 +20,15 @@ void AOButton::set_image(QString p_image)
 
   if (file_exists(image_path))
   {
-    this->setIcon(QIcon(image_path));
-    this->setIconSize(this->size());
-    this->setStyleSheet("border:0px");
     this->setText("");
+    this->setStyleSheet("QPushButton { border-image: url(\"" + image_path + "\") 0 0 0 0 stretch stretch; }"
+        "QToolTip { background-image: url(); color: #000000; background-color: #ffffff; border: 0px; }");
   }
   else if (file_exists(default_image_path))
   {
-    this->setIcon(QIcon(default_image_path));
-    this->setIconSize(this->size());
-    this->setStyleSheet("border:0px");
     this->setText("");
+    this->setStyleSheet("QPushButton { border-image: url(\"" + default_image_path + "\"); }"
+        "QToolTip { background-image: url(); color: #000000; background-color: #ffffff; border: 0px; }");
   }
   else
     return;

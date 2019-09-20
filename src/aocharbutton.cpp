@@ -70,10 +70,14 @@ void AOCharButton::set_image(QString p_character)
   this->setText("");
 
   if (file_exists(image_path))
-    this->setStyleSheet("border-image:url(\"" + image_path + "\")");
+  {
+    this->setStyleSheet("QPushButton { border-image: url(\"" + image_path + "\") 0 0 0 0 stretch stretch; }"
+        "QToolTip { background-image: url(); color: #000000; background-color: #ffffff; border: 0px; }");
+  }
   else
   {
-    this->setStyleSheet("border-image:url()");
+    this->setStyleSheet("QPushButton { border-image: url(); }"
+        "QToolTip { background-image: url(); color: #000000; background-color: #ffffff; border: 0px; }");
     this->setText(p_character);
   }
 }

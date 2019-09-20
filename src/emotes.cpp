@@ -52,7 +52,7 @@ void Courtroom::refresh_emotes()
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
-    AOEmoteButton *f_emote = new AOEmoteButton(ui_emotes, ao_app, x_pos, y_pos);
+    AOEmoteButton *f_emote = new AOEmoteButton(ui_emotes, ao_app, x_pos, y_pos, button_width, button_height);
 
     ui_emote_list.append(f_emote);
 

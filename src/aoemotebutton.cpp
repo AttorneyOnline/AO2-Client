@@ -2,13 +2,13 @@
 
 #include "file_functions.h"
 
-AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
+AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y, int p_w, int p_h) : QPushButton(p_parent)
 {
   parent = p_parent;
   ao_app = p_ao_app;
 
   this->move(p_x, p_y);
-  this->resize(40, 40);
+  this->resize(p_w, p_h);
 
   connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
 }
@@ -17,15 +17,15 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
 {
   if (file_exists(p_image))
   {
-    this->setIcon(QIcon(p_image));
-    this->setIconSize(this->size());
-    this->setStyleSheet("border:0px");
     this->setText("");
+    this->setStyleSheet("QPushButton { border-image: url(\"" + p_image + "\") 0 0 0 0 stretch stretch; }"
+        "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
   }
   else
   {
     this->setText(p_emote_comment);
-    this->setStyleSheet("border-image:url(\"\")");
+    this->setStyleSheet("QPushButton { border-image: url(); }"
+        "QToolTip { background-image: url(); color: #000000; background-color: #ffffff; border: 0px; }");
   }
 }
 
