@@ -161,7 +161,7 @@ public:
   void set_pair_list();
 
   //sets desk and bg based on pos in chatmessage
-  void set_scene();
+  void set_scene(QString f_desk_mod, QString f_side);
 
   //sets text color based on text color in chatmessage
   void set_text_color();

@@ -1000,6 +1000,14 @@ void Courtroom::set_background(QString p_background)
     set_size_and_pos(ui_vp_chatbox, "chatbox");
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   }
+
+  ui_vp_speedlines->stop();
+  ui_vp_player_char->stop();
+  ui_vp_sideplayer_char->stop();
+  ui_vp_effect->stop();
+  ui_vp_message->hide();
+  ui_vp_chatbox->hide();
+  set_scene(ao_app->get_char_side(current_char), QString::number(ao_app->get_desk_mod(current_char, current_emote)));
 }
 
 void Courtroom::update_character(int p_cid)
@@ -1706,7 +1714,7 @@ void Courtroom::handle_chatmessage_2()
     f_weight = chatsize;
   this->set_qfont(ui_vp_message, "", QFont(font_name, f_weight), f_color, bold);
 
-  set_scene();
+  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
   set_text_color();
 
   // Check if the message needs to be centered.
@@ -1741,7 +1749,6 @@ void Courtroom::handle_chatmessage_2()
   if (m_chatmessage[OTHER_CHARID].isEmpty())
   {
     // If there is no second character, hide 'em, and center the first.
-    ui_vp_sideplayer_char->hide();
     ui_vp_sideplayer_char->stop();
     ui_vp_sideplayer_char->move(0,0);
 
@@ -2738,13 +2745,11 @@ void Courtroom::play_sfx()
     sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
 }
 
-void Courtroom::set_scene()
+void Courtroom::set_scene(QString f_desk_mod, QString f_side)
 {
   //witness is default if pos is invalid
   QString f_background = "witnessempty";
   QString f_desk_image = "stand";
-  QString f_desk_mod = m_chatmessage[DESK_MOD];
-  QString f_side = m_chatmessage[SIDE];
 
   if (f_side == "def")
   {
