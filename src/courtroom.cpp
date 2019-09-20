@@ -1508,6 +1508,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
+    if (ui_additive->isChecked())
+      ui_ic_chat_message->insert(" ");
     objection_state = 0;
     realization_state = 0;
     screenshake_state = 0;
