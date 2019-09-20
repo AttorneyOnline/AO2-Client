@@ -125,6 +125,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_area_list->hide();
   ui_music_list = new QListWidget(this);
 
+  ui_music_display = new AOMovie(this, ao_app);
+  ui_music_display->set_play_once(false);
+  ui_music_display->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+  ui_music_name = new ScrollText(ui_music_display);
+  ui_music_name->setText(tr("None"));
+  ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
+
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
@@ -544,6 +552,24 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_area_list, "music_list");
   set_size_and_pos(ui_music_list, "music_list");
 
+  set_size_and_pos(ui_music_name, "music_name");
+
+  ui_music_display->move(0, 0);
+  design_ini_result = ao_app->get_element_dimensions("music_display", "courtroom_design.ini");
+
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)
+  {
+    qDebug() << "W: could not find \"music_name\" in courtroom_design.ini";
+    ui_music_display->hide();
+  }
+  else
+  {
+    ui_music_display->move(design_ini_result.x, design_ini_result.y);
+    ui_music_display->combo_resize(design_ini_result.width, design_ini_result.height);
+  }
+
+  ui_music_display->play("music_display");
+
   if (is_ao2_bg)
   {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
@@ -827,6 +853,7 @@ void Courtroom::set_fonts()
   set_font(ui_server_chatlog, "", "server_chatlog");
   set_font(ui_music_list, "", "music_list");
   set_font(ui_area_list, "", "area_list");
+  set_font(ui_music_name, "", "music_name");
 
   set_dropdowns();
 }
@@ -1081,7 +1108,12 @@ void Courtroom::enter_courtroom()
   list_music();
   list_areas();
 
-  music_player->set_volume(ui_music_slider->value());
+  music_player->set_volume(ui_music_slider->value(), 0); //set music
+  //Set the ambience and other misc. music layers
+  for (int i = 1; i < music_player->m_channelmax; ++i)
+  {
+    music_player->set_volume(ui_sfx_slider->value(), i);
+  }
   sfx_player->set_volume(ui_sfx_slider->value());
   objection_player->set_volume(ui_sfx_slider->value());
   blip_player->set_volume(ui_blip_slider->value());
@@ -1145,14 +1177,12 @@ void Courtroom::list_areas()
   for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
   {
     QString i_area = "";
-    i_area.append("[");
-    i_area.append(QString::number(n_area));
-    i_area.append("] ");
-
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled)
     {
+      i_area.prepend("[" + QString::number(n_area) + "] "); //Give it the index
+
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
@@ -2873,30 +2903,33 @@ void Courtroom::handle_song(QStringList *p_contents)
   f_song_clear = f_song_clear.left(f_song_clear.lastIndexOf("."));
   int n_char = f_contents.at(1).toInt();
 
+  bool looping = true;
+  int channel = 0;
+  bool crossfade = false;
   if (n_char < 0 || n_char >= char_list.size())
   {
-    music_player->set_looping(true);
     int channel = 0;
     if (p_contents->length() > 3 && p_contents->at(3) != "-1")
-      music_player->set_looping(false);
+      looping = false;
 
     if (p_contents->length() > 4) //eyyy we want to change this song's CHANNEL huh
       channel = p_contents->at(4).toInt(); //let the music player handle it if it's bigger than the channel list
 
-    bool crossfade = false;
     if (p_contents->length() > 5) //CROSSFADE!? Are you MAD?
     {
-      qDebug() << p_contents->at(5);
       crossfade = p_contents->at(5) == "1"; //let the music player handle it if it's bigger than the channel list
     }
 
+    qDebug() << f_song << channel << p_contents->at(3) << looping;
+    music_player->set_looping(looping, channel);
     music_player->play(f_song, channel, crossfade);
+    if (channel == 0)
+      ui_music_name->setText(f_song);
   }
   else
   {
     QString str_char = char_list.at(n_char).name;
     QString str_show = char_list.at(n_char).name;
-    music_player->set_looping(true);
 
     if (p_contents->length() > 2)
     {
@@ -2905,20 +2938,15 @@ void Courtroom::handle_song(QStringList *p_contents)
           str_show = p_contents->at(2);
         }
     }
-    if (p_contents->length() > 3)
+    if (p_contents->length() > 3 && p_contents->at(3) != "-1")
     {
         //I am really confused why "-1" is "loop this song" and why anything else passes as "don't loop"
         //(if we even have this length) but alright
-        if(p_contents->at(3) != "-1")
-        {
-          music_player->set_looping(false);
-        }
+        looping = false;
     }
-    int channel = 0;
     if (p_contents->length() > 4) //eyyy we want to change this song's CHANNEL huh
       channel = p_contents->at(4).toInt(); //let the music player handle it if it's bigger than the channel list
 
-    bool crossfade = false;
     if (p_contents->length() > 5) //CROSSFADE!? Are you MAD?
       crossfade = p_contents->at(5) == "1"; //let the music player handle it if it's bigger than the channel list
 
@@ -2934,7 +2962,10 @@ void Courtroom::handle_song(QStringList *p_contents)
       }
 
       append_ic_text(f_song_clear, str_show, true);
+      music_player->set_looping(looping, channel);
       music_player->play(f_song, channel, crossfade);
+      if (channel == 0)
+        ui_music_name->setText(f_song);
     }
   }
 }
@@ -3915,13 +3946,18 @@ void Courtroom::on_text_color_changed(int p_color)
 
 void Courtroom::on_music_slider_moved(int p_value)
 {
-  music_player->set_volume(p_value);
+  music_player->set_volume(p_value, 0); //Set volume on music layer
   ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_sfx_slider_moved(int p_value)
 {
   sfx_player->set_volume(p_value);
+  //Set the ambience and other misc. music layers
+  for (int i = 1; i < music_player->m_channelmax; ++i)
+  {
+    music_player->set_volume(p_value, i);
+  }
   objection_player->set_volume(p_value);
   ui_ic_chat_message->setFocus();
 }
@@ -3985,7 +4021,6 @@ void Courtroom::on_guilty_clicked()
 void Courtroom::on_change_character_clicked()
 {
   music_player->set_volume(0);
-  sfx_player->set_volume(0);
   sfx_player->set_volume(0);
   blip_player->set_volume(0);
 

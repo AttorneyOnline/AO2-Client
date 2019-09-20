@@ -26,6 +26,7 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "chatlogpiece.h"
+#include "scrolltext.h"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -444,6 +445,9 @@ private:
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
   QListWidget *ui_music_list;
+
+  ScrollText *ui_music_name;
+  AOMovie *ui_music_display;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;

@@ -18,6 +18,8 @@ AOMusicPlayer::~AOMusicPlayer()
 void AOMusicPlayer::play(QString p_song, int channel, bool crossfade)
 {
   channel = channel % m_channelmax;
+  if (channel < 0) //wtf?
+      return;
   QString f_path = ao_app->get_music_path(p_song);
 //  QString d_path = f_path + ".txt";
 
@@ -39,27 +41,33 @@ void AOMusicPlayer::play(QString p_song, int channel, bool crossfade)
 //  }
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE;
+  if (m_looping)
+    flags |= BASS_SAMPLE_LOOP;
   DWORD newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
 
-  if (BASS_ChannelIsActive(m_stream_list[channel]) == BASS_ACTIVE_PLAYING && crossfade)
+  if (crossfade)
   {
     DWORD oldstream = m_stream_list[channel];
-
-    //Fade out the other sample and stop it
-    BASS_ChannelSlideAttribute(oldstream, BASS_ATTRIB_VOL|BASS_SLIDE_LOG, -1, 5000);
-    BASS_ChannelLock(oldstream, true);
     //Mute the new sample
     BASS_ChannelSetAttribute(newstream, BASS_ATTRIB_VOL, 0);
-    //Sync it with the new sample
-    BASS_ChannelSetPosition(newstream, BASS_ChannelGetPosition(oldstream, BASS_POS_BYTE), BASS_POS_BYTE);
+    //Crossfade time
+    if (BASS_ChannelIsActive(oldstream) == BASS_ACTIVE_PLAYING)
+    {
+      //Fade out the other sample and stop it
+      BASS_ChannelSlideAttribute(oldstream, BASS_ATTRIB_VOL|BASS_SLIDE_LOG, -1, 5000);
+      BASS_ChannelLock(oldstream, true);
+      //Sync it with the new sample
+      BASS_ChannelSetPosition(newstream, BASS_ChannelGetPosition(oldstream, BASS_POS_BYTE), BASS_POS_BYTE);
+      BASS_ChannelLock(oldstream, false);
+    }
     //Start it
     BASS_ChannelPlay(newstream, false);
     //Fade in our sample
     BASS_ChannelSlideAttribute(newstream, BASS_ATTRIB_VOL, static_cast<float>(m_volume / 100.0f), 1000);
-    BASS_ChannelLock(oldstream, false);
+
     m_stream_list[channel] = newstream;
   }
   else
@@ -67,7 +75,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool crossfade)
     BASS_ChannelStop(m_stream_list[channel]);
     m_stream_list[channel] = newstream;
     BASS_ChannelPlay(m_stream_list[channel], false);
-    this->set_volume(m_volume);
+    this->set_volume(m_volume, channel);
   }
 
   this->set_looping(m_looping); //Have to do this here due to any crossfading-related changes, etc.
@@ -82,7 +90,17 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
 {
   m_volume = p_value;
   float volume = m_volume / 100.0f;
-  BASS_ChannelSetAttribute(m_stream_list[channel], BASS_ATTRIB_VOL, volume);
+  if (channel < 0)
+  {
+    for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+    {
+      BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);
+    }
+  }
+  else
+  {
+    BASS_ChannelSetAttribute(m_stream_list[channel], BASS_ATTRIB_VOL, volume);
+  }
 }
 
 //void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
