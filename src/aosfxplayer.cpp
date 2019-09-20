@@ -31,7 +31,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel
 {
   if (channel == -1)
   {
-    if (m_stream_list[channel] != NULL)
+    if (BASS_ChannelIsActive(m_stream_list[channel]) == BASS_ACTIVE_PLAYING)
       m_channel = (m_channel + 1) % m_channelmax;
     channel = m_channel;
   }

@@ -2862,12 +2862,28 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   if (n_char < 0 || n_char >= char_list.size())
   {
-    music_player->play(f_song);
+    music_player->set_looping(true);
+    int channel = 0;
+    if (p_contents->length() > 3 && p_contents->at(3) != "-1")
+      music_player->set_looping(false);
+
+    if (p_contents->length() > 4) //eyyy we want to change this song's CHANNEL huh
+      channel = p_contents->at(4).toInt(); //let the music player handle it if it's bigger than the channel list
+
+    bool crossfade = false;
+    if (p_contents->length() > 5) //CROSSFADE!? Are you MAD?
+    {
+      qDebug() << p_contents->at(5);
+      crossfade = p_contents->at(5) == "1"; //let the music player handle it if it's bigger than the channel list
+    }
+
+    music_player->play(f_song, channel, crossfade);
   }
   else
   {
     QString str_char = char_list.at(n_char).name;
     QString str_show = char_list.at(n_char).name;
+    music_player->set_looping(true);
 
     if (p_contents->length() > 2)
     {
@@ -2884,11 +2900,14 @@ void Courtroom::handle_song(QStringList *p_contents)
         {
           music_player->set_looping(false);
         }
-        else
-        {
-          music_player->set_looping(true);
-        }
     }
+    int channel = 0;
+    if (p_contents->length() > 4) //eyyy we want to change this song's CHANNEL huh
+      channel = p_contents->at(4).toInt(); //let the music player handle it if it's bigger than the channel list
+
+    bool crossfade = false;
+    if (p_contents->length() > 5) //CROSSFADE!? Are you MAD?
+      crossfade = p_contents->at(5) == "1"; //let the music player handle it if it's bigger than the channel list
 
     if (!mute_map.value(n_char))
     {
@@ -2902,7 +2921,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       }
 
       append_ic_text(f_song_clear, str_show, true);
-      music_player->play(f_song);
+      music_player->play(f_song, channel, crossfade);
     }
   }
 }
@@ -4055,6 +4074,12 @@ void Courtroom::on_flip_clicked()
 
 void Courtroom::on_additive_clicked()
 {
+  if (ui_additive->isChecked())
+  {
+    ui_ic_chat_message->home(false); //move cursor to the start of the message
+    ui_ic_chat_message->insert(" "); //preface the message by whitespace
+    ui_ic_chat_message->end(false); //move cursor to the end of the message without selecting anything
+  }
   ui_ic_chat_message->setFocus();
 }
 

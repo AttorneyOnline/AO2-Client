@@ -1,5 +1,6 @@
 #ifndef AOMUSICPLAYER_H
 #define AOMUSICPLAYER_H
+#include "file_functions.h"
 
 #if defined(BASSAUDIO)
 #include "bass.h"
@@ -19,18 +20,30 @@ public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   virtual ~AOMusicPlayer();
 
-  void play(QString p_song);
-  void stop();
-  void set_volume(int p_value);
-  void set_looping(bool toggle);
+  void play(QString p_song, int channel=0, bool crossfade=false);
+  void stop(int channel=0);
+  void set_volume(int p_value, int channel=0);
+  void set_looping(bool toggle, int channel=0);
+
+  //These have to be public for the stupid sync thing
+//  QWORD loop_start = 0;
+//  QWORD loop_end = 0;
 
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
 
-  bool m_looping = true;
+  bool m_looping = false;
   int m_volume = 0;
-  HSTREAM m_stream;
+
+  const int m_channelmax = 4;
+  // Channel 0 = music
+  // Channel 1 = ambience
+  // Channel 2 = extra
+  // Channel 3 = extra
+  HSTREAM m_stream_list[4];
+
+//  HSYNC loop_sync;
 };
 #elif defined(QTAUDIO)
 class AOMusicPlayer
