@@ -579,6 +579,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_search, "music_search");
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
+  ui_pos_dropdown->setToolTip(tr("Set your character's emote to play on your next message."));
+
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
   ui_pos_dropdown->setToolTip(tr("Set your character's supplementary background."));
 
@@ -586,7 +588,7 @@ void Courtroom::set_widgets()
   ui_iniswap_dropdown->setEditable(true);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
   ui_iniswap_dropdown->setToolTip(tr("Set an 'iniswap', or an alternative character folder to refer to from your current character.\n"
-                                     "This information is saved to your base/characters/<charname>/iniswaps.ini"));
+                                     "Edit by typing and pressing Enter, [X] to remove. This saves to your base/characters/<charname>/iniswaps.ini"));
 
   set_size_and_pos(ui_iniswap_remove, "iniswap_remove");
   ui_iniswap_remove->setText("X");
@@ -596,8 +598,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_sfx_dropdown, "sfx_dropdown");
   ui_sfx_dropdown->setEditable(true);
   ui_sfx_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
-  ui_sfx_dropdown->setToolTip(tr("Set an 'iniswap', or an alternative character folder to refer to from your current character.\n"
-                                     "This information is saved to your base/characters/<charname>/iniswaps.ini"));
+  ui_sfx_dropdown->setToolTip(tr("Set a sound effect to play on your next 'Preanim'. Leaving it on Default will use the emote-defined sound (if any).\n"
+                                  "Edit by typing and pressing Enter, [X] to remove. This saves to your base/characters/<charname>/sounds.ini"));
 
   set_size_and_pos(ui_sfx_remove, "sfx_remove");
   ui_sfx_remove->setText("X");
@@ -606,7 +608,9 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_effects_dropdown, "effects_dropdown");
   ui_effects_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
-  ui_effects_dropdown->setToolTip(tr("Choose an effect to play on your next spoken message."));
+  ui_effects_dropdown->setToolTip(tr("Choose an effect to play on your next spoken message.\n"
+                                     "The effects are defined in your theme/effects/effects.ini. Your character can define custom effects by\n"
+                                     "char.ini [Options] category, effects = 'miscname' where it referes to misc/<miscname>/effects.ini to read the effects."));
   //Todo: recode this entire fucking system with these dumbass goddamn ini's why is everything so specifically coded for all these purposes
   //is ABSTRACT CODING not a thing now huh what the FUCK why do I gotta do this pleASE FOR THE LOVE OF GOD SPARE ME FROM THIS FRESH HELL
   //btw i still love coding.
@@ -716,7 +720,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->setText(tr("Custom Shout!"));
   ui_custom_objection->set_image("custom");
-  ui_custom_objection->setToolTip(tr("This will display the custom character-defined animation in the viewport as soon as it is pressed."));
+  ui_custom_objection->setToolTip(tr("This will display the custom character-defined animation in the viewport as soon as it is pressed.\n"
+                                     "To make one, your character's folder must contain custom.[webp/apng/gif/png] and custom.wav"));
 
   set_size_and_pos(ui_realization, "realization");
   ui_realization->set_image("realization");
@@ -1551,17 +1556,17 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     switch (objection_mod)
     {
     case 1:
-      ui_vp_objection->play("holdit", f_char, f_custom_theme, 724);
+      ui_vp_objection->play("holdit_bubble", f_char, f_custom_theme, 724);
       objection_player->play("holdit.wav", f_char, f_custom_theme);
       break;
     case 2:
-      ui_vp_objection->play("objection", f_char, f_custom_theme, 724);
+      ui_vp_objection->play("objection_bubble", f_char, f_custom_theme, 724);
       objection_player->play("objection.wav", f_char, f_custom_theme);
       if(ao_app->objection_stop_music())
           music_player->stop();
       break;
     case 3:
-      ui_vp_objection->play("takethat", f_char, f_custom_theme, 724);
+      ui_vp_objection->play("takethat_bubble", f_char, f_custom_theme, 724);
       objection_player->play("takethat.wav", f_char, f_custom_theme);
       break;
     //case 4 is AO2 only
@@ -1893,7 +1898,9 @@ void Courtroom::do_flash()
   if(!ao_app->is_shake_flash_enabled())
       return;
 
-  ui_vp_effect->play("realizationflash", "", "", 60);
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_custom_theme = ao_app->get_char_shouts(f_char);
+  ui_vp_effect->play("realizationflash", f_char, f_custom_theme, 60);
 }
 
 void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char)
@@ -1948,12 +1955,14 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_sideplayer_char->hide();
     ui_vp_player_char->move(0,0);
 
+    QString f_char = m_chatmessage[CHAR_NAME];
+    QString f_custom_theme = ao_app->get_char_shouts(f_char);
     if (side == "pro" ||
         side == "hlp" ||
         side == "wit")
-      ui_vp_speedlines->play("prosecution_speedlines");
+      ui_vp_speedlines->play("prosecution_speedlines", f_char, f_custom_theme);
     else
-      ui_vp_speedlines->play("defense_speedlines");
+      ui_vp_speedlines->play("defense_speedlines", f_char, f_custom_theme);
 
   }
 
@@ -2412,7 +2421,9 @@ void Courtroom::chat_tick()
       anim_state = 3;
       ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
     }
-    ui_vp_chat_arrow->play("chat_arrow"); //Chat stopped being processed, indicate that.
+    QString f_char = m_chatmessage[CHAR_NAME];
+    QString f_custom_theme = ao_app->get_char_shouts(f_char);
+    ui_vp_chat_arrow->play("chat_arrow", f_char, f_custom_theme); //Chat stopped being processed, indicate that.
   }
 
   else
@@ -3988,13 +3999,14 @@ void Courtroom::on_reload_theme_clicked()
 {
   ao_app->reload_theme();
 
-  //to update status on the background
-  set_background(current_background);
   enter_courtroom();
   update_character(m_cid);
 
   anim_state = 4;
   text_state = 3;
+
+  //to update status on the background
+  set_background(current_background);
 }
 
 void Courtroom::on_back_to_lobby_clicked()
