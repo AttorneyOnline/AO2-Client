@@ -123,7 +123,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_area_list = new QListWidget(this);
   ui_area_list->hide();
-  ui_music_list = new QListWidget(this);
+  ui_music_list = new QTreeWidget(this);
+  ui_music_list->setColumnCount(1);
+  ui_music_list->setHeaderHidden(true);
+  ui_music_list->header()->setStretchLastSection(false);
+  ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
   ui_music_display = new AOMovie(this, ao_app);
   ui_music_display->set_play_once(false);
@@ -308,7 +312,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
-  connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
+  connect(ui_music_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_music_list_double_clicked(QTreeWidgetItem*, int)));
   connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
 
   connect(ui_hold_it, SIGNAL(clicked()), this, SLOT(on_hold_it_clicked()));
@@ -1001,13 +1005,13 @@ void Courtroom::set_background(QString p_background)
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   }
 
-  ui_vp_speedlines->stop();
-  ui_vp_player_char->stop();
-  ui_vp_sideplayer_char->stop();
-  ui_vp_effect->stop();
-  ui_vp_message->hide();
-  ui_vp_chatbox->hide();
-  set_scene(ao_app->get_char_side(current_char), QString::number(ao_app->get_desk_mod(current_char, current_emote)));
+//  ui_vp_speedlines->stop();
+//  ui_vp_player_char->stop();
+//  ui_vp_sideplayer_char->stop();
+//  ui_vp_effect->stop();
+//  ui_vp_message->hide();
+//  ui_vp_chatbox->hide();
+//  set_scene(ao_app->get_char_side(current_char), QString::number(ao_app->get_desk_mod(current_char, current_emote)));
 }
 
 void Courtroom::update_character(int p_cid)
@@ -1142,26 +1146,43 @@ void Courtroom::list_music()
 
   int n_listed_songs = 0;
 
+  QTreeWidgetItem *parent = nullptr;
   for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
   {
     QString i_song = music_list.at(n_song);
-    QString i_song_listname = i_song;
-    i_song_listname = i_song_listname.left(i_song_listname.lastIndexOf("."));
+    QString i_song_listname = i_song.left(i_song.lastIndexOf("."));
 
-    if (i_song.toLower().contains(ui_music_search->text().toLower()))
+    QTreeWidgetItem *treeItem;
+    if (i_song_listname != i_song && parent != nullptr) //not a category, parent exists
+      treeItem = new QTreeWidgetItem(parent);
+    else
+      treeItem = new QTreeWidgetItem(ui_music_list);
+    treeItem->setText(0, i_song);
+    music_row_to_number.append(n_song);
+
+    QString song_path = ao_app->get_music_path(i_song);
+
+    if (file_exists(song_path))
+      treeItem->setBackground(0, found_brush);
+    else
+      treeItem->setBackground(0, missing_brush);
+
+    if (i_song_listname == i_song) //Not supposed to be a song to begin with - a category?
+      parent = treeItem;
+    ++n_listed_songs;
+
+    if (ui_music_search->text() != "")
+      treeItem->setHidden(true);
+  }
+
+  if (ui_music_search->text() != "")
+  {
+    QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 0);
+    foreach(QTreeWidgetItem* item, clist)
     {
-      ui_music_list->addItem(i_song_listname);
-      music_row_to_number.append(n_song);
-
-      QString song_path = ao_app->get_music_path(i_song);
-
-      if (file_exists(song_path))
-        ui_music_list->item(n_listed_songs)->setBackground(found_brush);
-      else
-        ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
-
-      ++n_listed_songs;
+        item->setHidden(false);
     }
+    ui_music_list->expandAll();
   }
 }
 
@@ -3736,12 +3757,12 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   }
 }
 
-void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
+void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
   if (is_muted)
     return;
 
-  QString p_song = music_list.at(music_row_to_number.at(p_model.row()));
+  QString p_song = p_item->text(column);
 
   if (!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled)
   {

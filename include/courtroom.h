@@ -32,6 +32,8 @@
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QListWidget>
+#include <QTreeWidget>
+#include <QHeaderView>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSlider>
@@ -444,7 +446,7 @@ private:
 
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
-  QListWidget *ui_music_list;
+  QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
   AOMovie *ui_music_display;
@@ -610,7 +612,7 @@ private slots:
   void on_ooc_return_pressed();
 
   void on_music_search_edited(QString p_text);
-  void on_music_list_double_clicked(QModelIndex p_model);
+  void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_area_list_double_clicked(QModelIndex p_model);
 
   void select_emote(int p_id);
