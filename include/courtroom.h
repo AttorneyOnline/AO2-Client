@@ -150,6 +150,9 @@ public:
   //sets the current background to argument. also does some checks to see if it's a legacy bg
   void set_background(QString p_background);
 
+  //sets the local character pos/side to use.
+  void set_side(QString p_side);
+
   //sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
@@ -412,6 +415,7 @@ private:
   bool server_ooc = true;
 
   QString current_background = "default";
+  QString current_side = "";
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;

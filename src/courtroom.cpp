@@ -1005,14 +1005,43 @@ void Courtroom::set_background(QString p_background)
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   }
 
-//  ui_vp_speedlines->stop();
-//  ui_vp_player_char->stop();
-//  ui_vp_sideplayer_char->stop();
-//  ui_vp_effect->stop();
-//  ui_vp_message->hide();
-//  ui_vp_chatbox->hide();
-//  set_scene(ao_app->get_char_side(current_char), QString::number(ao_app->get_desk_mod(current_char, current_emote)));
+  ui_vp_speedlines->stop();
+  ui_vp_player_char->stop();
+  ui_vp_sideplayer_char->stop();
+  ui_vp_effect->stop();
+  ui_vp_message->hide();
+  ui_vp_chatbox->hide();
+  set_scene(QString::number(ao_app->get_desk_mod(current_char, current_emote)), current_side);
 }
+
+void Courtroom::set_side(QString p_side)
+{
+  if (p_side == "")
+    current_side = ao_app->get_char_side(current_char);
+  else
+    current_side = p_side;
+
+  qDebug() << current_side;
+  for (int i = 0; i < ui_pos_dropdown->count(); ++i)
+  {
+    QString pos = ui_pos_dropdown->itemText(i);
+    if (pos == current_side)
+    {
+      //Block the signals to prevent setCurrentIndex from triggering a pos change
+      ui_pos_dropdown->blockSignals(true);
+
+      //Set the index on dropdown ui element to let you know what pos you're on right now
+      ui_pos_dropdown->setCurrentIndex(i);
+
+      //Unblock the signals so the element can be used for setting pos again
+      ui_pos_dropdown->blockSignals(false);
+
+      //alright we dun, jobs done here boyos
+      break;
+    }
+  }
+}
+
 
 void Courtroom::update_character(int p_cid)
 {
@@ -1052,7 +1081,9 @@ void Courtroom::update_character(int p_cid)
   set_sfx_dropdown();
   set_effects_dropdown();
 
-  QString side = ao_app->get_char_side(f_char);
+  QString side = current_side;
+  if (side == "")
+    side = ao_app->get_char_side(current_char);
 
   if (side == "jud")
   {
@@ -1320,7 +1351,9 @@ void Courtroom::on_chat_return_pressed()
 
   QStringList packet_contents;
 
-  QString f_side = ao_app->get_char_side(current_char);
+  QString f_side = current_side;
+  if (f_side == "")
+    f_side = ao_app->get_char_side(current_char);
 
   QString f_desk_mod = "chat";
 
@@ -2946,7 +2979,6 @@ void Courtroom::handle_song(QStringList *p_contents)
       crossfade = p_contents->at(5) == "1"; //let the music player handle it if it's bigger than the channel list
     }
 
-    qDebug() << f_song << channel << p_contents->at(3) << looping;
     music_player->set_looping(looping, channel);
     music_player->play(f_song, channel, crossfade);
     if (channel == 0)

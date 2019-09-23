@@ -594,7 +594,19 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed)
+    {
+      if (f_contents.size() >= 2) //We have a pos included in the background packet!
+        w_courtroom->set_side(f_contents.at(1));
       w_courtroom->set_background(f_contents.at(0));
+    }
+  }
+  else if (header == "SP")
+  {
+    if (f_contents.size() < 1)
+      goto end;
+
+    if (courtroom_constructed) //We were sent a "set position" packet
+      w_courtroom->set_side(f_contents.at(0));
   }
   //server accepting char request(CC) packet
   else if (header == "PV")
