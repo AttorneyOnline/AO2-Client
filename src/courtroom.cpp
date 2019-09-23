@@ -1211,7 +1211,9 @@ void Courtroom::list_music()
     QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 0);
     foreach(QTreeWidgetItem* item, clist)
     {
-        item->setHidden(false);
+      if (item->parent() != nullptr) //So the category shows up too
+        item->parent()->setHidden(false);
+      item->setHidden(false);
     }
     ui_music_list->expandAll();
   }
