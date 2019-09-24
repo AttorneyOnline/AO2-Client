@@ -609,7 +609,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_search, "music_search");
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
-  ui_pos_dropdown->setToolTip(tr("Set your character's emote to play on your next message."));
+  ui_emote_dropdown->setToolTip(tr("Set your character's emote to play on your next message."));
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
   ui_pos_dropdown->setToolTip(tr("Set your character's supplementary background."));
@@ -629,7 +629,7 @@ void Courtroom::set_widgets()
   ui_sfx_dropdown->setEditable(true);
   ui_sfx_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
   ui_sfx_dropdown->setToolTip(tr("Set a sound effect to play on your next 'Preanim'. Leaving it on Default will use the emote-defined sound (if any).\n"
-                                  "Edit by typing and pressing Enter, [X] to remove. This saves to your base/characters/<charname>/sounds.ini"));
+                                  "Edit by typing and pressing Enter, [X] to remove. This saves to your base/characters/<charname>/soundlist.ini"));
 
   set_size_and_pos(ui_sfx_remove, "sfx_remove");
   ui_sfx_remove->setText("X");
@@ -738,7 +738,7 @@ void Courtroom::set_widgets()
   ui_additive->setToolTip(tr("Add text to your last spoken message when checked."));
 
   set_size_and_pos(ui_guard, "guard");
-  ui_additive->setToolTip(tr("Do not listen to mod calls when checked, preventing them from playing sounds or focusing attention on the window."));
+  ui_guard->setToolTip(tr("Do not listen to mod calls when checked, preventing them from playing sounds or focusing attention on the window."));
 
   set_size_and_pos(ui_casing, "casing");
   ui_casing->setToolTip(tr("Lets you receive case alerts when enabled.\n"
@@ -1215,8 +1215,8 @@ void Courtroom::list_music()
         item->parent()->setHidden(false);
       item->setHidden(false);
     }
-    ui_music_list->expandAll();
   }
+  ui_music_list->expandAll(); //Workaround, it needs to preserve the "expanded categories" due to list music being updated constantly by some servers
 }
 
 void Courtroom::list_areas()
@@ -1603,7 +1603,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
-  is_additive = false;
+  //Hey, our message showed up! Cool!
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
@@ -1621,11 +1621,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_realization->set_image("realization");
     ui_screenshake->set_image("screenshake");
     ui_evidence_present->set_image("present_disabled");
-
-
-    if (ao_app->additive_enabled && ui_vp_player_char->m_char == m_chatmessage[CHAR_NAME])
-      is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
   }
+
+  //Let the server handle actually checking if they're allowed to do this.
+  is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
 
   chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
   ic_chatlog_history.append(*temp);
