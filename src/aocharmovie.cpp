@@ -153,8 +153,12 @@ void AOCharMovie::play()
 {
   play_frame_effect(frame);
   if (max_frames <= 1)
-    return;
-  ticker->start(this->get_frame_delay(movie_delays[frame]));
+  {
+    play_once = true;
+    ticker->start(60);
+  }
+  else
+    ticker->start(this->get_frame_delay(movie_delays[frame]));
 }
 
 void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
@@ -281,7 +285,7 @@ void AOCharMovie::move(int ax, int ay)
 void AOCharMovie::movie_ticker()
 {
   ++frame;
-  if(frame == max_frames)
+  if(frame >= max_frames)
   {
     if(play_once)
     {
