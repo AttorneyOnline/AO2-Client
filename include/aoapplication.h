@@ -242,7 +242,7 @@ public:
   //Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);
 
-  // Returns the colour from the misc folder.
+  // Returns the color from the misc folder.
   QColor get_chat_color(QString p_identifier, QString p_chat);
 
   //Returns the sfx with p_identifier from sounds.ini in the current theme path

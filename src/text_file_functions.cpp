@@ -436,42 +436,40 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 {
   QColor return_color(255, 255, 255);
 
-  if (p_identifier == "_inline_grey")
-  {
-    return_color = QColor(187, 187, 187);
+  switch (p_identifier.toInt()) {
+    case WHITE:
+    case GREEN:
+      return_color = QColor(0, 255, 0);
+      break;
+    case RED:
+      return_color = QColor(255, 0, 0);
+      break;
+    case ORANGE:
+      return_color = QColor(255, 165, 0);
+      break;
+    case BLUE:
+      return_color = QColor(45, 150, 255);
+      break;
+    case YELLOW:
+      return_color = QColor(255, 255, 0);
+      break;
+    case RAINBOW: // 6 is rainbow.
+    case PINK:
+      return_color = QColor(255, 192, 203);
+      break;
+    case CYAN:
+      return_color = QColor(0, 255, 255);
+      break;
+    case GRAY:
+      return_color = QColor(187, 187, 187);
+      break;
+    case BLANK:
+      return_color = QColor(0, 0, 0, 0);
+      break;
+    default:
+      return_color = QColor(255, 255, 255);
+      break;
   }
-  else
-  {
-    switch (p_identifier.toInt()) {
-      case 1:
-        return_color = QColor(0, 255, 0);
-        break;
-      case 2:
-        return_color = QColor(255, 0, 0);
-        break;
-      case 3:
-        return_color = QColor(255, 165, 0);
-        break;
-      case 4:
-        return_color = QColor(45, 150, 255);
-        break;
-      case 5:
-        return_color = QColor(255, 255, 0);
-        break;
-      case 7:
-        return_color = QColor(255, 192, 203);
-        break;
-      case 8:
-        return_color = QColor(0, 255, 255);
-        break;
-      case 0:
-      case 6: // 6 is rainbow.
-      default:
-        return_color = QColor(255, 255, 255);
-        break;
-    }
-  }
-
   p_identifier = p_identifier.prepend("c");
   QString design_ini_path = get_base_path() + "misc/" + p_chat + "/config.ini";
   QString default_path = get_base_path() + "misc/default/config.ini";

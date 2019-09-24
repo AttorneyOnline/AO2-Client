@@ -171,7 +171,7 @@ public:
   //sets text color based on text color in chatmessage
   void set_text_color();
 
-  // And gets the colour, too!
+  // And gets the color, too!
   QColor get_text_color(QString color);
 
   //takes in serverD-formatted IP list as prints a converted version to server OOC
@@ -202,7 +202,7 @@ public:
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
-  void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
+  void append_server_chatmessage(QString p_name, QString p_message, QString p_color);
 
   //these functions handle chatmessages sequentially.
   //The process itself is very convoluted and merits separate documentation
@@ -213,7 +213,7 @@ public:
 
   //This function filters out the common CC inline text trickery, for appending to
   //the IC chatlog.
-  QString filter_ic_text(QString p_text);
+  QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1, int default_color = WHITE);
 
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
@@ -259,18 +259,6 @@ private:
 
   QParallelAnimationGroup *screenshake_animation_group = new QParallelAnimationGroup;
 
-  // This is for inline message-colouring.
-
-  enum INLINE_COLOURS {
-      INLINE_BLUE,
-      INLINE_GREEN,
-      INLINE_ORANGE,
-      INLINE_GREY
-  };
-
-  // A stack of inline colours.
-  std::stack<INLINE_COLOURS> inline_colour_stack;
-
   bool next_character_is_not_special = false; // If true, write the
                         // next character as it is.
 
@@ -278,14 +266,6 @@ private:
 
   int current_display_speed = 3;
   int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
-
-  // This is for checking if the character should start talking again
-  // when an inline blue text ends.
-  bool entire_message_is_blue = false;
-
-  // And this is the inline 'talking checker'. Counts how 'deep' we are
-  // in inline blues.
-  int inline_blue_depth = 0;
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
@@ -356,6 +336,7 @@ private:
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
+  QString additive_previous = "";
 
   //char id, muted or not
   QMap<int, bool> mute_map;

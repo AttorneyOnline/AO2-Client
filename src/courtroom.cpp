@@ -1266,7 +1266,7 @@ void Courtroom::list_areas()
 
       if (ao_app->arup_enabled)
       {
-        // Colouring logic here.
+        // Coloring logic here.
         ui_area_list->item(n_listed_areas)->setBackground(free_brush);
         if (arup_locks.at(n_area) == "LOCKED")
         {
@@ -1301,21 +1301,21 @@ void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
   ui_ms_chatlog->append_chatmessage(f_name, f_message, ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini").name());
 }
 
-void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_colour)
+void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_color)
 {
-  QString colour = "#000000";
+  QString color = "#000000";
 
-  if (p_colour == "0")
-    colour = ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini").name();
-  if (p_colour == "1")
-    colour = ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini").name();
+  if (p_color == "0")
+    color = ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini").name();
+  if (p_color == "1")
+    color = ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini").name();
   if(p_message == "Logged in as a moderator.")
   {
     ui_guard->show();
     append_server_chatmessage("CLIENT", "You were granted the Disable Modcalls button.", "1");
   }
 
-  ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
+  ui_server_chatlog->append_chatmessage(p_name, p_message, color);
 }
 
 void Courtroom::on_chat_return_pressed()
@@ -1635,7 +1635,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ic_chatlog_history.removeFirst();
   }
 
-  append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
+  append_ic_text(m_chatmessage[MESSAGE], f_showname);
 
   previous_ic_message = f_message;
 
@@ -2060,19 +2060,17 @@ void Courtroom::handle_chatmessage_3()
 
   int f_anim_state = 0;
   //BLUE is from an enum in datatypes.h
-  bool text_is_blue = m_chatmessage[TEXT_COLOR].toInt() == BLUE;
+  bool text_is_blue = m_chatmessage[TEXT_COLOR].toInt() == BLUE || m_chatmessage[TEXT_COLOR].toInt() == ORANGE;
 
   if (!text_is_blue && text_state == 1)
   {
     //talking
     f_anim_state = 2;
-    entire_message_is_blue = false;
   }
   else
   {
     //idle
     f_anim_state = 3;
-    entire_message_is_blue = true;
   }
 
   if (f_anim_state <= anim_state)
@@ -2108,148 +2106,156 @@ void Courtroom::handle_chatmessage_3()
 
 }
 
-QString Courtroom::filter_ic_text(QString p_text)
+QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int default_color)
 {
   // Get rid of centering.
-  if(p_text.startsWith(": ~~"))
-  {
-      // Don't forget, the p_text part actually everything after the name!
-      // Hence why we check for ': ~~'.
+  if(p_text.startsWith("~~"))
+      p_text.remove(0,2);
 
-      // Let's remove those two tildes, then.
-      // : _ ~ ~
-      // 0 1 2 3
-      p_text.remove(2,2);
+  int check_pos = 0;
+  bool ic_next_is_not_special = false;
+  QString f_character = p_text.at(check_pos);
+  std::stack<COLOR> ic_color_stack;
+
+  if (colorize)
+  {
+    ic_color_stack.push(static_cast<COLOR>(default_color));
+    qDebug() << ic_color_stack.top();
+    QString appendage = "<font color=\""+ get_text_color(QString::number(ic_color_stack.top())).name(QColor::HexRgb) +"\">";
+    p_text.insert(check_pos, appendage);
+    check_pos += appendage.size();
+    if (pos > -1)
+      pos += appendage.size();
   }
 
-  // Get rid of the inline-colouring.
-  // I know, I know, excessive code duplication.
-  // Nobody looks in here, I'm fine.
-  int trick_check_pos = 0;
-  bool ic_next_is_not_special = false;
-  QString f_character = p_text.at(trick_check_pos);
-  std::stack<INLINE_COLOURS> ic_colour_stack;
-  while (trick_check_pos < p_text.size())
+  while (check_pos < p_text.size())
   {
-      f_character = p_text.at(trick_check_pos);
+    f_character = p_text.at(check_pos);
+    bool color_update = false;
 
-      // Escape character.
-      if (f_character == "\\" and !ic_next_is_not_special)
+    if (!ic_next_is_not_special)
+    {
+      if (f_character == "\\")
       {
-          ic_next_is_not_special = true;
-          p_text.remove(trick_check_pos,1);
+        ic_next_is_not_special = true;
+        p_text.remove(check_pos, 1);
+        check_pos -= 1;
+        pos -= 1;
       }
 
-      // Text speed modifier.
-      else if (f_character == "{" and !ic_next_is_not_special)
+      //Nothing related to colors here
+      else if (f_character == "{" || f_character == "}" || f_character == "@" || f_character == "$")
       {
-          p_text.remove(trick_check_pos,1);
-      }
-      else if (f_character == "}" and !ic_next_is_not_special)
-      {
-          p_text.remove(trick_check_pos,1);
+        p_text.remove(check_pos, 1);
+        check_pos -= 1;
+        pos -= 1;
       }
 
-      else if (f_character == "$" and !ic_next_is_not_special)
+      //Colors that destroy the character
+      else if (f_character == "`")
       {
-          p_text.remove(trick_check_pos,1);
-      }
-
-      else if (f_character == "@" and !ic_next_is_not_special)
-      {
-          p_text.remove(trick_check_pos,1);
-      }
-
-      // Orange inline colourisation.
-      else if (f_character == "|" and !ic_next_is_not_special)
-      {
-          if (!ic_colour_stack.empty())
-          {
-              if (ic_colour_stack.top() == INLINE_ORANGE)
-              {
-                  ic_colour_stack.pop();
-                  p_text.remove(trick_check_pos,1);
-              }
-              else
-              {
-                  ic_colour_stack.push(INLINE_ORANGE);
-                  p_text.remove(trick_check_pos,1);
-              }
-          }
+        if (colorize)
+        {
+          if (!ic_color_stack.empty() && ic_color_stack.top() == GREEN && default_color != GREEN)
+            ic_color_stack.pop(); //Cease our coloring
           else
           {
-              ic_colour_stack.push(INLINE_ORANGE);
-              p_text.remove(trick_check_pos,1);
+            ic_color_stack.push(GREEN); //Begin our coloring
           }
+          color_update = true;
+        }
+        else
+          p_text.remove(check_pos, 1);
       }
-
-      // Blue inline colourisation.
-      else if (f_character == "(" and !ic_next_is_not_special)
+      else if (f_character == "|")
       {
-          ic_colour_stack.push(INLINE_BLUE);
-          trick_check_pos++;
-      }
-      else if (f_character == ")" and !ic_next_is_not_special
-               and !ic_colour_stack.empty())
-      {
-          if (ic_colour_stack.top() == INLINE_BLUE)
-          {
-              ic_colour_stack.pop();
-              trick_check_pos++;
-          }
+        if (colorize)
+        {
+          if (!ic_color_stack.empty() && ic_color_stack.top() == ORANGE && default_color != ORANGE)
+            ic_color_stack.pop(); //Cease our coloring
           else
           {
-              ic_next_is_not_special = true;
+            ic_color_stack.push(ORANGE); //Begin our coloring
           }
+          color_update = true;
+        }
+        else
+          p_text.remove(check_pos, 1);
       }
 
-      // Grey inline colourisation.
-      else if (f_character == "[" and !ic_next_is_not_special)
+      //Colors that don't destroy the character and use 2 chars for beginning/end
+      else if (colorize && f_character == "(")
       {
-          ic_colour_stack.push(INLINE_GREY);
-          trick_check_pos++;
+        ic_color_stack.push(BLUE); //Begin our coloring
+        color_update = true;
       }
-      else if (f_character == "]" and !ic_next_is_not_special
-               and !ic_colour_stack.empty())
+      else if (colorize && f_character == ")" && ic_color_stack.top() == BLUE)
       {
-          if (ic_colour_stack.top() == INLINE_GREY)
-          {
-              ic_colour_stack.pop();
-              trick_check_pos++;
-          }
-          else
-          {
-              ic_next_is_not_special = true;
-          }
+        ic_color_stack.pop(); //Cease our coloring
+        color_update = true;
+      }
+      else if (colorize && f_character == "[")
+      {
+        if (colorize)
+          ic_color_stack.push(GRAY); //Begin our coloring
+        color_update = true;
+      }
+      else if (colorize && f_character == "]" && ic_color_stack.top() == GRAY)
+      {
+        if (colorize)
+          ic_color_stack.pop(); //Cease our coloring
+        color_update = true;
       }
 
-      // Green inline colourisation.
-      else if (f_character == "`" and !ic_next_is_not_special)
+      //Parse the newest color stack
+      if (!ic_next_is_not_special && color_update && (pos <= -1 || check_pos < pos)) //Only color text if we haven't reached the "invisible threshold"
       {
-          if (!ic_colour_stack.empty())
-          {
-              if (ic_colour_stack.top() == INLINE_GREEN)
-              {
-                  ic_colour_stack.pop();
-                  p_text.remove(trick_check_pos,1);
-              }
-              else
-              {
-                  ic_colour_stack.push(INLINE_GREEN);
-                  p_text.remove(trick_check_pos,1);
-              }
-          }
-          else
-          {
-              ic_colour_stack.push(INLINE_GREEN);
-              p_text.remove(trick_check_pos,1);
-          }
+        QString appendage = "</font>";
+
+        if (!ic_color_stack.empty())
+          appendage += "<font color=\""+ get_text_color(QString::number(ic_color_stack.top())).name(QColor::HexRgb) +"\">";
+
+        if (f_character == "(" || f_character == "[") //Gotta capture them in the color too
+          p_text.insert(check_pos, appendage);
+        else if (f_character == ")" || f_character == "]")
+          p_text.insert(check_pos+1, appendage);
+        else
+        {
+          p_text.remove(check_pos, 1);
+          p_text.insert(check_pos, appendage);
+          check_pos -= 1;
+          pos -= 1;
+        }
+        check_pos += appendage.size();
+        if (pos > -1)
+          pos += appendage.size();
       }
-      else
+    }
+    else
+      ic_next_is_not_special = false;
+
+    //Make all chars we're not supposed to see invisible
+    if (pos > -1 && check_pos == pos)
+    {
+      QString appendage = "";
+      if (!ic_color_stack.empty())
       {
-          trick_check_pos++;
-          ic_next_is_not_special = false;
+        //Clean it up, we're done here
+        while (!ic_color_stack.empty())
+            ic_color_stack.pop();
+
+        appendage += "</font>";
       }
+      ic_color_stack.push(BLANK);
+      appendage += "<font color=\""+ get_text_color(QString::number(BLANK)).name(QColor::HexArgb) +"\">";
+      p_text.insert(check_pos, appendage);
+    }
+    check_pos += 1;
+  }
+
+  if (!ic_color_stack.empty())
+  {
+    p_text.append("</font>");
   }
 
   return p_text;
@@ -2292,6 +2298,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       }
       else
       {
+        ui_ic_chatlog->textCursor().insertText(": ", normal);
         ui_ic_chatlog->textCursor().insertText(p_text, normal);
       }
 
@@ -2302,7 +2309,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
           ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
           ui_ic_chatlog->textCursor().removeSelectedText();
           ui_ic_chatlog->textCursor().deleteChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
 
       if (old_cursor.hasSelection() || !is_scrolled_down)
@@ -2333,6 +2339,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       }
       else
       {
+        ui_ic_chatlog->textCursor().insertText(": ", normal);
         ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
       }
 
@@ -2441,7 +2448,7 @@ void Courtroom::start_chat_ticking()
   }
 
   set_text_color();
-  rainbow_counter = 0;
+//  rainbow_counter = 0;
 
   if (chatmessage_is_empty)
   {
@@ -2452,10 +2459,10 @@ void Courtroom::start_chat_ticking()
 
   // At this point, we'd do well to clear the inline colour stack.
   // This stops it from flowing into next messages.
-  while (!inline_colour_stack.empty())
-  {
-      inline_colour_stack.pop();
-  }
+//  while (!inline_colour_stack.empty())
+//  {
+//      inline_colour_stack.pop();
+//  }
 
   ui_vp_chatbox->show();
   ui_vp_message->show();
@@ -2463,14 +2470,11 @@ void Courtroom::start_chat_ticking()
   if (!is_additive)
   {
     ui_vp_message->clear();
+    additive_previous = "";
   }
 
   tick_pos = 0;
   blip_pos = 0;
-
-  // Just in case we somehow got inline blue text left over from a previous message,
-  // let's set it to false.
-  inline_blue_depth = 0;
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
@@ -2486,11 +2490,10 @@ void Courtroom::start_chat_ticking()
 
 void Courtroom::chat_tick()
 {
-  //note: this is called fairly often(every 60 ms when char is talking)
+  //note: this is called fairly often
   //do not perform heavy operations here
 
   QString f_message = m_chatmessage[MESSAGE];
-  f_message.remove(0, tick_pos);
 
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
@@ -2498,14 +2501,7 @@ void Courtroom::chat_tick()
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
 
-  // If previously, we have detected that the message is centered, now
-  // is the time to remove those two tildes at the start.
-  if (message_is_centered)
-  {
-    f_message.remove(0,2);
-  }
-
-  if (f_message.size() == 0)
+  if (tick_pos >= f_message.size())
   {
     text_state = 2;
     if (anim_state != 4)
@@ -2516,239 +2512,78 @@ void Courtroom::chat_tick()
     QString f_char = m_chatmessage[CHAR_NAME];
     QString f_custom_theme = ao_app->get_char_shouts(f_char);
     ui_vp_chat_arrow->play("chat_arrow", f_char, f_custom_theme); //Chat stopped being processed, indicate that.
+    additive_previous = additive_previous + filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
   }
 
   else
   {
-    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_message);
+    QString f_rest = f_message;
+    f_rest.remove(0, tick_pos);
+    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
     QString f_character;
     int f_char_length;
 
     tbf.toNextBoundary();
 
     if (tbf.position() == -1)
-      f_character = f_message;
+      f_character = f_rest;
     else
-      f_character = f_message.left(tbf.position());
+      f_character = f_rest.left(tbf.position());
 
     f_char_length = f_character.length();
     f_character = f_character.toHtmlEscaped();
 
-
-    if (f_character == " ")
-      ui_vp_message->insertPlainText(" ");
-
     // Escape character.
-    else if (f_character == "\\" and !next_character_is_not_special)
+    if (!next_character_is_not_special)
     {
-        next_character_is_not_special = true;
-        formatting_char = true;
-    }
+      if (f_character == "\\")
+      {
+          next_character_is_not_special = true;
+          formatting_char = true;
+      }
 
-    // Text speed modifier.
-    else if (f_character == "{" and !next_character_is_not_special)
-    {
-        // ++, because it INCREASES delay!
-        current_display_speed++;
-        formatting_char = true;
-    }
-    else if (f_character == "}" and !next_character_is_not_special)
-    {
-        current_display_speed--;
-        formatting_char = true;
-    }
+      // Text speed modifier.
+      else if (f_character == "{")
+      {
+          // ++, because it INCREASES delay!
+          current_display_speed++;
+          formatting_char = true;
+      }
+      else if (f_character == "}")
+      {
+          current_display_speed--;
+          formatting_char = true;
+      }
 
-    else if (f_character == "@" and !next_character_is_not_special)
-    {
-        this->do_screenshake();
-        formatting_char = true;
-    }
+      //Screenshake.
+      else if (f_character == "@")
+      {
+          this->do_screenshake();
+          formatting_char = true;
+      }
 
-    else if (f_character == "$" and !next_character_is_not_special)
-    {
-        this->do_flash();
-        formatting_char = true;
-    }
+      //Flash.
+      else if (f_character == "$")
+      {
+          this->do_flash();
+          formatting_char = true;
+      }
 
-    // Orange inline colourisation.
-    else if (f_character == "|" and !next_character_is_not_special)
-    {
-        if (!inline_colour_stack.empty())
-        {
-            if (inline_colour_stack.top() == INLINE_ORANGE)
-            {
-                inline_colour_stack.pop();
-            }
-            else
-            {
-                inline_colour_stack.push(INLINE_ORANGE);
-            }
-        }
-        else
-        {
-            inline_colour_stack.push(INLINE_ORANGE);
-        }
-        formatting_char = true;
-    }
-
-    // Blue inline colourisation.
-    else if (f_character == "(" and !next_character_is_not_special)
-    {
-        inline_colour_stack.push(INLINE_BLUE);
-        ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
-
-        // Increase how deep we are in inline blues.
-        inline_blue_depth++;
-
-        // Here, we check if the entire message is blue.
-        // If it isn't, we stop talking.
-        if (!entire_message_is_blue and anim_state != 4)
-        {
-          QString f_char = m_chatmessage[CHAR_NAME];
-          QString f_emote = m_chatmessage[EMOTE];
-          ui_vp_player_char->play_idle(f_char, f_emote);
-        }
-    }
-    else if (f_character == ")" and !next_character_is_not_special
-             and !inline_colour_stack.empty())
-    {
-        if (inline_colour_stack.top() == INLINE_BLUE)
-        {
-            inline_colour_stack.pop();
-            ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
-
-            // Decrease how deep we are in inline blues.
-            // Just in case, we do a check if we're above zero, but we should be.
-            if (inline_blue_depth > 0)
-            {
-              inline_blue_depth--;
-              // Here, we check if the entire message is blue.
-              // If it isn't, we start talking if we have completely climbed out of inline blues.
-              if (!entire_message_is_blue)
-              {
-                // We should only go back to talking if we're out of inline blues, not during a non. int. pre, and not on the last character.
-                if (inline_blue_depth == 0 and anim_state != 4 and !(tick_pos+1 >= f_message.size()))
-                {
-                  QString f_char = m_chatmessage[CHAR_NAME];
-                  QString f_emote = m_chatmessage[EMOTE];
-                  ui_vp_player_char->play_talking(f_char, f_emote);
-                }
-              }
-            }
-        }
-        else
-        {
-            next_character_is_not_special = true;
-            tick_pos -= f_char_length;
-        }
-    }
-
-    // Grey inline colourisation.
-    else if (f_character == "[" and !next_character_is_not_special)
-    {
-        inline_colour_stack.push(INLINE_GREY);
-        ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
-    }
-    else if (f_character == "]" and !next_character_is_not_special
-             and !inline_colour_stack.empty())
-    {
-        if (inline_colour_stack.top() == INLINE_GREY)
-        {
-            inline_colour_stack.pop();
-            ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
-        }
-        else
-        {
-            next_character_is_not_special = true;
-            tick_pos -= f_char_length;
-        }
-    }
-
-    // Green inline colourisation.
-    else if (f_character == "`" and !next_character_is_not_special)
-    {
-        if (!inline_colour_stack.empty())
-        {
-            if (inline_colour_stack.top() == INLINE_GREEN)
-            {
-                inline_colour_stack.pop();
-                formatting_char = true;
-            }
-            else
-            {
-                inline_colour_stack.push(INLINE_GREEN);
-                formatting_char = true;
-            }
-        }
-        else
-        {
-            inline_colour_stack.push(INLINE_GREEN);
-            formatting_char = true;
-        }
+      //Color memes
+      else if (f_character == "`" || f_character == "|")
+      {
+          formatting_char = true;
+      }
     }
     else
-    {
       next_character_is_not_special = false;
-      if (!inline_colour_stack.empty())
-      {
-          switch (inline_colour_stack.top()) {
-          case INLINE_ORANGE:
-              ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(ORANGE)).name() +"\">" + f_character + "</font>");
-              break;
-          case INLINE_BLUE:
-              ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
-              break;
-          case INLINE_GREEN:
-              ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(GREEN)).name() +"\">" + f_character + "</font>");
-              break;
-          case INLINE_GREY:
-              ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
-              break;
-          }
-      }
-      else
-      {
-        if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
-        {
-          QString html_color;
 
-          switch (rainbow_counter)
-          {
-          case 0:
-            html_color = get_text_color(QString::number(RED)).name();
-            break;
-          case 1:
-            html_color = get_text_color(QString::number(ORANGE)).name();
-            break;
-          case 2:
-            html_color = get_text_color(QString::number(YELLOW)).name();
-            break;
-          case 3:
-            html_color = get_text_color(QString::number(GREEN)).name();
-            break;
-          default:
-            html_color = get_text_color(QString::number(BLUE)).name();
-            rainbow_counter = -1;
-          }
+    tick_pos += f_char_length;
 
-          ++rainbow_counter;
+    //Do the colors, gradual showing, etc. in here
+    ui_vp_message->setHtml(additive_previous + filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt()));
 
-          ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
-        }
-        else
-          ui_vp_message->insertHtml(f_character);
-      }
-
-      if (message_is_centered)
-      {
-          ui_vp_message->setAlignment(Qt::AlignCenter);
-      }
-      else
-      {
-          ui_vp_message->setAlignment(Qt::AlignLeft);
-      }
-    }
-
+    //If the text overflows, make it snap to bottom
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());
 
@@ -2772,8 +2607,6 @@ void Courtroom::chat_tick()
       }
       ++blip_pos;
     }
-
-    tick_pos += f_char_length;
 
     // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
     if (formatting_char)
