@@ -141,9 +141,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
 
-  ui_ic_chat_message = new QLineEdit(this);
+  ui_ic_chat_message = new AOLineEdit(this);
   ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message"));
+  ui_ic_chat_message->preserve_selection(true);
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
@@ -247,15 +248,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_prosecution_minus = new AOButton(this, ao_app);
 
   ui_text_color = new QComboBox(this);
-  ui_text_color->addItem(tr("White"));
-  ui_text_color->addItem(tr("Green"));
-  ui_text_color->addItem(tr("Red"));
-  ui_text_color->addItem(tr("Orange"));
-  ui_text_color->addItem(tr("Blue"));
-  ui_text_color->addItem(tr("Yellow"));
-  ui_text_color->addItem(tr("Rainbow"));
-  ui_text_color->addItem(tr("Pink"));
-  ui_text_color->addItem(tr("Cyan"));
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
@@ -784,6 +776,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_text_color, "text_color");
   ui_text_color->setToolTip(tr("Change the text color of the spoken message."));
+  set_text_color_dropdown();
 
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
@@ -1513,7 +1506,7 @@ void Courtroom::on_chat_return_pressed()
           packet += f_emote;
           if (ao_app->is_frame_network_enabled())
           {
-            QString sfx_frames = ao_app->read_char_ini_tag(current_char, f_emote.append(f_effect)).join("|");
+            QString sfx_frames = ao_app->read_ini_tags(ao_app->get_character_path(current_char, "char.ini"), f_emote.append(f_effect)).join("|");
             if (sfx_frames != "")
               packet += "|" + sfx_frames;
           }
@@ -1770,7 +1763,6 @@ void Courtroom::handle_chatmessage_2()
   this->set_qfont(ui_vp_message, "", QFont(font_name, f_weight), f_color, bold);
 
   set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
-  set_text_color();
 
   // Check if the message needs to be centered.
   QString f_message = m_chatmessage[MESSAGE];
@@ -2058,38 +2050,6 @@ void Courtroom::handle_chatmessage_3()
 
   }
 
-  int f_anim_state = 0;
-  //BLUE is from an enum in datatypes.h
-  bool text_is_blue = m_chatmessage[TEXT_COLOR].toInt() == BLUE || m_chatmessage[TEXT_COLOR].toInt() == ORANGE;
-
-  if (!text_is_blue && text_state == 1)
-  {
-    //talking
-    f_anim_state = 2;
-  }
-  else
-  {
-    //idle
-    f_anim_state = 3;
-  }
-
-  if (f_anim_state <= anim_state)
-    return;
-
-  ui_vp_player_char->stop();
-  QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_emote = m_chatmessage[EMOTE];
-
-  if (f_anim_state == 2) {
-    ui_vp_player_char->play_talking(f_char, f_emote);
-    anim_state = 2;
-  }
-  else
-  {
-    ui_vp_player_char->play_idle(f_char, f_emote);
-    anim_state = 3;
-  }
-
   QString f_message = m_chatmessage[MESSAGE];
   QStringList call_words = ao_app->get_call_words();
 
@@ -2115,13 +2075,13 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
   int check_pos = 0;
   bool ic_next_is_not_special = false;
   QString f_character = p_text.at(check_pos);
-  std::stack<COLOR> ic_color_stack;
+  std::stack<int> ic_color_stack;
 
   if (colorize)
   {
-    ic_color_stack.push(static_cast<COLOR>(default_color));
+    ic_color_stack.push(default_color);
     qDebug() << ic_color_stack.top();
-    QString appendage = "<font color=\""+ get_text_color(QString::number(ic_color_stack.top())).name(QColor::HexRgb) +"\">";
+    QString appendage = "<font color=\""+ ao_app->get_chat_color(QString::number(ic_color_stack.top()), m_chatmessage[CHAR_NAME]).name(QColor::HexRgb) +"\">";
     p_text.insert(check_pos, appendage);
     check_pos += appendage.size();
     if (pos > -1)
@@ -2151,84 +2111,91 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
         pos -= 1;
       }
 
-      //Colors that destroy the character
-      else if (f_character == "`")
+      bool is_end = false;
+      bool remove = false;
+      //Parse markdown colors
+      for (int c = 0; c < max_colors; ++c)
       {
-        if (colorize)
-        {
-          if (!ic_color_stack.empty() && ic_color_stack.top() == GREEN && default_color != GREEN)
-            ic_color_stack.pop(); //Cease our coloring
-          else
-          {
-            ic_color_stack.push(GREEN); //Begin our coloring
-          }
-          color_update = true;
-        }
-        else
-          p_text.remove(check_pos, 1);
-      }
-      else if (f_character == "|")
-      {
-        if (colorize)
-        {
-          if (!ic_color_stack.empty() && ic_color_stack.top() == ORANGE && default_color != ORANGE)
-            ic_color_stack.pop(); //Cease our coloring
-          else
-          {
-            ic_color_stack.push(ORANGE); //Begin our coloring
-          }
-          color_update = true;
-        }
-        else
-          p_text.remove(check_pos, 1);
-      }
+        QString markdown_start = ao_app->get_chat_markdown("c" + QString::number(c) + "_start", m_chatmessage[CHAR_NAME]);
+        if (markdown_start.isEmpty()) //Not defined
+          continue;
+        QString markdown_end = ao_app->get_chat_markdown("c" + QString::number(c) + "_end", m_chatmessage[CHAR_NAME]);
+        bool markdown_remove = ao_app->get_chat_markdown("c" + QString::number(c) + "_remove", m_chatmessage[CHAR_NAME]) == "1";
 
-      //Colors that don't destroy the character and use 2 chars for beginning/end
-      else if (colorize && f_character == "(")
-      {
-        ic_color_stack.push(BLUE); //Begin our coloring
-        color_update = true;
+        if (markdown_end.isEmpty() || markdown_end == markdown_start) //"toggle switch" type
+        {
+          if (f_character == markdown_start)
+          {
+            if (colorize)
+            {
+              if (!ic_color_stack.empty() && ic_color_stack.top() == c && default_color != c)
+                ic_color_stack.pop(); //Cease our coloring
+              else
+              {
+                ic_color_stack.push(c); //Begin our coloring
+              }
+              color_update = true;
+            }
+            remove = markdown_remove;
+            break; //Prevent it from looping forward for whatever reason
+          }
+        }
+        else if (f_character == markdown_start || (f_character == markdown_end && ic_color_stack.top() == c))
+        {
+          if (colorize)
+          {
+            if (f_character == markdown_start)
+            {
+              ic_color_stack.push(c); //Begin our coloring
+            }
+            else if (f_character == markdown_end)
+            {
+              ic_color_stack.pop(); //Cease our coloring
+              is_end = true;
+            }
+            color_update = true;
+          }
+          remove = markdown_remove;
+          break; //Prevent it from looping forward for whatever reason
+        }
       }
-      else if (colorize && f_character == ")" && ic_color_stack.top() == BLUE)
-      {
-        ic_color_stack.pop(); //Cease our coloring
-        color_update = true;
-      }
-      else if (colorize && f_character == "[")
-      {
-        if (colorize)
-          ic_color_stack.push(GRAY); //Begin our coloring
-        color_update = true;
-      }
-      else if (colorize && f_character == "]" && ic_color_stack.top() == GRAY)
-      {
-        if (colorize)
-          ic_color_stack.pop(); //Cease our coloring
-        color_update = true;
-      }
-
       //Parse the newest color stack
-      if (!ic_next_is_not_special && color_update && (pos <= -1 || check_pos < pos)) //Only color text if we haven't reached the "invisible threshold"
+      if (color_update)
       {
-        QString appendage = "</font>";
-
-        if (!ic_color_stack.empty())
-          appendage += "<font color=\""+ get_text_color(QString::number(ic_color_stack.top())).name(QColor::HexRgb) +"\">";
-
-        if (f_character == "(" || f_character == "[") //Gotta capture them in the color too
-          p_text.insert(check_pos, appendage);
-        else if (f_character == ")" || f_character == "]")
-          p_text.insert(check_pos+1, appendage);
-        else
+        if (!ic_next_is_not_special && (pos <= -1 || check_pos < pos)) //Only color text if we haven't reached the "invisible threshold"
         {
-          p_text.remove(check_pos, 1);
-          p_text.insert(check_pos, appendage);
-          check_pos -= 1;
-          pos -= 1;
+          QString appendage = "</font>";
+
+          if (!ic_color_stack.empty())
+            appendage += "<font color=\""+ ao_app->get_chat_color(QString::number(ic_color_stack.top()), m_chatmessage[CHAR_NAME]).name(QColor::HexRgb) +"\">";
+
+          if (!is_end || remove)
+          {
+            if (remove)
+              p_text.remove(check_pos, 1);
+
+            p_text.insert(check_pos, appendage);
+
+            if (remove)
+            {
+              check_pos -= 1;
+              pos -= 1;
+            }
+          }
+          else
+          {
+            p_text.insert(check_pos+1, appendage);
+          }
+          check_pos += appendage.size();
+          if (pos > -1)
+            pos += appendage.size();
         }
-        check_pos += appendage.size();
-        if (pos > -1)
-          pos += appendage.size();
+      }
+      else if (remove) //Simple remove request
+      {
+        p_text.remove(check_pos, 1);
+        check_pos -= 1;
+        pos -= 1;
       }
     }
     else
@@ -2246,8 +2213,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
 
         appendage += "</font>";
       }
-      ic_color_stack.push(BLANK);
-      appendage += "<font color=\""+ get_text_color(QString::number(BLANK)).name(QColor::HexArgb) +"\">";
+      ic_color_stack.push(-1); //Dummy colorstack push for maximum </font> appendage
+      appendage += "<font color=\"#00000000\">";
       p_text.insert(check_pos, appendage);
     }
     check_pos += 1;
@@ -2447,22 +2414,12 @@ void Courtroom::start_chat_ticking()
     this->do_screenshake();
   }
 
-  set_text_color();
-//  rainbow_counter = 0;
-
   if (chatmessage_is_empty)
   {
     //since the message is empty, it's technically done ticking
     text_state = 2;
     return;
   }
-
-  // At this point, we'd do well to clear the inline colour stack.
-  // This stops it from flowing into next messages.
-//  while (!inline_colour_stack.empty())
-//  {
-//      inline_colour_stack.pop();
-//  }
 
   ui_vp_chatbox->show();
   ui_vp_message->show();
@@ -2486,6 +2443,22 @@ void Courtroom::start_chat_ticking()
 
   //means text is currently ticking
   text_state = 1;
+
+  //If this color is talking
+  bool color_is_talking = ao_app->get_chat_markdown("c" + m_chatmessage[TEXT_COLOR] + "_talking", m_chatmessage[CHAR_NAME]) == "1";
+
+  if (color_is_talking && text_state == 1 && anim_state < 2) //Set it to talking as we're not on that already
+  {
+//    ui_vp_player_char->stop();
+    ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+    anim_state = 2;
+  }
+  else if (anim_state < 3) //Set it to idle as we're not on that already
+  {
+//    ui_vp_player_char->stop();
+    ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+    anim_state = 3;
+  }
 }
 
 void Courtroom::chat_tick()
@@ -2500,6 +2473,7 @@ void Courtroom::chat_tick()
 
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
+  bool is_talking = ao_app->get_chat_markdown("c" + m_chatmessage[TEXT_COLOR] + "_talking", m_chatmessage[CHAR_NAME]) == "1";
 
   if (tick_pos >= f_message.size())
   {
@@ -2568,11 +2542,25 @@ void Courtroom::chat_tick()
           this->do_flash();
           formatting_char = true;
       }
-
-      //Color memes
-      else if (f_character == "`" || f_character == "|")
+      else
       {
-          formatting_char = true;
+        //Parse markdown colors
+        for (int c = 0; c < max_colors; ++c)
+        {
+          QString markdown_start = ao_app->get_chat_markdown("c" + QString::number(c) + "_start", m_chatmessage[CHAR_NAME]);
+          if (markdown_start.isEmpty())
+            continue;
+          QString markdown_end = ao_app->get_chat_markdown("c" + QString::number(c) + "_end", m_chatmessage[CHAR_NAME]);
+          bool markdown_remove = ao_app->get_chat_markdown("c" + QString::number(c) + "_remove", m_chatmessage[CHAR_NAME]) == "1";
+          bool color_is_talking = ao_app->get_chat_markdown("c" + QString::number(c) + "_talking", m_chatmessage[CHAR_NAME]) == "1";
+
+          if (markdown_remove && (f_character == markdown_start || f_character == markdown_end))
+          {
+            formatting_char = true;
+            is_talking = color_is_talking;
+            break;
+          }
+        }
       }
     }
     else
@@ -2591,12 +2579,12 @@ void Courtroom::chat_tick()
     // Keep the speed at bay.
     if (current_display_speed < 0)
     {
-        current_display_speed = 0;
+      current_display_speed = 0;
     }
 
     if (current_display_speed > 6)
     {
-        current_display_speed = 6;
+      current_display_speed = 6;
     }
 
     if (!formatting_char && (f_character != ' ' || blank_blip))
@@ -2611,13 +2599,27 @@ void Courtroom::chat_tick()
     // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
     if (formatting_char)
     {
-        chat_tick_timer->start(0);
+       chat_tick_timer->start(0);
     }
     else
     {
-        chat_tick_timer->start(message_display_speed[current_display_speed]);
-    }
+      //If this color is talking
+      if (is_talking && text_state == 1 && anim_state < 2) //Set it to talking as we're not on that already
+      {
+//        ui_vp_player_char->stop();
+        ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+        anim_state = 2;
+      }
+      else if (anim_state < 3) //Set it to idle as we're not on that already
+      {
+//        ui_vp_player_char->stop();
+        ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+        anim_state = 3;
+      }
 
+      //Continue ticking
+      chat_tick_timer->start(message_display_speed[current_display_speed]);
+    }
   }
 }
 
@@ -2720,30 +2722,6 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
       ui_vp_legacy_desk->show();
     }
   }
-}
-
-void Courtroom::set_text_color()
-{
-  QColor textcolor = ao_app->get_chat_color(m_chatmessage[TEXT_COLOR], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
-
-  ui_vp_message->setTextBackgroundColor(QColor(0,0,0,0));
-  ui_vp_message->setTextColor(textcolor);
-
-  QString style = "background-color: rgba(0, 0, 0, 0);";
-  style.append("color: rgb(");
-  style.append(QString::number(textcolor.red()));
-  style.append(", ");
-  style.append(QString::number(textcolor.green()));
-  style.append(", ");
-  style.append(QString::number(textcolor.blue()));
-  style.append(")");
-
-  ui_vp_message->setStyleSheet(style);
-}
-
-QColor Courtroom::get_text_color(QString color)
-{
-  return ao_app->get_chat_color(color, ao_app->get_chat(m_chatmessage[CHAR_NAME]));
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -3830,9 +3808,44 @@ void Courtroom::on_prosecution_plus_clicked()
     ao_app->send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
+void Courtroom::set_text_color_dropdown()
+{
+  ui_text_color->clear();
+  color_row_to_number.clear();
+
+  //Set the default color 0
+  QString c0_name = ao_app->get_chat_markdown("c0_name", current_char);
+  if (c0_name.isEmpty())
+    c0_name = tr("Default");
+  ui_text_color->addItem(c0_name);
+  color_row_to_number.append(0);
+
+  //Set the rest of the colors
+  for (int c = 1; c < max_colors; ++c)
+  {
+    QString color_name = ao_app->get_chat_markdown("c" + QString::number(c) + "_name", current_char);
+    if (color_name.isEmpty()) //Not defined
+      continue;
+    ui_text_color->addItem(color_name);
+    color_row_to_number.append(c);
+  }
+}
+
 void Courtroom::on_text_color_changed(int p_color)
 {
-  text_color = p_color;
+  if (ui_ic_chat_message->selectionStart() != -1) //We have a selection!
+  {
+    qDebug() << "Setting color to selection" << ui_ic_chat_message->selectionStart() << ui_ic_chat_message->selectionEnd();
+    ui_ic_chat_message->end(false);
+    ui_text_color->setCurrentIndex(0);
+  }
+  else
+  {
+    if (p_color != -1 && p_color < color_row_to_number.size())
+      text_color = color_row_to_number.at(p_color);
+    else
+      text_color = 0;
+  }
   ui_ic_chat_message->setFocus();
 }
 

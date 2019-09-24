@@ -168,12 +168,6 @@ public:
   //sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
 
-  //sets text color based on text color in chatmessage
-  void set_text_color();
-
-  // And gets the color, too!
-  QColor get_text_color(QString color);
-
   //takes in serverD-formatted IP list as prints a converted version to server OOC
   //admittedly poorly named
   void set_ip_list(QString p_list);
@@ -213,7 +207,7 @@ public:
 
   //This function filters out the common CC inline text trickery, for appending to
   //the IC chatlog.
-  QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1, int default_color = WHITE);
+  QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1, int default_color = 0);
 
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
@@ -360,6 +354,9 @@ private:
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
+  static const int max_colors = 12; //How many unique user colors are possible
+  QVector<int> color_row_to_number; //Current color list indexes to real color references
+
   bool is_presenting_evidence = false;
 
   QString effect = "";
@@ -440,7 +437,7 @@ private:
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
 
-  QLineEdit *ui_ic_chat_message;
+  AOLineEdit *ui_ic_chat_message;
   QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
@@ -625,7 +622,7 @@ private slots:
   QString get_char_sfx();
   int get_char_sfx_delay();
 
-  void on_evidence_name_edited(QString text);
+  void on_evidence_name_edited();
   void on_evidence_image_name_edited();
   void on_evidence_image_button_clicked();
   void on_evidence_clicked(int p_id);
@@ -654,6 +651,7 @@ private slots:
   void on_prosecution_plus_clicked();
 
   void on_text_color_changed(int p_color);
+  void set_text_color_dropdown();
 
   void on_music_slider_moved(int p_value);
   void on_sfx_slider_moved(int p_value);

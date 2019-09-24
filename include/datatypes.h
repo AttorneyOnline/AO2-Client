@@ -110,19 +110,4 @@ enum CHAT_MESSAGE
   EFFECTS
 };
 
-enum COLOR
-{
-  WHITE = 0,
-  GREEN,
-  RED,
-  ORANGE,
-  BLUE,
-  YELLOW,
-  RAINBOW,
-  PINK,
-  CYAN,
-  GRAY,
-  BLANK
-};
-
 #endif // DATATYPES_H

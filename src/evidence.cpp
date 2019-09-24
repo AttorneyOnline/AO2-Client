@@ -26,7 +26,7 @@ void Courtroom::initialize_evidence()
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                          "color: white;");
 
-  connect(ui_evidence_name, SIGNAL(textEdited(QString)), this, SLOT(on_evidence_name_edited(QString)));
+  connect(ui_evidence_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_name_edited()));
   connect(ui_evidence_name, SIGNAL(double_clicked()), this, SLOT(on_evidence_name_double_clicked()));
   connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
   connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
@@ -179,8 +179,9 @@ void Courtroom::set_evidence_page()
   }
 }
 
-void Courtroom::on_evidence_name_edited(QString text)
+void Courtroom::on_evidence_name_edited()
 {
+  ui_evidence_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
 
@@ -206,6 +207,7 @@ void Courtroom::on_evidence_name_double_clicked()
 
 void Courtroom::on_evidence_image_name_edited()
 {
+  ui_evidence_image_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
 

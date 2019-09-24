@@ -432,48 +432,57 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
   return f_text;
 }
 
+QString AOApplication::get_chat_markdown(QString p_identifier, QString p_chat)
+{
+  QString design_ini_path = get_base_path() + "misc/" + p_chat + "/config.ini";
+  QString default_path = get_base_path() + "misc/default/config.ini";
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+
+  if (f_result == "")
+    f_result = read_design_ini(p_identifier, default_path);
+
+  return f_result;
+}
+
 QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 {
   QColor return_color(255, 255, 255);
 
   switch (p_identifier.toInt()) {
-    case WHITE:
-    case GREEN:
+    case 0: //White
+      return_color = QColor(255, 255, 255);
+      break;
+    case 1: //Green
       return_color = QColor(0, 255, 0);
       break;
-    case RED:
+    case 2: //Red
       return_color = QColor(255, 0, 0);
       break;
-    case ORANGE:
+    case 3: //Orange
       return_color = QColor(255, 165, 0);
       break;
-    case BLUE:
+    case 4: //Blue
       return_color = QColor(45, 150, 255);
       break;
-    case YELLOW:
+    case 5: //Yellow
       return_color = QColor(255, 255, 0);
       break;
-    case RAINBOW: // 6 is rainbow.
-    case PINK:
+    case 6: //Pink
       return_color = QColor(255, 192, 203);
       break;
-    case CYAN:
+    case 7: //Cyan
       return_color = QColor(0, 255, 255);
       break;
-    case GRAY:
+    case 8: //Grey
       return_color = QColor(187, 187, 187);
-      break;
-    case BLANK:
-      return_color = QColor(0, 0, 0, 0);
       break;
     default:
       return_color = QColor(255, 255, 255);
       break;
   }
-  p_identifier = p_identifier.prepend("c");
   QString design_ini_path = get_base_path() + "misc/" + p_chat + "/config.ini";
   QString default_path = get_base_path() + "misc/default/config.ini";
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QString f_result = read_design_ini("c" + p_identifier, design_ini_path);
 
   if (f_result == "")
   {
@@ -567,18 +576,20 @@ void AOApplication::set_char_ini(QString p_char, QString value, QString p_search
 }
 
 //returns all the values of target_tag
-QStringList AOApplication::read_char_ini_tag(QString p_char, QString target_tag)
+QStringList AOApplication::read_ini_tags(QString p_path, QString target_tag)
 {
   QStringList r_values;
-  QSettings settings(get_character_path(p_char, "char.ini"), QSettings::IniFormat);
-  settings.beginGroup(target_tag);
+  QSettings settings(p_path, QSettings::IniFormat);
+  if (!target_tag.isEmpty())
+    settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
   foreach (QString key, keys)
   {
     QString value = settings.value(key).toString();
     r_values << key + "=" + value;
   }
-  settings.endGroup();
+  if (!settings.group().isEmpty())
+    settings.endGroup();
   return r_values;
 }
 
