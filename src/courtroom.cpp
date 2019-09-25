@@ -2102,6 +2102,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
       pos += appendage.size();
   }
 
+  //Current issue: does not properly escape html stuff.
+  //Solution: probably parse p_text and export into a different string separately, perform some mumbo jumbo to properly adjust string indexes.
   while (check_pos < p_text.size())
   {
     f_character = p_text.at(check_pos);
