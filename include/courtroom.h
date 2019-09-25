@@ -354,8 +354,29 @@ private:
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
-  static const int max_colors = 12; //How many unique user colors are possible
-  QVector<int> color_row_to_number; //Current color list indexes to real color references
+
+  //How many unique user colors are possible
+  static const int max_colors = 12;
+
+  //Text Color-related optimization:
+  //Current color list indexes to real color references
+  QVector<int> color_row_to_number;
+
+  //List of associated RGB colors for this color index
+  QVector<QColor> color_rgb_list;
+
+  //List of markdown start characters, their index is tied to the color index
+  QStringList color_markdown_start_list;
+
+  //List of markdown end characters, their index is tied to the color index
+  QStringList color_markdown_end_list;
+
+  //Whether or not we're supposed to remove this char during parsing
+  QVector<bool> color_markdown_remove_list;
+
+  //Whether or not this color allows us to play the talking animation
+  QVector<bool> color_markdown_talking_list;
+  //Text Color-related optimization END
 
   bool is_presenting_evidence = false;
 

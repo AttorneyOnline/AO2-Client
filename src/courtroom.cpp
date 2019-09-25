@@ -1014,7 +1014,6 @@ void Courtroom::set_side(QString p_side)
   else
     current_side = p_side;
 
-  qDebug() << current_side;
   for (int i = 0; i < ui_pos_dropdown->count(); ++i)
   {
     QString pos = ui_pos_dropdown->itemText(i);
@@ -2050,6 +2049,22 @@ void Courtroom::handle_chatmessage_3()
 
   }
 
+  //If this color is talking
+  bool color_is_talking = ao_app->get_chat_markdown("c" + m_chatmessage[TEXT_COLOR] + "_talking", m_chatmessage[CHAR_NAME]) == "1";
+
+  if (color_is_talking && text_state == 1 && anim_state < 2) //Set it to talking as we're not on that already
+  {
+    ui_vp_player_char->stop();
+    ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+    anim_state = 2;
+  }
+  else if (anim_state < 3) //Set it to idle as we're not on that already
+  {
+    ui_vp_player_char->stop();
+    ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+    anim_state = 3;
+  }
+
   QString f_message = m_chatmessage[MESSAGE];
   QStringList call_words = ao_app->get_call_words();
 
@@ -2080,8 +2095,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
   if (colorize)
   {
     ic_color_stack.push(default_color);
-    qDebug() << ic_color_stack.top();
-    QString appendage = "<font color=\""+ ao_app->get_chat_color(QString::number(ic_color_stack.top()), m_chatmessage[CHAR_NAME]).name(QColor::HexRgb) +"\">";
+    QString appendage = "<font color=\""+ color_rgb_list.at(default_color).name(QColor::HexRgb) +"\">";
     p_text.insert(check_pos, appendage);
     check_pos += appendage.size();
     if (pos > -1)
@@ -2116,11 +2130,13 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
       //Parse markdown colors
       for (int c = 0; c < max_colors; ++c)
       {
-        QString markdown_start = ao_app->get_chat_markdown("c" + QString::number(c) + "_start", m_chatmessage[CHAR_NAME]);
+        //Clear the stored optimization information
+        QString markdown_start = color_markdown_start_list.at(c);
+        QString markdown_end = color_markdown_end_list.at(c);
+        bool markdown_remove = color_markdown_remove_list.at(c);
+//        bool is_talking = color_markdown_talking_list.at(c);
         if (markdown_start.isEmpty()) //Not defined
           continue;
-        QString markdown_end = ao_app->get_chat_markdown("c" + QString::number(c) + "_end", m_chatmessage[CHAR_NAME]);
-        bool markdown_remove = ao_app->get_chat_markdown("c" + QString::number(c) + "_remove", m_chatmessage[CHAR_NAME]) == "1";
 
         if (markdown_end.isEmpty() || markdown_end == markdown_start) //"toggle switch" type
         {
@@ -2167,7 +2183,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
           QString appendage = "</font>";
 
           if (!ic_color_stack.empty())
-            appendage += "<font color=\""+ ao_app->get_chat_color(QString::number(ic_color_stack.top()), m_chatmessage[CHAR_NAME]).name(QColor::HexRgb) +"\">";
+            appendage += "<font color=\""+ color_rgb_list.at(ic_color_stack.top()).name(QColor::HexRgb) +"\">";
 
           if (!is_end || remove)
           {
@@ -2317,7 +2333,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
           ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
           ui_ic_chatlog->textCursor().removeSelectedText();
           ui_ic_chatlog->textCursor().deletePreviousChar();
-          //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
 
       if (old_cursor.hasSelection() || !is_scrolled_up)
@@ -2395,7 +2410,6 @@ void Courtroom::start_chat_ticking()
   if (m_chatmessage[EFFECTS] != "")
   {
     QStringList fx_list = m_chatmessage[EFFECTS].split("|");
-//    qDebug() << m_chatmessage[EFFECTS] << fx_list;
     QString fx = fx_list[0];
     QString fx_sound;
     if (fx_list.length() > 1)
@@ -2443,22 +2457,6 @@ void Courtroom::start_chat_ticking()
 
   //means text is currently ticking
   text_state = 1;
-
-  //If this color is talking
-  bool color_is_talking = ao_app->get_chat_markdown("c" + m_chatmessage[TEXT_COLOR] + "_talking", m_chatmessage[CHAR_NAME]) == "1";
-
-  if (color_is_talking && text_state == 1 && anim_state < 2) //Set it to talking as we're not on that already
-  {
-//    ui_vp_player_char->stop();
-    ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
-    anim_state = 2;
-  }
-  else if (anim_state < 3) //Set it to idle as we're not on that already
-  {
-//    ui_vp_player_char->stop();
-    ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
-    anim_state = 3;
-  }
 }
 
 void Courtroom::chat_tick()
@@ -2473,7 +2471,7 @@ void Courtroom::chat_tick()
 
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
-  bool is_talking = ao_app->get_chat_markdown("c" + m_chatmessage[TEXT_COLOR] + "_talking", m_chatmessage[CHAR_NAME]) == "1";
+  bool is_talking = color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
 
   if (tick_pos >= f_message.size())
   {
@@ -2487,8 +2485,8 @@ void Courtroom::chat_tick()
     QString f_custom_theme = ao_app->get_char_shouts(f_char);
     ui_vp_chat_arrow->play("chat_arrow", f_char, f_custom_theme); //Chat stopped being processed, indicate that.
     additive_previous = additive_previous + filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
+    return;
   }
-
   else
   {
     QString f_rest = f_message;
@@ -2547,12 +2545,14 @@ void Courtroom::chat_tick()
         //Parse markdown colors
         for (int c = 0; c < max_colors; ++c)
         {
-          QString markdown_start = ao_app->get_chat_markdown("c" + QString::number(c) + "_start", m_chatmessage[CHAR_NAME]);
+          //Clear the stored optimization information
+//          color_rgb_list.at(c);
+          QString markdown_start = color_markdown_start_list.at(c);
+          QString markdown_end = color_markdown_end_list.at(c);
+          bool markdown_remove = color_markdown_remove_list.at(c);
+          bool color_is_talking = color_markdown_talking_list.at(c);
           if (markdown_start.isEmpty())
             continue;
-          QString markdown_end = ao_app->get_chat_markdown("c" + QString::number(c) + "_end", m_chatmessage[CHAR_NAME]);
-          bool markdown_remove = ao_app->get_chat_markdown("c" + QString::number(c) + "_remove", m_chatmessage[CHAR_NAME]) == "1";
-          bool color_is_talking = ao_app->get_chat_markdown("c" + QString::number(c) + "_talking", m_chatmessage[CHAR_NAME]) == "1";
 
           if (markdown_remove && (f_character == markdown_start || f_character == markdown_end))
           {
@@ -2606,13 +2606,13 @@ void Courtroom::chat_tick()
       //If this color is talking
       if (is_talking && text_state == 1 && anim_state < 2) //Set it to talking as we're not on that already
       {
-//        ui_vp_player_char->stop();
+        ui_vp_player_char->stop();
         ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
         anim_state = 2;
       }
       else if (anim_state < 3) //Set it to idle as we're not on that already
       {
-//        ui_vp_player_char->stop();
+        ui_vp_player_char->stop();
         ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
         anim_state = 3;
       }
@@ -3810,22 +3810,33 @@ void Courtroom::on_prosecution_plus_clicked()
 
 void Courtroom::set_text_color_dropdown()
 {
+  //Clear the lists
   ui_text_color->clear();
   color_row_to_number.clear();
 
-  //Set the default color 0
-  QString c0_name = ao_app->get_chat_markdown("c0_name", current_char);
-  if (c0_name.isEmpty())
-    c0_name = tr("Default");
-  ui_text_color->addItem(c0_name);
-  color_row_to_number.append(0);
+  //Clear the stored optimization information
+  color_rgb_list.clear();
+  color_markdown_start_list.clear();
+  color_markdown_end_list.clear();
+  color_markdown_remove_list.clear();
+  color_markdown_talking_list.clear();
 
-  //Set the rest of the colors
-  for (int c = 1; c < max_colors; ++c)
+  //Update markdown colors. TODO: make a loading function that only loads the config file once instead of several times
+  for (int c = 0; c < max_colors; ++c)
   {
+    color_rgb_list.append(ao_app->get_chat_color(QString::number(c), current_char));
+    color_markdown_start_list.append(ao_app->get_chat_markdown("c" + QString::number(c) + "_start", current_char));
+    color_markdown_end_list.append(ao_app->get_chat_markdown("c" + QString::number(c) + "_end", current_char));
+    color_markdown_remove_list.append(ao_app->get_chat_markdown("c" + QString::number(c) + "_remove", current_char) == "1");
+    color_markdown_talking_list.append(ao_app->get_chat_markdown("c" + QString::number(c) + "_talking", current_char) == "1");
+
     QString color_name = ao_app->get_chat_markdown("c" + QString::number(c) + "_name", current_char);
     if (color_name.isEmpty()) //Not defined
-      continue;
+    {
+      if (c > 0)
+        continue;
+      color_name = tr("Default");
+    }
     ui_text_color->addItem(color_name);
     color_row_to_number.append(c);
   }
