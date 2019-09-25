@@ -154,8 +154,8 @@ void AOCharMovie::play()
   play_frame_effect(frame);
   if (max_frames <= 1)
   {
-    play_once = true;
-    ticker->start(60);
+    if (play_once)
+      ticker->start(60);
   }
   else
     ticker->start(this->get_frame_delay(movie_delays[frame]));
@@ -316,6 +316,7 @@ void AOCharMovie::movie_ticker()
 
 void AOCharMovie::preanim_done()
 {
+  ticker->stop();
   preanim_timer->stop();
   done();
 }
