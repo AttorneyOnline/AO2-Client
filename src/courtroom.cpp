@@ -2156,7 +2156,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
             break; //Prevent it from looping forward for whatever reason
           }
         }
-        else if (f_character == markdown_start || (f_character == markdown_end && ic_color_stack.top() == c))
+        else if (f_character == markdown_start || (f_character == markdown_end && !ic_color_stack.empty() && ic_color_stack.top() == c))
         {
           if (colorize)
           {
@@ -2547,8 +2547,8 @@ void Courtroom::chat_tick()
         {
           //Clear the stored optimization information
 //          color_rgb_list.at(c);
-          QString markdown_start = color_markdown_start_list.at(c);
-          QString markdown_end = color_markdown_end_list.at(c);
+          QString markdown_start = color_markdown_start_list.at(c).toHtmlEscaped();
+          QString markdown_end = color_markdown_end_list.at(c).toHtmlEscaped();
           bool markdown_remove = color_markdown_remove_list.at(c);
           bool color_is_talking = color_markdown_talking_list.at(c);
           if (markdown_start.isEmpty())
@@ -3846,8 +3846,23 @@ void Courtroom::on_text_color_changed(int p_color)
 {
   if (ui_ic_chat_message->selectionStart() != -1) //We have a selection!
   {
-    qDebug() << "Setting color to selection" << ui_ic_chat_message->selectionStart() << ui_ic_chat_message->selectionEnd();
-    ui_ic_chat_message->end(false);
+    int c = color_row_to_number.at(p_color);
+    QString markdown_start = color_markdown_start_list.at(c);
+    if (markdown_start.isEmpty())
+    {
+      qDebug() << "W: Color list dropdown selected a non-existent markdown start character";
+      return;
+    }
+    QString markdown_end = color_markdown_end_list.at(c);
+    if (markdown_end.isEmpty())
+      markdown_end = markdown_start;
+    int start = ui_ic_chat_message->selectionStart();
+    int end = ui_ic_chat_message->selectionEnd()+1;
+    ui_ic_chat_message->setCursorPosition(start);
+    ui_ic_chat_message->insert(markdown_start);
+    ui_ic_chat_message->setCursorPosition(end);
+    ui_ic_chat_message->insert(markdown_end);
+//    ui_ic_chat_message->end(false);
     ui_text_color->setCurrentIndex(0);
   }
   else

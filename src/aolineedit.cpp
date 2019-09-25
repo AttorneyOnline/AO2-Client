@@ -13,8 +13,8 @@ void AOLineEdit::mouseDoubleClickEvent(QMouseEvent *e)
 void AOLineEdit::focusOutEvent(QFocusEvent *ev)
 {
   int start = selectionStart();
-  int end = selectionEnd();
+  int len = selectionLength();
   QLineEdit::focusOutEvent(ev);
-  if (p_selection && start != -1 && end != -1)
-    this->setSelection(start, end);
+  if (p_selection && start != -1 && len != -1)
+    this->setSelection(start, len);
 }
