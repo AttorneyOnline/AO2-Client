@@ -14,6 +14,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   
   QString misc_path = "";
   QString char_path = "";
+  QStringList sfx_types = {".wav", ".ogg",".opus"}
   QString sound_path = ao_app->get_sounds_path(p_sfx);
 
   if (shout != "")
@@ -22,14 +23,17 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
     char_path = ao_app->get_character_path(p_char, p_sfx);
 
   QString f_path;
-
-  if (file_exists(char_path))
-      f_path = char_path;
-  else if (file_exists(misc_path))
-    f_path = misc_path;
-  else
+  foreach(QString& type, sfx_types)
+  {
+      if (file_exists(char_path + type))
+        f_path = char_path;
+      else if (file_exists(misc_path + type))
+        f_path = misc_path;
+      else if (file_exists(sound_path + type)
+        f_path = sound_path;
+  }
+  if (f_path == "")
     f_path = sound_path;
-
   m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
   set_volume_internal(m_volume);
