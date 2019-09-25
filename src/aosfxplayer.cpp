@@ -22,14 +22,15 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
     char_path = ao_app->get_character_path(p_char, p_sfx);
 
   QString f_path;
-
   if (file_exists(char_path))
-      f_path = char_path;
+    f_path = char_path;
   else if (file_exists(misc_path))
     f_path = misc_path;
-  else
+  else if (file_exists(sound_path))
     f_path = sound_path;
 
+  if (f_path == "")
+    f_path = sound_path;
   m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
   set_volume_internal(m_volume);

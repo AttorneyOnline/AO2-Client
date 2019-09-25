@@ -25,13 +25,15 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
   m_movie->stop();
 
   QString gif_path;
-
   QString custom_path;
-  if (p_gif == "custom" || ao_app->get_character_path(p_char, p_gif).contains("custom_objections")) //checks if the file is located within the folder of custom objections
+
+  if (ao_app->get_character_path(p_char, p_gif).contains("custom_objections")) //checks if the file is located within the folder of custom objections
+    custom_path = ao_app->get_character_path(p_char, p_gif); //get_image_suffix is unecessery as it is already given.
+  else if(p_gif == "custom")
     custom_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif));
   else
     custom_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif + "_bubble"));
-
+  qDebug() << "CUSTOM PATH"  << custom_path;
   QString misc_path = ao_app->get_base_path() + "misc/" + p_custom_theme + "/" + p_gif + "_bubble.gif";
   QString custom_theme_path = ao_app->get_custom_theme_path(p_custom_theme, p_gif + ".gif");
   QString theme_path = ao_app->get_theme_path(p_gif + ".gif");
@@ -55,7 +57,7 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
     gif_path = default_placeholder_path;
   else
     gif_path = "";
-
+  qDebug() << "gif PATH" << gif_path;
   m_movie->setFileName(gif_path);
 
   this->show();

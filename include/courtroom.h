@@ -481,7 +481,7 @@ private:
   AOButton *ui_realization;
   AOButton *ui_mute;
 
-  QMenu *Custom_obj_menu;
+  QMenu *custom_obj_menu;
 
   AOButton *ui_defense_plus;
   AOButton *ui_defense_minus;

@@ -94,9 +94,7 @@ void AOApplication::destruct_courtroom()
 QString AOApplication::get_version_string()
 {
   return
-  QString::number(RELEASE) + "." +
-  QString::number(MAJOR_VERSION) + "." +
-  QString::number(MINOR_VERSION);
+  "Fix the Client, Cents - jooj";
 }
 
 void AOApplication::reload_theme()
