@@ -776,7 +776,8 @@ void Courtroom::set_widgets()
   ui_prosecution_minus->setToolTip(tr("Decrease the health bar."));
 
   set_size_and_pos(ui_text_color, "text_color");
-  ui_text_color->setToolTip(tr("Change the text color of the spoken message."));
+  ui_text_color->setToolTip(tr("Change the text color of the spoken message.\n"
+                               "You can also select a part of your currently typed message and use the dropdown to change its color!"));
   set_text_color_dropdown();
 
   set_size_and_pos(ui_music_slider, "music_slider");
@@ -1059,6 +1060,7 @@ void Courtroom::update_character(int p_cid)
   }
 
   current_char = f_char;
+  current_side = "";
 
   current_emote_page = 0;
   current_emote = 0;
@@ -1621,7 +1623,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   //Let the server handle actually checking if they're allowed to do this.
   is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
 
-  chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
+  chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, m_chatmessage[MESSAGE], false);
   ic_chatlog_history.append(*temp);
   ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
@@ -3896,7 +3898,8 @@ void Courtroom::set_text_color_dropdown()
   //Update markdown colors. TODO: make a loading function that only loads the config file once instead of several times
   for (int c = 0; c < max_colors; ++c)
   {
-    color_rgb_list.append(ao_app->get_chat_color(QString::number(c), current_char));
+    QColor color = ao_app->get_chat_color(QString::number(c), current_char);
+    color_rgb_list.append(color);
     color_markdown_start_list.append(ao_app->get_chat_markdown("c" + QString::number(c) + "_start", current_char));
     color_markdown_end_list.append(ao_app->get_chat_markdown("c" + QString::number(c) + "_end", current_char));
     color_markdown_remove_list.append(ao_app->get_chat_markdown("c" + QString::number(c) + "_remove", current_char) == "1");
@@ -3910,6 +3913,9 @@ void Courtroom::set_text_color_dropdown()
       color_name = tr("Default");
     }
     ui_text_color->addItem(color_name);
+    QPixmap pixmap(16,16);
+    pixmap.fill(color);
+    ui_text_color->setItemIcon(ui_text_color->count() - 1, QIcon(pixmap));
     color_row_to_number.append(c);
   }
 }

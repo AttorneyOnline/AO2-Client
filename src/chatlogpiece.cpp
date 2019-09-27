@@ -69,6 +69,8 @@ QString chatlogpiece::get_full()
   full.append(")");
   if (p_is_song)
     full.append(" has played a song: ");
+  else
+    full.append(": ");
   full.append(get_message());
 
   return full;
