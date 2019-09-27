@@ -2134,7 +2134,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
 //      }
 //    }
 
-    f_character = f_character.toHtmlEscaped();
+    if (html)
+      f_character = f_character.toHtmlEscaped();
 
     if (f_character == " " && html) //Whitespace, woah
       f_character = "&nbsp;"; //Turn it into an HTML entity
@@ -2162,8 +2163,13 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
         for (int c = 0; c < max_colors; ++c)
         {
           //Clear the stored optimization information
-          QString markdown_start = color_markdown_start_list.at(c).toHtmlEscaped();
-          QString markdown_end = color_markdown_end_list.at(c).toHtmlEscaped();
+          QString markdown_start = color_markdown_start_list.at(c);
+          QString markdown_end = color_markdown_end_list.at(c);
+          if (html)
+          {
+            markdown_start = markdown_start.toHtmlEscaped();
+            markdown_end = markdown_end.toHtmlEscaped();
+          }
           bool markdown_remove = color_markdown_remove_list.at(c);
           if (markdown_start.isEmpty()) //Not defined
             continue;
