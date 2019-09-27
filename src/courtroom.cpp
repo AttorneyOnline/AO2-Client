@@ -2496,7 +2496,7 @@ void Courtroom::start_chat_ticking()
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
-  chat_tick_timer->start(message_display_speed[current_display_speed]);
+  chat_tick_timer->start(0); //Display the first char right away
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
