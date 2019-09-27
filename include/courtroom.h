@@ -291,8 +291,10 @@ private:
   //int chat_tick_interval = 60;
   //which tick position(character in chat message) we are at
   int tick_pos = 0;
+  //the actual document tick pos we gotta worry about for making the text scroll better
+  int real_tick_pos = 0;
   //used to determine how often blips sound
-  int blip_pos = 0;
+  int blip_ticker = 0;
   int blip_rate = 1;
   int rainbow_counter = 0;
   bool rainbow_appended = false;
@@ -341,6 +343,9 @@ private:
 
   //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 = noniterrupting preanim
   int anim_state = 3;
+
+  //whether or not current color is a talking one
+  bool color_is_talking = true;
 
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
   int text_state = 2;

@@ -145,6 +145,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message"));
   ui_ic_chat_message->preserve_selection(true);
+  //todo: filter out \n from showing up as that commonly breaks the chatlog and can be spammed to hell
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
@@ -1593,10 +1594,12 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
 
+  m_chatmessage[MESSAGE].remove("\n"); //Remove undesired newline chars
+
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
   //Hey, our message showed up! Cool!
-  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
+  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text().remove("\n") && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
     if (ui_additive->isChecked())
@@ -2050,7 +2053,7 @@ void Courtroom::handle_chatmessage_3()
   }
 
   //If this color is talking
-  bool color_is_talking = ao_app->get_chat_markdown("c" + m_chatmessage[TEXT_COLOR] + "_talking", m_chatmessage[CHAR_NAME]) == "1";
+  color_is_talking = color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
 
   if (color_is_talking && text_state == 1 && anim_state < 2) //Set it to talking as we're not on that already
   {
@@ -2081,150 +2084,185 @@ void Courtroom::handle_chatmessage_3()
 
 }
 
-QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int default_color)
+QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
 {
   // Get rid of centering.
   if(p_text.startsWith("~~"))
       p_text.remove(0,2);
 
+  p_text.remove("\n"); //Undesired newline chars, probably from copy-pasting it from a doc or something.
+
+  QString p_text_escaped;
+
   int check_pos = 0;
+  int check_pos_escaped = 0;
   bool ic_next_is_not_special = false;
-  QString f_character = p_text.at(check_pos);
   std::stack<int> ic_color_stack;
 
-  if (colorize)
+  if (html)
   {
     ic_color_stack.push(default_color);
     QString appendage = "<font color=\""+ color_rgb_list.at(default_color).name(QColor::HexRgb) +"\">";
-    p_text.insert(check_pos, appendage);
-    check_pos += appendage.size();
-    if (pos > -1)
-      pos += appendage.size();
+    p_text_escaped.insert(check_pos_escaped, appendage);
+    check_pos_escaped += appendage.size();
   }
 
   //Current issue: does not properly escape html stuff.
   //Solution: probably parse p_text and export into a different string separately, perform some mumbo jumbo to properly adjust string indexes.
   while (check_pos < p_text.size())
   {
-    f_character = p_text.at(check_pos);
+    QString f_rest = p_text.right(p_text.size() - check_pos);
+    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
+    QString f_character;
+    int f_char_length;
+
+    tbf.toNextBoundary();
+
+    if (tbf.position() == -1)
+      f_character = f_rest;
+    else
+      f_character = f_rest.left(tbf.position());
+
+//    if (f_character == "&") //oh shit it's probably an escaped html
+//    {
+//      //Skip escaped chars like you would graphemes
+//      QRegularExpression re("&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});", QRegularExpression::CaseInsensitiveOption);
+//      QRegularExpressionMatch match = re.match(f_rest);
+//      if (match.hasMatch()) //OH SHIT IT IS, PANIC, PANIC
+//      {
+//        f_character = match.captured(0); //Phew, we solved the big problem here.
+//      }
+//    }
+
+    f_character = f_character.toHtmlEscaped();
+
+    if (f_character == " " && html) //Whitespace, woah
+      f_character = "&nbsp;"; //Turn it into an HTML entity
+    f_char_length = f_character.length();
+
     bool color_update = false;
+    bool is_end = false;
+    bool skip = false;
 
     if (!ic_next_is_not_special)
     {
       if (f_character == "\\")
       {
         ic_next_is_not_special = true;
-        p_text.remove(check_pos, 1);
-        check_pos -= 1;
-        pos -= 1;
+        skip = true;
       }
-
       //Nothing related to colors here
       else if (f_character == "{" || f_character == "}" || f_character == "@" || f_character == "$")
       {
-        p_text.remove(check_pos, 1);
-        check_pos -= 1;
-        pos -= 1;
+        skip = true;
       }
-
-      bool is_end = false;
-      bool remove = false;
       //Parse markdown colors
-      for (int c = 0; c < max_colors; ++c)
+      else
       {
-        //Clear the stored optimization information
-        QString markdown_start = color_markdown_start_list.at(c);
-        QString markdown_end = color_markdown_end_list.at(c);
-        bool markdown_remove = color_markdown_remove_list.at(c);
-//        bool is_talking = color_markdown_talking_list.at(c);
-        if (markdown_start.isEmpty()) //Not defined
-          continue;
-
-        if (markdown_end.isEmpty() || markdown_end == markdown_start) //"toggle switch" type
+        for (int c = 0; c < max_colors; ++c)
         {
-          if (f_character == markdown_start)
+          //Clear the stored optimization information
+          QString markdown_start = color_markdown_start_list.at(c).toHtmlEscaped();
+          QString markdown_end = color_markdown_end_list.at(c).toHtmlEscaped();
+          bool markdown_remove = color_markdown_remove_list.at(c);
+          if (markdown_start.isEmpty()) //Not defined
+            continue;
+
+          if (markdown_end.isEmpty() || markdown_end == markdown_start) //"toggle switch" type
           {
-            if (colorize)
+            if (f_character == markdown_start)
             {
-              if (!ic_color_stack.empty() && ic_color_stack.top() == c && default_color != c)
+              if (html)
+              {
+                if (!ic_color_stack.empty() && ic_color_stack.top() == c && default_color != c)
+                {
+                  ic_color_stack.pop(); //Cease our coloring
+                  is_end = true;
+                }
+                else
+                {
+                  ic_color_stack.push(c); //Begin our coloring
+                }
+                color_update = true;
+              }
+              skip = markdown_remove;
+              break; //Prevent it from looping forward for whatever reason
+            }
+          }
+          else if (f_character == markdown_start || (f_character == markdown_end && !ic_color_stack.empty() && ic_color_stack.top() == c))
+          {
+            if (html)
+            {
+              if (f_character == markdown_end)
+              {
                 ic_color_stack.pop(); //Cease our coloring
-              else
+                is_end = true;
+              }
+              else if (f_character == markdown_start)
               {
                 ic_color_stack.push(c); //Begin our coloring
               }
               color_update = true;
             }
-            remove = markdown_remove;
+            skip = markdown_remove;
             break; //Prevent it from looping forward for whatever reason
           }
         }
-        else if (f_character == markdown_start || (f_character == markdown_end && !ic_color_stack.empty() && ic_color_stack.top() == c))
+        //Parse the newest color stack
+        if (color_update && (target_pos <= -1 || check_pos < target_pos))
         {
-          if (colorize)
+          if (!ic_next_is_not_special)
           {
-            if (f_character == markdown_start)
+            QString appendage = "</font>";
+
+            if (!ic_color_stack.empty())
+              appendage += "<font color=\""+ color_rgb_list.at(ic_color_stack.top()).name(QColor::HexRgb) +"\">";
+
+            if (is_end && !skip)
             {
-              ic_color_stack.push(c); //Begin our coloring
+              p_text_escaped.insert(check_pos_escaped, f_character); //Add that char right now
+              check_pos_escaped += f_char_length; //So the closing char is captured too
+              skip = true;
             }
-            else if (f_character == markdown_end)
-            {
-              ic_color_stack.pop(); //Cease our coloring
-              is_end = true;
-            }
-            color_update = true;
+            p_text_escaped.insert(check_pos_escaped, appendage);
+            check_pos_escaped += appendage.size();
           }
-          remove = markdown_remove;
-          break; //Prevent it from looping forward for whatever reason
         }
-      }
-      //Parse the newest color stack
-      if (color_update)
-      {
-        if (!ic_next_is_not_special && (pos <= -1 || check_pos < pos)) //Only color text if we haven't reached the "invisible threshold"
-        {
-          QString appendage = "</font>";
-
-          if (!ic_color_stack.empty())
-            appendage += "<font color=\""+ color_rgb_list.at(ic_color_stack.top()).name(QColor::HexRgb) +"\">";
-
-          if (!is_end || remove)
-          {
-            if (remove)
-              p_text.remove(check_pos, 1);
-
-            p_text.insert(check_pos, appendage);
-
-            if (remove)
-            {
-              check_pos -= 1;
-              pos -= 1;
-            }
-          }
-          else
-          {
-            p_text.insert(check_pos+1, appendage);
-          }
-          check_pos += appendage.size();
-          if (pos > -1)
-            pos += appendage.size();
-        }
-      }
-      else if (remove) //Simple remove request
-      {
-        p_text.remove(check_pos, 1);
-        check_pos -= 1;
-        pos -= 1;
       }
     }
     else
+    {
+      if (f_character == "n") // \n, that's a line break son
+      {
+        QString appendage = "<br/>";
+        if (!html)
+        {
+          //actual newline commented out
+//          appendage = "\n";
+//          size = 1; //yeah guess what \n is a "single character" apparently
+          appendage = "\\n "; //visual representation of a newline
+        }
+        p_text_escaped.insert(check_pos_escaped, appendage);
+        check_pos_escaped += appendage.size();
+        skip = true;
+      }
+
       ic_next_is_not_special = false;
+    }
 
     //Make all chars we're not supposed to see invisible
-    if (pos > -1 && check_pos == pos)
+    if (target_pos > -1 && check_pos == target_pos)
     {
       QString appendage = "";
       if (!ic_color_stack.empty())
       {
+        if (!is_end) //Was our last coloring char ending the color stack or nah
+        {
+          //God forgive me for my transgressions but I have refactored this whole thing about 25 times and having to refactor it
+          //again to more elegantly support this will finally make me go insane.
+          color_is_talking = color_markdown_talking_list.at(ic_color_stack.top());
+        }
+
         //Clean it up, we're done here
         while (!ic_color_stack.empty())
             ic_color_stack.pop();
@@ -2233,17 +2271,23 @@ QString Courtroom::filter_ic_text(QString p_text, bool colorize, int pos, int de
       }
       ic_color_stack.push(-1); //Dummy colorstack push for maximum </font> appendage
       appendage += "<font color=\"#00000000\">";
-      p_text.insert(check_pos, appendage);
+      p_text_escaped.insert(check_pos_escaped, appendage);
+      check_pos_escaped += appendage.size();
+    }
+    if (!skip)
+    {
+      p_text_escaped.insert(check_pos_escaped, f_character);
+      check_pos_escaped += f_char_length;
     }
     check_pos += 1;
   }
 
   if (!ic_color_stack.empty())
   {
-    p_text.append("</font>");
+    p_text_escaped.append("</font>");
   }
 
-  return p_text;
+  return p_text_escaped;
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange)
@@ -2258,7 +2302,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
 
   if (!is_songchange)
-    p_text = filter_ic_text(p_text);
+    p_text = filter_ic_text(p_text, false);
 
   if (log_goes_downwards)
   {
@@ -2443,11 +2487,12 @@ void Courtroom::start_chat_ticking()
   if (!is_additive)
   {
     ui_vp_message->clear();
+    real_tick_pos = 0;
     additive_previous = "";
   }
 
   tick_pos = 0;
-  blip_pos = 0;
+  blip_ticker = 0;
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
@@ -2471,14 +2516,10 @@ void Courtroom::chat_tick()
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
 
-  // Stops blips from playing when we have a formatting option.
-  bool formatting_char = false;
-  bool is_talking = color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
-
   if (tick_pos >= f_message.size())
   {
     text_state = 2;
-    if (anim_state != 4)
+    if (anim_state < 3)
     {
       anim_state = 3;
       ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
@@ -2487,141 +2528,164 @@ void Courtroom::chat_tick()
     QString f_custom_theme = ao_app->get_char_shouts(f_char);
     ui_vp_chat_arrow->play("chat_arrow", f_char, f_custom_theme); //Chat stopped being processed, indicate that.
     additive_previous = additive_previous + filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
+    real_tick_pos = ui_vp_message->toPlainText().size();
+
+    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
+    scroll->setValue(scroll->maximum());
     return;
   }
+
+  // Stops blips from playing when we have a formatting option.
+  bool formatting_char = false;
+
+  QString f_rest = f_message;
+  f_rest.remove(0, tick_pos);
+  QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
+  QString f_character;
+  int f_char_length;
+
+  tbf.toNextBoundary();
+
+  if (tbf.position() == -1)
+    f_character = f_rest;
   else
+    f_character = f_rest.left(tbf.position());
+
+  f_char_length = f_character.length();
+
+  // Escape character.
+  if (!next_character_is_not_special)
   {
-    QString f_rest = f_message;
-    f_rest.remove(0, tick_pos);
-    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
-    QString f_character;
-    int f_char_length;
-
-    tbf.toNextBoundary();
-
-    if (tbf.position() == -1)
-      f_character = f_rest;
-    else
-      f_character = f_rest.left(tbf.position());
-
-    f_char_length = f_character.length();
-    f_character = f_character.toHtmlEscaped();
-
-    // Escape character.
-    if (!next_character_is_not_special)
+    if (f_character == "\\")
     {
-      if (f_character == "\\")
-      {
-          next_character_is_not_special = true;
-          formatting_char = true;
-      }
+        next_character_is_not_special = true;
+        formatting_char = true;
+    }
 
-      // Text speed modifier.
-      else if (f_character == "{")
-      {
-          // ++, because it INCREASES delay!
-          current_display_speed++;
-          formatting_char = true;
-      }
-      else if (f_character == "}")
-      {
-          current_display_speed--;
-          formatting_char = true;
-      }
+    // Text speed modifier.
+    else if (f_character == "{")
+    {
+        // ++, because it INCREASES delay!
+        current_display_speed++;
+        formatting_char = true;
+    }
+    else if (f_character == "}")
+    {
+        current_display_speed--;
+        formatting_char = true;
+    }
 
-      //Screenshake.
-      else if (f_character == "@")
-      {
-          this->do_screenshake();
-          formatting_char = true;
-      }
+    //Screenshake.
+    else if (f_character == "@")
+    {
+        this->do_screenshake();
+        formatting_char = true;
+    }
 
-      //Flash.
-      else if (f_character == "$")
+    //Flash.
+    else if (f_character == "$")
+    {
+        this->do_flash();
+        formatting_char = true;
+    }
+    else
+    {
+      //Parse markdown colors
+      for (int c = 0; c < max_colors; ++c)
       {
-          this->do_flash();
-          formatting_char = true;
-      }
-      else
-      {
-        //Parse markdown colors
-        for (int c = 0; c < max_colors; ++c)
+        QString markdown_start = color_markdown_start_list.at(c);
+        QString markdown_end = color_markdown_end_list.at(c);
+        bool markdown_remove = color_markdown_remove_list.at(c);
+        if (markdown_start.isEmpty())
+          continue;
+
+        if (f_character == markdown_start || f_character == markdown_end)
         {
-          //Clear the stored optimization information
-//          color_rgb_list.at(c);
-          QString markdown_start = color_markdown_start_list.at(c).toHtmlEscaped();
-          QString markdown_end = color_markdown_end_list.at(c).toHtmlEscaped();
-          bool markdown_remove = color_markdown_remove_list.at(c);
-          bool color_is_talking = color_markdown_talking_list.at(c);
-          if (markdown_start.isEmpty())
-            continue;
-
-          if (markdown_remove && (f_character == markdown_start || f_character == markdown_end))
-          {
+          if (markdown_remove)
             formatting_char = true;
-            is_talking = color_is_talking;
-            break;
-          }
+          break;
         }
       }
     }
-    else
-      next_character_is_not_special = false;
+  }
+  else
+  {
+    if (f_character == "n")
+      formatting_char = true; //it's a newline
+    next_character_is_not_special = false;
+  }
 
-    tick_pos += f_char_length;
+  tick_pos += f_char_length;
 
-    //Do the colors, gradual showing, etc. in here
-    ui_vp_message->setHtml(additive_previous + filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt()));
+  //Do the colors, gradual showing, etc. in here
+  ui_vp_message->setHtml(additive_previous + filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt()));
 
-    //If the text overflows, make it snap to bottom
-    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
-    scroll->setValue(scroll->maximum());
+  if (!formatting_char || f_character == "n") //NEWLINES (\n) COUNT AS A SINGLE CHARACTER.
+  {
+    //Make the cursor follow the message
+    QTextCursor cursor = ui_vp_message->textCursor();
+    cursor.setPosition(real_tick_pos);
+    ui_vp_message->setTextCursor(cursor);
+    real_tick_pos += f_char_length;
+  }
+  ui_vp_message->ensureCursorVisible();
 
-    // Restart the timer, but according to the newly set speeds, if there were any.
-    // Keep the speed at bay.
-    if (current_display_speed < 0)
+//  //Grab the currently displayed chars
+//  f_rest = f_message.left(tick_pos);
+//  f_rest.replace("\\n", "\n");
+
+//  QFontMetrics fm = fontMetrics();
+//  QRect bounding_rect = fm.boundingRect(QRect(0,0,ui_vp_message->width(),ui_vp_message->height()), Qt::TextWordWrap, f_rest);
+
+//  //If the text overflows, make it snap to bottom
+//  if (bounding_rect.height() > ui_vp_message->height())
+//  {
+
+//    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
+//    scroll->value();
+//    scroll->setValue(scroll->maximum());
+//  }
+
+  // Keep the speed at bay.
+  if (current_display_speed < 0)
+    current_display_speed = 0;
+  else if (current_display_speed > 6)
+    current_display_speed = 6;
+
+  //Blip player and real tick pos ticker
+  if (!formatting_char && (f_character != ' ' || blank_blip))
+  {
+    if (blip_ticker % blip_rate == 0)
     {
-      current_display_speed = 0;
+      blip_player->blip_tick();
+    }
+    ++blip_ticker;
+  }
+
+  // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
+  // Additionally, if the message_display_speed length is too short for us to do anything (play animations, etc.) then skip the trouble and don't bother.
+  if (formatting_char || message_display_speed[current_display_speed] <= 0)
+  {
+     chat_tick_timer->start(0);
+  }
+  else
+  {
+    //If this color is talking
+    if (color_is_talking && anim_state != 2 && anim_state < 4) //Set it to talking as we're not on that already (though we have to avoid interrupting a non-interrupted preanim)
+    {
+      ui_vp_player_char->stop();
+      ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+      anim_state = 2;
+    }
+    else if (!color_is_talking && anim_state < 3 && anim_state != 3) //Set it to idle as we're not on that already
+    {
+      ui_vp_player_char->stop();
+      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+      anim_state = 3;
     }
 
-    if (current_display_speed > 6)
-    {
-      current_display_speed = 6;
-    }
-
-    if (!formatting_char && (f_character != ' ' || blank_blip))
-    {
-      if (blip_pos % blip_rate == 0)
-      {
-        blip_player->blip_tick();
-      }
-      ++blip_pos;
-    }
-
-    // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
-    if (formatting_char)
-    {
-       chat_tick_timer->start(0);
-    }
-    else
-    {
-      //If this color is talking
-      if (is_talking && text_state == 1 && anim_state < 2) //Set it to talking as we're not on that already
-      {
-        ui_vp_player_char->stop();
-        ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
-        anim_state = 2;
-      }
-      else if (anim_state < 3) //Set it to idle as we're not on that already
-      {
-        ui_vp_player_char->stop();
-        ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
-        anim_state = 3;
-      }
-
-      //Continue ticking
-      chat_tick_timer->start(message_display_speed[current_display_speed]);
-    }
+    //Continue ticking
+    chat_tick_timer->start(message_display_speed[current_display_speed]);
   }
 }
 
