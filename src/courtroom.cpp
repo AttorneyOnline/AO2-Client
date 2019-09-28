@@ -490,16 +490,7 @@ void Courtroom::set_widgets()
   ui_vp_legacy_desk->hide();
 
   ui_vp_evidence_display->move(0, 0);
-  ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());
-
-  set_size_and_pos(ui_vp_showname, "showname");
-
-  set_size_and_pos(ui_vp_message, "message");
-  //We detached the text as parent from the chatbox so it doesn't get affected by the screenshake.
-  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
-  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
-//  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-//                               "color: white");
+  ui_vp_evidence_display->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_chat_arrow->move(0, 0);
   pos_size_type design_ini_result = ao_app->get_element_dimensions("chat_arrow", "courtroom_design.ini");
@@ -585,6 +576,15 @@ void Courtroom::set_widgets()
 
   ui_vp_chatbox->set_image("chatblank");
   ui_vp_chatbox->hide();
+
+  set_size_and_pos(ui_vp_showname, "showname");
+
+  set_size_and_pos(ui_vp_message, "message");
+  //We detached the text as parent from the chatbox so it doesn't get affected by the screenshake.
+  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
+  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+//  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+//                               "color: white");
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
   ui_muted->set_image("muted");
@@ -1582,7 +1582,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_custom_objection->set_image("custom");
     ui_realization->set_image("realization");
     ui_screenshake->set_image("screenshake");
-    ui_evidence_present->set_image("present_disabled");
+    ui_evidence_present->set_image("present");
   }
 
   //Let the server handle actually checking if they're allowed to do this.
