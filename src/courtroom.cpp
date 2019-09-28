@@ -44,6 +44,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   }
   #endif
 
+  qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
+
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(60000);
 
@@ -1933,7 +1935,7 @@ void Courtroom::do_screenshake()
     for (int frame=0; frame < maxframes; frame++)
     {
       double fraction = double(frame*frequency)/duration;
-      quint32 rng = QRandomGenerator::global()->generate();
+      int rng = qrand();//QRandomGenerator::global()->generate();
       int rand_x = int(rng) % max_x;
       int rand_y = int(rng+100) % max_y;
       screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));

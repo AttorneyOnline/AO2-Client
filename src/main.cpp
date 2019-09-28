@@ -22,6 +22,14 @@ int main(int argc, char *argv[])
 
     QSettings *configini = main_app.configini;
 
+    QPluginLoader apngPlugin("imageformats/qapng");
+    if (!apngPlugin.load())
+        qCritical() << "QApng plugin could not be loaded";
+
+    QPluginLoader webpPlugin("imageformats/qwebp");
+    if (!webpPlugin.load())
+        qCritical() << "QWebp plugin could not be loaded";
+
     QString p_language = configini->value("language", QLocale::system().name()).toString();
     if (p_language == "  " || p_language == "")
         p_language = QLocale::system().name();

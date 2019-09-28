@@ -55,7 +55,7 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QMessageBox>
-#include <QRandomGenerator>
+//#include <QRandomGenerator>
 
 #include <stack>
 
