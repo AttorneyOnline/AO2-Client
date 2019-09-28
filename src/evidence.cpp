@@ -7,24 +7,32 @@ void Courtroom::initialize_evidence()
   //ui_evidence_name = new QLabel(ui_evidence);
   ui_evidence_name = new AOLineEdit(ui_evidence);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
+  ui_evidence_name->setFrame(false);
 
   ui_evidence_buttons = new QWidget(ui_evidence);
 
   ui_evidence_left = new AOButton(ui_evidence, ao_app);
   ui_evidence_right = new AOButton(ui_evidence, ao_app);
   ui_evidence_present = new AOButton(ui_evidence, ao_app);
+  ui_evidence_present->setToolTip(tr("Present this piece of evidence to everyone on your next spoken message"));
 
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_delete->setToolTip(tr("Destroy this piece of evidence"));
   ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_button->setText(tr("Choose..."));
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_x->setToolTip(tr("Close the evidence display/editing overlay"));
+  ui_evidence_ok = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_ok->setToolTip(tr("Save any changes made to this piece of evidence"));
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                          "color: white;");
+  ui_evidence_description->setFrameStyle(QFrame::NoFrame);
+  ui_evidence_description->setToolTip("Double-click to edit. Press [X] to update your changes.");
 
   connect(ui_evidence_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_name_edited()));
   connect(ui_evidence_name, SIGNAL(double_clicked()), this, SLOT(on_evidence_name_double_clicked()));
@@ -33,9 +41,14 @@ void Courtroom::initialize_evidence()
   connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
   connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
   connect(ui_evidence_image_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_name_edited()));
+  connect(ui_evidence_image_name, SIGNAL(double_clicked()), this, SLOT(on_evidence_image_name_double_clicked()));
   connect(ui_evidence_image_button, SIGNAL(clicked()), this, SLOT(on_evidence_image_button_clicked()));
   connect(ui_evidence_x, SIGNAL(clicked()), this, SLOT(on_evidence_x_clicked()));
-  connect(ui_evidence_description, SIGNAL(textChanged()), this, SLOT(on_evidence_description_edited()));
+  connect(ui_evidence_ok, SIGNAL(clicked()), this, SLOT(on_evidence_ok_clicked()));
+
+  connect(ui_evidence_name, SIGNAL(textChanged(QString)), this, SLOT(on_evidence_edited()));
+  connect(ui_evidence_image_name, SIGNAL(textChanged(QString)), this, SLOT(on_evidence_edited()));
+  connect(ui_evidence_description, SIGNAL(textChanged()), this, SLOT(on_evidence_edited()));
 
   ui_evidence->hide();
 }
@@ -50,8 +63,43 @@ void Courtroom::refresh_evidence()
   qDeleteAll(ui_evidence_list.begin(), ui_evidence_list.end());
   ui_evidence_list.clear();
 
+  set_size_and_pos(ui_evidence_button, "evidence_button");
+  ui_evidence_button->set_image("evidencebutton");
+  ui_evidence_button->setToolTip(tr("Bring up the Evidence screen."));
+
   set_size_and_pos(ui_evidence, "evidence_background");
+  ui_evidence->set_image("evidencebackground");
+
+  set_size_and_pos(ui_evidence_name, "evidence_name");
+
   set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
+
+  set_size_and_pos(ui_evidence_left, "evidence_left");
+  ui_evidence_left->set_image("arrow_left");
+
+  set_size_and_pos(ui_evidence_right, "evidence_right");
+  ui_evidence_right->set_image("arrow_right");
+
+  set_size_and_pos(ui_evidence_present, "evidence_present");
+  ui_evidence_present->set_image("present");
+
+  set_size_and_pos(ui_evidence_overlay, "evidence_overlay");
+  ui_evidence_overlay->set_image("evidenceoverlay");
+
+  set_size_and_pos(ui_evidence_delete, "evidence_delete");
+  ui_evidence_delete->set_image("deleteevidence");
+
+  set_size_and_pos(ui_evidence_image_name, "evidence_image_name");
+
+  set_size_and_pos(ui_evidence_image_button, "evidence_image_button");
+
+  set_size_and_pos(ui_evidence_x, "evidence_x");
+  ui_evidence_x->set_image("evidencex");
+
+  set_size_and_pos(ui_evidence_ok, "evidence_ok");
+  ui_evidence_ok->set_image("evidenceok");
+
+  set_size_and_pos(ui_evidence_description, "evidence_description");
 
   QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
   QPoint p_point = ao_app->get_button_spacing("evidence_button_size", "courtroom_design.ini");
@@ -96,6 +144,7 @@ void Courtroom::refresh_evidence()
 
 void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
 {
+  QVector<evi_type> old_list = local_evidence_list;
   local_evidence_list.clear();
   local_evidence_list = p_evi_list;
 
@@ -105,12 +154,37 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
   {
     if (current_evidence >= local_evidence_list.size())
     {
-      on_evidence_x_clicked();
+      evidence_close();
       ui_evidence_name->setText("");
     }
-    else
+    else if (ui_evidence_description->isReadOnly()) //We haven't double clicked to edit it or anything
     {
       on_evidence_double_clicked(current_evidence);
+    }
+    //Todo: make a function that compares two pieces of evidence for any differences
+    else if (compare_evidence_changed(old_list.at(current_evidence), local_evidence_list.at(current_evidence)))
+    {
+      QMessageBox *msgBox = new QMessageBox;
+
+      msgBox->setText("The piece of evidence you've been editing has changed.");
+      msgBox->setInformativeText("Do you wish to keep your changes?");
+      msgBox->setDetailedText("Name: " + local_evidence_list.at(current_evidence).name + "\nImage: " + local_evidence_list.at(current_evidence).image + "\nDescription:\n" + local_evidence_list.at(current_evidence).description);
+      msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+      msgBox->setDefaultButton(QMessageBox::No);
+      //msgBox->setWindowModality(Qt::NonModal);
+      int ret = msgBox->exec();
+      switch (ret) {
+        case QMessageBox::Yes:
+            // "Keep changes"
+            break;
+        case QMessageBox::No:
+            // "Discard changes and keep theirs"
+            on_evidence_double_clicked(current_evidence);
+            break;
+        default:
+            // should never be reached
+            break;
+      }
     }
   }
 }
@@ -185,24 +259,34 @@ void Courtroom::on_evidence_name_edited()
   if (current_evidence >= local_evidence_list.size())
     return;
 
-  QStringList f_contents;
+// Prefer pressing [X] to update the evidence.
+//  QStringList f_contents;
 
-  evi_type f_evi = local_evidence_list.at(current_evidence);
+//  evi_type f_evi = local_evidence_list.at(current_evidence);
 
-  f_contents.append(QString::number(current_evidence));
-  f_contents.append(ui_evidence_name->text());
-  f_contents.append(f_evi.description);
-  f_contents.append(f_evi.image);
+//  f_contents.append(QString::number(current_evidence));
+//  f_contents.append(ui_evidence_name->text());
+//  f_contents.append(f_evi.description);
+//  f_contents.append(f_evi.image);
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+//  ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_name_double_clicked()
 {
   if (ui_evidence_overlay->isVisible())
+  {
     ui_evidence_name->setReadOnly(false);
+  }
   else
+  {
     ui_evidence_name->setReadOnly(true);
+  }
+}
+
+void Courtroom::on_evidence_image_name_double_clicked()
+{
+  ui_evidence_image_name->setReadOnly(false);
 }
 
 void Courtroom::on_evidence_image_name_edited()
@@ -211,16 +295,16 @@ void Courtroom::on_evidence_image_name_edited()
   if (current_evidence >= local_evidence_list.size())
     return;
 
-  QStringList f_contents;
+//  QStringList f_contents;
 
-  evi_type f_evi = local_evidence_list.at(current_evidence);
+//  evi_type f_evi = local_evidence_list.at(current_evidence);
 
-  f_contents.append(QString::number(current_evidence));
-  f_contents.append(f_evi.name);
-  f_contents.append(f_evi.description);
-  f_contents.append(ui_evidence_image_name->text());
+//  f_contents.append(QString::number(current_evidence));
+//  f_contents.append(f_evi.name);
+//  f_contents.append(f_evi.description);
+//  f_contents.append(ui_evidence_image_name->text());
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+//  ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_image_button_clicked()
@@ -284,23 +368,22 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
   evi_type f_evi = local_evidence_list.at(f_real_id);
 
-  QTextCursor cursor = ui_evidence_description->textCursor();
-  int pos = cursor.position();
+  ui_evidence_description->clear();
+  ui_evidence_description->appendPlainText(f_evi.description);
+  ui_evidence_description->setReadOnly(true);
+  ui_evidence_description->setToolTip("Double-click to edit...");
 
-  //ISSUE: Undo/redo history is completely inaccessible. :(
-  ui_evidence_description->blockSignals(true);
-  ui_evidence_description->setPlainText(f_evi.description);
-  ui_evidence_description->blockSignals(false);
-
-  cursor.setPosition(pos); //Reset the cursor position back in place
-  ui_evidence_description->setTextCursor(cursor);
-
-  ui_evidence_image_name->setText(f_evi.image);
   ui_evidence_name->setText(f_evi.name);
+  ui_evidence_name->setReadOnly(true);
+  ui_evidence_name->setToolTip("Double-click to edit...");
+  ui_evidence_image_name->setText(f_evi.image);
+  ui_evidence_image_name->setReadOnly(true);
+  ui_evidence_image_name->setToolTip("Double-click to edit...");
 
   ui_evidence_overlay->show();
+  ui_evidence_ok->hide();
 
-//  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
@@ -342,9 +425,9 @@ void Courtroom::on_evidence_right_clicked()
 void Courtroom::on_evidence_present_clicked()
 {
   if (is_presenting_evidence)
-    ui_evidence_present->set_image("present_disabled");
-  else
     ui_evidence_present->set_image("present");
+  else
+    ui_evidence_present->set_image("present_disabled");
 
   is_presenting_evidence = !is_presenting_evidence;
 
@@ -353,10 +436,7 @@ void Courtroom::on_evidence_present_clicked()
 
 void Courtroom::on_evidence_delete_clicked()
 {
-  ui_evidence_description->setReadOnly(true);
-  ui_evidence_name->setReadOnly(true);
-  ui_evidence_overlay->hide();
-
+  evidence_close();
   ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
 
   current_evidence = 0;
@@ -366,22 +446,94 @@ void Courtroom::on_evidence_delete_clicked()
 
 void Courtroom::on_evidence_x_clicked()
 {
-  ui_evidence_description->setReadOnly(true);
+  if (current_evidence >= local_evidence_list.size()) //Should never happen but you never know.
+    return;
+
+  evi_type fake_evidence;
+  fake_evidence.name = ui_evidence_name->text();
+  fake_evidence.description = ui_evidence_description->toPlainText();
+  fake_evidence.image = ui_evidence_image_name->text();
+  if (!compare_evidence_changed(fake_evidence, local_evidence_list.at(current_evidence)))
+  {
+    evidence_close();
+    return;
+  }
+  QMessageBox *msgBox = new QMessageBox;
+  msgBox->setText("Evidence has been modified.");
+  msgBox->setInformativeText("Do you want to save your changes?");
+  msgBox->setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  msgBox->setDefaultButton(QMessageBox::Save);
+  int ret = msgBox->exec();
+  switch (ret) {
+    case QMessageBox::Save:
+        evidence_close();
+        on_evidence_ok_clicked();
+        break;
+    case QMessageBox::Discard:
+        evidence_close();
+        break;
+    case QMessageBox::Cancel:
+        // Cancel was clicked, do nothing
+        break;
+    default:
+        // should never be reached
+        break;
+  }
+}
+
+void Courtroom::on_evidence_ok_clicked()
+{
   ui_evidence_name->setReadOnly(true);
+  ui_evidence_description->setReadOnly(true);
+  ui_evidence_image_name->setReadOnly(true);
+  if (current_evidence < local_evidence_list.size())
+  {
+    evi_type f_evi = local_evidence_list.at(current_evidence);
+
+    QStringList f_contents;
+    f_contents.append(QString::number(current_evidence));
+    f_contents.append(ui_evidence_name->text());
+    f_contents.append(ui_evidence_description->toPlainText());
+    f_contents.append(ui_evidence_image_name->text());
+
+    ao_app->send_server_packet(new AOPacket("EE", f_contents));
+
+//    QMessageBox *msgBox = new QMessageBox;
+
+//    msgBox->setText("You succesfully saved your changes.");
+//    msgBox->setStandardButtons(QMessageBox::Ok);
+//    msgBox->setDefaultButton(QMessageBox::Ok);
+//    msgBox->exec();
+  }
+}
+
+void Courtroom::on_evidence_edited()
+{
+  if (current_evidence >= local_evidence_list.size()) //Should never happen but you never know.
+    return;
+  evi_type fake_evidence;
+  fake_evidence.name = ui_evidence_name->text();
+  fake_evidence.description = ui_evidence_description->toPlainText();
+  fake_evidence.image = ui_evidence_image_name->text();
+  if (compare_evidence_changed(fake_evidence, local_evidence_list.at(current_evidence)))
+    ui_evidence_ok->show();
+  else
+    ui_evidence_ok->hide();
+}
+
+void Courtroom::evidence_close()
+{
+  ui_evidence_description->setReadOnly(true);
+  ui_evidence_description->setToolTip("");
+  ui_evidence_name->setReadOnly(true);
+  ui_evidence_name->setToolTip("");
+  ui_evidence_image_name->setReadOnly(true);
+  ui_evidence_image_name->setToolTip("");
   ui_evidence_overlay->hide();
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_evidence_description_edited()
+bool Courtroom::compare_evidence_changed(evi_type evi_a, evi_type evi_b)
 {
-  QStringList f_contents;
-
-  evi_type f_evi = local_evidence_list.at(current_evidence);
-
-  f_contents.append(QString::number(current_evidence));
-  f_contents.append(f_evi.name);
-  f_contents.append(ui_evidence_description->toPlainText());
-  f_contents.append(f_evi.image);
-
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+  return evi_a.name != evi_b.name || evi_a.image != evi_b.image || evi_a.description != evi_b.description;
 }

@@ -784,41 +784,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
 
-  set_size_and_pos(ui_evidence_button, "evidence_button");
-  ui_evidence_button->set_image("evidencebutton");
-  ui_evidence_button->setToolTip(tr("Bring up the Evidence screen."));
-
-  set_size_and_pos(ui_evidence, "evidence_background");
-  ui_evidence->set_image("evidencebackground");
-
-  set_size_and_pos(ui_evidence_name, "evidence_name");
-
-  set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
-
-  set_size_and_pos(ui_evidence_left, "evidence_left");
-  ui_evidence_left->set_image("arrow_left");
-
-  set_size_and_pos(ui_evidence_right, "evidence_right");
-  ui_evidence_right->set_image("arrow_right");
-
-  set_size_and_pos(ui_evidence_present, "evidence_present");
-  ui_evidence_present->set_image("present_disabled");
-
-  set_size_and_pos(ui_evidence_overlay, "evidence_overlay");
-  ui_evidence_overlay->set_image("evidenceoverlay");
-
-  set_size_and_pos(ui_evidence_delete, "evidence_delete");
-  ui_evidence_delete->set_image("deleteevidence");
-
-  set_size_and_pos(ui_evidence_image_name, "evidence_image_name");
-
-  set_size_and_pos(ui_evidence_image_button, "evidence_image_button");
-
-  set_size_and_pos(ui_evidence_x, "evidence_x");
-  ui_evidence_x->set_image("evidencex");
-
-  set_size_and_pos(ui_evidence_description, "evidence_description");
-
   ui_selector->set_image("char_selector");
   ui_selector->hide();
 

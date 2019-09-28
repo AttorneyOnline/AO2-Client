@@ -54,6 +54,7 @@
 #include <QTextBoundaryFinder>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QMessageBox>
 #include <QRandomGenerator>
 
 #include <stack>
@@ -554,6 +555,7 @@ private:
   AOLineEdit *ui_evidence_image_name;
   AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
+  AOButton *ui_evidence_ok;
   AOTextEdit *ui_evidence_description;
 
   AOImage *ui_char_select_background;
@@ -707,11 +709,17 @@ private slots:
   void on_showname_enable_clicked();
 
   void on_evidence_name_double_clicked();
+  void on_evidence_image_name_double_clicked();
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();
   void on_evidence_x_clicked();
-  void on_evidence_description_edited();
+  void on_evidence_ok_clicked();
+
+  void on_evidence_edited();
+
+  void evidence_close();
+  bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
 
