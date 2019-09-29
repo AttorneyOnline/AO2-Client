@@ -315,7 +315,7 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
   {
     f_result = read_design_ini(p_identifier, default_path);
     if (f_result == "")
-      return "Sans";
+      return "";
   }
   return f_result;
 }

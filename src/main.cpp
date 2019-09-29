@@ -22,11 +22,11 @@ int main(int argc, char *argv[])
 
     QSettings *configini = main_app.configini;
 
-    QPluginLoader apngPlugin("imageformats/qapng");
+    QPluginLoader apngPlugin("qapng");
     if (!apngPlugin.load())
         qCritical() << "QApng plugin could not be loaded";
 
-    QPluginLoader webpPlugin("imageformats/qwebp");
+    QPluginLoader webpPlugin("qwebp");
     if (!webpPlugin.load())
         qCritical() << "QWebp plugin could not be loaded";
 

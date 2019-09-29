@@ -1,5 +1,6 @@
 #include "courtroom.h"
 
+
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
@@ -147,6 +148,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message"));
   ui_ic_chat_message->preserve_selection(true);
+//  ui_ic_chat_message->setValidator(new QRegExpValidator(QRegExp("^\\S+(?: \\S+)*$"), ui_ic_chat_message));
   //todo: filter out \n from showing up as that commonly breaks the chatlog and can be spammed to hell
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
@@ -585,19 +587,15 @@ void Courtroom::set_widgets()
   //We detached the text as parent from the chatbox so it doesn't get affected by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
-//  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-//                               "color: white");
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
   ui_muted->set_image("muted");
   ui_muted->setToolTip(tr("Oops, you're muted!"));
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
-  ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
   ui_ooc_chat_message->setToolTip(tr("Type your message to display in the server chat here."));
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name");
-  ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
   ui_ooc_chat_name->setToolTip(tr("Set your name to display in the server chat."));
 
   //set_size_and_pos(ui_area_password, "area_password");
@@ -832,12 +830,21 @@ void Courtroom::set_font(QWidget *widget, QString class_name, QString p_identifi
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
   bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) == 1; // is the font bold or not?
-  this->set_qfont(widget, class_name, QFont(font_name, f_weight), f_color, bold);
+
+  QFont font;
+  if (font_name.isEmpty())
+  {
+    font = QFont(font_name, f_weight);
+    font.setStyleHint(QFont::SansSerif, QFont::NoAntialias);
+  }
+  else
+    font = QFont(font_name, f_weight);
+  this->set_qfont(widget, class_name, font, f_color, bold);
 }
 
 void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font, QColor f_color, bool bold)
 {
-  if(class_name == "")
+  if(class_name.isEmpty())
     class_name = widget->metaObject()->className();
   widget->setFont(font);
 
@@ -1563,7 +1570,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
 
-  m_chatmessage[MESSAGE].remove("\n"); //Remove undesired newline chars
+  //Remove undesired newline chars
+  m_chatmessage[MESSAGE].remove("\n");
+  //Replace all trailing whitespace with a single space and remove all whitespace at the end of the string.
+  //m_chatmessage[MESSAGE] = m_chatmessage[MESSAGE].replace(QRegularExpression("^\\s+(?=\\s)|\\s+$|\\s+(?=\\s)"), "");
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
@@ -1734,25 +1744,6 @@ void Courtroom::handle_chatmessage_2()
   this->set_qfont(ui_vp_message, "", QFont(font_name, f_weight), f_color, bold);
 
   set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
-
-  // Check if the message needs to be centered.
-  QString f_message = m_chatmessage[MESSAGE];
-  if (f_message.size() >= 2)
-  {
-      if (f_message.startsWith("~~"))
-      {
-          message_is_centered = true;
-      }
-      else
-      {
-          message_is_centered = false;
-      }
-  }
-  else
-  {
-      ui_vp_message->setAlignment(Qt::AlignLeft);
-  }
-
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
@@ -2055,12 +2046,6 @@ void Courtroom::handle_chatmessage_3()
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
 {
-  // Get rid of centering.
-  if(p_text.startsWith("~~"))
-      p_text.remove(0,2);
-
-  p_text.remove("\n"); //Undesired newline chars, probably from copy-pasting it from a doc or something.
-
   QString p_text_escaped;
 
   int check_pos = 0;
@@ -2106,8 +2091,6 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
     if (html)
       f_character = f_character.toHtmlEscaped();
 
-    if (f_character == " " && html) //Whitespace, woah
-      f_character = "&nbsp;"; //Turn it into an HTML entity
     f_char_length = f_character.length();
 
     bool color_update = false;
@@ -2260,6 +2243,14 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
   if (!ic_color_stack.empty())
   {
     p_text_escaped.append("</font>");
+  }
+
+  if (html)
+  {
+    //Example: https://regex101.com/r/oL4nM9/37 - this replaces excessive/trailing/etc. whitespace with non-breaking space.
+    //I WOULD use white-space: pre; stylesheet tag, but for whataver reason it doesn't work no matter where I try it.
+    //If somoene else can get that piece of HTML memery to work, please do.
+    p_text_escaped.replace(QRegularExpression("^\\s|(?<=\\s)\\s"), "&nbsp;");
   }
 
   return p_text_escaped;
@@ -2591,60 +2582,57 @@ void Courtroom::chat_tick()
   }
 
   tick_pos += f_char_length;
-
-  //Do the colors, gradual showing, etc. in here
-  ui_vp_message->setHtml(additive_previous + filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt()));
-
-  if (!formatting_char || f_character == "n") //NEWLINES (\n) COUNT AS A SINGLE CHARACTER.
+  if (formatting_char || (message_display_speed[current_display_speed] <= 0 && tick_pos < f_message.size()))
   {
-    //Make the cursor follow the message
-    QTextCursor cursor = ui_vp_message->textCursor();
-    cursor.setPosition(real_tick_pos);
-    ui_vp_message->setTextCursor(cursor);
-    real_tick_pos += f_char_length;
-  }
-  ui_vp_message->ensureCursorVisible();
-
-//  //Grab the currently displayed chars
-//  f_rest = f_message.left(tick_pos);
-//  f_rest.replace("\\n", "\n");
-
-//  QFontMetrics fm = fontMetrics();
-//  QRect bounding_rect = fm.boundingRect(QRect(0,0,ui_vp_message->width(),ui_vp_message->height()), Qt::TextWordWrap, f_rest);
-
-//  //If the text overflows, make it snap to bottom
-//  if (bounding_rect.height() > ui_vp_message->height())
-//  {
-
-//    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
-//    scroll->value();
-//    scroll->setValue(scroll->maximum());
-//  }
-
-  // Keep the speed at bay.
-  if (current_display_speed < 0)
-    current_display_speed = 0;
-  else if (current_display_speed > 6)
-    current_display_speed = 6;
-
-  //Blip player and real tick pos ticker
-  if (!formatting_char && (f_character != ' ' || blank_blip))
-  {
-    if (blip_ticker % blip_rate == 0)
-    {
-      blip_player->blip_tick();
-    }
-    ++blip_ticker;
-  }
-
-  // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
-  // Additionally, if the message_display_speed length is too short for us to do anything (play animations, etc.) then skip the trouble and don't bother.
-  if (formatting_char || message_display_speed[current_display_speed] <= 0)
-  {
-     chat_tick_timer->start(0);
+    chat_tick_timer->start(0); //Don't bother rendering anything out as we're doing the SPEED. (there's latency otherwise)
   }
   else
   {
+    //Do the colors, gradual showing, etc. in here
+    ui_vp_message->setHtml(additive_previous + filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt()));
+
+    if (!formatting_char || f_character == "n") //NEWLINES (\n) COUNT AS A SINGLE CHARACTER.
+    {
+      //Make the cursor follow the message
+      QTextCursor cursor = ui_vp_message->textCursor();
+      cursor.setPosition(real_tick_pos);
+      ui_vp_message->setTextCursor(cursor);
+      real_tick_pos += f_char_length;
+    }
+    ui_vp_message->ensureCursorVisible();
+
+  //  //Grab the currently displayed chars
+  //  f_rest = f_message.left(tick_pos);
+  //  f_rest.replace("\\n", "\n");
+
+  //  QFontMetrics fm = fontMetrics();
+  //  QRect bounding_rect = fm.boundingRect(QRect(0,0,ui_vp_message->width(),ui_vp_message->height()), Qt::TextWordWrap, f_rest);
+
+  //  //If the text overflows, make it snap to bottom
+  //  if (bounding_rect.height() > ui_vp_message->height())
+  //  {
+
+  //    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
+  //    scroll->value();
+  //    scroll->setValue(scroll->maximum());
+  //  }
+
+    // Keep the speed at bay.
+    if (current_display_speed < 0)
+      current_display_speed = 0;
+    else if (current_display_speed > 6)
+      current_display_speed = 6;
+
+    //Blip player and real tick pos ticker
+    if (!formatting_char && (f_character != ' ' || blank_blip))
+    {
+      if (blip_ticker % blip_rate == 0)
+      {
+        blip_player->blip_tick();
+      }
+      ++blip_ticker;
+    }
+
     //If this color is talking
     if (color_is_talking && anim_state != 2 && anim_state < 4) //Set it to talking as we're not on that already (though we have to avoid interrupting a non-interrupted preanim)
     {
@@ -2658,7 +2646,6 @@ void Courtroom::chat_tick()
       ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
       anim_state = 3;
     }
-
     //Continue ticking
     chat_tick_timer->start(message_display_speed[current_display_speed]);
   }
