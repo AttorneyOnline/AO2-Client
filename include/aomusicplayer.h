@@ -44,8 +44,6 @@ private:
   // Channel 2 = extra
   // Channel 3 = extra
   HSTREAM m_stream_list[4];
-
-//  HSYNC loop_sync;
 };
 #elif defined(QTAUDIO)
 class AOMusicPlayer

@@ -2601,22 +2601,6 @@ void Courtroom::chat_tick()
     }
     ui_vp_message->ensureCursorVisible();
 
-  //  //Grab the currently displayed chars
-  //  f_rest = f_message.left(tick_pos);
-  //  f_rest.replace("\\n", "\n");
-
-  //  QFontMetrics fm = fontMetrics();
-  //  QRect bounding_rect = fm.boundingRect(QRect(0,0,ui_vp_message->width(),ui_vp_message->height()), Qt::TextWordWrap, f_rest);
-
-  //  //If the text overflows, make it snap to bottom
-  //  if (bounding_rect.height() > ui_vp_message->height())
-  //  {
-
-  //    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
-  //    scroll->value();
-  //    scroll->setValue(scroll->maximum());
-  //  }
-
     // Keep the speed at bay.
     if (current_display_speed < 0)
       current_display_speed = 0;
