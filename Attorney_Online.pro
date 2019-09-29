@@ -15,8 +15,6 @@ HEADERS += $$files($$PWD/include/*.h)
 
 
 LIBS += -L$$PWD/lib
-LIBS += -lqapng
-LIBS += -lqwebp
 
 DEFINES += DISCORD
 
