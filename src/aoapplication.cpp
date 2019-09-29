@@ -94,7 +94,7 @@ void AOApplication::destruct_courtroom()
 QString AOApplication::get_version_string()
 {
   return
-  "Fix the Client, Cents - jooj";
+  "CC - Update 21";
 }
 
 void AOApplication::reload_theme()

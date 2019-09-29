@@ -20,8 +20,9 @@ void AOMovie::set_play_once(bool p_play_once)
   play_once = p_play_once;
 }
 
-void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
+void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, bool shown)
 {
+
   m_movie->stop();
 
   QString gif_path;
@@ -59,7 +60,6 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
     gif_path = "";
   qDebug() << "gif PATH" << gif_path;
   m_movie->setFileName(gif_path);
-
   this->show();
   m_movie->start();
 }
@@ -80,7 +80,7 @@ void AOMovie::frame_change(int n_frame)
     this->stop();
 
     //signal connected to courtroom object, let it figure out what to do
-    done();
+    emit done();
   }
 }
 

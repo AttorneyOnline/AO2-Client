@@ -320,6 +320,7 @@ private:
 
   static const int chatmessage_size = 23;
   QString m_chatmessage[chatmessage_size];
+  QString m_chatmessage_tmp[chatmessage_size];
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
@@ -338,7 +339,8 @@ private:
   //QVector<int> muted_cids;
 
   bool is_muted = false;
-
+  bool shown = true;
+  bool toshow = true;
   //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 = noniterrupting preanim
   int anim_state = 3;
 
@@ -349,6 +351,8 @@ private:
   int m_cid = -1;
   //cid and this may differ in cases of ini-editing
   QString current_char = "";
+
+  QString char_name = "";
 
   int objection_state = 0;
   QString objection_custom = "";
