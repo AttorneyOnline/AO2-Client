@@ -834,7 +834,7 @@ void Courtroom::set_font(QWidget *widget, QString class_name, QString p_identifi
   QFont font;
   if (font_name.isEmpty())
   {
-    font = QFont(font_name, f_weight);
+    font = QFont("Arial", f_weight);
     font.setStyleHint(QFont::SansSerif, QFont::NoAntialias);
   }
   else
