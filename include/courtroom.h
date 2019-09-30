@@ -149,7 +149,7 @@ public:
   void set_taken(int n_char, bool p_taken);
 
   //sets the current background to argument. also does some checks to see if it's a legacy bg
-  void set_background(QString p_background);
+  void set_background(QString p_background, bool display=false);
 
   //sets the local character pos/side to use.
   void set_side(QString p_side);

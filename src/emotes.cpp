@@ -107,7 +107,7 @@ void Courtroom::set_emote_page()
   if (current_emote_page > 0)
     ui_emote_left->show();
 
-  for (int n_emote = 0 ; n_emote < emotes_on_page ; ++n_emote)
+  for (int n_emote = 0 ; n_emote < emotes_on_page && n_emote < ui_emote_list.size(); ++n_emote)
   {
     int n_real_emote = n_emote + current_emote_page * max_emotes_on_page;
     AOEmoteButton *f_emote = ui_emote_list.at(n_emote);

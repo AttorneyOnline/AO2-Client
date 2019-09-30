@@ -295,13 +295,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_pos_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_pos_dropdown_changed(int)));
 
-  connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
+  connect(ui_iniswap_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
   connect(ui_iniswap_remove, SIGNAL(clicked()), this, SLOT(on_iniswap_remove_clicked()));
 
-  connect(ui_sfx_dropdown, SIGNAL(activated(int)), this, SLOT(on_sfx_dropdown_changed(int)));
+  connect(ui_sfx_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sfx_dropdown_changed(int)));
   connect(ui_sfx_remove, SIGNAL(clicked()), this, SLOT(on_sfx_remove_clicked()));
 
-  connect(ui_effects_dropdown, SIGNAL(activated(int)), this, SLOT(on_effects_dropdown_changed(int)));
+  connect(ui_effects_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_effects_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -460,10 +460,12 @@ void Courtroom::set_widgets()
   if (ao_app->casing_alerts_enabled)
   {
     ui_announce_casing->show();
+    ui_casing->show();
   }
   else
   {
     ui_announce_casing->hide();
+    ui_casing->hide();
   }
 
   // We also show the non-server-dependent client additions.
@@ -617,6 +619,7 @@ void Courtroom::set_widgets()
   ui_iniswap_remove->setText("X");
   ui_iniswap_remove->set_image("evidencex");
   ui_iniswap_remove->setToolTip(tr("Remove the currently selected iniswap from the list and return to the original character folder."));
+  ui_iniswap_remove->hide();
 
   set_size_and_pos(ui_sfx_dropdown, "sfx_dropdown");
   ui_sfx_dropdown->setEditable(true);
@@ -628,6 +631,7 @@ void Courtroom::set_widgets()
   ui_sfx_remove->setText("X");
   ui_sfx_remove->set_image("evidencex");
   ui_sfx_remove->setToolTip(tr("Remove the currently selected iniswap from the list and return to the original character folder."));
+  ui_sfx_remove->hide();
 
   set_size_and_pos(ui_effects_dropdown, "effects_dropdown");
   ui_effects_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
@@ -805,7 +809,6 @@ void Courtroom::set_widgets()
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to interact with the in-character screen."));
 
   refresh_evidence();
-  refresh_emotes();
 }
 
 void Courtroom::set_fonts()
@@ -954,7 +957,7 @@ void Courtroom::done_received()
   ui_spectator->show();
 }
 
-void Courtroom::set_background(QString p_background)
+void Courtroom::set_background(QString p_background, bool display)
 {
   ui_vp_testimony->stop();
   current_background = p_background;
@@ -974,13 +977,16 @@ void Courtroom::set_background(QString p_background)
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   }
 
-  ui_vp_speedlines->stop();
-  ui_vp_player_char->stop();
-  ui_vp_sideplayer_char->stop();
-  ui_vp_effect->stop();
-  ui_vp_message->hide();
-  ui_vp_chatbox->hide();
-  set_scene(QString::number(ao_app->get_desk_mod(current_char, current_emote)), current_side);
+  if (display)
+  {
+    ui_vp_speedlines->stop();
+    ui_vp_player_char->stop();
+    ui_vp_sideplayer_char->stop();
+    ui_vp_effect->stop();
+    ui_vp_message->hide();
+    ui_vp_chatbox->hide();
+    set_scene(QString::number(ao_app->get_desk_mod(current_char, current_emote)), current_side);
+  }
 }
 
 void Courtroom::set_side(QString p_side)
@@ -1034,7 +1040,7 @@ void Courtroom::update_character(int p_cid)
   }
 
   current_char = f_char;
-  current_side = "";
+  current_side = ao_app->get_char_side(current_char);
 
   current_emote_page = 0;
   current_emote = 0;
@@ -1044,17 +1050,18 @@ void Courtroom::update_character(int p_cid)
   else
     ui_emotes->show();
 
+  refresh_emotes();
   set_emote_page();
   set_emote_dropdown();
 
   set_sfx_dropdown();
   set_effects_dropdown();
 
-  QString side = current_side;
-  if (side == "")
-    side = ao_app->get_char_side(current_char);
+  qDebug() << "update_character called";
+  if (newchar) //Avoid infinite loop of death and suffering
+    set_iniswap_dropdown();
 
-  if (side == "jud")
+  if (current_side == "jud")
   {
     ui_witness_testimony->show();
     ui_cross_examination->show();
@@ -1088,9 +1095,6 @@ void Courtroom::update_character(int p_cid)
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
-
-  if (newchar)
-    set_iniswap_dropdown();
 }
 
 void Courtroom::enter_courtroom()
@@ -1134,6 +1138,7 @@ void Courtroom::enter_courtroom()
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
 }
 
+//Todo: multithread this due to some servers having large as hell music list
 void Courtroom::list_music()
 {
   ui_music_list->clear();
@@ -1170,24 +1175,12 @@ void Courtroom::list_music()
     if (i_song_listname == i_song) //Not supposed to be a song to begin with - a category?
       parent = treeItem;
     ++n_listed_songs;
-
-    if (ui_music_search->text() != "")
-      treeItem->setHidden(true);
   }
 
-  if (ui_music_search->text() != "")
-  {
-    QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 0);
-    foreach(QTreeWidgetItem* item, clist)
-    {
-      if (item->parent() != nullptr) //So the category shows up too
-        item->parent()->setHidden(false);
-      item->setHidden(false);
-    }
-  }
-  ui_music_list->expandAll(); //Workaround, it needs to preserve the "expanded categories" due to list music being updated constantly by some servers
+  ui_music_list->expandAll(); //Needs to somehow remember which categories were expanded/collapsed if the music list didn't change since last time
 }
 
+//Todo: multithread this due to some servers having large as hell area list
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
@@ -1322,9 +1315,8 @@ void Courtroom::on_chat_return_pressed()
 
   QStringList packet_contents;
 
-  QString f_side = current_side;
-  if (f_side == "")
-    f_side = ao_app->get_char_side(current_char);
+  if (current_side == "")
+    current_side = ao_app->get_char_side(current_char);
 
   QString f_desk_mod = "chat";
 
@@ -1345,7 +1337,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(ui_ic_chat_message->text());
 
-  packet_contents.append(f_side);
+  packet_contents.append(current_side);
 
   packet_contents.append(get_char_sfx());
 
@@ -1500,7 +1492,9 @@ void Courtroom::on_chat_return_pressed()
   {
     QString fx_sound = ao_app->get_effect_sound(effect, current_char);
     packet_contents.append(effect + "|" + fx_sound);
+    ui_effects_dropdown->blockSignals(true);
     ui_effects_dropdown->setCurrentIndex(0);
+    ui_effects_dropdown->blockSignals(false);
     effect = "";
   }
 
@@ -2053,10 +2047,36 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
   bool ic_next_is_not_special = false;
   std::stack<int> ic_color_stack;
 
+  //Text alignment shenanigans. Could make a dropdown for this later, too!
+  QString align;
+  if (p_text.trimmed().startsWith("~~"))
+  {
+    p_text.remove(p_text.indexOf("~~"), 2);
+    target_pos -= 2;
+    align = "center";
+  }
+  else if (p_text.trimmed().startsWith("~>"))
+  {
+    p_text.remove(p_text.indexOf("~>"), 2);
+    target_pos -= 2;
+    align = "right";
+  }
+  else if (p_text.trimmed().startsWith("<>"))
+  {
+    p_text.remove(p_text.indexOf("<>"), 2);
+    target_pos -= 2;
+    align = "justify";
+  }
+
+  //If html is enabled, prepare this text to be all ready for it.
   if (html)
   {
     ic_color_stack.push(default_color);
     QString appendage = "<font color=\""+ color_rgb_list.at(default_color).name(QColor::HexRgb) +"\">";
+
+    if (!align.isEmpty())
+      appendage.prepend("<div align="+ align +">");
+
     p_text_escaped.insert(check_pos_escaped, appendage);
     check_pos_escaped += appendage.size();
   }
@@ -2240,7 +2260,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
     check_pos += 1;
   }
 
-  if (!ic_color_stack.empty())
+  if (!ic_color_stack.empty() && html)
   {
     p_text_escaped.append("</font>");
   }
@@ -2251,6 +2271,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
     //I WOULD use white-space: pre; stylesheet tag, but for whataver reason it doesn't work no matter where I try it.
     //If somoene else can get that piece of HTML memery to work, please do.
     p_text_escaped.replace(QRegularExpression("^\\s|(?<=\\s)\\s"), "&nbsp;");
+    if (!align.isEmpty())
+      p_text_escaped.append("</div>");
   }
 
   return p_text_escaped;
@@ -2495,9 +2517,6 @@ void Courtroom::chat_tick()
     ui_vp_chat_arrow->play("chat_arrow", f_char, f_custom_theme); //Chat stopped being processed, indicate that.
     additive_previous = additive_previous + filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     real_tick_pos = ui_vp_message->toPlainText().size();
-
-    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
-    scroll->setValue(scroll->maximum());
     return;
   }
 
@@ -2505,6 +2524,29 @@ void Courtroom::chat_tick()
   bool formatting_char = false;
 
   QString f_rest = f_message;
+
+  //Alignment characters
+  if (tick_pos < 2)
+  {
+    if (f_rest.startsWith("~~"))
+    {
+      tick_pos = f_rest.indexOf("~~");
+      f_rest.remove(tick_pos, 2);
+      tick_pos += 2;
+    }
+    else if (f_rest.startsWith("~>"))
+    {
+      tick_pos = f_rest.indexOf("~>");
+      f_rest.remove(tick_pos, 2);
+      tick_pos += 2;
+    }
+    else if (f_rest.startsWith("<>"))
+    {
+      tick_pos = f_rest.indexOf("<>");
+      f_rest.remove(tick_pos, 2);
+      tick_pos += 2;
+    }
+  }
   f_rest.remove(0, tick_pos);
   QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
   QString f_character;
@@ -2518,6 +2560,7 @@ void Courtroom::chat_tick()
     f_character = f_rest.left(tbf.position());
 
   f_char_length = f_character.length();
+  tick_pos += f_char_length;
 
   // Escape character.
   if (!next_character_is_not_special)
@@ -2581,24 +2624,25 @@ void Courtroom::chat_tick()
     next_character_is_not_special = false;
   }
 
-  tick_pos += f_char_length;
   if (formatting_char || (message_display_speed[current_display_speed] <= 0 && tick_pos < f_message.size()))
   {
     chat_tick_timer->start(0); //Don't bother rendering anything out as we're doing the SPEED. (there's latency otherwise)
+    if (!formatting_char || f_character == "n")
+      real_tick_pos += f_char_length; //Adjust the tick position for the scrollbar convenience
   }
   else
   {
     //Do the colors, gradual showing, etc. in here
     ui_vp_message->setHtml(additive_previous + filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt()));
 
-    if (!formatting_char || f_character == "n") //NEWLINES (\n) COUNT AS A SINGLE CHARACTER.
-    {
-      //Make the cursor follow the message
-      QTextCursor cursor = ui_vp_message->textCursor();
-      cursor.setPosition(real_tick_pos);
-      ui_vp_message->setTextCursor(cursor);
-      real_tick_pos += f_char_length;
-    }
+    //This should always be done AFTER setHtml. Scroll the chat window with the text.
+
+    //Make the cursor follow the message
+    QTextCursor cursor = ui_vp_message->textCursor();
+    cursor.setPosition(real_tick_pos);
+    ui_vp_message->setTextCursor(cursor);
+    real_tick_pos += f_char_length;
+
     ui_vp_message->ensureCursorVisible();
 
     // Keep the speed at bay.
@@ -3256,11 +3300,27 @@ void Courtroom::on_ooc_toggle_clicked()
   }
 }
 
+//Todo: multithread this due to some servers having large as hell music list
 void Courtroom::on_music_search_edited(QString p_text)
 {
-  //preventing compiler warnings
-  p_text += "a";
-  list_music();
+  // Iterate through all QTreeWidgetItem items
+  QTreeWidgetItemIterator it(ui_music_list);
+  while (*it)
+  {
+      (*it)->setHidden(p_text != "");
+      ++it;
+  }
+
+  if (p_text != "")
+  {
+    QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 0);
+    foreach(QTreeWidgetItem* item, clist)
+    {
+      if (item->parent() != nullptr) //So the category shows up too
+        item->parent()->setHidden(false);
+      item->setHidden(false);
+    }
+  }
   list_areas();
 }
 
@@ -3268,7 +3328,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
 
-  if (p_index < 0 || p_index > 5)
+  if (p_index < 0 || p_index > 7)
     return;
 
   toggle_judge_buttons(false);
@@ -3296,18 +3356,27 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   case 5:
     f_pos = "hlp";
     break;
+  case 6:
+    f_pos = "jur";
+    break;
+  case 7:
+    f_pos = "sea";
+    break;
   default:
     f_pos = "";
   }
 
-  if (f_pos == "" || ui_ooc_chat_name->text() == "")
+  if (f_pos == "")
     return;
 
-  ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
+  //YEAH SENDING LIKE 20 PACKETS IF THE USER SCROLLS THROUGH, GREAT IDEA
+  //how about this instead
+  set_side(f_pos);
 }
 
 void Courtroom::set_iniswap_dropdown()
 {
+  ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->clear();
   if (m_cid == -1)
   {
@@ -3338,6 +3407,7 @@ void Courtroom::set_iniswap_dropdown()
       break;
     }
   }
+  ui_iniswap_dropdown->blockSignals(false);
 }
 
 void Courtroom::on_iniswap_dropdown_changed(int p_index)
@@ -3354,7 +3424,9 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
       swaplist.append(entry);
   }
   ao_app->write_to_file(swaplist.join("\n"), ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+  ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
+  ui_iniswap_dropdown->blockSignals(false);
   update_character(m_cid);
   if (p_index != 0)
     ui_iniswap_remove->show();
@@ -3364,6 +3436,11 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 
 void Courtroom::on_iniswap_remove_clicked()
 {
+  if (ui_iniswap_dropdown->count() <= 0)
+  {
+    ui_iniswap_remove->hide(); //We're not supposed to see it. Do this or the client will crash
+    return;
+  }
   if (ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()) != char_list.at(m_cid).name)
   {
     ui_iniswap_dropdown->removeItem(ui_iniswap_dropdown->currentIndex());
@@ -3374,6 +3451,7 @@ void Courtroom::on_iniswap_remove_clicked()
 
 void Courtroom::set_sfx_dropdown()
 {
+  ui_sfx_dropdown->blockSignals(true);
   ui_sfx_dropdown->clear();
   if (m_cid == -1)
   {
@@ -3404,6 +3482,7 @@ void Courtroom::set_sfx_dropdown()
   ui_sfx_dropdown->addItems(soundlist);
   ui_sfx_dropdown->setCurrentIndex(0);
   ui_sfx_remove->hide();
+  ui_sfx_dropdown->blockSignals(false);
 }
 
 void Courtroom::on_sfx_dropdown_changed(int p_index)
@@ -3427,7 +3506,9 @@ void Courtroom::on_sfx_dropdown_changed(int p_index)
   if (defaultlist.size() > 0 && defaultlist.toSet().subtract(soundlist.toSet()).size() > 0) //There's a difference from the default configuration
     ao_app->write_to_file(soundlist.join("\n"), ao_app->get_character_path(current_char, "soundlist.ini")); //Create a new sound list
 
+  ui_sfx_dropdown->blockSignals(true);
   ui_sfx_dropdown->setCurrentIndex(p_index);
+  ui_sfx_dropdown->blockSignals(false);
   if (p_index != 0)
     ui_sfx_remove->show();
   else
@@ -3436,6 +3517,11 @@ void Courtroom::on_sfx_dropdown_changed(int p_index)
 
 void Courtroom::on_sfx_remove_clicked()
 {
+  if (ui_sfx_dropdown->count() <= 0)
+  {
+    ui_sfx_remove->hide(); //We're not supposed to see it. Do this or the client will crash
+    return;
+  }
   if (ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex()) != "Default")
   {
     ui_sfx_dropdown->removeItem(ui_sfx_dropdown->currentIndex());
@@ -3445,6 +3531,7 @@ void Courtroom::on_sfx_remove_clicked()
 
 void Courtroom::set_effects_dropdown()
 {
+  ui_effects_dropdown->blockSignals(true);
   ui_effects_dropdown->clear();
   if (m_cid == -1)
   {
@@ -3488,6 +3575,7 @@ void Courtroom::set_effects_dropdown()
   }
 
   ui_effects_dropdown->setCurrentIndex(0);
+  ui_effects_dropdown->blockSignals(false);
 }
 
 void Courtroom::on_effects_dropdown_changed(int p_index)

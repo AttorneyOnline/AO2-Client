@@ -134,7 +134,9 @@ void Courtroom::char_clicked(int n_char)
     ao_app->send_server_packet(new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
-  update_character(n_char);
+  else
+    update_character(n_char);
+
   enter_courtroom();
 
   ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);

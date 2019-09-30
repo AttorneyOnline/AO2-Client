@@ -531,46 +531,32 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RD#%"));
   }
-  else if (header == "FM")
+  else if (header == "FM") //Fetch music ONLY
   {
     if (!courtroom_constructed)
       goto end;
 
     w_courtroom->clear_music();
-    w_courtroom->clear_areas();
-
-    bool musics_time = false;
-    int areas = 0;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
-      if (musics_time)
-      {
-          w_courtroom->append_music(f_contents.at(n_element));
-      }
-      else
-      {
-          if (f_contents.at(n_element).endsWith(".wav") ||
-                  f_contents.at(n_element).endsWith(".mp3") ||
-                  f_contents.at(n_element).endsWith(".mp4") ||
-                  f_contents.at(n_element).endsWith(".ogg") ||
-                  f_contents.at(n_element).endsWith(".opus"))
-          {
-              musics_time = true;
-              w_courtroom->fix_last_area();
-              w_courtroom->append_music(f_contents.at(n_element));
-              areas--;
-//              qDebug() << "wtf!!" << f_contents.at(n_element);
-          }
-          else
-          {
-              w_courtroom->append_area(f_contents.at(n_element));
-              areas++;
-          }
-      }
+      w_courtroom->append_music(f_contents.at(n_element));
     }
 
     w_courtroom->list_music();
+  }
+  else if (header == "FA") //Fetch areas ONLY
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    w_courtroom->clear_areas();
+
+    for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
+    {
+      w_courtroom->append_area(f_contents.at(n_element));
+    }
+
     w_courtroom->list_areas();
   }
   else if (header == "DONE")
@@ -597,7 +583,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     {
       if (f_contents.size() >= 2) //We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
-      w_courtroom->set_background(f_contents.at(0));
+      w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
     }
   }
   else if (header == "SP")

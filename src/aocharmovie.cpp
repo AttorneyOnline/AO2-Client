@@ -235,23 +235,12 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
         f_pixmap = QPixmap::fromImage(image.mirrored(true, false));
     else
         f_pixmap = QPixmap::fromImage(image);
-    auto aspect_ratio = Qt::KeepAspectRatio;
+//    auto aspect_ratio = Qt::KeepAspectRatio;
     auto transform_mode = Qt::SmoothTransformation;
 
-    if (f_pixmap.size().width() > this->size().width() || f_pixmap.size().height() > this->size().height())
-    {
-      f_pixmap = f_pixmap.scaledToHeight(this->height(), transform_mode);
-    }
-//    else if (f_pixmap.size().height() > this->size().height())
-//    {
-//      f_pixmap = f_pixmap.scaledToWidth(this->width(), transform_mode);
-//    }
-    else
-    {
-      f_pixmap = f_pixmap.scaled(this->width(), this->height(), aspect_ratio, transform_mode);
-    }
-    this->move((f_w - f_pixmap.width())/2, (f_pixmap.height() - f_h)); //Always center horizontally, always put at the bottom vertically
+    f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
     this->resize(f_pixmap.size());
+    this->move((f_w - f_pixmap.width())/2, (f_h - f_pixmap.height())); //Always center horizontally, always put at the bottom vertically
 
     return f_pixmap;
 }

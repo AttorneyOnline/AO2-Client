@@ -831,18 +831,19 @@ QStringList AOApplication::get_theme_effects()
   QString p_path = get_theme_path("effects/effects.ini");
   QString default_path = get_default_theme_path("effects/effects.ini");
 
+  QStringList effects;
   if (!file_exists(p_path))
   {
     p_path = default_path;
+    if (!file_exists(p_path))
+      return effects;
   }
-  QStringList lines = read_file(p_path).split("\n");
 
-  QStringList effects;
+  QStringList lines = read_file(p_path).split("\n");
   foreach (QString effect, lines)
   {
     effect = effect.split("=")[0].trimmed();
-    qDebug() << effect;
-    if (effect != "" && !effects.contains(effect))
+    if (!effect.isEmpty() && !effects.contains(effect))
       effects.append(effect);
   }
   return effects;
@@ -853,14 +854,15 @@ QStringList AOApplication::get_effects(QString p_char)
   QString p_effect = read_char_ini(p_char, "effects", "Options");
   QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
 
-  QStringList lines = read_file(p_path).split("\n");
-
   QStringList effects = get_theme_effects();
+  if (!file_exists(p_path))
+    return effects;
+
+  QStringList lines = read_file(p_path).split("\n");
   foreach (QString effect, lines)
   {
     effect = effect.split("=")[0].trimmed();
-    qDebug() << effect;
-    if (effect != "" && !effects.contains(effect))
+    if (!effect.isEmpty() && !effects.contains(effect))
       effects.append(effect);
   }
 
