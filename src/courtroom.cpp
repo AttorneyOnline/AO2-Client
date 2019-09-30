@@ -2457,7 +2457,8 @@ void Courtroom::start_chat_ticking()
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
 
-  if (m_chatmessage[SCREENSHAKE] == "1")
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); //text meme bonanza
+  if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1")
   {
     this->do_screenshake();
   }
@@ -2682,7 +2683,10 @@ void Courtroom::chat_tick()
 void Courtroom::play_sfx()
 {
   QString sfx_name = m_chatmessage[SFX_NAME];
-
+  if (m_chatmessage[SCREENSHAKE] == "1") //Screenshake dependant on preanim sfx delay meme
+  {
+    this->do_screenshake();
+  }
   if (sfx_name == "1")
     return;
 
