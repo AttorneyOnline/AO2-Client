@@ -66,7 +66,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool crossfade)
     //Start it
     BASS_ChannelPlay(newstream, false);
     //Fade in our sample
-    BASS_ChannelSlideAttribute(newstream, BASS_ATTRIB_VOL, static_cast<float>(m_volume / 100.0f), 1000);
+    BASS_ChannelSlideAttribute(newstream, BASS_ATTRIB_VOL, static_cast<float>(m_volume[channel] / 100.0f), 1000);
 
     m_stream_list[channel] = newstream;
   }
@@ -75,7 +75,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool crossfade)
     BASS_ChannelStop(m_stream_list[channel]);
     m_stream_list[channel] = newstream;
     BASS_ChannelPlay(m_stream_list[channel], false);
-    this->set_volume(m_volume, channel);
+    this->set_volume(m_volume[channel], channel);
   }
 
   this->set_looping(m_looping); //Have to do this here due to any crossfading-related changes, etc.
@@ -88,8 +88,8 @@ void AOMusicPlayer::stop(int channel)
 
 void AOMusicPlayer::set_volume(int p_value, int channel)
 {
-  m_volume = p_value;
-  float volume = m_volume / 100.0f;
+  m_volume[channel] = p_value;
+  float volume = m_volume[channel] / 100.0f;
   if (channel < 0)
   {
     for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)

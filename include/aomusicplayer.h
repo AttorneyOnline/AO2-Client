@@ -37,7 +37,7 @@ private:
   AOApplication *ao_app;
 
   bool m_looping = false;
-  int m_volume = 0;
+  int m_volume[4] = {0, 0, 0, 0};
 
   // Channel 0 = music
   // Channel 1 = ambience
