@@ -266,7 +266,10 @@ private:
   int other_charid = -1;
 
   // The offset this user has given if they want to appear alongside someone.
-  int offset_with_pair = 0;
+  int char_offset = 0;
+
+  // 0 = in front, 1 = behind
+  int pair_order = 0;
 
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
@@ -463,6 +466,8 @@ private:
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
+
+  QComboBox *ui_pair_order_dropdown;
 
   AOLineEdit *ui_ic_chat_message;
   QLineEdit *ui_ic_chat_name;
@@ -672,6 +677,7 @@ private slots:
 
   void on_mute_clicked();
   void on_pair_clicked();
+  void on_pair_order_dropdown_changed(int p_index);
 
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();

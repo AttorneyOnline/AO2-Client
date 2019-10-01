@@ -272,6 +272,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100,100);
   ui_pair_offset_spinbox->setSuffix(tr("% offset"));
+
+  ui_pair_order_dropdown = new QComboBox(this);
+  ui_pair_order_dropdown->addItem("To front");
+  ui_pair_order_dropdown->addItem("To behind");
+
   ui_pair_button = new AOButton(this, ao_app);
 
   ui_evidence_button = new AOButton(this, ao_app);
@@ -360,6 +365,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_pair_button, SIGNAL(clicked()), this, SLOT(on_pair_clicked()));
   connect(ui_pair_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_pair_list_clicked(QModelIndex)));
   connect(ui_pair_offset_spinbox, SIGNAL(valueChanged(int)), this, SLOT(on_pair_offset_changed(int)));
+  connect(ui_pair_order_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_pair_order_dropdown_changed(int)));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
@@ -536,9 +542,15 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pair_list, "pair_list");
   ui_pair_list->hide();
   ui_pair_list->setToolTip(tr("Select a character you wish to pair with."));
+
   set_size_and_pos(ui_pair_offset_spinbox, "pair_offset_spinbox");
   ui_pair_offset_spinbox->hide();
   ui_pair_offset_spinbox->setToolTip(tr("Change the percentage offset of your character's position from the center of the screen."));
+
+  ui_pair_order_dropdown->hide();
+  set_size_and_pos(ui_pair_order_dropdown, "pair_order_dropdown");
+  ui_pair_offset_spinbox->setToolTip(tr("Change the order of appearance for your character."));
+
   set_size_and_pos(ui_pair_button, "pair_button");
   ui_pair_button->set_image("pair_button");
   ui_pair_button->setToolTip(tr("Display the list of characters to pair with."));
@@ -1411,7 +1423,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (text_color < 0)
     f_text_color = "0";
-  else if (text_color > 8)
+  else if (text_color > max_colors)
     f_text_color = "0";
   else
     f_text_color = QString::number(text_color);
@@ -1435,14 +1447,17 @@ void Courtroom::on_chat_return_pressed()
     // Or a charid of -1 or lower, through some means.
     if (other_charid > -1 && other_charid != m_cid)
     {
-      packet_contents.append(QString::number(other_charid));
-      packet_contents.append(QString::number(offset_with_pair));
+      QString packet = QString::number(other_charid);
+      if (ao_app->effects_enabled) //Only servers with effects enabled will support pair reordering
+         packet += "^" + QString::number(pair_order);
+      packet_contents.append(packet);
     }
     else
     {
       packet_contents.append("-1");
-      packet_contents.append("0");
     }
+    //Send the offset as it's gonna be used regardless
+    packet_contents.append(QString::number(char_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked())
@@ -1751,16 +1766,14 @@ void Courtroom::handle_chatmessage_2()
   // Making the second character appear.
   if (m_chatmessage[OTHER_CHARID].isEmpty())
   {
-    // If there is no second character, hide 'em, and center the first.
+    // If there is no second character, hide 'em
     ui_vp_sideplayer_char->stop();
     ui_vp_sideplayer_char->move(0,0);
-
-    ui_vp_player_char->move(0,0);
   }
   else
   {
     bool ok;
-    int got_other_charid = m_chatmessage[OTHER_CHARID].toInt(&ok);
+    int got_other_charid = m_chatmessage[OTHER_CHARID].split("^")[0].toInt(&ok);
     if (ok)
     {
       if (got_other_charid > -1)
@@ -1768,91 +1781,27 @@ void Courtroom::handle_chatmessage_2()
         // If there is, show them!
         ui_vp_sideplayer_char->show();
 
-        // Depending on where we are, we offset the characters, and reorder their stacking.
-        if (side == "def")
+        int other_offset = m_chatmessage[OTHER_OFFSET].toInt();
+        ui_vp_sideplayer_char->move(ui_viewport->width() * other_offset / 100, 0);
+        qDebug() << "other offset" << other_offset;
+
+        QStringList args = m_chatmessage[OTHER_CHARID].split("^");
+        if (args.size() > 1) //This ugly workaround is so we don't make an extra packet just for this purpose. Rewrite pairing when?
         {
-          // We also move the character down depending on how far the are to the right.
-          int hor_offset = m_chatmessage[SELF_OFFSET].toInt();
-          int vert_offset = 0;
-          if (hor_offset > 0)
-          {
-            vert_offset = hor_offset / 10;
-          }
-          ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, ui_viewport->height() * vert_offset / 100);
-
-          // We do the same with the second character.
-          int hor2_offset = m_chatmessage[OTHER_OFFSET].toInt();
-          int vert2_offset = 0;
-          if (hor2_offset > 0)
-          {
-            vert2_offset = hor2_offset / 10;
-          }
-          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, ui_viewport->height() * vert2_offset / 100);
-
-          // Finally, we reorder them based on who is more to the left.
-          // The person more to the left is more in the front.
-          if (hor2_offset >= hor_offset)
-          {
-            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
-          }
-          else
-          {
-            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
+          //Change the order of appearance based on the pair order variable
+          int order = args.at(1).toInt();
+          switch (order) {
+            case 0:
+              ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
+              break;
+            case 1:
+              ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
+              break;
+            default:
+              break;
           }
         }
-        else if (side == "pro")
-        {
-          // Almost the same thing happens here, but in reverse.
-          int hor_offset = m_chatmessage[SELF_OFFSET].toInt();
-          int vert_offset = 0;
-          if (hor_offset < 0)
-          {
-            // We don't want to RAISE the char off the floor.
-            vert_offset = -1 * hor_offset / 10;
-          }
-          ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, ui_viewport->height() * vert_offset / 100);
 
-          // We do the same with the second character.
-          int hor2_offset = m_chatmessage[OTHER_OFFSET].toInt();
-          int vert2_offset = 0;
-          if (hor2_offset < 0)
-          {
-            vert2_offset = -1 * hor2_offset / 10;
-          }
-          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, ui_viewport->height() * vert2_offset / 100);
-
-          // Finally, we reorder them based on who is more to the right.
-          if (hor2_offset >= hor_offset)
-          {
-            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
-          }
-          else
-          {
-            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
-          }
-        }
-        else
-        {
-          // In every other case, the person more to the left is on top.
-          // These cases also don't move the characters down.
-          int hor_offset = m_chatmessage[SELF_OFFSET].toInt();
-          ui_vp_player_char->move(ui_viewport->width() * hor_offset / 100, 0);
-
-          // We do the same with the second character.
-          int hor2_offset = m_chatmessage[OTHER_OFFSET].toInt();
-          ui_vp_sideplayer_char->move(ui_viewport->width() * hor2_offset / 100, 0);
-
-          // Finally, we reorder them based on who is more to the left.
-          // The person more to the left is more in the front.
-          if (hor2_offset >= hor_offset)
-          {
-            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
-          }
-          else
-          {
-            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
-          }
-        }
         // We should probably also play the other character's idle emote.
         if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
           ui_vp_sideplayer_char->set_flipped(true);
@@ -1866,11 +1815,19 @@ void Courtroom::handle_chatmessage_2()
           // really is no second character, hide 'em, and center the first.
           ui_vp_sideplayer_char->hide();
           ui_vp_sideplayer_char->move(0,0);
-
-          ui_vp_player_char->move(0,0);
       }
     }
   }
+  //Set ourselves according to SELF_OFFSET
+
+  bool ok;
+  int self_offset = m_chatmessage[SELF_OFFSET].toInt(&ok);
+  if (ok)
+    ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, 0);
+  else
+    ui_vp_player_char->move(0, 0);
+
+  qDebug() << "offset OK" << ok << "offset value" << self_offset;
   switch (emote_mod)
   {
   case 1: case 2: case 6:
@@ -3077,7 +3034,7 @@ void Courtroom::on_ooc_return_pressed()
     {
       if (off >= -100 && off <= 100)
       {
-        offset_with_pair = off;
+        char_offset = off;
         QString msg = tr("You have set your offset to ");
         msg.append(QString::number(off));
         msg.append("%.");
@@ -3852,6 +3809,7 @@ void Courtroom::on_mute_clicked()
     ui_mute_list->show();
     ui_pair_list->hide();
     ui_pair_offset_spinbox->hide();
+    ui_pair_order_dropdown->hide();
     ui_pair_button->set_image("pair_button");
     ui_mute->set_image("mute_pressed");
   }
@@ -3868,6 +3826,7 @@ void Courtroom::on_pair_clicked()
   {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
+    ui_pair_order_dropdown->show();
     ui_mute_list->hide();
     ui_mute->set_image("mute");
     ui_pair_button->set_image("pair_button_pressed");
@@ -3876,8 +3835,14 @@ void Courtroom::on_pair_clicked()
   {
     ui_pair_list->hide();
     ui_pair_offset_spinbox->hide();
+    ui_pair_order_dropdown->hide();
     ui_pair_button->set_image("pair_button");
   }
+}
+
+void Courtroom::on_pair_order_dropdown_changed(int p_index)
+{
+  pair_order = p_index;
 }
 
 void Courtroom::on_defense_minus_clicked()
@@ -4014,7 +3979,7 @@ void Courtroom::on_log_limit_changed(int value)
 
 void Courtroom::on_pair_offset_changed(int value)
 {
-  offset_with_pair = value;
+  char_offset = value;
 }
 
 void Courtroom::on_witness_testimony_clicked()
@@ -4059,7 +4024,6 @@ void Courtroom::on_guilty_clicked()
 
 void Courtroom::on_change_character_clicked()
 {
-  music_player->set_volume(0);
   sfx_player->set_volume(0);
   blip_player->set_volume(0);
 

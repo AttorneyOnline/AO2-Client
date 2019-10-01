@@ -24,9 +24,10 @@ void Courtroom::initialize_evidence()
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_button->setText(tr("Choose..."));
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
-  ui_evidence_x->setToolTip(tr("Close the evidence display/editing overlay"));
+  ui_evidence_x->setToolTip(tr("Close the evidence display/editing overlay.\n"
+                               "You will be prompted if there's any unsaved changes."));
   ui_evidence_ok = new AOButton(ui_evidence_overlay, ao_app);
-  ui_evidence_ok->setToolTip(tr("Save any changes made to this piece of evidence"));
+  ui_evidence_ok->setToolTip(tr("Save any changes made to this piece of evidence and send them to server."));
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"

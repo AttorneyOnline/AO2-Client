@@ -240,7 +240,7 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
 
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
     this->resize(f_pixmap.size());
-    this->move((f_w - f_pixmap.width())/2, (f_h - f_pixmap.height())); //Always center horizontally, always put at the bottom vertically
+    this->move(x + (f_w - f_pixmap.width())/2, y + (f_h - f_pixmap.height())); //Always center horizontally, always put at the bottom vertically
 
     return f_pixmap;
 }
