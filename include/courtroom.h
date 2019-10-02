@@ -55,6 +55,8 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QMessageBox>
+#include <QMenu>
+#include <QDesktopServices>
 //#include <QRandomGenerator>
 
 #include <stack>
@@ -628,6 +630,9 @@ private slots:
 
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
+  void on_music_list_context_menu_requested(const QPoint &pos);
+  void music_list_expand_all();
+  void music_list_collapse_all();
   void on_area_list_double_clicked(QModelIndex p_model);
 
   void select_emote(int p_id);
@@ -642,13 +647,20 @@ private slots:
 
   void on_iniswap_dropdown_changed(int p_index);
   void set_iniswap_dropdown();
+  void on_iniswap_context_menu_requested(const QPoint &pos);
+  void on_iniswap_edit_requested();
   void on_iniswap_remove_clicked();
 
   void on_sfx_dropdown_changed(int p_index);
   void set_sfx_dropdown();
+  void on_sfx_context_menu_requested(const QPoint &pos);
+  void on_sfx_edit_requested();
   void on_sfx_remove_clicked();
 
   void set_effects_dropdown();
+  void on_effects_context_menu_requested(const QPoint &pos);
+  void on_effects_edit_requested();
+  void on_character_effects_edit_requested();
   void on_effects_dropdown_changed(int p_index);
   bool effects_dropdown_find_and_set(QString effect);
 

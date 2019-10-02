@@ -12,7 +12,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_settings_buttons = new QDialogButtonBox(this);
 
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Maximum);
+    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
     sizePolicy1.setHeightForWidth(ui_settings_buttons->sizePolicy().hasHeightForWidth());
@@ -36,6 +36,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     // Let's add the tabs one by one.
     // First, we'll start with 'Gameplay'.
     ui_gameplay_tab = new QWidget();
+    ui_gameplay_tab->setSizePolicy(sizePolicy1);
     ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
     ui_form_layout_widget = new QWidget(ui_gameplay_tab);
     ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 211));
@@ -45,6 +46,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
     ui_gameplay_form->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
     ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
+    ui_gameplay_form->setSpacing(2);
 
     int row = 0;
 
