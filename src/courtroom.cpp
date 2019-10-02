@@ -2715,6 +2715,12 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
       f_desk_image = "estrado";
   }
 
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(f_side)))) //Unique pos path
+  {
+    f_background = f_side;
+    f_desk_image = f_side + "_overlay";
+  }
+
   ui_vp_background->set_image(f_background);
   ui_vp_desk->set_image(f_desk_image);
   ui_vp_legacy_desk->set_legacy_desk(f_desk_image);
