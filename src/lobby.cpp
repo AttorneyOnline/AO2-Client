@@ -339,10 +339,18 @@ void Lobby::on_about_clicked()
                    "https://github.com/AttorneyOnline/AO2-Client</a>"
                    "<p><b>Major development:</b><br>"
                    "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter"
+                   "<p><b>2.8 Major Release development:</b><br>"
+                   "Crystalwarrior, Iamgoofball"
+                   "<p><b>2.8 Quality Assurance:</b><br>"
+                   "WillDean, Captain N, Mr M, Riel, Seimmet, Fury McFlurry,"
+                   "CedricDewitt, Chewable Tablets, Fantos, Futugaze,"
+                   "Geck, Minx, Pandae, Sierra, CrazyJC, CaseyMayCazy,"
+                   "GreenBowers, Robotic Overlord, Veritas, Gin-Gi"
                    "<p><b>Special thanks:</b><br>"
                    "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
                    "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
-                   "Noevain, Cronnicossy")
+                   "Noevain, Cronnicossy, the AO2 community, server hosts, game masters,"
+                   "case makers, content creators and players!")
           .arg(ao_app->get_version_string());
   QMessageBox::about(this, "About", msg);
 }
