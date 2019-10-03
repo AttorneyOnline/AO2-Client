@@ -16,6 +16,9 @@ void Courtroom::initialize_evidence()
   ui_evidence_present = new AOButton(ui_evidence, ao_app);
   ui_evidence_present->setToolTip(tr("Present this piece of evidence to everyone on your next spoken message"));
 
+  ui_evidence_switch = new AOButton(ui_evidence, ao_app);
+  ui_evidence_transfer = new AOButton(ui_evidence, ao_app);
+
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
@@ -40,6 +43,9 @@ void Courtroom::initialize_evidence()
   connect(ui_evidence_left, SIGNAL(clicked()), this, SLOT(on_evidence_left_clicked()));
   connect(ui_evidence_right, SIGNAL(clicked()), this, SLOT(on_evidence_right_clicked()));
   connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
+  connect(ui_evidence_switch, SIGNAL(clicked()), this, SLOT(on_evidence_switch_clicked()));
+  connect(ui_evidence_transfer, SIGNAL(clicked()), this, SLOT(on_evidence_transfer_clicked()));
+
   connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
   connect(ui_evidence_image_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_name_edited()));
   connect(ui_evidence_image_name, SIGNAL(double_clicked()), this, SLOT(on_evidence_image_name_double_clicked()));
@@ -65,11 +71,14 @@ void Courtroom::refresh_evidence()
   ui_evidence_list.clear();
 
   set_size_and_pos(ui_evidence_button, "evidence_button");
-  ui_evidence_button->set_image("evidencebutton");
+  ui_evidence_button->set_image("evidence_button");
   ui_evidence_button->setToolTip(tr("Bring up the Evidence screen."));
 
   set_size_and_pos(ui_evidence, "evidence_background");
-  ui_evidence->set_image("evidencebackground");
+  if (current_evidence_global)
+    ui_evidence->set_image("evidence_background");
+  else
+    ui_evidence->set_image("evidence_background_private");
 
   set_size_and_pos(ui_evidence_name, "evidence_name");
 
@@ -85,20 +94,47 @@ void Courtroom::refresh_evidence()
   ui_evidence_present->set_image("present");
 
   set_size_and_pos(ui_evidence_overlay, "evidence_overlay");
-  ui_evidence_overlay->set_image("evidenceoverlay");
+  if (current_evidence_global)
+    ui_evidence_overlay->set_image("evidence_overlay");
+  else
+    ui_evidence_overlay->set_image("evidence_overlay_private");
 
   set_size_and_pos(ui_evidence_delete, "evidence_delete");
-  ui_evidence_delete->set_image("deleteevidence");
+  ui_evidence_delete->set_image("evidence_delete");
 
   set_size_and_pos(ui_evidence_image_name, "evidence_image_name");
 
   set_size_and_pos(ui_evidence_image_button, "evidence_image_button");
 
   set_size_and_pos(ui_evidence_x, "evidence_x");
-  ui_evidence_x->set_image("evidencex");
+  ui_evidence_x->set_image("evidence_x");
 
   set_size_and_pos(ui_evidence_ok, "evidence_ok");
-  ui_evidence_ok->set_image("evidenceok");
+  ui_evidence_ok->set_image("evidence_ok");
+
+  set_size_and_pos(ui_evidence_switch, "evidence_switch");
+  if (current_evidence_global)
+  {
+    ui_evidence_switch->set_image("evidence_global");
+    ui_evidence_switch->setToolTip(tr("Switch evidence to private inventory."));
+  }
+  else
+  {
+    ui_evidence_switch->set_image("evidence_private");
+    ui_evidence_switch->setToolTip(tr("Switch evidence to global inventory."));
+  }
+
+  set_size_and_pos(ui_evidence_transfer, "evidence_transfer");
+  if (current_evidence_global)
+  {
+    ui_evidence_transfer->set_image("evidence_transfer");
+    ui_evidence_transfer->setToolTip(tr("Transfer evidence to private inventory."));
+  }
+  else
+  {
+    ui_evidence_transfer->set_image("evidence_transfer_private");
+    ui_evidence_transfer->setToolTip(tr("Transfer evidence to global inventory."));
+  }
 
   set_size_and_pos(ui_evidence_description, "evidence_description");
 
@@ -145,6 +181,10 @@ void Courtroom::refresh_evidence()
 
 void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
 {
+  global_evidence_list = p_evi_list;
+  if (!current_evidence_global)
+    return; //We're on private evidence editing, wait for user to do their thing
+
   QVector<evi_type> old_list = local_evidence_list;
   local_evidence_list.clear();
   local_evidence_list = p_evi_list;
@@ -171,7 +211,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
       msgBox->setInformativeText("Do you wish to keep your changes?");
       msgBox->setDetailedText("Name: " + local_evidence_list.at(current_evidence).name + "\nImage: " + local_evidence_list.at(current_evidence).image + "\nDescription:\n" + local_evidence_list.at(current_evidence).description);
       msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-      msgBox->setDefaultButton(QMessageBox::No);
+      msgBox->setDefaultButton(QMessageBox::LastButton);
       //msgBox->setWindowModality(Qt::NonModal);
       int ret = msgBox->exec();
       switch (ret) {
@@ -259,18 +299,6 @@ void Courtroom::on_evidence_name_edited()
   ui_evidence_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
-
-// Prefer pressing [X] to update the evidence.
-//  QStringList f_contents;
-
-//  evi_type f_evi = local_evidence_list.at(current_evidence);
-
-//  f_contents.append(QString::number(current_evidence));
-//  f_contents.append(ui_evidence_name->text());
-//  f_contents.append(f_evi.description);
-//  f_contents.append(f_evi.image);
-
-//  ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_name_double_clicked()
@@ -295,17 +323,6 @@ void Courtroom::on_evidence_image_name_edited()
   ui_evidence_image_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
-
-//  QStringList f_contents;
-
-//  evi_type f_evi = local_evidence_list.at(current_evidence);
-
-//  f_contents.append(QString::number(current_evidence));
-//  f_contents.append(f_evi.name);
-//  f_contents.append(f_evi.description);
-//  f_contents.append(ui_evidence_image_name->text());
-
-//  ao_app->send_server_packet(new AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_image_button_clicked()
@@ -339,7 +356,19 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   if (f_real_id == local_evidence_list.size())
   {
-    ao_app->send_server_packet(new AOPacket("PE#<name>#<description>#empty.png#%"));
+    if (current_evidence_global)
+      ao_app->send_server_packet(new AOPacket("PE#<name>#<description>#empty.png#%"));
+    else
+    {
+      evi_type f_evi;
+      f_evi.name = "<name>";
+      f_evi.description = "<description>";
+      f_evi.image = "empty.png";
+
+      local_evidence_list.append(f_evi);
+      private_evidence_list = local_evidence_list;
+      set_evidence_page();
+    }
     return;
   }
   else if (f_real_id > local_evidence_list.size())
@@ -425,6 +454,12 @@ void Courtroom::on_evidence_right_clicked()
 
 void Courtroom::on_evidence_present_clicked()
 {
+  if (!current_evidence_global)
+  {
+    ui_evidence_present->hide();
+    is_presenting_evidence = false;
+    return; //otherwise we get force-disconnected
+  }
   if (is_presenting_evidence)
     ui_evidence_present->set_image("present");
   else
@@ -438,7 +473,14 @@ void Courtroom::on_evidence_present_clicked()
 void Courtroom::on_evidence_delete_clicked()
 {
   evidence_close();
-  ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
+  if (current_evidence_global)
+    ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
+  else
+  {
+    local_evidence_list.remove(current_evidence);
+    private_evidence_list = local_evidence_list;
+    set_evidence_page();
+  }
 
   current_evidence = 0;
 
@@ -490,22 +532,80 @@ void Courtroom::on_evidence_ok_clicked()
   if (current_evidence < local_evidence_list.size())
   {
     evi_type f_evi = local_evidence_list.at(current_evidence);
+    if (current_evidence_global)
+    {
+      QStringList f_contents;
+      f_contents.append(QString::number(current_evidence));
+      f_contents.append(ui_evidence_name->text());
+      f_contents.append(ui_evidence_description->toPlainText());
+      f_contents.append(ui_evidence_image_name->text());
+
+      ao_app->send_server_packet(new AOPacket("EE", f_contents));
+    }
+    else
+    {
+      f_evi.name = ui_evidence_name->text();
+      f_evi.description = ui_evidence_description->toPlainText();
+      f_evi.image = ui_evidence_image_name->text();
+      local_evidence_list.replace(current_evidence, f_evi);
+      private_evidence_list = local_evidence_list;
+      ui_evidence_ok->hide();
+      set_evidence_page();
+    }
+  }
+}
+
+void Courtroom::on_evidence_switch_clicked()
+{
+  evidence_close();
+  evidence_switch(!current_evidence_global);
+  if (current_evidence_global)
+  {
+    ui_evidence_switch->set_image("evidence_global");
+    ui_evidence->set_image("evidence_background");
+    ui_evidence_overlay->set_image("evidence_overlay");
+    ui_evidence_transfer->set_image("evidence_transfer");
+    ui_evidence_transfer->setToolTip(tr("Transfer evidence to private inventory."));
+    ui_evidence_switch->setToolTip(tr("Current evidence is global. Click to switch to private."));
+  }
+  else
+  {
+    ui_evidence_switch->set_image("evidence_private");
+    ui_evidence->set_image("evidence_background_private");
+    ui_evidence_overlay->set_image("evidence_overlay_private");
+    ui_evidence_transfer->set_image("evidence_transfer_private");
+    ui_evidence_transfer->setToolTip(tr("Transfer evidence to global inventory."));
+    ui_evidence_switch->setToolTip(tr("Current evidence is private. Click to switch to global."));
+  }
+}
+
+void Courtroom::on_evidence_transfer_clicked()
+{
+  if (current_evidence >= local_evidence_list.size())
+    return;
+
+  if (!current_evidence_global) //Transfer private evidence to global
+  {
+    evi_type f_evi = local_evidence_list.at(current_evidence);
 
     QStringList f_contents;
-    f_contents.append(QString::number(current_evidence));
-    f_contents.append(ui_evidence_name->text());
-    f_contents.append(ui_evidence_description->toPlainText());
-    f_contents.append(ui_evidence_image_name->text());
+    f_contents.append(f_evi.name);
+    f_contents.append(f_evi.description);
+    f_contents.append(f_evi.image);
 
-    ao_app->send_server_packet(new AOPacket("EE", f_contents));
-
-//    QMessageBox *msgBox = new QMessageBox;
-
-//    msgBox->setText("You succesfully saved your changes.");
-//    msgBox->setStandardButtons(QMessageBox::Ok);
-//    msgBox->setDefaultButton(QMessageBox::Ok);
-//    msgBox->exec();
+    ao_app->send_server_packet(new AOPacket("PE", f_contents));
   }
+  else //Transfer global evidence to private
+  {
+    evi_type f_evi = local_evidence_list.at(current_evidence);
+    private_evidence_list.append(f_evi);
+  }
+
+  QMessageBox *msgBox = new QMessageBox;
+  msgBox->setText("Evidence has been transferred.");
+  msgBox->setStandardButtons(QMessageBox::Ok);
+  msgBox->setDefaultButton(QMessageBox::Ok);
+  msgBox->exec();
 }
 
 void Courtroom::on_evidence_edited()
@@ -532,6 +632,25 @@ void Courtroom::evidence_close()
   ui_evidence_image_name->setToolTip("");
   ui_evidence_overlay->hide();
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::evidence_switch(bool global)
+{
+  current_evidence_global = global;
+  is_presenting_evidence = false;
+  ui_evidence_present->set_image("present");
+  local_evidence_list.clear();
+  if (current_evidence_global)
+  {
+    local_evidence_list = global_evidence_list;
+    ui_evidence_present->show();
+  }
+  else
+  {
+    local_evidence_list = private_evidence_list;
+    ui_evidence_present->hide();
+  }
+  set_evidence_page();
 }
 
 bool Courtroom::compare_evidence_changed(evi_type evi_a, evi_type evi_b)

@@ -411,6 +411,11 @@ private:
   int max_emotes_on_page = 10;
 
   QVector<evi_type> local_evidence_list;
+  QVector<evi_type> private_evidence_list;
+  QVector<evi_type> global_evidence_list;
+
+  //false = use private_evidence_list
+  bool current_evidence_global = true;
 
   int current_evidence_page = 0;
   int current_evidence = 0;
@@ -563,6 +568,8 @@ private:
   AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
   AOButton *ui_evidence_ok;
+  AOButton *ui_evidence_switch;
+  AOButton *ui_evidence_transfer;
   AOTextEdit *ui_evidence_description;
 
   AOImage *ui_char_select_background;
@@ -733,10 +740,13 @@ private slots:
   void on_evidence_delete_clicked();
   void on_evidence_x_clicked();
   void on_evidence_ok_clicked();
+  void on_evidence_switch_clicked();
+  void on_evidence_transfer_clicked();
 
   void on_evidence_edited();
 
   void evidence_close();
+  void evidence_switch(bool global);
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
