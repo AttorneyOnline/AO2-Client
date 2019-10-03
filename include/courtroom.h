@@ -127,6 +127,9 @@ public:
   //sets font size based on theme ini files
   void set_font(QWidget *widget, QString class_name, QString p_identifier);
 
+  //Get the properly constructed font
+  QFont get_qfont(QString font_name, int f_pointsize);
+
   //actual operation of setting the font on a widget
   void set_qfont(QWidget *widget, QString class_name, QFont font, QColor f_color = Qt::black, bool bold = false);
 

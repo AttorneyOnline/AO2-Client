@@ -22,7 +22,7 @@ void Courtroom::initialize_evidence()
   ui_evidence_save = new AOButton(ui_evidence, ao_app);
   ui_evidence_save->setToolTip(tr("Save evidence to an .ini file."));
   ui_evidence_load = new AOButton(ui_evidence, ao_app);
-  ui_evidence_save->setToolTip(tr("Load evidence from an .ini file."));
+  ui_evidence_load->setToolTip(tr("Load evidence from an .ini file."));
 
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 

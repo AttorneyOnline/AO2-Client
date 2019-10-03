@@ -606,6 +606,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_showname, "showname");
 
   set_size_and_pos(ui_vp_message, "message");
+  ui_vp_message->hide();
+
   //We detached the text as parent from the chatbox so it doesn't get affected by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
@@ -848,37 +850,40 @@ void Courtroom::set_fonts()
 void Courtroom::set_font(QWidget *widget, QString class_name, QString p_identifier)
 {
   QString design_file = "courtroom_fonts.ini";
-  int f_weight = ao_app->get_font_size(p_identifier, design_file);
+  int f_pointsize = ao_app->get_font_size(p_identifier, design_file);
   QString font_name = ao_app->get_font_name(p_identifier + "_font", design_file);
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
-
   bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) == 1; // is the font bold or not?
 
+  this->set_qfont(widget, class_name, get_qfont(font_name, f_pointsize), f_color, bold);
+}
+
+QFont Courtroom::get_qfont(QString font_name, int f_pointsize)
+{
   QFont font;
   if (font_name.isEmpty())
   {
-    font = QFont("Arial", f_weight);
+    font = QFont("Arial", f_pointsize);
     font.setStyleHint(QFont::SansSerif, QFont::NoAntialias);
   }
   else
-    font = QFont(font_name, f_weight);
-  this->set_qfont(widget, class_name, font, f_color, bold);
+    font = QFont(font_name, f_pointsize);
+  return font;
 }
 
 void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font, QColor f_color, bool bold)
 {
   if(class_name.isEmpty())
     class_name = widget->metaObject()->className();
-  widget->setFont(font);
 
-  QString is_bold = "";
-  if(bold) is_bold = "font: bold;";
+  font.setBold(bold);
+  widget->setFont(font);
 
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
                                "color: rgba(" +
                                QString::number(f_color.red()) + ", " +
                                QString::number(f_color.green()) + ", " +
-                               QString::number(f_color.blue()) + ", 255);\n" + is_bold + "}";
+                               QString::number(f_color.blue()) + ", 255);}";
   widget->setStyleSheet(style_sheet_string);
 }
 
@@ -1745,8 +1750,9 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_message->hide();
   ui_vp_chatbox->hide();
 
+  //todo: put this in its own function or update
   QString design_file = "courtroom_fonts.ini";
-  int f_weight = ao_app->get_font_size("message", design_file);
+  int f_pointsize = ao_app->get_font_size("message", design_file);
   QString font_name = ao_app->get_font_name("message_font", design_file);
   QColor f_color = ao_app->get_color("message_color", design_file);
   bool bold = ao_app->get_font_size("message_bold", design_file) == 1; // is the font bold or not?
@@ -1757,8 +1763,8 @@ void Courtroom::handle_chatmessage_2()
 
   int chatsize = ao_app->get_chat_size(m_chatmessage[CHAR_NAME]);
   if (chatsize != -1)
-    f_weight = chatsize;
-  this->set_qfont(ui_vp_message, "", QFont(font_name, f_weight), f_color, bold);
+    f_pointsize = chatsize;
+  this->set_qfont(ui_vp_message, "", get_qfont(font_name, f_pointsize), f_color, bold);
 
   set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
