@@ -19,6 +19,11 @@ void Courtroom::initialize_evidence()
   ui_evidence_switch = new AOButton(ui_evidence, ao_app);
   ui_evidence_transfer = new AOButton(ui_evidence, ao_app);
 
+  ui_evidence_save = new AOButton(ui_evidence, ao_app);
+  ui_evidence_save->setToolTip(tr("Save evidence to an .ini file."));
+  ui_evidence_load = new AOButton(ui_evidence, ao_app);
+  ui_evidence_save->setToolTip(tr("Load evidence from an .ini file."));
+
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
 
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
@@ -45,6 +50,8 @@ void Courtroom::initialize_evidence()
   connect(ui_evidence_present, SIGNAL(clicked()), this, SLOT(on_evidence_present_clicked()));
   connect(ui_evidence_switch, SIGNAL(clicked()), this, SLOT(on_evidence_switch_clicked()));
   connect(ui_evidence_transfer, SIGNAL(clicked()), this, SLOT(on_evidence_transfer_clicked()));
+  connect(ui_evidence_save, SIGNAL(clicked()), this, SLOT(on_evidence_save_clicked()));
+  connect(ui_evidence_load, SIGNAL(clicked()), this, SLOT(on_evidence_load_clicked()));
 
   connect(ui_evidence_delete, SIGNAL(clicked()), this, SLOT(on_evidence_delete_clicked()));
   connect(ui_evidence_image_name, SIGNAL(returnPressed()), this, SLOT(on_evidence_image_name_edited()));
@@ -135,6 +142,20 @@ void Courtroom::refresh_evidence()
     ui_evidence_transfer->set_image("evidence_transfer_private");
     ui_evidence_transfer->setToolTip(tr("Transfer evidence to global inventory."));
   }
+
+  set_size_and_pos(ui_evidence_save, "evidence_save");
+  ui_evidence_save->set_image("evidence_save");
+  if (current_evidence_global)
+    ui_evidence_save->hide();
+  else
+    ui_evidence_save->show();
+
+  set_size_and_pos(ui_evidence_load, "evidence_load");
+  ui_evidence_load->set_image("evidence_load");
+  if (current_evidence_global)
+    ui_evidence_load->hide();
+  else
+    ui_evidence_load->show();
 
   set_size_and_pos(ui_evidence_description, "evidence_description");
 
@@ -584,6 +605,7 @@ void Courtroom::on_evidence_transfer_clicked()
   if (current_evidence >= local_evidence_list.size())
     return;
 
+  QString name;
   if (!current_evidence_global) //Transfer private evidence to global
   {
     evi_type f_evi = local_evidence_list.at(current_evidence);
@@ -593,16 +615,18 @@ void Courtroom::on_evidence_transfer_clicked()
     f_contents.append(f_evi.description);
     f_contents.append(f_evi.image);
 
+    name = f_evi.name;
     ao_app->send_server_packet(new AOPacket("PE", f_contents));
   }
   else //Transfer global evidence to private
   {
     evi_type f_evi = local_evidence_list.at(current_evidence);
+    name = f_evi.name;
     private_evidence_list.append(f_evi);
   }
 
   QMessageBox *msgBox = new QMessageBox;
-  msgBox->setText("Evidence has been transferred.");
+  msgBox->setText("\"" + name + "\" has been transferred.");
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setDefaultButton(QMessageBox::Ok);
   msgBox->exec();
@@ -644,12 +668,70 @@ void Courtroom::evidence_switch(bool global)
   {
     local_evidence_list = global_evidence_list;
     ui_evidence_present->show();
+    ui_evidence_save->hide();
+    ui_evidence_load->hide();
   }
   else
   {
     local_evidence_list = private_evidence_list;
     ui_evidence_present->hide();
+    ui_evidence_save->show();
+    ui_evidence_load->show();
   }
+  set_evidence_page();
+}
+
+void Courtroom::on_evidence_save_clicked()
+{
+  if (current_evidence_global)
+    return; //Don't allow saving/loading operations when in global inventory mode for now
+
+  QString p_path = QFileDialog::getSaveFileName(this, tr("Save Inventory"), "base/inventories/", tr("Ini Files (*.ini)"));
+  if (p_path.isEmpty())
+    return;
+
+  evidence_close();
+  ui_evidence_name->setText("");
+
+  QSettings inventory(p_path, QSettings::IniFormat);
+  inventory.clear();
+  for(int i = 0; i < local_evidence_list.size(); i++)
+  {
+     inventory.beginGroup(QString::number(i));
+     inventory.setValue("name",local_evidence_list[i].name);
+     inventory.setValue("description",local_evidence_list[i].description);
+     inventory.setValue("image",local_evidence_list[i].image);
+     inventory.endGroup();
+  }
+  inventory.sync();
+}
+
+void Courtroom::on_evidence_load_clicked()
+{
+  if (current_evidence_global)
+    return; //Don't allow saving/loading operations when in global inventory mode for now
+
+  QString p_path = QFileDialog::getOpenFileName(this, tr("Open Inventory"), "base/inventories/", tr("Ini Files (*.ini)"));
+  if (p_path.isEmpty())
+    return;
+
+  evidence_close();
+  ui_evidence_name->setText("");
+
+  QSettings inventory(p_path, QSettings::IniFormat);
+  local_evidence_list.clear();
+  foreach (QString evi, inventory.childGroups())
+  {
+    if (evi == "General")
+      continue;
+
+    evi_type f_evi;
+    f_evi.name = inventory.value(evi + "/name", "UNKNOWN").value<QString>();
+    f_evi.description = inventory.value(evi + "/description", "UNKNOWN").value<QString>();
+    f_evi.image = inventory.value(evi + "/image", "UNKNOWN.png").value<QString>();
+    local_evidence_list.append(f_evi);
+  }
+  private_evidence_list = local_evidence_list;
   set_evidence_page();
 }
 

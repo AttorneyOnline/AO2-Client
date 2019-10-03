@@ -2993,14 +2993,6 @@ void Courtroom::on_ooc_return_pressed()
       toggle_judge_buttons(false);
     }
   }
-  else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
-  {
-    //ui_text_color->addItem("Rainbow");
-    ui_ooc_chat_message->clear();
-    //rainbow_appended = true;
-    append_server_chatmessage("CLIENT", tr("This does nothing, but there you go."), "1");
-    return;
-  }
   else if (ooc_message.startsWith("/settings"))
   {
     ui_ooc_chat_message->clear();
@@ -3221,7 +3213,7 @@ void Courtroom::on_ooc_return_pressed()
       casefile.setValue("doc", "");
       casefile.setValue("status",command[2]);
       casefile.sync();
-      for(int i = local_evidence_list.size() - 1; i >= 0; i--)
+      for(int i = 0; i < local_evidence_list.size(); i++)
       {
            QString clean_evidence_dsc =  local_evidence_list[i].description.replace(QRegularExpression("<owner = ...>..."), "");
            clean_evidence_dsc = clean_evidence_dsc.replace(clean_evidence_dsc.lastIndexOf(">"), 1, "");

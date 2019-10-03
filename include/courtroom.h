@@ -570,6 +570,8 @@ private:
   AOButton *ui_evidence_ok;
   AOButton *ui_evidence_switch;
   AOButton *ui_evidence_transfer;
+  AOButton *ui_evidence_save;
+  AOButton *ui_evidence_load;
   AOTextEdit *ui_evidence_description;
 
   AOImage *ui_char_select_background;
@@ -747,6 +749,8 @@ private slots:
 
   void evidence_close();
   void evidence_switch(bool global);
+  void on_evidence_save_clicked();
+  void on_evidence_load_clicked();
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
