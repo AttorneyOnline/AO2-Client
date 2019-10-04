@@ -22,7 +22,6 @@ public:
   void play(QString p_song);
   void set_volume(int p_value);
 
-  void kill_loop();
   bool enable_looping = true;
 
 private:
