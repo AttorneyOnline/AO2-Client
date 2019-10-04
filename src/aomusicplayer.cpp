@@ -21,24 +21,6 @@ void AOMusicPlayer::play(QString p_song, int channel, bool crossfade)
   if (channel < 0) //wtf?
       return;
   QString f_path = ao_app->get_music_path(p_song);
-//  QString d_path = f_path + ".txt";
-
-//  if (file_exists(d_path)) //Contains loop/etc. information file
-//  {
-//    QStringList lines = ao_app->read_file(d_path).split("\n");
-//    foreach (QString line, lines)
-//    {
-//      QStringList args = line.split("=");
-//      if (args.size() < 2)
-//        continue;
-//      QString arg = args[0].trimmed();
-//      if (arg == "loop_start")
-//        loop_start = args[1].trimmed().toUInt();
-//      else if (arg == "loop_end")
-//        loop_end = args[1].trimmed().toUInt();
-//    }
-//    qDebug() << "Found data file for song" << p_song << loop_start << loop_end;
-//  }
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE;
   if (m_looping)
@@ -47,6 +29,34 @@ void AOMusicPlayer::play(QString p_song, int channel, bool crossfade)
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
+
+  QString d_path = f_path + ".txt";
+
+  loop_start = 0;
+  loop_end = 0;
+  if (m_looping && file_exists(d_path)) //Contains loop/etc. information file
+  {
+    QStringList lines = ao_app->read_file(d_path).split("\n");
+    foreach (QString line, lines)
+    {
+      QStringList args = line.split("=");
+      if (args.size() < 2)
+        continue;
+      QString arg = args[0].trimmed();
+
+      float sample_rate;
+      BASS_ChannelGetAttribute(newstream, BASS_ATTRIB_FREQ, &sample_rate);
+      qDebug() << sample_rate << args[1].trimmed();
+
+      if (arg == "loop_start")
+        loop_start = BASS_ChannelSeconds2Bytes(newstream, args[1].trimmed().toDouble() / static_cast<double>(sample_rate));
+      else if (arg == "loop_length")
+        loop_end = loop_start + BASS_ChannelSeconds2Bytes(newstream, args[1].trimmed().toDouble() / static_cast<double>(sample_rate));
+      else if (arg == "loop_end")
+        loop_end = BASS_ChannelSeconds2Bytes(newstream, args[1].trimmed().toDouble() / static_cast<double>(sample_rate));
+    }
+    qDebug() << "Found data file for song" << p_song << "length" << BASS_ChannelGetLength(newstream, BASS_POS_BYTE) << "loop start" << loop_start << "loop end" << loop_end;
+  }
 
   if (crossfade)
   {
@@ -103,28 +113,32 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
   }
 }
 
-//void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
-//{
-//  AOMusicPlayer *self= static_cast<AOMusicPlayer*>(user);
-//  qDebug() << BASS_ChannelGetPosition(channel, BASS_POS_BYTE);
-//  BASS_ChannelSetPosition(channel, self->loop_start, BASS_POS_BYTE);
-//}
+void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
+{
+  AOMusicPlayer *self= static_cast<AOMusicPlayer*>(user);
+  qDebug() << BASS_ChannelGetPosition(channel, BASS_POS_BYTE);
+  BASS_ChannelSetPosition(channel, self->loop_start, BASS_POS_BYTE);
+}
 
 void AOMusicPlayer::set_looping(bool toggle, int channel)
 {
   m_looping = toggle;
-  if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
+  qDebug() << "looping" << m_looping;
+  if (m_looping == false && BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
   {
-      if (m_looping == false)
-        BASS_ChannelFlags(m_stream_list[channel], 0, BASS_SAMPLE_LOOP); // remove the LOOP flag
-//      BASS_ChannelRemoveSync(m_stream_list[channel], loop_sync);
+    BASS_ChannelFlags(m_stream_list[channel], 0, BASS_SAMPLE_LOOP); // remove the LOOP flag
+    BASS_ChannelRemoveSync(m_stream_list[channel], loop_sync[channel]);
   }
-  else
+  else if (m_looping == true)
   {
-      if (m_looping == true)
-        BASS_ChannelFlags(m_stream_list[channel], BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP); // set the LOOP flag
-//      if (loop_end > 0 && loop_end < BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE))
-//        loop_sync = BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME, loop_end, loopProc, this);
+    BASS_ChannelFlags(m_stream_list[channel], BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP); // set the LOOP flag
+    BASS_ChannelRemoveSync(m_stream_list[channel], loop_sync[channel]);
+    qDebug() << loop_end;
+    if (loop_end > 0)
+    {
+      loop_sync[channel] = BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME, loop_end, loopProc, this);
+      qDebug() << "Started loop sync";
+    }
   }
 }
 #elif defined(QTAUDIO)

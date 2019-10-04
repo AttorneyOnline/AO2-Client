@@ -25,8 +25,8 @@ public:
   const int m_channelmax = 4;
 
   //These have to be public for the stupid sync thing
-//  QWORD loop_start = 0;
-//  QWORD loop_end = 0;
+  QWORD loop_start = 0;
+  QWORD loop_end = 0;
 
 public slots:
   void play(QString p_song, int channel=0, bool crossfade=false);
@@ -44,6 +44,7 @@ private:
   // Channel 2 = extra
   // Channel 3 = extra
   HSTREAM m_stream_list[4];
+  HSYNC loop_sync[4];
 };
 #elif defined(QTAUDIO)
 class AOMusicPlayer
