@@ -64,6 +64,11 @@ void AOMusicPlayer::set_volume(int p_value)
   m_volume = p_value;
   m_player.setVolume(m_volume);
 }
+
+void AOMusicPlayer::kill_loop()
+{
+    BASS_ChannelStop(m_stream);
+}
 #else
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
