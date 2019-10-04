@@ -78,6 +78,7 @@ public:
   bool arup_enabled = false;
   bool casing_alerts_enabled = false;
   bool modcall_reason_enabled = false;
+  bool looping_sfx_support_enabled = false;
 
   ///////////////loading info///////////////////
 
