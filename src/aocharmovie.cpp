@@ -17,7 +17,7 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 
-void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
+void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bool shown)
 {
   QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
   QString alt_path = ao_app->get_character_path(p_char, p_emote + ".png");
@@ -59,7 +59,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   m_movie->start();
 }
 
-void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
+void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration, bool shown)
 {
   QString gif_path = ao_app->get_character_path(p_char, p_emote);
 
@@ -111,33 +111,34 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 
   m_movie->setSpeed(static_cast<int>(percentage_modifier));
-  play(p_char, p_emote, "");
+  play(p_char, p_emote, "", shown);
 }
 
-void AOCharMovie::play_talking(QString p_char, QString p_emote)
+void AOCharMovie::play_talking(QString p_char, QString p_emote, bool shown)
 {
   QString gif_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
-
   m_movie->stop();
   this->clear();
   m_movie->setFileName(gif_path);
 
   play_once = false;
   m_movie->setSpeed(100);
-  play(p_char, p_emote, "(b)");
+  if(shown)
+    play(p_char, p_emote, "(b)", shown);
+  else
+    play(p_char, p_emote, "(a)", shown);
 }
 
-void AOCharMovie::play_idle(QString p_char, QString p_emote)
+void AOCharMovie::play_idle(QString p_char, QString p_emote, bool shown)
 {
   QString gif_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
-
   m_movie->stop();
   this->clear();
   m_movie->setFileName(gif_path);
 
   play_once = false;
   m_movie->setSpeed(100);
-  play(p_char, p_emote, "(a)");
+  play(p_char, p_emote, "(a)", shown);
 }
 
 void AOCharMovie::stop()

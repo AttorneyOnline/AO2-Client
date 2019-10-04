@@ -9,7 +9,7 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 
 AOMusicPlayer::~AOMusicPlayer()
 {
-  BASS_ChannelStop(m_stream);
+  kill_loop();
 }
 
 void AOMusicPlayer::play(QString p_song)
@@ -24,6 +24,7 @@ void AOMusicPlayer::play(QString p_song)
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
+  BASS_ChannelFlags(m_stream, BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP);
   BASS_ChannelPlay(m_stream, false);
 }
 

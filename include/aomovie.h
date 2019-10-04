@@ -15,7 +15,7 @@ public:
   AOMovie(QWidget *p_parent, AOApplication *p_ao_app);
 
   void set_play_once(bool p_play_once);
-  void play(QString p_gif, QString p_char = "", QString p_custom_theme = "");
+  void play(QString p_gif, QString p_char = "", QString p_custom_theme = "", bool shown = true);
   void combo_resize(int w, int h);
   void stop();
 

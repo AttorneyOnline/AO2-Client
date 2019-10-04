@@ -1328,12 +1328,13 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_evidence_display->reset();
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
-
+  shown = true;
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
   {
     ui_ic_chat_message->clear();
     objection_state = 0;
     objection_custom = "";
+    char_name = m_chatmessage[CHAR_NAME];
     realization_state = 0;
     is_presenting_evidence = false;
     ui_pre->setChecked(false);
@@ -1343,8 +1344,38 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_custom_objection->set_image("custom.png");
     ui_realization->set_image("realization.png");
     ui_evidence_present->set_image("present_disabled.png");
+    shown = toshow;
+    if(!shown)
+    {
+    m_chatmessage[EMOTE] = m_chatmessage_tmp[EMOTE];
+    m_chatmessage[SIDE] = m_chatmessage_tmp[SIDE];
+    m_chatmessage[FLIP] = m_chatmessage_tmp[FLIP];
+    m_chatmessage[CHAR_ID] = m_chatmessage_tmp[CHAR_ID];
+    m_chatmessage[SELF_OFFSET] = m_chatmessage_tmp[SELF_OFFSET];
+    m_chatmessage[OTHER_FLIP] = m_chatmessage_tmp[OTHER_FLIP];
+    m_chatmessage[OTHER_OFFSET] = m_chatmessage_tmp[OTHER_OFFSET];
+    m_chatmessage[OTHER_NAME] = m_chatmessage_tmp[OTHER_NAME];
+    m_chatmessage[OTHER_EMOTE] = m_chatmessage_tmp[OTHER_EMOTE];
+    m_chatmessage[CHAR_NAME] = m_chatmessage_tmp[CHAR_NAME];
+    m_chatmessage[OTHER_CHARID] = m_chatmessage_tmp[OTHER_CHARID];
+    }
   }
-
+  else
+  {
+     m_chatmessage_tmp[EMOTE] = m_chatmessage[EMOTE];
+     m_chatmessage_tmp[SIDE] = m_chatmessage[SIDE];
+     m_chatmessage_tmp[CHAR_ID] = m_chatmessage[CHAR_ID];
+     m_chatmessage_tmp[SELF_OFFSET] = m_chatmessage[SELF_OFFSET];
+     m_chatmessage_tmp[OTHER_FLIP] = m_chatmessage[OTHER_FLIP];
+     m_chatmessage_tmp[OTHER_OFFSET] =  m_chatmessage[OTHER_OFFSET];
+     m_chatmessage_tmp[OTHER_NAME] =   m_chatmessage[OTHER_NAME] ;
+     m_chatmessage_tmp[OTHER_EMOTE] = m_chatmessage[OTHER_EMOTE];
+     m_chatmessage_tmp[CHAR_NAME] = m_chatmessage[CHAR_NAME];
+     m_chatmessage_tmp[FLIP] = m_chatmessage[FLIP];
+     m_chatmessage_tmp[OTHER_CHARID] = m_chatmessage[OTHER_CHARID];
+  }
+   qDebug() << "BACKUP CHR NAME: " <<  m_chatmessage_tmp[CHAR_NAME];
+   qDebug() << "MAIN CHR NAME: " <<  m_chatmessage[CHAR_NAME];
   chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
   ic_chatlog_history.append(*temp);
 
@@ -1364,7 +1395,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       objection_mod = 4;
       objection_custom = m_chatmessage[OBJECTION_MOD].split("4&")[1]; //takes the name of custom objection.
   }
-  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_char = char_name;
+  if(shown)
+    f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
   //if an objection is used
@@ -1373,27 +1406,27 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     switch (objection_mod)
     {
     case 1:
-      ui_vp_objection->play("holdit", f_char, f_custom_theme);
+      ui_vp_objection->play("holdit", f_char, f_custom_theme, shown);
       objection_player->play("holdit.wav", f_char, f_custom_theme); //Note: if sound breaks, add .wav back in the objection_player
       break;
     case 2:
-      ui_vp_objection->play("objection", f_char, f_custom_theme);
+      ui_vp_objection->play("objection", f_char, f_custom_theme, shown);
       objection_player->play("objection.wav", f_char, f_custom_theme);
       break;
     case 3:
-      ui_vp_objection->play("takethat", f_char, f_custom_theme);
+      ui_vp_objection->play("takethat", f_char, f_custom_theme, shown);
       objection_player->play("takethat.wav", f_char, f_custom_theme);
       break;
     //case 4 is AO2 only
     case 4:
       if(objection_custom != "")
       {
-          ui_vp_objection->play("custom_objections/" + objection_custom, f_char, f_custom_theme);
+          ui_vp_objection->play("custom_objections/" + objection_custom, f_char, f_custom_theme, shown);
           objection_player->play("custom_objections/" + objection_custom.split('.')[0] + ".wav", f_char, f_custom_theme);
       }
       else
       {
-          ui_vp_objection->play("custom", f_char, f_custom_theme);
+          ui_vp_objection->play("custom", f_char, f_custom_theme, shown);
           objection_player->play("custom.wav", f_char, f_custom_theme);
       }
       break;
@@ -1426,7 +1459,7 @@ void Courtroom::handle_chatmessage_2()
 
       QString f_showname = ao_app->get_showname(real_name);
 
-      ui_vp_showname->setText(f_showname);
+      ui_vp_showname->setText(char_name); //Found it
   }
   else
   {
@@ -1439,7 +1472,9 @@ void Courtroom::handle_chatmessage_2()
   QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
 
   if (chatbox == "")
-    ui_vp_chatbox->set_image("chatmed.png");
+  {
+   ui_vp_chatbox->set_image("chatmed.png");
+  }
   else
   {
     QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chatbox.png";
@@ -1601,7 +1636,7 @@ void Courtroom::handle_chatmessage_2()
           ui_vp_sideplayer_char->set_flipped(true);
         else
           ui_vp_sideplayer_char->set_flipped(false);
-        ui_vp_sideplayer_char->play_idle(m_chatmessage[OTHER_NAME], m_chatmessage[OTHER_EMOTE]);
+        ui_vp_sideplayer_char->play_idle(m_chatmessage[OTHER_NAME], m_chatmessage[OTHER_EMOTE], shown);
       }
       else
       {
@@ -1690,17 +1725,17 @@ void Courtroom::handle_chatmessage_3()
   if (f_anim_state <= anim_state)
     return;
 
-  ui_vp_player_char->stop();
+   ui_vp_player_char->stop();
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_emote = m_chatmessage[EMOTE];
 
   if (f_anim_state == 2) {
-    ui_vp_player_char->play_talking(f_char, f_emote);
+    ui_vp_player_char->play_talking(f_char, f_emote, shown);
     anim_state = 2;
   }
   else
   {
-    ui_vp_player_char->play_idle(f_char, f_emote);
+    ui_vp_player_char->play_idle(f_char, f_emote, shown);
     anim_state = 3;
   }
 
@@ -1994,7 +2029,7 @@ void Courtroom::play_preanim(bool noninterrupting)
     return;
   }
 
-  ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
+  ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration,shown);
 
   if (noninterrupting)
     anim_state = 4;
@@ -2098,7 +2133,7 @@ void Courtroom::chat_tick()
     if (anim_state != 4)
     {
       anim_state = 3;
-      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
+      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE], shown);
     }
   }
 
@@ -2178,7 +2213,7 @@ void Courtroom::chat_tick()
         {
           QString f_char = m_chatmessage[CHAR_NAME];
           QString f_emote = m_chatmessage[EMOTE];
-          ui_vp_player_char->play_idle(f_char, f_emote);
+          ui_vp_player_char->play_idle(f_char, f_emote, shown);
         }
     }
     else if (f_character == ")" and !next_character_is_not_special
@@ -2203,7 +2238,7 @@ void Courtroom::chat_tick()
                 {
                   QString f_char = m_chatmessage[CHAR_NAME];
                   QString f_emote = m_chatmessage[EMOTE];
-                  ui_vp_player_char->play_talking(f_char, f_emote);
+                  ui_vp_player_char->play_talking(f_char, f_emote, shown);
                 }
               }
             }
@@ -2911,7 +2946,6 @@ void Courtroom::on_ooc_return_pressed()
 
         ao_app->send_server_packet(new AOPacket("PE", f_contents));
       }
-
     append_server_chatmessage("CLIENT", tr("Your case \"%1\" was loaded!").arg(command[1]), "1");
     ui_ooc_chat_message->clear();
     return;
@@ -2972,6 +3006,22 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if(ooc_message.startsWith("/clearooc"))
   {
+      ui_server_chatlog->clear();
+      ui_ooc_chat_message->clear();
+      return;
+  }
+  else if(ooc_message.startsWith("/toggle_fp"))
+  {
+      if (toshow)
+      {
+        toshow = false;
+        append_server_chatmessage("CLIENT", tr("First person mode is now turned on"), "1");
+      }
+      else
+      {
+        toshow = true;
+        append_server_chatmessage("CLIENT", tr("First person mod is now turned off"), "1");
+      }
       ui_ooc_chat_message->clear();
       return;
   }
