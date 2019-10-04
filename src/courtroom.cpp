@@ -1345,7 +1345,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_realization->set_image("realization.png");
     ui_evidence_present->set_image("present_disabled.png");
     shown = toshow;
-    if(!shown)
+    if(!shown && m_chatmessage_tmp[EMOTE] != "")
     {
     m_chatmessage[EMOTE] = m_chatmessage_tmp[EMOTE];
     m_chatmessage[SIDE] = m_chatmessage_tmp[SIDE];
@@ -1457,10 +1457,16 @@ void Courtroom::handle_chatmessage_2()
   {
       QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
 
-      QString f_showname = ao_app->get_showname(real_name);
+      QString f_showname = ao_app->get_showname(m_chatmessage[CHAR_NAME]);
+      if(shown)
+      {
+          ui_vp_showname->setText(f_showname); //Found it
+      }
+      else
+          ui_vp_showname->setText(char_name); //Found it
+   }
 
-      ui_vp_showname->setText(char_name); //Found it
-  }
+
   else
   {
       ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
@@ -1469,7 +1475,7 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
 
-  QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
+  QString chatbox = ao_app->get_chat(char_name);
 
   if (chatbox == "")
   {
@@ -3218,6 +3224,7 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 {
     QString p_area = area_list.at(area_row_to_number.at(p_model.row()));
+    music_player->~AOMusicPlayer();
     ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
 }
 
