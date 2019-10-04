@@ -1457,10 +1457,16 @@ void Courtroom::handle_chatmessage_2()
   {
       QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
 
-      QString f_showname = ao_app->get_showname(real_name);
+      QString f_showname = ao_app->get_showname(m_chatmessage[CHAR_NAME]);
+      if(shown)
+      {
+          ui_vp_showname->setText(f_showname); //Found it
+      }
+      else
+          ui_vp_showname->setText(char_name); //Found it
+   }
 
-      ui_vp_showname->setText(char_name); //Found it
-  }
+
   else
   {
       ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
