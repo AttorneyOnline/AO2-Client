@@ -22,6 +22,8 @@ public:
   void play(QString p_song);
   void set_volume(int p_value);
 
+  bool enable_looping = true;
+
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
