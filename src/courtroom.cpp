@@ -1344,8 +1344,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_custom_objection->set_image("custom.png");
     ui_realization->set_image("realization.png");
     ui_evidence_present->set_image("present_disabled.png");
-    shown = toshow;
-    if(!shown && m_chatmessage_tmp[EMOTE] != "")
+
+    shown = true;  //toshow
+    if(false)  //!shown && m_chatmessage_tmp[EMOTE] != ""
     {
     m_chatmessage[EMOTE] = m_chatmessage_tmp[EMOTE];
     m_chatmessage[SIDE] = m_chatmessage_tmp[SIDE];
@@ -2076,7 +2077,10 @@ void Courtroom::start_chat_ticking()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
+    QString f_char = char_name;
+    if(shown)
+      f_char = m_chatmessage[CHAR_NAME];
+    sfx_player->play(ao_app->get_custom_realization(f_char));
   }
 
   ui_vp_message->clear();
@@ -2109,8 +2113,10 @@ void Courtroom::start_chat_ticking()
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
   chat_tick_timer->start(message_display_speed[current_display_speed]);
-
-  QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
+  QString f_char = char_name;
+  if(shown)
+    f_char = m_chatmessage[CHAR_NAME];
+  QString f_gender = ao_app->get_gender(f_char);
 
   blip_player->set_blips(ao_app->get_sfx_suffix("sfx-blip" + f_gender));
 
@@ -2546,7 +2552,10 @@ void Courtroom::set_scene()
 
 void Courtroom::set_text_color()
 {
-  QColor textcolor = ao_app->get_chat_color(m_chatmessage[TEXT_COLOR], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+    QString f_char = char_name;
+    if(shown)
+      f_char = m_chatmessage[CHAR_NAME];
+  QColor textcolor = ao_app->get_chat_color(m_chatmessage[TEXT_COLOR], ao_app->get_chat(f_char));
 
   ui_vp_message->setTextBackgroundColor(QColor(0,0,0,0));
   ui_vp_message->setTextColor(textcolor);
@@ -2565,7 +2574,10 @@ void Courtroom::set_text_color()
 
 QColor Courtroom::get_text_color(QString color)
 {
-  return ao_app->get_chat_color(color, ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+    QString f_char = char_name;
+    if(shown)
+      f_char = m_chatmessage[CHAR_NAME];
+  return ao_app->get_chat_color(color, ao_app->get_chat(f_char));
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -3026,7 +3038,7 @@ void Courtroom::on_ooc_return_pressed()
       ui_ooc_chat_message->clear();
       return;
   }
-  else if(ooc_message.startsWith("/toggle_fp"))
+  else if(ooc_message.startsWith("/toggle_fp_thisisdisabled123321"))
   {
       if (toshow)
       {
