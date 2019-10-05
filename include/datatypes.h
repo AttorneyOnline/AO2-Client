@@ -110,4 +110,11 @@ enum CHAT_MESSAGE
   EFFECTS
 };
 
+enum MUSIC_EFFECT
+{
+  FADE_IN = 1,
+  FADE_OUT = 2,
+  SYNC_POS = 4
+};
+
 #endif // DATATYPES_H

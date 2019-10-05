@@ -2813,7 +2813,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   bool looping = true;
   int channel = 0;
-  bool crossfade = false;
+  int effect_flags = 0;
   if (n_char < 0 || n_char >= char_list.size())
   {
     int channel = 0;
@@ -2823,13 +2823,12 @@ void Courtroom::handle_song(QStringList *p_contents)
     if (p_contents->length() > 4) //eyyy we want to change this song's CHANNEL huh
       channel = p_contents->at(4).toInt(); //let the music player handle it if it's bigger than the channel list
 
-    if (p_contents->length() > 5) //CROSSFADE!? Are you MAD?
+    if (p_contents->length() > 5) //Flags provided to us by server such as Fade In, Fade Out, Sync Pos etc.
     {
-      crossfade = p_contents->at(5) == "1"; //let the music player handle it if it's bigger than the channel list
+      effect_flags = p_contents->at(5).toInt();
     }
 
-    music_player->set_looping(looping, channel);
-    music_player->play(f_song, channel, crossfade);
+    music_player->play(f_song, channel, looping, effect_flags);
     if (channel == 0)
       ui_music_name->setText(f_song);
   }
@@ -2854,8 +2853,10 @@ void Courtroom::handle_song(QStringList *p_contents)
     if (p_contents->length() > 4) //eyyy we want to change this song's CHANNEL huh
       channel = p_contents->at(4).toInt(); //let the music player handle it if it's bigger than the channel list
 
-    if (p_contents->length() > 5) //CROSSFADE!? Are you MAD?
-      crossfade = p_contents->at(5) == "1"; //let the music player handle it if it's bigger than the channel list
+    if (p_contents->length() > 5) //Flags provided to us by server such as Fade In, Fade Out, Sync Pos etc.
+    {
+      effect_flags = p_contents->at(5).toInt();
+    }
 
     if (!mute_map.value(n_char))
     {
@@ -2869,8 +2870,8 @@ void Courtroom::handle_song(QStringList *p_contents)
       }
 
       append_ic_text(f_song_clear, str_show, true);
-      music_player->set_looping(looping, channel);
-      music_player->play(f_song, channel, crossfade);
+
+      music_player->play(f_song, channel, looping, effect_flags);
       if (channel == 0)
         ui_music_name->setText(f_song);
     }
@@ -3763,14 +3764,14 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item, int column
 
   QString p_song = p_item->text(column);
 
-  if (!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled)
-  {
-    ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
-  }
-  else
-  {
-    ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
-  }
+  QStringList packet_contents;
+  packet_contents.append(p_song);
+  packet_contents.append(QString::number(m_cid));
+  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) || ao_app->effects_enabled)
+    packet_contents.append(ui_ic_chat_name->text());
+  if (ao_app->effects_enabled)
+    packet_contents.append(QString::number(music_flags));
+  ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
@@ -3779,9 +3780,50 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 
   menu->addAction(QString("Expand All Categories"), this, SLOT(music_list_expand_all()));
   menu->addAction(QString("Collapse All Categories"), this, SLOT(music_list_collapse_all()));
-  //  menu->addSeparator();
+  menu->addSeparator();
+
+  menu->addAction(new QAction("Fade Out Previous", this));
+  menu->actions().back()->setCheckable(true);
+  menu->actions().back()->setChecked(music_flags & FADE_OUT);
+  connect(menu->actions().back(), SIGNAL(toggled(bool)), this, SLOT(music_fade_out(bool)));
+
+  menu->addAction(new QAction("Fade In", this));
+  menu->actions().back()->setCheckable(true);
+  menu->actions().back()->setChecked(music_flags & FADE_IN);
+  connect(menu->actions().back(), SIGNAL(toggled(bool)), this, SLOT(music_fade_in(bool)));
+
+  menu->addAction(new QAction("Synchronize", this));
+  menu->actions().back()->setCheckable(true);
+  menu->actions().back()->setChecked(music_flags & SYNC_POS);
+  connect(menu->actions().back(), SIGNAL(toggled(bool)), this, SLOT(music_synchronize(bool)));
+
   menu->popup(ui_music_list->mapToGlobal(pos));
 }
+
+void Courtroom::music_fade_out(bool toggle)
+{
+  if (toggle)
+    music_flags |= FADE_OUT;
+  else
+    music_flags &= ~FADE_OUT;
+}
+
+void Courtroom::music_fade_in(bool toggle)
+{
+  if (toggle)
+    music_flags |= FADE_IN;
+  else
+    music_flags &= ~FADE_IN;
+}
+
+void Courtroom::music_synchronize(bool toggle)
+{
+  if (toggle)
+    music_flags |= SYNC_POS;
+  else
+    music_flags &= ~SYNC_POS;
+}
+
 void Courtroom::music_list_expand_all()
 {
   ui_music_list->expandAll();

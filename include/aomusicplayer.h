@@ -29,7 +29,7 @@ public:
   QWORD loop_end = 0;
 
 public slots:
-  void play(QString p_song, int channel=0, bool crossfade=false);
+  void play(QString p_song, int channel=0, bool loop=false, int effect_flags=0);
   void stop(int channel=0);
 
 private:
