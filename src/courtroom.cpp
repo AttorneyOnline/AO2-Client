@@ -2023,19 +2023,28 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
   if (p_text.trimmed().startsWith("~~"))
   {
     p_text.remove(p_text.indexOf("~~"), 2);
-    target_pos -= 2;
+    if (target_pos != -1)
+    {
+      target_pos = qMax(0, target_pos - 2);
+    }
     align = "center";
   }
   else if (p_text.trimmed().startsWith("~>"))
   {
     p_text.remove(p_text.indexOf("~>"), 2);
-    target_pos -= 2;
+    if (target_pos != -1)
+    {
+      target_pos = qMax(0, target_pos - 2);
+    }
     align = "right";
   }
   else if (p_text.trimmed().startsWith("<>"))
   {
     p_text.remove(p_text.indexOf("<>"), 2);
-    target_pos -= 2;
+    if (target_pos != -1)
+    {
+      target_pos = qMax(0, target_pos - 2);
+    }
     align = "justify";
   }
 

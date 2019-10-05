@@ -441,7 +441,7 @@ QString AOApplication::get_chat_markdown(QString p_identifier, QString p_chat)
   if (f_result == "")
     f_result = read_design_ini(p_identifier, default_path);
 
-  return f_result;
+  return f_result.toLatin1();
 }
 
 QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
