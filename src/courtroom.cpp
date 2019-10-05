@@ -1474,8 +1474,10 @@ void Courtroom::handle_chatmessage_2()
 
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
-
-  QString chatbox = ao_app->get_chat(char_name);
+  QString f_char = char_name;
+  if(shown)
+    f_char = m_chatmessage[CHAR_NAME];
+  QString chatbox = ao_app->get_chat(f_char);
 
   if (chatbox == "")
   {
@@ -1732,7 +1734,9 @@ void Courtroom::handle_chatmessage_3()
     return;
 
    ui_vp_player_char->stop();
-  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_char = char_name;
+  if(shown)
+     f_char = m_chatmessage[CHAR_NAME];
   QString f_emote = m_chatmessage[EMOTE];
 
   if (f_anim_state == 2) {
@@ -2006,7 +2010,9 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
 
 void Courtroom::play_preanim(bool noninterrupting)
 {
-  QString f_char = m_chatmessage[CHAR_NAME];
+    QString f_char = char_name;
+    if(shown)
+      f_char = m_chatmessage[CHAR_NAME];
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
@@ -2217,7 +2223,9 @@ void Courtroom::chat_tick()
         // If it isn't, we stop talking.
         if (!entire_message_is_blue and anim_state != 4)
         {
-          QString f_char = m_chatmessage[CHAR_NAME];
+            QString f_char = char_name;
+            if(shown)
+              f_char = m_chatmessage[CHAR_NAME];
           QString f_emote = m_chatmessage[EMOTE];
           ui_vp_player_char->play_idle(f_char, f_emote, shown);
         }
@@ -2242,7 +2250,9 @@ void Courtroom::chat_tick()
                 // We should only go back to talking if we're out of inline blues, not during a non. int. pre, and not on the last character.
                 if (inline_blue_depth == 0 and anim_state != 4 and !(tick_pos+1 >= f_message.size()))
                 {
-                  QString f_char = m_chatmessage[CHAR_NAME];
+                    QString f_char = char_name;
+                    if(shown)
+                      f_char = m_chatmessage[CHAR_NAME];
                   QString f_emote = m_chatmessage[EMOTE];
                   ui_vp_player_char->play_talking(f_char, f_emote, shown);
                 }
