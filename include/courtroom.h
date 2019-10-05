@@ -396,6 +396,9 @@ private:
 
   QString effect = "";
 
+  //Music effect flags we want to send to server when we play music
+  int music_flags = 0;
+
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
 
@@ -643,6 +646,9 @@ private slots:
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_music_list_context_menu_requested(const QPoint &pos);
+  void music_fade_out(bool toggle);
+  void music_fade_in(bool toggle);
+  void music_synchronize(bool toggle);
   void music_list_expand_all();
   void music_list_collapse_all();
   void on_area_list_double_clicked(QModelIndex p_model);
