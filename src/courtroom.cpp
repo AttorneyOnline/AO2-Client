@@ -854,20 +854,23 @@ void Courtroom::set_font(QWidget *widget, QString class_name, QString p_identifi
   QString font_name = ao_app->get_font_name(p_identifier + "_font", design_file);
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
   bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) == 1; // is the font bold or not?
+  bool antialias = ao_app->get_font_size(p_identifier + "_sharp", design_file) != 1; // is the font anti-aliased or not?
 
-  this->set_qfont(widget, class_name, get_qfont(font_name, f_pointsize), f_color, bold);
+  this->set_qfont(widget, class_name, get_qfont(font_name, f_pointsize, antialias), f_color, bold);
 }
 
-QFont Courtroom::get_qfont(QString font_name, int f_pointsize)
+QFont Courtroom::get_qfont(QString font_name, int f_pointsize, bool antialias)
 {
   QFont font;
   if (font_name.isEmpty())
-  {
-    font = QFont("Arial", f_pointsize);
-    font.setStyleHint(QFont::SansSerif, QFont::NoAntialias);
-  }
-  else
-    font = QFont(font_name, f_pointsize);
+    font_name = "Arial";
+
+  QFont::StyleStrategy style_strategy = QFont::PreferDefault;
+  if (!antialias)
+    style_strategy = QFont::NoAntialias;
+
+  font = QFont(font_name, f_pointsize);
+  font.setStyleHint(QFont::SansSerif, style_strategy);
   return font;
 }
 
@@ -1756,6 +1759,7 @@ void Courtroom::handle_chatmessage_2()
   QString font_name = ao_app->get_font_name("message_font", design_file);
   QColor f_color = ao_app->get_color("message_color", design_file);
   bool bold = ao_app->get_font_size("message_bold", design_file) == 1; // is the font bold or not?
+  bool antialias = ao_app->get_font_size("message_sharp", design_file) != 1; // is the font anti-aliased or not?
 
   QString chatfont = ao_app->get_chat_font(m_chatmessage[CHAR_NAME]);
   if (chatfont != "")
@@ -1764,7 +1768,7 @@ void Courtroom::handle_chatmessage_2()
   int chatsize = ao_app->get_chat_size(m_chatmessage[CHAR_NAME]);
   if (chatsize != -1)
     f_pointsize = chatsize;
-  this->set_qfont(ui_vp_message, "", get_qfont(font_name, f_pointsize), f_color, bold);
+  this->set_qfont(ui_vp_message, "", get_qfont(font_name, f_pointsize, antialias), f_color, bold);
 
   set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
