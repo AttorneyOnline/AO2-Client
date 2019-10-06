@@ -2820,8 +2820,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     return;
 
   QString f_song = f_contents.at(0);
-  QString f_song_clear = f_song;
-  f_song_clear = f_song_clear.left(f_song_clear.lastIndexOf("."));
+  QString f_song_clear = f_song.left(f_song.lastIndexOf(".")).right(f_song.lastIndexOf("/"));
   int n_char = f_contents.at(1).toInt();
 
   bool looping = true;
@@ -2843,7 +2842,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     music_player->play(f_song, channel, looping, effect_flags);
     if (channel == 0)
-      ui_music_name->setText(f_song);
+      ui_music_name->setText(f_song_clear);
   }
   else
   {
@@ -2886,7 +2885,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
       music_player->play(f_song, channel, looping, effect_flags);
       if (channel == 0)
-        ui_music_name->setText(f_song);
+        ui_music_name->setText(f_song_clear);
     }
   }
 }
