@@ -240,7 +240,6 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
 
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
     this->resize(f_pixmap.size());
-    QLabel::move(x + (f_w - f_pixmap.width())/2, y + (f_h - f_pixmap.height())); //Always center horizontally, always put at the bottom vertically
 
     return f_pixmap;
 }
@@ -248,7 +247,7 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
 void AOCharMovie::set_frame(QPixmap f_pixmap)
 {
     this->setPixmap(f_pixmap);
-    QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
+    QLabel::move(x + (f_w - f_pixmap.width())/2, y + (f_h - f_pixmap.height())); //Always center horizontally, always put at the bottom vertically
 }
 
 void AOCharMovie::combo_resize(int w, int h)

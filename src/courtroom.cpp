@@ -2605,7 +2605,7 @@ void Courtroom::chat_tick()
     next_character_is_not_special = false;
   }
 
-  if (formatting_char || (message_display_speed[current_display_speed] <= 0 && tick_pos < f_message.size()))
+  if ((message_display_speed[current_display_speed] <= 0 && tick_pos < f_message.size()-1) || formatting_char)
   {
     chat_tick_timer->start(0); //Don't bother rendering anything out as we're doing the SPEED. (there's latency otherwise)
     if (!formatting_char || f_character == "n")
