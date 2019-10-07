@@ -1561,20 +1561,20 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
 
-  if (f_char_id < 0 || f_char_id >= char_list.size())
+  if (f_char_id >= 0 && f_char_id >= char_list.size())
     return;
 
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
   QString f_showname;
-  if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
+  if (f_char_id > 0 && (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked()))
   {
-      f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
   else
   {
-      f_showname = m_chatmessage[SHOWNAME];
+    f_showname = m_chatmessage[SHOWNAME];
   }
 
   if(f_showname.trimmed().isEmpty()) //Pure whitespace showname, get outta here.
@@ -1583,8 +1583,13 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
-  if (f_message == previous_ic_message)
+  if (f_char_id >= 0 && f_message == previous_ic_message) //Not a system message
     return;
+
+  if (f_char_id <= -1)
+    previous_ic_message = ""; //System messages don't care about repeating themselves
+  else
+    previous_ic_message = f_message;
 
   //Stop the chat arrow from animating
   ui_vp_chat_arrow->stop();
@@ -1597,8 +1602,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   //Remove undesired newline chars
   m_chatmessage[MESSAGE].remove("\n");
-  //Replace all trailing whitespace with a single space and remove all whitespace at the end of the string.
-  //m_chatmessage[MESSAGE] = m_chatmessage[MESSAGE].replace(QRegularExpression("^\\s+(?=\\s)|\\s+$|\\s+(?=\\s)"), "");
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
@@ -1625,7 +1628,11 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   //Let the server handle actually checking if they're allowed to do this.
   is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
 
-  chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, m_chatmessage[MESSAGE], false);
+  QString f_charname = "";
+  if (f_char_id >= 0)
+    f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
+
+  chatlogpiece* temp = new chatlogpiece(f_charname, f_showname, m_chatmessage[MESSAGE], false);
   ic_chatlog_history.append(*temp);
   ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
@@ -1635,8 +1642,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   append_ic_text(m_chatmessage[MESSAGE], f_showname);
-
-  previous_ic_message = f_message;
 
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
@@ -1701,9 +1706,10 @@ void Courtroom::handle_chatmessage_2()
   else
     ui_vp_player_char->network_strings.clear();
 
-  if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
+  int f_charid = m_chatmessage[CHAR_ID].toInt();
+  if (f_charid >= 0 && (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked()))
   {
-      QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
+      QString real_name = char_list.at(f_charid).name;
 
       QString f_showname = ao_app->get_showname(real_name);
 
@@ -1845,7 +1851,6 @@ void Courtroom::handle_chatmessage_2()
   else
     ui_vp_player_char->move(0, 0);
 
-  qDebug() << "offset OK" << ok << "offset value" << self_offset;
   switch (emote_mod)
   {
   case 1: case 2: case 6:
