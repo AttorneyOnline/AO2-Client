@@ -180,10 +180,12 @@ void LegacyClient::mapSignals()
       QString character;
       if (args.size() >= 2)
       {
+        // Use custom showname
         character = args[1];
       }
       else if (ok && charId >= 0 && charId < charsList.size())
       {
+        // Use character's default name
         character = charsList[charId].name;
       }
 
@@ -404,15 +406,18 @@ void LegacyClient::sendKeepalive()
 }
 
 /*!
- * Joins a room with the specific index. By default, the default room has
+ * Joins a room with the specified name. By default, the default room has
  * already been joined. Since the AO1 protocol has no notion of rooms,
  * the currently selected room cannot be tracked.
  *
- * The new room will be joined with the previously selected character.
+ * The new room will be joined with the previously selected character; however,
+ * it cannot be guaranteed that the character has not already been taken. In
+ * this case, the client's character will be automatically reassigned by the
+ * server.
  */
-void LegacyClient::joinRoom(int index)
+void LegacyClient::joinRoom(QString &name)
 {
-  send("MC", { QString::number(index), "0" });
+  send("MC", { name, "0" });
 }
 
 /*!
@@ -433,7 +438,11 @@ void LegacyClient::setCharacter(int charId)
  */
 void LegacyClient::callMod(const QString &message)
 {
-  send("ZZ", { message });
+  if (!message.isEmpty()) {
+    send("ZZ", { message });
+  } else {
+    send("ZZ");
+  }
 }
 
 /*!
@@ -450,14 +459,13 @@ QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
 
   send("MS", msgCopy);
 
-  return QPromise<void>(
-        [&](const QPromiseResolve<void>& resolve) {
+  return QPromise<void>([&](const QPromiseResolve<void>& resolve) {
     std::unique_ptr<QMetaObject::Connection> connection {
       new QMetaObject::Connection
     };
 
     *connection = QObject::connect(this, &LegacyClient::icReceived,
-                                   [&](const chat_message_type &message) {
+                                   [=, &connection](const chat_message_type &message) {
       // If you ever design a protocol, don't do this - this is a really bad
       // heuristic. There could be various players in the room with the same
       // character, or your messages might be being intentionally delayed.
@@ -514,6 +522,9 @@ void LegacyClient::sendWTCE(WTCE_TYPE type)
  */
 void LegacyClient::sendHealth(HEALTH_TYPE type, int value)
 {
+  if (value > 10 || value < 0)
+    return;
+
   send("HP", { QString::number(type), QString::number(value) });
 }
 

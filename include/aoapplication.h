@@ -1,7 +1,6 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "aopacket.h"
 #include "datatypes.h"
 #include "discord_rich_presence.h"
 

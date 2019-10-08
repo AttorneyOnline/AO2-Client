@@ -75,18 +75,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ms_chat, SIGNAL(messageSent(QString, QString)), this, SLOT(on_ms_return_pressed(QString, QString)));
 
   connect(client, &Client::oocReceived, this, &Courtroom::append_server_chatmessage);
-  connect(client, &Client::icReceived, this, &Courtroom::handle_chatmessage);
-  connect(client, &Client::trackChanged, this, &Courtroom::handle_song);
-  connect(client, &Client::caseCalled, this, &Courtroom::case_called);
-  connect(client, &Client::modCalled, this, &Courtroom::mod_called);
   connect(client, &Client::characterChanged, this, &Courtroom::enter_courtroom);
-
   connect(client, &Client::backgroundChanged, ui_viewport, &AOViewport::set_background);
   connect(client, &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
-
   connect(client, &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
-
   connect(client, &Client::areasUpdated, ui_area_list, &AORoomChooser::setAreas);
+  connect(client, &Client::evidenceChanged, ui_evidence, &AOEvidence::setEvidenceList);
 
   connect(ui_mixer, &AOMixer::volumeChanged, this, &Courtroom::setVolume);
 }
@@ -166,30 +160,6 @@ void Courtroom::on_ic_chat_messageSent()
   if (ui_viewport->is_busy() && objection_state == 0)
     return;
 
-  //MS#
-  //deskmod#
-  //pre-emote#
-  //character#
-  //emote#
-  //message#
-  //side#
-  //sfx-name#
-  //emote_modifier#
-  //char_id#
-  //sfx_delay#
-  //objection_modifier#
-  //evidence#
-  //placeholder#
-  //realization#
-  //text_color#%
-
-  // Additionally, in our case:
-
-  //showname#
-  //other_charid#
-  //self_offset#
-  //noninterrupting_preanim#%
-
   chat_message_type message;
   ui_ic_chat->addMessageData(message);
   ui_evidence->addMessageData(message);
@@ -202,27 +172,6 @@ void Courtroom::on_ic_chat_messageSent()
     message.pair_offset = 0;
   }
 
-  QStringList packet_contents = {
-    QString::number(message.desk),
-    message.preanim,
-    message.character,
-    message.anim,
-    message.side,
-    message.sfx_name,
-    QString::number(message.emote_modifier),
-    QString::number(message.char_id),
-    QString::number(message.sfx_delay),
-    QString::number(message.objection_modifier),
-    QString::number(message.evidence),
-    QString::number(message.flip),
-    QString::number(message.realization),
-    QString::number(message.text_color),
-    message.showname,
-    QString::number(message.pair_char_id),
-    QString::number(message.pair_offset),
-    QString::number(message.noninterrupting_preanim)
-  };
-
   client->sendIC(message).then([&] {
     objection_state = 0;
     realization_state = 0;
@@ -231,25 +180,14 @@ void Courtroom::on_ic_chat_messageSent()
   });
 }
 
-void Courtroom::handle_chatmessage(QStringList *p_contents)
+void Courtroom::on_client_icReceived(const chat_message_type &message)
 {
-  // Instead of checking for whether a message has at least chatmessage_size
-  // amount of packages, we'll check if it has at least 15.
-  // That was the original chatmessage_size.
-  if (p_contents->size() < 15)
-  {
-    qWarning() << "IC message is too short:" << p_contents->size();
-    return;
-  }
-
-  chat_message_type message(*p_contents);
-
-  if (message.char_id < 0 || message.char_id >= char_list.size() ||
+  if (message.char_id < 0 || message.char_id >= client->characters().size() ||
       mute_map.value(message.char_id))
     return;
 
   QString f_showname;
-  QString f_default_showname = ao_app->get_showname(char_list.at(message.char_id).name);
+  QString f_default_showname = ao_app->get_showname(client->characters()[message.char_id].name);
   if (message.showname.isEmpty() || !ui_showname_enable->isChecked())
   {
       f_showname = f_default_showname;
@@ -309,43 +247,21 @@ void Courtroom::on_client_kicked(const QString &message, bool banned)
   ao_app->destruct_courtroom();
 }
 
-void Courtroom::handle_song(QStringList *p_contents)
+void Courtroom::on_client_trackChanged(const QString &track, const QString &showname)
 {
-  QStringList f_contents = *p_contents;
+  // TODO: ignore track change if the character who changed it is on the mute map
 
-  if (f_contents.size() < 2)
-    return;
-
-  QString f_song = f_contents.at(0);
-  QString f_song_clear = f_song;
-  f_song_clear = f_song_clear.left(f_song_clear.lastIndexOf("."));
-  int n_char = f_contents.at(1).toInt();
-
-  if (n_char < 0 || n_char >= char_list.size())
+  if (!showname.isEmpty())
   {
-    music_player->play(f_song);
+    ui_ic_chatlog->append_ic_text(showname, showname, track, true);
   }
-  else
-  {
-    QString str_char = char_list.at(n_char).name;
-    QString str_show = char_list.at(n_char).name;
 
-    if (p_contents->length() > 2)
-    {
-        str_show = p_contents->at(2);
-    }
-
-    if (!mute_map.value(n_char))
-    {
-      ui_ic_chatlog->append_ic_text(str_show, str_show, f_song_clear, true);
-      music_player->play(f_song);
-    }
-  }
+  music_player->play(track);
 }
 
-void Courtroom::mod_called(QString p_ip)
+void Courtroom::on_client_modCalled(const QString &message)
 {
-  ui_server_chat->append_text(p_ip);
+  ui_server_chat->append_text(message);
   if (ui_modcall_notify->isChecked())
   {
     modcall_player->play(ao_app->get_sfx("mod_call"));
@@ -353,11 +269,12 @@ void Courtroom::mod_called(QString p_ip)
   }
 }
 
-void Courtroom::case_called(QString msg, std::bitset<CASING_FLAGS_COUNT> flags)
+void Courtroom::on_client_caseCalled(const QString &message,
+                                     std::bitset<CASING_FLAGS_COUNT> flags)
 {
   if (ui_casing->isChecked())
   {
-    ui_server_chat->append_text(msg);
+    ui_server_chat->append_text(message);
     if ((ao_app->get_casing_flags() & flags).any())
     {
         modcall_player->play(ao_app->get_sfx("case_call"));
@@ -454,72 +371,57 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
     if (!caseauth.isEmpty())
       append_server_chatmessage("CLIENT", "Case made by " + caseauth + ".", "1");
     if (!casedoc.isEmpty())
-      ao_app->send_server_packet(new AOPacket("CT#" + name + "#/doc " + casedoc + "#%"));
+      client->sendOOC(name, QStringLiteral("/doc %1").arg(casedoc));
     if (!casestatus.isEmpty())
-      ao_app->send_server_packet(new AOPacket("CT#" + name + "#/status " + casestatus + "#%"));
+      client->sendOOC(name, QStringLiteral("/status %1").arg(casestatus));
     if (!cmdoc.isEmpty())
       append_server_chatmessage("CLIENT", "Navigate to " + cmdoc + " for the CM doc.", "1");
 
-    for (int i = local_evidence_list.size() - 1; i >= 0; i--)
+    for (int i = client->evidence().size() - 1; i >= 0; i--)
     {
-        ao_app->send_server_packet(new AOPacket("DE#" + QString::number(i) + "#%"));
+        client->removeEvidence(i);
     }
 
     for (QString &evi : casefile.childGroups()) {
         if (evi == "General")
           continue;
 
-        QStringList f_contents;
+        evi_type evidence;
+        evidence.name = casefile.value(evi + "/name", "UNKNOWN")
+            .value<QString>();
+        evidence.description = casefile.value(evi + "/description", "UNKNOWN")
+            .value<QString>();
+        evidence.image = casefile.value(evi + "/image", "UNKNOWN.png")
+            .value<QString>();
 
-        f_contents.append(casefile.value(evi + "/name", "UNKNOWN").value<QString>());
-        f_contents.append(casefile.value(evi + "/description", "UNKNOWN").value<QString>());
-        f_contents.append(casefile.value(evi + "/image", "UNKNOWN.png").value<QString>());
-
-        ao_app->send_server_packet(new AOPacket("PE", f_contents));
+        client->addEvidence(evidence);
       }
 
     append_server_chatmessage("CLIENT", "Your case \"" + command[1] + "\" was loaded!", "1");
     return;
   }
 
-  QStringList packet_contents;
-  packet_contents.append(name);
-  packet_contents.append(message);
-
-  AOPacket *f_packet = new AOPacket("CT", packet_contents);
-
-  ao_app->send_server_packet(f_packet);
+  client->sendOOC(name, message);
 }
 
 void Courtroom::on_ms_return_pressed(QString name, QString message)
 {
-  QStringList packet_contents({name, message});
-  AOPacket *f_packet = new AOPacket("CT", packet_contents);
-
-  ao_app->send_ms_packet(f_packet);
+  client->sendOOC(name, message);
 }
 
 void Courtroom::on_icChat_positionChanged(QString pos)
 {
-  ao_app->send_server_packet(new AOPacket("CT#" + ui_server_chat->name() + "#/pos "
-                                          + pos + "#%"));
+  client->sendOOC(ui_server_chat->name(), QStringLiteral("/pos %1").arg(pos));
 }
 
 void Courtroom::on_jukebox_trackSelected(QString track)
 {
-  const QString packetBody = QStringLiteral("MC#%1#%2#%3#%")
-      .arg(track)
-      .arg(QString::number(m_cid))
-      .arg(ui_ic_chat->showname());
-  ao_app->send_server_packet(new AOPacket(packetBody), false);
+  client->playTrack(track, ui_ic_chat->showname());
 }
 
 void Courtroom::on_rooms_roomSelected(QString room)
 {
-  const QString packetBody = QStringLiteral("MC#%1#%2#%")
-      .arg(room)
-      .arg(QString::number(m_cid));
-  ao_app->send_server_packet(new AOPacket(packetBody), false);
+  client->joinRoom(room);
 }
 
 void Courtroom::on_mute_triggered()
@@ -530,7 +432,7 @@ void Courtroom::on_mute_triggered()
   });
 
   QVector<QString> char_names;
-  for (const char_type &character : char_list)
+  for (const char_type &character : client->characters())
     char_names.push_back(character.name);
 
   dialog->setCharacters(char_names);
@@ -548,31 +450,12 @@ void Courtroom::on_pair_triggered()
 
 void Courtroom::healthChangeRequested(HEALTH_TYPE type, int value)
 {
-  if (value > 10 || value < 0)
-    return;
-
-  QStringList params = {
-    QString::number(type),
-    QString::number(value)
-  };
-
-  ao_app->send_server_packet(new AOPacket("HP", params));
+  client->sendHealth(type, value);
 }
 
 void Courtroom::on_roomControls_wtce(WTCE_TYPE type)
 {
-  const std::map<WTCE_TYPE, QString> packets = {
-    {WITNESS_TESTIMONY, "testimony1"},
-    {CROSS_EXAMINATION, "testimony2"},
-    {NOT_GUILTY, "judgeruling#0"},
-    {GUILTY, "judgeruling#1"}
-  };
-
-  try {
-    ao_app->send_server_packet(new AOPacket("RT#" + packets.at(type) + "#%"));
-  } catch (std::out_of_range) {
-    qWarning() << "out-of-range WTCE_TYPE" << type;
-  }
+  client->sendWTCE(type);
 }
 
 void Courtroom::on_change_character_triggered()
@@ -624,12 +507,9 @@ void Courtroom::on_call_mod_triggered()
       return;
     }
 
-    QStringList mod_reason;
-    mod_reason.append(text);
-
-    ao_app->send_server_packet(new AOPacket("ZZ", mod_reason));
+    client->callMod(text);
   } else {
-    ao_app->send_server_packet(new AOPacket("ZZ#%"));
+    client->callMod();
   }
 }
 
@@ -648,34 +528,12 @@ void Courtroom::on_showname_enable_triggered()
   ui_ic_chatlog->reload();
 }
 
-void Courtroom::ping_server()
-{
-  ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
-}
-
 void Courtroom::on_casing_triggered()
 {
   if (!ao_app->casing_alerts_enabled)
     return;
 
-  if (ui_casing->isChecked())
-  {
-    QStringList f_packet = {
-      ao_app->get_casing_can_host_cases(),
-      QString::number(ao_app->get_casing_cm_enabled()),
-      QString::number(ao_app->get_casing_defence_enabled()),
-      QString::number(ao_app->get_casing_prosecution_enabled()),
-      QString::number(ao_app->get_casing_judge_enabled()),
-      QString::number(ao_app->get_casing_juror_enabled()),
-      QString::number(ao_app->get_casing_steno_enabled())
-    };
-
-    ao_app->send_server_packet(new AOPacket("SETCASE", f_packet));
-  }
-  else
-  {
-    ao_app->send_server_packet(new AOPacket("SETCASE#\"\"#0#0#0#0#0#0#%"));
-  }
+  QMessageBox::warning(this, "Casing Filter", "This button is obsolete.");
 }
 
 void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno)
@@ -683,16 +541,7 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool 
   if (!ao_app->casing_alerts_enabled)
     return;
 
-  QStringList f_packet = {
-    title,
-    QString::number(def),
-    QString::number(pro),
-    QString::number(jud),
-    QString::number(jur),
-    QString::number(steno)
-  };
-
-  ao_app->send_server_packet(new AOPacket("CASEA", f_packet));
+  client->announceCase(title, casing_flags_to_bitset(def, pro, jud, jur, steno, false));
 }
 
 Courtroom::~Courtroom()

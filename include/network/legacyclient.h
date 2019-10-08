@@ -63,7 +63,7 @@ public:
   char_type character() override { return charsList[currentCharId]; }
 
   QVector<area_type> rooms() override { return areasList; }
-  void joinRoom(int index) override;
+  void joinRoom(QString &name) override;
   void setCharacter(int charId) override;
 
   void callMod(const QString &message) override;

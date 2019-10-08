@@ -3,7 +3,6 @@
 
 #include "aoimage.h"
 #include "aobutton.h"
-#include "aopacket.h"
 #include "aoscene.h"
 #include "aomovie.h"
 #include "aocharmovie.h"
@@ -86,10 +85,6 @@ public:
 
   void handle_chatmessage(QStringList *p_contents);
 
-  //prints who played the song to IC chat and plays said song(if found on local filesystem)
-  //takes in a list where the first element is the song name and the second is the char id of who played it
-  void handle_song(QStringList *p_contents);
-
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
   void check_connection_received();
@@ -141,13 +136,15 @@ private:
   QAction *ui_showname_enable;
 
   bool chooseCharacter();
-public slots:
-  void mod_called(QString p_ip);
-
-  void case_called(QString msg, std::bitset<CASING_FLAGS_COUNT> flags);
 
 private slots:
   void on_ic_chat_messageSent();
+  void on_client_icReceived(const chat_message_type &message);
+  void on_client_kicked(const QString &message, bool banned);
+  void on_client_trackChanged(const QString &track, const QString &showname);
+  void on_client_modCalled(const QString &message);
+  void on_client_caseCalled(const QString &message,
+                            const std::bitset<CASING_FLAGS_COUNT> casingFlags);
 
   void on_ooc_return_pressed(QString name, QString message);
   void on_ms_return_pressed(QString name, QString message);
@@ -177,8 +174,6 @@ private slots:
   void on_quit_triggered();
 
   void on_casing_triggered();
-
-  void ping_server();
 
   void load_bass_opus_plugin();
 };

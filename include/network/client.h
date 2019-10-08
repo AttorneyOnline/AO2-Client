@@ -31,10 +31,10 @@ public:
   virtual char_type character() = 0;
 
   virtual QVector<area_type> rooms() = 0;
-  virtual void joinRoom(int index) = 0;
+  virtual void joinRoom(QString &name) = 0;
   virtual void setCharacter(int charId) = 0;
 
-  virtual void callMod(const QString &message) = 0;
+  virtual void callMod(const QString &message = QStringLiteral()) = 0;
 
   virtual QPromise<void> sendIC(const chat_message_type &message) = 0;
   virtual void sendOOC(const QString &oocName,
