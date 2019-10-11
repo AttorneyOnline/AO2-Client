@@ -127,7 +127,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_area_list = new QListWidget(this);
   ui_area_list->hide();
   ui_music_list = new QTreeWidget(this);
-  ui_music_list->setColumnCount(1);
+  ui_music_list->setColumnCount(2);
+  ui_music_list->hideColumn(1);
   ui_music_list->setHeaderHidden(true);
   ui_music_list->header()->setStretchLastSection(false);
   ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1184,13 +1185,15 @@ void Courtroom::list_music()
   {
     QString i_song = music_list.at(n_song);
     QString i_song_listname = i_song.left(i_song.lastIndexOf("."));
+    i_song_listname = i_song_listname.right(i_song_listname.length() - (i_song_listname.lastIndexOf("/") + 1));
 
     QTreeWidgetItem *treeItem;
     if (i_song_listname != i_song && parent != nullptr) //not a category, parent exists
       treeItem = new QTreeWidgetItem(parent);
     else
       treeItem = new QTreeWidgetItem(ui_music_list);
-    treeItem->setText(0, i_song);
+    treeItem->setText(0, i_song_listname);
+    treeItem->setText(1, i_song);
     music_row_to_number.append(n_song);
 
     QString song_path = ao_app->get_music_path(i_song);
@@ -2825,7 +2828,8 @@ void Courtroom::handle_song(QStringList *p_contents)
     return;
 
   QString f_song = f_contents.at(0);
-  QString f_song_clear = f_song.left(f_song.lastIndexOf(".")).right(f_song.lastIndexOf("/"));
+  QString f_song_clear = f_song.left(f_song.lastIndexOf("."));
+  f_song_clear = f_song_clear.right(f_song_clear.length() - (f_song_clear.lastIndexOf("/") + 1));
   int n_char = f_contents.at(1).toInt();
 
   bool looping = true;
@@ -3779,6 +3783,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item, int column
   if (is_muted)
     return;
 
+  column = 1; //Column 1 is always the metadata (which we want)
   QString p_song = p_item->text(column);
 
   QStringList packet_contents;
