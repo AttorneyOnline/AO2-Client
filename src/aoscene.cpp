@@ -15,11 +15,11 @@ void AOScene::set_image(QString p_image)
   QString background_path = ao_app->get_image_suffix(ao_app->get_background_path(p_image));
   if (!file_exists(background_path)) //If image is missing, clear current image
   {
-    //background_path = ao_app->get_image_suffix(ao_app->get_default_background_path(p_image)); //Default path
     this->clear();
     this->setMovie(nullptr);
 
     m_movie->stop();
+    last_image = "";
     return;
   }
 
@@ -55,11 +55,11 @@ void AOScene::set_legacy_desk(QString p_image)
   QString desk_path = ao_app->get_image_suffix(ao_app->get_background_path(p_image));
   if (!file_exists(desk_path)) //If image is missing, clear current image
   {
-    //desk_path = ao_app->get_image_suffix(ao_app->get_default_background_path(p_image)); //Default path
     this->clear();
     this->setMovie(nullptr);
 
     m_movie->stop();
+    last_image = "";
     return;
   }
 
