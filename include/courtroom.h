@@ -288,10 +288,6 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
-  // These map music row items and area row items to their actual IDs.
-  QVector<int> music_row_to_number;
-  QVector<int> area_row_to_number;
-
   //triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 
@@ -470,7 +466,7 @@ private:
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
-  QListWidget *ui_area_list;
+  QTreeWidget *ui_area_list;
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
@@ -651,7 +647,7 @@ private slots:
   void music_synchronize(bool toggle);
   void music_list_expand_all();
   void music_list_collapse_all();
-  void on_area_list_double_clicked(QModelIndex p_model);
+  void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
 

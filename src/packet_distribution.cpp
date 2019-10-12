@@ -151,6 +151,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     modcall_reason_enabled = false;
     looping_sfx_support_enabled = false;
     additive_enabled = false;
+    effects_enabled = false;
 
     //workaround for tsuserver4
     if (f_contents.at(0) == "NOENCRYPT")

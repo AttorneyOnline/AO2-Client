@@ -124,8 +124,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
 
-  ui_area_list = new QListWidget(this);
+  ui_area_list = new QTreeWidget(this);
+  ui_area_list->setColumnCount(2);
+  ui_area_list->hideColumn(1);
+  ui_area_list->setHeaderHidden(true);
+  ui_area_list->header()->setStretchLastSection(false);
+  ui_area_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_area_list->hide();
+
   ui_music_list = new QTreeWidget(this);
   ui_music_list->setColumnCount(2);
   ui_music_list->hideColumn(1);
@@ -324,7 +330,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_music_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_music_list_double_clicked(QTreeWidgetItem*, int)));
   connect(ui_music_list, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_music_list_context_menu_requested(QPoint)));
-  connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
+
+  connect(ui_area_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_area_list_double_clicked(QTreeWidgetItem*, int)));
 
   connect(ui_hold_it, SIGNAL(clicked()), this, SLOT(on_hold_it_clicked()));
   connect(ui_objection, SIGNAL(clicked()), this, SLOT(on_objection_clicked()));
@@ -565,7 +572,10 @@ void Courtroom::set_widgets()
   ui_pair_button->setToolTip(tr("Display the list of characters to pair with."));
 
   set_size_and_pos(ui_area_list, "music_list");
+  ui_area_list->header()->setMinimumSectionSize(ui_area_list->width());
+
   set_size_and_pos(ui_music_list, "music_list");
+  ui_music_list->header()->setMinimumSectionSize(ui_music_list->width());
 
   set_size_and_pos(ui_music_name, "music_name");
 
@@ -1171,7 +1181,6 @@ void Courtroom::enter_courtroom()
 void Courtroom::list_music()
 {
   ui_music_list->clear();
-  music_row_to_number.clear();
 
   QString f_file = "courtroom_design.ini";
 
@@ -1194,7 +1203,6 @@ void Courtroom::list_music()
       treeItem = new QTreeWidgetItem(ui_music_list);
     treeItem->setText(0, i_song_listname);
     treeItem->setText(1, i_song);
-    music_row_to_number.append(n_song);
 
     QString song_path = ao_app->get_music_path(i_song);
 
@@ -1215,7 +1223,6 @@ void Courtroom::list_music()
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
-  area_row_to_number.clear();
 
   QString f_file = "courtroom_design.ini";
 
@@ -1254,34 +1261,35 @@ void Courtroom::list_areas()
 
     if (i_area.toLower().contains(ui_music_search->text().toLower()))
     {
-      ui_area_list->addItem(i_area);
-      area_row_to_number.append(n_area);
+      QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
+      treeItem->setText(0, i_area);
+      treeItem->setText(1, QString::number(n_area));
 
       if (ao_app->arup_enabled)
       {
         // Coloring logic here.
-        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+        treeItem->setBackground(0, free_brush);
         if (arup_locks.at(n_area) == "LOCKED")
         {
-            ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
+            treeItem->setBackground(0, locked_brush);
         }
         else
         {
             if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-                ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
+                treeItem->setBackground(0, lfp_brush);
             else if (arup_statuses.at(n_area) == "CASING")
-                ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
+                treeItem->setBackground(0, casing_brush);
             else if (arup_statuses.at(n_area) == "RECESS")
-                ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
+                treeItem->setBackground(0, recess_brush);
             else if (arup_statuses.at(n_area) == "RP")
-                ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
+                treeItem->setBackground(0, rp_brush);
             else if (arup_statuses.at(n_area) == "GAMING")
-                ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
+                treeItem->setBackground(0, gaming_brush);
         }
       }
       else
       {
-        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+        treeItem->setBackground(0, free_brush);
       }
 
       ++n_listed_areas;
@@ -3855,10 +3863,15 @@ void Courtroom::music_list_collapse_all()
   ui_music_list->collapseAll();
 }
 
-void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
+void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
-    QString p_area = area_list.at(area_row_to_number.at(p_model.row()));
-    ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
+  column = 0; //Column 0 is the area name, column 1 is the metadata
+  QString p_area = p_item->text(column);
+
+  QStringList packet_contents;
+  packet_contents.append(p_area);
+  packet_contents.append(QString::number(m_cid));
+  ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 
 void Courtroom::on_hold_it_clicked()
