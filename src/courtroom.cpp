@@ -1356,7 +1356,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[OTHER_OFFSET] = m_chatmessage_tmp[OTHER_OFFSET];
     m_chatmessage[OTHER_NAME] = m_chatmessage_tmp[OTHER_NAME];
     m_chatmessage[OTHER_EMOTE] = m_chatmessage_tmp[OTHER_EMOTE];
-    m_chatmessage[CHAR_NAME] = m_chatmessage_tmp[CHAR_NAME];
     m_chatmessage[OTHER_CHARID] = m_chatmessage_tmp[OTHER_CHARID];
     }
   }
@@ -1474,8 +1473,8 @@ void Courtroom::handle_chatmessage_2()
 
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
-
-  QString chatbox = ao_app->get_chat(char_name);
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString chatbox = ao_app->get_chat(f_char);
 
   if (chatbox == "")
   {
@@ -1732,7 +1731,11 @@ void Courtroom::handle_chatmessage_3()
     return;
 
    ui_vp_player_char->stop();
-  QString f_char = m_chatmessage[CHAR_NAME];
+
+   QString f_char = "";
+  f_char = m_chatmessage[CHAR_NAME];
+  if(!shown)
+     f_char = m_chatmessage_tmp[CHAR_NAME];
   QString f_emote = m_chatmessage[EMOTE];
 
   if (f_anim_state == 2) {
@@ -2070,7 +2073,8 @@ void Courtroom::start_chat_ticking()
   {
     realization_timer->start(60);
     ui_vp_realization->show();
-    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
+    QString f_char = m_chatmessage[CHAR_NAME];
+    sfx_player->play(ao_app->get_custom_realization(f_char));
   }
 
   ui_vp_message->clear();
@@ -2104,7 +2108,8 @@ void Courtroom::start_chat_ticking()
   current_display_speed = 3;
   chat_tick_timer->start(message_display_speed[current_display_speed]);
 
-  QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_gender = ao_app->get_gender(f_char);
 
   blip_player->set_blips(ao_app->get_sfx_suffix("sfx-blip" + f_gender));
 
@@ -2132,14 +2137,16 @@ void Courtroom::chat_tick()
   {
     f_message.remove(0,2);
   }
-
+  QString f_char = m_chatmessage[CHAR_NAME];
+  if(!shown)
+     f_char = m_chatmessage_tmp[CHAR_NAME];
   if (f_message.size() == 0)
   {
     text_state = 2;
     if (anim_state != 4)
     {
       anim_state = 3;
-      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE], shown);
+      ui_vp_player_char->play_idle(f_char, m_chatmessage[EMOTE], shown);
     }
   }
 
@@ -2217,7 +2224,9 @@ void Courtroom::chat_tick()
         // If it isn't, we stop talking.
         if (!entire_message_is_blue and anim_state != 4)
         {
-          QString f_char = m_chatmessage[CHAR_NAME];
+            QString f_char = m_chatmessage_tmp[CHAR_NAME];
+            if(shown)
+              f_char = m_chatmessage[CHAR_NAME];
           QString f_emote = m_chatmessage[EMOTE];
           ui_vp_player_char->play_idle(f_char, f_emote, shown);
         }
@@ -2242,7 +2251,9 @@ void Courtroom::chat_tick()
                 // We should only go back to talking if we're out of inline blues, not during a non. int. pre, and not on the last character.
                 if (inline_blue_depth == 0 and anim_state != 4 and !(tick_pos+1 >= f_message.size()))
                 {
-                  QString f_char = m_chatmessage[CHAR_NAME];
+                    QString f_char = char_name;
+                    if(shown)
+                      f_char = m_chatmessage[CHAR_NAME];
                   QString f_emote = m_chatmessage[EMOTE];
                   ui_vp_player_char->play_talking(f_char, f_emote, shown);
                 }
@@ -2536,7 +2547,8 @@ void Courtroom::set_scene()
 
 void Courtroom::set_text_color()
 {
-  QColor textcolor = ao_app->get_chat_color(m_chatmessage[TEXT_COLOR], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QColor textcolor = ao_app->get_chat_color(m_chatmessage[TEXT_COLOR], ao_app->get_chat(f_char));
 
   ui_vp_message->setTextBackgroundColor(QColor(0,0,0,0));
   ui_vp_message->setTextColor(textcolor);
@@ -2555,7 +2567,8 @@ void Courtroom::set_text_color()
 
 QColor Courtroom::get_text_color(QString color)
 {
-  return ao_app->get_chat_color(color, ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+  QString f_char = m_chatmessage[CHAR_NAME];
+  return ao_app->get_chat_color(color, ao_app->get_chat(f_char));
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -3030,6 +3043,12 @@ void Courtroom::on_ooc_return_pressed()
       }
       ui_ooc_chat_message->clear();
       return;
+  }
+  else if(ooc_message.startsWith("/afk"))
+  {
+    append_server_chatmessage("CLIENT", tr("You are now AFK. Have a good day!"), "1");
+    ui_ooc_chat_message->clear();
+    return;
   }
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
