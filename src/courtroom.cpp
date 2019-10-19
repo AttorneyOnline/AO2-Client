@@ -628,13 +628,14 @@ void Courtroom::set_widgets()
   ui_muted->setToolTip(tr("Oops, you're muted!"));
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
-  ui_ooc_chat_message->setToolTip(tr("Type your message to display in the server chat here."));
+  ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name");
-  ui_ooc_chat_name->setToolTip(tr("Set your name to display in the server chat."));
+  ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   //set_size_and_pos(ui_area_password, "area_password");
   set_size_and_pos(ui_music_search, "music_search");
+  ui_music_search->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
   ui_emote_dropdown->setToolTip(tr("Set your character's emote to play on your next message."));
@@ -1020,10 +1021,13 @@ void Courtroom::set_background(QString p_background, bool display)
   {
     ui_vp_speedlines->stop();
     ui_vp_player_char->stop();
+
     ui_vp_sideplayer_char->stop();
     ui_vp_effect->stop();
     ui_vp_message->hide();
     ui_vp_chatbox->hide();
+
+    chat_tick_timer->stop();
     set_scene(QString::number(ao_app->get_desk_mod(current_char, current_emote)), current_side);
   }
 }
