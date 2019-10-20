@@ -140,7 +140,6 @@ void Lobby::set_widgets()
 
 
   set_size_and_pos(ui_loading_text, "loading_label");
-  //WHY IS THIS FONT HARDCODED, WHAT IS WRONG WITH YOU
   ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
   ui_loading_text->setReadOnly(true);
   ui_loading_text->setAlignment(Qt::AlignCenter);
