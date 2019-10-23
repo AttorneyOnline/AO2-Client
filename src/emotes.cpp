@@ -159,7 +159,7 @@ void Courtroom::select_emote(int p_id)
   {
     ui_pre->setChecked(!ui_pre->isChecked());
   }
-  else if (emote_mod == 1)
+  else if (emote_mod == 1 || emote_mod == 4)
     ui_pre->setChecked(true);
   else
     ui_pre->setChecked(false);

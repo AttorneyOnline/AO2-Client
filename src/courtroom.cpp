@@ -1391,7 +1391,7 @@ void Courtroom::on_chat_return_pressed()
   {
     if (ui_pre->isChecked())
     {
-      if (f_emote_mod == 5)
+      if (f_emote_mod == 4 || f_emote_mod == 5)
         f_emote_mod = 6;
       else
         f_emote_mod = 2;
@@ -1957,7 +1957,7 @@ void Courtroom::play_char_sfx(QString sfx_name)
 {
   sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
   if(ao_app->get_looping_sfx())
-    sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
+    sfx_player->set_looping(ao_app->get_sfx_looping(current_char, QString::number(current_emote))!="0");
 }
 
 void Courtroom::handle_chatmessage_3()
@@ -2396,7 +2396,7 @@ void Courtroom::play_preanim(bool noninterrupting)
   //all time values in char.inis are multiplied by a constant(time_mod) to get the actual time
   int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
-  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
+  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
 
   int preanim_duration;
 
@@ -2493,7 +2493,7 @@ void Courtroom::start_chat_ticking()
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
-  blip_player->set_blips(ao_app->get_sfx_suffix("sfx-blip" + f_gender));
+  blip_player->set_blips(ao_app->get_sfx_suffix(f_gender));
 
   //means text is currently ticking
   text_state = 1;

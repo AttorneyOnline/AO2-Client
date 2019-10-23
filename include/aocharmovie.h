@@ -67,7 +67,7 @@ private:
 
   QElapsedTimer actual_time;
 
-  //it will forever be a mystery who thought this time_mod system would ever be a good idea with precision-based emotes
+  //Usually used to turn seconds into milliseconds such as for [Time] tag in char.ini
   const int time_mod = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's width.

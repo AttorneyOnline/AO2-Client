@@ -628,8 +628,10 @@ QString AOApplication::get_gender(QString p_char)
   QString f_result = read_char_ini(p_char, "gender", "Options");
 
   if (f_result == "")
-    return "male";
-  else return f_result;
+    return "sfx-blipmale";
+  if (!file_exists(get_sfx(f_result)))
+    f_result = "sfx-blip" + f_result;
+  return f_result;
 }
 
 QString AOApplication::get_chat(QString p_char)

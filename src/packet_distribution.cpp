@@ -192,6 +192,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (f_packet.contains("yellowtext",Qt::CaseInsensitive))
       yellow_text_enabled = true;
+    if (f_packet.contains("prezoom",Qt::CaseInsensitive))
+      prezoom_enabled = true;
     if (f_packet.contains("flipping",Qt::CaseInsensitive))
       flipping_enabled = true;
     if (f_packet.contains("customobjections",Qt::CaseInsensitive))
