@@ -40,12 +40,12 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel
   
   QString misc_path = "";
   QString char_path = "";
-  QString sound_path = ao_app->get_sounds_path(p_sfx);
+  QString sound_path = ao_app->get_sfx_suffix(ao_app->get_sounds_path(p_sfx));
 
   if (shout != "")
-    misc_path = ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx;
+    misc_path = ao_app->get_sfx_suffix(ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx);
   if (p_char != "")
-    char_path = ao_app->get_character_path(p_char, p_sfx);
+    char_path = ao_app->get_sfx_suffix(ao_app->get_character_path(p_char, p_sfx));
 
   QString f_path;
 
@@ -55,9 +55,6 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel
     f_path = misc_path;
   else
     f_path = sound_path;
-
-  if (!file_exists(f_path))
-    f_path = ao_app->get_sfx_suffix(f_path); //If we're not given a sound file with .wav/.ogg/.opus already there, let's do this thing
 
   if (f_path.endsWith(".opus"))
     m_stream_list[channel] = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);

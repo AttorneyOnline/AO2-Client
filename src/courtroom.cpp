@@ -1818,7 +1818,6 @@ void Courtroom::handle_chatmessage_2()
 
         int other_offset = m_chatmessage[OTHER_OFFSET].toInt();
         ui_vp_sideplayer_char->move(ui_viewport->width() * other_offset / 100, 0);
-        qDebug() << "other offset" << other_offset;
 
         QStringList args = m_chatmessage[OTHER_CHARID].split("^");
         if (args.size() > 1) //This ugly workaround is so we don't make an extra packet just for this purpose. Rewrite pairing when?
@@ -1914,7 +1913,6 @@ void Courtroom::do_screenshake()
       int rng = qrand();//QRandomGenerator::global()->generate();
       int rand_x = max_x - (int(rng) % (max_x*2));
       int rand_y = max_y - (int(rng+100) % (max_y*2));
-      qDebug() << rand_x << rand_y;
       screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
     screenshake_animation->setEndValue(pos_default);
@@ -1947,12 +1945,12 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char)
   ui_vp_effect->set_play_once(false); // The effects themselves dictate whether or not they're looping. Static effects will linger.
   ui_vp_effect->play(effect); // It will set_play_once to true if the filepath provided is not designed to loop more than once
   if (fx_sound != "")
-    sfx_player->play(ao_app->get_sfx_suffix(fx_sound));
+    sfx_player->play(fx_sound);
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
 {
-  sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
+  sfx_player->play(sfx_name);
   if(ao_app->get_looping_sfx())
     sfx_player->set_looping(ao_app->get_sfx_looping(current_char, QString::number(current_emote))!="0");
 }
@@ -2690,7 +2688,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
+  sfx_player->play(sfx_name);
   if(ao_app->get_looping_sfx())
     sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name)!="0");
 }

@@ -527,7 +527,8 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
-  sound_to_check = get_sounds_path(sound_to_check);
+    if (sound_to_check.contains(".")) //We have what we could call a file extension
+        return sound_to_check;
     if (file_exists(sound_to_check + ".opus"))
         return sound_to_check + ".opus";
     if (file_exists(sound_to_check + ".ogg"))
@@ -541,6 +542,8 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
+    if (path_to_check.contains(".")) //We have what we could call a file extension
+        return path_to_check;
     if (file_exists(path_to_check + ".webp"))
         return path_to_check + ".webp";
     if (file_exists(path_to_check + ".apng"))
@@ -629,9 +632,9 @@ QString AOApplication::get_gender(QString p_char)
   if (f_result == "")
     return "sfx-blipmale";
 
-  if (!file_exists(get_sfx_suffix(get_sfx(f_result))))
+  if (!file_exists(get_sfx_suffix(get_sounds_path(f_result))))
   {
-    if (file_exists(get_sfx_suffix(get_sfx("blips/" + f_result))))
+    if (file_exists(get_sfx_suffix(get_sounds_path("blips/" + f_result))))
       return "blips/" + f_result; //Return the cool kids variant
 
     return "sfx-blip" + f_result; //Return legacy variant
