@@ -782,7 +782,7 @@ void Courtroom::set_widgets()
   ui_custom_objection->setText(tr("Custom Shout!"));
   ui_custom_objection->set_image("custom");
   ui_custom_objection->setToolTip(tr("This will display the custom character-defined animation in the viewport as soon as it is pressed.\n"
-                                     "To make one, your character's folder must contain custom.[webp/apng/gif/png] and custom.wav"));
+                                     "To make one, your character's folder must contain custom.[webp/apng/gif/png] and custom.[wav/ogg/opus] sound effect"));
 
   set_size_and_pos(ui_realization, "realization");
   ui_realization->set_image("realization");
@@ -1002,9 +1002,10 @@ void Courtroom::set_background(QString p_background, bool display)
   ui_vp_testimony->stop();
   current_background = p_background;
 
-  is_ao2_bg = file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("defensedesk"))) &&
-              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("prosecutiondesk"))) &&
-              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("stand")));
+  is_ao2_bg = true;
+//              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("defensedesk"))) &&
+//              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("prosecutiondesk"))) &&
+//              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("stand")));
 
   if (is_ao2_bg)
   {
@@ -1127,10 +1128,7 @@ void Courtroom::update_character(int p_cid)
     ui_prosecution_plus->hide();
   }
 
-  if (ao_app->custom_objection_enabled &&
-      (file_exists(ao_app->get_character_path(current_char, "custom.gif")) ||
-      file_exists(ao_app->get_character_path(current_char, "custom.apng"))) &&
-      file_exists(ao_app->get_character_path(current_char, "custom.wav")))
+  if (ao_app->custom_objection_enabled && file_exists(ao_app->get_image_suffix(ao_app->get_character_path(current_char, "custom"))))
     ui_custom_objection->show();
   else
     ui_custom_objection->hide();
@@ -1597,8 +1595,11 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
+  //Remove undesired newline chars
+  m_chatmessage[MESSAGE].remove("\n");
+  chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
-  if (f_char_id >= 0 && f_message == previous_ic_message) //Not a system message
+  if (f_char_id >= 0 && !chatmessage_is_empty && f_message == previous_ic_message) //Not a system message
     return;
 
   if (f_char_id <= -1)
@@ -1614,11 +1615,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_objection->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
-
-  //Remove undesired newline chars
-  m_chatmessage[MESSAGE].remove("\n");
-
-  chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
   //Hey, our message showed up! Cool!
   if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text().remove("\n") && m_chatmessage[CHAR_ID].toInt() == m_cid)
@@ -1669,22 +1665,22 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     {
     case 1:
       ui_vp_objection->play("holdit_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("holdit.wav", f_char, f_custom_theme);
+      objection_player->play("holdit", f_char, f_custom_theme);
       break;
     case 2:
       ui_vp_objection->play("objection_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("objection.wav", f_char, f_custom_theme);
+      objection_player->play("objection", f_char, f_custom_theme);
       if(ao_app->objection_stop_music())
           music_player->stop();
       break;
     case 3:
       ui_vp_objection->play("takethat_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("takethat.wav", f_char, f_custom_theme);
+      objection_player->play("takethat", f_char, f_custom_theme);
       break;
     //case 4 is AO2 only
     case 4:
       ui_vp_objection->play("custom", f_char, f_custom_theme, 724);
-      objection_player->play("custom.wav", f_char, f_custom_theme);
+      objection_player->play("custom", f_char, f_custom_theme);
       break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
@@ -2493,7 +2489,7 @@ void Courtroom::start_chat_ticking()
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
-  blip_player->set_blips(ao_app->get_sfx_suffix(f_gender));
+  blip_player->set_blips(f_gender);
 
   //means text is currently ticking
   text_state = 1;
@@ -2518,7 +2514,7 @@ void Courtroom::chat_tick()
       ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE]);
     }
     QString f_char = m_chatmessage[CHAR_NAME];
-    QString f_custom_theme = ao_app->get_char_shouts(f_char);
+    QString f_custom_theme = ao_app->get_chat(f_char);
     ui_vp_chat_arrow->play("chat_arrow", f_char, f_custom_theme); //Chat stopped being processed, indicate that.
     additive_previous = additive_previous + filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     real_tick_pos = ui_vp_message->toPlainText().size();
@@ -3320,7 +3316,8 @@ void Courtroom::on_music_search_edited(QString p_text)
 
   if (p_text != "")
   {
-    QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 0);
+    //Search in metadata
+    QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 1);
     foreach(QTreeWidgetItem* item, clist)
     {
       if (item->parent() != nullptr) //So the category shows up too

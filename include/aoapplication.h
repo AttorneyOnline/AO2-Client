@@ -335,6 +335,9 @@ public:
   //Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
 
+  //Returns the blipsound of p_char's p_emote
+  QString get_emote_blip(QString p_char, int p_emote);
+
   //Returns if the sfx is defined as looping in char.ini
   QString get_sfx_looping(QString p_char, QString p_sfx);
 

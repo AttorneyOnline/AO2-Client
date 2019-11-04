@@ -527,16 +527,15 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
-    QString mp3_check = get_sounds_path(sound_to_check + ".mp3");
-    QString opus_check = get_sounds_path(sound_to_check + ".opus");
-    if (file_exists(opus_check))
-    {
+  sound_to_check = get_sounds_path(sound_to_check);
+    if (file_exists(sound_to_check + ".opus"))
         return sound_to_check + ".opus";
-    }
-    else if (file_exists(mp3_check))
-    {
+    if (file_exists(sound_to_check + ".ogg"))
+        return sound_to_check + ".ogg";
+    if (file_exists(sound_to_check + ".mp3"))
         return sound_to_check + ".mp3";
-    }
+    if (file_exists(sound_to_check + ".mp4"))
+        return sound_to_check + ".mp4";
     return sound_to_check + ".wav";
 }
 
@@ -599,7 +598,7 @@ QString AOApplication::get_char_name(QString p_char)
 
   if (f_result == "")
     return p_char;
-  else return f_result;
+  return f_result;
 }
 
 QString AOApplication::get_showname(QString p_char)
@@ -611,7 +610,7 @@ QString AOApplication::get_showname(QString p_char)
     return "";
   if (f_result == "")
     return p_char;
-  else return f_result;
+  return f_result;
 }
 
 QString AOApplication::get_char_side(QString p_char)
@@ -620,7 +619,7 @@ QString AOApplication::get_char_side(QString p_char)
 
   if (f_result == "")
     return "wit";
-  else return f_result;
+  return f_result;
 }
 
 QString AOApplication::get_gender(QString p_char)
@@ -629,8 +628,14 @@ QString AOApplication::get_gender(QString p_char)
 
   if (f_result == "")
     return "sfx-blipmale";
-  if (!file_exists(get_sfx(f_result)))
-    f_result = "sfx-blip" + f_result;
+
+  if (!file_exists(get_sfx_suffix(get_sfx(f_result))))
+  {
+    if (file_exists(get_sfx_suffix(get_sfx("blips/" + f_result))))
+      return "blips/" + f_result; //Return the cool kids variant
+
+    return "sfx-blip" + f_result; //Return legacy variant
+  }
   return f_result;
 }
 
@@ -663,7 +668,7 @@ QString AOApplication::get_char_shouts(QString p_char)
   QString f_result = read_char_ini(p_char, "shouts", "Options");
   if (f_result == "")
     return "default";
-  else return f_result;
+  return f_result;
 }
 
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
@@ -672,7 +677,7 @@ int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
 
   if (f_result == "")
     return -1;
-  else return f_result.toInt();
+  return f_result.toInt();
 }
 
 int AOApplication::get_ao2_preanim_duration(QString p_char, QString p_emote)
@@ -681,7 +686,7 @@ int AOApplication::get_ao2_preanim_duration(QString p_char, QString p_emote)
 
   if (f_result == "")
     return -1;
-  else return f_result.toInt();
+  return f_result.toInt();
 }
 
 int AOApplication::get_emote_number(QString p_char)
@@ -690,7 +695,7 @@ int AOApplication::get_emote_number(QString p_char)
 
   if (f_result == "")
     return 0;
-  else return f_result.toInt();
+  return f_result.toInt();
 }
 
 QString AOApplication::get_emote_comment(QString p_char, int p_emote)
@@ -704,7 +709,7 @@ QString AOApplication::get_emote_comment(QString p_char, int p_emote)
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
-  else return result_contents.at(0);
+  return result_contents.at(0);
 }
 
 QString AOApplication::get_pre_emote(QString p_char, int p_emote)
@@ -718,7 +723,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "";
   }
-  else return result_contents.at(1);
+  return result_contents.at(1);
 }
 
 QString AOApplication::get_emote(QString p_char, int p_emote)
@@ -732,7 +737,7 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
-  else return result_contents.at(2);
+  return result_contents.at(2);
 }
 
 int AOApplication::get_emote_mod(QString p_char, int p_emote)
@@ -746,7 +751,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << QString::number(p_emote);
     return 0;
   }
-  else return result_contents.at(3).toInt();
+  return result_contents.at(3).toInt();
 }
 
 int AOApplication::get_desk_mod(QString p_char, int p_emote)
@@ -762,7 +767,7 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
   if (string_result == "")
     return -1;
 
-  else return string_result.toInt();
+  return string_result.toInt();
 }
 
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)
@@ -771,7 +776,13 @@ QString AOApplication::get_sfx_name(QString p_char, int p_emote)
 
   if (f_result == "")
     return "1";
-  else return f_result;
+  return f_result;
+}
+
+QString AOApplication::get_emote_blip(QString p_char, int p_emote)
+{
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "SoundB");
+  return f_result;
 }
 
 int AOApplication::get_sfx_delay(QString p_char, int p_emote)
@@ -780,7 +791,7 @@ int AOApplication::get_sfx_delay(QString p_char, int p_emote)
 
   if (f_result == "")
     return 1;
-  else return f_result.toInt();
+  return f_result.toInt();
 }
 
 QString AOApplication::get_sfx_looping(QString p_char, QString p_sfx)
@@ -789,7 +800,7 @@ QString AOApplication::get_sfx_looping(QString p_char, QString p_sfx)
 
   if (f_result == "")
     return "0";
-  else return f_result;
+  return f_result;
 }
 
 QString AOApplication::get_sfx_frame(QString p_char, QString p_emote, int n_frame)
@@ -798,7 +809,7 @@ QString AOApplication::get_sfx_frame(QString p_char, QString p_emote, int n_fram
 
   if (f_result == "")
     return "";
-  else return f_result;
+  return f_result;
 }
 
 QString AOApplication::get_screenshake_frame(QString p_char, QString p_emote, int n_frame)
@@ -807,7 +818,7 @@ QString AOApplication::get_screenshake_frame(QString p_char, QString p_emote, in
 
   if (f_result == "")
     return "";
-  else return f_result;
+  return f_result;
 }
 
 QString AOApplication::get_flash_frame(QString p_char, QString p_emote, int n_frame)
@@ -816,7 +827,7 @@ QString AOApplication::get_flash_frame(QString p_char, QString p_emote, int n_fr
 
   if (f_result == "")
     return "";
-  else return f_result;
+  return f_result;
 }
 
 int AOApplication::get_text_delay(QString p_char, QString p_emote)
@@ -825,7 +836,7 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 
   if (f_result == "")
     return -1;
-  else return f_result.toInt();
+  return f_result.toInt();
 }
 
 QStringList AOApplication::get_theme_effects()
