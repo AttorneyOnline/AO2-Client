@@ -2701,7 +2701,7 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
   QString f_background = "witnessempty";
   QString f_desk_image = "stand";
 
-  if (f_side == "def")
+  if (f_side == "def" && file_exists(ao_app->get_image_suffix(ao_app->get_background_path("defenseempty"))))
   {
     f_background = "defenseempty";
     if (is_ao2_bg)
@@ -2709,7 +2709,7 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
     else
       f_desk_image = "bancodefensa";
   }
-  else if (f_side == "pro")
+  else if (f_side == "pro" && file_exists(ao_app->get_image_suffix(ao_app->get_background_path("prosecutorempty"))))
   {
     f_background = "prosecutorempty";
     if (is_ao2_bg)
@@ -2717,17 +2717,17 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
     else
       f_desk_image = "bancoacusacion";
   }
-  else if (f_side == "jud")
+  else if (f_side == "jud" && file_exists(ao_app->get_image_suffix(ao_app->get_background_path("judgestand"))))
   {
     f_background = "judgestand";
     f_desk_image = "judgedesk";
   }
-  else if (f_side == "hld")
+  else if (f_side == "hld" && file_exists(ao_app->get_image_suffix(ao_app->get_background_path("helperstand"))))
   {
     f_background = "helperstand";
     f_desk_image = "helperdesk";
   }
-  else if (f_side == "hlp")
+  else if (f_side == "hlp" && file_exists(ao_app->get_image_suffix(ao_app->get_background_path("prohelperstand"))))
   {
     f_background = "prohelperstand";
     f_desk_image = "prohelperdesk";
