@@ -59,7 +59,10 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel
   if (!file_exists(f_path))
     f_path = ao_app->get_sfx_suffix(f_path); //If we're not given a sound file with .wav/.ogg/.opus already there, let's do this thing
 
-  m_stream_list[channel] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  if (f_path.endsWith(".opus"))
+    m_stream_list[channel] = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  else
+    m_stream_list[channel] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
   set_volume_internal(m_volume);
 

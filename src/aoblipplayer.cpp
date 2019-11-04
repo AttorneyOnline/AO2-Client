@@ -15,7 +15,10 @@ void AOBlipPlayer::set_blips(QString p_sfx)
   {
     BASS_StreamFree(m_stream_list[n_stream]);
 
-    m_stream_list[n_stream] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+    if (f_path.endsWith(".opus"))
+      m_stream_list[n_stream] = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+    else
+      m_stream_list[n_stream] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
   }
 
   set_volume_internal(m_volume);
@@ -46,7 +49,7 @@ void AOBlipPlayer::set_volume(qreal p_value)
 
 void AOBlipPlayer::set_volume_internal(qreal p_value)
 {
-  float volume = p_value;
+  float volume = static_cast<float>(p_value);
 
   for (int n_stream = 0 ; n_stream < 5 ; ++n_stream)
   {

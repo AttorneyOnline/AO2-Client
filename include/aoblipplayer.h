@@ -3,6 +3,7 @@
 
 #if defined(BASSAUDIO)
 #include "bass.h"
+#include "bassopus.h"
 #elif defined(QTAUDIO)
 #include <QSoundEffect>
 #endif

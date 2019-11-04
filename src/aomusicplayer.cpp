@@ -26,7 +26,11 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop, int effect_flag
   if (loop)
     flags |= BASS_SAMPLE_LOOP;
 
-  DWORD newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
+  DWORD newstream;
+  if (f_path.endsWith(".opus"))
+    newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
+  else
+    newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());

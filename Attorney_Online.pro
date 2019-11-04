@@ -13,7 +13,6 @@ MOC_DIR = $$PWD/build
 SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
 
-
 LIBS += -L$$PWD/lib
 
 DEFINES += DISCORD
@@ -26,6 +25,7 @@ DEFINES += BASSAUDIO
 
 contains(DEFINES, BASSAUDIO) {
 LIBS += -lbass
+LIBS += -lbassopus
 }
 
 #DEFINES += QTAUDIO
