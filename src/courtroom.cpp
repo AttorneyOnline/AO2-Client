@@ -1912,8 +1912,9 @@ void Courtroom::do_screenshake()
     {
       double fraction = double(frame*frequency)/duration;
       int rng = qrand();//QRandomGenerator::global()->generate();
-      int rand_x = int(rng) % max_x;
-      int rand_y = int(rng+100) % max_y;
+      int rand_x = max_x - (int(rng) % (max_x*2));
+      int rand_y = max_y - (int(rng+100) % (max_y*2));
+      qDebug() << rand_x << rand_y;
       screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
     screenshake_animation->setEndValue(pos_default);
@@ -2456,13 +2457,6 @@ void Courtroom::start_chat_ticking()
     this->do_flash();
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
-
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); //text meme bonanza
-  if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1")
-  {
-    this->do_screenshake();
-  }
-
   if (chatmessage_is_empty)
   {
     //since the message is empty, it's technically done ticking
@@ -2490,6 +2484,12 @@ void Courtroom::start_chat_ticking()
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
   blip_player->set_blips(f_gender);
+
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); //text meme bonanza
+  if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1")
+  {
+    this->do_screenshake();
+  }
 
   //means text is currently ticking
   text_state = 1;
