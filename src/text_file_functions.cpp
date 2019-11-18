@@ -634,8 +634,8 @@ QString AOApplication::get_gender(QString p_char)
 
   if (!file_exists(get_sfx_suffix(get_sounds_path(f_result))))
   {
-    if (file_exists(get_sfx_suffix(get_sounds_path("blips/" + f_result))))
-      return "blips/" + f_result; //Return the cool kids variant
+    if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))
+      return "../blips/" + f_result; //Return the cool kids variant
 
     return "sfx-blip" + f_result; //Return legacy variant
   }

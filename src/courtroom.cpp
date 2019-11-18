@@ -1028,7 +1028,14 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_message->hide();
     ui_vp_chatbox->hide();
 
+    //Stop the chat arrow from animating
+    ui_vp_chat_arrow->stop();
+
+    text_state = 0;
+    anim_state = 0;
+    ui_vp_objection->stop();
     chat_tick_timer->stop();
+    ui_vp_evidence_display->reset();
     set_scene(QString::number(ao_app->get_desk_mod(current_char, current_emote)), current_side);
   }
 }
