@@ -1031,8 +1031,8 @@ void Courtroom::set_background(QString p_background, bool display)
     //Stop the chat arrow from animating
     ui_vp_chat_arrow->stop();
 
-    text_state = 0;
-    anim_state = 0;
+    text_state = 2;
+    anim_state = 3;
     ui_vp_objection->stop();
     chat_tick_timer->stop();
     ui_vp_evidence_display->reset();
