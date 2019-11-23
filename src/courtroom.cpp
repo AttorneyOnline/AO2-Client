@@ -3042,12 +3042,7 @@ void Courtroom::on_ooc_return_pressed()
       ui_ooc_chat_message->clear();
       return;
   }
-  else if(ooc_message.startsWith("/afk"))
-  {
-    append_server_chatmessage("CLIENT", tr("You are now AFK. Have a good day!"), "1");
-    ui_ooc_chat_message->clear();
-    return;
-  }
+
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ooc_message);
@@ -3648,13 +3643,18 @@ void Courtroom::on_evidence_button_clicked()
 
 void Courtroom::on_switch_area_music_clicked()
 {
+
     if (ui_area_list->isHidden())
     {
+        music_search_par = ui_music_search->text();
+        ui_music_search->setText(area_search_par);
         ui_area_list->show();
         ui_music_list->hide();
     }
     else
     {
+        area_search_par = ui_music_search->text();
+        ui_music_search->setText(music_search_par);
         ui_area_list->hide();
         ui_music_list->show();
     }

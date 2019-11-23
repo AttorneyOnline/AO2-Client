@@ -391,6 +391,8 @@ private:
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
+  //Is AFK enabled
+  bool isafk = false;
   QString current_background = "default";
 
   AOMusicPlayer *music_player;
@@ -439,6 +441,8 @@ private:
 
   //QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
+  QString music_search_par = "";
+  QString area_search_par = "";
 
   QWidget *ui_emotes;
   QVector<AOEmoteButton*> ui_emote_list;
