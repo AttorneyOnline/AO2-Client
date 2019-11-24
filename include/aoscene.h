@@ -21,7 +21,7 @@ private:
   QWidget *m_parent;
   QMovie *m_movie;
   AOApplication *ao_app;
-
+  QString last_image;
 };
 
 #endif // AOSCENE_H

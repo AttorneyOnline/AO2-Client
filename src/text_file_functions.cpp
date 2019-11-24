@@ -385,12 +385,13 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
-    QString apng_check = path_to_check + ".apng";
-    if (file_exists(apng_check))
-    {
-        return apng_check;
-    }
-    return path_to_check + ".gif";
+    if (file_exists(path_to_check + ".webp"))
+           return path_to_check + ".webp";
+       if (file_exists(path_to_check + ".apng"))
+           return path_to_check + ".apng";
+       if (file_exists(path_to_check + ".gif"))
+           return path_to_check + ".gif";
+       return path_to_check + ".png";
 }
 
 
@@ -592,7 +593,7 @@ QString AOApplication::get_custom_realization(QString p_char)
 
   if (f_result == "")
     return get_sfx("realization");
-  else return f_result;
+  else return get_sfx_suffix(f_result);
 }
 
 bool AOApplication::get_blank_blip()

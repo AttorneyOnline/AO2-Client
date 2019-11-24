@@ -19,28 +19,26 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bool shown)
 {
-  QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
-  QString alt_path = ao_app->get_character_path(p_char, p_emote + ".png");
-  QString apng_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
-  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
-  QString placeholder_default_path = ao_app->get_default_theme_path("placeholder.gif");
-  QString gif_path;
-
-  if (file_exists(apng_path))
-    gif_path = apng_path;
-  else if (file_exists(original_path))
-    gif_path = original_path;
-  else if (file_exists(alt_path))
-    gif_path = alt_path;
-  else if (file_exists(placeholder_path))
-    gif_path = placeholder_path;
-  else
-    gif_path = placeholder_default_path;
+    QString emote_path;
+      QList<QString> pathlist;
+      pathlist = {  ao_app->get_image_suffix(ao_app->get_character_path(p_char, emote_prefix + p_emote)), //Default path
+                  ao_app->get_character_path(p_char, p_emote + ".png") , //Non-animated path if emote_prefix fails
+                  ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")) , //Theme placeholder path
+                  ao_app->get_image_suffix(ao_app->get_default_theme_path("placeholder")) //Default theme placeholder path
+                };
+      for (QString path : pathlist)
+      {
+          if (file_exists(path))
+          {
+              emote_path = path;
+              break;
+          }
+      }
 
   m_movie->stop();
-  m_movie->setFileName(gif_path);
+  m_movie->setFileName(emote_path);
 
-  QImageReader *reader = new QImageReader(gif_path);
+  QImageReader *reader = new QImageReader(emote_path);
 
   movie_frames.clear();
   QImage f_image = reader->read();
