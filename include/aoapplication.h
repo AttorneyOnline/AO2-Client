@@ -220,7 +220,7 @@ public:
   //Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
 
-  // Can we use APNG for this? If not, fall back to a gif.
+  // Can we use APNG for this? If not, WEBP? if not, GIF? If not, fall back to a gif.
   QString get_image_suffix(QString path_to_check);
 
   //Returns the value of p_search_line within target_tag and terminator_tag
