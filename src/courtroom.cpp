@@ -1378,7 +1378,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       objection_mod = 4;
       objection_custom = m_chatmessage[OBJECTION_MOD].split("4&")[1]; //takes the name of custom objection.
   }
-  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_char = char_name;
+  if(shown)
+    f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
   //if an objection is used
