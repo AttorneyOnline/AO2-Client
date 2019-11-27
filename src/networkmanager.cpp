@@ -59,59 +59,6 @@ void NetworkManager::connect_to_server(server_type p_server)
   server_socket->connectToHost(p_server.ip, p_server.port);
 }
 
-void NetworkManager::ship_ms_packet(QString p_packet)
-{
-  if (!ms_socket->isOpen())
-  {
-    retry_ms_connect();
-  }
-  else
-  {
-    ms_socket->write(p_packet.toUtf8());
-  }
-}
-
-void NetworkManager::ship_server_packet(QString p_packet)
-{
-  server_socket->write(p_packet.toUtf8());
-}
-
-void NetworkManager::handle_ms_packet()
-{
-  char buffer[buffer_max_size];
-  std::memset(buffer, 0, buffer_max_size);
-  ms_socket->read(buffer, buffer_max_size);
-
-  QString in_data = buffer;
-
-  if (!in_data.endsWith("%"))
-  {
-    ms_partial_packet = true;
-    ms_temp_packet += in_data;
-    return;
-  }
-
-  else
-  {
-    if (ms_partial_packet)
-    {
-      in_data = ms_temp_packet + in_data;
-      ms_temp_packet = "";
-      ms_partial_packet = false;
-    }
-  }
-
-  QStringList packet_list = in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
-
-  for (QString packet : packet_list)
-  {
-    AOPacket *f_packet = new AOPacket(packet);
-
-    ao_app->ms_packet_received(f_packet);
-  }
-}
-
-
 void NetworkManager::perform_srv_lookup()
 {
   #ifdef MS_FAILOVER_SUPPORTED
@@ -214,39 +161,3 @@ void NetworkManager::retry_ms_connect()
   if (!ms_reconnect_timer->isActive() && ms_socket->state() != QAbstractSocket::ConnectingState)
     connect_to_master();
 }
-
-void NetworkManager::handle_server_packet()
-{
-  char buffer[buffer_max_size];
-  std::memset(buffer, 0, buffer_max_size);
-  server_socket->read(buffer, buffer_max_size);
-
-  QString in_data = buffer;
-
-  if (!in_data.endsWith("%"))
-  {
-    partial_packet = true;
-    temp_packet += in_data;
-    return;
-  }
-
-  else
-  {
-    if (partial_packet)
-    {
-      in_data = temp_packet + in_data;
-      temp_packet = "";
-      partial_packet = false;
-    }
-  }
-
-  QStringList packet_list = in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
-
-  for (QString packet : packet_list)
-  {
-    AOPacket *f_packet = new AOPacket(packet);
-
-    ao_app->server_packet_received(f_packet);
-  }
-}
-

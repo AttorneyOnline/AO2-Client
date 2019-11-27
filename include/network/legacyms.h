@@ -1,6 +1,7 @@
 #ifndef LEGACYMS_H
 #define LEGACYMS_H
 
+#include "legacysocket.h"
 #include "masterserver.h"
 
 namespace AttorneyOnline {
@@ -15,10 +16,23 @@ namespace AttorneyOnline {
  */
 class LegacyMasterServer : public MasterServer
 {
+private:
+  LegacySocket socket;
 
+  QVector<server_type> serversList;
+
+  void mapSignals();
+public:
+  QPromise<void> connect(const QString &address,
+                         const uint16_t &port) override;
+  void sendKeepalive() override;
+  void sendChat(const QString &name, const QString &message) override;
+  void requestServerList() override;
+
+  QVector<server_type> servers() override;
 };
 
-}
+} // namespace AttorneyOnline
 
 
 #endif // LEGACYMS_H

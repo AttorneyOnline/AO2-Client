@@ -14,17 +14,12 @@ namespace AttorneyOnline {
 class Client : public QObject {
   Q_OBJECT
 
-protected:
-  const QString address;
-  const uint16_t port;
-
 public:
-  explicit Client(QObject *parent,
-                  const QString &address, const uint16_t &port)
-    : QObject(parent), address(address), port(port) {}
+  explicit Client(QObject *parent = nullptr) : QObject(parent) {}
   virtual ~Client() = default;
 
-  virtual QPromise<void> connect() = 0;
+  virtual QPromise<void> connect(const QString &address,
+                                 const uint16_t &port) = 0;
   virtual void sendKeepalive() = 0;
 
   virtual QVector<char_type> characters() = 0;
@@ -55,8 +50,6 @@ public:
                             const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) = 0;
 
 signals:
-  void messageReceived(const QString &header, const QStringList &args);
-
   void connectProgress(int current, int max, const QString &message);
 
   void icReceived(const chat_message_type &message);

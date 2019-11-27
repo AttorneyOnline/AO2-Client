@@ -6,6 +6,7 @@
 #include <QVector>
 #include <contrib/QtPromise>
 
+#include "legacysocket.h"
 #include "client.h"
 
 using namespace QtPromise;
@@ -33,11 +34,6 @@ private:
 
   int currentCharId = -1;
 
-  // This buffer is not limited in its storage capacity.
-  // However, messages longer than 1024K are discarded.
-  const int BUFFER_SOFT_LIMIT = 1024 * 1024;
-  QByteArray buffer;
-
   // tsuserver3 enjoys kicking players that do not send the keepalive
   // packet within a server-configured timeout.
   const int KEEPALIVE_INTERVAL = 60 * 1000;
@@ -47,16 +43,13 @@ private:
   // IC message. Otherwise, the promise is rejected and discarded.
   const int IC_ECHO_TIMEOUT = 5 * 1000;
 
-  QTcpSocket socket;
+  LegacySocket socket;
 
-  void send(const QString &header, QStringList args);
-  QPromise<QStringList> waitForMessage(const QString &header);
   void mapSignals();
-private slots:
-  void packetReceived();
 
 public:
-  QPromise<void> connect() override;
+  QPromise<void> connect(const QString &address,
+                         const uint16_t &port) override;
   void sendKeepalive() override;
 
   QVector<char_type> characters() override { return charsList; }

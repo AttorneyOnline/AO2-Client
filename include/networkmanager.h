@@ -14,7 +14,6 @@
 #undef MS_FAILOVER_SUPPORTED
 #endif
 
-#include "aopacket.h"
 #include "aoapplication.h"
 
 #include <QTcpSocket>
@@ -64,10 +63,6 @@ public:
   void connect_to_master_nosrv();
   void connect_to_server(server_type p_server);
 
-public slots:
-  void ship_ms_packet(QString p_packet);
-  void ship_server_packet(QString p_packet);
-
 signals:
   void ms_connect_finished(bool success, bool will_retry);
 
@@ -76,8 +71,6 @@ private:
 
 private slots:
   void on_srv_lookup();
-  void handle_ms_packet();
-  void handle_server_packet();
   void on_ms_nosrv_connect_success();
   void on_ms_socket_error(QAbstractSocket::SocketError error);
   void retry_ms_connect();
