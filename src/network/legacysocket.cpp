@@ -68,7 +68,7 @@ QPromise<void> LegacySocket::connect(const QString &address,
   return promise;
 }
 
-void LegacySocket::send(const QString &header, QStringList args = {})
+void LegacySocket::send(const QString &header, QStringList args)
 {
   args.replaceInStrings("#", "<num>")
       .replaceInStrings("%", "<percent>")

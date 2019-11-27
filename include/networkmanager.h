@@ -22,6 +22,9 @@
 #include <QTimer>
 #include <cstring>
 
+#include <network/client.h>
+#include <network/masterserver.h>
+
 class NetworkManager : public QObject
 {
   Q_OBJECT
@@ -31,12 +34,10 @@ public:
   ~NetworkManager();
 
   AOApplication *ao_app;
-  QTcpSocket *ms_socket;
-  QTcpSocket *server_socket;
-  QDnsLookup *ms_dns;
+  AttorneyOnline::MasterServer *ms_socket;
+  AttorneyOnline::Client *server_socket;
   QTimer *ms_reconnect_timer;
 
-  const QString ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
 #ifdef LOCAL_MS
   QString ms_nosrv_hostname = "localhost";
 #else
@@ -47,17 +48,6 @@ public:
   const int timeout_milliseconds = 2000;
 
   const int ms_reconnect_delay_ms = 7000;
-
-  // kind of arbitrary max buffer size
-  const size_t buffer_max_size = 16384;
-
-  bool ms_partial_packet = false;
-  QString ms_temp_packet = "";
-
-  bool partial_packet = false;
-  QString temp_packet = "";
-
-  unsigned int s_decryptor = 5;
 
   void connect_to_master();
   void connect_to_master_nosrv();

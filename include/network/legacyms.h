@@ -23,6 +23,8 @@ private:
 
   void mapSignals();
 public:
+  explicit LegacyMasterServer(QObject *parent)
+    : MasterServer(parent) {}
   QPromise<void> connect(const QString &address,
                          const uint16_t &port) override;
   void sendKeepalive() override;

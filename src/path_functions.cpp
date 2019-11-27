@@ -64,7 +64,7 @@ QString AOApplication::get_custom_theme_path(QString p_theme, QString p_file)
 
 QString AOApplication::get_theme_path(QString p_file)
 {
-  QString path = get_base_path() + "themes/" + current_theme + "/" + p_file;
+  QString path = get_base_path() + "themes/" + currentTheme + "/" + p_file;
 #ifndef CASE_SENSITIVE_FILESYSTEM
   return path;
 #else

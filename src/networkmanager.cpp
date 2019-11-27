@@ -4,12 +4,15 @@
 #include "debug_functions.h"
 #include "lobby.h"
 
+#include <network/legacyclient.h>
+#include <network/legacyms.h>
+
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;
 
-  ms_socket = new QTcpSocket(this);
-  server_socket = new QTcpSocket(this);
+  ms_socket = new AttorneyOnline::LegacyMasterServer(this);
+  server_socket = new AttorneyOnline::LegacyClient(this);
 
   ms_reconnect_timer = new QTimer(this);
   ms_reconnect_timer->setSingleShot(true);
@@ -31,8 +34,7 @@ NetworkManager::~NetworkManager()
 
 void NetworkManager::connect_to_master()
 {
-  ms_socket->close();
-  ms_socket->abort();
+  ms_socket->deleteLater();
 
 #ifdef MS_FAILOVER_SUPPORTED
   perform_srv_lookup();

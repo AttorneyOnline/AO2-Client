@@ -42,7 +42,7 @@ void AOApplication::construct_lobby()
   int y = (screenGeometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (is_discord_enabled())
+  if (options.discordEnabled())
     discord->state_lobby();
 
   w_lobby->show();
@@ -97,22 +97,9 @@ QString AOApplication::get_version_string()
   QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme()
+void AOApplication::reloadTheme()
 {
-  current_theme = read_theme();
-}
-
-void AOApplication::set_favorite_list()
-{
-  favorite_list = read_serverlist_txt();
-}
-
-QString AOApplication::get_current_char()
-{
-  if (courtroom_constructed)
-    return w_courtroom->get_current_char();
-  else
-    return "";
+  currentTheme = options.theme();
 }
 
 void AOApplication::add_favorite_server(int p_server)
@@ -120,13 +107,7 @@ void AOApplication::add_favorite_server(int p_server)
   if (p_server < 0 || p_server >= server_list.size())
     return;
 
-  server_type fav_server = server_list.at(p_server);
-
-  QString str_port = QString::number(fav_server.port);
-
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
-
-  write_to_serverlist_txt(server_line);
+  options.addToFavoriteServers(server_list[p_server]);
 }
 
 void AOApplication::server_disconnected()

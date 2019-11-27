@@ -51,7 +51,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow(), ao_app(p_ao_app)
 
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
-  ao_app->reload_theme();
   list_servers();
 }
 
@@ -105,7 +104,6 @@ void Lobby::on_favorites_clicked()
     ui_favorites->setChecked(true);
 
   ao_app->set_favorite_list();
-  //ao_app->favorite_list = read_serverlist_txt();
 
   list_favorites();
 

@@ -472,7 +472,6 @@ void Courtroom::on_change_character_triggered()
  */
 void Courtroom::on_reload_theme_triggered()
 {
-  //ao_app->reload_theme();
   //enter_courtroom(m_cid);
   QMessageBox::warning(this, tr("Reload Theme"),
                        tr("Not supported yet - sorry!"));

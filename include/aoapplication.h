@@ -3,6 +3,7 @@
 
 #include "datatypes.h"
 #include "discord_rich_presence.h"
+#include "options.h"
 
 #include <QApplication>
 #include <QVector>
@@ -38,6 +39,7 @@ public:
   Lobby *w_lobby;
   Courtroom *w_courtroom;
   AttorneyOnline::Discord *discord;
+  Options options;
 
   bool lobby_constructed = false;
   bool courtroom_constructed = false;
@@ -51,29 +53,6 @@ public:
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
 
-  /////////////////server metadata//////////////////
-
-  unsigned int s_decryptor = 5;
-  bool encryption_needed = true;
-
-  bool yellow_text_enabled = false;
-  bool prezoom_enabled = false;
-  bool flipping_enabled = false;
-  bool custom_objection_enabled = false;
-  bool improved_loading_enabled = false;
-  bool desk_mod_enabled = false;
-  bool evidence_enabled = false;
-  bool cccc_ic_support_enabled = false;
-  bool arup_enabled = false;
-  bool casing_alerts_enabled = false;
-  bool modcall_reason_enabled = false;
-
-  ///////////////loading info///////////////////
-
-  //player number, it's hardly used but might be needed for some old servers
-  int s_pv = 0;
-
-  QString server_software = "";
 
   //////////////////versioning///////////////
 
@@ -83,19 +62,7 @@ public:
   QString get_version_string();
 
   ///////////////////////////////////////////
-
-  void set_favorite_list();
-  QVector<server_type>& get_favorite_list() {return favorite_list;}
-  void add_favorite_server(int p_server);
-
-  void set_server_list();
-  QVector<server_type>& get_server_list() {return server_list;}
-
-  //reads the theme from config.ini and sets it accordingly
-  void reload_theme();
-
-  //Returns the character the player has currently selected
-  QString get_current_char();
+  void reloadTheme();
 
   //implementation in path_functions.cpp
   QString get_base_path();
@@ -229,10 +196,7 @@ private:
   const int MAJOR_VERSION = 6;
   const int MINOR_VERSION = 0;
 
-  QString current_theme = "default";
-
-  QVector<server_type> server_list;
-  QVector<server_type> favorite_list;
+  QString currentTheme = "default";
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);

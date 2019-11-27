@@ -48,6 +48,8 @@ private:
   void mapSignals();
 
 public:
+  explicit LegacyClient(QObject *parent)
+    : Client(parent) {}
   QPromise<void> connect(const QString &address,
                          const uint16_t &port) override;
   void sendKeepalive() override;
