@@ -77,7 +77,7 @@
           <string notr="true">background-color: rgba(0, 0, 0, 0); font: bold; border: none;</string>
          </property>
         </widget>
-        <widget class="AOButton" name="public_servers">
+        <widget class="QPushButton" name="public_servers">
          <property name="geometry">
           <rect>
            <x>46</x>
@@ -104,7 +104,7 @@
           <bool>true</bool>
          </property>
         </widget>
-        <widget class="AOButton" name="refresh">
+        <widget class="QPushButton" name="refresh">
          <property name="geometry">
           <rect>
            <x>56</x>
@@ -138,7 +138,7 @@
           <string notr="true">background-color: rgba(0, 0, 0, 0); color: white;</string>
          </property>
         </widget>
-        <widget class="AOButton" name="favorites">
+        <widget class="QPushButton" name="favorites">
          <property name="geometry">
           <rect>
            <x>164</x>
@@ -174,6 +174,7 @@
          <property name="font">
           <font>
            <weight>75</weight>
+           <italic>false</italic>
            <bold>true</bold>
           </font>
          </property>
@@ -187,7 +188,7 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="AOButton" name="about">
+        <widget class="QPushButton" name="about">
          <property name="geometry">
           <rect>
            <x>428</x>
@@ -203,7 +204,7 @@
           <string notr="true">border-image: url(':/base/themes/default/about.png');</string>
          </property>
         </widget>
-        <widget class="AOButton" name="connect">
+        <widget class="QPushButton" name="connect">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -227,7 +228,7 @@
 }</string>
          </property>
         </widget>
-        <widget class="AOButton" name="add_to_fav">
+        <widget class="QPushButton" name="add_to_fav">
          <property name="geometry">
           <rect>
            <x>194</x>
@@ -297,7 +298,7 @@ QLineEdit { color: white; }</string>
           <number>0</number>
          </property>
          <item row="1" column="0">
-          <widget class="AOImage" name="loading_background">
+          <widget class="QLabel" name="loading_background">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
              <horstretch>0</horstretch>
@@ -411,16 +412,6 @@ QLineEdit { color: white; }</string>
    <extends>QWidget</extends>
    <header>widgets/aoserverchat.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AOImage</class>
-   <extends>QLabel</extends>
-   <header location="global">widgets/aoimage.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AOButton</class>
-   <extends>QPushButton</extends>
-   <header location="global">widgets/aobutton.h</header>
   </customwidget>
  </customwidgets>
  <resources>

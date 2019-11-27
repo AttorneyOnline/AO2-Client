@@ -75,16 +75,6 @@ public:
 
   QString server_software = "";
 
-  int evidence_list_size = 0;
-  int loaded_chars = 0;
-  int loaded_evidence = 0;
-  int generated_chars = 0;
-  int char_list_size = 0;
-  int music_list_size = 0;
-  int loaded_music = 0;
-
-  bool courtroom_loaded = false;
-
   //////////////////versioning///////////////
 
   constexpr int get_release() const { return RELEASE; }
@@ -127,68 +117,11 @@ public:
   // Instead of reinventing the wheel, we'll use a QSettings class.
   QSettings *configini;
 
-  //Reads the theme from config.ini and loads it into the current_theme variable
-  QString read_theme();
-
-  //Returns the value of ooc_name in config.ini
-  QString get_ooc_name();
-
-  //Returns the blip rate from config.ini
-  int read_blip_rate();
-
-  //Returns true if blank blips is enabled in config.ini and false otherwise
-  bool get_blank_blip();
-
-  //Returns the value of default_music in config.ini
-  int get_default_music();
-
-  //Returns the value of default_sfx in config.ini
-  int get_default_sfx();
-
-  //Returns the value of default_blip in config.ini
-  int get_default_blip();
-
-  // Returns the value of whether Discord should be enabled on startup
-  // from the config.ini.
-  bool is_discord_enabled();
-
-  // Returns the value of the maximum amount of lines the IC chatlog
-  // may contain, from config.ini.
-  int get_max_log_size();
-
-  // Returns whether the log should go upwards (new behaviour)
-  // or downwards (vanilla behaviour).
-  bool get_log_goes_downwards();
-
-  // Returns the username the user may have set in config.ini.
-  QString get_default_username();
-
-  // Returns the audio device used for the client.
-  QString get_audio_output_device();
-
-  // Returns whether the user would like to have custom shownames on by default.
-  bool get_showname_enabled_by_default();
-
-  //Returns the list of words in callwords.ini
-  QStringList get_call_words();
-
-  //Appends the argument string to serverlist.txt
-  void write_to_serverlist_txt(QString p_line);
-
-  //Returns the contents of serverlist.txt
-  QVector<server_type> read_serverlist_txt();
-
   //Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
-  //Returns the coordinates of widget with p_identifier from p_file
-  QPoint get_button_spacing(QString p_identifier, QString p_file);
-
   //Returns the dimensions of widget with specified identifier from p_file
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
-
-  //Returns the value of font_size with p_identifier from p_file
-  int get_font_size(QString p_identifier, QString p_file);
 
   //Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);
