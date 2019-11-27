@@ -1,10 +1,7 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include "widgets/aoimage.h"
-#include "widgets/aobutton.h"
 #include "widgets/aoserverchat.h"
-#include "aopacket.h"
 
 #include <QMainWindow>
 #include <QListWidget>
@@ -15,6 +12,7 @@
 #include <QTextBrowser>
 
 #include <QDebug>
+#include <QPushButton>
 #include <QScrollBar>
 #include <QStackedWidget>
 
@@ -48,17 +46,17 @@ public:
 private:
   AOApplication *ao_app;
 
-  AOImage *ui_background;
+  QImage *ui_background;
 
-  AOButton *ui_public_servers;
-  AOButton *ui_favorites;
+  QPushButton *ui_public_servers;
+  QPushButton *ui_favorites;
 
-  AOButton *ui_refresh;
-  AOButton *ui_add_to_fav;
-  AOButton *ui_connect;
+  QPushButton *ui_refresh;
+  QPushButton *ui_add_to_fav;
+  QPushButton *ui_connect;
 
   QLabel *ui_version;
-  AOButton *ui_about;
+  QPushButton *ui_about;
 
   QListWidget *ui_server_list;
 
@@ -67,10 +65,10 @@ private:
 
   AOServerChat *ui_chat;
 
-  AOImage *ui_loading_background;
+  QImage *ui_loading_background;
   QTextEdit *ui_loading_text;
   QProgressBar *ui_progress_bar;
-  AOButton *ui_cancel;
+  QPushButton *ui_cancel;
 
   QWidget *ui_server_list_page;
   QWidget *ui_loading_page;

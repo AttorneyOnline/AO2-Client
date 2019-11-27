@@ -8,10 +8,8 @@
 
 #include <QVBoxLayout>
 
-Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
+Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow(), ao_app(p_ao_app)
 {
-  ao_app = p_ao_app;
-
   AOUiLoader loader(this, ao_app);
   QFile uiFile(":/resource/ui/lobby.ui");
   uiFile.open(QFile::ReadOnly);
@@ -26,22 +24,22 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   setWindowIcon(QIcon(":/logo.png"));
   setFixedSize(windowWidget->size());
 
-  FROM_UI(AOImage, background)
-  FROM_UI(AOButton, public_servers)
-  FROM_UI(AOButton, favorites)
-  FROM_UI(AOButton, refresh)
-  FROM_UI(AOButton, add_to_fav)
-  FROM_UI(AOButton, connect)
+  FROM_UI(QImage, background)
+  FROM_UI(QPushButton, public_servers)
+  FROM_UI(QPushButton, favorites)
+  FROM_UI(QPushButton, refresh)
+  FROM_UI(QPushButton, add_to_fav)
+  FROM_UI(QPushButton, connect)
   FROM_UI(QLabel, version)
-  FROM_UI(AOButton, about)
+  FROM_UI(QPushButton, about)
   FROM_UI(QListWidget, server_list)
   FROM_UI(QLabel, player_count)
   FROM_UI(QTextBrowser, description)
   FROM_UI(AOServerChat, chat)
-  FROM_UI(AOImage, loading_background)
+  FROM_UI(QImage, loading_background)
   FROM_UI(QTextEdit, loading_text)
   FROM_UI(QProgressBar, progress_bar)
-  FROM_UI(AOButton, cancel)
+  FROM_UI(QPushButton, cancel)
 
   FROM_UI(QWidget, server_list_page)
   FROM_UI(QWidget, loading_page)

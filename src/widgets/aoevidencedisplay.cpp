@@ -1,4 +1,4 @@
-#include "aoevidencedisplay.h"
+#include "widgets/aoevidencedisplay.h"
 
 #include "file_functions.h"
 #include "datatypes.h"
