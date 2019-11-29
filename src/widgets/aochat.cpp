@@ -1,6 +1,8 @@
 #include "widgets/aochat.h"
 #include "aouiloader.h"
 
+#include "file_functions.h"
+
 #include <QVBoxLayout>
 
 AOChat::AOChat(QWidget *parent, AOApplication *p_ao_app)
@@ -51,7 +53,7 @@ void AOChat::setCharacter(const QString &character)
     return;
 
   // Show custom button
-  const bool custom = ao_app->custom_objection_enabled &&
+  const bool custom =
       (file_exists(ao_app->get_character_path(character, "custom.gif")) ||
       file_exists(ao_app->get_character_path(character, "custom.apng"))) &&
       file_exists(ao_app->get_character_path(character, "custom.wav"));
@@ -87,7 +89,7 @@ void AOChat::setCharacter(const QString &character)
 void AOChat::clearEntry()
 {
   ui_chat_entry->clear();
-  for (QPushButton * const button : buttons)
+  for (QPushButton * const button : interjectionButtons)
     button->setChecked(false);
   ui_preanim->setChecked(false);
   ui_realization->setChecked(false);
@@ -98,7 +100,7 @@ void AOChat::on_interjection_toggled(bool toggled)
   if (toggled)
   {
     auto senderButton = static_cast<QPushButton *>(sender());
-    for (QPushButton * const button : buttons)
+    for (QPushButton * const button : interjectionButtons)
       if (button != senderButton)
         button->setChecked(false);
   }
@@ -203,4 +205,12 @@ void AOChat::addMessageData(chat_message_type &message)
   // No access to pair info.
 
   message.noninterrupting_preanim = ui_no_interrupt->isChecked();
+}
+
+bool AOChat::interjectionSelected()
+{
+  for (QPushButton * const button : interjectionButtons)
+    if (button->isChecked())
+      return true;
+  return false;
 }

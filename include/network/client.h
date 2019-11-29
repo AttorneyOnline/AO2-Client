@@ -19,11 +19,13 @@ public:
   virtual ~Client() = default;
 
   virtual QPromise<void> connect(const QString &address,
-                                 const uint16_t &port) = 0;
+                                 const uint16_t &port,
+                                 const bool &probeOnly = false) = 0;
   virtual void sendKeepalive() = 0;
 
   virtual QVector<char_type> characters() = 0;
   virtual char_type character() = 0;
+  virtual bool spectating() = 0;
 
   virtual QVector<area_type> rooms() = 0;
   virtual void joinRoom(QString &name) = 0;
@@ -48,6 +50,8 @@ public:
 
   virtual void announceCase(const QString &caseTitle,
                             const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) = 0;
+
+  virtual std::pair<int, int> playerCount() const = 0;
 
 signals:
   void connectProgress(int current, int max, const QString &message);

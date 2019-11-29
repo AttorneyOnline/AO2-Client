@@ -2,99 +2,63 @@
 
 #include "lobby.h"
 #include "widgets/courtroom.h"
-#include "networkmanager.h"
 #include "debug_functions.h"
 
 #include "widgets/aooptionsdialog.h"
 #include "widgets/aocaseannouncerdialog.h"
 
+#include <network/legacyclient.h>
+#include <network/legacyms.h>
+
+using namespace AttorneyOnline;
+
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   // Create the QSettings class that points to the config.ini.
   configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
+  ms = std::make_shared<LegacyMasterServer>(nullptr);
+  discord = std::make_shared<Discord>();
 
-  net_manager = new NetworkManager(this);
-  discord = new AttorneyOnline::Discord();
-  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
-                   SLOT(ms_connect_finished(bool, bool)));
+  connectToMaster();
 }
 
-AOApplication::~AOApplication()
+void AOApplication::openLobby()
 {
-  destruct_lobby();
-  destruct_courtroom();
-  delete discord;
-}
+  auto lobby = new Lobby(this);
+  connect(ms.get(), &MasterServer::serversChanged, lobby, &Lobby::showPublicServers);
+  connect(ms.get(), &MasterServer::chatReceived, lobby, &Lobby::appendChat);
+  connect(ms.get(), &MasterServer::connectionLost, lobby, [&] {
+    lobby->appendError("Connection to master server lost. Retrying.");
+    QtPromise::resolve().delay(MS_RETRY_MILLISECS).then([&] {
+      connectToMaster();
+    });
+  });
+  connect(lobby, &Lobby::chatSent, ms.get(), &MasterServer::sendChat);
+  connect(lobby, &Lobby::msRefreshRequested, this, [&] {
+    if (!ms->isConnected())
+      this->connectToMaster();
+    else
+      ms->requestServerList();
+  });
 
-void AOApplication::construct_lobby()
-{
-  if (lobby_constructed)
-  {
-    qDebug() << "W: lobby was attempted constructed when it already exists";
-    return;
-  }
-
-  w_lobby = new Lobby(this);
-  lobby_constructed = true;
-
+  // XXX: is this needed?
   QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width()-w_lobby->width()) / 2;
-  int y = (screenGeometry.height()-w_lobby->height()) / 2;
-  w_lobby->move(x, y);
+  int x = (screenGeometry.width() - lobby->width()) / 2;
+  int y = (screenGeometry.height() - lobby->height()) / 2;
+  lobby->move(x, y);
 
   if (options.discordEnabled())
     discord->state_lobby();
 
-  w_lobby->show();
-}
-
-void AOApplication::destruct_lobby()
-{
-  if(!lobby_constructed)
-  {
-    qDebug() << "W: lobby was attempted destructed when it did not exist";
-    return;
-  }
-
-  delete w_lobby;
-  lobby_constructed = false;
-}
-
-void AOApplication::construct_courtroom()
-{
-  if (courtroom_constructed)
-  {
-    qDebug() << "W: courtroom was attempted constructed when it already exists";
-    return;
-  }
-
-  w_courtroom = new Courtroom(this);
-  courtroom_constructed = true;
-
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width()-w_courtroom->width()) / 2;
-  int y = (screenGeometry.height()-w_courtroom->height()) / 2;
-  w_courtroom->move(x, y);
-}
-
-void AOApplication::destruct_courtroom()
-{
-  if (!courtroom_constructed)
-  {
-    qDebug() << "W: courtroom was attempted destructed when it did not exist";
-    return;
-  }
-
-  delete w_courtroom;
-  courtroom_constructed = false;
+  lobby->show();
 }
 
 QString AOApplication::get_version_string()
 {
-  return
-  QString::number(RELEASE) + "." +
-  QString::number(MAJOR_VERSION) + "." +
-  QString::number(MINOR_VERSION);
+  return QStringLiteral("%1.%2.%3")
+      .arg(RELEASE)
+      .arg(MAJOR_VERSION)
+      .arg(MINOR_VERSION);
 }
 
 void AOApplication::reloadTheme()
@@ -102,65 +66,21 @@ void AOApplication::reloadTheme()
   currentTheme = options.theme();
 }
 
-void AOApplication::add_favorite_server(int p_server)
+void AOApplication::connectToMaster()
 {
-  if (p_server < 0 || p_server >= server_list.size())
+  if (ms->isConnecting() || ms->isConnected())
     return;
 
-  options.addToFavoriteServers(server_list[p_server]);
-}
-
-void AOApplication::server_disconnected()
-{
-  if (courtroom_constructed)
-  {
-    call_notice("Disconnected from server.");
-    construct_lobby();
-    destruct_courtroom();
-  }
-}
-
-void AOApplication::loading_cancelled()
-{
-  destruct_courtroom();
-
-  w_lobby->hide_loading_overlay();
-}
-
-void AOApplication::ms_connect_finished(bool connected, bool will_retry)
-{
-  if (connected)
-  {
-    AOPacket *f_packet = new AOPacket("ALL#%");
-    send_ms_packet(f_packet);
-  }
-  else
-  {
-    if (will_retry)
-    {
-      if (w_lobby != nullptr)
-        w_lobby->append_error("Error connecting to master server. Will try again in "
-                            + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
-    }
-    else
-    {
-      call_error("There was an error connecting to the master server.\n"
-                 "We deploy multiple master servers to mitigate any possible downtime, "
-                 "but the client appears to have exhausted all possible methods of finding "
-                 "and connecting to one.\n"
-                 "Please check your Internet connection and firewall, and please try again.");
-    }
-  }
-}
-
-void AOApplication::call_settings_menu()
-{
-    AOOptionsDialog settings(nullptr, this);
-    settings.exec();
-}
-
-void AOApplication::call_announce_menu(Courtroom *court)
-{
-    AOCaseAnnouncerDialog announcer(nullptr, this, court);
-    announcer.exec();
+  qInfo() << "Connecting to master server...";
+  ms->connect(options.msAddress(), options.msPort()).then([&] {
+    qInfo() << "Connected to master server.";
+    msRetryCount = 0;
+    ms->requestServerList();
+  }).fail([&] {
+    qWarning() << "Connection to master server failed. Retrying...";
+    msRetryCount++;
+    QtPromise::resolve().delay(MS_RETRY_MILLISECS * msRetryCount).then([&] {
+      connectToMaster();
+    });
+  });
 }

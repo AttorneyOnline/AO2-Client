@@ -33,7 +33,7 @@ public:
   bool is_busy() { return anim_state < 3 || text_state < 2; }
 
   //plays the witness testimony or cross examination animation based on argument
-  void wtce(QString p_wtce, int variant);
+  void wtce(WTCE_TYPE type);
 
   void stop_sounds();
   void stop_talking();
@@ -114,6 +114,7 @@ private:
   AOBlipPlayer *blip_player;
 
   AOApplication *ao_app;
+  Options options;
 
   AOScene *ui_vp_background;
   AOMovie *ui_vp_speedlines;

@@ -64,7 +64,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
         QString actualname = QDir(it.next()).dirName();
         if (actualname != "." && actualname != "..")
             ui_theme_combobox->addItem(actualname);
-        if (actualname == p_ao_app->read_theme())
+        if (actualname == options.theme())
             ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count()-1);
     }
 
@@ -78,15 +78,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(1, QFormLayout::FieldRole, ui_theme_log_divider);
 
     ui_downwards_lbl = new QLabel(ui_form_layout_widget);
-    ui_downwards_lbl->setText(tr("Log goes downwards:"));
-    ui_downwards_lbl->setToolTip(tr("If ticked, new messages will appear at "
-                                    "the bottom (like the OOC chatlog). The traditional "
-                                    "(AO1) behaviour is equivalent to this being unticked."));
+    ui_downwards_lbl->setText(tr("Legacy scroll:"));
+    ui_downwards_lbl->setToolTip(tr("If ticked, new messages will appear at the top."));
 
     ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_downwards_lbl);
 
     ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-    ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
+    ui_downwards_cb->setChecked(options.legacyScrollEnabled());
 
     ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_downwards_cb);
 
@@ -99,7 +97,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
     ui_length_spinbox->setMaximum(10000);
-    ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
+    ui_length_spinbox->setValue(options.maxLogLines());
 
     ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_length_spinbox);
 
@@ -118,7 +116,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_username_textbox = new QLineEdit(ui_form_layout_widget);
     ui_username_textbox->setMaxLength(30);
-    ui_username_textbox->setText(p_ao_app->get_default_username());
+    ui_username_textbox->setText(options.oocName());
 
     ui_gameplay_form->setWidget(5, QFormLayout::FieldRole, ui_username_textbox);
 
@@ -131,7 +129,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(6, QFormLayout::LabelRole, ui_showname_lbl);
 
     ui_showname_cb = new QCheckBox(ui_form_layout_widget);
-    ui_showname_cb->setChecked(p_ao_app->get_showname_enabled_by_default());
+    ui_showname_cb->setChecked(options.shownamesEnabled());
 
     ui_gameplay_form->setWidget(6, QFormLayout::FieldRole, ui_showname_cb);
 
@@ -148,9 +146,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(8, QFormLayout::LabelRole, ui_ms_lbl);
 
-    QSettings* configini = ao_app->configini;
     ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
-    ui_ms_textbox->setText(configini->value("master", "").value<QString>());
+    ui_ms_textbox->setText(options.msAddress());
 
     ui_gameplay_form->setWidget(8, QFormLayout::FieldRole, ui_ms_textbox);
 
@@ -163,7 +160,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(9, QFormLayout::LabelRole, ui_discord_lbl);
 
     ui_discord_cb = new QCheckBox(ui_form_layout_widget);
-    ui_discord_cb->setChecked(ao_app->is_discord_enabled());
+    ui_discord_cb->setChecked(options.discordEnabled());
 
     ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
 
@@ -186,7 +183,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     // Let's fill the callwords text edit with the already present callwords.
     ui_callwords_textbox->document()->clear();
-    foreach (QString callword, p_ao_app->get_call_words()) {
+    for (const QString &callword : options.callWords()) {
         ui_callwords_textbox->appendPlainText(callword);
     }
 
@@ -230,7 +227,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
     {
         ui_audio_device_combobox->addItem(info.name);
-        if (p_ao_app->get_audio_output_device() == info.name)
+        if (options.audioDevice() == info.name)
             ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
     }
 
@@ -249,7 +246,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(2, QFormLayout::LabelRole, ui_music_volume_lbl);
 
     ui_music_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_music_volume_spinbox->setValue(p_ao_app->get_default_music());
+    ui_music_volume_spinbox->setValue(options.defaultMusicVolume());
     ui_music_volume_spinbox->setMaximum(100);
     ui_music_volume_spinbox->setSuffix("%");
 
@@ -263,7 +260,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(3, QFormLayout::LabelRole, ui_sfx_volume_lbl);
 
     ui_sfx_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_sfx_volume_spinbox->setValue(p_ao_app->get_default_sfx());
+    ui_sfx_volume_spinbox->setValue(options.defaultSfxVolume());
     ui_sfx_volume_spinbox->setMaximum(100);
     ui_sfx_volume_spinbox->setSuffix("%");
 
@@ -276,7 +273,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(4, QFormLayout::LabelRole, ui_blips_volume_lbl);
 
     ui_blips_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_blips_volume_spinbox->setValue(p_ao_app->get_default_blip());
+    ui_blips_volume_spinbox->setValue(options.defaultBlipVolume());
     ui_blips_volume_spinbox->setMaximum(100);
     ui_blips_volume_spinbox->setSuffix("%");
 
@@ -295,7 +292,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(6, QFormLayout::LabelRole, ui_bliprate_lbl);
 
     ui_bliprate_spinbox = new QSpinBox(ui_audio_widget);
-    ui_bliprate_spinbox->setValue(p_ao_app->read_blip_rate());
+    ui_bliprate_spinbox->setValue(options.blipRate());
     ui_bliprate_spinbox->setMinimum(1);
 
     ui_audio_layout->setWidget(6, QFormLayout::FieldRole, ui_bliprate_spinbox);
@@ -308,7 +305,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(7, QFormLayout::LabelRole, ui_blank_blips_lbl);
 
     ui_blank_blips_cb = new QCheckBox(ui_audio_widget);
-    ui_blank_blips_cb->setChecked(p_ao_app->get_blank_blip());
+    ui_blank_blips_cb->setChecked(options.blankBlipsEnabled());
 
     ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
 
@@ -326,12 +323,15 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     // -- SERVER SUPPORTS CASING
 
+    /*
+    // XXX: No support for checking this kind of capability.
     ui_casing_supported_lbl = new QLabel(ui_casing_widget);
     if (ao_app->casing_alerts_enabled)
       ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
     else
       ui_casing_supported_lbl->setText(tr("This server does not support case alerts."));
     ui_casing_supported_lbl->setToolTip(tr("Pretty self-explanatory."));
+    */
 
     ui_casing_layout->setWidget(0, QFormLayout::FieldRole, ui_casing_supported_lbl);
 
@@ -345,11 +345,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(1, QFormLayout::LabelRole, ui_casing_enabled_lbl);
 
     ui_casing_enabled_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
+    ui_casing_enabled_cb->setChecked(options.casingEnabled());
 
     ui_casing_layout->setWidget(1, QFormLayout::FieldRole, ui_casing_enabled_cb);
 
     // -- DEFENSE ANNOUNCEMENTS
+
+    auto flags = options.casingFlags();
 
     ui_casing_def_lbl = new QLabel(ui_casing_widget);
     ui_casing_def_lbl->setText(tr("Defense:"));
@@ -359,7 +361,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(2, QFormLayout::LabelRole, ui_casing_def_lbl);
 
     ui_casing_def_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
+    ui_casing_def_cb->setChecked(flags.test(CASING_DEF));
 
     ui_casing_layout->setWidget(2, QFormLayout::FieldRole, ui_casing_def_cb);
 
@@ -373,7 +375,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(3, QFormLayout::LabelRole, ui_casing_pro_lbl);
 
     ui_casing_pro_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
+    ui_casing_pro_cb->setChecked(flags.test(CASING_PRO));
 
     ui_casing_layout->setWidget(3, QFormLayout::FieldRole, ui_casing_pro_cb);
 
@@ -387,7 +389,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(4, QFormLayout::LabelRole, ui_casing_jud_lbl);
 
     ui_casing_jud_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_jud_cb->setChecked(ao_app->get_casing_judge_enabled());
+    ui_casing_jud_cb->setChecked(flags.test(CASING_JUD));
 
     ui_casing_layout->setWidget(4, QFormLayout::FieldRole, ui_casing_jud_cb);
 
@@ -401,7 +403,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(5, QFormLayout::LabelRole, ui_casing_jur_lbl);
 
     ui_casing_jur_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
+    ui_casing_jur_cb->setChecked(flags.test(CASING_JUR));
 
     ui_casing_layout->setWidget(5, QFormLayout::FieldRole, ui_casing_jur_cb);
 
@@ -415,7 +417,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(6, QFormLayout::LabelRole, ui_casing_steno_lbl);
 
     ui_casing_steno_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
+    ui_casing_steno_cb->setChecked(flags.test(CASING_STENO));
 
     ui_casing_layout->setWidget(6, QFormLayout::FieldRole, ui_casing_steno_cb);
 
@@ -429,23 +431,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(7, QFormLayout::LabelRole, ui_casing_cm_lbl);
 
     ui_casing_cm_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
+    ui_casing_cm_cb->setChecked(flags.test(CASING_CM));
 
     ui_casing_layout->setWidget(7, QFormLayout::FieldRole, ui_casing_cm_cb);
-
-    // -- CM CASES ANNOUNCEMENTS
-
-    ui_casing_cm_cases_lbl = new QLabel(ui_casing_widget);
-    ui_casing_cm_cases_lbl->setText(tr("Hosting cases:"));
-    ui_casing_cm_cases_lbl->setToolTip(tr("If you're a CM, enter what cases you are "
-                                          "willing to host."));
-
-    ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_cm_cases_lbl);
-
-    ui_casing_cm_cases_textbox = new QLineEdit(ui_casing_widget);
-    ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
-
-    ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
 
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);
@@ -491,7 +479,6 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_juror_enabled", ui_casing_jur_cb->isChecked());
     configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
     configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
-    configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
 
     callwordsini->close();
     done(0);

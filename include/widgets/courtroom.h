@@ -67,20 +67,19 @@ class Courtroom : public QMainWindow
 {
   Q_OBJECT
 public:
-  explicit Courtroom(AOApplication *p_ao_app);
+  explicit Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client);
+
+  bool chooseCharacter();
 
   void arup_append(int players, QString status, QString cm, QString locked);
   void arup_modify(int type, int place, QString value);
-
-  //called when a DONE#% from the server was received
-  void done_received();
 
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
-  void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
+  void append_server_chatmessage(QString p_name, QString p_message, bool special = false);
 
   void handle_chatmessage(QStringList *p_contents);
 
@@ -93,21 +92,15 @@ public:
   static constexpr int chatmessage_size = 23;
 private:
   AOApplication *ao_app;
+  Options options;
 
-  Client *client;
+  std::shared_ptr<Client> client;
 
   QString previous_ic_message = "";
 
   //char id, muted or not
+  // XXX: needs rework
   QMap<int, bool> mute_map;
-
-  int objection_state = 0;
-  int realization_state = 0;
-  int text_color = 0;
-  bool is_presenting_evidence = false;
-
-  int defense_bar_state = 0;
-  int prosecution_bar_state = 0;
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *modcall_player;
@@ -134,7 +127,7 @@ private:
   QAction *ui_casing;
   QAction *ui_showname_enable;
 
-  bool chooseCharacter();
+  void initBASS();
 
 private slots:
   void on_ic_chat_messageSent();
@@ -154,12 +147,9 @@ private slots:
   void on_mute_triggered();
   void on_pair_triggered();
 
-  void on_text_color_changed(int p_color);
+  void on_mixer_volumeChanged(AUDIO_TYPE type, int volume);
 
-  void on_music_slider_moved(int p_value);
-  void on_sfx_slider_moved(int p_value);
-  void on_blip_slider_moved(int p_value);
-
+  void on_roomControls_requestHealthChange(HEALTH_TYPE type, int value);
   void on_roomControls_wtce(WTCE_TYPE type);
 
   void on_change_character_triggered();

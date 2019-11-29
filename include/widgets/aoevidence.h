@@ -87,7 +87,7 @@ private slots:
   void on_deleteButton_clicked();
 
 public slots:
-  void setEvidenceList(QVector<evi_type> &list);
+  void setEvidenceList(QVector<evi_type> list);
   void togglePresenting(bool presenting);
 };
 

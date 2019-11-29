@@ -22,9 +22,10 @@ AOMixer::AOMixer(QWidget *parent, AOApplication *p_ao_app)
   ui_sfx_slider = findChild<QSlider *>("sfx_slider");
   ui_blips_slider = findChild<QSlider *>("blips_slider");
 
-  ui_music_slider->setValue(ao_app->get_default_music());
-  ui_sfx_slider->setValue(ao_app->get_default_sfx());
-  ui_blips_slider->setValue(ao_app->get_default_blip());
+  const Options options;
+  ui_music_slider->setValue(options.defaultMusicVolume());
+  ui_sfx_slider->setValue(options.defaultSfxVolume());
+  ui_blips_slider->setValue(options.defaultBlipVolume());
 }
 
 void AOMixer::set_master_level(int level)

@@ -22,6 +22,7 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
+  Options options;
 
   int m_volume;
   HSTREAM m_stream_list[5];

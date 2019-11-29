@@ -28,7 +28,7 @@ AOICLog::AOICLog(QWidget *parent, AOApplication *p_ao_app)
 void AOICLog::append_ic_text(QString p_default_showname, QString p_showname,
                              QString p_text, bool is_songchange)
 {
-  int log_maximum_blocks = ao_app->get_max_log_size();
+  int log_maximum_blocks = options.maxLogLines();
 
   // Append and purge chat log history
   chatlogpiece temp(p_default_showname, p_showname, p_text, is_songchange);
@@ -51,7 +51,7 @@ void AOICLog::append_ic_text(QString p_default_showname, QString p_showname,
   if (!is_songchange)
     p_text = filter_ic_text(p_text);
 
-  if (ao_app->get_log_goes_downwards())
+  if (!options.legacyScrollEnabled())
   {
       const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
 

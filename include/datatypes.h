@@ -174,8 +174,8 @@ enum CASING_FLAGS
 const auto CASING_FLAGS_COUNT = 6;
 
 std::bitset<CASING_FLAGS_COUNT>
-casing_flags_to_bitset(bool def, bool pro, bool jud, bool jur,
-                       bool steno, bool cm)
+inline casing_flags_to_bitset(bool def, bool pro, bool jud, bool jur,
+                              bool steno, bool cm)
 {
   std::bitset<CASING_FLAGS_COUNT> bitset;
   bitset[CASING_DEF] = def;

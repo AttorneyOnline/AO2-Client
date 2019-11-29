@@ -183,7 +183,7 @@ void AOEvidence::on_deleteButton_clicked()
   emit evidenceDeleted(selectedEvidenceId());
 }
 
-void AOEvidence::setEvidenceList(QVector<evi_type> &list)
+void AOEvidence::setEvidenceList(QVector<evi_type> list)
 {
   evidence = list;
   int originalIndex = ui_list->currentRow();

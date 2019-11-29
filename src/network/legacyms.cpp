@@ -52,6 +52,9 @@ void LegacyMasterServer::mapSignals()
       // TODO: Meh, who cares about version checking right now.
     }
   });
+
+  QObject::connect(&socket, &LegacySocket::connectionLost,
+                   this, &MasterServer::connectionLost);
 }
 
 /*!
@@ -63,6 +66,12 @@ void LegacyMasterServer::mapSignals()
 QPromise<void> LegacyMasterServer::connect(const QString &address,
                                            const uint16_t &port)
 {
+  if (socket.isConnected() || socket.isConnecting())
+  {
+    qWarning() << "connect call while still connecting to master server!";
+    return QPromise<void>::resolve();
+  }
+
   return socket.connect(address, port)
       .then([&](void)
   {
@@ -93,6 +102,16 @@ void LegacyMasterServer::sendChat(const QString &name, const QString &message)
 void LegacyMasterServer::requestServerList()
 {
   socket.send("ALL");
+}
+
+bool LegacyMasterServer::isConnected()
+{
+  return socket.isConnected();
+}
+
+bool LegacyMasterServer::isConnecting()
+{
+  return socket.isConnecting();
 }
 
 } // namespace AttorneyOnline

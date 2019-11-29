@@ -37,6 +37,15 @@ public:
 
   void addToFavoriteServers(const server_type &server);
   QVector<server_type> favoriteServers() const;
+
+  QString msAddress() const;
+  uint16_t msPort() const;
+
+  bool casingEnabled() const;
+  std::bitset<CASING_FLAGS_COUNT> casingFlags() const;
+
+private:
+  bool casingRoleEnabled(const QString &role) const;
 };
 
 #endif // OPTIONS_H

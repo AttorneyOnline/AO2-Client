@@ -1,10 +1,7 @@
 #include "aomusicplayer.h"
 
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
+  : m_parent(parent), ao_app(p_ao_app) {}
 
 AOMusicPlayer::~AOMusicPlayer()
 {
@@ -21,7 +18,7 @@ void AOMusicPlayer::play(QString p_song)
 
   this->set_volume(m_volume);
 
-  if (ao_app->get_audio_output_device() != "default")
+  if (options.audioDevice() != "default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
 }

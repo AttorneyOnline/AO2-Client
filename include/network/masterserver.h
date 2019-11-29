@@ -22,14 +22,17 @@ public:
                                  const uint16_t &port) = 0;
   virtual void sendKeepalive() = 0;
   virtual void sendChat(const QString &name, const QString &message) = 0;
-  virtual void requestServerList();
+  virtual void requestServerList() = 0;
 
-  virtual QVector<server_type> servers();
+  virtual QVector<server_type> servers() = 0;
+
+  virtual bool isConnected() = 0;
+  virtual bool isConnecting() = 0;
 
 signals:
   void chatReceived(const QString &name, const QString &message);
   void serversChanged();
-
+  void connectionLost();
 };
 
 }

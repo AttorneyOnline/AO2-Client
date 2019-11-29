@@ -23,7 +23,7 @@ AOServerChat::AOServerChat(QWidget *parent, AOApplication *p_ao_app)
   ui_name = findChild<QLineEdit *>("name");
 
   ui_name->setMaxLength(30);
-  ui_name->setText(ao_app->get_default_username());
+  ui_name->setText(Options().oocName());
 
   connect(ui_message, &QLineEdit::returnPressed, this, &AOServerChat::send_message);
 }

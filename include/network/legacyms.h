@@ -1,6 +1,8 @@
 #ifndef LEGACYMS_H
 #define LEGACYMS_H
 
+#include <contrib/QtPromise>
+
 #include "legacysocket.h"
 #include "masterserver.h"
 
@@ -31,7 +33,10 @@ public:
   void sendChat(const QString &name, const QString &message) override;
   void requestServerList() override;
 
-  QVector<server_type> servers() override;
+  QVector<server_type> servers() override { return serversList; }
+
+  bool isConnected() override;
+  bool isConnecting() override;
 };
 
 } // namespace AttorneyOnline

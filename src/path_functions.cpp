@@ -105,14 +105,11 @@ QString AOApplication::get_music_path(QString p_song)
 QString AOApplication::get_background_path(QString background, QString p_file)
 {
   QString path = get_base_path() + "background/" + background + "/" + p_file;
-  if (courtroom_constructed) {
 #ifndef CASE_SENSITIVE_FILESYSTEM
-    return path;
+  return path;
 #else
-    return get_case_sensitive_path(path);
+  return get_case_sensitive_path(path);
 #endif
-  }
-  return get_default_background_path(p_file);
 }
 
 QString AOApplication::get_default_background_path(QString p_file)

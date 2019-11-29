@@ -5,36 +5,14 @@
 #include <QLayout>
 #include <aocharselect.h>
 
+#include <widgets/aocaseannouncerdialog.h>
 #include <widgets/aomutedialog.h>
+#include <widgets/aooptionsdialog.h>
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
+  : QMainWindow(), ao_app(p_ao_app), client(client)
 {
-  ao_app = p_ao_app;
-
-  // Change the default audio output device to be the one the user has given
-  // in his config.ini file for now.
-  DWORD a = 0;
-  BASS_DEVICEINFO info;
-
-  if (ao_app->get_audio_output_device() == "default")
-  {
-      BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-      load_bass_opus_plugin();
-  }
-  else
-  {
-      for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
-      {
-          if (ao_app->get_audio_output_device() == info.name)
-          {
-              BASS_SetDevice(a);
-              BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-              load_bass_opus_plugin();
-              qDebug() << info.name << "was set as the default audio output device.";
-              break;
-          }
-      }
-  }
+  initBASS();
 
   AOUiLoader loader(this, ao_app);
   QFile uiFile(":/resource/ui/courtroom.ui");
@@ -68,46 +46,39 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   modcall_player = new AOSfxPlayer(this, ao_app);
   modcall_player->set_volume(50);
 
-  ui_casing->setChecked(ao_app->get_casing_enabled());
-  ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
+  ui_casing->setChecked(options.casingEnabled());
+  ui_showname_enable->setChecked(options.shownamesEnabled());
 
   connect(ui_server_chat, SIGNAL(messageSent(QString, QString)), this, SLOT(on_ooc_return_pressed(QString, QString)));
   connect(ui_ms_chat, SIGNAL(messageSent(QString, QString)), this, SLOT(on_ms_return_pressed(QString, QString)));
 
-  connect(client, &Client::oocReceived, this, &Courtroom::append_server_chatmessage);
-  connect(client, &Client::characterChanged, this, &Courtroom::enter_courtroom);
-  connect(client, &Client::backgroundChanged, ui_viewport, &AOViewport::set_background);
-  connect(client, &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
-  connect(client, &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
-  connect(client, &Client::areasUpdated, ui_area_list, &AORoomChooser::setAreas);
-  connect(client, &Client::evidenceChanged, ui_evidence, &AOEvidence::setEvidenceList);
-
-  connect(ui_mixer, &AOMixer::volumeChanged, this, &Courtroom::setVolume);
-}
-
-void Courtroom::done_received()
-{
-  music_player->set_volume(0);
-  ui_viewport->stop_sounds();
-
-  show();
-
-  if (!chooseCharacter())
-    on_quit_triggered();
+  connect(client.get(), &Client::oocReceived, this,
+          [&](const QString &name, const QString &message) {
+    append_server_chatmessage(name, message, false);
+  });
+  connect(client.get(), &Client::characterChanged, this, &Courtroom::enter_courtroom);
+  connect(client.get(), &Client::backgroundChanged, ui_viewport, &AOViewport::set_background);
+  connect(client.get(), &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
+  connect(client.get(), &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
+  connect(client.get(), &Client::areasUpdated, this, [&] {
+    ui_area_list->setAreas(client->rooms());
+  });
+  connect(client.get(), &Client::evidenceChanged, this, [&] {
+    ui_evidence->setEvidenceList(client->evidence());
+  });
 }
 
 bool Courtroom::chooseCharacter()
 {
   AOCharSelect charSelect(this, ao_app);
+  charSelect.setCharacters(client->characters());
   if (charSelect.exec() == QDialog::Accepted)
   {
     enter_courtroom(charSelect.selectedCharacterIndex());
     return true;
   }
-  else
-  {
-    return false;
-  }
+
+  return false;
 }
 
 void Courtroom::enter_courtroom(int p_cid)
@@ -118,14 +89,14 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     f_char = "";
 
-    if (ao_app->is_discord_enabled())
+    if (options.discordEnabled())
       ao_app->discord->state_spectate();
   }
   else
   {
     f_char = ao_app->get_char_name(client->character().name);
 
-    if (ao_app->is_discord_enabled())
+    if (options.discordEnabled())
       ao_app->discord->state_character(f_char.toStdString());
   }
 
@@ -143,21 +114,21 @@ void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
   ui_ms_chat->append_chat_message(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
-void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_colour)
+void Courtroom::append_server_chatmessage(QString p_name, QString p_message, bool special)
 {
-  QString colour = "#000000";
+  QString color = "#000000";
 
-  if (p_colour == "0")
-    colour = ao_app->get_color("ooc_default_color", "courtroom_design.ini").name();
-  if (p_colour == "1")
-    colour = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
+  if (special)
+    color = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
+  else
+    color = ao_app->get_color("ooc_default_color", "courtroom_design.ini").name();
 
-  ui_server_chat->append_chat_message(p_name, p_message, colour);
+  ui_server_chat->append_chat_message(p_name, p_message, color);
 }
 
 void Courtroom::on_ic_chat_messageSent()
 {
-  if (ui_viewport->is_busy() && objection_state == 0)
+  if (ui_viewport->is_busy() && !ui_ic_chat->interjectionSelected())
     return;
 
   chat_message_type message;
@@ -173,8 +144,6 @@ void Courtroom::on_ic_chat_messageSent()
   }
 
   client->sendIC(message).then([&] {
-    objection_state = 0;
-    realization_state = 0;
     ui_evidence->togglePresenting(false);
     ui_ic_chat->clearEntry();
   });
@@ -219,7 +188,7 @@ void Courtroom::on_client_icReceived(const chat_message_type &message)
   }
 
   // Check if any word in the call words list is contained in the message
-  QStringList call_words = ao_app->get_call_words();
+  QStringList call_words = options.callWords();
 
   for (QString word : call_words)
   {
@@ -243,8 +212,8 @@ void Courtroom::on_client_kicked(const QString &message, bool banned)
     call_notice(tr("You were %1.").arg(verb));
   }
 
-  ao_app->construct_lobby();
-  ao_app->destruct_courtroom();
+  ao_app->openLobby();
+  deleteLater();
 }
 
 void Courtroom::on_client_trackChanged(const QString &track, const QString &showname)
@@ -275,7 +244,7 @@ void Courtroom::on_client_caseCalled(const QString &message,
   if (ui_casing->isChecked())
   {
     ui_server_chat->append_text(message);
-    if ((ao_app->get_casing_flags() & flags).any())
+    if ((options.casingFlags() & flags).any())
     {
         modcall_player->play(ao_app->get_sfx("case_call"));
         ao_app->alert(this);
@@ -298,18 +267,7 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
   }
   else if (message.startsWith("/settings"))
   {
-    ao_app->call_settings_menu();
-    append_server_chatmessage("CLIENT", "You opened the settings menu.", "1");
-    return;
-  }
-  else if (message.startsWith("/enable_blocks"))
-  {
-    append_server_chatmessage("CLIENT", "You have forcefully enabled features that the server "
-                                        "may not support. You may not be able to talk IC, or worse, because of this.", "1");
-    ao_app->cccc_ic_support_enabled = true;
-    ao_app->arup_enabled = true;
-    ao_app->modcall_reason_enabled = true;
-    on_reload_theme_triggered();
+    AOOptionsDialog(nullptr, ao_app).exec();
     return;
   }
   else if (message.startsWith("/save_chatlog"))
@@ -318,13 +276,13 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
-      append_server_chatmessage("CLIENT", "Couldn't open chatlog.txt to write into.", "1");
+      append_server_chatmessage("CLIENT", "Couldn't open chatlog.txt to write into.", true);
       return;
     }
 
     ui_ic_chatlog->export_to_file(file);
 
-    append_server_chatmessage("CLIENT", "Transcript saved to chatlog.txt.", "1");
+    append_server_chatmessage("CLIENT", "Transcript saved to chatlog.txt.", true);
     return;
   }
   else if (message.startsWith("/load_case"))
@@ -334,11 +292,11 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
     QDir casefolder("base/cases");
     if (!casefolder.exists())
     {
-        QDir::current().mkdir("base/" + casefolder.dirName());
-        append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made "
-                                            "for you, but seeing as it WAS just made for you, it's "
-                                            "likely the case file you're looking for can't be found in there.", "1");
-        return;
+      QDir::current().mkdir("base/" + casefolder.dirName());
+      append_server_chatmessage("CLIENT", "You don't have a `base/cases/` folder! It was just made "
+                                          "for you, but seeing as it WAS just made for you, it's "
+                                          "likely the case file you're looking for can't be found in there.", true);
+      return;
     }
     QStringList caseslist = casefolder.entryList();
     caseslist.removeOne(".");
@@ -349,7 +307,7 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
     {
       append_server_chatmessage("CLIENT", "You need to give a filename to load (extension not needed)! "
                                           "Make sure that it is in the `base/cases/` folder, and that "
-                                          "it is a correctly formatted ini.\nCases you can load: " + caseslist.join(", "), "1");
+                                          "it is a correctly formatted ini.\nCases you can load: " + caseslist.join(", "), true);
       return;
     }
 
@@ -357,7 +315,7 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
     if (command.size() > 2)
     {
       append_server_chatmessage("CLIENT", "Too many arguments to load a case! You only need one filename, "
-                                          "without extension.", "1");
+                                          "without extension.", true);
       return;
     }
 
@@ -369,35 +327,35 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
     QString casestatus = casefile.value("status", "").value<QString>();
 
     if (!caseauth.isEmpty())
-      append_server_chatmessage("CLIENT", "Case made by " + caseauth + ".", "1");
+      append_server_chatmessage("CLIENT", "Case made by " + caseauth + ".", true);
     if (!casedoc.isEmpty())
       client->sendOOC(name, QStringLiteral("/doc %1").arg(casedoc));
     if (!casestatus.isEmpty())
       client->sendOOC(name, QStringLiteral("/status %1").arg(casestatus));
     if (!cmdoc.isEmpty())
-      append_server_chatmessage("CLIENT", "Navigate to " + cmdoc + " for the CM doc.", "1");
+      append_server_chatmessage("CLIENT", "Navigate to " + cmdoc + " for the CM doc.", true);
 
     for (int i = client->evidence().size() - 1; i >= 0; i--)
     {
-        client->removeEvidence(i);
+      client->removeEvidence(i);
     }
 
     for (QString &evi : casefile.childGroups()) {
-        if (evi == "General")
-          continue;
+      if (evi == "General")
+        continue;
 
-        evi_type evidence;
-        evidence.name = casefile.value(evi + "/name", "UNKNOWN")
-            .value<QString>();
-        evidence.description = casefile.value(evi + "/description", "UNKNOWN")
-            .value<QString>();
-        evidence.image = casefile.value(evi + "/image", "UNKNOWN.png")
-            .value<QString>();
+      evi_type evidence;
+      evidence.name = casefile.value(evi + "/name", "UNKNOWN")
+          .value<QString>();
+      evidence.description = casefile.value(evi + "/description", "UNKNOWN")
+          .value<QString>();
+      evidence.image = casefile.value(evi + "/image", "UNKNOWN.png")
+          .value<QString>();
 
-        client->addEvidence(evidence);
-      }
+      client->addEvidence(evidence);
+    }
 
-    append_server_chatmessage("CLIENT", "Your case \"" + command[1] + "\" was loaded!", "1");
+    append_server_chatmessage("CLIENT", "Your case \"" + command[1] + "\" was loaded!", true);
     return;
   }
 
@@ -448,7 +406,24 @@ void Courtroom::on_pair_triggered()
                                         "the next version.");
 }
 
-void Courtroom::healthChangeRequested(HEALTH_TYPE type, int value)
+void Courtroom::on_mixer_volumeChanged(AUDIO_TYPE type, int volume)
+{
+  switch (type)
+  {
+  case SFX:
+    ui_viewport->set_sfx_volume(volume);
+    modcall_player->set_volume(volume);
+    break;
+  case BLIPS:
+    ui_viewport->set_blip_volume(volume);
+    break;
+  case MUSIC:
+    music_player->set_volume(volume);
+    break;
+  }
+}
+
+void Courtroom::on_roomControls_requestHealthChange(HEALTH_TYPE type, int value)
 {
   client->sendHealth(type, value);
 }
@@ -479,47 +454,43 @@ void Courtroom::on_reload_theme_triggered()
 
 void Courtroom::on_quit_triggered()
 {
-  ao_app->construct_lobby();
-  ao_app->destruct_courtroom();
+  ao_app->openLobby();
+  deleteLater();
 }
 
 void Courtroom::on_call_mod_triggered()
 {
-  if (ao_app->modcall_reason_enabled) {
-    QMessageBox errorBox;
-    QInputDialog input;
+  QMessageBox errorBox;
+  QInputDialog input;
 
-    input.setWindowFlags(Qt::WindowSystemMenuHint);
-    input.setLabelText("Reason:");
-    input.setWindowTitle("Call Moderator");
-    auto code = input.exec();
+  input.setWindowFlags(Qt::WindowSystemMenuHint);
+  input.setLabelText("Reason:");
+  input.setWindowTitle("Call Moderator");
+  auto code = input.exec();
 
-    if (code != QDialog::Accepted)
-      return;
+  if (code != QDialog::Accepted)
+    return;
 
-    QString text = input.textValue();
-    if (text.isEmpty()) {
-      errorBox.critical(nullptr, "Error", "You must provide a reason.");
-      return;
-    } else if (text.length() > 256) {
-      errorBox.critical(nullptr, "Error", "The message is too long.");
-      return;
-    }
-
-    client->callMod(text);
-  } else {
-    client->callMod();
+  QString text = input.textValue();
+  if (text.isEmpty()) {
+    errorBox.critical(nullptr, "Error", "You must provide a reason.");
+    return;
+  } else if (text.length() > 256) {
+    errorBox.critical(nullptr, "Error", "The message is too long.");
+    return;
   }
+
+  client->callMod(text);
 }
 
 void Courtroom::on_settings_triggered()
 {
-  ao_app->call_settings_menu();
+  AOOptionsDialog(nullptr, ao_app).exec();
 }
 
 void Courtroom::on_announce_case_triggered()
 {
-  ao_app->call_announce_menu(this);
+  AOCaseAnnouncerDialog(nullptr, ao_app, this).exec();
 }
 
 void Courtroom::on_showname_enable_triggered()
@@ -529,23 +500,44 @@ void Courtroom::on_showname_enable_triggered()
 
 void Courtroom::on_casing_triggered()
 {
-  if (!ao_app->casing_alerts_enabled)
-    return;
-
+  // TODO: remove button
   QMessageBox::warning(this, "Casing Filter", "This button is obsolete.");
 }
 
 void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno)
 {
-  if (!ao_app->casing_alerts_enabled)
-    return;
-
+  // TODO: replace with direct call by announcer dialog to announceCase
   client->announceCase(title, casing_flags_to_bitset(def, pro, jud, jur, steno, false));
 }
 
 Courtroom::~Courtroom()
 {
   delete music_player;
+}
+
+void Courtroom::initBASS()
+{
+  BASS_DEVICEINFO info;
+
+  if (options.audioDevice() == "default")
+  {
+    BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+  }
+  else
+  {
+    for (DWORD i = 0; BASS_GetDeviceInfo(i, &info); i++)
+    {
+      if (options.audioDevice() == info.name)
+      {
+        BASS_SetDevice(i);
+        BASS_Init(static_cast<int>(i), 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+        qDebug() << info.name << "was set as the default audio output device.";
+        break;
+      }
+    }
+  }
+
+  load_bass_opus_plugin();
 }
 
 #if (defined (_WIN32) || defined (_WIN64))

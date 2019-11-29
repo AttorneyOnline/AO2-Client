@@ -24,7 +24,7 @@ void LegacyClient::mapSignals()
     if (header == "FL")
     {
       if (args.contains("cccc_ic_support"))
-        allowPairing = true;
+        caseCafeFeatures = true;
     }
     else if (header == "SC")
     {
@@ -244,6 +244,8 @@ void LegacyClient::mapSignals()
   });
 }
 
+struct ProbeAbort {};
+
 /*!
  * Establishes a TCP connection to an AO2 server, and performs the usual
  * handshake by sending an HDID to the server and retrieving character
@@ -252,7 +254,8 @@ void LegacyClient::mapSignals()
  * \return a promise that is resolved when the handshake is complete
  */
 QPromise<void> LegacyClient::connect(const QString &address,
-                                     const uint16_t &port)
+                                     const uint16_t &port,
+                                     const bool &probeOnly)
 {
   emit connectProgress(0, 100, tr("Connecting to server..."));
 
@@ -265,7 +268,13 @@ QPromise<void> LegacyClient::connect(const QString &address,
     // TODO: fix application version
     socket.send("ID", { "AO2", QCoreApplication::applicationVersion() });
     return socket.waitForMessage("PN");
-  }).then([&] {
+  }).then([&](const QStringList &playerCount) {
+    curPlayers = playerCount[0].toInt();
+    maxPlayers = playerCount[1].toInt();
+
+    // Basically the only good way to stop a promise chain.
+    if (probeOnly) throw ProbeAbort();
+
     emit connectProgress(15, 100, tr("Getting characters..."));
     socket.send("askchaa");
     return socket.waitForMessage("SI");
@@ -293,7 +302,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
                      this, &LegacyClient::sendKeepalive);
     keepaliveTimer.setInterval(KEEPALIVE_INTERVAL);
     keepaliveTimer.start();
-  });
+  }).fail([](const ProbeAbort &) {});
 }
 
 /*!
@@ -303,6 +312,18 @@ QPromise<void> LegacyClient::connect(const QString &address,
 void LegacyClient::sendKeepalive()
 {
   socket.send("CHECK");
+}
+
+char_type LegacyClient::character()
+{
+  if (currentCharId >= 0)
+  {
+    return charsList[currentCharId];
+  }
+  else
+  {
+    return char_type { "Spectator", QStringLiteral(), QStringLiteral(), false };
+  }
 }
 
 /*!
@@ -490,7 +511,17 @@ void LegacyClient::announceCase(const QString &caseTitle,
     QString::number(rolesNeeded.test(CASING_JUD)),
     QString::number(rolesNeeded.test(CASING_JUR)),
     QString::number(rolesNeeded.test(CASING_STENO))
-  });
+              });
+}
+
+/*!
+ * Gets a player count. This count is usually only updated on initial server
+ * connect; additional requests for server info may be required for an
+ * up-to-date count.
+ */
+std::pair<int, int> LegacyClient::playerCount() const
+{
+  return { curPlayers, maxPlayers };
 }
 
 } // namespace AttorneyOnline

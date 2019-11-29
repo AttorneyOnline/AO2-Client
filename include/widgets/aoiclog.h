@@ -22,6 +22,7 @@ public:
   void export_to_file(QFile &file);
 private:
   AOApplication *ao_app;
+  Options options;
 
   QTextEdit *ui_ic_chatlog;
   QVector<chatlogpiece> ic_chatlog_history;

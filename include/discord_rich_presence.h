@@ -24,6 +24,12 @@ public:
   Discord();
   ~Discord();
 
+  // I hate C++. I hate C++. I hate C++.
+  Discord(const Discord &) = default;
+  Discord(Discord &&) = default;
+  Discord &operator=(const Discord &) = default;
+  Discord &operator=(Discord &&) = default;
+
   void state_lobby();
   void state_server(std::string name, std::string server_id);
   void state_character(std::string name);

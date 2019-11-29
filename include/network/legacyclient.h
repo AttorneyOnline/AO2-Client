@@ -25,7 +25,7 @@ namespace AttorneyOnline {
  */
 class LegacyClient : public Client {
 private:
-  bool allowPairing = false;
+  bool caseCafeFeatures = false;
 
   QVector<char_type> charsList;
   QStringList tracksList;
@@ -33,6 +33,9 @@ private:
   QVector<area_type> areasList;
 
   int currentCharId = -1;
+
+  int curPlayers;
+  int maxPlayers;
 
   // tsuserver3 enjoys kicking players that do not send the keepalive
   // packet within a server-configured timeout.
@@ -51,11 +54,13 @@ public:
   explicit LegacyClient(QObject *parent)
     : Client(parent) {}
   QPromise<void> connect(const QString &address,
-                         const uint16_t &port) override;
+                         const uint16_t &port,
+                         const bool &probeOnly) override;
   void sendKeepalive() override;
 
   QVector<char_type> characters() override { return charsList; }
-  char_type character() override { return charsList[currentCharId]; }
+  char_type character() override;
+  bool spectating() override { return currentCharId == -1; }
 
   QVector<area_type> rooms() override { return areasList; }
   void joinRoom(QString &name) override;
@@ -80,6 +85,8 @@ public:
 
   void announceCase(const QString &caseTitle,
                     const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) override;
+
+  std::pair<int, int> playerCount() const override;
 };
 
 } // namespace AttorneyOnline

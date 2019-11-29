@@ -23,6 +23,7 @@
 #include <QDirIterator>
 #include <QTextStream>
 
+// XXX: Imagine not using Qt Designer for designing forms -_-
 class AOOptionsDialog: public QDialog
 {
     Q_OBJECT
@@ -31,6 +32,7 @@ public:
 
 private:
     AOApplication *ao_app;
+    Options options;
 
     QVBoxLayout *ui_vertical_layout;
     QTabWidget *ui_settings_tabs;
@@ -100,8 +102,6 @@ private:
     QCheckBox *ui_casing_steno_cb;
     QLabel *ui_casing_cm_lbl;
     QCheckBox *ui_casing_cm_cb;
-    QLabel *ui_casing_cm_cases_lbl;
-    QLineEdit *ui_casing_cm_cases_textbox;
 
     bool needs_default_audiodev();
 

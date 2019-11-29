@@ -1,5 +1,6 @@
 #include "options.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
 #include <QRegularExpression>
@@ -85,7 +86,8 @@ bool Options::shownamesEnabled() const
  * this list is mentioned. */
 QStringList Options::callWords() const
 {
-  QFile file(basePath() + "callwords.ini");
+  QFile file(QCoreApplication::applicationDirPath() +
+             "/base/callwords.ini");
 
   if (!file.open(QIODevice::ReadOnly))
     return QStringList();
@@ -98,7 +100,8 @@ QStringList Options::callWords() const
 /*! Adds a server to the favorites list. */
 void Options::addToFavoriteServers(const server_type &server)
 {
-  QFile file(basePath() + "serverlist.txt");
+  QFile file(QCoreApplication::applicationDirPath() +
+             "/base/serverlist.txt");
 
   if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
   {
@@ -116,7 +119,8 @@ QVector<server_type> Options::favoriteServers() const
 {
   QVector<server_type> servers;
 
-  QFile file(basePath() + "serverlist.txt");
+  QFile file(QCoreApplication::applicationDirPath() +
+             "/base/serverlist.txt");
 
   if (!file.open(QIODevice::ReadOnly))
   {
@@ -141,4 +145,39 @@ QVector<server_type> Options::favoriteServers() const
   }
 
   return servers;
+}
+
+/*! The address (hostname) of the master server. */
+QString Options::msAddress() const
+{
+  return config.value("master", "master.aceattorneyonline.com").toString();
+}
+
+/*! The port of the master server. */
+uint16_t Options::msPort() const
+{
+  return static_cast<uint16_t>(config.value("master_port", 27016).toInt());
+}
+
+/*! Whether or not casing announcements are to be received. */
+bool Options::casingEnabled() const
+{
+  return config.value("casing_enabled", true).toBool();
+}
+
+/*! Indicates which roles a client wishes to receive casing
+ *  announcements for. */
+std::bitset<CASING_FLAGS_COUNT> Options::casingFlags() const
+{
+  return casing_flags_to_bitset(casingRoleEnabled("defence"),
+                                casingRoleEnabled("prosecution"),
+                                casingRoleEnabled("judge"),
+                                casingRoleEnabled("juror"),
+                                casingRoleEnabled("steno"),
+                                casingRoleEnabled("cm"));
+}
+
+bool Options::casingRoleEnabled(const QString &role) const
+{
+  return config.value(QStringLiteral("casing_%1_enabled").arg(role), true).toBool();
 }

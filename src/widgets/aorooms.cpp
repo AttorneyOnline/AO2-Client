@@ -22,7 +22,7 @@ AORoomChooser::AORoomChooser(QWidget *parent, AOApplication *p_ao_app)
   ui_search = findChild<QLineEdit *>("search");
 }
 
-void AORoomChooser::setAreas(QVector<area_type> &areas)
+void AORoomChooser::setAreas(QVector<area_type> areas)
 {
   area_list = areas;
   refresh();
@@ -54,63 +54,43 @@ void AORoomChooser::refresh()
   QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
   QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
 
-  for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
+  for (int i = 0 ; i < area_list.size() ; ++i)
   {
-    auto area = area_list.at(n_area);
-    QString i_area = "";
-    i_area.append("[");
-    i_area.append(QString::number(n_area));
-    i_area.append("] ");
+    const area_type &area = area_list.at(i);
+    const QString desc = tr("[%1] %2\n"
+                            "  %3 | CM: %4\n"
+                            "  %5 users | %6")
+        .arg(i)
+        .arg(area.name)
+        .arg(area.status)
+        .arg(area.cm)
+        .arg(area.players)
+        .arg(area.locked);
 
-    i_area.append(area.name);
-
-    if (ao_app->arup_enabled)
+    if (desc.toLower().contains(ui_search->text().toLower()))
     {
-      i_area.append("\n  ");
+      auto area_item = new QListWidgetItem(desc, ui_area_list);
+      ui_area_list->addItem(desc);
 
-      i_area.append(area.status);
-      i_area.append(" | CM: ");
-      i_area.append(area.cm);
+      // Colouring logic here.
+      const std::map<QString, QBrush &> backgrounds = {
+        {"LOOKING-FOR-PLAYERS", lfp_brush},
+        {"CASING", casing_brush},
+        {"RECESS", recess_brush},
+        {"RP", rp_brush},
+        {"GAMING", gaming_brush},
+        {"FREE", free_brush}
+      };
 
-      i_area.append("\n  ");
-
-      i_area.append(QString::number(area.players));
-      i_area.append(" users | ");
-
-      i_area.append(area.locked);
-    }
-
-    if (i_area.toLower().contains(ui_search->text().toLower()))
-    {
-      auto area_item = new QListWidgetItem(i_area, ui_area_list);
-      ui_area_list->addItem(i_area);
-
-      if (ao_app->arup_enabled)
-      {
-        // Colouring logic here.
-        const std::map<QString, QBrush &> backgrounds = {
-          {"LOOKING-FOR-PLAYERS", lfp_brush},
-          {"CASING", casing_brush},
-          {"RECESS", recess_brush},
-          {"RP", rp_brush},
-          {"GAMING", gaming_brush},
-          {"FREE", free_brush}
-        };
-
-        QBrush *brush;
-        if (area.locked == "LOCKED")
-          brush = &locked_brush;
-        else if (backgrounds.count(area.status) > 0)
-          brush = &backgrounds.at(area.status);
-        else
-          brush = &free_brush;
-
-        area_item->setBackground(*brush);
-      }
+      QBrush *brush;
+      if (area.locked == "LOCKED")
+        brush = &locked_brush;
+      else if (backgrounds.count(area.status) > 0)
+        brush = &backgrounds.at(area.status);
       else
-      {
-        area_item->setBackground(free_brush);
-      }
+        brush = &free_brush;
+
+      area_item->setBackground(*brush);
     }
   }
 }

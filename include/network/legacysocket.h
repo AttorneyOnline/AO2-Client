@@ -31,8 +31,12 @@ public:
 
   QPromise<QStringList> waitForMessage(const QString &header);
 
+  bool isConnected();
+  bool isConnecting();
+
 signals:
   void messageReceived(const QString &header, const QStringList &args);
+  void connectionLost();
 };
 
 } // namespace AttorneyOnline

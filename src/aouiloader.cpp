@@ -1,4 +1,3 @@
-#include "widgets/aobutton.h"
 #include "widgets/aocharmovie.h"
 #include "widgets/aoevidencedisplay.h"
 #include "widgets/aoimage.h"
@@ -14,11 +13,7 @@
 QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent, const QString &name)
 {
   QWidget *widget;
-  if (className == "AOButton")
-  {
-    widget = new AOButton(parent, ao_app);
-  }
-  else if (className == "AOImage")
+  if (className == "AOImage")
   {
     widget = new AOImage(parent, ao_app);
   }

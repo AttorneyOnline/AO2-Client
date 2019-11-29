@@ -65,7 +65,10 @@ QPromise<void> LegacySocket::connect(const QString &address,
   // Connect TCP socket, bringing the promise chain above into motion.
   socket.connectToHost(address, port);
 
-  return promise;
+  return promise.then([&] {
+    QObject::connect(&socket, &QTcpSocket::disconnected,
+                     this, &LegacySocket::connectionLost);
+  });
 }
 
 void LegacySocket::send(const QString &header, QStringList args)
@@ -106,6 +109,16 @@ QPromise<QStringList> LegacySocket::waitForMessage(const QString &header)
 
     QObject::connect(this, &LegacySocket::messageReceived, wrapper.get(), func);
   });
+}
+
+bool LegacySocket::isConnected()
+{
+  return socket.state() == QAbstractSocket::ConnectedState;
+}
+
+bool LegacySocket::isConnecting()
+{
+  return socket.state() == QAbstractSocket::ConnectingState;
 }
 
 } // namespace AttorneyOnline

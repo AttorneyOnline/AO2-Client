@@ -42,8 +42,8 @@ AOViewport::AOViewport(QWidget *parent, AOApplication *p_ao_app)
   blip_player = new AOBlipPlayer(this, ao_app);
   blip_player->set_volume(0);
 
-  blip_rate = ao_app->read_blip_rate();
-  blank_blip = ao_app->get_blank_blip();
+  blip_rate = options.blipRate();
+  blank_blip = options.blankBlipsEnabled();
 
   ui_vp_background = findChild<AOScene *>("ui_vp_background");
   ui_vp_speedlines = findChild<AOMovie *>("ui_vp_speedlines");
@@ -244,7 +244,7 @@ void AOViewport::handle_chatmessage_2()
 
   EMOTE_MODIFIER emote_mod = m_chatmessage.emote_modifier;
 
-  if (ao_app->flipping_enabled && m_chatmessage.flip == 1)
+  if (m_chatmessage.flip == 1)
     ui_vp_player_char->set_flipped(true);
   else
     ui_vp_player_char->set_flipped(false);
@@ -356,7 +356,7 @@ void AOViewport::handle_chatmessage_2()
     }
 
     // We should probably also play the other character's idle emote.
-    if (ao_app->flipping_enabled && m_chatmessage.pair_flip == 1)
+    if (m_chatmessage.pair_flip == 1)
       ui_vp_sideplayer_char->set_flipped(true);
     else
       ui_vp_sideplayer_char->set_flipped(false);
@@ -994,38 +994,31 @@ QColor AOViewport::get_text_color(QString color)
   return ao_app->get_chat_color(color, ao_app->get_chat(m_chatmessage.character));
 }
 
-void AOViewport::wtce(QString p_wtce, int variant)
+void AOViewport::wtce(WTCE_TYPE type)
 {
-  QString sfx_file = "courtroom_sounds.ini";
-
-  //witness testimony
-  if (p_wtce == "testimony1")
+  switch (type)
   {
+  case WITNESS_TESTIMONY:
     sfx_player->play(ao_app->get_sfx("witness_testimony"));
     ui_vp_wtce->play("witnesstestimony");
     testimony_in_progress = true;
     show_testimony();
-  }
-  //cross examination
-  else if (p_wtce == "testimony2")
-  {
+    break;
+  case CROSS_EXAMINATION:
     sfx_player->play(ao_app->get_sfx("cross_examination"));
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
-  }
-  else if (p_wtce == "judgeruling")
-  {
-    if (variant == 0)
-    {
-        sfx_player->play(ao_app->get_sfx("not_guilty"));
-        ui_vp_wtce->play("notguilty");
-        testimony_in_progress = false;
-    }
-    else if (variant == 1) {
-        sfx_player->play(ao_app->get_sfx("guilty"));
-        ui_vp_wtce->play("guilty");
-        testimony_in_progress = false;
-    }
+    break;
+  case NOT_GUILTY:
+    sfx_player->play(ao_app->get_sfx("not_guilty"));
+    ui_vp_wtce->play("notguilty");
+    testimony_in_progress = false;
+    break;
+  case GUILTY:
+    sfx_player->play(ao_app->get_sfx("guilty"));
+    ui_vp_wtce->play("guilty");
+    testimony_in_progress = false;
+    break;
   }
 }
 

@@ -1,10 +1,7 @@
 #include "aoblipplayer.h"
 
 AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
+  : m_parent(parent), ao_app(p_ao_app) {}
 
 void AOBlipPlayer::set_blips(QString p_sfx)
 {
@@ -29,7 +26,7 @@ void AOBlipPlayer::blip_tick()
 
   HSTREAM f_stream = m_stream_list[f_cycle];
 
-  if (ao_app->get_audio_output_device() != "default")
+  if (options.audioDevice() != "default")
     BASS_ChannelSetDevice(f_stream, BASS_GetDevice());
   BASS_ChannelPlay(f_stream, false);
 }

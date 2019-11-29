@@ -18,6 +18,7 @@ public:
   AOChat(QWidget *parent, AOApplication *p_ao_app);
   void addMessageData(chat_message_type &message);
   QString showname() { return ui_showname->text(); }
+  bool interjectionSelected();
 
 private:
   AOApplication *ao_app;
@@ -27,8 +28,9 @@ private:
   QPushButton *ui_objection;
   QPushButton *ui_takethat;
 
-  QPushButton * const buttons[4] = {ui_custom_interjection, ui_holdit,
-                                    ui_objection, ui_takethat};
+  QPushButton * const interjectionButtons[4] = {
+    ui_custom_interjection, ui_holdit, ui_objection, ui_takethat
+  };
 
   QTextEdit *ui_chat_entry;
   QComboBox *ui_color;

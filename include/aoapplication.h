@@ -23,7 +23,9 @@
 #include <QStringList>
 #include <QColor>
 
-class NetworkManager;
+#include <network/client.h>
+#include <network/masterserver.h>
+
 class Lobby;
 class Courtroom;
 
@@ -33,26 +35,14 @@ class AOApplication : public QApplication
 
 public:
   AOApplication(int &argc, char **argv);
-  ~AOApplication();
+  ~AOApplication() = default;
 
-  NetworkManager *net_manager;
-  Lobby *w_lobby;
-  Courtroom *w_courtroom;
-  AttorneyOnline::Discord *discord;
+  std::shared_ptr<AttorneyOnline::Discord> discord;
   Options options;
 
-  bool lobby_constructed = false;
-  bool courtroom_constructed = false;
+  void openLobby();
 
-  void construct_lobby();
-  void destruct_lobby();
-
-  void construct_courtroom();
-  void destruct_courtroom();
-
-  void call_settings_menu();
-  void call_announce_menu(Courtroom *court);
-
+  std::shared_ptr<AttorneyOnline::MasterServer> msConnection() { return ms; }
 
   //////////////////versioning///////////////
 
@@ -162,35 +152,6 @@ public:
   //Returns p_char's gender
   QString get_gender(QString p_char);
 
-  // ======
-  // These are all casing-related settings.
-  // ======
-
-  // Returns if the user has casing alerts enabled.
-  bool get_casing_enabled();
-
-  // Returns if the user wants to get alerts for the defence role.
-  bool get_casing_defence_enabled();
-
-  // Same for prosecution.
-  bool get_casing_prosecution_enabled();
-
-  // Same for judge.
-  bool get_casing_judge_enabled();
-
-  // Same for juror.
-  bool get_casing_juror_enabled();
-
-  // Same for steno.
-  bool get_casing_steno_enabled();
-
-  // Same for CM.
-  bool get_casing_cm_enabled();
-
-  // Get the message for the CM for casing alerts.
-  QString get_casing_can_host_cases();
-
-  std::bitset<CASING_FLAGS_COUNT> get_casing_flags();
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 6;
@@ -198,12 +159,11 @@ private:
 
   QString currentTheme = "default";
 
-private slots:
-  void ms_connect_finished(bool connected, bool will_retry);
+  const int MS_RETRY_MILLISECS = 4000;
+  int msRetryCount = 0;
+  std::shared_ptr<AttorneyOnline::MasterServer> ms;
 
-public slots:
-  void server_disconnected();
-  void loading_cancelled();
+  void connectToMaster();
 };
 
 #endif // AOAPPLICATION_H
