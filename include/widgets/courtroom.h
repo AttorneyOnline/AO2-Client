@@ -107,7 +107,7 @@ private:
 
   AOViewport *ui_viewport;
   AOICLog *ui_ic_chatlog;
-  AORoomChooser *ui_area_list;
+  AORoomChooser *ui_room_chooser;
   AOJukebox *ui_music_list;
   AOMixer *ui_mixer;
   AOChat *ui_ic_chat;
@@ -126,6 +126,14 @@ private:
   QAction *ui_modcall_notify;
   QAction *ui_casing;
   QAction *ui_showname_enable;
+
+  QAction *ui_toggle_ic_log;
+  QAction *ui_toggle_server_chat;
+  QAction *ui_toggle_ms_chat;
+  QAction *ui_toggle_room_chooser;
+  QAction *ui_toggle_room_controls;
+  QAction *ui_toggle_jukebox;
+  QAction *ui_toggle_mixer;
 
   void initBASS();
 

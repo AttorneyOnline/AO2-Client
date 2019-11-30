@@ -23,22 +23,41 @@ Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
 //  QVBoxLayout *parentLayout = new QVBoxLayout;
 //  parentLayout->addWidget(windowWidget);
 //  setLayout(parentLayout);
+  windowWidget->setWindowFlag(Qt::Window, false);
+  windowWidget->setWindowFlag(Qt::Widget);
+  windowWidget->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
   windowWidget->show();
 
-//  setWindowTitle("Attorney Online 2");
-//  setWindowIcon(QIcon(":/logo.png"));
-//  setFixedSize(windowWidget->size());
+  setWindowTitle("Attorney Online 2");
+  setWindowIcon(QIcon(":/logo.png"));
 
-  windowWidget->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
   FROM_UI(AOViewport, viewport)
   FROM_UI(AOICLog, ic_chatlog)
   FROM_UI(AOServerChat, ms_chat)
   FROM_UI(AOServerChat, server_chat)
   FROM_UI(AOJukebox, music_list)
-  FROM_UI(AORoomChooser, area_list)
+  FROM_UI(AORoomChooser, room_chooser)
   FROM_UI(AOMixer, mixer)
   FROM_UI(AOChat, ic_chat)
   FROM_UI(AORoomControls, room_controls)
+  FROM_UI(AOEvidence, evidence)
+
+  FROM_UI(QAction, change_character)
+  FROM_UI(QAction, reload_theme)
+  FROM_UI(QAction, call_mod)
+  FROM_UI(QAction, settings)
+  FROM_UI(QAction, announce_case)
+  FROM_UI(QAction, modcall_notify)
+  FROM_UI(QAction, casing)
+  FROM_UI(QAction, showname_enable)
+
+  FROM_UI(QAction, toggle_ic_log)
+  FROM_UI(QAction, toggle_server_chat)
+  FROM_UI(QAction, toggle_ms_chat)
+  FROM_UI(QAction, toggle_room_chooser)
+  FROM_UI(QAction, toggle_room_controls)
+  FROM_UI(QAction, toggle_jukebox)
+  FROM_UI(QAction, toggle_mixer)
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
@@ -49,8 +68,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
   ui_casing->setChecked(options.casingEnabled());
   ui_showname_enable->setChecked(options.shownamesEnabled());
 
-  connect(ui_server_chat, SIGNAL(messageSent(QString, QString)), this, SLOT(on_ooc_return_pressed(QString, QString)));
-  connect(ui_ms_chat, SIGNAL(messageSent(QString, QString)), this, SLOT(on_ms_return_pressed(QString, QString)));
+  connect(ui_server_chat, &AOServerChat::messageSent, this, &Courtroom::on_ooc_return_pressed);
+  connect(ui_ms_chat, &AOServerChat::messageSent, this, &Courtroom::on_ms_return_pressed);
+
+  // TODO: remove the autoconnect name of these slots - they don't autoconnect
+  // due to the nature of the shared_ptr
+  connect(client.get(), &Client::icReceived, this, &Courtroom::on_client_icReceived);
+  connect(client.get(), &Client::kicked, this, &Courtroom::on_client_kicked);
+  connect(client.get(), &Client::trackChanged, this, &Courtroom::on_client_trackChanged);
+  connect(client.get(), &Client::modCalled, this, &Courtroom::on_client_modCalled);
+  connect(client.get(), &Client::caseCalled, this, &Courtroom::on_client_caseCalled);
 
   connect(client.get(), &Client::oocReceived, this,
           [&](const QString &name, const QString &message) {
@@ -61,11 +88,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
   connect(client.get(), &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
   connect(client.get(), &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
   connect(client.get(), &Client::areasUpdated, this, [&] {
-    ui_area_list->setAreas(client->rooms());
+    ui_room_chooser->setAreas(client->rooms());
   });
   connect(client.get(), &Client::evidenceChanged, this, [&] {
     ui_evidence->setEvidenceList(client->evidence());
   });
+
+  ui_room_chooser->setAreas(client->rooms());
+  ui_music_list->setTracks(client->tracks().toVector());
 }
 
 bool Courtroom::chooseCharacter()

@@ -21,6 +21,7 @@ AOCharSelect::AOCharSelect(QWidget *parent, AOApplication *p_ao_app)
 
   FROM_UI(QListWidget, char_list)
   FROM_UI(QDialogButtonBox, buttons)
+  FROM_UI(QPushButton, spectate)
 }
 
 int AOCharSelect::selectedCharacterIndex()

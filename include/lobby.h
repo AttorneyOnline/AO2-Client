@@ -60,7 +60,7 @@ private:
 
   AOServerChat *ui_chat;
 
-  QTextEdit *ui_loading_text;
+  QLabel *ui_loading_text;
   QProgressBar *ui_progress_bar;
   QPushButton *ui_cancel;
 

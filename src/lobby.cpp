@@ -40,7 +40,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow(), ao_app(p_ao_app)
   FROM_UI(QLabel, player_count)
   FROM_UI(QTextBrowser, description)
   FROM_UI(AOServerChat, chat)
-  FROM_UI(QTextEdit, loading_text)
+  FROM_UI(QLabel, loading_text)
   FROM_UI(QProgressBar, progress_bar)
   FROM_UI(QPushButton, cancel)
 
@@ -71,7 +71,7 @@ server_type Lobby::selectedServer()
 {
   int row = ui_server_list->currentRow();
 
-  Q_ASSERT(row < 0);
+  Q_ASSERT(row >= 0);
 
   if (publicServersSelected)
     return servers[row];
@@ -142,6 +142,7 @@ void Lobby::on_connect_released()
     courtroom->move(x, y);
 
     courtroom->show();
+    hide();
 
     if (!courtroom->chooseCharacter())
       courtroom->deleteLater();

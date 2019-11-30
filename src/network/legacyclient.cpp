@@ -518,7 +518,7 @@ void LegacyClient::announceCase(const QString &caseTitle,
     QString::number(rolesNeeded.test(CASING_JUD)),
     QString::number(rolesNeeded.test(CASING_JUR)),
     QString::number(rolesNeeded.test(CASING_STENO))
-              });
+  });
 }
 
 /*!

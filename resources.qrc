@@ -92,5 +92,12 @@
         <file>resource/ui/jukebox.ui</file>
         <file>resource/ui/rooms.ui</file>
         <file>resource/icons/evidence_placeholder.png</file>
+        <file>resource/ui/char_select.ui</file>
+        <file>resource/ui/debug.ui</file>
+        <file>resource/ui/evidence.ui</file>
+        <file>resource/ui/ic.ui</file>
+        <file>resource/ui/mixer.ui</file>
+        <file>resource/ui/mute.ui</file>
+        <file>resource/ui/room_controls.ui</file>
     </qresource>
 </RCC>

@@ -13,50 +13,28 @@
 QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent, const QString &name)
 {
   QWidget *widget;
-  if (className == "AOImage")
-  {
-    widget = new AOImage(parent, ao_app);
+
+  if (0); // (a necessary sacrifice for a greater good... muhehe)
+#define AO_WIDGET(class, ...) \
+  else if (className == #class) \
+  { \
+  widget = new class(parent, ##__VA_ARGS__); \
   }
-  else if (className == "AOTextEdit")
-  {
-    widget = new AOTextEdit(parent);
-  }
-  else if (className == "AOScene")
-  {
-    widget = new AOScene(parent, ao_app);
-  }
-  else if (className == "AOMovie")
-  {
-    widget = new AOMovie(parent, ao_app);
-  }
-  else if (className == "AOCharMovie")
-  {
-    widget = new AOCharMovie(parent, ao_app);
-  }
-  else if (className == "AOEvidenceDisplay")
-  {
-    widget = new AOEvidenceDisplay(parent, ao_app);
-  }
-  else if (className == "AOViewport")
-  {
-    widget = new AOViewport(parent, ao_app);
-  }
-  else if (className == "AOICLog")
-  {
-    widget = new AOICLog(parent, ao_app);
-  }
-  else if (className == "AOServerChat")
-  {
-    widget = new AOServerChat(parent, ao_app);
-  }
-  else if (className == "AOJukebox")
-  {
-    widget = new AOJukebox(parent, ao_app);
-  }
-  else if (className == "AORoomChooser")
-  {
-    widget = new AORoomChooser(parent, ao_app);
-  }
+
+  AO_WIDGET(AOImage, ao_app)
+  AO_WIDGET(AOTextEdit)
+  AO_WIDGET(AOScene, ao_app)
+  AO_WIDGET(AOMovie, ao_app)
+  AO_WIDGET(AOCharMovie, ao_app)
+  AO_WIDGET(AOEvidenceDisplay, ao_app)
+  AO_WIDGET(AOViewport, ao_app)
+  AO_WIDGET(AOICLog, ao_app)
+  AO_WIDGET(AOServerChat, ao_app)
+  AO_WIDGET(AOJukebox, ao_app)
+  AO_WIDGET(AORoomChooser, ao_app)
+  AO_WIDGET(AOMixer, ao_app)
+  AO_WIDGET(AOChat, ao_app)
+  AO_WIDGET(AORoomControls, ao_app)
   else
   {
     widget = QUiLoader::createWidget(className, parent, name);

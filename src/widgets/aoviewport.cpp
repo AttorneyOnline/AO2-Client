@@ -801,9 +801,6 @@ void AOViewport::chat_tick()
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());
 
-    if(blank_blip)
-      qDebug() << "blank_blip found true";
-
     if (f_message.at(tick_pos) != ' ' || blank_blip)
     {
 

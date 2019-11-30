@@ -539,9 +539,22 @@
      <string>Downloading (0.3 MB/12 MB)</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="toggle_ic_log"/>
+    <addaction name="toggle_server_chat"/>
+    <addaction name="toggle_ms_chat"/>
+    <addaction name="toggle_room_chooser"/>
+    <addaction name="toggle_room_controls"/>
+    <addaction name="toggle_jukebox"/>
+    <addaction name="toggle_mixer"/>
+   </widget>
    <addaction name="menuPlayer"/>
    <addaction name="menuCase"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuWindow"/>
    <addaction name="assetStatus"/>
   </widget>
   <widget class="QDockWidget" name="ic_chatlog_dock">
@@ -621,7 +634,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="AORoomChooser" name="rooms"/>
+   <widget class="AORoomChooser" name="room_chooser"/>
   </widget>
   <widget class="QDockWidget" name="mixer_dock">
    <property name="windowTitle">
@@ -660,7 +673,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
   </action>
   <action name="pair">
    <property name="text">
-    <string>Pair with…</string>
+    <string>Pair With…</string>
    </property>
    <property name="shortcut">
     <string>Alt+P</string>
@@ -668,12 +681,12 @@ QLineEdit { background-color: #575757; color: white; }</string>
   </action>
   <action name="announce_case">
    <property name="text">
-    <string>Announce case…</string>
+    <string>Announce Case…</string>
    </property>
   </action>
   <action name="change_character">
    <property name="text">
-    <string>Change character…</string>
+    <string>Change Character…</string>
    </property>
   </action>
   <action name="quit">
@@ -686,7 +699,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
   </action>
   <action name="call_mod">
    <property name="text">
-    <string>Call mod…</string>
+    <string>Call Mod…</string>
    </property>
   </action>
   <action name="settings">
@@ -702,7 +715,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Enable custom names</string>
+    <string>Enable Custom Names</string>
    </property>
   </action>
   <action name="casing">
@@ -710,7 +723,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Case in progress</string>
+    <string>Case in Progress</string>
    </property>
   </action>
   <action name="modcall_notify">
@@ -721,12 +734,68 @@ QLineEdit { background-color: #575757; color: white; }</string>
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Ping on mod call</string>
+    <string>Ping on Mod Call</string>
    </property>
   </action>
   <action name="reload_theme">
    <property name="text">
     <string>Reload theme</string>
+   </property>
+  </action>
+  <action name="toggle_ic_log">
+   <property name="text">
+    <string>Transcript</string>
+   </property>
+   <property name="targetWidget" stdset="0">
+    <string notr="true">ic_chatlog</string>
+   </property>
+  </action>
+  <action name="toggle_server_chat">
+   <property name="text">
+    <string>Server Chat</string>
+   </property>
+   <property name="targetWidget" stdset="0">
+    <string notr="true">server_chat</string>
+   </property>
+  </action>
+  <action name="toggle_ms_chat">
+   <property name="text">
+    <string>Global Chat</string>
+   </property>
+   <property name="targetWidget" stdset="0">
+    <string>ms_chat</string>
+   </property>
+  </action>
+  <action name="toggle_room_chooser">
+   <property name="text">
+    <string>Room List</string>
+   </property>
+   <property name="targetWidget" stdset="0">
+    <string>room_chooser</string>
+   </property>
+  </action>
+  <action name="toggle_room_controls">
+   <property name="text">
+    <string>Room Controls</string>
+   </property>
+   <property name="targetWidget" stdset="0">
+    <string>room_controls</string>
+   </property>
+  </action>
+  <action name="toggle_mixer">
+   <property name="text">
+    <string>Sound Mixer</string>
+   </property>
+   <property name="targetWidget" stdset="0">
+    <string>mixer</string>
+   </property>
+  </action>
+  <action name="toggle_jukebox">
+   <property name="text">
+    <string>Music List</string>
+   </property>
+   <property name="targetWidget" stdset="0">
+    <string>jukebox</string>
    </property>
   </action>
  </widget>
