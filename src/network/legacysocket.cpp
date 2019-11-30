@@ -30,11 +30,11 @@ void LegacySocket::packetReceived()
     if (end == 0)
     {
       // Special case of a garbage message - kill with fire
-      buffer = buffer.right(end + 1);
+      buffer = buffer.mid(end + 1);
       continue;
     }
 
-    QByteArray msg = buffer.left(end - 1); // Ignore trailing "#%"
+    QByteArray msg = buffer.left(end - 1); // Ignore trailing "%"
     QStringList args = QString::fromUtf8(msg).split("#")
         .replaceInStrings("<num>", "#")
         .replaceInStrings("<percent>", "%")
@@ -42,11 +42,18 @@ void LegacySocket::packetReceived()
         .replaceInStrings("<and>", "&");
     QString header = args.takeFirst();
 
+    // Sometimes packets don't come with a # at the end, which is extremely
+    // annoying. This is why we cannot always trim the buffer by two
+    // characters.
+    if (msg[msg.size() - 1] == '#')
+      args.removeLast();
+
+    qDebug() << "recv:" << header << args;
     emit messageReceived(header, args);
 
     // (Unfortunately QByteArray is not a circular buffer. You wish it were,
     // though.)
-    buffer = buffer.right(end + 1);
+    buffer = buffer.mid(end + 1);
   }
 }
 
@@ -60,15 +67,18 @@ QPromise<void> LegacySocket::connect(const QString &address,
   auto errorFunc = static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>
       (&QTcpSocket::error);
 
-  auto promise = QtPromise::connect(&socket, &QTcpSocket::connected, errorFunc);
+  auto promise = QtPromise::connect(&socket, &QTcpSocket::connected, errorFunc)
+      .then([&] {
+    QObject::connect(&socket, &QTcpSocket::disconnected,
+                     this, &LegacySocket::connectionLost);
+  }).timeout(TIMEOUT_MILLISECS).fail([&](const QPromiseTimeoutException &) {
+    socket.disconnectFromHost();
+  });
 
   // Connect TCP socket, bringing the promise chain above into motion.
   socket.connectToHost(address, port);
 
-  return promise.then([&] {
-    QObject::connect(&socket, &QTcpSocket::disconnected,
-                     this, &LegacySocket::connectionLost);
-  });
+  return promise;
 }
 
 void LegacySocket::send(const QString &header, QStringList args)
@@ -77,8 +87,10 @@ void LegacySocket::send(const QString &header, QStringList args)
       .replaceInStrings("%", "<percent>")
       .replaceInStrings("$", "<dollar>")
       .replaceInStrings("&", "<and>");
+  args.append("%");
 
-  auto bytes = (header % args.join('#') % "#%").toUtf8();
+  auto bytes = (header % "#" % args.join('#')).toUtf8();
+  qDebug() << "send:" << bytes;
   socket.write(bytes, bytes.length());
 }
 
@@ -90,24 +102,23 @@ void LegacySocket::send(const QString &header, QStringList args)
  */
 QPromise<QStringList> LegacySocket::waitForMessage(const QString &header)
 {
+  qDebug().noquote() << "Waiting for" << header;
+
   return QPromise<QStringList>(
         [&](const QPromiseResolve<QStringList>& resolve) {
+    std::shared_ptr<QMetaObject::Connection> connection =
+        std::make_shared<QMetaObject::Connection>();
 
-    // Create a wrapper object we can place our connection inside. We don't
-    // want to leak memory by having connections that are not needed anymore.
-    std::unique_ptr<QObject> wrapper { new QObject };
-
-    auto func = [&](const QString &recvHeader, const QStringList &args) {
+    *connection = QObject::connect(this, &LegacySocket::messageReceived,
+                                   [=](const QString &recvHeader,
+                                   const QStringList &args) {
       if (recvHeader == header)
       {
+        qDebug().noquote() << "Resolving with" << recvHeader;
+        QObject::disconnect(*connection);
         resolve(args);
-
-        // Destroy the wrapper QObject, automatically disconnecting this slot
-        wrapper.reset();
       }
-    };
-
-    QObject::connect(this, &LegacySocket::messageReceived, wrapper.get(), func);
+    });
   });
 }
 

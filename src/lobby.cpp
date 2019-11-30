@@ -52,7 +52,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow(), ao_app(p_ao_app)
   ui_chat->set_name(options.oocName());
   ui_version->setText("Version: " + ao_app->get_version_string());
 
-  connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
+  // connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   showPublicServers();
 }
@@ -194,6 +194,7 @@ void Lobby::on_server_list_currentRowChanged(int row)
   client = std::make_shared<LegacyClient>(nullptr);
   client->connect(server.ip, static_cast<uint16_t>(server.port), true)
       .then([&] {
+    qDebug() << "Client probe promise resolved";
     std::pair<int, int> players = client->playerCount();
     ui_player_count->setText(tr("Online: %1/%2")
                              .arg(players.first)
@@ -228,9 +229,14 @@ void Lobby::showPublicServers()
 
 void Lobby::showFavorites()
 {
+  publicServersSelected = false;
+
   ui_server_list->clear();
 
-  for (const server_type &i_server : options.favoriteServers())
+  // Implicit copy
+  favorites = options.favoriteServers();
+
+  for (const server_type &i_server : favorites)
   {
     ui_server_list->addItem(i_server.name);
   }

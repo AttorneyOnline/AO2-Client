@@ -19,6 +19,8 @@ private:
   const int BUFFER_SOFT_LIMIT = 1024 * 1024;
   QByteArray buffer;
 
+  const int TIMEOUT_MILLISECS = 4000;
+
 private slots:
   void packetReceived();
 

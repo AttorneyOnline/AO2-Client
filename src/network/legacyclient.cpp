@@ -34,7 +34,8 @@ void LegacyClient::mapSignals()
         QStringList charInfo = character.split("&");
         char_type charEntry;
         charEntry.name = charInfo[0];
-        charEntry.description = charInfo[1];
+        if (charInfo.size() > 1)
+          charEntry.description = charInfo[1];
         charsList.append(std::move(charEntry));
       }
     }
@@ -244,8 +245,6 @@ void LegacyClient::mapSignals()
   });
 }
 
-struct ProbeAbort {};
-
 /*!
  * Establishes a TCP connection to an AO2 server, and performs the usual
  * handshake by sending an HDID to the server and retrieving character
@@ -257,9 +256,13 @@ QPromise<void> LegacyClient::connect(const QString &address,
                                      const uint16_t &port,
                                      const bool &probeOnly)
 {
+  qInfo().noquote() << "Connecting to"
+                    << QStringLiteral("%1:%2").arg(address).arg(port)
+                    << QStringLiteral("(probe: %1)").arg(probeOnly ? "yes" : "no");
+
   emit connectProgress(0, 100, tr("Connecting to server..."));
 
-  return socket.connect(address, port)
+  auto promise = socket.connect(address, port)
       .then([&](void) {
     emit connectProgress(10, 100, tr("Getting player information..."));
     // Send HDID. Ignore fantacrypt - no AO server requires communicating
@@ -272,9 +275,13 @@ QPromise<void> LegacyClient::connect(const QString &address,
     curPlayers = playerCount[0].toInt();
     maxPlayers = playerCount[1].toInt();
 
-    // Basically the only good way to stop a promise chain.
-    if (probeOnly) throw ProbeAbort();
+    return QPromise<QStringList>::resolve(playerCount);
+  });
 
+  if (probeOnly)
+    return promise.then(&QPromise<void>::resolve);
+
+  return promise.then([&] {
     emit connectProgress(15, 100, tr("Getting characters..."));
     socket.send("askchaa");
     return socket.waitForMessage("SI");
@@ -293,7 +300,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
 
     // I am not going to put up with server-side preferences.
     // Filter case announcements on the client side.
-    socket.send("SETCASE", {"1", "1", "1", "1", "1", "1"});
+    socket.send("SETCASE", {"", "1", "1", "1", "1", "1", "1"});
 
     socket.send("RD");
     return socket.waitForMessage("DONE");
@@ -302,7 +309,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
                      this, &LegacyClient::sendKeepalive);
     keepaliveTimer.setInterval(KEEPALIVE_INTERVAL);
     keepaliveTimer.start();
-  }).fail([](const ProbeAbort &) {});
+  });
 }
 
 /*!
@@ -381,7 +388,7 @@ QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
   socket.send("MS", msgCopy);
 
   return QPromise<void>([&](const QPromiseResolve<void>& resolve) {
-    std::unique_ptr<QMetaObject::Connection> connection {
+    std::shared_ptr<QMetaObject::Connection> connection {
       new QMetaObject::Connection
     };
 

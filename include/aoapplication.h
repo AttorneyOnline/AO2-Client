@@ -53,6 +53,7 @@ public:
 
   ///////////////////////////////////////////
   void reloadTheme();
+  void connectToMaster();
 
   //implementation in path_functions.cpp
   QString get_base_path();
@@ -162,8 +163,6 @@ private:
   const int MS_RETRY_MILLISECS = 4000;
   int msRetryCount = 0;
   std::shared_ptr<AttorneyOnline::MasterServer> ms;
-
-  void connectToMaster();
 };
 
 #endif // AOAPPLICATION_H

@@ -18,13 +18,13 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
   ms = std::make_shared<LegacyMasterServer>(nullptr);
   discord = std::make_shared<Discord>();
-
-  connectToMaster();
 }
 
 void AOApplication::openLobby()
 {
   auto lobby = new Lobby(this);
+  lobby->setAttribute(Qt::WA_DeleteOnClose);
+
   connect(ms.get(), &MasterServer::serversChanged, lobby, &Lobby::showPublicServers);
   connect(ms.get(), &MasterServer::chatReceived, lobby, &Lobby::appendChat);
   connect(ms.get(), &MasterServer::connectionLost, lobby, [&] {
