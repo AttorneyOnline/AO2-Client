@@ -13,14 +13,14 @@ class AOJukebox : public QWidget
 public:
   explicit AOJukebox(QWidget *parent, AOApplication *p_ao_app);
 
-  void set_tracks(QVector<track_type> &tracks);
+  void setTracks(QVector<QString> tracks);
 private:
   AOApplication *ao_app;
 
   QListWidget *ui_music_list;
   QLineEdit *ui_search;
 
-  QVector<track_type> track_list;
+  QVector<QString> track_list;
 
 signals:
   void trackSelected(QString track);

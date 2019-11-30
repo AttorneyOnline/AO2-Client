@@ -22,7 +22,7 @@ AOJukebox::AOJukebox(QWidget *parent, AOApplication *p_ao_app)
   ui_search = findChild<QLineEdit *>("search");
 }
 
-void AOJukebox::set_tracks(QVector<track_type> &tracks)
+void AOJukebox::setTracks(QVector<QString> tracks)
 {
   track_list = tracks;
   refresh();
@@ -30,7 +30,7 @@ void AOJukebox::set_tracks(QVector<track_type> &tracks)
 
 void AOJukebox::on_music_list_doubleClicked(QModelIndex p_model)
 {
-  QString p_song = track_list.at(p_model.row()).name;
+  QString p_song = track_list[p_model.row()];
 
   emit trackSelected(p_song);
 }
@@ -48,17 +48,16 @@ void AOJukebox::refresh()
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
 
-  for (const track_type &track : track_list)
+  for (const QString &track : track_list)
   {
-    QString i_song_listname = track.name;
-    i_song_listname = i_song_listname.left(i_song_listname.lastIndexOf("."));
+    QString filename = track.left(track.lastIndexOf("."));
 
-    if (track.name.toLower().contains(ui_search->text().toLower()))
+    if (track.toLower().contains(ui_search->text().toLower()))
     {
-      auto entry = new QListWidgetItem(i_song_listname, ui_music_list);
+      auto entry = new QListWidgetItem(filename, ui_music_list);
       ui_music_list->addItem(entry);
 
-      QString song_path = ao_app->get_music_path(track.name);
+      QString song_path = ao_app->get_music_path(track);
 
       if (file_exists(song_path))
         entry->setBackground(found_brush);
