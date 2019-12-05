@@ -2638,6 +2638,7 @@ void Courtroom::chat_tick()
   }
   else
   {
+    int msg_delay = message_display_speed[current_display_speed];
     //Do the colors, gradual showing, etc. in here
     ui_vp_message->setHtml(additive_previous + filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt()));
 
@@ -2667,6 +2668,12 @@ void Courtroom::chat_tick()
       ++blip_ticker;
     }
 
+    //Punctuation delayer
+    if (punctuation_chars.contains(f_character))
+    {
+      msg_delay *= punctuation_modifier;
+    }
+
     //If this color is talking
     if (color_is_talking && anim_state != 2 && anim_state < 4) //Set it to talking as we're not on that already (though we have to avoid interrupting a non-interrupted preanim)
     {
@@ -2681,7 +2688,7 @@ void Courtroom::chat_tick()
       anim_state = 3;
     }
     //Continue ticking
-    chat_tick_timer->start(message_display_speed[current_display_speed]);
+    chat_tick_timer->start(msg_delay);
   }
 }
 

@@ -332,6 +332,12 @@ private:
   //the amount of time non-animated witness testimony/cross-examination images stay onscreen for in ms
   const int wtce_stay_time = 1500;
 
+  //characters we consider punctuation
+  const QString punctuation_chars = ".,?!:;";
+
+  //amount by which we multiply the delay when we parse punctuation chars
+  const int punctuation_modifier = 3;
+
   static const int chatmessage_size = 30;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
