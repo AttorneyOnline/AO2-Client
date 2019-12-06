@@ -47,5 +47,5 @@ TRANSLATIONS    =   resource/translations/ao_en.ts \
                     resource/translations/ao_ru.ts \
                     resource/translations/ao_es.ts
 
-win32:RC_ICONS = resource/logo.ico
+win32:RC_ICONS = resource/logo_ao2.ico
 macx:ICON = resource/logo.icns
