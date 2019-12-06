@@ -1,7 +1,8 @@
 # Attorney Online
 
 [Attorney Online](https://aceattorneyonline.com) is an online version of the world-renowned courtroom drama simulator that allows you to create and play out cases in an off-the-cuff format.
-Refer to the Wiki for more information.
+
+## [Refer to the Wiki](https://github.com/Crystalwarrior/KFO-Client/wiki) for more information.
 
 ---
 
