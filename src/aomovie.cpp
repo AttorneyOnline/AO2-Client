@@ -72,7 +72,7 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, bool s
 
 void AOMovie::stop()
 {
-  m_movie->stop();
+  this->stop();
   this->hide();
 }
 
