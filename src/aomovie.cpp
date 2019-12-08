@@ -11,8 +11,11 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   m_movie = new QMovie();
 
   this->setMovie(m_movie);
-
+  timer = new QTimer(this);
+  timer->setTimerType(Qt::PreciseTimer);
+  timer->setSingleShot(true);
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
+  connect(timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 
 void AOMovie::set_play_once(bool p_play_once)
@@ -31,7 +34,7 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, bool s
 
   m_movie->stop();
   this->timer_done();
-  QString shout_path;
+  QString shout_path = p_gif;
   QList<QString> pathlist;
 
   if (ao_app->get_character_path(p_char, p_gif).contains("custom_objections")) //checks if the file is located within the folder of custom objections
@@ -64,15 +67,18 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, bool s
        }
    }
    m_movie->setFileName(shout_path);
+   if (m_movie->loopCount() == 0)
+     play_once = true;
+
   this->show();
   m_movie->start();
   if (m_movie->frameCount() == 0 && duration > 0)
-       this->start_timer(duration);
+       timer->start(duration);
 }
 
 void AOMovie::stop()
 {
-  this->stop();
+  m_movie->stop();
   this->hide();
 }
 
@@ -83,13 +89,7 @@ void AOMovie::frame_change(int n_frame)
      if (m_movie->frameCount() == 0 || n_frame < (m_movie->frameCount() - 1) || !play_once)
          return;
      //we need this or else the last frame wont show
-     delay(m_movie->nextFrameDelay());
-
-    this->stop();
-
-    //signal connected to courtroom object, let it figure out what to do
-    emit done();
-
+    timer->start(m_movie->nextFrameDelay());
 }
 
 void AOMovie::timer_done()

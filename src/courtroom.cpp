@@ -2052,10 +2052,11 @@ void Courtroom::start_chat_ticking()
 
   if (m_chatmessage[REALIZATION] == "1")
   {
-    ui_vp_realization->play("realizationflash", "", "", 60);
-    ui_vp_realization->show();
+    ui_vp_realization->play("realizationflash", "", "",shown, 90);
     QString f_char = m_chatmessage[CHAR_NAME];
     sfx_player->play(ao_app->get_custom_realization(f_char));
+
+
   }
 
   ui_vp_message->clear();
