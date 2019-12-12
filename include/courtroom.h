@@ -340,6 +340,13 @@ private:
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
   int text_state = 2;
 
+  //characters we consider punctuation
+    const QString punctuation_chars = ".,?!:;";
+
+    //amount by which we multiply the delay when we parse punctuation chars
+    const int punctuation_modifier = 3;
+
+
   //character id, which index of the char_list the player is
   int m_cid = -1;
   //cid and this may differ in cases of ini-editing

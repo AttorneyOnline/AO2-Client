@@ -1301,6 +1301,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
+
   if (f_message == previous_ic_message)
     return;
 
@@ -1433,8 +1434,8 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2()
 {
-  ui_vp_speedlines->stop();
-  ui_vp_player_char->stop();
+  //ui_vp_speedlines->stop();
+  //ui_vp_player_char->stop();
 
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
   {
@@ -1455,8 +1456,8 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
 
-  ui_vp_message->clear();
-  ui_vp_chatbox->hide();
+  //ui_vp_message->clear();
+  //ui_vp_chatbox->hide();
   QString f_char = m_chatmessage[CHAR_NAME];
   QString chatbox = ao_app->get_chat(f_char);
 
@@ -2109,7 +2110,7 @@ void Courtroom::chat_tick()
 
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
-
+  int msg_delay = message_display_speed[current_display_speed];
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
 
@@ -2156,7 +2157,7 @@ void Courtroom::chat_tick()
     else if (f_character == "\\" and !next_character_is_not_special)
     {
         next_character_is_not_special = true;
-        formatting_char = true;
+        msg_delay ++;
     }
 
     // Text speed modifier.
@@ -2164,14 +2165,18 @@ void Courtroom::chat_tick()
     {
         // ++, because it INCREASES delay!
         current_display_speed++;
-        formatting_char = true;
+        msg_delay ++;
     }
     else if (f_character == "}" and !next_character_is_not_special)
     {
         current_display_speed--;
-        formatting_char = true;
+        msg_delay++;
     }
-
+    else if (punctuation_chars.contains(f_character))
+    {
+      msg_delay *= punctuation_modifier;
+      ui_vp_message->insertPlainText(f_character);
+    }
     // Orange inline colourisation.
     else if (f_character == "|" and !next_character_is_not_special)
     {
@@ -2190,7 +2195,7 @@ void Courtroom::chat_tick()
         {
             inline_colour_stack.push(INLINE_ORANGE);
         }
-        formatting_char = true;
+        msg_delay++;
     }
 
     // Blue inline colourisation.
@@ -2278,22 +2283,27 @@ void Courtroom::chat_tick()
             if (inline_colour_stack.top() == INLINE_GREEN)
             {
                 inline_colour_stack.pop();
-                formatting_char = true;
+                msg_delay++;
             }
             else
             {
                 inline_colour_stack.push(INLINE_GREEN);
-                formatting_char = true;
+                msg_delay++;
             }
         }
         else
         {
             inline_colour_stack.push(INLINE_GREEN);
-            formatting_char = true;
+            msg_delay++;
         }
+    }
+    else if( f_character == "n")
+    {
+        ui_vp_message->insertHtml("<br>"); //DO STUFF HERE
     }
     else
     {
+
       next_character_is_not_special = false;
       if (!inline_colour_stack.empty())
       {
@@ -2387,15 +2397,8 @@ void Courtroom::chat_tick()
         current_display_speed = 6;
     }
 
-    // If we had a formatting char, we shouldn't wait so long again, as it won't appear!
-    if (formatting_char)
-    {
-        chat_tick_timer->start(1);
-    }
-    else
-    {
-        chat_tick_timer->start(message_display_speed[current_display_speed]);
-    }
+    chat_tick_timer->start(msg_delay);
+
 
   }
 }
