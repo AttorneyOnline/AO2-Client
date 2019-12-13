@@ -114,9 +114,18 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
 
-  ui_area_list = new QListWidget(this);
-  ui_area_list->hide();
-  ui_music_list = new QListWidget(this);
+  ui_area_list = new QTreeWidget(this);
+  ui_area_list->setColumnCount(2);
+  ui_area_list->hideColumn(1);
+  ui_area_list->setHeaderHidden(true);
+
+
+  ui_music_list = new QTreeWidget(this);
+  ui_music_list->setColumnCount(2);
+  ui_music_list->hideColumn(1);
+  ui_music_list->setHeaderHidden(true);
+  ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_music_list->hide();
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -947,7 +956,6 @@ void Courtroom::enter_courtroom(int p_cid)
 void Courtroom::list_music()
 {
   ui_music_list->clear();
-  music_row_to_number.clear();
 
   QString f_file = "courtroom_design.ini";
 
@@ -956,33 +964,41 @@ void Courtroom::list_music()
 
   int n_listed_songs = 0;
 
+  QTreeWidgetItem *parent = nullptr;
   for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
   {
     QString i_song = music_list.at(n_song);
-    QString i_song_listname = i_song;
-    i_song_listname = i_song_listname.left(i_song_listname.lastIndexOf("."));
+    QString i_song_listname = i_song.left(i_song.lastIndexOf("."));
+    i_song_listname = i_song_listname.right(i_song_listname.length() - (i_song_listname.lastIndexOf("/") + 1));
 
-    if (i_song.toLower().contains(ui_music_search->text().toLower()))
-    {
-      ui_music_list->addItem(i_song_listname);
-      music_row_to_number.append(n_song);
+    QTreeWidgetItem *treeItem;
+    if (i_song_listname != i_song && parent != nullptr) //not a category, parent exists
+      treeItem = new QTreeWidgetItem(parent);
+    else
+      treeItem = new QTreeWidgetItem(ui_music_list);
+    treeItem->setText(0, i_song_listname);
+    treeItem->setText(1, i_song);
 
-      QString song_path = ao_app->get_music_path(i_song);
+    QString song_path = ao_app->get_music_path(i_song);
 
-      if (file_exists(song_path))
-        ui_music_list->item(n_listed_songs)->setBackground(found_brush);
-      else
-        ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
+    if (file_exists(song_path))
+      treeItem->setBackground(0, found_brush);
+    else
+      treeItem->setBackground(0, missing_brush);
 
-      ++n_listed_songs;
-    }
+    if (i_song_listname == i_song) //Not supposed to be a song to begin with - a category?
+      parent = treeItem;
+    ++n_listed_songs;
   }
+
+  ui_music_list->expandAll(); //Needs to somehow remember which categories were expanded/collapsed if the music list didn't change since last time
 }
+
+
 
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
-  area_row_to_number.clear();
 
   QString f_file = "courtroom_design.ini";
 
@@ -999,14 +1015,12 @@ void Courtroom::list_areas()
   for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
   {
     QString i_area = "";
-    i_area.append("[");
-    i_area.append(QString::number(n_area));
-    i_area.append("] ");
-
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled)
     {
+      i_area.prepend("[" + QString::number(n_area) + "] "); //Give it the index
+
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
@@ -1023,34 +1037,35 @@ void Courtroom::list_areas()
 
     if (i_area.toLower().contains(ui_music_search->text().toLower()))
     {
-      ui_area_list->addItem(i_area);
-      area_row_to_number.append(n_area);
+      QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
+      treeItem->setText(0, i_area);
+      treeItem->setText(1, QString::number(n_area));
 
       if (ao_app->arup_enabled)
       {
-        // Colouring logic here.
-        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+        // Coloring logic here.
+        treeItem->setBackground(0, free_brush);
         if (arup_locks.at(n_area) == "LOCKED")
         {
-            ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
+            treeItem->setBackground(0, locked_brush);
         }
         else
         {
             if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-                ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
+                treeItem->setBackground(0, lfp_brush);
             else if (arup_statuses.at(n_area) == "CASING")
-                ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
+                treeItem->setBackground(0, casing_brush);
             else if (arup_statuses.at(n_area) == "RECESS")
-                ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
+                treeItem->setBackground(0, recess_brush);
             else if (arup_statuses.at(n_area) == "RP")
-                ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
+                treeItem->setBackground(0, rp_brush);
             else if (arup_statuses.at(n_area) == "GAMING")
-                ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
+                treeItem->setBackground(0, gaming_brush);
         }
       }
       else
       {
-        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+        treeItem->setBackground(0, free_brush);
       }
 
       ++n_listed_areas;
@@ -1434,7 +1449,7 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2()
 {
-  //ui_vp_speedlines->stop();
+  ui_vp_speedlines->stop();
   //ui_vp_player_char->stop();
 
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())
@@ -1779,6 +1794,10 @@ QString Courtroom::filter_ic_text(QString p_text)
       {
           ic_next_is_not_special = true;
           p_text.remove(trick_check_pos,1);
+          if (p_text[trick_check_pos] == 'n')
+          {
+              p_text[trick_check_pos] = ' ';
+          }
       }
 
       // Text speed modifier.
@@ -2154,9 +2173,16 @@ void Courtroom::chat_tick()
       ui_vp_message->insertPlainText(" ");
 
     // Escape character.
-    else if (f_character == "\\" and !next_character_is_not_special)
+    else if (f_character == "\\")
     {
-        next_character_is_not_special = true;
+        if( f_message[1] == 'n')
+        {
+            ui_vp_message->insertHtml("<br>");
+            tick_pos += 1;
+            next_character_is_not_special = false;
+        }
+        else
+            next_character_is_not_special = true;
         msg_delay ++;
     }
 
@@ -2296,10 +2322,6 @@ void Courtroom::chat_tick()
             inline_colour_stack.push(INLINE_GREEN);
             msg_delay++;
         }
-    }
-    else if( f_character == "n")
-    {
-        ui_vp_message->insertHtml("<br>"); //DO STUFF HERE
     }
     else
     {

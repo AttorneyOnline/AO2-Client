@@ -39,7 +39,7 @@
 #include <QMap>
 #include <QTextBrowser>
 #include <QSpinBox>
-
+#include <QTreeWidget>
 #include <QDebug>
 #include <QScrollBar>
 #include <QRegExp>
@@ -426,8 +426,8 @@ private:
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
-  QListWidget *ui_area_list;
-  QListWidget *ui_music_list;
+  QTreeWidget *ui_area_list;
+  QTreeWidget *ui_music_list;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
