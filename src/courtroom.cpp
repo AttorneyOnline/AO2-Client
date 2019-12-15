@@ -1489,8 +1489,8 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
 
-  //ui_vp_message->clear();
-  //ui_vp_chatbox->hide();
+  ui_vp_message->clear();
+  ui_vp_chatbox->hide();
   QString f_char = m_chatmessage[CHAR_NAME];
   QString chatbox = ao_app->get_chat(f_char);
 
@@ -3045,7 +3045,10 @@ void Courtroom::on_ooc_return_pressed()
       ui_ooc_chat_message->clear();
       return;
   }
-
+  else if(ooc_message.startsWith("/version"))
+  {
+      append_server_chatmessage("CLIENT", tr("V22 - Banana Edition"), "1");
+  }
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ooc_message);
