@@ -296,9 +296,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
-  connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
-  connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
+  connect(ui_music_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_music_list_double_clicked(QTreeWidgetItem*, int)));
 
+  connect(ui_area_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_area_list_double_clicked(QTreeWidgetItem*, int)));
   connect(ui_hold_it, SIGNAL(clicked()), this, SLOT(on_hold_it_clicked()));
   connect(ui_objection, SIGNAL(clicked()), this, SLOT(on_objection_clicked()));
   connect(ui_take_that, SIGNAL(clicked()), this, SLOT(on_take_that_clicked()));
@@ -521,7 +521,8 @@ void Courtroom::set_widgets()
   ui_pair_button->set_image("pair_button.png");
 
   set_size_and_pos(ui_area_list, "music_list");
-  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_area_list->setStyleSheet("background-color: rgba(20, 220, 250, 225);");
+  ui_music_list->collapseAll();
 
   set_size_and_pos(ui_music_list, "music_list");
 
@@ -3201,13 +3202,14 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   }
 }
 
-void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
+void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
   if (is_muted)
     return;
 
-  QString p_song = music_list.at(music_row_to_number.at(p_model.row()));
-
+  column = 1; //Column 1 is always the metadata (which we want)
+  QString p_song = p_item->text(column);
+  p_song.truncate(p_song.indexOf('\\'));
   if (!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled)
   {
     ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
@@ -3218,11 +3220,15 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
   }
 }
 
-void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
+
+void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
-    QString p_area = area_list.at(area_row_to_number.at(p_model.row()));
-    music_player->~AOMusicPlayer();
-    ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
+  column = 0; //Column 0 is the area name, column 1 is the metadata
+  QString p_area = p_item->text(column);
+  p_area.truncate(p_area.indexOf('\\'));
+  ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
+  QString packe = "MC#" + p_area + "#" + QString::number(m_cid) + "#%";
+  qDebug() << packe;
 }
 
 void Courtroom::on_hold_it_clicked()
