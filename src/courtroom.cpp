@@ -521,7 +521,8 @@ void Courtroom::set_widgets()
   ui_pair_button->set_image("pair_button.png");
 
   set_size_and_pos(ui_area_list, "music_list");
-  ui_area_list->setStyleSheet("background-color: rgba(20, 220, 250, 225);");
+  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_music_list->setStyleSheet("background-color: rgba(0, 220, 0, 5);");
   ui_music_list->collapseAll();
 
   set_size_and_pos(ui_music_list, "music_list");
