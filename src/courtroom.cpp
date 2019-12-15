@@ -526,7 +526,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_area_list, "music_list");
   ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
-   ui_music_list->setStyleSheet("background-color: rgba(100, 103, 132, 225);");
+  ui_music_list->setStyleSheet("background-color: rgba(100, 103, 132, 225);");
 
   ui_music_list->collapseAll();
 
@@ -1422,10 +1422,12 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if(shown)
     f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
-
+  ui_vp_message->clear();
+  ui_vp_chatbox->hide();
   //if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1)
   {
+
     switch (objection_mod)
     {
     case 1:
@@ -1495,8 +1497,7 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
 
-  ui_vp_message->clear();
-  ui_vp_chatbox->hide();
+
   QString f_char = m_chatmessage[CHAR_NAME];
   QString chatbox = ao_app->get_chat(f_char);
 
@@ -1688,7 +1689,10 @@ void Courtroom::handle_chatmessage_2()
     if (m_chatmessage[NONINTERRUPTING_PRE].toInt() == 0)
       handle_chatmessage_3();
     else
+    {
+
       play_preanim(true);
+    }
     break;
   default:
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
