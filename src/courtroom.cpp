@@ -3054,6 +3054,7 @@ void Courtroom::on_ooc_return_pressed()
   else if(ooc_message.startsWith("/version"))
   {
       append_server_chatmessage("CLIENT", tr("V22 - Banana Edition"), "1");
+      return;
   }
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
