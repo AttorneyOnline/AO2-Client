@@ -94,7 +94,7 @@ void AOApplication::destruct_courtroom()
 QString AOApplication::get_version_string()
 {
   return
-  "CC - V22 (Testing Branch)";
+  "CC - Update 22";
 }
 
 void AOApplication::reload_theme()

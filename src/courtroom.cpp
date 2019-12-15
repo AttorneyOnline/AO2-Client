@@ -526,7 +526,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_area_list, "music_list");
   ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
-  ui_music_list->setStyleSheet("background-color: rgba(01, 20, 0, 0);");
+   ui_music_list->setStyleSheet("background-color: rgba(100, 103, 132, 225);");
 
   ui_music_list->collapseAll();
 
