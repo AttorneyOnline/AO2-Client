@@ -125,6 +125,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_list->hideColumn(1);
   ui_music_list->setHeaderHidden(true);
   ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_music_list->setAutoFillBackground(true);
+  ui_music_list->setExpandsOnDoubleClick(true);
+  ui_music_list->setRootIsDecorated(true);
   ui_music_list->hide();
 
   ui_ic_chat_name = new QLineEdit(this);
@@ -522,7 +525,9 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_area_list, "music_list");
   ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
-  ui_music_list->setStyleSheet("background-color: rgba(0, 220, 0, 5);");
+
+  ui_music_list->setStyleSheet("background-color: rgba(01, 20, 0, 0);");
+
   ui_music_list->collapseAll();
 
   set_size_and_pos(ui_music_list, "music_list");
@@ -991,7 +996,7 @@ void Courtroom::list_music()
           parent = treeItem;
         ++n_listed_songs;
        }
-      else if( parent == nullptr)
+      else if(i_song_listname == i_song)
       {
         treeItem = new QTreeWidgetItem(ui_music_list);
         treeItem->setText(0, i_song_listname);

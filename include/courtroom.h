@@ -429,6 +429,8 @@ private:
   QTreeWidget *ui_area_list;
   QTreeWidget *ui_music_list;
 
+
+
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
