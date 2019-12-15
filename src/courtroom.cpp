@@ -956,44 +956,61 @@ void Courtroom::enter_courtroom(int p_cid)
 
 void Courtroom::list_music()
 {
-  ui_music_list->clear();
+    ui_music_list->clear();
 
-  QString f_file = "courtroom_design.ini";
+    QString f_file = "courtroom_design.ini";
 
-  QBrush found_brush(ao_app->get_color("found_song_color", f_file));
-  QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
+    QBrush found_brush(ao_app->get_color("found_song_color", f_file));
+    QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
 
-  int n_listed_songs = 0;
+    int n_listed_songs = 0;
 
-  QTreeWidgetItem *parent = nullptr;
-  for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
-  {
-    QString i_song = music_list.at(n_song);
-    QString i_song_listname = i_song.left(i_song.lastIndexOf("."));
-    i_song_listname = i_song_listname.right(i_song_listname.length() - (i_song_listname.lastIndexOf("/") + 1));
+    QTreeWidgetItem *parent = nullptr;
+    for (int n_song = 0 ; n_song < music_list.size() ; ++n_song)
+    {
+      QString i_song = music_list.at(n_song);
+      QString i_song_listname = i_song.left(i_song.lastIndexOf("."));
+      i_song_listname = i_song_listname.right(i_song_listname.length() - (i_song_listname.lastIndexOf("/") + 1));
 
-    QTreeWidgetItem *treeItem;
-    if (i_song_listname != i_song && parent != nullptr) //not a category, parent exists
-      treeItem = new QTreeWidgetItem(parent);
-    else
-      treeItem = new QTreeWidgetItem(ui_music_list);
-    treeItem->setText(0, i_song_listname);
-    treeItem->setText(1, i_song);
+      QTreeWidgetItem *treeItem;
+      if (i_song_listname != i_song && parent != nullptr  && i_song.toLower().contains(ui_music_search->text().toLower())) //not a category, parent exists
+      {
+        treeItem = new QTreeWidgetItem(parent);
+        treeItem->setText(0, i_song_listname);
+        treeItem->setText(1, i_song);
 
-    QString song_path = ao_app->get_music_path(i_song);
+        QString song_path = ao_app->get_music_path(i_song);
 
-    if (file_exists(song_path))
-      treeItem->setBackground(0, found_brush);
-    else
-      treeItem->setBackground(0, missing_brush);
+        if (file_exists(song_path))
+          treeItem->setBackground(0, found_brush);
+        else
+          treeItem->setBackground(0, missing_brush);
 
-    if (i_song_listname == i_song) //Not supposed to be a song to begin with - a category?
-      parent = treeItem;
-    ++n_listed_songs;
-  }
+        if (i_song_listname == i_song) //Not supposed to be a song to begin with - a category?
+          parent = treeItem;
+        ++n_listed_songs;
+       }
+      else if( parent == nullptr)
+      {
+        treeItem = new QTreeWidgetItem(ui_music_list);
+        treeItem->setText(0, i_song_listname);
+        treeItem->setText(1, i_song);
 
-  ui_music_list->expandAll(); //Needs to somehow remember which categories were expanded/collapsed if the music list didn't change since last time
+        QString song_path = ao_app->get_music_path(i_song);
+
+        if (file_exists(song_path))
+          treeItem->setBackground(0, found_brush);
+        else
+          treeItem->setBackground(0, missing_brush);
+
+        if (i_song_listname == i_song) //Not supposed to be a song to begin with - a category?
+          parent = treeItem;
+        ++n_listed_songs;
+      }
+    }
+    ui_music_list->expandAll(); //Needs to somehow remember which categories were expanded/collapsed if the music list didn't change since last time
 }
+
 
 
 
@@ -3209,7 +3226,6 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item, int column
 
   column = 1; //Column 1 is always the metadata (which we want)
   QString p_song = p_item->text(column);
-  p_song.truncate(p_song.indexOf('\\'));
   if (!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled)
   {
     ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#" + ui_ic_chat_name->text() + "#%"), false);
@@ -3225,7 +3241,8 @@ void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0; //Column 0 is the area name, column 1 is the metadata
   QString p_area = p_item->text(column);
-  p_area.truncate(p_area.indexOf('\\'));
+  p_area = p_area.mid(p_area.indexOf(' ') + 1);
+  p_area.truncate(p_area.indexOf('\n'));
   ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
   QString packe = "MC#" + p_area + "#" + QString::number(m_cid) + "#%";
   qDebug() << packe;
