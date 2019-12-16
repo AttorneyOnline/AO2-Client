@@ -1181,7 +1181,7 @@ void Courtroom::on_chat_return_pressed()
   {
     if (ui_pre->isChecked())
     {
-      if (f_emote_mod == 5)
+      if (f_emote_mod == 5 || f_emote_mod == 4 )
         f_emote_mod = 6;
       else
         f_emote_mod = 2;
@@ -1422,8 +1422,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if(shown)
     f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
-  ui_vp_message->clear();
-  ui_vp_chatbox->hide();
+
   //if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1)
   {
@@ -1459,13 +1458,15 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       qDebug() << "W: Logic error in objection switch statement!";
     }
 
-    int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
     if (emote_mod == 0)
       m_chatmessage[EMOTE_MOD] = 1;
   }
   else
+  {
     handle_chatmessage_2();
+  }
 }
 
 void Courtroom::objection_done()
