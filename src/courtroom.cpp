@@ -731,6 +731,11 @@ void Courtroom::set_fonts()
   set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
   set_font(ui_area_list, "music_list");
+  set_font(ui_evidence_description, "evidence_description");
+  set_font(ui_evidence_image_name, "evidence_name_font");
+  set_font(ui_evidence_name,"evidence_name");
+  set_font(ui_area_list,"area_list");
+  set_font(ui_music_list,"music_name");
 
   // Set color of labels and checkboxes
   const QString design_file = "courtroom_fonts.ini";
@@ -1422,7 +1427,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if(shown)
     f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
-
+  ui_vp_message->clear();
+  ui_vp_chatbox->hide();
   //if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1)
   {
@@ -3058,7 +3064,7 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if(ooc_message.startsWith("/version"))
   {
-      append_server_chatmessage("CLIENT", tr("V22 - Banana Edition"), "1");
+      append_server_chatmessage("CLIENT", tr("V22 - Orange Edition"), "1");
       return;
   }
   QStringList packet_contents;
