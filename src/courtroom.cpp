@@ -724,6 +724,7 @@ void Courtroom::set_widgets()
 
 void Courtroom::set_fonts()
 {
+
   set_font(ui_vp_showname, "showname");
   set_font(ui_vp_message, "message");
   set_font(ui_ic_chatlog, "ic_chatlog");
@@ -731,14 +732,21 @@ void Courtroom::set_fonts()
   set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
   set_font(ui_area_list, "music_list");
-  set_font(ui_evidence_description, "evidence_description");
-  set_font(ui_evidence_image_name, "evidence_name_font");
-  set_font(ui_evidence_name,"evidence_name");
+
   set_font(ui_area_list,"area_list");
   set_font(ui_music_list,"music_name");
 
   // Set color of labels and checkboxes
   const QString design_file = "courtroom_fonts.ini";
+
+  QTextDocument *doc = ui_evidence_description->document();
+  doc->setDefaultFont(ao_app->get_font_name("evidence_description", design_file));
+
+
+  //CHANGE FONT HERE FOR NOW TODO
+  ui_evidence_image_name->setStyleSheet("font: Segoe UI");
+  ui_evidence_name->setStyleSheet("font: Segoe UI");
+
   QColor f_color = ao_app->get_color("label_color", design_file);
   QString color_string = "color: rgba(" +
           QString::number(f_color.red()) + ", " +
