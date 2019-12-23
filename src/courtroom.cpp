@@ -3062,7 +3062,7 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if(ooc_message.startsWith("/version"))
   {
-      append_server_chatmessage("CLIENT", tr("V22 - Orange Edition"), "1");
+      append_server_chatmessage("CLIENT", tr("V22.5 - Mango Edition"), "1");
       return;
   }
   QStringList packet_contents;
@@ -3542,7 +3542,7 @@ void Courtroom::on_change_character_clicked()
 void Courtroom::on_reload_theme_clicked()
 { 
   ao_app->reload_theme();
-
+  punctuation_modifier = ao_app->get_pundelay();
   //to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
