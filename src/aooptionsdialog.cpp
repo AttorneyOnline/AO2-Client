@@ -182,7 +182,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_language_combobox);
 
 
-    ui_pun_delay = new QLabel(ui_casing_widget);
+    ui_pun_delay = new QLabel(ui_form_layout_widget);
     ui_pun_delay->setText(tr("Punctation Delay:"));
     ui_pun_delay->setToolTip(tr("Punctation delay modifier."
                                          " Set it to 1 for no additional delay."));
