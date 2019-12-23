@@ -100,6 +100,14 @@ If you begin a message with `~~` (two tildes), the two tildes are removed and th
 
 If two players are in the same position and select each other's characters using the in-game pair list (or with `/pair [id]`), they will appear alongside each other. You can set the offset of your character using the provided spinbox (or with `/offset [percentage]`).
 
+### Screenflash (2.6+)
+
+Placing a `$` (dollar symbol) at any point in the message will cause a white flash to appear at that point, and the symbol will disappear. You can do this multiple times in one message and stack it up with any other markup symbol. The flash will be silent, unlike the equivalent button.
+
+### Screenshake (2.6+)
+
+Placing an `@` (at symbol) at any point in the message will cause the screen to shake at that point, and the symbol will disappear. You can do this multiple times in one message and stack it up with any other markup symbol (including the screenflash).
+
 ### Non-interrupting preanimations (2.6+)
 
 When checked, this will force text to immediately begin displaying without waiting for the preanimation to finish.
