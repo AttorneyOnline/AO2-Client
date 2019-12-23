@@ -3063,6 +3063,17 @@ void Courtroom::on_ooc_return_pressed()
   else if(ooc_message.startsWith("/version"))
   {
       append_server_chatmessage("CLIENT", tr("V22.5 - Mango Edition"), "1");
+      ui_ooc_chat_message->clear();
+      return;
+  }
+  else if(ooc_message.startsWith("/magic")) //keep this out of documentation thx
+  {
+       ui_vp_message->setStyleSheet("background-color: rgba(" + QString::number(qrand() % 251) + "," +QString::number(qrand() % 251) + ","  + QString::number(qrand() % 251) + "," + QString::number(qrand() % 251) + ");");
+       ui_ic_chatlog->setStyleSheet("background-color: rgba(" + QString::number(qrand() % 251) + "," +QString::number(qrand() % 251) + ","  + QString::number(qrand() % 251) + "," + QString::number(qrand() % 251) + ");");
+       ui_server_chatlog->setStyleSheet("background-color: rgba(" + QString::number(qrand() % 251) + "," +QString::number(qrand() % 251) + ","  + QString::number(qrand() % 251) + "," + QString::number(qrand() % 251) + ");");
+
+       append_server_chatmessage("CLIENT", tr("Abra kadabra"), "1");
+      ui_ooc_chat_message->clear();
       return;
   }
   QStringList packet_contents;

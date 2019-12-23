@@ -49,6 +49,10 @@ int AOApplication::get_max_log_size()
 int AOApplication::get_pundelay()
 {
     int result = configini->value("punctuation_delay", 2).toInt();
+   if( result < 1 || result > 3)
+   {
+       result = 2;
+   }
    return result;
 }
 

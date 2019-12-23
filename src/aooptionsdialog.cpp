@@ -188,7 +188,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
                                          " Set it to 1 for no additional delay."));
     ui_pun_delay_spinbox = new QSpinBox(ui_form_layout_widget);
     ui_pun_delay_spinbox->setMinimum(1);
-    ui_pun_delay_spinbox->setMaximum(10000);
+    ui_pun_delay_spinbox->setMaximum(3);
     ui_pun_delay_spinbox->setValue(p_ao_app->get_pundelay());
     ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_pun_delay_spinbox);
     ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_pun_delay);
