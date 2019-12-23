@@ -301,8 +301,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
   connect(ui_music_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_music_list_double_clicked(QTreeWidgetItem*, int)));
-
-  connect(ui_area_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_area_list_double_clicked(QTreeWidgetItem*, int)));
+  connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
   connect(ui_hold_it, SIGNAL(clicked()), this, SLOT(on_hold_it_clicked()));
   connect(ui_objection, SIGNAL(clicked()), this, SLOT(on_objection_clicked()));
   connect(ui_take_that, SIGNAL(clicked()), this, SLOT(on_take_that_clicked()));
@@ -3265,15 +3264,14 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item, int column
 }
 
 
-void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
+void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
+
 {
-  column = 0; //Column 0 is the area name, column 1 is the metadata
-  QString p_area = p_item->text(column);
-  p_area = p_area.mid(p_area.indexOf(' ') + 1);
-  p_area.truncate(p_area.indexOf('\n'));
-  ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
-  QString packe = "MC#" + p_area + "#" + QString::number(m_cid) + "#%";
-  qDebug() << packe;
+
+    QString p_area = area_list.at(area_row_to_number.at(p_model.row()));
+
+    ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
+
 }
 
 void Courtroom::on_hold_it_clicked()

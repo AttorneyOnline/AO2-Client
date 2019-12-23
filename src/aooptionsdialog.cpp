@@ -8,7 +8,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     // Setting up the basics.
     // setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Settings"));
-    resize(398, 330);
+    resize(398, 340);
 
     ui_settings_buttons = new QDialogButtonBox(this);
 
