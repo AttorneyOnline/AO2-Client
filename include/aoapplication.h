@@ -168,6 +168,9 @@ public:
   // may contain, from config.ini.
   int get_max_log_size();
 
+  //Gets the punctuation delay modifier
+  int get_pundelay();
+
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();

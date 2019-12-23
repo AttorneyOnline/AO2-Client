@@ -46,6 +46,12 @@ int AOApplication::get_max_log_size()
   return result;
 }
 
+int AOApplication::get_pundelay()
+{
+    int result = configini->value("punctuation_delay", 2).toInt();
+   return result;
+}
+
 bool AOApplication::get_log_goes_downwards()
 {
   QString result = configini->value("log_goes_downwards", "false").value<QString>();

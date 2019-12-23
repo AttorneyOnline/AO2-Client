@@ -8,7 +8,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     // Setting up the basics.
     // setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Settings"));
-    resize(398, 320);
+    resize(398, 330);
 
     ui_settings_buttons = new QDialogButtonBox(this);
 
@@ -39,12 +39,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
 
     ui_form_layout_widget = new QWidget(ui_gameplay_tab);
-    ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 211));
+    ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 240));
 
     ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
     ui_gameplay_form->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
     ui_gameplay_form->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
+    ui_gameplay_form->setContentsMargins(0, 0, 0, 3);
 
     ui_theme_label = new QLabel(ui_form_layout_widget);
     ui_theme_label->setText(tr("Theme:"));
@@ -180,6 +180,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("jp - 日本語");
     ui_language_combobox->addItem("ru - Русский");
     ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_language_combobox);
+
+
+    ui_pun_delay = new QLabel(ui_casing_widget);
+    ui_pun_delay->setText(tr("Punctation Delay:"));
+    ui_pun_delay->setToolTip(tr("Punctation delay modifier."
+                                         " Set it to 1 for no additional delay."));
+    ui_pun_delay_spinbox = new QSpinBox(ui_form_layout_widget);
+    ui_pun_delay_spinbox->setMinimum(1);
+    ui_pun_delay_spinbox->setMaximum(10000);
+    ui_pun_delay_spinbox->setValue(p_ao_app->get_pundelay());
+    ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_pun_delay_spinbox);
+    ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_pun_delay);
 
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();
@@ -371,6 +383,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_casing_layout->setWidget(1, QFormLayout::FieldRole, ui_casing_enabled_cb);
 
+
+
+
     // -- DEFENSE ANNOUNCEMENTS
 
     ui_casing_def_lbl = new QLabel(ui_casing_widget);
@@ -486,7 +501,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
-
+    configini->setValue("punctuation_delay",ui_pun_delay_spinbox->value());
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
     if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))

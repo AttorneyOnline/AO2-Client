@@ -31,6 +31,7 @@
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QListWidget>
+#include <QHeaderView>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSlider>
@@ -344,7 +345,7 @@ private:
     const QString punctuation_chars = ".,?!:;";
 
     //amount by which we multiply the delay when we parse punctuation chars
-    const int punctuation_modifier = 3;
+     int punctuation_modifier = 2;
 
 
   //character id, which index of the char_list the player is
@@ -426,7 +427,7 @@ private:
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
-  QTreeWidget *ui_area_list;
+  QListWidget *ui_area_list;
   QTreeWidget *ui_music_list;
 
 
@@ -582,6 +583,7 @@ private slots:
 
   void on_ooc_return_pressed();
 
+  void on_music_search_keypr();
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);

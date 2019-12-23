@@ -114,11 +114,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
 
-  ui_area_list = new QTreeWidget(this);
-  ui_area_list->setColumnCount(2);
-  ui_area_list->hideColumn(1);
-  ui_area_list->setHeaderHidden(true);
-
+  ui_area_list = new QListWidget(this);
 
   ui_music_list = new QTreeWidget(this);
   ui_music_list->setColumnCount(2);
@@ -128,6 +124,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_list->setAutoFillBackground(true);
   ui_music_list->setExpandsOnDoubleClick(true);
   ui_music_list->setRootIsDecorated(true);
+  ui_music_list->header()->setStretchLastSection(false);
+  ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+  ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
+
   ui_music_list->hide();
 
   ui_ic_chat_name = new QLineEdit(this);
@@ -150,6 +150,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_name->setMaxLength(30);
   ui_ooc_chat_name->setText(p_ao_app->get_default_username());
 
+  punctuation_modifier = p_ao_app->get_pundelay();
   //ui_area_password = new QLineEdit(this);
   //ui_area_password->setFrame(false);
   ui_music_search = new QLineEdit(this);
@@ -326,6 +327,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ooc_toggle, SIGNAL(clicked()), this, SLOT(on_ooc_toggle_clicked()));
 
+  connect(ui_music_search, SIGNAL(returnPressed()), this, SLOT(on_music_search_keypr()));
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
 
   connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_witness_testimony_clicked()));
@@ -724,7 +726,6 @@ void Courtroom::set_widgets()
 
 void Courtroom::set_fonts()
 {
-
   set_font(ui_vp_showname, "showname");
   set_font(ui_vp_message, "message");
   set_font(ui_ic_chatlog, "ic_chatlog");
@@ -733,20 +734,8 @@ void Courtroom::set_fonts()
   set_font(ui_music_list, "music_list");
   set_font(ui_area_list, "music_list");
 
-  set_font(ui_area_list,"area_list");
-  set_font(ui_music_list,"music_name");
-
   // Set color of labels and checkboxes
   const QString design_file = "courtroom_fonts.ini";
-
-  QTextDocument *doc = ui_evidence_description->document();
-  doc->setDefaultFont(ao_app->get_font_name("evidence_description", design_file));
-
-
-  //CHANGE FONT HERE FOR NOW TODO
-  ui_evidence_image_name->setStyleSheet("font: Segoe UI");
-  ui_evidence_name->setStyleSheet("font: Segoe UI");
-
   QColor f_color = ao_app->get_color("label_color", design_file);
   QString color_string = "color: rgba(" +
           QString::number(f_color.red()) + ", " +
@@ -1035,80 +1024,82 @@ void Courtroom::list_music()
 
 void Courtroom::list_areas()
 {
-  ui_area_list->clear();
+    ui_area_list->clear();
+      area_row_to_number.clear();
 
-  QString f_file = "courtroom_design.ini";
+      QString f_file = "courtroom_design.ini";
 
-  QBrush free_brush(ao_app->get_color("area_free_color", f_file));
-  QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
-  QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
-  QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
-  QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
-  QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
-  QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
+      QBrush free_brush(ao_app->get_color("area_free_color", f_file));
+      QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
+      QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
+      QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
+      QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
+      QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
+      QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
 
-  int n_listed_areas = 0;
+      int n_listed_areas = 0;
 
-  for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
-  {
-    QString i_area = "";
-    i_area.append(area_list.at(n_area));
-
-    if (ao_app->arup_enabled)
-    {
-      i_area.prepend("[" + QString::number(n_area) + "] "); //Give it the index
-
-      i_area.append("\n  ");
-
-      i_area.append(arup_statuses.at(n_area));
-      i_area.append(" | CM: ");
-      i_area.append(arup_cms.at(n_area));
-
-      i_area.append("\n  ");
-
-      i_area.append(QString::number(arup_players.at(n_area)));
-      i_area.append(" users | ");
-
-      i_area.append(arup_locks.at(n_area));
-    }
-
-    if (i_area.toLower().contains(ui_music_search->text().toLower()))
-    {
-      QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
-      treeItem->setText(0, i_area);
-      treeItem->setText(1, QString::number(n_area));
-
-      if (ao_app->arup_enabled)
+      for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
       {
-        // Coloring logic here.
-        treeItem->setBackground(0, free_brush);
-        if (arup_locks.at(n_area) == "LOCKED")
+        QString i_area = "";
+        i_area.append("[");
+        i_area.append(QString::number(n_area));
+        i_area.append("] ");
+
+        i_area.append(area_list.at(n_area));
+
+        if (ao_app->arup_enabled)
         {
-            treeItem->setBackground(0, locked_brush);
+          i_area.append("\n  ");
+
+          i_area.append(arup_statuses.at(n_area));
+          i_area.append(" | CM: ");
+          i_area.append(arup_cms.at(n_area));
+
+          i_area.append("\n  ");
+
+          i_area.append(QString::number(arup_players.at(n_area)));
+          i_area.append(" users | ");
+
+          i_area.append(arup_locks.at(n_area));
         }
-        else
+
+        if (i_area.toLower().contains(ui_music_search->text().toLower()))
         {
-            if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-                treeItem->setBackground(0, lfp_brush);
-            else if (arup_statuses.at(n_area) == "CASING")
-                treeItem->setBackground(0, casing_brush);
-            else if (arup_statuses.at(n_area) == "RECESS")
-                treeItem->setBackground(0, recess_brush);
-            else if (arup_statuses.at(n_area) == "RP")
-                treeItem->setBackground(0, rp_brush);
-            else if (arup_statuses.at(n_area) == "GAMING")
-                treeItem->setBackground(0, gaming_brush);
+          ui_area_list->addItem(i_area);
+          area_row_to_number.append(n_area);
+
+          if (ao_app->arup_enabled)
+          {
+            // Colouring logic here.
+            ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+            if (arup_locks.at(n_area) == "LOCKED")
+            {
+                ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
+            }
+            else
+            {
+                if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
+                    ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
+                else if (arup_statuses.at(n_area) == "CASING")
+                    ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
+                else if (arup_statuses.at(n_area) == "RECESS")
+                    ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
+                else if (arup_statuses.at(n_area) == "RP")
+                    ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
+                else if (arup_statuses.at(n_area) == "GAMING")
+                    ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
+            }
+          }
+          else
+          {
+            ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+          }
+
+          ++n_listed_areas;
         }
       }
-      else
-      {
-        treeItem->setBackground(0, free_brush);
-      }
-
-      ++n_listed_areas;
     }
-  }
-}
 
 void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
 {
@@ -3109,6 +3100,14 @@ void Courtroom::on_ooc_toggle_clicked()
 
     server_ooc = true;
   }
+}
+
+void Courtroom::on_music_search_keypr()
+{
+    if(ui_music_search->text() == "")
+    {
+            ui_music_list->collapseAll();
+    }
 }
 
 void Courtroom::on_music_search_edited(QString p_text)
