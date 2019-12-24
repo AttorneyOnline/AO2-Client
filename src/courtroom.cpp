@@ -2213,9 +2213,11 @@ void Courtroom::chat_tick()
             ui_vp_message->insertHtml("<br>");
             tick_pos += 1;
             next_character_is_not_special = false;
+            formatting_char = true;
         }
         else
             next_character_is_not_special = true;
+            formatting_char = true;
         msg_delay ++;
     }
 
@@ -2225,11 +2227,13 @@ void Courtroom::chat_tick()
         // ++, because it INCREASES delay!
         current_display_speed++;
         msg_delay ++;
+        formatting_char = true;
     }
     else if (f_character == "}" and !next_character_is_not_special)
     {
         current_display_speed--;
         msg_delay++;
+        formatting_char = true;
     }
     else if (punctuation_chars.contains(f_character))
     {
@@ -2254,6 +2258,7 @@ void Courtroom::chat_tick()
         {
             inline_colour_stack.push(INLINE_ORANGE);
         }
+        formatting_char = true;
         msg_delay++;
     }
 
@@ -2342,19 +2347,19 @@ void Courtroom::chat_tick()
             if (inline_colour_stack.top() == INLINE_GREEN)
             {
                 inline_colour_stack.pop();
-                msg_delay++;
             }
             else
             {
                 inline_colour_stack.push(INLINE_GREEN);
-                msg_delay++;
             }
+
         }
         else
         {
             inline_colour_stack.push(INLINE_GREEN);
-            msg_delay++;
         }
+         msg_delay++;
+        formatting_char = true;
     }
     else
     {
@@ -2451,9 +2456,14 @@ void Courtroom::chat_tick()
     {
         current_display_speed = 6;
     }
+    if (formatting_char)
+    {
+        chat_tick_timer->start(1);
 
+    }
+    else{
     chat_tick_timer->start(msg_delay);
-
+}
 
   }
 }
