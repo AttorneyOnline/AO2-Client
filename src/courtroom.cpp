@@ -1272,7 +1272,7 @@ void Courtroom::list_areas()
     {
       QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
       treeItem->setText(0, i_area);
-      treeItem->setText(1, QString::number(n_area));
+      treeItem->setText(1, area_list.at(n_area));
 
       if (ao_app->arup_enabled)
       {
@@ -3850,12 +3850,13 @@ void Courtroom::music_list_collapse_all()
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
-  column = 0; //Column 0 is the area name, column 1 is the metadata
-  QString p_area = p_item->text(column);
+  column = 1; //The metadata
+  QString p_area = p_item->text(1);
 
   QStringList packet_contents;
   packet_contents.append(p_area);
   packet_contents.append(QString::number(m_cid));
+  qDebug() << packet_contents;
   ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 
