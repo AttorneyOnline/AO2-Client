@@ -11,7 +11,7 @@ OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
 
 SOURCES += $$files($$PWD/src/*.cpp)
-HEADERS += $$files($$PWD/include/*.h) $$PWD/include/aomusicplayer.h $$PWD/include/aosfxplayer.h
+HEADERS += $$files($$PWD/include/*.h)
 LIBS += -L$$PWD/lib -lbass -ldiscord-rpc
 
 CONFIG += c++11
