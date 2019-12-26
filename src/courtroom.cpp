@@ -3850,12 +3850,11 @@ void Courtroom::music_list_collapse_all()
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
-  column = 0; //Column 0 is the area name, column 1 is the metadata
-  QString p_area = p_item->text(column);
-
+  int p_area = ui_area_list->indexOfTopLevelItem(p_item);
   QStringList packet_contents;
-  packet_contents.append(p_area);
+  packet_contents.append(QString::number(p_area));
   packet_contents.append(QString::number(m_cid));
+  qDebug() << packet_contents;
   ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 
