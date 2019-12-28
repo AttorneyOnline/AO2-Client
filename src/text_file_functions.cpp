@@ -665,3 +665,9 @@ QString AOApplication::get_casing_can_host_cases()
   QString result = configini->value("casing_can_host_cases", "Turnabout Check Your Settings").value<QString>();
   return result;
 }
+
+bool AOApplication::get_icfan_enabled()
+{
+    QString result = configini->value("fancy_iclog_enabled","false").value<QString>();
+    return result.startsWith("true");
+}

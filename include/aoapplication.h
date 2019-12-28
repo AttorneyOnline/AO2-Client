@@ -311,6 +311,9 @@ public:
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
+  // Get if html for ic log is enabled
+  bool get_icfan_enabled();
+
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 6;

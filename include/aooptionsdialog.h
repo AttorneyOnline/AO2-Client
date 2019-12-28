@@ -113,6 +113,14 @@ private:
     QLabel *ui_casing_cm_cases_lbl;
     QLineEdit *ui_casing_cm_cases_textbox;
 
+
+    QWidget *ui_other_tab;
+    QWidget *ui_other_widget;
+    QFormLayout *ui_other_layout;
+    QLabel *ui_other_fancy_icl_enabled_lb;
+    QCheckBox *ui_other_fancy_icl_enabled_cb
+
+    ;
     bool needs_default_audiodev();
 
 signals:

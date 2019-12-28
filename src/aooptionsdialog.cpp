@@ -484,6 +484,30 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
 
+
+    //other
+
+
+
+    ui_other_tab = new QWidget();
+    ui_settings_tabs->addTab(ui_other_tab, tr("Other"));
+
+    ui_other_widget = new QWidget(ui_other_tab);
+    ui_other_widget->setGeometry(QRect(10,10, 361, 211));
+
+    ui_other_layout = new QFormLayout(ui_other_widget);
+    ui_other_layout->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+    ui_other_layout->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    ui_other_layout->setContentsMargins(0, 0, 0, 0);
+
+    ui_other_fancy_icl_enabled_lb = new QLabel(ui_other_widget);
+    ui_other_fancy_icl_enabled_lb->setText(tr("Fancy IC log"));
+    ui_other_fancy_icl_enabled_lb->setToolTip(tr("Enables html on log. Basically it will enable colors in ic log."));
+    ui_other_fancy_icl_enabled_cb = new QCheckBox(ui_other_widget);
+    ui_other_fancy_icl_enabled_cb->setChecked(ao_app->get_icfan_enabled());
+
+
+
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);
 }
@@ -530,6 +554,8 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
     configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
     configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
+
+    configini->setValue("fancy_iclog_enabled",ui_other_fancy_icl_enabled_cb->isChecked());
 
     callwordsini->close();
     done(0);
