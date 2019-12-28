@@ -2296,7 +2296,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
 
   if (!is_songchange)
-    p_text = filter_ic_text(p_text, false);
+    p_text = filter_ic_text(p_text, true, -1, m_chatmessage[TEXT_COLOR].toInt());
 
   if (log_goes_downwards)
   {
@@ -2322,7 +2322,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       else
       {
         ui_ic_chatlog->textCursor().insertText(": ", normal);
-        ui_ic_chatlog->textCursor().insertText(p_text, normal);
+        ui_ic_chatlog->textCursor().insertHtml(p_text);
       }
 
       // If we got too many blocks in the current log, delete some from the top.
