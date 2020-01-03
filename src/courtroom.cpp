@@ -547,10 +547,13 @@ void Courtroom::set_widgets()
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
+  ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
+  ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
+  ui_server_chatlog->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
