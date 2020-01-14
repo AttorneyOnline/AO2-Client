@@ -422,7 +422,9 @@ private:
   AOMovie *ui_vp_objection;
 
 
-  bool fancy_iclog = false;
+  bool colorf_iclog = false;
+  bool mirror_iclog = false;
+
   QTextEdit *ui_ic_chatlog;
 
   AOTextArea *ui_ms_chatlog;

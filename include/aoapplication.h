@@ -314,6 +314,9 @@ public:
   // Get if html for ic log is enabled
   bool get_icfan_enabled();
 
+  // Get if ic log mirror is enabled
+  bool get_iclmir_enabled();
+
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 6;

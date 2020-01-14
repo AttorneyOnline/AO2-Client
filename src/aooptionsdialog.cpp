@@ -501,10 +501,22 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_other_layout->setContentsMargins(0, 0, 0, 0);
 
     ui_other_fancy_icl_enabled_lb = new QLabel(ui_other_widget);
-    ui_other_fancy_icl_enabled_lb->setText(tr("Fancy IC log"));
+    ui_other_fancy_icl_enabled_lb->setText(tr("Colorfull IC log"));
     ui_other_fancy_icl_enabled_lb->setToolTip(tr("Enables html on log. Basically it will enable colors in ic log."));
+    ui_other_layout->setWidget(1,QFormLayout::LabelRole, ui_other_fancy_icl_enabled_lb);
     ui_other_fancy_icl_enabled_cb = new QCheckBox(ui_other_widget);
     ui_other_fancy_icl_enabled_cb->setChecked(ao_app->get_icfan_enabled());
+    ui_other_layout->setWidget(1, QFormLayout::FieldRole, ui_other_fancy_icl_enabled_cb);
+
+    ui_other_mirror_icl_enabled_lb = new QLabel(ui_other_widget);
+    ui_other_mirror_icl_enabled_lb->setText(tr("Mirror IC log"));
+    ui_other_mirror_icl_enabled_lb->setToolTip(tr("IC log will mirror the IC box. "
+                                                  "Meaning that if somebody gets interupted nobody will know what they wanted to say. "
+                                                  "Enable for a more realistic expierence"));
+    ui_other_layout->setWidget(2,QFormLayout::LabelRole, ui_other_mirror_icl_enabled_lb);
+    ui_other_mirror_icl_enabled_cb = new QCheckBox(ui_other_widget);
+    ui_other_mirror_icl_enabled_cb->setChecked(ao_app->get_iclmir_enabled());
+    ui_other_layout->setWidget(2, QFormLayout::FieldRole, ui_other_mirror_icl_enabled_cb);
 
 
 
@@ -555,8 +567,8 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
     configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
 
-    configini->setValue("fancy_iclog_enabled",ui_other_fancy_icl_enabled_cb->isChecked());
-
+    configini->setValue("color_iclog_enabled",ui_other_fancy_icl_enabled_cb->isChecked());
+    configini->setValue("mirror_iclog_enabled",ui_other_mirror_icl_enabled_cb->isChecked());
     callwordsini->close();
     done(0);
 }

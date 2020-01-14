@@ -668,6 +668,12 @@ QString AOApplication::get_casing_can_host_cases()
 
 bool AOApplication::get_icfan_enabled()
 {
-    QString result = configini->value("fancy_iclog_enabled","false").value<QString>();
+    QString result = configini->value("color_iclog_enabled","false").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::get_iclmir_enabled()
+{
+    QString result = configini->value("mirror_iclog_enabled","false").value<QString>();
     return result.startsWith("true");
 }

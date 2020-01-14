@@ -94,7 +94,7 @@ void AOApplication::destruct_courtroom()
 QString AOApplication::get_version_string()
 {
   return
-  "CC - Update 22.6";
+  "CC - Update 22.6?";
 }
 
 void AOApplication::reload_theme()
@@ -134,6 +134,7 @@ void AOApplication::server_disconnected()
   if (courtroom_constructed)
   {
     call_notice(tr("Disconnected from server."));
+    beep();
     construct_lobby();
     destruct_courtroom();
   }
@@ -142,7 +143,6 @@ void AOApplication::server_disconnected()
 void AOApplication::loading_cancelled()
 {
   destruct_courtroom();
-
   w_lobby->hide_loading_overlay();
 }
 
