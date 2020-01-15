@@ -960,15 +960,27 @@ bool AOApplication::is_discord_enabled()
     return result.startsWith("true");
 }
 
-bool AOApplication::is_shake_flash_enabled()
+bool AOApplication::is_shake_enabled()
 {
-    QString result = configini->value("shakeandflash", "true").value<QString>();
+    QString result = configini->value("shake", "true").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::is_effects_enabled()
+{
+    QString result = configini->value("effects", "true").value<QString>();
     return result.startsWith("true");
 }
 
 bool AOApplication::is_frame_network_enabled()
 {
     QString result = configini->value("framenetwork", "true").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::is_colorlog_enabled()
+{
+    QString result = configini->value("colorlog", "true").value<QString>();
     return result.startsWith("true");
 }
 

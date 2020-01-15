@@ -195,16 +195,28 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_language_combobox);
 
     row += 1;
-    ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
-    ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
-    ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+    ui_shake_lbl = new QLabel(ui_form_layout_widget);
+    ui_shake_lbl->setText(tr("Allow Screenshake:"));
+    ui_shake_lbl->setToolTip(tr("Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
 
-    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_epilepsy_lbl);
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_shake_lbl);
 
-    ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
-    ui_epilepsy_cb->setChecked(ao_app->is_shake_flash_enabled());
+    ui_shake_cb = new QCheckBox(ui_form_layout_widget);
+    ui_shake_cb->setChecked(ao_app->is_shake_enabled());
 
-    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_epilepsy_cb);
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_shake_cb);
+
+    row += 1;
+    ui_effects_lbl = new QLabel(ui_form_layout_widget);
+    ui_effects_lbl->setText(tr("Allow Effects:"));
+    ui_effects_lbl->setToolTip(tr("Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_effects_lbl);
+
+    ui_effects_cb = new QCheckBox(ui_form_layout_widget);
+    ui_effects_cb->setChecked(ao_app->is_effects_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_effects_cb);
 
     row += 1;
     ui_framenetwork_lbl = new QLabel(ui_form_layout_widget);
@@ -214,9 +226,21 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_framenetwork_lbl);
 
     ui_framenetwork_cb = new QCheckBox(ui_form_layout_widget);
-    ui_framenetwork_cb->setChecked(ao_app->is_shake_flash_enabled());
+    ui_framenetwork_cb->setChecked(ao_app->is_frame_network_enabled());
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_framenetwork_cb);
+
+    row += 1;
+    ui_colorlog_lbl = new QLabel(ui_form_layout_widget);
+    ui_colorlog_lbl->setText(tr("Colors in IC Log:"));
+    ui_colorlog_lbl->setToolTip(tr("Use the markup colors in the server IC chatlog."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_colorlog_lbl);
+
+    ui_colorlog_cb = new QCheckBox(ui_form_layout_widget);
+    ui_colorlog_cb->setChecked(ao_app->is_colorlog_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_colorlog_cb);
 
     QScrollArea *scroll = new QScrollArea;
     scroll->setWidget(ui_form_layout_widget);
@@ -571,8 +595,11 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
-    configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
+    configini->setValue("shake", ui_shake_cb->isChecked());
+    configini->setValue("effects", ui_effects_cb->isChecked());
     configini->setValue("framenetwork", ui_framenetwork_cb->isChecked());
+    configini->setValue("colorlog", ui_colorlog_cb->isChecked());
+
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 

@@ -1889,7 +1889,7 @@ void Courtroom::handle_chatmessage_2()
 
 void Courtroom::do_screenshake()
 {
-  if(!ao_app->is_shake_flash_enabled())
+  if(!ao_app->is_shake_enabled())
       return;
 
   //This way, the animation is reset in such a way that last played screenshake would return to its "final frame" properly.
@@ -1935,7 +1935,7 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_flash()
 {
-  if(!ao_app->is_shake_flash_enabled())
+  if(!ao_app->is_effects_enabled())
       return;
 
   QString f_char = m_chatmessage[CHAR_NAME];
@@ -1945,17 +1945,20 @@ void Courtroom::do_flash()
 
 void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char)
 {
-  if(!ao_app->is_shake_flash_enabled())
-    return;
 
   QString effect = ao_app->get_effect(fx_name, p_char);
   if (effect == "")
     return;
 
-  ui_vp_effect->set_play_once(false); // The effects themselves dictate whether or not they're looping. Static effects will linger.
-  ui_vp_effect->play(effect); // It will set_play_once to true if the filepath provided is not designed to loop more than once
   if (fx_sound != "")
     sfx_player->play(fx_sound);
+
+  //Only check if effects are disabled after playing the sound if it exists
+  if(!ao_app->is_effects_enabled())
+    return;
+
+  ui_vp_effect->set_play_once(false); // The effects themselves dictate whether or not they're looping. Static effects will linger.
+  ui_vp_effect->play(effect); // It will set_play_once to true if the filepath provided is not designed to loop more than once
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
@@ -2299,7 +2302,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
 
   if (!is_songchange)
-    p_text = filter_ic_text(p_text, true, -1, m_chatmessage[TEXT_COLOR].toInt());
+    p_text = filter_ic_text(p_text, ao_app->is_colorlog_enabled(), -1, m_chatmessage[TEXT_COLOR].toInt());
 
   if (log_goes_downwards)
   {

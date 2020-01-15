@@ -172,13 +172,21 @@ public:
   // from the config.ini.
   bool is_discord_enabled();
 
-  // Returns the value of whether shaking and flashing should be enabled.
+  // Returns the value of whether shaking should be enabled.
   // from the config.ini.
-  bool is_shake_flash_enabled();
+  bool is_shake_enabled();
+
+  // Returns the value of whether effects should be enabled.
+  // from the config.ini.
+  bool is_effects_enabled();
 
   // Returns the value of whether frame-specific effects defined in char.ini should be sent/received over the network.
   // from the config.ini.
   bool is_frame_network_enabled();
+
+  // Returns the value of whether colored ic log should be a thing.
+  // from the config.ini.
+  bool is_colorlog_enabled();
 
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
@@ -396,7 +404,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 8;
-  const int MINOR_VERSION = 1;
+  const int MINOR_VERSION = 2;
 
   QString current_theme = "default";
 

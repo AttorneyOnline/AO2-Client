@@ -65,10 +65,15 @@ private:
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
 
-    QLabel *ui_epilepsy_lbl;
-    QCheckBox *ui_epilepsy_cb;
+    QLabel *ui_shake_lbl;
+    QCheckBox *ui_shake_cb;
+    QLabel *ui_effects_lbl;
+    QCheckBox *ui_effects_cb;
     QLabel *ui_framenetwork_lbl;
     QCheckBox *ui_framenetwork_cb;
+
+    QLabel *ui_colorlog_lbl;
+    QCheckBox *ui_colorlog_cb;
 
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;
