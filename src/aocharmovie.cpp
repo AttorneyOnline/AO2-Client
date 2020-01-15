@@ -50,6 +50,9 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
   movie_delays.clear();
   movie_effects.clear();
 
+  if (!file_exists(emote_path))
+    return;
+
   m_reader->setFileName(emote_path);
   QPixmap f_pixmap = this->get_pixmap(m_reader->read());
   int f_delay = m_reader->nextImageDelay();

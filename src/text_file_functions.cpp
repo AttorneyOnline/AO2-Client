@@ -527,7 +527,7 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
-    if (sound_to_check.contains(".")) //We have what we could call a file extension
+    if (file_exists(sound_to_check))
         return sound_to_check;
     if (file_exists(sound_to_check + ".opus"))
         return sound_to_check + ".opus";
@@ -542,7 +542,7 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
-    if (path_to_check.contains(".")) //We have what we could call a file extension
+    if (file_exists(path_to_check))
         return path_to_check;
     if (file_exists(path_to_check + ".webp"))
         return path_to_check + ".webp";
