@@ -1718,8 +1718,20 @@ void Courtroom::handle_chatmessage_2()
 
 void Courtroom::handle_chatmessage_3()
 {
-  start_chat_ticking();
+     start_chat_ticking();
+     if (mirror_iclog)
+     {
+     append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false);
+     if (!ui_showname_enable->isChecked())
+     {
+         ui_ic_chatlog->textCursor().insertHtml("<br><b>" + m_chatmessage[CHAR_NAME] + ": </b>");
 
+     }
+     else{
+
+         ui_ic_chatlog->textCursor().insertHtml("<br><b>" + m_chatmessage[SHOWNAME] + ": </b>");
+     }
+     }
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
@@ -1806,17 +1818,7 @@ void Courtroom::handle_chatmessage_3()
       break;
     }
   }
-  if(mirror_iclog)
-      {// TODO: Disable this
-      if (!ui_showname_enable->isChecked())
-      {
-          ui_ic_chatlog->insertHtml("<br><b>" + m_chatmessage[CHAR_NAME] + ": </b>");
-      }
-      else{
 
-          ui_ic_chatlog->insertHtml("<br><b>" + m_chatmessage[SHOWNAME] + ": </b>");
-      }
-  }
 
 }
 
@@ -1996,7 +1998,7 @@ QString Courtroom::filter_ic_text(QString p_text)
   }
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange)
+void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange, bool force_write)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2007,7 +2009,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
 
-  if (!is_songchange)
+  if ((!is_songchange && !mirror_iclog) || force_write)
     p_text = filter_ic_text(p_text);
 
   if (log_goes_downwards)
@@ -2016,12 +2018,12 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
 
       ui_ic_chatlog->moveCursor(QTextCursor::End);
 
-      if (!first_message_sent)
+      if ((!colorf_iclog && !mirror_iclog) || force_write)
       {
           ui_ic_chatlog->textCursor().insertText(p_name, bold);
           first_message_sent = true;
       }
-      else
+      else if(!mirror_iclog)
       {
           ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
       }
@@ -2031,11 +2033,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
         ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
         ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
       }
-      else if(colorf_iclog)
+      else if(colorf_iclog && (!mirror_iclog || force_write))
       { //insertText(p_text, normal);
         ui_ic_chatlog->textCursor().insertHtml(p_text);
       }
-      else
+      else if((!colorf_iclog && !mirror_iclog) || force_write)
       {
           ui_ic_chatlog->textCursor().insertText(p_text, normal);
       }
@@ -2068,19 +2070,19 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
 
       ui_ic_chatlog->moveCursor(QTextCursor::Start);
-
-      ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+      if((!colorf_iclog && !mirror_iclog) || force_write)
+        ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
 
       if (is_songchange)
       {
         ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
         ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
       }
-      else if(colorf_iclog)
+      else if(colorf_iclog && (!mirror_iclog || force_write))
       { //insertText(p_text, normal);
         ui_ic_chatlog->textCursor().insertHtml(p_text);
       }
-      else
+      else if((!colorf_iclog && !mirror_iclog) || force_write)
       {
           ui_ic_chatlog->textCursor().insertText(p_text, normal);
       }
@@ -2336,7 +2338,7 @@ void Courtroom::chat_tick()
     {
         inline_colour_stack.push(INLINE_BLUE);
         ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
-        if(mirror_iclog)
+        if(mirror_iclog && colorf_iclog)
             ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
         // Increase how deep we are in inline blues.
         inline_blue_depth++;
@@ -2359,7 +2361,7 @@ void Courtroom::chat_tick()
         {
             inline_colour_stack.pop();
             ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
-            if(mirror_iclog)
+            if(mirror_iclog && colorf_iclog)
                 ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
             // Decrease how deep we are in inline blues.
             // Just in case, we do a check if we're above zero, but we should be.
@@ -2394,7 +2396,7 @@ void Courtroom::chat_tick()
     {
         inline_colour_stack.push(INLINE_GREY);
         ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
-        if(mirror_iclog)
+        if(mirror_iclog && colorf_iclog)
             ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
     }
     else if (f_character == "]" and !next_character_is_not_special
@@ -2404,7 +2406,7 @@ void Courtroom::chat_tick()
         {
             inline_colour_stack.pop();
             ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
-            if(mirror_iclog)
+            if(mirror_iclog && colorf_iclog)
                 ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
         }
         else
@@ -2445,22 +2447,22 @@ void Courtroom::chat_tick()
           switch (inline_colour_stack.top()) {
           case INLINE_ORANGE:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(ORANGE)).name() +"\">" + f_character + "</font>");
-              if(mirror_iclog)
+              if(mirror_iclog && colorf_iclog)
                 ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color(QString::number(ORANGE)).name() +"\">" + f_character + "</font>");
               break;
           case INLINE_BLUE:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
-              if(mirror_iclog)
+              if(mirror_iclog && colorf_iclog)
                 ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
               break;
           case INLINE_GREEN:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(GREEN)).name() +"\">" + f_character + "</font>");
-              if(mirror_iclog)
+              if(mirror_iclog && colorf_iclog)
                 ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color(QString::number(GREEN)).name() +"\">" + f_character + "</font>");
               break;
           case INLINE_GREY:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
-              if(mirror_iclog)
+              if(mirror_iclog && colorf_iclog)
                 ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
               break;
           }
@@ -2493,16 +2495,19 @@ void Courtroom::chat_tick()
           ++rainbow_counter;
 
           ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
-          if(mirror_iclog)
+          if(mirror_iclog  && colorf_iclog)
             ui_ic_chatlog->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
         }
         else
         {
           ui_vp_message->insertHtml(f_character);
-          if(mirror_iclog)
+          if(mirror_iclog && colorf_iclog)
               ui_ic_chatlog->insertHtml(f_character);}
       }
-
+      if (mirror_iclog && !colorf_iclog)
+      {
+          ui_ic_chatlog->insertHtml(f_character);
+      }
       if (message_is_centered)
       {
           ui_vp_message->setAlignment(Qt::AlignCenter);
@@ -3759,14 +3764,14 @@ void Courtroom::on_showname_enable_clicked()
          if (item.get_is_song())
            append_ic_text(item.get_message(), item.get_showname(), true);
          else
-           append_ic_text(item.get_message(), item.get_showname());
+           append_ic_text(item.get_message(), item.get_showname(),false,true);
       }
       else
       {
           if (item.get_is_song())
             append_ic_text(item.get_message(), item.get_name(), true);
           else
-            append_ic_text(item.get_message(), item.get_name());
+            append_ic_text(item.get_message(), item.get_name(),false,true);
       }
     }
 
