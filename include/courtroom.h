@@ -625,7 +625,7 @@ public slots:
   void preanim_done();
   void do_screenshake();
   void do_flash();
-  void do_effect(QString fx_path, QString fx_sound, QString p_char);
+  void do_effect(QString fx_path, QString fx_sound, QString p_char, QString p_folder);
   void play_char_sfx(QString sfx_name);
 
   void mod_called(QString p_ip);

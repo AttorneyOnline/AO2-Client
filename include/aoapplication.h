@@ -317,7 +317,7 @@ public:
   QStringList get_effects(QString p_char);
 
   //t
-  QString get_effect(QString effect, QString p_char);
+  QString get_effect(QString effect, QString p_char, QString p_folder);
 
   //Return the effect sound associated with the fx_name in the misc/effects/<char-defined>/sounds.ini, or theme/effects/sounds.ini.
   QString get_effect_sound(QString fx_name, QString p_char);

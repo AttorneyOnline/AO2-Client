@@ -1,4 +1,4 @@
-#include "courtroom.h"
+﻿#include "courtroom.h"
 
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
@@ -1545,7 +1545,8 @@ void Courtroom::on_chat_return_pressed()
   if (ao_app->effects_enabled)
   {
     QString fx_sound = ao_app->get_effect_sound(effect, current_char);
-    packet_contents.append(effect + "|" + fx_sound);
+    QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
+    packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
     ui_effects_dropdown->blockSignals(true);
     ui_effects_dropdown->setCurrentIndex(0);
     ui_effects_dropdown->blockSignals(false);
@@ -1943,10 +1944,10 @@ void Courtroom::do_flash()
   ui_vp_effect->play("realizationflash", f_char, f_custom_theme, 60);
 }
 
-void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char)
+void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char, QString p_folder)
 {
 
-  QString effect = ao_app->get_effect(fx_name, p_char);
+  QString effect = ao_app->get_effect(fx_name, p_char, p_folder);
   if (effect == "")
     return;
 
@@ -2458,10 +2459,18 @@ void Courtroom::start_chat_ticking()
     QStringList fx_list = m_chatmessage[EFFECTS].split("|");
     QString fx = fx_list[0];
     QString fx_sound;
+    QString fx_folder;
+
     if (fx_list.length() > 1)
       fx_sound = fx_list[1];
 
-    this->do_effect(fx, fx_sound, m_chatmessage[CHAR_NAME]);
+    if (fx_list.length() > 2)
+    {
+      fx_folder = fx_list[1];
+      fx_sound = fx_list[2];
+    }
+
+    this->do_effect(fx, fx_sound, m_chatmessage[CHAR_NAME], fx_folder);
   }
   else if (m_chatmessage[REALIZATION] == "1")
   {

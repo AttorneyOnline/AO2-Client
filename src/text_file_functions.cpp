@@ -885,9 +885,12 @@ QStringList AOApplication::get_effects(QString p_char)
   return effects;
 }
 
-QString AOApplication::get_effect(QString effect, QString p_char)
+QString AOApplication::get_effect(QString effect, QString p_char, QString p_folder)
 {
-  QString p_effect = read_char_ini(p_char, "effects", "Options");
+  QString p_effect = p_folder;
+  if (p_folder == "")
+    p_effect = read_char_ini(p_char, "effects", "Options");
+
   QString p_path = get_image_suffix(get_base_path() + "misc/" + p_effect + "/" + effect);
   QString design_ini_path = get_image_suffix(get_theme_path("effects/" + effect));
   QString default_path = get_image_suffix(get_default_theme_path("effects/" + effect));
