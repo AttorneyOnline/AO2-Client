@@ -677,3 +677,4 @@ bool AOApplication::get_iclmir_enabled()
     QString result = configini->value("mirror_iclog_enabled","false").value<QString>();
     return result.startsWith("true");
 }
+

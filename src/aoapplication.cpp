@@ -93,8 +93,10 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  return
-  "CC - Update 22.6?";
+  if(file_exists(get_base_path() + "/updates/update.ini"))
+      return "Update system works";
+  else
+    return "CC - Update 22.6?";
 }
 
 void AOApplication::reload_theme()
