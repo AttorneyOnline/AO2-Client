@@ -1849,6 +1849,7 @@ QString Courtroom::filter_ic_text(QString p_text)
   QString f_character = p_text.at(trick_check_pos);
   std::stack<INLINE_COLOURS> ic_colour_stack;
   QString final_text = "";
+  bool delay_pop = false;
   while (trick_check_pos < p_text.size())
   {
       f_character = p_text.at(trick_check_pos);
@@ -1901,15 +1902,18 @@ QString Courtroom::filter_ic_text(QString p_text)
       else if (f_character == "(" and !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_BLUE);
-          trick_check_pos++;
+          if(!colorf_iclog)
+            trick_check_pos++;
       }
       else if (f_character == ")" and !ic_next_is_not_special
                and !ic_colour_stack.empty())
       {
           if (ic_colour_stack.top() == INLINE_BLUE)
           {
-              ic_colour_stack.pop();
-              trick_check_pos++;
+              //ic_colour_stack.pop();
+              delay_pop = true;
+              if(!colorf_iclog)
+                trick_check_pos++;
           }
           else
           {
@@ -1921,15 +1925,18 @@ QString Courtroom::filter_ic_text(QString p_text)
       else if (f_character == "[" and !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_GREY);
-          trick_check_pos++;
+          if(!colorf_iclog)
+            trick_check_pos++;
       }
       else if (f_character == "]" and !ic_next_is_not_special
                and !ic_colour_stack.empty())
       {
           if (ic_colour_stack.top() == INLINE_GREY)
           {
-              ic_colour_stack.pop();
-              trick_check_pos++;
+              //ic_colour_stack.pop();
+              delay_pop = true;
+              if(!colorf_iclog)
+                trick_check_pos++;
           }
           else
           {
@@ -1959,9 +1966,15 @@ QString Courtroom::filter_ic_text(QString p_text)
               p_text.remove(trick_check_pos,1);
           }
       }
-      else if(colorf_iclog)
+      else if (f_character == "<" || f_character == ">")
       {
-
+          //if(colorf_iclog)
+              //  f_character = '&lt';
+          //f_character = "";
+         // trick_check_pos++;
+      }
+      if(colorf_iclog)
+      {
         ic_next_is_not_special = false;
         if (!ic_colour_stack.empty())
         {
@@ -1980,6 +1993,11 @@ QString Courtroom::filter_ic_text(QString p_text)
             case INLINE_GREY:
                 final_text += "<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>";
                 break;
+            }
+            if(delay_pop)
+            {
+                ic_colour_stack.pop();
+                delay_pop = false;
             }
 
         }
@@ -2014,11 +2032,16 @@ QString Courtroom::filter_ic_text(QString p_text)
         }
         else
         {
-            final_text += f_character;
+            if (f_character == "<")
+                final_text += "&lt;";
+            else if (f_character == ">")
+                final_text += "&gt;";
+            else
+                final_text += f_character;
             trick_check_pos++;
         }
 
-  }
+      }
       else
       {
           trick_check_pos++;
