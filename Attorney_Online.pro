@@ -16,6 +16,7 @@ HEADERS += $$files($$PWD/include/*.h)
 
 LIBS += -L$$PWD/lib
 
+
 #DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {

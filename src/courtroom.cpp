@@ -3305,7 +3305,7 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if(ooc_message.startsWith("/version"))
   {
-      append_server_chatmessage("CLIENT", tr("V22.5 - Tomato Edition"), "1");
+      append_server_chatmessage("CLIENT", tr("V22.5 - Sweet Potato Edition"), "1");
       ui_ooc_chat_message->clear();
       return;
   }
