@@ -2877,7 +2877,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   if (n_char < 0 || n_char >= char_list.size())
   {
-    music_player->play(f_song);
+    music_player->play(ao_app->get_sfx_suffix(f_song));
   }
   else
   {
@@ -2900,7 +2900,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       }
 
       append_ic_text(f_song_clear, str_show, true);
-      music_player->play(f_song);
+      music_player->play(ao_app->get_sfx_suffix(f_song));
     }
   }
 }

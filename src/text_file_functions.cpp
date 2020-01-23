@@ -380,6 +380,8 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
+    if(!file_exists(sound_to_check))
+    {
     QString mp3_check = get_sounds_path(sound_to_check + ".mp3");
     QString opus_check = get_sounds_path(sound_to_check + ".opus");
     if (file_exists(opus_check))
@@ -390,7 +392,11 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
     {
         return sound_to_check + ".mp3";
     }
-    return sound_to_check + ".wav";
+    return sound_to_check + ".wav";}
+    else
+     {
+        return sound_to_check;
+    }
 }
 
 QString AOApplication::get_image_suffix(QString path_to_check)
