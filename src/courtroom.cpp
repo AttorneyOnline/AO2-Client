@@ -1719,6 +1719,10 @@ void Courtroom::handle_chatmessage_2()
 
 void Courtroom::handle_chatmessage_3()
 {
+     if(!log_goes_downwards && mirror_iclog)
+        ui_ic_chatlog->moveCursor(QTextCursor::Start);
+     else if(mirror_iclog)
+         ui_ic_chatlog->moveCursor(QTextCursor::End);
 
      start_chat_ticking();
      if (mirror_iclog)
@@ -2322,6 +2326,7 @@ void Courtroom::chat_tick()
   //do not perform heavy operations here
 
   QString f_message = m_chatmessage[MESSAGE];
+
   f_message.remove(0, tick_pos);
 
   // Due to our new text speed system, we always need to stop the timer now.
@@ -2337,6 +2342,7 @@ void Courtroom::chat_tick()
     f_message.remove(0,2);
   }
   QString f_char = m_chatmessage[CHAR_NAME];
+
   if(!shown)
      f_char = m_chatmessage_tmp[CHAR_NAME];
   if (f_message.size() == 0)
