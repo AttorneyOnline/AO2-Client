@@ -1,4 +1,4 @@
-#include "courtroom.h"
+﻿#include "courtroom.h"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -1740,6 +1740,10 @@ void Courtroom::handle_chatmessage_3()
           }
         QScrollBar *scroll = ui_vp_message->verticalScrollBar();
         scroll->setValue(scroll->maximum());
+        if(chatmessage_is_empty && log_goes_downwards)
+        {
+             ui_ic_chatlog->moveCursor(QTextCursor::End);
+        }
 
      }
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
@@ -2350,8 +2354,9 @@ void Courtroom::chat_tick()
     text_state = 2;
     if (log_goes_downwards && mirror_iclog)
     {
-        ui_ic_chatlog->moveCursor(QTextCursor::End);
+
         append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false);
+        ui_ic_chatlog->moveCursor(QTextCursor::End);
     }
     if (anim_state != 4)
     {
