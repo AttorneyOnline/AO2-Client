@@ -296,6 +296,8 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
 
+  //The cursor to write with in mirror mode
+  QTextCursor *mirror_cursor;
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
 

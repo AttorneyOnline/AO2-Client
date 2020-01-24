@@ -1724,6 +1724,7 @@ void Courtroom::handle_chatmessage_3()
      else if(mirror_iclog)
          ui_ic_chatlog->moveCursor(QTextCursor::End);
 
+     ui_ic_chatlog->setTextInteractionFlags(Qt::TextSelectableByMouse);
      start_chat_ticking();
      if (mirror_iclog)
      {
@@ -2334,6 +2335,11 @@ void Courtroom::chat_tick()
     f_message.remove(0,2);
   }
   QString f_char = m_chatmessage[CHAR_NAME];
+  if (log_goes_downwards && mirror_iclog)
+    ui_ic_chatlog->moveCursor(QTextCursor::End);
+  else if (!log_goes_downwards && mirror_iclog)
+    //ui_ic_chatlog->setTextCursor();
+    ui_ic_chatlog->moveCursor(QTextCursor::EndOfLine);
 
   if(!shown)
      f_char = m_chatmessage_tmp[CHAR_NAME];
