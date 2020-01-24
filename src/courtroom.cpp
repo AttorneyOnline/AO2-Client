@@ -1850,16 +1850,19 @@ QString Courtroom::filter_ic_text(QString p_text)
   // Get rid of the inline-colouring.
   // I know, I know, excessive code duplication.
   // Nobody looks in here, I'm fine.
-  int trick_check_pos = 0;
+  int trick_check_pos = 1;
   bool ic_next_is_not_special = false;
   QString f_character = p_text.at(trick_check_pos);
   std::stack<INLINE_COLOURS> ic_colour_stack;
-  QString final_text = "";
+  QString final_text = ": ";
   bool delay_pop = false;
   while (trick_check_pos < p_text.size())
   {
       f_character = p_text.at(trick_check_pos);
-
+      if (f_character == "<")
+          f_character = "&lt;";
+      else if (f_character == ">")
+          f_character = "&gt;";
       // Escape character.
       if (f_character == "\\" and !ic_next_is_not_special)
       {
@@ -1974,13 +1977,7 @@ QString Courtroom::filter_ic_text(QString p_text)
           }
           f_character = "";
       }
-      else if (f_character == "<" || f_character == ">")
-      {
-          //if(colorf_iclog)
-              //  f_character = '&lt';
-          //f_character = "";
-         // trick_check_pos++;
-      }
+
       if(colorf_iclog && f_character != "")
       {
         ic_next_is_not_special = false;
@@ -2068,12 +2065,7 @@ QString Courtroom::filter_ic_text(QString p_text)
         }
         else
         {
-            if (f_character == "<")
-                final_text += "&lt;";
-            else if (f_character == ">")
-                final_text += "&gt;";
-            else
-                final_text += f_character;
+            final_text += f_character;
             trick_check_pos++;
         }
 
