@@ -2611,7 +2611,7 @@ void Courtroom::chat_tick()
               ui_ic_chatlog->insertHtml(f_character);
         }
         
-        if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE)){
+        if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE) && !(m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)){
             QString html_color;
             switch (m_chatmessage[TEXT_COLOR].toInt())
             {
