@@ -5,15 +5,33 @@ update_manager::update_manager(AOApplication *parent) : QObject(parent)
     ao_app = parent;
 
 }
-QString get_latest_update()
+
+update_manager::~update_manager(){}
+
+void update_manager::get_latest_update()
 {
-    QNetworkRequest request;
-    request.setUrl(QUrl("http://qt-project.org"));
-    request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
+    QUrl url("http://127.0.0.1:5000/updates");
+    QUrlQuery query;
+    query.addQueryItem("cver","19");
+    url.setQuery(query.query());
+    request.setUrl(url);
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager(manager);
 
-    manager->get(QNetworkRequest(QUrl("http://AmazingUpdateServer.org")));
-    QNetworkReply *reply = manager->get(request);
-    return "Yes this works totally";
+    manager->get(request);
+
+    manager = new QNetworkAccessManager();
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply*)),
+        this, SLOT(managerFinished(QNetworkReply*)));
+    return;
+}
+
+void update_manager::managerFinished(QNetworkReply *reply) {
+    if (reply->error()) {
+        qDebug() << reply->errorString();
+        return;
+    }
+
+    QString answer = reply->readAll();
+
+    qDebug() << answer;
 }

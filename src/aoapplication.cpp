@@ -4,7 +4,7 @@
 #include "courtroom.h"
 #include "networkmanager.h"
 #include "debug_functions.h"
-
+#include "update_manager.h"
 #include "aooptionsdialog.h"
 #include "aocaseannouncerdialog.h"
 
@@ -94,9 +94,15 @@ void AOApplication::destruct_courtroom()
 QString AOApplication::get_version_string()
 {
   if(file_exists(get_base_path() + "/updates/update.ini"))
+  {
+      //  ##### V DO NOT ENABLE THIS V  #####
+      //client_updater = new update_manager(this);
+     // client_updater->get_latest_update();
       return "Update system works";
-  else
+  }
+  else{
     return "CC - Update 22.6?";
+    }
 }
 
 void AOApplication::reload_theme()

@@ -1556,9 +1556,7 @@ void Courtroom::handle_chatmessage_2()
 
   QString side = m_chatmessage[SIDE];
   if (side != "wit")
-      ui_vp_testimony->hide();
-  else
-      ui_vp_testimony->show();
+      ui_vp_testimony->stop();
 
 
   // Making the second character appear.
@@ -1730,7 +1728,7 @@ void Courtroom::handle_chatmessage_3()
      {
         if(!log_goes_downwards)//BMK
             append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false);
-        if (!ui_showname_enable->isChecked())
+        if (!ui_showname_enable->isChecked() || m_chatmessage[SHOWNAME] == "")
          {
           ui_ic_chatlog->textCursor().insertHtml("<br><b>" + m_chatmessage[CHAR_NAME] + ": </b>");
 
@@ -2882,7 +2880,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   if (n_char < 0 || n_char >= char_list.size())
   {
-    music_player->play(ao_app->get_sfx_suffix(f_song));
+    music_player->play(ao_app->get_music_prefix(f_song));
   }
   else
   {
@@ -2905,7 +2903,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       }
 
       append_ic_text(f_song_clear, str_show, true);
-      music_player->play(ao_app->get_sfx_suffix(f_song));
+      music_player->play(ao_app->get_music_prefix(f_song));
     }
   }
 }
@@ -2913,7 +2911,8 @@ void Courtroom::handle_song(QStringList *p_contents)
 void Courtroom::handle_wtce(QString p_wtce, int variant)
 {
   QString sfx_file = "courtroom_sounds.ini";
-  ui_vp_testimony->stop();
+
+
   //witness testimony
   if (p_wtce == "testimony1")
   {

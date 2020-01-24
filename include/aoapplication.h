@@ -30,7 +30,7 @@
 class NetworkManager;
 class Lobby;
 class Courtroom;
-
+class update_manager;
 class AOApplication : public QApplication
 {
   Q_OBJECT
@@ -40,6 +40,7 @@ public:
   ~AOApplication();
 
   NetworkManager *net_manager;
+  update_manager *client_updater;
   Lobby *w_lobby;
   Courtroom *w_courtroom;
   AttorneyOnline::Discord *discord;
@@ -222,6 +223,9 @@ public:
 
   //Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
+
+  //figure out if we can find what prefix this song uses
+  QString get_music_prefix(QString song_to_check);
 
   // Can we use APNG for this? If not, WEBP? if not, GIF? If not, fall back to a gif.
   QString get_image_suffix(QString path_to_check);

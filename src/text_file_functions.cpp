@@ -378,9 +378,31 @@ QString AOApplication::get_sfx(QString p_identifier)
   return return_sfx;
 }
 
+QString AOApplication::get_music_prefix(QString song_to_check)
+{
+    if(!file_exists(get_music_path(song_to_check)))
+    {
+    QString mp3_check = get_music_path(song_to_check + ".mp3");
+    QString opus_check = get_music_path(song_to_check + ".opus");
+     if (file_exists(opus_check))
+      {
+          return song_to_check + ".opus";
+      }
+     else if (file_exists(mp3_check))
+        {
+           return song_to_check + ".mp3";
+     }
+        return song_to_check + ".wav";
+        }
+    else
+     {
+        return song_to_check;
+    }
+}
+
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
-    if(!file_exists(sound_to_check))
+    if(!file_exists(get_sounds_path(sound_to_check)))
     {
     QString mp3_check = get_sounds_path(sound_to_check + ".mp3");
     QString opus_check = get_sounds_path(sound_to_check + ".opus");
@@ -392,7 +414,8 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
     {
         return sound_to_check + ".mp3";
     }
-    return sound_to_check + ".wav";}
+    return sound_to_check + ".wav";
+    }
     else
      {
         return sound_to_check;
