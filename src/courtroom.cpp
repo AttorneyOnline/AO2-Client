@@ -2102,12 +2102,12 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
 
       ui_ic_chatlog->moveCursor(QTextCursor::End);
 
-      if (!first_message_sent && (!mirror_iclog || force_write))
+      if (!first_message_sent && (force_write || !mirror_iclog || is_songchange))
       {
           ui_ic_chatlog->textCursor().insertText(p_name, bold);
           first_message_sent = true;
       }
-      else if(force_write || !mirror_iclog)
+      else if(force_write || !mirror_iclog || is_songchange)
       {
           ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
       }
@@ -2149,7 +2149,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
           ui_ic_chatlog->moveCursor(QTextCursor::End);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
       }
-  }
+      if(mirror_iclog && is_songchange){
+        ui_ic_chatlog->moveCursor(QTextCursor::End);
+        ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
+      }
+}
   else
   {
       const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
@@ -2157,11 +2161,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       ui_ic_chatlog->moveCursor(QTextCursor::Start);
       if (!first_message_sent)
       {
-          if((!mirror_iclog) || force_write)
+          if((force_write || !mirror_iclog || is_songchange))
             ui_ic_chatlog->textCursor().insertText(p_name, bold);
           first_message_sent = true;
       }
-      if((!mirror_iclog) || force_write)
+      if(force_write || !mirror_iclog || is_songchange)
         ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
 
       if (is_songchange)
