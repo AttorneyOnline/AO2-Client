@@ -2605,8 +2605,13 @@ void Courtroom::chat_tick()
           if(mirror_iclog  && colorf_iclog)
             ui_ic_chatlog->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
         }
-
-        else if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE)){
+        else{
+          ui_vp_message->insertHtml(f_character);
+          if(mirror_iclog && colorf_iclog && (m_chatmessage[TEXT_COLOR].toInt() == WHITE))
+              ui_ic_chatlog->insertHtml(f_character);
+        }
+        
+        if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE)){
             QString html_color;
             switch (m_chatmessage[TEXT_COLOR].toInt())
             {
@@ -2637,11 +2642,7 @@ void Courtroom::chat_tick()
             if(mirror_iclog  && colorf_iclog)
               ui_ic_chatlog->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
         }
-        else{
-          ui_vp_message->insertHtml(f_character);
-          if(mirror_iclog && colorf_iclog)
-              ui_ic_chatlog->insertHtml(f_character);
-        }
+        
       }
 
       if (mirror_iclog && !colorf_iclog)
