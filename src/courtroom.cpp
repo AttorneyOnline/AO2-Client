@@ -1724,20 +1724,25 @@ void Courtroom::handle_chatmessage_3()
 
      ui_ic_chatlog->setTextInteractionFlags(Qt::TextSelectableByMouse);
      start_chat_ticking();
+
      if (mirror_iclog)
      {
         if(!log_goes_downwards)//BMK
             append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false);
         if (!ui_showname_enable->isChecked() || m_chatmessage[SHOWNAME] == "")
          {
-          ui_ic_chatlog->textCursor().insertHtml("<br><b>" + m_chatmessage[CHAR_NAME] + ": </b>");
+          if(first_message_sent)
+              ui_ic_chatlog->textCursor().insertHtml("<br>");
+          ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[CHAR_NAME] + ": </b>");
 
          }
         else{
-
-             ui_ic_chatlog->textCursor().insertHtml("<br><b>" + m_chatmessage[SHOWNAME] + ": </b>");
+            if(first_message_sent)
+                ui_ic_chatlog->textCursor().insertHtml("<br>");
+             ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[SHOWNAME] + ": </b>");
 
           }
+
         QScrollBar *scroll = ui_vp_message->verticalScrollBar();
         scroll->setValue(scroll->maximum());
         if(chatmessage_is_empty && log_goes_downwards)
@@ -1746,6 +1751,7 @@ void Courtroom::handle_chatmessage_3()
         }
 
      }
+     first_message_sent = true;
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
