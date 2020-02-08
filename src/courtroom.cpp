@@ -1734,12 +1734,16 @@ void Courtroom::handle_chatmessage_3()
          {
           if(first_message_sent)
               ui_ic_chatlog->textCursor().insertHtml("<br>");
+          else
+              first_message_sent = true;
           ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[CHAR_NAME] + ": </b>");
 
          }
         else{
             if(first_message_sent)
                 ui_ic_chatlog->textCursor().insertHtml("<br>");
+            else
+                first_message_sent = true;
              ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[SHOWNAME] + ": </b>");
 
           }
@@ -3408,7 +3412,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   switch (p_index)
   {
   case 0:
-    f_pos = "wit";
+    f_pos = ;
     break;
   case 1:
     f_pos = "def";
