@@ -1,4 +1,4 @@
-﻿#include "courtroom.h"
+#include "courtroom.h"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -1718,7 +1718,7 @@ void Courtroom::handle_chatmessage_2()
 void Courtroom::handle_chatmessage_3()
 {
      if(!log_goes_downwards && mirror_iclog)
-        ui_ic_chatlog->moveCursor(QTextCursor::Start);
+         ui_ic_chatlog->moveCursor(QTextCursor::Start);
      else if(mirror_iclog)
          ui_ic_chatlog->moveCursor(QTextCursor::End);
 
@@ -1877,20 +1877,20 @@ QString Courtroom::filter_ic_text(QString p_text)
       {
           ic_next_is_not_special = true;
           p_text.remove(trick_check_pos,1);
+          f_character = "";
           if (p_text[trick_check_pos] == 'n')
           {
               p_text[trick_check_pos] = ' ';
+              f_character = " ";
           }
+
       }
 
       // Text speed modifier.
-      else if (f_character == "{" and !ic_next_is_not_special)
+      else if ((f_character == "{" || f_character == "}") && !ic_next_is_not_special)
       {
           p_text.remove(trick_check_pos,1);
-      }
-      else if (f_character == "}" and !ic_next_is_not_special)
-      {
-          p_text.remove(trick_check_pos,1);
+          f_character = "";
       }
 
       // Orange inline colourisation.
@@ -2105,7 +2105,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
 
   if ((!is_songchange && !mirror_iclog) || force_write)
     p_text = filter_ic_text(p_text);
-
   if (log_goes_downwards)
   {
       const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
@@ -2119,6 +2118,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       }
       else if(force_write || !mirror_iclog || is_songchange)
       {
+
           ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
       }
 
@@ -2171,12 +2171,12 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       ui_ic_chatlog->moveCursor(QTextCursor::Start);
       if (!first_message_sent)
       {
-          if((force_write || !mirror_iclog || is_songchange))
+          if(!mirror_iclog)
             ui_ic_chatlog->textCursor().insertText(p_name, bold);
           first_message_sent = true;
       }
-      if(force_write || !mirror_iclog || is_songchange)
-        ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+      else if(!mirror_iclog)
+        ui_ic_chatlog->textCursor().insertText(p_name, bold);//fix here
 
       if (is_songchange)
       {
@@ -2191,6 +2191,9 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       {
           ui_ic_chatlog->textCursor().insertText(p_text, normal);
       }
+      if(!mirror_iclog)
+        ui_ic_chatlog->textCursor().insertHtml("<br>");
+
 
       // If we got too many blocks in the current log, delete some from the bottom.
       while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
@@ -2404,6 +2407,8 @@ void Courtroom::chat_tick()
         if( f_message[1] == 'n')
         {
             ui_vp_message->insertHtml("<br>");
+            ui_ic_chatlog->insertPlainText(" ");
+
             tick_pos += 1;
             next_character_is_not_special = false;
             formatting_char = true;
