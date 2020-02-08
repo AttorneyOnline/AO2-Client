@@ -379,7 +379,7 @@ void Lobby::list_favorites()
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  ui_chatbox->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_chatbox->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name(),false);
 }
 
 void Lobby::append_error(QString f_message)

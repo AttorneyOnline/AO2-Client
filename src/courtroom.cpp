@@ -1,4 +1,4 @@
-#include "courtroom.h"
+﻿#include "courtroom.h"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -1105,7 +1105,7 @@ void Courtroom::list_areas()
 
 void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
 {
-  ui_ms_chatlog->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_ms_chatlog->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name(),false);
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_colour)
@@ -1117,7 +1117,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
   if (p_colour == "1")
     colour = ao_app->get_color("ooc_server_color", "courtroom_design.ini").name();
 
-  ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
+  ui_server_chatlog->append_chatmessage(p_name, p_message, colour,false);
 }
 
 void Courtroom::on_chat_return_pressed()
@@ -2105,7 +2105,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
 
   if ((!is_songchange && !mirror_iclog) || force_write)
     p_text = filter_ic_text(p_text);
-  if (log_goes_downwards)
+  if(is_songchange && mirror_iclog)
+  {
+      ui_server_chatlog->append_chatmessage(p_name," has played a song: " + p_text + ".",ao_app->get_color("ooc_server_color", "courtroom_design.ini").name(),true);
+  }
+  else if (log_goes_downwards)
   {
       const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
 
