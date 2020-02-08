@@ -321,6 +321,9 @@ public:
   // Get if ic log mirror is enabled
   bool get_iclmir_enabled();
 
+  //Get if only inline coloring should be shown in log
+  bool colorlog_restricted_enabled();
+
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 6;

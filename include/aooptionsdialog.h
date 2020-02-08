@@ -121,6 +121,10 @@ private:
     QCheckBox *ui_other_fancy_icl_enabled_cb;
     QLabel *ui_other_mirror_icl_enabled_lb;
     QCheckBox *ui_other_mirror_icl_enabled_cb;
+
+    QLabel *ui_other_fancy_icl_limit_lb;
+    QCheckBox *ui_other_fancy_icl_limit_cb;
+
     bool needs_default_audiodev();
 
 signals:

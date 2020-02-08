@@ -426,6 +426,7 @@ private:
 
   bool colorf_iclog = false;
   bool mirror_iclog = false;
+  bool colorf_limit = false;
 
   QTextEdit *ui_ic_chatlog;
 

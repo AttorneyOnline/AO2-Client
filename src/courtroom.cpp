@@ -153,6 +153,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   punctuation_modifier = p_ao_app->get_pundelay();
   colorf_iclog = p_ao_app->get_icfan_enabled();
   mirror_iclog = p_ao_app->get_iclmir_enabled();
+  colorf_limit = p_ao_app->colorlog_restricted_enabled();
 
   //ui_area_password = new QLineEdit(this);
   //ui_area_password->setFrame(false);
@@ -2016,7 +2017,7 @@ QString Courtroom::filter_ic_text(QString p_text)
             }
 
         }
-        else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
+        else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW && !colorf_limit)
         {
               QString html_color;
 
@@ -2043,7 +2044,7 @@ QString Courtroom::filter_ic_text(QString p_text)
                final_text += "<font color=\"" + html_color + "\">" + f_character + "</font>";
                trick_check_pos++;
         }
-        else if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE)){
+        else if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE) && !colorf_limit){
             trick_check_pos++;
             QString html_color;
             switch (m_chatmessage[TEXT_COLOR].toInt())
@@ -2622,16 +2623,16 @@ void Courtroom::chat_tick()
           ++rainbow_counter;
 
           ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
-          if(mirror_iclog  && colorf_iclog)
+          if(mirror_iclog  && colorf_iclog && !colorf_limit)
             ui_ic_chatlog->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
         }
         else{
           ui_vp_message->insertHtml(f_character);
-          if(mirror_iclog && colorf_iclog && (m_chatmessage[TEXT_COLOR].toInt() == WHITE))
+          if(mirror_iclog && colorf_iclog && ((m_chatmessage[TEXT_COLOR].toInt() == WHITE) || colorf_limit))
               ui_ic_chatlog->insertHtml(f_character);
         }
         
-        if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE) && !(m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)){
+        if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE) && !(m_chatmessage[TEXT_COLOR].toInt() == RAINBOW) && !colorf_limit){
             QString html_color;
             switch (m_chatmessage[TEXT_COLOR].toInt())
             {
@@ -3821,6 +3822,7 @@ void Courtroom::on_reload_theme_clicked()
   punctuation_modifier = ao_app->get_pundelay();
   colorf_iclog = ao_app->get_icfan_enabled();
   mirror_iclog = ao_app->get_iclmir_enabled();
+  colorf_limit = ao_app->colorlog_restricted_enabled();
   //to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
