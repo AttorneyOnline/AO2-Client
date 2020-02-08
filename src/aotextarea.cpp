@@ -14,16 +14,15 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message, QString p
   this->moveCursor(QTextCursor::End);
 
   this->append("");
-  if(song)
-      this->insertHtml("<b><i><font color=" + p_colour + ">" + p_name.toHtmlEscaped() + "</font></b>&nbsp;");
+  if(song)//  add <i> here v
+      this->insertHtml("<b><font color=" + p_colour + ">" + p_name.toHtmlEscaped() + "</font></b>&nbsp;");
   else
       this->insertHtml("<b><font color=" + p_colour + ">" + p_name.toHtmlEscaped() + "</font></b>:&nbsp;");
 
   //cheap workarounds ahoy
   p_message += " ";
   QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>" );
-  if (song)
-    result = "<i>" + result;
+
 
   this->insertHtml(result);
 
