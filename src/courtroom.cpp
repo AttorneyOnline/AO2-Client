@@ -3412,7 +3412,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   switch (p_index)
   {
   case 0:
-    f_pos = ;
+    f_pos = "wit";
     break;
   case 1:
     f_pos = "def";

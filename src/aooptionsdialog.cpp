@@ -76,37 +76,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(1, QFormLayout::FieldRole, ui_theme_log_divider);
 
-    ui_downwards_lbl = new QLabel(ui_form_layout_widget);
-    ui_downwards_lbl->setText(tr("Log goes downwards:"));
-    ui_downwards_lbl->setToolTip(tr("If ticked, new messages will appear at "
-                                    "the bottom (like the OOC chatlog). The traditional "
-                                    "(AO1) behaviour is equivalent to this being unticked."));
 
-    ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_downwards_lbl);
-
-    ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-    ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
-
-    ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_downwards_cb);
-
-    ui_length_lbl = new QLabel(ui_form_layout_widget);
-    ui_length_lbl->setText(tr("Log length:"));
-    ui_length_lbl->setToolTip(tr("The amount of messages the IC chatlog will keep before "
-                                 "deleting older messages. A value of 0 or below counts as 'infinite'."));
-
-    ui_gameplay_form->setWidget(3, QFormLayout::LabelRole, ui_length_lbl);
-
-    ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
-    ui_length_spinbox->setMaximum(10000);
-    ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
-
-    ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_length_spinbox);
-
-    ui_log_names_divider = new QFrame(ui_form_layout_widget);
-    ui_log_names_divider->setFrameShape(QFrame::HLine);
-    ui_log_names_divider->setFrameShadow(QFrame::Sunken);
-
-    ui_gameplay_form->setWidget(4, QFormLayout::FieldRole, ui_log_names_divider);
 
     ui_username_lbl = new QLabel(ui_form_layout_widget);
     ui_username_lbl->setText(tr("Default username:"));
@@ -526,6 +496,39 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_other_mirror_icl_enabled_cb = new QCheckBox(ui_other_widget);
     ui_other_mirror_icl_enabled_cb->setChecked(ao_app->get_iclmir_enabled());
     ui_other_layout->setWidget(3, QFormLayout::FieldRole, ui_other_mirror_icl_enabled_cb);
+
+    ui_downwards_lbl = new QLabel(ui_other_widget);
+    ui_downwards_lbl->setText(tr("Log goes downwards:"));
+    ui_downwards_lbl->setToolTip(tr("If ticked, new messages will appear at "
+                                    "the bottom (like the OOC chatlog). The traditional "
+                                    "(AO1) behaviour is equivalent to this being unticked."));
+
+    ui_other_layout->setWidget(4, QFormLayout::LabelRole, ui_downwards_lbl);
+
+    ui_downwards_cb = new QCheckBox(ui_other_widget);
+    ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
+
+    ui_other_layout->setWidget(4, QFormLayout::FieldRole, ui_downwards_cb);
+
+    ui_length_lbl = new QLabel(ui_other_widget);
+    ui_length_lbl->setText(tr("Log length:"));
+    ui_length_lbl->setToolTip(tr("The amount of messages the IC chatlog will keep before "
+                                 "deleting older messages. A value of 0 or below counts as 'infinite'."));
+
+    ui_other_layout->setWidget(5, QFormLayout::LabelRole, ui_length_lbl);
+
+    ui_length_spinbox = new QSpinBox(ui_other_widget);
+    ui_length_spinbox->setMaximum(10000);
+    ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
+
+    ui_other_layout->setWidget(5, QFormLayout::FieldRole, ui_length_spinbox);
+
+    ui_log_names_divider = new QFrame(ui_other_widget);
+    ui_log_names_divider->setFrameShape(QFrame::HLine);
+    ui_log_names_divider->setFrameShadow(QFrame::Sunken);
+
+    ui_other_layout->setWidget(5, QFormLayout::FieldRole, ui_log_names_divider);
+
 
 
 
