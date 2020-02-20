@@ -101,7 +101,7 @@ QString AOApplication::get_version_string()
       return "Update system works";
   }
   else{
-    return "CC - Update 22.6?";
+    return "CR Version - V1";
     }
 }
 
