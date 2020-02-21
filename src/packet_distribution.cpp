@@ -397,7 +397,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           {
               musics_time = true;
               areas--;
-              w_courtroom->fix_last_area();
+              //w_courtroom->fix_last_area();
               w_courtroom->append_music(f_music);
           }
           else
@@ -491,18 +491,18 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                   f_contents.at(n_element).endsWith(".opus"))
           {
               musics_time = true;
-              w_courtroom->fix_last_area();
+              // w_courtroom->fix_last_area();
               w_courtroom->append_music(f_contents.at(n_element));
-              areas--;
+              area_count--;
           }
           else
           {
               w_courtroom->append_area(f_contents.at(n_element));
-              areas++;
+              area_count++;
           }
       }
 
-      for (int area_n = 0; area_n < areas; area_n++)
+      for (int area_n = 0; area_n < area_count; area_n++)
       {
           musics_time = true;
           continue;
