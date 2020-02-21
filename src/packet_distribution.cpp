@@ -323,6 +323,51 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (is_discord_enabled())
       discord->state_server(server_name.toStdString(), hash.result().toBase64().toStdString());
   }
+  else if (header == "CI")
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
+    {
+      if (f_contents.at(n_element).toInt() != loaded_chars)
+        break;
+
+      //this means we are on the last element and checking n + 1 element will be game over so
+      if (n_element == f_contents.size() - 1)
+        break;
+
+      QStringList sub_elements = f_contents.at(n_element + 1).split("&");
+      if (sub_elements.size() < 2)
+        break;
+
+      char_type f_char;
+      f_char.name = sub_elements.at(0);
+      f_char.description = sub_elements.at(1);
+      f_char.evidence_string = sub_elements.at(3);
+      //temporary. the CharsCheck packet sets this properly
+      f_char.taken = false;
+
+      ++loaded_chars;
+
+      w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
+
+      w_courtroom->append_char(f_char);
+
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      w_lobby->set_loading_value(loading_value);
+    }
+
+    if (improved_loading_enabled)
+      send_server_packet(new AOPacket("RE#%"));
+    else
+    {
+      QString next_packet_number = QString::number(((loaded_chars - 1) / 10) + 1);
+      send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
+    }
+
+  }
   else if (header == "EI")
   {
     if (!courtroom_constructed)
