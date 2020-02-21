@@ -8,11 +8,11 @@
 class AOCharSelectGenerationThreading : public QRunnable
 {
 public:
-    Courtroom *mycourt_fuck;
+    Courtroom *thisCourtroom;
     int char_num;
     AOCharButton *char_button;
     AOCharSelectGenerationThreading(Courtroom *my_courtroom, int character_number, AOCharButton *charbut){
-        mycourt_fuck = my_courtroom;
+        thisCourtroom = my_courtroom;
         char_num = character_number;
         char_button = charbut;
     }
@@ -21,40 +21,40 @@ public:
         AOCharButton* character = char_button;
         character->reset();
         character->hide();
-        character->set_image(mycourt_fuck->char_list.at(char_num).name);
-        mycourt_fuck->ui_char_button_list.append(character);
+        character->set_image(thisCourtroom->char_list.at(char_num).name);
+        thisCourtroom->ui_char_button_list.append(character);
 
-        mycourt_fuck->connect(character, SIGNAL(clicked()), mycourt_fuck->char_button_mapper, SLOT(map()));
-        mycourt_fuck->char_button_mapper->setMapping(character, mycourt_fuck->ui_char_button_list.size() - 1);
+        thisCourtroom->connect(character, SIGNAL(clicked()), thisCourtroom->char_button_mapper, SLOT(map()));
+        thisCourtroom->char_button_mapper->setMapping(character, thisCourtroom->ui_char_button_list.size() - 1);
     }
 };
 
 class AOCharSelectFilterThreading : public QRunnable
 {
 public:
-    Courtroom *mycourt_fuck;
+    Courtroom *thisCourtroom;
     int char_num;
     AOCharSelectFilterThreading(Courtroom *my_courtroom, int character_number){
-        mycourt_fuck = my_courtroom;
+        thisCourtroom = my_courtroom;
         char_num = character_number;
     }
     void run()
     {
-        AOCharButton* current_char = mycourt_fuck->ui_char_button_list.at(char_num);
+        AOCharButton* current_char = thisCourtroom->ui_char_button_list.at(char_num);
 
-        if (!mycourt_fuck->ui_char_taken->isChecked() && mycourt_fuck->char_list.at(char_num).taken)
+        if (!thisCourtroom->ui_char_taken->isChecked() && thisCourtroom->char_list.at(char_num).taken)
             return;
 
-        if (!mycourt_fuck->char_list.at(char_num).name.contains(mycourt_fuck->ui_char_search->text(), Qt::CaseInsensitive))
+        if (!thisCourtroom->char_list.at(char_num).name.contains(thisCourtroom->ui_char_search->text(), Qt::CaseInsensitive))
             return;
 
         // We only really need to update the fact that a character is taken
         // for the buttons that actually appear.
         // You'd also update the passwordedness and etc. here later.
         current_char->reset();
-        current_char->set_taken(mycourt_fuck->char_list.at(char_num).taken);
+        current_char->set_taken(thisCourtroom->char_list.at(char_num).taken);
 
-        mycourt_fuck->ui_char_button_list_filtered.append(current_char);
+        thisCourtroom->ui_char_button_list_filtered.append(current_char);
     }
 };
 
