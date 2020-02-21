@@ -342,6 +342,7 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 7;
+  const int MINOR_VERSION = 0;
 
   QString current_theme = "default";
 
