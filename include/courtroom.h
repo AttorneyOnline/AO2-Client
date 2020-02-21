@@ -688,7 +688,9 @@ private slots:
 
   void ping_server();
 
+  #ifdef BASSAUDIO
   void load_bass_opus_plugin();
+  #endif
 };
 
 #endif // COURTROOM_H

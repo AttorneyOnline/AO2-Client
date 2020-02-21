@@ -3955,30 +3955,25 @@ Courtroom::~Courtroom()
   delete blip_player;
 }
 
-
+#ifdef BASSAUDIO
 #if (defined (_WIN32) || defined (_WIN64))
 void Courtroom::load_bass_opus_plugin()
 {
-  #ifdef BASSAUDIO
   BASS_PluginLoad("bassopus.dll", 0);
-  #endif
 }
 #elif (defined (LINUX) || defined (__linux__))
 void Courtroom::load_bass_opus_plugin()
 {
-  #ifdef BASSAUDIO
   BASS_PluginLoad("libbassopus.so", 0);
-  #endif
 }
 #elif defined __APPLE__
 void Courtroom::load_bass_opus_plugin()
 {
   QString libpath = ao_app->get_base_path() + "../../Frameworks/libbassopus.dylib";
   QByteArray ba = libpath.toLocal8Bit();
-  #ifdef BASSAUDIO
   BASS_PluginLoad(ba.data(), 0);
-  #endif
 }
 #else
 #error This operating system is unsupported for bass plugins.
+#endif
 #endif
