@@ -18,14 +18,14 @@ public:
     }
     void run()
     {
-        AOCharButton* character = char_button;
-        character->reset();
-        character->hide();
-        character->set_image(thisCourtroom->char_list.at(char_num).name);
-        thisCourtroom->ui_char_button_list.append(character);
+        AOCharButton* thisCharacterButton = char_button;
+        thisCharacterButton->reset();
+        thisCharacterButton->hide();
+        thisCharacterButton->set_image(thisCourtroom->char_list.at(char_num).name);
+        thisCourtroom->ui_char_button_list.append(thisCharacterButton);
 
-        thisCourtroom->connect(character, SIGNAL(clicked()), thisCourtroom->char_button_mapper, SLOT(map()));
-        thisCourtroom->char_button_mapper->setMapping(character, thisCourtroom->ui_char_button_list.size() - 1);
+        thisCourtroom->connect(thisCharacterButton, SIGNAL(clicked()), thisCourtroom->char_button_mapper, SLOT(map()));
+        thisCourtroom->char_button_mapper->setMapping(thisCharacterButton, thisCourtroom->ui_char_button_list.size() - 1);
     }
 };
 
