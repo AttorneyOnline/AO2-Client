@@ -78,11 +78,8 @@ void NetworkManager::ship_server_packet(QString p_packet)
 
 void NetworkManager::handle_ms_packet()
 {
-  char buffer[buffer_max_size];
-  std::memset(buffer, 0, buffer_max_size);
-  ms_socket->read(buffer, buffer_max_size);
-
-  QString in_data = buffer;
+  QByteArray buffer = ms_socket->readAll();
+  QString in_data = QString::fromUtf8(buffer, buffer.size());
 
   if (!in_data.endsWith("%"))
   {
@@ -137,7 +134,9 @@ void NetworkManager::on_srv_lookup()
 
     for (const QDnsServiceRecord &record : srv_records)
     {
+#ifdef DEBUG_NETWORK
       qDebug() << "Connecting to " << record.target() << ":" << record.port();
+#endif
       ms_socket->connectToHost(record.target(), record.port());
       QTime timer;
       timer.start();
@@ -206,7 +205,7 @@ void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
 
   emit ms_connect_finished(false, true);
 
-  ms_reconnect_timer->start(ms_reconnect_delay_ms);
+  ms_reconnect_timer->start(ms_reconnect_delay * 1000);
 }
 
 void NetworkManager::retry_ms_connect()
@@ -217,11 +216,8 @@ void NetworkManager::retry_ms_connect()
 
 void NetworkManager::handle_server_packet()
 {
-  char buffer[buffer_max_size];
-  std::memset(buffer, 0, buffer_max_size);
-  server_socket->read(buffer, buffer_max_size);
-
-  QString in_data = buffer;
+  QByteArray buffer = server_socket->readAll();
+  QString in_data = QString::fromUtf8(buffer, buffer.size());
 
   if (!in_data.endsWith("%"))
   {
@@ -249,4 +245,3 @@ void NetworkManager::handle_server_packet()
     ao_app->server_packet_received(f_packet);
   }
 }
-

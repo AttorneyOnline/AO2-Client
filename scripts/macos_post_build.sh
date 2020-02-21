@@ -1,16 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
-DST_FOLDER="./bin/Attorney_Online.app/Contents/Frameworks"
+# This script prepares the compiled bundle for shipping as a standalone release
+# Assumes the Qt bin folder is in PATH
+# Should be used on a "Release" build from QT creator
+# Note that this DOES NOT add the base/ folder
 
-cd ..
+# Exit on errors and unset variables
+set -eu
 
-mkdir $DST_FOLDER
+ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 
-cp ./lib/libbass.dylib $DST_FOLDER
-cp ./lib/libbassopus.dylib $DST_FOLDER
+cd ${ROOT_DIR}
 
-install_name_tool -id @executable_path/../Frameworks/libbass.dylib $DST_FOLDER/libbass.dylib
+# This thing basically does all the work
+/usr/local/opt/qt/bin/macdeployqt ../bin/Attorney_Online.app
 
-install_name_tool -id @executable_path/../Frameworks/libbassopus.dylib $DST_FOLDER/libbassopus.dylib
+# Need to add the dependencies
+cp ../lib/* ../bin/Attorney_Online.app/Contents/Frameworks
 
-install_name_tool -change @loader_path/libbass.dylib @executable_path/../Frameworks/libbass.dylib ./bin/Attorney_Online.app/Contents/MacOS/Attorney_Online
+# libbass has a funny path for some reason, just use rpath
+install_name_tool -change @loader_path/libbass.dylib @rpath/libbass.dylib ../bin/Attorney_Online.app/Contents/MacOS/Attorney_Online

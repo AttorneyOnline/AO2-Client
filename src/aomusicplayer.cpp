@@ -1,6 +1,6 @@
 #include "aomusicplayer.h"
 
-
+#if defined(BASSAUDIO)
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
@@ -55,3 +55,75 @@ void AOMusicPlayer::kill_loop()
     BASS_ChannelStop(m_stream);
 }
 
+#elif defined(QTAUDIO)
+AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
+{
+  m_parent = parent;
+  ao_app = p_ao_app;
+}
+
+AOMusicPlayer::~AOMusicPlayer()
+{
+  m_player.stop();
+}
+
+void AOMusicPlayer::play(QString p_song)
+{
+  m_player.stop();
+
+  QString f_path = ao_app->get_music_path(p_song);
+
+  m_player.setMedia(QUrl::fromLocalFile(f_path));
+
+  this->set_volume(m_volume);
+
+  m_player.play();
+}
+
+void AOMusicPlayer::set_volume(int p_value)
+{
+  m_volume = p_value;
+  m_player.setVolume(m_volume);
+}
+
+QString AOMusicPlayer::get_path()
+{
+    return f_path;
+}
+
+void AOMusicPlayer::kill_loop()
+{
+    // TODO QTAUDIO
+}
+#else
+AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
+{
+  m_parent = parent;
+  ao_app = p_ao_app;
+}
+
+AOMusicPlayer::~AOMusicPlayer()
+{
+
+}
+
+void AOMusicPlayer::play(QString p_song)
+{
+
+}
+
+void AOMusicPlayer::set_volume(int p_value)
+{
+
+}
+
+QString AOMusicPlayer::get_path()
+{
+    return f_path;
+}
+
+void AOMusicPlayer::kill_loop()
+{
+
+}
+#endif

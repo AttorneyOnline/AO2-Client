@@ -9,7 +9,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowTitle("Attorney Online 2");
+  this->setWindowTitle(tr("Attorney Online 2"));
   this->setWindowIcon(QIcon(":/logo.png"));
 
   ui_background = new AOImage(this, ao_app);
@@ -26,7 +26,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
-  ui_chatname->setPlaceholderText("Name");
+  ui_chatname->setPlaceholderText(tr("Name"));
   ui_chatname->setText(ao_app->get_ooc_name());
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this, ao_app);
@@ -47,6 +47,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
+  connect(ui_server_list, SIGNAL(activated(QModelIndex)), this, SLOT(on_server_list_doubleclicked(QModelIndex)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
@@ -71,9 +72,9 @@ void Lobby::set_widgets()
     qDebug() << "W: did not find lobby width or height in " << filename;
 
     // Most common symptom of bad config files and missing assets.
-    call_notice("It doesn't look like your client is set up correctly.\n"
+    call_notice(tr("It doesn't look like your client is set up correctly.\n"
                 "Did you download all resources correctly from tiny.cc/getao, "
-                "including the large 'base' folder?");
+                "including the large 'base' folder?"));
 
     this->resize(517, 666);
   }
@@ -101,7 +102,7 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect.png");
 
   set_size_and_pos(ui_version, "version");
-  ui_version->setText("Version: " + ao_app->get_version_string());
+  ui_version->setText(tr("Version: %1").arg(ao_app->get_version_string()));
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about.png");
@@ -111,7 +112,7 @@ void Lobby::set_widgets()
                                   "font: bold;");
 
   set_size_and_pos(ui_player_count, "player_count");
-  ui_player_count->setText("Offline");
+  ui_player_count->setText(tr("Offline"));
   ui_player_count->setStyleSheet("font: bold;"
                                  "color: white;"
                                  "qproperty-alignment: AlignCenter;");
@@ -144,11 +145,11 @@ void Lobby::set_widgets()
   ui_loading_text->setFrameStyle(QFrame::NoFrame);
   ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: rgba(255, 128, 0, 255);");
-  ui_loading_text->append("Loading");
+  ui_loading_text->append(tr("Loading"));
 
   set_size_and_pos(ui_progress_bar, "progress_bar");
   set_size_and_pos(ui_cancel, "cancel");
-  ui_cancel->setText("Cancel");
+  ui_cancel->setText(tr("Cancel"));
 
   ui_loading_background->hide();
 
@@ -286,9 +287,13 @@ void Lobby::on_about_clicked()
   QMessageBox::about(this, "About", msg);
 }
 
+//clicked on an item in the serverlist
 void Lobby::on_server_list_clicked(QModelIndex p_model)
 {
+  if (p_model != last_model)
+  {
   server_type f_server;
+  last_model = p_model;
   int n_server = p_model.row();
 
   if (n_server < 0)
@@ -317,11 +322,19 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_description->moveCursor(QTextCursor::Start);
   ui_description->ensureCursorVisible();
 
-  ui_player_count->setText("Offline");
+  ui_player_count->setText(tr("Offline"));
 
   ui_connect->setEnabled(false);
 
   ao_app->net_manager->connect_to_server(f_server);
+  }
+}
+
+//doubleclicked on an item in the serverlist so we'll connect right away
+void Lobby::on_server_list_doubleclicked(QModelIndex p_model)
+{
+    on_server_list_clicked(p_model);
+    on_connect_released();
 }
 
 void Lobby::on_chatfield_return_pressed()
@@ -377,7 +390,7 @@ void Lobby::append_error(QString f_message)
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
+  QString f_string = tr("Online: %1/%2").arg(QString::number(players_online)).arg(QString::number(max_players));
   ui_player_count->setText(f_string);
 }
 

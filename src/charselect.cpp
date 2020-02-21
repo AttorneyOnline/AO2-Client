@@ -97,7 +97,6 @@ void Courtroom::construct_char_select()
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
-  connect (char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
   connect(ui_char_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
@@ -105,9 +104,9 @@ void Courtroom::construct_char_select()
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
-  connect(ui_char_search, SIGNAL(textEdited(const QString&)), this, SLOT(on_char_search_changed(const QString&)));
-  connect(ui_char_passworded, SIGNAL(stateChanged(int)), this, SLOT(on_char_passworded_clicked(int)));
-  connect(ui_char_taken, SIGNAL(stateChanged(int)), this, SLOT(on_char_taken_clicked(int)));
+  connect(ui_char_search, SIGNAL(textEdited(const QString&)), this, SLOT(on_char_search_changed()));
+  connect(ui_char_passworded, SIGNAL(stateChanged(int)), this, SLOT(on_char_passworded_clicked()));
+  connect(ui_char_taken, SIGNAL(stateChanged(int)), this, SLOT(on_char_taken_clicked()));
 }
 
 void Courtroom::set_char_select()
@@ -189,6 +188,7 @@ void Courtroom::char_clicked(int n_char)
   }
   else
   {
+    ao_app->send_server_packet(new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
 
@@ -280,17 +280,17 @@ void Courtroom::filter_character_list()
     set_char_select_page();
 }
 
-void Courtroom::on_char_search_changed(const QString& newtext)
+void Courtroom::on_char_search_changed()
 {
     filter_character_list();
 }
 
-void Courtroom::on_char_passworded_clicked(int newstate)
+void Courtroom::on_char_passworded_clicked()
 {
     filter_character_list();
 }
 
-void Courtroom::on_char_taken_clicked(int newstate)
+void Courtroom::on_char_taken_clicked()
 {
     filter_character_list();
 }

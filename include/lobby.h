@@ -75,6 +75,8 @@ private:
   QProgressBar *ui_progress_bar;
   AOButton *ui_cancel;
 
+  QModelIndex last_model;
+
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 public slots:
   void fucking_threading_goddamn_it(QString fuckshitassgoddamnfuck);
@@ -90,6 +92,7 @@ private slots:
   void on_connect_released();
   void on_about_clicked();
   void on_server_list_clicked(QModelIndex p_model);
+  void on_server_list_doubleclicked(QModelIndex p_model);
   void on_chatfield_return_pressed();
 };
 

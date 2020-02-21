@@ -22,6 +22,10 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QColor>
+#include <QScreen>
+#ifdef QTAUDIO
+#include <QAudioDeviceInfo>
+#endif
 
 #include <QtConcurrent/QtConcurrent>
 #include <QThread>
@@ -189,6 +193,9 @@ public:
 
   // Returns the audio device used for the client.
   QString get_audio_output_device();
+  #ifdef QTAUDIO
+  QAudioDeviceInfo QtAudioDevice;
+  #endif
 
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();
@@ -210,6 +217,9 @@ public:
 
   //Returns the dimensions of widget with specified identifier from p_file
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
+
+  //Returns the name of the font with p_identifier from p_file
+  QString get_font_name(QString p_identifier, QString p_file);
 
   //Returns the value of font_size with p_identifier from p_file
   int get_font_size(QString p_identifier, QString p_file);
@@ -332,7 +342,6 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 7;
-  const int MINOR_VERSION = 2;
 
   QString current_theme = "default";
 

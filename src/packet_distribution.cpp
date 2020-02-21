@@ -43,8 +43,10 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   QString header = p_packet->get_header();
   QStringList f_contents = p_packet->get_contents();
 
+#ifdef DEBUG_NETWORK
   if (header != "CHECK")
     qDebug() << "R(ms):" << p_packet->to_string();
+#endif
 
   if (header == "ALL")
   {
@@ -130,8 +132,16 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       }
     }
 
-    call_notice("Outdated version! Your version: " + get_version_string()
-                + "\nPlease go to aceattorneyonline.com to update.");
+    call_notice(tr("Outdated version! Your version: %1\n"
+                   "Please go to aceattorneyonline.com to update.")
+                .arg(get_version_string()));
+    destruct_courtroom();
+    destruct_lobby();
+  }
+  else if (header == "DOOM")
+  {
+    call_notice(tr("You have been exiled from AO.\n"
+                   "Have a nice day."));
     destruct_courtroom();
     destruct_lobby();
   }
@@ -149,8 +159,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   QStringList f_contents = p_packet->get_contents();
   QString f_packet = p_packet->to_string();
 
+#ifdef DEBUG_NETWORK
   if (header != "checkconnection")
     qDebug() << "R:" << f_packet;
+#endif
 
   if (header == "decryptor")
   {
@@ -192,6 +204,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     s_pv = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
+
+    w_lobby->enable_connect_button();
 
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
@@ -266,7 +280,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = "Attorney Online 2";
+    QString window_title = tr("Attorney Online 2");
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -292,7 +306,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->set_window_title(window_title);
 
     w_lobby->show_loading_overlay();
-    w_lobby->set_loading_text("Loading");
+    w_lobby->set_loading_text(tr("Loading"));
     w_lobby->set_loading_value(0);
 
     AOPacket *f_packet;
@@ -335,7 +349,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     ++loaded_evidence;
 
-    w_lobby->set_loading_text("Loading evidence:\n" + QString::number(loaded_evidence) + "/" + QString::number(evidence_list_size));
+    w_lobby->set_loading_text(tr("Loading evidence:\n%1/%2").arg(QString::number(loaded_evidence)).arg(QString::number(evidence_list_size)));
 
     w_courtroom->append_evidence(f_evi);
 
@@ -346,6 +360,65 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString next_packet_number = QString::number(loaded_evidence);
     send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
 
+  }
+  else if (header == "EM")
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    bool musics_time = false;
+    int areas = 0;
+
+    for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
+    {
+      if (f_contents.at(n_element).toInt() != loaded_music)
+        break;
+
+      if (n_element == f_contents.size() - 1)
+        break;
+
+      QString f_music = f_contents.at(n_element + 1);
+
+      ++loaded_music;
+
+      w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
+
+      if (musics_time)
+      {
+          w_courtroom->append_music(f_music);
+      }
+      else
+      {
+          if (f_music.endsWith(".wav") ||
+                  f_music.endsWith(".mp3") ||
+                  f_music.endsWith(".mp4") ||
+                  f_music.endsWith(".ogg") ||
+                  f_music.endsWith(".opus"))
+          {
+              musics_time = true;
+              areas--;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_music);
+          }
+          else
+          {
+              w_courtroom->append_area(f_music);
+              areas++;
+          }
+      }
+
+      for (int area_n = 0; area_n < areas; area_n++)
+      {
+          w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+      }
+
+      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      w_lobby->set_loading_value(loading_value);
+    }
+
+    QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
+    send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
   }
   else if (header == "CharsCheck")
   {
@@ -380,7 +453,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       ++loaded_chars;
 
-      w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
+      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2").arg(QString::number(loaded_chars)).arg(QString::number(char_list_size)));
 
       w_courtroom->append_char(f_char);
 
@@ -401,7 +474,35 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
-      if (!musics_time && f_contents.at(n_element) == "===MUSIC START===.mp3")
+      ++loaded_music;
+
+      w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
+
+      if (musics_time)
+      {
+          w_courtroom->append_music(f_contents.at(n_element));
+      }
+      else
+      {
+          if (f_contents.at(n_element).endsWith(".wav") ||
+                  f_contents.at(n_element).endsWith(".mp3") ||
+                  f_contents.at(n_element).endsWith(".mp4") ||
+                  f_contents.at(n_element).endsWith(".ogg") ||
+                  f_contents.at(n_element).endsWith(".opus"))
+          {
+              musics_time = true;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_contents.at(n_element));
+              areas--;
+          }
+          else
+          {
+              w_courtroom->append_area(f_contents.at(n_element));
+              areas++;
+          }
+      }
+
+      for (int area_n = 0; area_n < areas; area_n++)
       {
           musics_time = true;
           continue;
@@ -566,7 +667,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() >= 1)
     {
-      call_notice("You have been kicked from the server.\nReason: " + f_contents.at(0));
+      call_notice(tr("You have been kicked from the server.\nReason: %1").arg(f_contents.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -575,7 +676,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() >= 1)
     {
-      call_notice("You have been banned from the server.\nReason: " + f_contents.at(0));
+      call_notice(tr("You have been banned from the server.\nReason: %1").arg(f_contents.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -583,7 +684,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "BD")
   {
-    call_notice("You are banned on this server.\nReason: " + f_contents.at(0));
+    call_notice(tr("You are banned on this server.\nReason: %1").arg(f_contents.at(0)));
   }
   else if (header == "ZZ")
   {
@@ -609,7 +710,9 @@ void AOApplication::send_ms_packet(AOPacket *p_packet)
 
   net_manager->ship_ms_packet(f_packet);
 
+#ifdef DEBUG_NETWORK
   qDebug() << "S(ms):" << f_packet;
+#endif
 
   delete p_packet;
 }
@@ -623,14 +726,18 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
 
   if (encryption_needed)
   {
+#ifdef DEBUG_NETWORK
     qDebug() << "S(e):" << f_packet;
+#endif
 
     p_packet->encrypt_header(s_decryptor);
     f_packet = p_packet->to_string();
   }
   else
   {
+#ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
+#endif
   }
 
   net_manager->ship_server_packet(f_packet);

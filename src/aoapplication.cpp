@@ -37,9 +37,9 @@ void AOApplication::construct_lobby()
   w_lobby = new Lobby(this);
   lobby_constructed = true;
 
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width()-w_lobby->width()) / 2;
-  int y = (screenGeometry.height()-w_lobby->height()) / 2;
+  QRect geometry = QGuiApplication::primaryScreen()->geometry();
+  int x = (geometry.width()-w_lobby->width()) / 2;
+  int y = (geometry.height()-w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
   if (is_discord_enabled())
@@ -72,9 +72,9 @@ void AOApplication::construct_courtroom()
   w_courtroom = new Courtroom(this);
   courtroom_constructed = true;
 
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width()-w_courtroom->width()) / 2;
-  int y = (screenGeometry.height()-w_courtroom->height()) / 2;
+  QRect geometry = QGuiApplication::primaryScreen()->geometry();
+  int x = (geometry.width()-w_courtroom->width()) / 2;
+  int y = (geometry.height()-w_courtroom->height()) / 2;
   w_courtroom->move(x, y);
 }
 
@@ -135,7 +135,7 @@ void AOApplication::server_disconnected()
 {
   if (courtroom_constructed)
   {
-    call_notice("Disconnected from server.");
+    call_notice(tr("Disconnected from server."));
     construct_lobby();
     destruct_courtroom();
   }
@@ -160,16 +160,15 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
     if (will_retry)
     {
       if (lobby_constructed)
-        w_lobby->append_error("Error connecting to master server. Will try again in "
-                            + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
+        w_lobby->append_error(tr("Error connecting to master server. Will try again in %1 seconds.").arg(QString::number(net_manager->ms_reconnect_delay)));
     }
     else
     {
-      call_error("There was an error connecting to the master server.\n"
+      call_error(tr("There was an error connecting to the master server.\n"
                  "We deploy multiple master servers to mitigate any possible downtime, "
                  "but the client appears to have exhausted all possible methods of finding "
                  "and connecting to one.\n"
-                 "Please check your Internet connection and firewall, and please try again.");
+                 "Please check your Internet connection and firewall, and please try again."));
     }
   }
 }

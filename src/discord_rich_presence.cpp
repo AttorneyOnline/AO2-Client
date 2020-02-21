@@ -2,6 +2,7 @@
 
 namespace AttorneyOnline {
 
+#ifdef DISCORD
 Discord::Discord()
 {
   DiscordEventHandlers handlers;
@@ -11,10 +12,10 @@ Discord::Discord()
     qInfo() << "Discord RPC ready";
   };
   handlers.disconnected = [](int errorCode, const char* message) {
-    qInfo() << "Discord RPC disconnected! " << message;
+    qInfo() << "Discord RPC disconnected! " << message << errorCode;
   };
   handlers.errored = [](int errorCode, const char* message) {
-    qWarning() << "Discord RPC errored out! " << message;
+    qWarning() << "Discord RPC errored out! " << message << errorCode;
   };
   qInfo() << "Initializing Discord RPC";
   Discord_Initialize(APPLICATION_ID, &handlers, 1, nullptr);
@@ -99,5 +100,36 @@ void Discord::state_spectate()
   presence.state = "Spectating";
   Discord_UpdatePresence(&presence);
 }
+#else
+Discord::Discord()
+{
 
+}
+
+Discord::~Discord()
+{
+
+}
+
+void Discord::state_lobby()
+{
+
+}
+
+void Discord::state_server(std::string name, std::string server_id)
+{
+  qDebug() << "Discord RPC: Setting server state";
+}
+
+void Discord::state_character(std::string name)
+{
+  qDebug() << "Discord RPC: Setting character state";
+}
+
+void Discord::state_spectate()
+{
+  qDebug() << "Discord RPC: Setting specator state";
+
+}
+#endif
 }

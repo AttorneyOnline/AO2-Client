@@ -224,7 +224,19 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QStrin
 
   return return_value;
 }
-
+QString AOApplication::get_font_name(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path(p_file);
+  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QString default_path = get_default_theme_path(p_file);
+  if (f_result == "")
+  {
+    f_result = read_design_ini(p_identifier, default_path);
+    if (f_result == "")
+      return "Sans";
+  }
+  return f_result;
+}
 int AOApplication::get_font_size(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
@@ -443,8 +455,9 @@ QString AOApplication::get_chat(QString p_char)
 QString AOApplication::get_char_shouts(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "shouts", "Options");
-
-  return f_result;
+  if (f_result == "")
+    return "default";
+  else return f_result;
 }
 
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
