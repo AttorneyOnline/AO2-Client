@@ -2374,7 +2374,7 @@ void Courtroom::chat_tick()
     f_message.remove(0,2);
   }
 
-  if (f_message.size() == 0)
+  if (f_message.size() == 0 || tick_pos >= f_message.size())
   {
     text_state = 2;
     if (anim_state != 4)
