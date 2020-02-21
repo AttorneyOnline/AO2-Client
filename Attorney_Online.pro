@@ -34,6 +34,10 @@ contains(DEFINES, QTAUDIO) {
 QT += multimedia
 }
 
+contains(CONFIG, qml_debug) {
+DEFINES += DEBUG_NETWORK
+}
+
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
 
