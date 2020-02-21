@@ -107,6 +107,11 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   }
 }
 
+void AOSfxPlayer::setLooping(bool is_looping)
+{
+    this->looping_sfx = is_looping;
+}
+
 void AOSfxPlayer::stop()
 {
   m_sfx.stop();
@@ -132,6 +137,11 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
 
+}
+
+void AOSfxPlayer::setLooping(bool is_looping)
+{
+    this->looping_sfx = is_looping;
 }
 
 void AOSfxPlayer::stop()
