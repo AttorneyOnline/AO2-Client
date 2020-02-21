@@ -250,8 +250,8 @@ void Courtroom::character_loading_finished()
     // Later on, we'll be revealing buttons as we need them.
     for (int n = 0; n < char_list.size(); n++)
     {
-        AOCharButton* character = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
-        AOCharSelectGenerationThreading *char_generate = new AOCharSelectGenerationThreading(this, n, character);
+        AOCharButton* characterButton = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+        AOCharSelectGenerationThreading *char_generate = new AOCharSelectGenerationThreading(this, n, characterButton);
         QThreadPool::globalInstance()->start(char_generate);
         if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
         {
