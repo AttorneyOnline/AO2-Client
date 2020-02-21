@@ -79,7 +79,7 @@ private:
 
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 public slots:
-  void fucking_threading_goddamn_it(QString fuckshitassgoddamnfuck);
+  void lobbyThreadHandler(QString loadingText);
 private slots:
   void on_public_servers_clicked();
   void on_favorites_clicked();

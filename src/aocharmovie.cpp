@@ -88,10 +88,10 @@ void AOCharMovie::play_frame_sfx()
 void AOCharMovie::realization_two_network_boogaloo()
 {
     int current_frame = m_movie->currentFrameNumber();
-    QStringList fucking_garbage = this->frame_realization_hellstring.split("^");
-    for (int i = 0; i < fucking_garbage.length(); i++) {
-        QString fucking_christ = fucking_garbage.at(i);
-        QStringList extra_garbage = fucking_christ.split("|");
+    QStringList realizationList = this->frame_realization_hellstring.split("^");
+    for (int i = 0; i < realizationList.length(); i++) {
+        QString screenshakeList = realizationList.at(i);
+        QStringList extra_garbage = screenshakeList.split("|");
         if(extra_garbage.at(0) != current_emote){
             continue;
         }
@@ -108,10 +108,10 @@ void AOCharMovie::realization_two_network_boogaloo()
 void AOCharMovie::screenshake_two_network_boogaloo()
 {
     int current_frame = m_movie->currentFrameNumber();
-    QStringList fucking_garbage = this->frame_screenshake_hellstring.split("^");
-    for (int i = 0; i < fucking_garbage.length(); i++) {
-        QString fucking_christ = fucking_garbage.at(i);
-        QStringList extra_garbage = fucking_christ.split("|");
+    QStringList realizationList = this->frame_screenshake_hellstring.split("^");
+    for (int i = 0; i < realizationList.length(); i++) {
+        QString screenshakeList = realizationList.at(i);
+        QStringList extra_garbage = screenshakeList.split("|");
         if(extra_garbage.at(0) != current_emote){
             continue;
         }
@@ -128,10 +128,10 @@ void AOCharMovie::screenshake_two_network_boogaloo()
 void AOCharMovie::sfx_two_network_boogaloo()
 {
     int current_frame = m_movie->currentFrameNumber();
-    QStringList fucking_garbage = this->frame_sfx_hellstring.split("^");
-    for (int i = 0; i < fucking_garbage.length(); i++) {
-        QString fucking_christ = fucking_garbage.at(i);
-        QStringList extra_garbage = fucking_christ.split("|");
+    QStringList realizationList = this->frame_sfx_hellstring.split("^");
+    for (int i = 0; i < realizationList.length(); i++) {
+        QString screenshakeList = realizationList.at(i);
+        QStringList extra_garbage = screenshakeList.split("|");
         if(extra_garbage.at(0) != current_emote){
             continue;
         }
@@ -168,8 +168,9 @@ void AOCharMovie::movie_ticker()
   {
     m_movie->jumpToNextFrame();
   }
-  this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage()); // imagine if QT had sane stuff like "mirror on QMovie" or "resize the image on QT" or "interface with the current QMovie image" or anything else
-  // ps: fuck private functions/variables as a concept, freedom 2 do dangerous things 5ever
+  this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage());
+  // imagine if QT had sane stuff like "mirror on QMovie" or "resize the image on QT" or "interface with the current QMovie image" or anything else
+
   this->play_frame_sfx();
   if(!apng){
       ticker->start(m_movie->nextFrameDelay());
@@ -180,7 +181,7 @@ void AOCharMovie::movie_ticker()
 void AOCharMovie::LoadImageWithStupidMethodForFlipSupport(QImage image)
 {
     QPixmap f_pixmap;
-    if(m_flipped) // imagine if QT wasn't handicapped harder than people who think MLP is good
+    if(m_flipped)
         f_pixmap = QPixmap::fromImage(image.mirrored(true, false));
     else
         f_pixmap = QPixmap::fromImage(image);

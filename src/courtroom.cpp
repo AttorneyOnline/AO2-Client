@@ -76,7 +76,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   misc_sfx_player->set_volume(0);
   frame_emote_sfx_player = new AOSfxPlayer(this, ao_app);
   frame_emote_sfx_player->set_volume(0);
-  pair_frame_emote_sfx_player = new AOSfxPlayer(this, ao_app); // todo: recode pair // todo: recode fucking everything
+  pair_frame_emote_sfx_player = new AOSfxPlayer(this, ao_app); // todo: recode pair
   pair_frame_emote_sfx_player->set_volume(0);
 
   blip_player = new AOBlipPlayer(this, ao_app);
@@ -878,7 +878,7 @@ void Courtroom::set_background(QString p_background)
   }
 }
 
-void Courtroom::set_character(int char_id) // can you fucking believe this didn't exist yet
+void Courtroom::set_character(int char_id)
 {
     m_cid = char_id;
 
@@ -1129,62 +1129,62 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
   ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
 }
 
-class AOFrameThreadingBullshitPre : public QRunnable
+class AOFrameThreadingPre : public QRunnable
 {
 public:
-    Courtroom *mycourt_fuck;
+    Courtroom *thisCourtroom;
     int my_frameNumber;
-    AOFrameThreadingBullshitPre(Courtroom *my_courtroom, int frameNumber){
-        mycourt_fuck = my_courtroom;
+    AOFrameThreadingPre(Courtroom *my_courtroom, int frameNumber){
+        thisCourtroom = my_courtroom;
         my_frameNumber = frameNumber;
     }
     void run()
     {
         qDebug() << my_frameNumber << " FRAME NUMBER" << " from" << QThread::currentThread();
-        QString sfx_to_play = mycourt_fuck->ao_app->get_frame_sfx_name(mycourt_fuck->current_char, mycourt_fuck->ao_app->get_pre_emote(mycourt_fuck->current_char, mycourt_fuck->current_emote), my_frameNumber);
-        QString screenshake_to_play = mycourt_fuck->ao_app->get_screenshake_frame(mycourt_fuck->current_char, mycourt_fuck->ao_app->get_pre_emote(mycourt_fuck->current_char, mycourt_fuck->current_emote), my_frameNumber);
-        QString realization_to_play = mycourt_fuck->ao_app->get_realization_frame(mycourt_fuck->current_char, mycourt_fuck->ao_app->get_pre_emote(mycourt_fuck->current_char, mycourt_fuck->current_emote), my_frameNumber);
+        QString sfx_to_play = thisCourtroom->ao_app->get_frame_sfx_name(thisCourtroom->current_char, thisCourtroom->ao_app->get_pre_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
+        QString screenshake_to_play = thisCourtroom->ao_app->get_screenshake_frame(thisCourtroom->current_char, thisCourtroom->ao_app->get_pre_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
+        QString realization_to_play = thisCourtroom->ao_app->get_realization_frame(thisCourtroom->current_char, thisCourtroom->ao_app->get_pre_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
         if(sfx_to_play != "")
         {
-            mycourt_fuck->threading_sfx += "|" + QString::number(my_frameNumber) + "=" + sfx_to_play;
+            thisCourtroom->threading_sfx += "|" + QString::number(my_frameNumber) + "=" + sfx_to_play;
         }
         if(screenshake_to_play != "")
         {
-            mycourt_fuck->threading_shake += "|" + QString::number(my_frameNumber) + "=" + screenshake_to_play;
+            thisCourtroom->threading_shake += "|" + QString::number(my_frameNumber) + "=" + screenshake_to_play;
         }
         if(realization_to_play != "")
         {
-            mycourt_fuck->threading_flash += "|" + QString::number(my_frameNumber) + "=" + realization_to_play;
+            thisCourtroom->threading_flash += "|" + QString::number(my_frameNumber) + "=" + realization_to_play;
         }
     }
 };
 
 
-class AOFrameThreadingBullshit : public QRunnable
+class AOFrameThreading : public QRunnable
 {
 public:
-    Courtroom *mycourt_fuck;
+    Courtroom *thisCourtroom;
     int my_frameNumber;
-    AOFrameThreadingBullshit(Courtroom *my_courtroom, int frameNumber){
-        mycourt_fuck = my_courtroom;
+    AOFrameThreading(Courtroom *my_courtroom, int frameNumber){
+        thisCourtroom = my_courtroom;
         my_frameNumber = frameNumber;
     }
     void run()
     {
-        QString sfx_to_play = mycourt_fuck->ao_app->get_frame_sfx_name(mycourt_fuck->current_char, mycourt_fuck->threading_prefix + mycourt_fuck->ao_app->get_emote(mycourt_fuck->current_char, mycourt_fuck->current_emote), my_frameNumber);
-        QString screenshake_to_play = mycourt_fuck->ao_app->get_screenshake_frame(mycourt_fuck->current_char, mycourt_fuck->threading_prefix + mycourt_fuck->ao_app->get_emote(mycourt_fuck->current_char, mycourt_fuck->current_emote), my_frameNumber);
-        QString realization_to_play = mycourt_fuck->ao_app->get_realization_frame(mycourt_fuck->current_char, mycourt_fuck->threading_prefix + mycourt_fuck->ao_app->get_emote(mycourt_fuck->current_char, mycourt_fuck->current_emote), my_frameNumber);
+        QString sfx_to_play = thisCourtroom->ao_app->get_frame_sfx_name(thisCourtroom->current_char, thisCourtroom->threading_prefix + thisCourtroom->ao_app->get_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
+        QString screenshake_to_play = thisCourtroom->ao_app->get_screenshake_frame(thisCourtroom->current_char, thisCourtroom->threading_prefix + thisCourtroom->ao_app->get_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
+        QString realization_to_play = thisCourtroom->ao_app->get_realization_frame(thisCourtroom->current_char, thisCourtroom->threading_prefix + thisCourtroom->ao_app->get_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
         if(sfx_to_play != "")
         {
-            mycourt_fuck->threading_sfx += "|" + QString::number(my_frameNumber) + "=" + sfx_to_play;
+            thisCourtroom->threading_sfx += "|" + QString::number(my_frameNumber) + "=" + sfx_to_play;
         }
         if(screenshake_to_play != "")
         {
-            mycourt_fuck->threading_shake += "|" + QString::number(my_frameNumber) + "=" + screenshake_to_play;
+            thisCourtroom->threading_shake += "|" + QString::number(my_frameNumber) + "=" + screenshake_to_play;
         }
         if(realization_to_play != "")
         {
-            mycourt_fuck->threading_flash += "|" + QString::number(my_frameNumber) + "=" + realization_to_play;
+            thisCourtroom->threading_flash += "|" + QString::number(my_frameNumber) + "=" + realization_to_play;
         }
     }
 };
@@ -1393,7 +1393,7 @@ void Courtroom::on_chat_return_pressed()
       frame_emote_checker = new QMovie(this);
       frame_emote_checker->setFileName(preemote);
       frame_emote_checker->jumpToFrame(0);
-      qDebug() << "Premote fuck: " << frame_emote_checker->frameCount();
+      qDebug() << "Premote: " << frame_emote_checker->frameCount();
 
       preemote_sfx += ao_app->get_pre_emote(current_char, current_emote);
       preemote_shake += ao_app->get_pre_emote(current_char, current_emote);
@@ -1404,7 +1404,7 @@ void Courtroom::on_chat_return_pressed()
       threading_flash = preemote_flash;
 
       for(int i=0; i < frame_emote_checker->frameCount(); i++){
-          AOFrameThreadingBullshitPre *testfuck = new AOFrameThreadingBullshitPre(this, i);
+          AOFrameThreadingPre *testfuck = new AOFrameThreadingPre(this, i);
           QThreadPool::globalInstance()->start(testfuck);
       }
       QThreadPool::globalInstance()->waitForDone();
@@ -1425,7 +1425,7 @@ void Courtroom::on_chat_return_pressed()
       frame_emote_checker = new QMovie(this);
       frame_emote_checker->setFileName(talkemote_to_check);
       frame_emote_checker->jumpToFrame(0);
-      qDebug() << "TALK fuck: " << frame_emote_checker->frameCount();
+      qDebug() << "Talk: " << frame_emote_checker->frameCount();
 
       threading_sfx = talkemote_sfx;
       threading_shake = talkemote_shake;
@@ -1433,7 +1433,7 @@ void Courtroom::on_chat_return_pressed()
       threading_prefix = QString("(b)");
 
       for(int i=0; i < frame_emote_checker->frameCount(); i++){
-          AOFrameThreadingBullshit *testfuck = new AOFrameThreadingBullshit(this, i);
+          AOFrameThreading *testfuck = new AOFrameThreading(this, i);
           QThreadPool::globalInstance()->start(testfuck);
       }
       QThreadPool::globalInstance()->waitForDone();
@@ -1455,14 +1455,14 @@ void Courtroom::on_chat_return_pressed()
       frame_emote_checker = new QMovie(this);
       frame_emote_checker->setFileName(idleemote_to_check);
       frame_emote_checker->jumpToFrame(0);
-      qDebug() << "idle fuck: " << frame_emote_checker->frameCount();
+      qDebug() << "idle: " << frame_emote_checker->frameCount();
 
       threading_sfx = idleemote_sfx;
       threading_shake = idleemote_shake;
       threading_flash = idleemote_flash;
       threading_prefix = QString("(a)");
       for(int i=0; i < frame_emote_checker->frameCount(); i++){
-          AOFrameThreadingBullshit *testfuck = new AOFrameThreadingBullshit(this, i);
+          AOFrameThreading *testfuck = new AOFrameThreading(this, i);
           QThreadPool::globalInstance()->start(testfuck);
       }
       QThreadPool::globalInstance()->waitForDone();

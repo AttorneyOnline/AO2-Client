@@ -197,7 +197,7 @@ public:
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
-  // mfw this didnt fucking exist yet
+  // set the character using an ID
   void set_character(int char_id);
 
   //helper function that populates ui_music_list with the contents of music_list
