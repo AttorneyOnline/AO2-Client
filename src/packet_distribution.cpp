@@ -350,7 +350,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       ++loaded_chars;
 
-      w_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" + QString::number(char_list_size));
+      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2").arg(QString::number(loaded_chars)).arg(QString::number(char_list_size)));
 
       w_courtroom->append_char(f_char);
 
@@ -535,7 +535,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
             int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
             int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
             w_lobby->set_loading_value(loading_value);
-            w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
+            w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
             if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
             {
               QThreadPool::globalInstance()->waitForDone(); //out of order music is bad

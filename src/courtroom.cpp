@@ -2835,7 +2835,7 @@ void Courtroom::set_ban(int p_cid)
   if (p_cid != m_cid && p_cid != -1)
     return;
 
-  call_notice("You have been banned.");
+  call_notice(tr("You have been banned."));
 
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
