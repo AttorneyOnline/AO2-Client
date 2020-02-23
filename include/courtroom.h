@@ -115,7 +115,7 @@ public:
   QCheckBox *ui_char_taken;
   void mt_pre_framegetter(int frameNumber);
   void mt_framegetter(int frameNumber);
-  
+
   void reset_music_list()
   {
       music_list.clear();
@@ -388,6 +388,14 @@ private:
 
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
+
+  bool testimony_in_progress = false;
+
+  //in milliseconds
+  const int testimony_show_time = 1500;
+
+  //in milliseconds
+  const int testimony_hide_time = 500;
 
   //the amount of time non-animated objection/hold it/takethat images stay onscreen for in ms
   const int shout_stay_time = 724;
@@ -683,6 +691,9 @@ public slots:
   void do_flash();
   void do_effect(QString fx_path, QString fx_sound, QString p_char);
   void play_char_sfx(QString sfx_name);
+
+  void show_testimony();
+  void hide_testimony();
 
   void mod_called(QString p_ip);
 
