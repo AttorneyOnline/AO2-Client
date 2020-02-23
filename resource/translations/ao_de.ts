@@ -155,7 +155,7 @@ Grund: </translation>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="58"/>
         <source>Witness needed</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeuge benötigt</translation>
     </message>
 </context>
 <context>
@@ -243,12 +243,12 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="170"/>
         <source>Allow Shake/Flash:</source>
-        <translation type="unfinished"></translation>
+        <translation>Schütteln/Geistesblitz erlauben:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="171"/>
         <source>Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erlaubt schütteln des Bildschirms und weiße Blitze. Deaktiviere dies falls du Bedenken wegen Photosensitivität hast.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="181"/>
@@ -338,22 +338,22 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="349"/>
         <source>Enable Looping SFX:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholende Soundeffekte:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="350"/>
         <source>If true, the game will allow looping sound effects to play on preanimations.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn aktiviert, werden wiederholende Soundeffekte bei den Voranimationen erlaubt.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="361"/>
         <source>Kill Music On Objection:</source>
-        <translation type="unfinished"></translation>
+        <translation>Stoppe Musik bei Einspruch:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="362"/>
         <source>If true, the game will stop music when someone objects, like in the actual games.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hält die Musik an wenn jemand &quot;Einspruch&quot; ruft, wie im echten Spiel.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="373"/>
@@ -448,12 +448,12 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="493"/>
         <source>Witness:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeuge:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="494"/>
         <source>If checked, you will appear amongst the potential witnesses on the server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn angehakt wirst du als potentielle Zeuge angezeigt.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="507"/>
@@ -543,7 +543,7 @@ Grund: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="217"/>
         <source>Disable Modcalls</source>
-        <translation type="unfinished"></translation>
+        <translation>Deaktiviere Moderatorenrufe</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="223"/>
