@@ -90,7 +90,7 @@ public:
   void clear_music(){music_list.clear();}
   void clear_areas(){area_list.clear();}
 
-  void fix_last_area()
+  void fix_last_area();
 
   void handle_failed_login();
   QString threading_sfx = "";
@@ -228,7 +228,7 @@ public:
   //updates character to p_cid and updates necessary ui elements
   void update_character(int p_cid);
 
-  //properly sets up some varibles: resets user state
+  //properly sets up some variables: resets user state
   void enter_courtroom();
 
   // set the character using an ID
@@ -300,17 +300,17 @@ private:
   QPropertyAnimation *chatbox_screenshake_animation;
   QParallelAnimationGroup *screenshake_group;
   QMovie *frame_emote_checker;
-  // This is for inline message-colouring.
+  // This is for inline message-coloring.
 
-  enum INLINE_COLOURS {
+  enum INLINE_COLORS {
       INLINE_BLUE,
       INLINE_GREEN,
       INLINE_ORANGE,
       INLINE_GREY
   };
 
-  // A stack of inline colours.
-  std::stack<INLINE_COLOURS> inline_colour_stack;
+  // A stack of inline colors.
+  std::stack<INLINE_COLORS> inline_color_stack;
 
   bool next_character_is_not_special = false; // If true, write the
                         // next character as it is.
@@ -377,6 +377,15 @@ private:
   //delay before sfx plays
   QTimer *sfx_delay_timer;
 
+  //delay before sfx plays
+  QTimer *realization_timer;
+
+  //delay before sfx plays
+  QTimer *testimony_show_timer;
+
+  //delay before sfx plays
+  QTimer *testimony_hide_timer;
+
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
@@ -398,10 +407,6 @@ private:
 
   //amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
-
-  static const int chatmessage_size = 30;
-  QString m_chatmessage[chatmessage_size];
-  bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
   QString additive_previous = "";
