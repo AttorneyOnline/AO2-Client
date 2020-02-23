@@ -2361,7 +2361,6 @@ void Courtroom::chat_tick()
   //do not perform heavy operations here
 
   QString f_message = m_chatmessage[MESSAGE];
-  f_message.remove(0, tick_pos);
 
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
@@ -2376,7 +2375,7 @@ void Courtroom::chat_tick()
     f_message.remove(0,2);
   }
 
-  if (f_message.size() == 0 || tick_pos >= f_message.size())
+  if (tick_pos >= f_message.size())
   {
     text_state = 2;
     if (anim_state != 4)
@@ -2388,20 +2387,8 @@ void Courtroom::chat_tick()
 
   else
   {
-    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_message);
-    QString f_character;
-    int f_char_length;
-
-    tbf.toNextBoundary();
-
-    if (tbf.position() == -1)
-      f_character = f_message;
-    else
-      f_character = f_message.left(tbf.position());
-
-    f_char_length = f_character.length();
+    QString f_character = f_message.at(tick_pos);
     f_character = f_character.toHtmlEscaped();
-
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
@@ -2507,7 +2494,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos -= f_char_length;
+            tick_pos--;
         }
     }
 
@@ -2528,7 +2515,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos -= f_char_length;
+            tick_pos--;
         }
     }
 
@@ -2572,7 +2559,11 @@ void Courtroom::chat_tick()
           case INLINE_GREY:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
               break;
+          default:
+              ui_vp_message->insertHtml(f_character);
+              break;
           }
+
       }
       else
       {
@@ -2623,7 +2614,7 @@ void Courtroom::chat_tick()
     if(blank_blip)
       qDebug() << "blank_blip found true";
 
-    if (f_character != ' ' || blank_blip)
+    if (f_message.at(tick_pos) != ' ' || blank_blip)
     {
 
       if (blip_pos % blip_rate == 0 && !formatting_char)
@@ -2635,7 +2626,7 @@ void Courtroom::chat_tick()
       ++blip_pos;
     }
 
-    tick_pos += f_char_length;
+    ++tick_pos;
 
     // Restart the timer, but according to the newly set speeds, if there were any.
     // Keep the speed at bay.
@@ -2661,7 +2652,6 @@ void Courtroom::chat_tick()
 
   }
 }
-
 
 void Courtroom::show_testimony()
 {
@@ -2861,6 +2851,8 @@ void Courtroom::handle_song(QStringList *p_contents)
   QString f_song = f_contents.at(0);
   QString f_song_clear = f_song;
   int n_char = f_contents.at(1).toInt();
+
+  qDebug() << "playing song "+f_song;
 
   if (n_char < 0 || n_char >= char_list.size())
   {
