@@ -27,6 +27,9 @@ public:
   void set_volume(int p_value, int channel=-1);
   void set_looping(bool toggle, int channel=0);
 
+  QString get_path();
+  bool enable_looping = true;
+
   const int m_channelmax = 4;
 
   //These have to be public for the stupid sync thing
@@ -38,8 +41,6 @@ public slots:
   void stop(int channel=0);
 
   void kill_loop();
-  QString get_path();
-  bool enable_looping = true;
 
 private:
   QWidget *m_parent;
