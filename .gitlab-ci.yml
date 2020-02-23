@@ -124,6 +124,8 @@ deploy linux x86_64:
     - *deploy_misc
 
     # Platform-specific
+    - cd ..
+    - ls
     - cp -a ../lib/*.so .
     - cp -a ../bin/Attorney_Online .
     - echo "#!/bin/sh" >> ./run.sh
