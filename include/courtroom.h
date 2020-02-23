@@ -36,6 +36,7 @@
 #include <QComboBox>
 #include <QSlider>
 #include <QVector>
+#include <QSignalMapper>
 #include <QCloseEvent>
 #include <QMap>
 #include <QTextBrowser>
@@ -560,7 +561,6 @@ private:
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
-  void char_clicked(int n_char);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
@@ -681,6 +681,8 @@ private slots:
   void on_char_passworded_clicked();
 
   void on_spectator_clicked();
+
+  void char_clicked(int n_char);
 
   void on_switch_area_music_clicked();
 
