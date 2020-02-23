@@ -15,13 +15,13 @@ HEADERS += $$files($$PWD/include/*.h)
 
 LIBS += -L$$PWD/lib
 
-DEFINES += DISCORD
+#DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {
 LIBS += -ldiscord-rpc
 }
 
-DEFINES += BASSAUDIO
+#DEFINES += BASSAUDIO
 
 contains(DEFINES, BASSAUDIO) {
 LIBS += -lbass
