@@ -165,6 +165,9 @@ public:
   // from the config.ini.
   bool is_discord_enabled();
 
+  //Returns whether evidence should be maintained ic
+  bool is_keepevi_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();

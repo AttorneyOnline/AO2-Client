@@ -173,6 +173,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_callwords_layout = new QVBoxLayout(ui_callwords_widget);
     ui_callwords_layout->setContentsMargins(0,0,0,0);
 
+    ui_keepevi_lbl = new QLabel(ui_form_layout_widget);
+    ui_keepevi_lbl->setText(tr("Maintain evidence:"));
+    ui_keepevi_lbl->setToolTip(tr("Instead of removing the evidence icon each time somebody speaks, "
+                                  "the evidence icon will remain until be replaced. "));
+
+    ui_gameplay_form->setWidget(12, QFormLayout::LabelRole, ui_keepevi_lbl);
+
+    ui_keepevi_cb = new QCheckBox(ui_form_layout_widget);
+    ui_keepevi_cb->setChecked(ao_app->is_discord_enabled());
+
+    ui_gameplay_form->setWidget(12, QFormLayout::FieldRole, ui_discord_cb);
+
     ui_callwords_textbox = new QPlainTextEdit(ui_callwords_widget);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     sizePolicy.setHorizontalStretch(0);
@@ -569,6 +581,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("default_blip", ui_blips_volume_spinbox->value());
     configini->setValue("blip_rate", ui_bliprate_spinbox->value());
     configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
+    configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
 
     configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
     configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
@@ -582,6 +595,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("color_iclog_enabled",ui_other_fancy_icl_enabled_cb->isChecked());
     configini->setValue("mirror_iclog_enabled",ui_other_mirror_icl_enabled_cb->isChecked());//ui_other_fancy_icl_limit_cb
     configini->setValue("mirror_iclog_restricted",ui_other_fancy_icl_limit_cb->isChecked());
+
     callwordsini->close();
     done(0);
 }

@@ -428,6 +428,8 @@ private:
   bool mirror_iclog = false;
   bool colorf_limit = false;
 
+  bool keep_evidence_display = false;
+
   QTextEdit *ui_ic_chatlog;
 
   AOTextArea *ui_ms_chatlog;

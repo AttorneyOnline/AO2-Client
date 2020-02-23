@@ -66,6 +66,9 @@ private:
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
 
+    QLabel *ui_keepevi_lbl;
+    QCheckBox *ui_keepevi_cb;
+
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;
     QVBoxLayout *ui_callwords_layout;

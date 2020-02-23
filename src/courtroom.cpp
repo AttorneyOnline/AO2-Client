@@ -154,6 +154,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   colorf_iclog = p_ao_app->get_icfan_enabled();
   mirror_iclog = p_ao_app->get_iclmir_enabled();
   colorf_limit = p_ao_app->colorlog_restricted_enabled();
+  keep_evidence_display = p_ao_app->is_keepevi_enabled();
+
 
   //ui_area_password = new QLineEdit(this);
   //ui_area_password->setFrame(false);
@@ -1356,7 +1358,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_objection->stop();
   ui_vp_player_char->stop();
   chat_tick_timer->stop();
-  ui_vp_evidence_display->reset();
+  if(keep_evidence_display)
+    ui_vp_evidence_display->reset();
 
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
   shown = true;
@@ -3827,6 +3830,7 @@ void Courtroom::on_reload_theme_clicked()
   colorf_iclog = ao_app->get_icfan_enabled();
   mirror_iclog = ao_app->get_iclmir_enabled();
   colorf_limit = ao_app->colorlog_restricted_enabled();
+  keep_evidence_display = ao_app->is_keepevi_enabled();
   //to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
