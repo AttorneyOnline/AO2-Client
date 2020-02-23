@@ -47,6 +47,7 @@ private:
 
   bool m_looping = false;
   int m_volume[4] = {0, 0, 0, 0};
+  QString f_path;
 
   // Channel 0 = music
   // Channel 1 = ambience
