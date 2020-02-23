@@ -63,6 +63,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   testimony_hide_timer = new QTimer(this);
   testimony_hide_timer->setSingleShot(true);
 
+  char_button_mapper = new QSignalMapper(this);
+
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
 
