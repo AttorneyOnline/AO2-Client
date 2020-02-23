@@ -22,7 +22,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop, int effect_flag
   if (channel < 0) //wtf?
       return;
   QString f_path = ao_app->get_music_path(p_song);
-  BASS_ChannelStop(m_stream);
+  BASS_ChannelStop(m_stream_list[channel]);
 
   f_path = ao_app->get_music_path(p_song);
 
@@ -172,11 +172,6 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
 QString AOMusicPlayer::get_path()
 {
     return f_path;
-}
-
-void AOMusicPlayer::kill_loop()
-{
-    BASS_ChannelStop(m_stream);
 }
 
 #elif defined(QTAUDIO)
