@@ -243,6 +243,14 @@ void AOCharMovie::play_frame_effect(int frame)
  // play(p_char, p_emote, "(a)");
 }
 
+void AOCharMovie::stop()
+{
+  //for all intents and purposes, stopping is the same as hiding. at no point do we want a frozen gif to display
+  ticker->stop();
+  preanim_timer->stop();
+  this->hide();
+}
+
 QPixmap AOCharMovie::get_pixmap(QImage image)
 {
     QPixmap f_pixmap;
