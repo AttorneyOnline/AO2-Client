@@ -179,7 +179,7 @@ void Courtroom::char_clicked(int n_char)
 
   if (!file_exists(char_ini_path))
   {
-    call_notice("Could not find " + char_ini_path);
+    call_notice(tr("Could not find %1").arg(char_ini_path, 1));
     return;
   }
 
