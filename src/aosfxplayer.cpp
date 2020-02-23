@@ -185,28 +185,64 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
   ao_app = p_ao_app;
 }
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
+void AOSfxPlayer::clear()
 {
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::loop_clear()
+{
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel)
+{
+  QString misc_path = "";
+  QString char_path = "";
+  QString sound_path = ao_app->get_sfx_suffix(ao_app->get_sounds_path(p_sfx));
+
+  if (shout != "")
+    misc_path = ao_app->get_sfx_suffix(ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx);
+  if (p_char != "")
+    char_path = ao_app->get_sfx_suffix(ao_app->get_character_path(p_char, p_sfx));
+
+  QString f_path;
+
+  if (file_exists(char_path))
+      f_path = char_path;
+  else if (file_exists(misc_path))
+    f_path = misc_path;
+  else
+    f_path = sound_path;
+
+  set_volume_internal(m_volume);
 
 }
 
-void AOSfxPlayer::setLooping(bool is_looping)
+void AOSfxPlayer::stop(int channel)
 {
-    this->looping_sfx = is_looping;
-}
-
-void AOSfxPlayer::stop()
-{
-
+  if (channel == -1)
+  {
+    channel = m_channel;
+  }
 }
 
 void AOSfxPlayer::set_volume(qreal p_value)
 {
-
+  m_volume = p_value / 100;
+  set_volume_internal(m_volume);
 }
 
 void AOSfxPlayer::set_volume_internal(qreal p_value)
 {
+    float volume = static_cast<float>(p_value);
+}
 
+void AOSfxPlayer::set_looping(bool toggle, int channel)
+{
+  if (channel == -1)
+  {
+    channel = m_channel;
+  }
 }
 #endif

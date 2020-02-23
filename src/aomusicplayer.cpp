@@ -199,7 +199,7 @@ void AOMusicPlayer::play(QString p_song)
   m_player.play();
 }
 
-void AOMusicPlayer::set_volume(int p_value)
+void AOMusicPlayer::set_volume(int p_value, int channel)
 {
   m_volume = p_value;
   m_player.setVolume(m_volume);
@@ -226,12 +226,17 @@ AOMusicPlayer::~AOMusicPlayer()
 
 }
 
-void AOMusicPlayer::play(QString p_song)
+void AOMusicPlayer::play(QString p_song, int channel, bool loop, int effect_flags)
 {
 
 }
 
-void AOMusicPlayer::set_volume(int p_value)
+void AOMusicPlayer::stop(int channel)
+{
+
+}
+
+void AOMusicPlayer::set_volume(int p_value, int channel)
 {
 
 }
