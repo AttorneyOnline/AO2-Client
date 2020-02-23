@@ -186,7 +186,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_epilepsy_lbl);
 
     ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
-    ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
+    ui_epilepsy_cb->setChecked(ao_app->is_shake_flash_enabled());
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_epilepsy_cb);
   
@@ -428,7 +428,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
 
     ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
-    ui_objectmusic_cb->setChecked(p_ao_app->get_objectmusic());
+    ui_objectmusic_cb->setChecked(p_ao_app->objection_stop_music());
 
     ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
 
