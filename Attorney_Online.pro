@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.6.2.0
+VERSION = 2.7.2.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -32,6 +32,10 @@ LIBS += -lbass
 
 contains(DEFINES, QTAUDIO) {
 QT += multimedia
+}
+
+contains(CONFIG, qml_debug) {
+DEFINES += DEBUG_NETWORK
 }
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices

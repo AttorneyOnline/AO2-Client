@@ -27,6 +27,11 @@
 #include <QAudioDeviceInfo>
 #endif
 
+#include <QtConcurrent/QtConcurrent>
+#include <QThread>
+#include <QThreadPool>
+#include <QFuture>
+
 class NetworkManager;
 class Lobby;
 class Courtroom;
@@ -78,6 +83,7 @@ public:
   bool arup_enabled = false;
   bool casing_alerts_enabled = false;
   bool modcall_reason_enabled = false;
+  bool looping_sfx_support_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -93,6 +99,7 @@ public:
   int loaded_evidence = 0;
   int music_list_size = 0;
   int loaded_music = 0;
+  int area_count = 0;
 
   bool courtroom_loaded = false;
 
@@ -150,6 +157,12 @@ public:
   //Returns true if blank blips is enabled in config.ini and false otherwise
   bool get_blank_blip();
 
+  //Returns true if looping sound effects are enabled in the config.ini
+  bool get_looping_sfx();
+
+  //Returns true if kill music on object is enabled in the config.ini
+  bool get_objectmusic();
+
   //Returns the value of default_music in config.ini
   int get_default_music();
 
@@ -162,6 +175,10 @@ public:
   // Returns the value of whether Discord should be enabled on startup
   // from the config.ini.
   bool is_discord_enabled();
+
+  // Returns the value of whether shaking and flashing should be enabled.
+  // from the config.ini.
+  bool is_shakeandflash_enabled();
 
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
@@ -267,6 +284,18 @@ public:
   //Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
 
+  //Returns if an emote loops it's SFX
+  QString get_sfx_looping(QString p_char, int p_emote);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_frame_sfx_name(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_realization_frame(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
+
   //Not in use
   int get_sfx_delay(QString p_char, int p_emote);
 
@@ -304,13 +333,16 @@ public:
   // Same for CM.
   bool get_casing_cm_enabled();
 
+  // Same for witnesses.
+  bool get_casing_wit_enabled();
+
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 6;
-  const int MINOR_VERSION = 2;
+  const int MAJOR_VERSION = 7;
+  const int MINOR_VERSION = 0;
 
   QString current_theme = "default";
 

@@ -173,6 +173,10 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   }
 }
 
+void Lobby::lobbyThreadHandler(QString loadingText){
+    this->set_loading_text(loadingText);
+}
+
 void Lobby::set_loading_text(QString p_text)
 {
   ui_loading_text->clear();
