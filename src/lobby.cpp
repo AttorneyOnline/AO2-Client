@@ -234,8 +234,10 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
       widget->setStyleSheet(style_sheet_string);
   }
   return;
+}
 
-void Lobby::lobbyThreadHandler(QString loadingText){
+void Lobby::lobbyThreadHandler(QString loadingText)
+{
     this->set_loading_text(loadingText);
 }
 
