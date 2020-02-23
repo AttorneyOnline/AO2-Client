@@ -529,7 +529,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
       else
       {
-          if (f_contents.at(n_element).endsWith(".wav") ||
+          if (f_contents.at(n_element).startsWith("==") ||
+                  f_contents.at(n_element).endsWith(".wav") ||
                   f_contents.at(n_element).endsWith(".mp3") ||
                   f_contents.at(n_element).endsWith(".mp4") ||
                   f_contents.at(n_element).endsWith(".ogg") ||
@@ -547,11 +548,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           }
       }
 
-      for (int area_n = 0; area_n < area_count; area_n++)
-      {
-          musics_time = true;
-          continue;
-      }
       AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musics_time);
       QThreadPool::globalInstance()->start(music_load);
       ++loaded_music;
