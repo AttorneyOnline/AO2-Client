@@ -639,7 +639,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         {
           if(f_contents.at(3) == "True")
           {
-            w_courtroom->set_character(f_contents.at(2).toInt());
+            w_courtroom->update_character(f_contents.at(2).toInt());
           }
           else
           {
