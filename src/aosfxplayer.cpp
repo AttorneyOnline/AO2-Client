@@ -77,11 +77,6 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel
   }
 }
 
-void AOSfxPlayer::setLooping(bool is_looping)
-{
-    this->looping_sfx = is_looping;
-}
-
 void AOSfxPlayer::stop(int channel)
 {
   if (channel == -1)

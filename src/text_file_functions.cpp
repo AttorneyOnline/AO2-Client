@@ -788,7 +788,7 @@ QString AOApplication::get_emote_blip(QString p_char, int p_emote)
   return f_result;
 }
 
-QString AOApplication::get_sfx_looping(QString p_char, int p_emote)
+QString AOApplication::get_sfx_looping(QString p_char, QString p_sfx, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "SoundL");
 
@@ -833,27 +833,9 @@ int AOApplication::get_sfx_delay(QString p_char, int p_emote)
   return f_result.toInt();
 }
 
-QString AOApplication::get_sfx_looping(QString p_char, QString p_sfx)
-{
-  QString f_result = read_char_ini(p_char, p_sfx, "SoundL");
-
-  if (f_result == "")
-    return "0";
-  return f_result;
-}
-
 QString AOApplication::get_sfx_frame(QString p_char, QString p_emote, int n_frame)
 {
   QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameSFX"));
-
-  if (f_result == "")
-    return "";
-  return f_result;
-}
-
-QString AOApplication::get_screenshake_frame(QString p_char, QString p_emote, int n_frame)
-{
-  QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameScreenshake"));
 
   if (f_result == "")
     return "";
