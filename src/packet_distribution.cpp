@@ -511,58 +511,39 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "SM")
   {
-    if (!courtroom_constructed)
-      goto end;
+      if (!courtroom_constructed)
+            goto end;
 
-    bool musics_time = false;
-    area_count = 0;
+          bool musics_time = false;
+          area_count = 0;
 
-    for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
-    {
-      ++loaded_music;
-
-      w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
-
-      if (musics_time)
-      {
-          w_courtroom->append_music(f_contents.at(n_element));
-      }
-      else
-      {
-          if (f_contents.at(n_element).startsWith("==") ||
-                  f_contents.at(n_element).endsWith(".wav") ||
-                  f_contents.at(n_element).endsWith(".mp3") ||
-                  f_contents.at(n_element).endsWith(".mp4") ||
-                  f_contents.at(n_element).endsWith(".ogg") ||
-                  f_contents.at(n_element).endsWith(".opus"))
+          for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
           {
-              musics_time = true;
-              // w_courtroom->fix_last_area();
-              w_courtroom->append_music(f_contents.at(n_element));
-              area_count--;
+            if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
+                                 f_contents.at(n_element).endsWith(".wav") ||
+                                 f_contents.at(n_element).endsWith(".mp3") ||
+                                 f_contents.at(n_element).endsWith(".mp4") ||
+                                 f_contents.at(n_element).endsWith(".ogg") ||
+                                 f_contents.at(n_element).endsWith(".opus")))
+            {
+                musics_time = true;
+                continue;
+            }
+            AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musics_time);
+            QThreadPool::globalInstance()->start(music_load);
+            ++loaded_music;
+            int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
+            int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+            w_lobby->set_loading_value(loading_value);
+            w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
+            if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
+            {
+              QThreadPool::globalInstance()->waitForDone(); //out of order music is bad
+            }
           }
-          else
-          {
-              w_courtroom->append_area(f_contents.at(n_element));
-              area_count++;
-          }
-      }
+          QThreadPool::globalInstance()->waitForDone();
 
-      AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musics_time);
-      QThreadPool::globalInstance()->start(music_load);
-      ++loaded_music;
-      int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
-      w_lobby->set_loading_value(loading_value);
-      w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
-      if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
-      {
-        QThreadPool::globalInstance()->waitForDone(); //out of order music is bad
-      }
-    }
-    QThreadPool::globalInstance()->waitForDone();
-
-    send_server_packet(new AOPacket("RD#%"));
+          send_server_packet(new AOPacket("RD#%"));
   }
   else if (header == "DONE")
   {
