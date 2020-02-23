@@ -38,7 +38,6 @@ public:
   void set_speed(int modifier) {speed = qMax(10, qMin(modifier, 1000));}
 
   void LoadImageWithStupidMethodForFlipSupport(QImage image);
-  void stop();
 
   //Move the label itself around
   void move(int ax, int ay);

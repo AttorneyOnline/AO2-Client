@@ -67,8 +67,6 @@ private:
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
 
-    QLabel *ui_epilepsy_lbl;
-    QCheckBox *ui_epilepsy_cb;
     QLabel *ui_framenetwork_lbl;
     QCheckBox *ui_framenetwork_cb;
 
