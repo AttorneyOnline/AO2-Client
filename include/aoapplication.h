@@ -27,6 +27,11 @@
 #include <QAudioDeviceInfo>
 #endif
 
+#include <QtConcurrent/QtConcurrent>
+#include <QThread>
+#include <QThreadPool>
+#include <QFuture>
+
 class NetworkManager;
 class Lobby;
 class Courtroom;
@@ -96,6 +101,7 @@ public:
   int loaded_evidence = 0;
   int music_list_size = 0;
   int loaded_music = 0;
+  int area_count = 0;
 
   bool courtroom_loaded = false;
 
@@ -339,13 +345,19 @@ public:
   QString get_emote_blip(QString p_char, int p_emote);
 
   //Returns if the sfx is defined as looping in char.ini
-  QString get_sfx_looping(QString p_char, QString p_sfx);
+  QString get_sfx_looping(QString p_char, QString p_sfx, int p_emote);
 
   //Returns if an emote has a frame specific SFX for it
   QString get_sfx_frame(QString p_char, QString p_emote, int n_frame);
 
   //Returns if an emote has a frame specific SFX for it
   QString get_flash_frame(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_frame_sfx_name(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_realization_frame(QString p_char, QString p_emote, int n_frame);
 
   //Returns if an emote has a frame specific SFX for it
   QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
@@ -387,6 +399,9 @@ public:
   // Same for CM.
   bool get_casing_cm_enabled();
 
+  // Same for witnesses.
+  bool get_casing_wit_enabled();
+
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
@@ -395,8 +410,8 @@ public:
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 8;
-  const int MINOR_VERSION = 1;
+  const int MAJOR_VERSION = 7;
+  const int MINOR_VERSION = 3;
 
   QString current_theme = "default";
 

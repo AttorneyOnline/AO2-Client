@@ -13,9 +13,11 @@
 #include <QWidget>
 #include <string.h>
 #include <QDebug>
+#include <QTimer>
 
-class AOSfxPlayer
+class AOSfxPlayer : public QObject
 {
+  Q_OBJECT
 public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
 
@@ -24,12 +26,14 @@ public:
   void play(QString p_sfx, QString p_char = "", QString shout = "", int channel=-1);
   void stop(int channel=-1);
   void set_volume(qreal p_volume);
-  void set_looping(bool toggle, int channel=-1);
+  void set_looping(bool is_looping, int channel=-1);
   int m_channel = 0;
+
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
   qreal m_volume = 0;
+  bool looping_sfx = false;
 
   bool m_looping = true;
   void set_volume_internal(qreal p_volume);

@@ -27,6 +27,7 @@
 #include "debug_functions.h"
 #include "chatlogpiece.h"
 #include "scrolltext.h"
+#include "aocharmovie.h"
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -38,11 +39,12 @@
 #include <QComboBox>
 #include <QSlider>
 #include <QVector>
+#include <QSignalMapper>
 #include <QCloseEvent>
 #include <QMap>
 #include <QTextBrowser>
 #include <QSpinBox>
-
+#include <QMovie>
 #include <QDebug>
 #include <QScrollBar>
 #include <QRegExp>
@@ -51,6 +53,17 @@
 #include <QFont>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QWidget>
+#include <QPropertyAnimation>
+#include <QTransform>
+#include <QParallelAnimationGroup>
+#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QThread>
+#include <QThreadPool>
+#include <QFuture>
+#include <QMetaObject>
+#include <QLayout>
 #include <QTextBoundaryFinder>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -62,7 +75,7 @@
 #include <stack>
 
 class AOApplication;
-
+class AOCharMovie;
 class Courtroom : public QMainWindow
 {
   Q_OBJECT
@@ -73,17 +86,39 @@ public:
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
   void append_area(QString f_area){area_list.append(f_area);}
+
   void clear_music(){music_list.clear();}
   void clear_areas(){area_list.clear();}
 
   void fix_last_area()
+
+  void handle_failed_login();
+  QString threading_sfx = "";
+  QString threading_shake = "";
+  QString threading_flash = "";
+  QString threading_prefix = "";
+  //cid and this may differ in cases of ini-editing
+  QString current_char = "";
+  int current_emote = 0;
+  AOApplication *ao_app;
+  //abstract widget to hold char buttons
+  QWidget *ui_char_buttons;
+  QVector<char_type> char_list;
+  QVector<evi_type> evidence_list;
+  QVector<QString> music_list;
+  QVector<QString> area_list;
+  QSignalMapper *char_button_mapper;
+  QVector<AOCharButton*> ui_char_button_list;
+  QVector<AOCharButton*> ui_char_button_list_filtered;
+  QLineEdit *ui_char_search;
+  QCheckBox *ui_char_passworded;
+  QCheckBox *ui_char_taken;
+  void mt_pre_framegetter(int frameNumber);
+  void mt_framegetter(int frameNumber);
+  
+  void reset_music_list()
   {
-    if (area_list.size() > 0)
-    {
-      QString malplaced = area_list.last();
-      area_list.removeLast();
-      append_music(malplaced);
-    }
+      music_list.clear();
   }
 
   void arup_append(int players, QString status, QString cm, QString locked)
@@ -196,6 +231,9 @@ public:
   //properly sets up some varibles: resets user state
   void enter_courtroom();
 
+  // set the character using an ID
+  void set_character(int char_id);
+
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
   void list_areas();
@@ -236,14 +274,15 @@ public:
   //Toggles the judge buttons, whether they should appear or not.
   void toggle_judge_buttons(bool is_on);
 
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
+  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno, bool wit);
 
   void check_connection_received();
+  void doScreenShake();
+  void doRealization();
 
   ~Courtroom();
 
 private:
-  AOApplication *ao_app;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
@@ -257,7 +296,21 @@ private:
   bool first_message_sent = false;
   int maximumMessages = 0;
 
-  QParallelAnimationGroup *screenshake_animation_group = new QParallelAnimationGroup;
+  QPropertyAnimation *screenshake_animation;
+  QPropertyAnimation *chatbox_screenshake_animation;
+  QParallelAnimationGroup *screenshake_group;
+  QMovie *frame_emote_checker;
+  // This is for inline message-colouring.
+
+  enum INLINE_COLOURS {
+      INLINE_BLUE,
+      INLINE_GREEN,
+      INLINE_ORANGE,
+      INLINE_GREY
+  };
+
+  // A stack of inline colours.
+  std::stack<INLINE_COLOURS> inline_colour_stack;
 
   bool next_character_is_not_special = false; // If true, write the
                         // next character as it is.
@@ -265,7 +318,16 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
+
+  int message_display_speed[7] = {10, 20, 30, 40, 50, 60, 75};
+
+  // This is for checking if the character should start talking again
+  // when an inline blue text ends.
+  bool entire_message_is_blue = false;
+
+  // And this is the inline 'talking checker'. Counts how 'deep' we are
+  // in inline blues.
+  int inline_blue_depth = 0;
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
@@ -275,11 +337,6 @@ private:
 
   // 0 = in front, 1 = behind
   int pair_order = 0;
-
-  QVector<char_type> char_list;
-  QVector<evi_type> evidence_list;
-  QVector<QString> music_list;
-  QVector<QString> area_list;
 
   QVector<int> arup_players;
   QVector<QString> arup_statuses;
@@ -326,6 +383,10 @@ private:
   //the amount of time non-animated objection/hold it/takethat images stay onscreen for in ms
   const int shout_stay_time = 724;
 
+  static const int chatmessage_size = 28;
+  QString m_chatmessage[chatmessage_size];
+  bool chatmessage_is_empty = false;
+
   //the amount of time non-animated guilty/not guilty images stay onscreen for in ms
   const int verdict_stay_time = 3000;
 
@@ -363,8 +424,6 @@ private:
 
   //character id, which index of the char_list the player is
   int m_cid = -1;
-  //cid and this may differ in cases of ini-editing
-  QString current_char = "";
 
   int objection_state = 0;
   int realization_state = 0;
@@ -413,7 +472,6 @@ private:
   const int button_height = 60;
 
   int current_emote_page = 0;
-  int current_emote = 0;
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;
@@ -442,6 +500,9 @@ private:
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
+  AOSfxPlayer *misc_sfx_player;
+  AOSfxPlayer *frame_emote_sfx_player;
+  AOSfxPlayer *pair_frame_emote_sfx_player;
   AOSfxPlayer *objection_player;
   AOBlipPlayer *blip_player;
 
@@ -584,11 +645,6 @@ private:
 
   AOImage *ui_char_select_background;
 
-  //abstract widget to hold char buttons
-  QWidget *ui_char_buttons;
-
-  QVector<AOCharButton*> ui_char_button_list;
-  QVector<AOCharButton*> ui_char_button_list_filtered;
   AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
@@ -600,14 +656,9 @@ private:
 
   AOButton *ui_spectator;
 
-  QLineEdit *ui_char_search;
-  QCheckBox *ui_char_passworded;
-  QCheckBox *ui_char_taken;
-
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
-  void char_clicked(int n_char);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
@@ -630,7 +681,7 @@ public slots:
 
   void mod_called(QString p_ip);
 
-  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno, bool witness);
 
 private slots:
   void start_chat_ticking();
@@ -774,13 +825,17 @@ private slots:
 
   void on_spectator_clicked();
 
+  void char_clicked(int n_char);
+
   void on_switch_area_music_clicked();
 
   void on_casing_clicked();
 
   void ping_server();
 
+  #ifdef BASSAUDIO
   void load_bass_opus_plugin();
+  #endif
 };
 
 #endif // COURTROOM_H

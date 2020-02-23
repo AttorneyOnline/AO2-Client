@@ -788,6 +788,42 @@ QString AOApplication::get_emote_blip(QString p_char, int p_emote)
   return f_result;
 }
 
+QString AOApplication::get_sfx_looping(QString p_char, int p_emote)
+{
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "SoundL");
+
+  if (f_result == "")
+    return "0";
+  else return f_result;
+}
+
+QString AOApplication::get_frame_sfx_name(QString p_char, QString p_emote, int n_frame)
+{
+  QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameSFX"));
+  if (f_result == "")
+    return "";
+  else return f_result;
+}
+
+QString AOApplication::get_screenshake_frame(QString p_char, QString p_emote, int n_frame)
+{
+  QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameScreenshake"));
+  if (f_result == "")
+    return "";
+  else return f_result;
+}
+
+
+QString AOApplication::get_realization_frame(QString p_char, QString p_emote, int n_frame)
+{
+  QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameRealization"));
+  if (f_result == "")
+    return "";
+  else return f_result;
+}
+
+
+
 int AOApplication::get_sfx_delay(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "SoundT");
@@ -1005,6 +1041,12 @@ bool AOApplication::get_casing_juror_enabled()
 bool AOApplication::get_casing_steno_enabled()
 {
   QString result = configini->value("casing_steno_enabled", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::get_casing_wit_enabled()
+{
+  QString result = configini->value("casing_wit_enabled", "false").value<QString>();
   return result.startsWith("true");
 }
 

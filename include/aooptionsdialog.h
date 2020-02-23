@@ -62,6 +62,8 @@ private:
     QLineEdit *ui_ms_textbox;
     QLabel *ui_discord_lbl;
     QCheckBox *ui_discord_cb;
+    QLabel *ui_epilepsy_lbl;
+    QCheckBox *ui_epilepsy_cb;
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
 
@@ -118,6 +120,8 @@ private:
     QCheckBox *ui_casing_steno_cb;
     QLabel *ui_casing_cm_lbl;
     QCheckBox *ui_casing_cm_cb;
+    QLabel *ui_casing_wit_lbl;
+    QCheckBox *ui_casing_wit_cb;
     QLabel *ui_casing_cm_cases_lbl;
     QLineEdit *ui_casing_cm_cases_textbox;
 

@@ -7,9 +7,11 @@
 #include <QDebug>
 #include <QImageReader>
 #include <QElapsedTimer>
+#include <QPainter>
+#include "include/aosfxplayer.h"
+#include "include/courtroom.h"
 
 class AOApplication;
-
 class AOCharMovie : public QLabel
 {
   Q_OBJECT
@@ -32,8 +34,11 @@ public:
   //Set the m_flipped variable to true/false
   void set_flipped(bool p_flipped) {m_flipped = p_flipped;}
 
-  //Set the movie's playback speed (between 10% and 1000%)
+//Set the movie's playback speed (between 10% and 1000%)
   void set_speed(int modifier) {speed = qMax(10, qMin(modifier, 1000));}
+
+  void LoadImageWithStupidMethodForFlipSupport(QImage image);
+  void stop();
 
   //Move the label itself around
   void move(int ax, int ay);
@@ -48,6 +53,19 @@ public:
 
   QString m_char;
   QString m_emote;
+
+  void play_frame_sfx();
+
+  void sfx_two_network_boogaloo();
+  void screenshake_two_network_boogaloo();
+  void realization_two_network_boogaloo();
+
+  AOSfxPlayer *frame_specific_sfx_player;
+  Courtroom *mycourtroom;
+  QString frame_sfx_hellstring = "";
+  QString frame_screenshake_hellstring = "";
+  QString frame_realization_hellstring = "";
+  bool use_networked_framehell = false;
 
 private:
   AOApplication *ao_app;
@@ -64,6 +82,8 @@ private:
   QTimer *ticker;
   QString last_path;
   QImageReader *m_reader = new QImageReader();
+  QString current_emote;
+  QString current_char;
 
   QElapsedTimer actual_time;
 
@@ -73,9 +93,13 @@ private:
   // These are the X and Y values before they are fixed based on the sprite's width.
   int x = 0;
   int y = 0;
+
   // These are the width and height values before they are fixed based on the sprite's width.
   int f_w = 0;
   int f_h = 0;
+
+  int default_w;
+  int default_h;
 
   int frame = 0;
   int max_frames = 0;
@@ -84,6 +108,7 @@ private:
 
   bool m_flipped = false;
   bool play_once = true;
+  bool apng = false;
 
   //Set the movie's image to provided paths, preparing for playback.
   void load_image(QString p_char, QString p_emote, QString emote_prefix);
@@ -114,7 +139,7 @@ signals:
 
 private slots:
   void preanim_done();
+  void timer_done();
   void movie_ticker();
 };
-
 #endif // AOCHARMOVIE_H

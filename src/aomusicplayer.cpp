@@ -1,7 +1,7 @@
 #include "aomusicplayer.h"
 
-#ifdef BASSAUDIO
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
+#if defined(BASSAUDIO)
+AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
   ao_app = p_ao_app;
@@ -13,6 +13,7 @@ AOMusicPlayer::~AOMusicPlayer()
   {
     BASS_ChannelStop(m_stream_list[n_stream]);
   }
+  kill_loop();
 }
 
 void AOMusicPlayer::play(QString p_song, int channel, bool loop, int effect_flags)
@@ -21,6 +22,9 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop, int effect_flag
   if (channel < 0) //wtf?
       return;
   QString f_path = ao_app->get_music_path(p_song);
+  BASS_ChannelStop(m_stream);
+
+  f_path = ao_app->get_music_path(p_song);
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE;
   if (loop)
@@ -164,8 +168,19 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
     }
   }
 }
+
+QString AOMusicPlayer::get_path()
+{
+    return f_path;
+}
+
+void AOMusicPlayer::kill_loop()
+{
+    BASS_ChannelStop(m_stream);
+}
+
 #elif defined(QTAUDIO)
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
   ao_app = p_ao_app;
@@ -194,8 +209,18 @@ void AOMusicPlayer::set_volume(int p_value)
   m_volume = p_value;
   m_player.setVolume(m_volume);
 }
+
+QString AOMusicPlayer::get_path()
+{
+    return f_path;
+}
+
+void AOMusicPlayer::kill_loop()
+{
+    // TODO QTAUDIO
+}
 #else
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
   ao_app = p_ao_app;
@@ -212,6 +237,16 @@ void AOMusicPlayer::play(QString p_song)
 }
 
 void AOMusicPlayer::set_volume(int p_value)
+{
+
+}
+
+QString AOMusicPlayer::get_path()
+{
+    return f_path;
+}
+
+void AOMusicPlayer::kill_loop()
 {
 
 }
