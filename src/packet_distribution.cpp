@@ -631,7 +631,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
     if(f_contents.size() < 4){
         if (courtroom_constructed)
-          w_courtroom->enter_courtroom(f_contents.at(2).toInt());
+          w_courtroom->enter_courtroom();
     }
     else
     {
@@ -643,7 +643,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           }
           else
           {
-            w_courtroom->enter_courtroom(f_contents.at(2).toInt());
+            w_courtroom->enter_courtroom();
           }
        }
     }
