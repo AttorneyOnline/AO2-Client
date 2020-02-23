@@ -111,7 +111,6 @@ build windows i686:
     cp -a ../LICENSE.MIT LICENSE.txt
 
 deploy linux x86_64:
-  image: ubuntu
   stage: deploy
   dependencies:
     - build linux x86_64
