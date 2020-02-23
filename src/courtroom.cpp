@@ -1125,7 +1125,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
   if(p_message == "Logged in as a moderator.")
   {
       ui_guard->show();
-      append_server_chatmessage("CLIENT", "You were granted the Disable Modcalls button.", "1");
+      append_server_chatmessage("CLIENT", tr("You were granted the Disable Modcalls button."), "1");
   }
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, colour);
@@ -3030,7 +3030,7 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/login"))
   {
     ui_guard->show();
-    append_server_chatmessage("CLIENT", tr("You were granted the Guard button."), "1");
+    append_server_chatmessage("CLIENT", tr("You were granted the Disable Modcalls button."), "1");
   }
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
