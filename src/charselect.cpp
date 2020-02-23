@@ -97,6 +97,7 @@ void Courtroom::construct_char_select()
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
+  connect(char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
   connect(ui_char_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
