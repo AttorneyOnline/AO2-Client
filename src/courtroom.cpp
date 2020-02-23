@@ -1003,23 +1003,6 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   char_list.replace(n_char, f_char);
 }
 
-QPoint Courtroom::get_theme_pos(QString p_identifier)
-{
-  QString filename = "courtroom_design.ini";
-
-  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
-
-  if (design_ini_result.width < 0 || design_ini_result.height < 0)
-  {
-    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
-    return QPoint(0,0);
-  }
-  else
-  {
-    return QPoint(design_ini_result.x, design_ini_result.y);
-  }
-}
-
 void Courtroom::done_received()
 {
   m_cid = -1;
@@ -1156,56 +1139,6 @@ void Courtroom::update_character(int p_cid)
       ui_custom_objection->hide();
 }
 
-  refresh_emotes();
-  set_emote_page();
-  set_emote_dropdown();
-
-void Courtroom::enter_courtroom(int p_cid)
-{ 
-  this->set_character(p_cid);
-
-
-  set_sfx_dropdown();
-  set_effects_dropdown();
-
-  qDebug() << "update_character called";
-  if (newchar) //Avoid infinite loop of death and suffering
-    set_iniswap_dropdown();
-  QString side = ao_app->get_char_side(current_char);
-
-  if (current_side == "jud")
-  {
-    ui_witness_testimony->show();
-    ui_cross_examination->show();
-    ui_not_guilty->show();
-    ui_guilty->show();
-    ui_defense_minus->show();
-    ui_defense_plus->show();
-    ui_prosecution_minus->show();
-    ui_prosecution_plus->show();
-  }
-  else
-  {
-    ui_witness_testimony->hide();
-    ui_cross_examination->hide();
-    ui_guilty->hide();
-    ui_not_guilty->hide();
-    ui_defense_minus->hide();
-    ui_defense_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_prosecution_plus->hide();
-  }
-
-  if (ao_app->custom_objection_enabled && file_exists(ao_app->get_image_suffix(ao_app->get_character_path(current_char, "custom"))))
-    ui_custom_objection->show();
-  else
-    ui_custom_objection->hide();
-
-  ui_char_select_background->hide();
-  ui_ic_chat_message->setEnabled(m_cid != -1);
-  ui_ic_chat_message->setFocus();
-}
-
 void Courtroom::enter_courtroom()
 {
   set_widgets();
@@ -1283,7 +1216,7 @@ void Courtroom::list_music()
     {
       ui_music_list->addItem(i_song);
       music_row_to_number.append(n_song);
-
+    }
 
     QString song_path = ao_app->get_music_path(i_song);
 
@@ -1757,7 +1690,7 @@ void Courtroom::on_chat_return_pressed()
       frame_sfx += preemote_sfx;
       frame_sfx += talkemote_sfx;
       frame_sfx += idleemote_sfx;
-
+    }
   // If the server we're on supports Looping SFX and Screenshake, use it if the emote uses it.
   if (ao_app->looping_sfx_support_enabled)
   {
@@ -1802,6 +1735,7 @@ void Courtroom::on_chat_return_pressed()
   }
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
+
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   // Instead of checking for whether a message has at least chatmessage_size
@@ -2434,35 +2368,35 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
 
       else if (f_character == "$" and !ic_next_is_not_special)
       {
-          p_text.remove(trick_check_pos,1);
+          p_text.remove(check_pos,1);
       }
 
       else if (f_character == "@" and !ic_next_is_not_special)
       {
-          p_text.remove(trick_check_pos,1);
+          p_text.remove(check_pos,1);
       }
 
 
-      // Orange inline colourisation.
+      // Orange inline colorisation.
       else if (f_character == "|" and !ic_next_is_not_special)
       {
-          if (!ic_colour_stack.empty())
+          if (!ic_color_stack.empty())
           {
-              if (ic_colour_stack.top() == INLINE_ORANGE)
+              if (ic_color_stack.top() == INLINE_ORANGE)
               {
-                  ic_colour_stack.pop();
-                  p_text.remove(trick_check_pos,1);
+                  ic_color_stack.pop();
+                  p_text.remove(check_pos,1);
               }
               else
               {
-                  ic_colour_stack.push(INLINE_ORANGE);
-                  p_text.remove(trick_check_pos,1);
+                  ic_color_stack.push(INLINE_ORANGE);
+                  p_text.remove(check_pos,1);
               }
           }
           else
           {
-              ic_colour_stack.push(INLINE_ORANGE);
-              p_text.remove(trick_check_pos,1);
+              ic_color_stack.push(INLINE_ORANGE);
+              p_text.remove(check_pos,1);
           }
       }
 
@@ -2791,7 +2725,7 @@ void Courtroom::preanim_done()
 
 void Courtroom::doRealization()
 {
-    if(!ao_app->is_shakeandflash_enabled())
+    if(!ao_app->is_shake_flash_enabled())
         return;
     realization_timer->start(60);
     ui_vp_realization->show();
@@ -2970,7 +2904,7 @@ void Courtroom::chat_tick()
         formatting_char = true;
     }
 
-    // Orange inline colourisation.
+    // Orange inline colorisation.
     else if (f_character == "|" and !next_character_is_not_special)
     {
         this->do_screenshake();
@@ -2984,7 +2918,7 @@ void Courtroom::chat_tick()
         this->do_flash();
         formatting_char = true;
 
-        inline_colour_stack.push(INLINE_BLUE);
+        inline_color_stack.push(INLINE_BLUE);
         ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
 
         // Increase how deep we are in inline blues.
@@ -3000,11 +2934,11 @@ void Courtroom::chat_tick()
         }
     }
     else if (f_character == ")" and !next_character_is_not_special
-             and !inline_colour_stack.empty())
+             and !inline_color_stack.empty())
     {
-        if (inline_colour_stack.top() == INLINE_BLUE)
+        if (inline_color_stack.top() == INLINE_BLUE)
         {
-            inline_colour_stack.pop();
+            inline_color_stack.pop();
             ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
 
             // Decrease how deep we are in inline blues.
@@ -3033,10 +2967,10 @@ void Courtroom::chat_tick()
         }
     }
 
-    // Grey inline colourisation.
+    // Grey inline colorisation.
     else if (f_character == "[" and !next_character_is_not_special)
     {
-        inline_colour_stack.push(INLINE_GREY);
+        inline_color_stack.push(INLINE_GREY);
         ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
     }
     else
@@ -3051,9 +2985,9 @@ void Courtroom::chat_tick()
         if (markdown_start.isEmpty())
           continue;
 
-        if (inline_colour_stack.top() == INLINE_GREY)
+        if (inline_color_stack.top() == INLINE_GREY)
         {
-            inline_colour_stack.pop();
+            inline_color_stack.pop();
             ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
         }
         else
@@ -3074,9 +3008,9 @@ void Courtroom::chat_tick()
     else
     {
       next_character_is_not_special = false;
-      if (!inline_colour_stack.empty())
+      if (!inline_color_stack.empty())
       {
-          switch (inline_colour_stack.top()) {
+          switch (inline_color_stack.top()) {
           case INLINE_ORANGE:
               ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(ORANGE)).name() +"\">" + f_character + "</font>");
               break;
@@ -4480,22 +4414,6 @@ void Courtroom::on_screenshake_clicked()
   {
     screenshake_state = 0;
     ui_screenshake->set_image("screenshake");
-  }
-
-  ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::on_screenshake_clicked()
-{
-  if (screenshake_state == 0)
-  {
-    screenshake_state = 1;
-    ui_screenshake->set_image("screenshake_pressed.png");
-  }
-  else
-  {
-    screenshake_state = 0;
-    ui_screenshake->set_image("screenshake.png");
   }
 
   ui_ic_chat_message->setFocus();
