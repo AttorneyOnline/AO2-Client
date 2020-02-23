@@ -197,7 +197,8 @@ void AOCharMovie::LoadImageWithStupidMethodForFlipSupport(QImage image)
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
 {
   play_once = false;
-  play(p_char, p_emote, "(b)");
+  load_image(p_char, p_emote, "(b)");
+  play();
 }
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote)
