@@ -159,6 +159,9 @@ public:
   //sets the local character pos/side to use.
   void set_side(QString p_side);
 
+  //sets the pos dropdown
+  void set_pos_dropdown(QStringList pos_dropdowns);
+
   //sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
@@ -393,6 +396,9 @@ private:
   //Whether or not this color allows us to play the talking animation
   QVector<bool> color_markdown_talking_list;
   //Text Color-related optimization END
+
+  //List of all currently available pos
+  QStringList pos_dropdown_list;
 
   bool is_presenting_evidence = false;
 

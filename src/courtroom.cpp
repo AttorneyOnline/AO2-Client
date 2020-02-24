@@ -180,14 +180,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   initialize_emotes();
 
   ui_pos_dropdown = new QComboBox(this);
-  ui_pos_dropdown->addItem("wit");
-  ui_pos_dropdown->addItem("def");
-  ui_pos_dropdown->addItem("pro");
-  ui_pos_dropdown->addItem("jud");
-  ui_pos_dropdown->addItem("hld");
-  ui_pos_dropdown->addItem("hlp");
-  ui_pos_dropdown->addItem("jur");
-  ui_pos_dropdown->addItem("sea");
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -1005,10 +997,32 @@ void Courtroom::set_background(QString p_background, bool display)
   ui_vp_testimony->stop();
   current_background = p_background;
 
+  //welcome to hardcode central may I take your order of regularly scheduled CBT
+  QMap<QString, QString> default_pos;
+  default_pos["defenseempty"] = "def";
+  default_pos["helperstand"] = "hld";
+  default_pos["prosecutorempty"] = "pro";
+  default_pos["prohelperstand"] = "hlp";
+  default_pos["witnessempty"] = "wit";
+  default_pos["judgestand"] = "jud";
+  default_pos["jurystand"] = "jur";
+  default_pos["seancestand"] = "sea";
+
+  //Populate the dropdown list with all pos that exist on this bg
+  QStringList pos_list = {};
+  for (QString key : default_pos.keys())
+  {
+    if (file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path(key))))
+    {
+      pos_list.append(default_pos[key]);
+    }
+  }
+
+  //TODO: search through extra/custom pos and add them to the pos dropdown as well
+
+  set_pos_dropdown(pos_list);
+
   is_ao2_bg = true;
-//              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("defensedesk"))) &&
-//              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("prosecutiondesk"))) &&
-//              file_exists(ao_app->get_static_image_suffix(ao_app->get_background_path("stand")));
 
   if (is_ao2_bg)
   {
@@ -1070,6 +1084,13 @@ void Courtroom::set_side(QString p_side)
   }
 }
 
+void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
+{
+  pos_dropdown_list = pos_dropdowns;
+  ui_pos_dropdown->clear();
+  ui_pos_dropdown->addItems(pos_dropdown_list);
+  qDebug() << pos_dropdown_list;
+}
 
 void Courtroom::update_character(int p_cid)
 {
@@ -3336,41 +3357,13 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
   toggle_judge_buttons(false);
 
-  QString f_pos;
-
-  switch (p_index)
-  {
-  case 0:
-    f_pos = "wit";
-    break;
-  case 1:
-    f_pos = "def";
-    break;
-  case 2:
-    f_pos = "pro";
-    break;
-  case 3:
-    f_pos = "jud";
-    toggle_judge_buttons(true);
-    break;
-  case 4:
-    f_pos = "hld";
-    break;
-  case 5:
-    f_pos = "hlp";
-    break;
-  case 6:
-    f_pos = "jur";
-    break;
-  case 7:
-    f_pos = "sea";
-    break;
-  default:
-    f_pos = "";
-  }
+  QString f_pos = ui_pos_dropdown->itemText(p_index);
 
   if (f_pos == "")
     return;
+
+  if (f_pos == "jud")
+    toggle_judge_buttons(true);
 
   //YEAH SENDING LIKE 20 PACKETS IF THE USER SCROLLS THROUGH, GREAT IDEA
   //how about this instead
