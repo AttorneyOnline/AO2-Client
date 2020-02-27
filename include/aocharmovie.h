@@ -76,7 +76,6 @@ signals:
   void done();
 
 private slots:
-  void frame_change(int n_frame);
   void timer_done();
   void movie_ticker();
 };

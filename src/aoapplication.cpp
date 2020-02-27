@@ -101,7 +101,7 @@ QString AOApplication::get_version_string()
       return "Update system works";
   }
   else{
-    return "CR Version - V1";
+    return "CR Version - V1.5";
     }
 }
 
