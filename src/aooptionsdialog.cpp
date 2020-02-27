@@ -141,6 +141,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_label->setToolTip(tr("Sets the language if you don't want to use your system language."));
     ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_language_label);
 
+    ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
+        ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
+        ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+
+        ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_epilepsy_lbl);
+
+        ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
+        ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
+
+        ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_epilepsy_cb);
+
+
     ui_language_combobox = new QComboBox(ui_form_layout_widget);
     ui_language_combobox->addItem(configini->value("language", "  ").value<QString>() + " - Keep current setting");
     ui_language_combobox->addItem("   - Default");
@@ -149,7 +161,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("es - Español");
     ui_language_combobox->addItem("jp - 日本語");
     ui_language_combobox->addItem("ru - Русский");
-    ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_language_combobox);
+    ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
 
 
     ui_pun_delay = new QLabel(ui_form_layout_widget);
@@ -160,8 +172,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_pun_delay_spinbox->setMinimum(1);
     ui_pun_delay_spinbox->setMaximum(3);
     ui_pun_delay_spinbox->setValue(p_ao_app->get_pundelay());
-    ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_pun_delay_spinbox);
-    ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_pun_delay);
+    ui_gameplay_form->setWidget(12, QFormLayout::FieldRole, ui_pun_delay_spinbox);
+    ui_gameplay_form->setWidget(12, QFormLayout::LabelRole, ui_pun_delay);
 
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();
@@ -178,12 +190,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_keepevi_lbl->setToolTip(tr("Instead of removing the evidence icon each time somebody speaks, "
                                   "the evidence icon will remain until be replaced. "));
 
-    ui_gameplay_form->setWidget(12, QFormLayout::LabelRole, ui_keepevi_lbl);
+    ui_gameplay_form->setWidget(13, QFormLayout::LabelRole, ui_keepevi_lbl);
 
     ui_keepevi_cb = new QCheckBox(ui_form_layout_widget);
     ui_keepevi_cb->setChecked(ao_app->is_discord_enabled());
 
-    ui_gameplay_form->setWidget(12, QFormLayout::FieldRole, ui_discord_cb);
+    ui_gameplay_form->setWidget(13, QFormLayout::FieldRole, ui_keepevi_cb);
 
     ui_callwords_textbox = new QPlainTextEdit(ui_callwords_widget);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -327,6 +339,30 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_blank_blips_cb->setChecked(p_ao_app->get_blank_blip());
 
     ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
+
+    ui_loopsfx_lbl = new QLabel(ui_audio_widget);
+       ui_loopsfx_lbl->setText(tr("Enable Looping SFX:"));
+       ui_loopsfx_lbl->setToolTip(tr("If true, the game will allow looping sound effects to play on preanimations."));
+
+       ui_audio_layout->setWidget(8, QFormLayout::LabelRole, ui_loopsfx_lbl);
+
+       ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
+       ui_loopsfx_cb->setChecked(p_ao_app->get_looping_sfx());
+
+       ui_audio_layout->setWidget(8, QFormLayout::FieldRole, ui_loopsfx_cb);
+
+
+       ui_objectmusic_lbl = new QLabel(ui_audio_widget);
+       ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
+       ui_objectmusic_lbl->setToolTip(tr("If true, the game will stop music when someone objects, like in the actual games."));
+
+       ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
+
+       ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
+       ui_objectmusic_cb->setChecked(p_ao_app->get_objectmusic());
+
+       ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
+
 
     // The casing tab!
     ui_casing_tab = new QWidget();
@@ -560,8 +596,10 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
+    configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
     configini->setValue("punctuation_delay",ui_pun_delay_spinbox->value());
+        configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
     if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
@@ -581,7 +619,10 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("default_blip", ui_blips_volume_spinbox->value());
     configini->setValue("blip_rate", ui_bliprate_spinbox->value());
     configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
-    configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
+    configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
+       configini->setValue("kill_music_on_object", ui_objectmusic_cb->isChecked());
+
+
 
     configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
     configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());

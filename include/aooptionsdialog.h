@@ -62,6 +62,9 @@ private:
     QLabel *ui_ms_lbl;
     QLineEdit *ui_ms_textbox;
     QLabel *ui_discord_lbl;
+    QLabel *ui_epilepsy_lbl;
+    QCheckBox *ui_epilepsy_cb;
+
     QCheckBox *ui_discord_cb;
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
@@ -85,6 +88,11 @@ private:
     QSpinBox *ui_music_volume_spinbox;
     QLabel *ui_music_volume_lbl;
     QSpinBox *ui_sfx_volume_spinbox;
+    QLabel *ui_loopsfx_lbl;
+    QCheckBox *ui_loopsfx_cb;
+    QLabel *ui_objectmusic_lbl;
+    QCheckBox *ui_objectmusic_cb;
+
     QSpinBox *ui_blips_volume_spinbox;
     QLabel *ui_sfx_volume_lbl;
     QLabel *ui_blips_volume_lbl;

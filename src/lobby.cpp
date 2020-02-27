@@ -156,6 +156,11 @@ void Lobby::set_widgets()
 
 }
 
+void Lobby::lobbyThreadHandler(QString loadingText){
+    this->set_loading_text(loadingText);
+}
+
+
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "lobby_design.ini";
