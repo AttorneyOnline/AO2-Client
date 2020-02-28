@@ -2686,7 +2686,7 @@ void Courtroom::chat_tick()
 
   if(!shown)
      f_char = m_chatmessage_tmp[CHAR_NAME];
-  if (f_message.size() == 0)
+  if (tick_pos >= f_message.size())
   {
     text_state = 2;
     if (log_goes_downwards && mirror_iclog)
@@ -2704,18 +2704,8 @@ void Courtroom::chat_tick()
 
   else
   {
-    QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_message);
-    QString f_character;
-    int f_char_length;
+      QString f_character = f_message.at(tick_pos);
 
-    tbf.toNextBoundary();
-
-    if (tbf.position() == -1)
-      f_character = f_message;
-    else
-      f_character = f_message.left(tbf.position());
-
-    f_char_length = f_character.length();
     f_character = f_character.toHtmlEscaped();
     if (punctuation_chars.contains(f_character))
     {
@@ -2849,7 +2839,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos -= f_char_length;
+            tick_pos--;
         }
     }
 
@@ -2874,7 +2864,7 @@ void Courtroom::chat_tick()
         else
         {
             next_character_is_not_special = true;
-            tick_pos -= f_char_length;
+            tick_pos--;
         }
     }
 
@@ -3032,7 +3022,7 @@ void Courtroom::chat_tick()
       ++blip_pos;
     }
 
-    tick_pos += f_char_length;
+    ++tick_pos;
 
     // Restart the timer, but according to the newly set speeds, if there were any.
     // Keep the speed at bay.

@@ -8,7 +8,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     // Setting up the basics.
     // setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Settings"));
-    resize(398, 340);
+    resize(398, 360);
 
     ui_settings_buttons = new QDialogButtonBox(this);
 
@@ -145,12 +145,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
         ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
         ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
 
-        ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_epilepsy_lbl);
+        ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_epilepsy_lbl);
 
         ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
         ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
 
-        ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_epilepsy_cb);
+        ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_epilepsy_cb);
 
 
     ui_language_combobox = new QComboBox(ui_form_layout_widget);
@@ -161,7 +161,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("es - Español");
     ui_language_combobox->addItem("jp - 日本語");
     ui_language_combobox->addItem("ru - Русский");
-    ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
+    ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_language_combobox);
 
 
     ui_pun_delay = new QLabel(ui_form_layout_widget);
@@ -239,7 +239,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_device_combobox = new QComboBox(ui_audio_widget);
 
     // Let's fill out the combobox with the available audio devices. Or don't if there is no audio
-    int a = 0;
     if (needs_default_audiodev())
     {
 
