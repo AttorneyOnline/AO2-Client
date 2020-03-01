@@ -2852,7 +2852,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   QString f_song_clear = f_song;
   int n_char = f_contents.at(1).toInt();
 
-  qDebug() << "playing song "+f_song;
+  qDebug() << "playing song "+ao_app->get_music_path(f_song);
 
   if (n_char < 0 || n_char >= char_list.size())
   {
