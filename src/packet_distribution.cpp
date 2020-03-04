@@ -442,8 +442,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           {
               musics_time = true;
               areas--;
-              //w_courtroom->fix_last_area();
+              w_courtroom->fix_last_area();
               w_courtroom->append_music(f_music);
+
           }
           else
           {
@@ -527,8 +528,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                  f_contents.at(n_element).endsWith(".opus")))
             {
                 musics_time = true;
+                w_courtroom->fix_last_area();
                 continue;
+
             }
+
             AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musics_time);
             QThreadPool::globalInstance()->start(music_load);
             ++loaded_music;
@@ -757,6 +761,7 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
   }
   else
   {
+    qDebug() << "S:" << f_packet;
 #ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
 #endif

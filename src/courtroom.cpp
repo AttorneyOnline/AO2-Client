@@ -757,7 +757,7 @@ void Courtroom::set_fonts()
   set_font(ui_ms_chatlog, "ms_chatlog");
   set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
-  set_font(ui_area_list, "music_list");
+  set_font(ui_area_list, "area_list");
 
   // Set color of labels and checkboxes
   const QString design_file = "courtroom_fonts.ini";
