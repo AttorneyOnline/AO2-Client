@@ -80,6 +80,15 @@ public:
   void append_music(QString f_music){music_list.append(f_music);}
   void append_area(QString f_area){area_list.append(f_area);}
 
+  void fix_last_area()
+  {
+    if (area_list.size() > 0)
+    {
+      QString malplaced = area_list.last();
+      area_list.removeLast();
+      append_music(malplaced);
+    }
+  }
   void handle_failed_login();
    QString threading_sfx = "";
    QString threading_shake = "";
