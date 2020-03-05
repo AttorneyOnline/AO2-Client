@@ -456,7 +456,7 @@ void Lobby::list_favorites()
   for (server_type i_server : ao_app->get_favorite_list())
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
-    treeItem->setText(0, QString(i));
+    treeItem->setText(0, QString::number(i));
     treeItem->setText(1, i_server.name);
 //    treeItem->setText(2, "-");
     i++;

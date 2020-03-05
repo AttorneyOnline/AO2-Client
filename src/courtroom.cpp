@@ -126,7 +126,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_area_list = new QTreeWidget(this);
   ui_area_list->setColumnCount(2);
-  ui_area_list->hideColumn(1);
+  ui_area_list->hideColumn(0);
   ui_area_list->setHeaderHidden(true);
   ui_area_list->header()->setStretchLastSection(false);
   ui_area_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1295,8 +1295,8 @@ void Courtroom::list_areas()
     if (i_area.toLower().contains(ui_music_search->text().toLower()))
     {
       QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
-      treeItem->setText(0, i_area);
-      treeItem->setText(1, area_list.at(n_area));
+      treeItem->setText(0, area_list.at(n_area));
+      treeItem->setText(1, i_area);
 
       if (ao_app->arup_enabled)
       {
@@ -1304,25 +1304,25 @@ void Courtroom::list_areas()
         treeItem->setBackground(0, free_brush);
         if (arup_locks.at(n_area) == "LOCKED")
         {
-            treeItem->setBackground(0, locked_brush);
+            treeItem->setBackground(1, locked_brush);
         }
         else
         {
             if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-                treeItem->setBackground(0, lfp_brush);
+                treeItem->setBackground(1, lfp_brush);
             else if (arup_statuses.at(n_area) == "CASING")
-                treeItem->setBackground(0, casing_brush);
+                treeItem->setBackground(1, casing_brush);
             else if (arup_statuses.at(n_area) == "RECESS")
-                treeItem->setBackground(0, recess_brush);
+                treeItem->setBackground(1, recess_brush);
             else if (arup_statuses.at(n_area) == "RP")
-                treeItem->setBackground(0, rp_brush);
+                treeItem->setBackground(1, rp_brush);
             else if (arup_statuses.at(n_area) == "GAMING")
-                treeItem->setBackground(0, gaming_brush);
+                treeItem->setBackground(1, gaming_brush);
         }
       }
       else
       {
-        treeItem->setBackground(0, free_brush);
+        treeItem->setBackground(1, free_brush);
       }
 
       ++n_listed_areas;
