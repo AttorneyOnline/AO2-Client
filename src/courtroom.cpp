@@ -2505,7 +2505,7 @@ void Courtroom::start_chat_ticking()
   if (text_state != 0)
     return;
 
-  if (m_chatmessage[EFFECTS] != "")
+  if (ao_app->effects_enabled && m_chatmessage[EFFECTS] != "")
   {
     QStringList fx_list = m_chatmessage[EFFECTS].split("|");
     QString fx = fx_list[0];
