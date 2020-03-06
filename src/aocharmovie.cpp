@@ -43,9 +43,6 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
           break;
       }
   }
-  delete m_movie;
-  m_movie = new QMovie(this);
-  m_movie->stop();
 
   this->clear();
   ticker->stop();
@@ -195,17 +192,6 @@ void AOCharMovie::LoadImageWithStupidMethodForFlipSupport(QImage image)
       this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation));
 
     QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
-}
-
-void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
-{
-  QString gif_path = ao_app->get_character_path(p_char, p_emote);
-
-  m_movie->stop();
-  m_movie->setFileName(gif_path);
-  m_movie->jumpToFrame(0);
-  play_once = true;
-  play(p_char, p_emote, "");
 }
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote)
