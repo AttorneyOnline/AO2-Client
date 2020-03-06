@@ -2,7 +2,7 @@
 #include "file_functions.h"
 
 #if defined(BASSAUDIO) //Using bass.dll for sfx
-AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
   ao_app = p_ao_app;
@@ -34,6 +34,8 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   }
   if (f_path == "")
     f_path = sound_path;
+  BASS_ChannelStop(m_stream);
+
   m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
   set_volume_internal(m_volume);
@@ -41,6 +43,19 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream, BASS_GetDevice());
   BASS_ChannelPlay(m_stream, false);
+  if(looping_sfx && ao_app->get_looping_sfx())
+  {
+    BASS_ChannelFlags(m_stream, BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP);
+  }
+  else
+  {
+    BASS_ChannelFlags(m_stream, 0, BASS_SAMPLE_LOOP);
+  }
+}
+
+void AOSfxPlayer::setLooping(bool is_looping)
+{
+    this->looping_sfx = is_looping;
 }
 
 void AOSfxPlayer::stop()
@@ -60,7 +75,7 @@ void AOSfxPlayer::set_volume_internal(qreal p_value)
     BASS_ChannelSetAttribute(m_stream, BASS_ATTRIB_VOL, volume);
 }
 #elif defined(QTAUDIO) //Using Qt's QSoundEffect class
-AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
   ao_app = p_ao_app;
@@ -98,6 +113,11 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   }
 }
 
+void AOSfxPlayer::setLooping(bool is_looping)
+{
+    this->looping_sfx = is_looping;
+}
+
 void AOSfxPlayer::stop()
 {
   m_sfx.stop();
@@ -114,7 +134,7 @@ void AOSfxPlayer::set_volume_internal(qreal p_value)
   m_sfx.setVolume(m_volume);
 }
 #else
-AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
+AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
   m_parent = parent;
   ao_app = p_ao_app;
@@ -123,6 +143,11 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
 
+}
+
+void AOSfxPlayer::setLooping(bool is_looping)
+{
+    this->looping_sfx = is_looping;
 }
 
 void AOSfxPlayer::stop()

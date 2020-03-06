@@ -69,7 +69,7 @@ void Lobby::set_widgets()
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
-    qDebug() << "W: did not find lobby width or height in " << filename;
+    qDebug() << "W: did not find lobby width or height in " << ao_app->get_theme_path(filename);
 
     // Most common symptom of bad config files and missing assets.
     call_notice(tr("It doesn't look like your client is set up correctly.\n"
@@ -171,6 +171,10 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
+}
+
+void Lobby::lobbyThreadHandler(QString loadingText){
+    this->set_loading_text(loadingText);
 }
 
 void Lobby::set_loading_text(QString p_text)

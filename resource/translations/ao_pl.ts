@@ -1,60 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de_DE">
+<TS version="2.1" language="pl_PL">
 <context>
     <name>AOApplication</name>
     <message>
         <location filename="../../src/aoapplication.cpp" line="138"/>
         <source>Disconnected from server.</source>
-        <translation>Vom Server getrennt.</translation>
+        <translation>Odłączono od serwera.</translation>
     </message>
     <message>
         <location filename="../../src/aoapplication.cpp" line="163"/>
         <source>Error connecting to master server. Will try again in %1 seconds.</source>
-        <translation>Fehler bei der Verbindung zum Master Server. Erneuter Versuch in %1 Sekunden.</translation>
-    </message>
-    <message>
-        <source>Error connecting to master server. Will try again in %n seconds.</source>
-        <translation type="vanished">Fehler bei der Verbindung zum Master Server. Erneuter Versuch in %n Sekunden.</translation>
+        <translation>Błąd podczas łączenia się do głównego serwera. Spróbuj ponownie za %1 sekundy.</translation>
     </message>
     <message>
         <location filename="../../src/aoapplication.cpp" line="167"/>
         <source>There was an error connecting to the master server.
 We deploy multiple master servers to mitigate any possible downtime, but the client appears to have exhausted all possible methods of finding and connecting to one.
 Please check your Internet connection and firewall, and please try again.</source>
-        <translation>Es gab einen Fehler beim Verbinden zum Master Server.
-Wir verwenden mehrere Master Server um Ausfälle zu verhindern, jedoch hat der Client alle Möglichkeiten einen zu finden erschöpft.
-Bitte prüfe deine Internetverbindung und Firewall, und versuche es erneut.</translation>
+        <translation>Odkryto błąd podczas łączania się do głównego serwera.
+Używamy wielu głównych serwerów, aby zminimalizować każdą możliwą przerwę, ale klient wyczerpał jaką kolwiek możliwość znalazienia i połączenia się do któregoś.
+Proszę sprawdzić swoje połączenie internetowe oraz zaporę ogniową i spróbować ponownie.</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="135"/>
         <source>Outdated version! Your version: %1
 Please go to aceattorneyonline.com to update.</source>
-        <translation>Version zu alt! Deine Version: %1
-Bitte besuche aceattorneyonline.com für ein Update.</translation>
+        <translation>Nieaktualna wersja! Twoja wersja: %1
+Proszę udać się do  aceattorneyonline.com, aby zaktualizować.</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="143"/>
         <source>You have been exiled from AO.
 Have a nice day.</source>
-        <translation>Du wurdest von AO befreit.
-Schönen Urlaub.</translation>
+        <translation>Zostałeś wygnany z AO2.
+Życzę miłego dnia.</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="283"/>
         <source>Attorney Online 2</source>
-        <translation>Attorney Online 2</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="309"/>
         <source>Loading</source>
-        <translation>Laden</translation>
+        <translation>Ładowanie</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="397"/>
         <source>Loading evidence:
 %1/%2</source>
-        <translation>Lade Beweisstücke:
+        <translation>Ładowanie dowodów:
 %1/%2</translation>
     </message>
     <message>
@@ -62,7 +58,7 @@ Schönen Urlaub.</translation>
         <location filename="../../src/packet_distribution.cpp" line="538"/>
         <source>Loading music:
 %1/%2</source>
-        <translation>Lade Musik:
+        <translation>Ładowanie muzyki:
 %1/%2</translation>
     </message>
     <message>
@@ -70,49 +66,29 @@ Schönen Urlaub.</translation>
         <location filename="../../src/packet_distribution.cpp" line="501"/>
         <source>Loading chars:
 %1/%2</source>
-        <translation>Lade Charaktere:
+        <translation>Ładowanie postaci:
 %1/%2</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="692"/>
         <source>You have been kicked from the server.
 Reason: %1</source>
-        <translation>Du wurdest von diesem Server geschmissen.
-Grund: %1</translation>
+        <translation>Zostałeś wyrzucony z tego serwera.
+Powód: %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="701"/>
         <source>You have been banned from the server.
 Reason: %1</source>
-        <translation>Du wurdest von diesem Server verbannt.
-Grund: %1</translation>
+        <translation>Zostałeś zbanowany z tego serwera.
+Powód: %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="709"/>
         <source>You are banned on this server.
 Reason: %1</source>
-        <translation>Du bist von diesem Server verbannt.
-Grund: %1</translation>
-    </message>
-    <message>
-        <source>You have been kicked from the server.
-Reason: </source>
-        <translation type="vanished">Du wurdest von diesem Server geschmissen.
-Grund: </translation>
-    </message>
-    <message>
-        <source>You are banned on this server.
-Reason: </source>
-        <translation type="vanished">Du wurdest von diesem Server verbannt.
-Grund: </translation>
-    </message>
-    <message>
-        <source>You have been kicked.</source>
-        <translation type="vanished">Du wurdest rausgeschmissen.</translation>
-    </message>
-    <message>
-        <source>You are banned on this server.</source>
-        <translation type="vanished">Du wurdest verbannt.</translation>
+        <translation>Jesteś zbanowany na tym serwerze.
+Powód: %1</translation>
     </message>
 </context>
 <context>
@@ -120,42 +96,42 @@ Grund: </translation>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="9"/>
         <source>Case Announcer</source>
-        <translation>Fallansager</translation>
+        <translation>Ogłaszanie rozpraw</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="38"/>
         <source>Case title:</source>
-        <translation>Fallname:</translation>
+        <translation>Tytuł rozprawy:</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="48"/>
         <source>Defense needed</source>
-        <translation>Verteidiger benötigt</translation>
+        <translation>Potrzebny obrońca</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="50"/>
         <source>Prosecution needed</source>
-        <translation>Kläger benötigt</translation>
+        <translation>Potrzebny prokurator</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="52"/>
         <source>Judge needed</source>
-        <translation>Richter benötigt</translation>
+        <translation>Potrzebny sędzia</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="54"/>
         <source>Jurors needed</source>
-        <translation>Jury benötigt</translation>
+        <translation>Potrzebny ławnik</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="56"/>
         <source>Stenographer needed</source>
-        <translation>Stenograph benötigt</translation>
+        <translation>Potrzebny stenograf</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="58"/>
         <source>Witness needed</source>
-        <translation>Zeuge benötigt</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -163,307 +139,308 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="10"/>
         <source>Settings</source>
-        <translation>Einstellungen</translation>
+        <translation>Ustawienia</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="39"/>
         <source>Gameplay</source>
-        <translation>Spiel</translation>
+        <translation>Rozgrywka</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="50"/>
         <source>Theme:</source>
-        <translation>Theme:</translation>
+        <translation>Motyw:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="51"/>
         <source>Sets the theme used in-game. If the new theme changes the lobby&apos;s look as well, you&apos;ll need to reload the lobby for the changes to take effect, such as by joining a server and leaving it.</source>
-        <translation>Setzt das Theme. Wenn das neue Theme auch das Aussehen der Lobby verändert, must du diese neu laden um die Änderungen zu sehen.</translation>
+        <translation>Ustawia motyw używany w grze. Jeżeli nowy motyw równiesz zmienia wygląd poczekalni, musisz odświeżyć poczekalnię, aby zmiany zaczęły działać, np. poprzez dołączenie do serwera i wyjście z niego.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="80"/>
         <source>Log goes downwards:</source>
-        <translation>Verlauf geht nach unten:</translation>
+        <translation>Dziennik idzie w dół:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="81"/>
         <source>If ticked, new messages will appear at the bottom (like the OOC chatlog). The traditional (AO1) behaviour is equivalent to this being unticked.</source>
-        <translation>Wenn angehakt werden neue Nachrichten unten erscheinen (wie beim OOC). Das traditionelle (AO1) Verhalten wäre nicht angehakt.</translation>
+        <translation>Jeżeli zaznaczone, nowe wiadomości zaczną się pojawiać na dole (tak jak na czacie OOC). Tradycyjne (AO1) zachowanie jest równoważne do tego bycia nie zaznaczonym.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="93"/>
         <source>Log length:</source>
-        <translation>Länge:</translation>
+        <translation>Długość dziennika:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="94"/>
         <source>The amount of messages the IC chatlog will keep before deleting older messages. A value of 0 or below counts as &apos;infinite&apos;.</source>
-        <translation>Die Menge an Nachrichten die aufgehoben werden bevor alte gelöscht werden. 0 bedeutet unendlich.</translation>
+        <translation>Ilość wiadomości, jakie czat IC będzie zostawiał zanim usunie starsze wiadomości. Wartośc 0 albo niżej, liczy się jako &apos;nieskończone&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="112"/>
         <source>Default username:</source>
-        <translation>Standard Benutzername:</translation>
+        <translation>Domyślna nazwa użytkownika:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="113"/>
         <source>Your OOC name will be automatically set to this value when you join a server.</source>
-        <translation>Dein OOC Name wird automatisch auf dies gesetzt.</translation>
+        <translation>Twoja nazwa OOC będzie ustawiana automatycznie do tej wartości, kiedy dołączysz na serwer.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="125"/>
         <source>Custom shownames:</source>
-        <translation>Eigener Anzeigename:</translation>
+        <translation>Niestandardowe ksywki:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="126"/>
         <source>Gives the default value for the in-game &apos;Custom shownames&apos; tickbox, which in turn determines whether the client should display custom in-character names.</source>
-        <translation>Standardwert für die Anzeigename Box, welche den In-Charakter Namen bestimmt.</translation>
+        <translation>Daje domyślną wartość przyciskowi wyboru &apos;Niestandardowe ksywki&apos;, który określa czy klient powinien pokazywać niestandardowe IC nazwy.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="144"/>
         <source>Backup MS:</source>
-        <translation>Rückfall MS:</translation>
+        <translation>Kopia zapasowa głównego serwera:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="145"/>
         <source>If the built-in server lookups fail, the game will try the address given here and use it as a backup master server address.</source>
-        <translation>Wenn dereingebaute Master Server fehlschlägt, wird das Spiel diesen hier verwenden.</translation>
+        <translation>Jeśli wbudowane szukanie serwerów zawiedzie, gra spróbuje użyć adresu podanego tutaj i użyje go jako adresu zapasowego głównego serwera.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="157"/>
         <source>Discord:</source>
-        <translation>Discord:</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="158"/>
         <source>Allows others on Discord to see what server you are in, what character are you playing, and how long you have been playing for.</source>
-        <translation>Erlaubt anderen auf Discord zu sehen auf welchem Server du spielst, welchen Charakter du spielst und wie lange.</translation>
+        <translation>Pozwala innym na Discordzie zobaczyć na jakim serwerze się znajdujesz, jaką postać używasz i jak długo grałeś.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="170"/>
         <source>Allow Shake/Flash:</source>
-        <translation>Schütteln/Geistesblitz erlauben:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="171"/>
         <source>Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures.</source>
-        <translation>Erlaubt schütteln des Bildschirms und weiße Blitze. Deaktiviere dies falls du Bedenken wegen Photosensitivität hast.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="181"/>
         <source>Language:</source>
-        <translation>Sprache:</translation>
+        <translation>Język:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="182"/>
         <source>Sets the language if you don&apos;t want to use your system language.</source>
-        <translation>Setzte die Sprache falls du nicht die Systemsprache verwenden möchtest.</translation>
+        <translation>Ustawia język, jeśli nie chcesz używać języka systemowego.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="197"/>
         <source>Callwords</source>
-        <translation>Alarmwörter</translation>
+        <translation>Zawołania</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="222"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Gib so viele Alarmwörter ein wie du möchtest. Groß/Kleinschreibung ist egal. Für jede Wort nur eine Zeile!&lt;br&gt;Bitte keine leere Zeile am Ende -- du bekommst sonst bei jeder Nachricht einen Alarm.&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Wpisz tyle zawołań, ile dusza zapragnie. Wielkość liter nie ma znaczenia. Miej na uwadze, aby każde zawołanie było na swojej lini!&lt;br&gt;Nie zostawiaj spacji na końcu -- zostaniesz zaalarmowany za każdym razem, kiedy ktoś użyje spacji w swojej wiadomości.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="228"/>
         <source>Audio</source>
-        <translation>Audio</translation>
+        <translation>Dźwięk</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="239"/>
         <source>Audio device:</source>
-        <translation>Audiogerät:</translation>
+        <translation>Urządzenie dźwiękowe:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="240"/>
         <source>Sets the audio device for all sounds.</source>
-        <translation>Setzt das Audiogerät für all Geräusche.</translation>
+        <translation>Ustawia urządzenie dźwiękowe na wszystkie dźwięki.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="279"/>
         <source>Music:</source>
-        <translation>Musik:</translation>
+        <translation>Muzyka:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="280"/>
         <source>Sets the music&apos;s default volume.</source>
-        <translation>Setzt die Musiklautstärke.</translation>
+        <translation>Ustawia domyślną głośność muzyki.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="292"/>
         <source>SFX:</source>
-        <translation>SFX:</translation>
+        <translation>Efekty dźwiękowe (SFX):</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="293"/>
         <source>Sets the SFX&apos;s default volume. Interjections and actual sound effects count as &apos;SFX&apos;.</source>
-        <translation>Setzt die Lautstärke der Soundeffekte wie Einsprüche und die Geräusche der Charaktere.</translation>
+        <translation>Ustawia domyślną głośność efektów specjalnych (SFX). Wtrącenia się i same efekty specjalne są zaliczane jako &apos;SFX&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="306"/>
         <source>Blips:</source>
-        <translation>Blips:</translation>
+        <translation>Blipy:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="307"/>
         <source>Sets the volume of the blips, the talking sound effects.</source>
-        <translation>Setzt die Lautstärke der Blips, das ist das Geräusch das die Charaktere beim Reden machen.</translation>
+        <translation>Ustawia głośność blipów, efektów dźwiękowych mówienia.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="325"/>
         <source>Blip rate:</source>
-        <translation>Bliprate:</translation>
+        <translation>Szybkość blipów:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="326"/>
         <source>Sets the delay between playing the blip sounds.</source>
-        <translation>Setzt die Pause zwischen einzelnen Blips.</translation>
+        <translation>Ustawia opóźnienie pomiędzy graniem blipów.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="337"/>
         <source>Blank blips:</source>
-        <translation>Leere Blips:</translation>
+        <translatorcomment>The &apos;blip&apos; isn&apos;t an accurate polish representation of this english word.</translatorcomment>
+        <translation>Puste blipy:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="338"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
-        <translation>Wenn angehakt wird das Spiel auch bei einem Leerzeichen einen Blip machen.</translation>
+        <translation>Jeśli prawdziwe, gra zagra dźwięk blip za każdym razem spacja &apos;jest mówiona&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="349"/>
         <source>Enable Looping SFX:</source>
-        <translation>Wiederholende Soundeffekte:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="350"/>
         <source>If true, the game will allow looping sound effects to play on preanimations.</source>
-        <translation>Wenn aktiviert, werden wiederholende Soundeffekte bei den Voranimationen erlaubt.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="361"/>
         <source>Kill Music On Objection:</source>
-        <translation>Stoppe Musik bei Einspruch:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="362"/>
         <source>If true, the game will stop music when someone objects, like in the actual games.</source>
-        <translation>Hält die Musik an wenn jemand &quot;Einspruch&quot; ruft, wie im echten Spiel.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="373"/>
         <source>Casing</source>
-        <translation>Fälle</translation>
+        <translation>Rozprawa</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="387"/>
         <source>This server supports case alerts.</source>
-        <translation>Dieser Server unterstützt Fallalarme.</translation>
+        <translation>Ten serwer wspiera komunikaty rozpraw.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="389"/>
         <source>This server does not support case alerts.</source>
-        <translation>Dieser Server unterstützt Fallalarme nicht.</translation>
+        <translation>Ten serwer nie wspiera komunikatów rozpraw.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="390"/>
         <source>Pretty self-explanatory.</source>
-        <translation>Eigentlich selbsterklärend.</translation>
+        <translation>Dosyć oczywiste.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="397"/>
         <source>Casing:</source>
-        <translation>Fälle:</translation>
+        <translation>Rozprawy:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="398"/>
         <source>If checked, you will get alerts about case announcements.</source>
-        <translation>Wenn angehakt wirst du benachrichtigt wenn ein Fall angekündigt wird.</translation>
+        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="411"/>
         <source>Defense:</source>
-        <translation>Verteidigung:</translation>
+        <translation>Obrona:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="412"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
-        <translation>Wenn angehakt wirst du benachrichtigt wenn ein Verteidiger benötigt wird.</translation>
+        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce obrony jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="425"/>
         <source>Prosecution:</source>
-        <translation>Kläger:</translation>
+        <translation>Prokuratura:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="426"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
-        <translation>Wenn angehakt wirst du benachrichtigt wenn ein Kläger benötigt wird.</translation>
+        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce prokuratury jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="439"/>
         <source>Judge:</source>
-        <translation>Richter:</translation>
+        <translation>Sędzia:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="440"/>
         <source>If checked, you will get alerts about case announcements if the judge spot is open.</source>
-        <translation>Wenn angehakt wirst du benachrichtigt wenn ein Richter benötigt wird.</translation>
+        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce sędzi jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="453"/>
         <source>Juror:</source>
-        <translation>Jury:</translation>
+        <translation>Ławnik:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="454"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
-        <translation>Wenn angehakt wirst du benachrichtigt wenn eine Jury benötigt wird.</translation>
+        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce ławnika jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="467"/>
         <source>Stenographer:</source>
-        <translation>Stenograph:</translation>
+        <translation>Stenograf:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="468"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
-        <translation>Wenn angehakt wirst du benachrichtigt wenn ein Stenograph benötigt wird.</translation>
+        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce stenografa jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="481"/>
         <source>CM:</source>
-        <translation>CM:</translation>
+        <translation>Mistrz rozpraw (CM):</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="482"/>
         <source>If checked, you will appear amongst the potential CMs on the server.</source>
-        <translation>Wenn angehakt wirst du als potentielle CM angezeigt.</translation>
+        <translation>Jeśli zaznaczone, pojawisz się wśród potencjalnych mistrzów rozpraw (CM) na serwerze.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="493"/>
         <source>Witness:</source>
-        <translation>Zeuge:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="494"/>
         <source>If checked, you will appear amongst the potential witnesses on the server.</source>
-        <translation>Wenn angehakt wirst du als potentielle Zeuge angezeigt.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="507"/>
         <source>Hosting cases:</source>
-        <translation>Fallleitung:</translation>
+        <translation>Hostowane rozprawy:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="508"/>
         <source>If you&apos;re a CM, enter what cases you are willing to host.</source>
-        <translation>Wenn du CM bist, gib ein welche Fälle du spielen möchtest.</translation>
+        <translation>Jeśli jesteś mistrzem rozpraw (CM), wpisz jakie rozprawy jesteś chętny hostowania.</translation>
     </message>
 </context>
 <context>
@@ -471,130 +448,182 @@ Grund: </translation>
     <message>
         <location filename="../../src/charselect.cpp" line="74"/>
         <source>Password</source>
-        <translation>Passwort</translation>
+        <translation>Hasło</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="80"/>
         <source>Spectator</source>
-        <translation>Zuschauer</translation>
+        <translation>Widz</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="83"/>
         <location filename="../../src/courtroom.cpp" line="164"/>
         <source>Search</source>
-        <translation>Suche</translation>
+        <translation>Wyszukaj</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="88"/>
         <source>Passworded</source>
-        <translation>Gesperrt</translation>
+        <translation>Zahasłowany</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="92"/>
         <source>Taken</source>
-        <translation>Benutzt</translation>
-    </message>
-    <message>
-        <source>Generating chars:
-%1/%2</source>
-        <translation type="vanished">Generiere Charaktere:
-%1/%2</translation>
-    </message>
-    <message>
-        <source>Generating chars:
-</source>
-        <translation type="vanished">Generiere Charaktere:
-</translation>
+        <translation>Zajęty</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="182"/>
         <source>Could not find %1</source>
-        <translation>Konnte %1 nicht finden</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generating chars:
+%1/%2</source>
+        <translation type="vanished">Generowanie postaci:
+%1.%2</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="142"/>
         <source>Showname</source>
-        <translation>Anzeigename</translation>
+        <translation>Ksywka</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="146"/>
         <source>Message</source>
-        <translation>Nachricht</translation>
+        <translation>Wiadomość</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="156"/>
         <source>Name</source>
-        <translation>Name</translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="209"/>
         <source>Pre</source>
-        <translation>Vor</translation>
+        <translation>przed-</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="212"/>
         <source>Flip</source>
-        <translation>Spiegeln</translation>
+        <translation>Odwróć</translation>
     </message>
     <message>
         <source>Guard</source>
-        <translation type="vanished">Wache</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="217"/>
-        <source>Disable Modcalls</source>
-        <translation>Deaktiviere Moderatorenrufe</translation>
+        <translation type="vanished">Na Służbie (mod)</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="223"/>
         <location filename="../../src/courtroom.cpp" line="637"/>
         <source>Casing</source>
-        <translation>Fall</translation>
+        <translation>Rozprawa</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="228"/>
         <source>Shownames</source>
-        <translation>Anzeigenamen</translation>
+        <translation>Ksywki</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="231"/>
         <source>No Interrupt</source>
-        <translation>Keine Unterbrechung</translation>
+        <translation>Bez przerwy</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="246"/>
         <source>White</source>
-        <translation>Weiß</translation>
+        <translation>Biały</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="247"/>
         <source>Green</source>
-        <translation>Grün</translation>
+        <translation>Zielony</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="248"/>
         <source>Red</source>
-        <translation>Rot</translation>
+        <translation>Czerwony</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="249"/>
         <source>Orange</source>
-        <translation>Orange</translation>
+        <translation>Pomarańczowy</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="250"/>
         <source>Blue</source>
-        <translation>Blau</translation>
+        <translation>Niebieski</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="251"/>
         <source>Yellow</source>
-        <translation>Gelb</translation>
+        <translation>Żółty</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="3040"/>
+        <source>This does nothing, but there you go.</source>
+        <translation>To nic nie robi, ale proszę bardzo.</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="3176"/>
+        <source>You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.
+Cases you can load: %1</source>
+        <translation>Musisz podać nazwę pliku, którego chcesz załadować (rozszerzenie nie potrzebne!) Upewnij się, że jest w folderze `base/cases/` i że jest to poprawnie sformatowane ini.
+Rozprawy które możesz załadować: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="3197"/>
+        <source>Case made by %1.</source>
+        <translation>Rozprawa zrobiona przez %1.</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="3203"/>
+        <source>Navigate to %1 for the CM doc.</source>
+        <translation>Przejdź do %1, aby dojść do dokumentu CM.</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="3222"/>
+        <source>Your case &quot;%1&quot; was loaded!</source>
+        <translation>Twoja rozprawa &quot;%1&quot; została wczytana!</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="612"/>
+        <location filename="../../src/courtroom.cpp" line="3311"/>
+        <source>Server</source>
+        <translation>Serwer</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="724"/>
+        <source>Back to Lobby</source>
+        <translation>Powrót do poczekalni</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="252"/>
+        <source>Rainbow</source>
+        <translation>Tęczowy</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="217"/>
+        <source>Disable Modcalls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="253"/>
+        <source>Pink</source>
+        <translation>Różowy</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="254"/>
+        <source>Cyan</source>
+        <translation>Turkusowy</translation>
+    </message>
+    <message>
+        <location filename="../../src/courtroom.cpp" line="277"/>
+        <source>% offset</source>
+        <translation>% wyrówanie</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="595"/>
         <source>Music</source>
-        <translation>Musik</translation>
+        <translation>Muzyka</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="597"/>
@@ -604,321 +633,199 @@ Grund: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="599"/>
         <source>Blips</source>
-        <translation>Blips</translation>
+        <translation>Blipy</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="602"/>
         <source>Log limit</source>
-        <translation>Verlaufsgrenze</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="612"/>
-        <location filename="../../src/courtroom.cpp" line="3311"/>
-        <source>Server</source>
-        <translation>Server</translation>
+        <translation>Limit dziennika</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="625"/>
         <source>Change character</source>
-        <translation>Charakter ändern</translation>
+        <translation>Zmiena postaci</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="628"/>
         <source>Reload theme</source>
-        <translation>Aussehen neu laden</translation>
+        <translation>Odśwież motyw</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="631"/>
         <source>Call mod</source>
-        <translation>Moderator rufen</translation>
+        <translation>Wezwij moda</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="634"/>
         <source>Settings</source>
-        <translation>Einstellungen</translation>
+        <translation>Ustawienia</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="640"/>
         <source>A/M</source>
-        <translation>A/M</translation>
+        <translatorcomment>O meaning &apos;Obszar&apos; and M meaning &apos;Muzyka&apos;.</translatorcomment>
+        <translation>O/M</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="643"/>
         <source>Preanim</source>
-        <translation>Voranimation</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="724"/>
-        <source>Back to Lobby</source>
-        <translation>Zurück zur Lobby</translation>
+        <translation>przed-animacja</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="2838"/>
         <source>You have been banned.</source>
-        <translation>Du wurdest verbannt.</translation>
-    </message>
-    <message>
-        <source>%1 has played a song: %2</source>
-        <translation type="vanished">%1 hat ein Lied gespielt: %2</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="252"/>
-        <source>Rainbow</source>
-        <translation>Regenbogen</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="253"/>
-        <source>Pink</source>
-        <translation>Pink</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="254"/>
-        <source>Cyan</source>
-        <translation>Cyan</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="277"/>
-        <source>% offset</source>
-        <translation>% Abstand</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3033"/>
         <source>You were granted the Guard button.</source>
-        <translation>Dir wurde der Wache Knopf gegeben.</translation>
-    </message>
-    <message>
-        <source>This does nohing, but there you go.</source>
-        <translation type="vanished">Dies bewirkt nichts, aber egal.</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="3040"/>
-        <source>This does nothing, but there you go.</source>
-        <translation>Dies bewirkt nichts, aber egal.</translation>
+        <translation>Zostałeś obdarzonym przyciskiem Na Służbie.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3047"/>
         <source>You opened the settings menu.</source>
-        <translation>Du hast die Einstellungen geöffnet.</translation>
+        <translation>Otworzyłeś opcje.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3062"/>
         <source>You will now pair up with </source>
-        <translation>Du wirst nun mit </translation>
+        <translation>Będzie teraz w parze z </translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3064"/>
         <source> if they also choose your character in return.</source>
-        <translation> gepaart, wenn der andere dies auch tut.</translation>
+        <translation> jeżeli oni również wybiorą ciebie spowrotem.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3070"/>
         <source>You are no longer paired with anyone.</source>
-        <translation>Du bist nicht mehr gepaart.</translation>
+        <translation>Nie jesteś już w parze z kimkolwiek.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3075"/>
         <source>Are you sure you typed that well? The char ID could not be recognised.</source>
-        <translation>Hast du dich vertippt? Die ID konnte nicht erkannt werden.</translation>
+        <translation>Czy jesteś pewien, że dobrze to napisałeś? ID postaci nie zostało rozpoznane.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3091"/>
         <source>You have set your offset to </source>
-        <translation>Dein Abstand ist auf </translation>
+        <translation>Musisz ustawić swoje wyrównanie do </translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3098"/>
         <source>Your offset must be between -100% and 100%!</source>
-        <translation>Der Abstand muss zwischen -100% und 100% liegen!</translation>
+        <translation>Twoje wyrównanie musi być między -100%, a 100%!</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3103"/>
         <source>That offset does not look like one.</source>
-        <translation>Das sieht nicht wie ein Abstand aus.</translation>
+        <translation>To wyrównanie nie wygląda na jedno.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3109"/>
         <source>You switched your music and area list.</source>
-        <translation>Du hast zwischen Musik- und Gebitsliste umgeschaltet.</translation>
+        <translation>Przełączyłeś swoją listę obszarów i muzyki.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3116"/>
         <source>You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.</source>
-        <translation>Du hast Funktionen erzwungen die der Server eventuell nicht unterstützt. Möglicherweise wirst du nicht mehr sprechen können.</translation>
+        <translation>Włączyłeś funkcje, które ten serwer może nie wspierać. Możliwe że, nie możesz rozmawiać na czacie IC lub gorzej przez to.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3127"/>
         <source>Your pre-animations interrupt again.</source>
-        <translation>Deine Voranimation unterbrechen nun Text.</translation>
+        <translation>Twoje przed-animacje przerywają tekst spowrotem.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3129"/>
         <source>Your pre-animations will not interrupt text.</source>
-        <translation>Deine Voranimation unterbrechen Text nicht.</translation>
+        <translation>Twoje przed-animacje nie będą przerywać tekstu.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3140"/>
         <source>Couldn&apos;t open chatlog.txt to write into.</source>
-        <translation>Konnte chatlog.txt nicht öffnen.</translation>
+        <translation>Nie można było otworzyć chatlog.txt, aby zapisać do niego.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3153"/>
         <source>The IC chatlog has been saved.</source>
-        <translation>Der IC Verlauf wurde gespeichert.</translation>
+        <translation>Dziennik czatu IC został zapisany.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3165"/>
         <source>You don&apos;t have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it&apos;s likely the case file you&apos;re looking for can&apos;t be found in there.</source>
-        <translation>Du hattest keinen &apos;base/cases&apos; Ordner! Ich hab ihn nun angelegt aber bedenke das er leer sein wird.</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="3176"/>
-        <source>You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.
-Cases you can load: %1</source>
-        <translation>Du musst einen Dateinamen angeben (ohne .ini). Stelle sicher das er im &apos;base/cases&apos; Ordner ist und das er korrekt formatiert ist.
-Verfügbare Fälle: %1</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="3197"/>
-        <source>Case made by %1.</source>
-        <translation>Fall von %1.</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="3203"/>
-        <source>Navigate to %1 for the CM doc.</source>
-        <translation>Gehe zu %1 für das CM Dokument.</translation>
-    </message>
-    <message>
-        <location filename="../../src/courtroom.cpp" line="3222"/>
-        <source>Your case &quot;%1&quot; was loaded!</source>
-        <translation>Dein Fall &quot;%1&quot; wurde geladen!</translation>
-    </message>
-    <message>
-        <source>You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.
-Cases you can load: </source>
-        <translation type="vanished">Du musst einen Dateinamen angeben (ohne .ini). Stelle sicher das er im &apos;base/cases&apos; Ordner ist und das er korrekt formatiert ist.
-Verfügbare Fälle: </translation>
+        <translation>Nie masz folderu `base/cases/`! Został zrobiony tylko dla ciebie, ale widząc, że ZOSTAŁ zrobiony tylko dla ciebie, prawdopodobnie plik rozpraw, którego szukasz nie został znaleziony tutaj.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3184"/>
         <source>Too many arguments to load a case! You only need one filename, without extension.</source>
-        <translation>Zu viele Argumente! Du brauchst nur den Dateinamen, ohne Erweiterung.</translation>
-    </message>
-    <message>
-        <source>Case made by </source>
-        <translation type="vanished">Fall von </translation>
-    </message>
-    <message>
-        <source>Navigate to </source>
-        <translation type="vanished">Gehe zu </translation>
-    </message>
-    <message>
-        <source> for the CM doc.</source>
-        <translation type="vanished"> für das CM Dokument.</translation>
-    </message>
-    <message>
-        <source>Your case &quot;</source>
-        <translation type="vanished">Dein Fall &quot;</translation>
-    </message>
-    <message>
-        <source>&quot; was loaded!</source>
-        <translation type="vanished">&quot; wurde geladen!</translation>
+        <translation>Za dużo parametrów, aby załadować rozprawę! Potrzebujesz tylko jedną nazwę pliku, bez rozszerzenia nazwy pliku.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3234"/>
         <source>You don&apos;t have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it&apos;s likely that you somehow deleted it.</source>
-        <translation>Du hattest keinen &apos;base/cases&apos; Ordner! Ich hab ihn nun angelegt aber bedenke das er leer sein wird.</translation>
+        <translation>Nie masz folderu `base/cases/`! Został zrobiony tylko dla ciebie, ale widząc, że ZOSTAŁ zrobiony tylko dla ciebie, prawdopodobnie jakoś usunąłeś go.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3245"/>
         <source>You need to give a filename to save (extension not needed) and the courtroom status!</source>
-        <translation>Du musst einen Dateinamen (ohne Erweiterung) angebenn, sowie den Gebietsstatus!</translation>
+        <translation>Musisz podać nazwę pliku, aby go zapisać (rozszerzenie nie potrzebne) i status sali sądowej!</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3253"/>
         <source>Too many arguments to save a case! You only need a filename without extension and the courtroom status!</source>
-        <translation>Zu viele Argumente! Du brauchst nur den Dateinamen, ohne Erweiterung sowie den Gebietsstatus!</translation>
+        <translation>Za dużo parametrów, aby zapisać rozprawę! Potrzebujesz tylko jedną nazwę pliku, bez rozszerzenia nazwy pliku i statusu sali sądowej!</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3275"/>
         <source>Succesfully saved, edit doc and cmdoc link on the ini!</source>
-        <translation>Erfolgreich gespeichert!</translation>
+        <translation>Zapisano pomyślnie, edytuj dokument i link cmdoc w .ini!</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3303"/>
         <source>Master</source>
-        <translation>Master</translation>
+        <translation>Główny</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3793"/>
         <source>Reason:</source>
-        <translation>Grund:</translation>
+        <translation>Powód:</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3794"/>
         <source>Call Moderator</source>
-        <translation>Moderator rufen</translation>
+        <translation>Wezwij Moderatora</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3802"/>
         <location filename="../../src/courtroom.cpp" line="3805"/>
         <source>Error</source>
-        <translation>Fehler</translation>
+        <translation>Błąd</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3802"/>
         <source>You must provide a reason.</source>
-        <translation>Du musst einen Grund angeben.</translation>
+        <translation>Musisz podać przyczynę.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3805"/>
         <source>The message is too long.</source>
-        <translation>Die Nachricht ist zu lang.</translation>
-    </message>
-    <message>
-        <source>Choose..</source>
-        <translation type="vanished">Wähle..</translation>
+        <translation>Ta wiadomość jest za długa.</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="25"/>
         <source>Choose...</source>
-        <translation>Wähle...</translation>
+        <translation>Wybierz...</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="194"/>
         <source>Images (*.png)</source>
-        <translation>Bilder (*.png)</translation>
+        <translation>Plik obrazu (*.png)</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="268"/>
         <source>Add new evidence...</source>
-        <translation>Neues Beweisstück...</translation>
-    </message>
-</context>
-<context>
-    <name>Discord</name>
-    <message>
-        <source>Objection!</source>
-        <translation type="vanished">Einspruch!</translation>
-    </message>
-    <message>
-        <source>In Lobby</source>
-        <translation type="vanished">In Lobby</translation>
-    </message>
-    <message>
-        <source>Idle</source>
-        <translation type="vanished">Untätig</translation>
-    </message>
-    <message>
-        <source>In a Server</source>
-        <translation type="vanished">In einem Server</translation>
-    </message>
-    <message>
-        <source>Playing as %1</source>
-        <translation type="vanished">Spielt als %1</translation>
-    </message>
-    <message>
-        <source>Spectating</source>
-        <translation type="vanished">Zuschauend</translation>
+        <translation>Dodaj nowe dowody...</translation>
     </message>
 </context>
 <context>
@@ -926,90 +833,50 @@ Verfügbare Fälle: </translation>
     <message>
         <location filename="../../src/lobby.cpp" line="12"/>
         <source>Attorney Online 2</source>
-        <translation>Attorney Online 2</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="29"/>
         <source>Name</source>
-        <translation>Name</translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="75"/>
         <source>It doesn&apos;t look like your client is set up correctly.
 Did you download all resources correctly from tiny.cc/getao, including the large &apos;base&apos; folder?</source>
-        <translation>Dein Client ist nicht korrekt eingerichtet.
-Hast du ALLES von tiny.cc/getao heruntergeladen und entpackt, auch den großen &apos;base&apos; Ordner?</translation>
+        <translation>Wygłąda na to, że twój klient nie jest ustawiony poprawnie.
+Czy pobrałeś wszystkie zasoby poprawnie z tiny.cc/getao, włączając duży folder &apos;base&apos;?</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="105"/>
         <source>Version: %1</source>
-        <translation>Version: %1</translation>
+        <translation>Wersja: %1</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="148"/>
         <source>Loading</source>
-        <translation>Laden</translation>
+        <translation>Ładowanie</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="152"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="275"/>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</source>
-        <translation>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;Der Gerichtsdrama Simulator&lt;p&gt;&lt;b&gt;Quelltext:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Leitende Entwicklung:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Danksagungen:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</translation>
+        <translation>&lt;h2&gt;Attorney Online: %1&lt;/h2&gt;Symulator dramy sądowej&lt;p&gt;&lt;b&gt;Kod żródłowy:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Główny rozwój:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Szczególne podziękowania:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="393"/>
         <source>Online: %1/%2</source>
-        <translation>Online: %1/%2</translation>
-    </message>
-    <message>
-        <source>Attorney Online 2 is built using Qt 5.11.
-
-Lead development:
-longbyte1
-OmniTroid
-
-stonedDiscord
-Supporting development:
-Fiercy
-
-UI design:
-Ruekasu
-Draxirch
-
-Special thanks:
-Unishred
-Argoneus
-Noevain
-Cronnicossy</source>
-        <translation type="vanished">Attorney Online 2 wurde gemacht mit Qt 5.11.
-
-Leitende Entwicklung:
-longbyte1
-OmniTroid
-stonedDiscord
-
-Unterstützende Entwicklung:
-Fiercy
-
-UI Design:
-Ruekasu
-Draxirch
-
-Speziellen Dank:
-Unishred
-Argoneus
-Noevain
-Cronnicossy</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="115"/>
         <location filename="../../src/lobby.cpp" line="325"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1017,17 +884,17 @@ Cronnicossy</translation>
     <message>
         <location filename="../../src/debug_functions.cpp" line="10"/>
         <source>Error: %1</source>
-        <translation>Fehler: %1</translation>
+        <translation>Błąd: %1</translation>
     </message>
     <message>
         <location filename="../../src/debug_functions.cpp" line="11"/>
         <source>Error</source>
-        <translation>Fehler</translation>
+        <translation>Błąd</translation>
     </message>
     <message>
         <location filename="../../src/debug_functions.cpp" line="23"/>
         <source>Notice</source>
-        <translation>Hinweis</translation>
+        <translation>Ogłoszenie</translation>
     </message>
 </context>
 </TS>

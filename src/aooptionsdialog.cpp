@@ -166,10 +166,21 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
 
+    ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
+    ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
+    ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+
+    ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_epilepsy_lbl);
+
+    ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
+    ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
+
+    ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_epilepsy_cb);
+
     ui_language_label = new QLabel(ui_form_layout_widget);
     ui_language_label->setText(tr("Language:"));
     ui_language_label->setToolTip(tr("Sets the language if you don't want to use your system language."));
-    ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_language_label);
+    ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_language_label);
 
     ui_language_combobox = new QComboBox(ui_form_layout_widget);
     ui_language_combobox->addItem(configini->value("language", "  ").value<QString>() + " - Keep current setting");
@@ -179,7 +190,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("es - Español");
     ui_language_combobox->addItem("jp - 日本語");
     ui_language_combobox->addItem("ru - Русский");
-    ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_language_combobox);
+    ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
 
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();
@@ -334,6 +345,29 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
 
+    ui_loopsfx_lbl = new QLabel(ui_audio_widget);
+    ui_loopsfx_lbl->setText(tr("Enable Looping SFX:"));
+    ui_loopsfx_lbl->setToolTip(tr("If true, the game will allow looping sound effects to play on preanimations."));
+
+    ui_audio_layout->setWidget(8, QFormLayout::LabelRole, ui_loopsfx_lbl);
+
+    ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
+    ui_loopsfx_cb->setChecked(p_ao_app->get_looping_sfx());
+
+    ui_audio_layout->setWidget(8, QFormLayout::FieldRole, ui_loopsfx_cb);
+
+
+    ui_objectmusic_lbl = new QLabel(ui_audio_widget);
+    ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
+    ui_objectmusic_lbl->setToolTip(tr("If true, the game will stop music when someone objects, like in the actual games."));
+
+    ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
+
+    ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
+    ui_objectmusic_cb->setChecked(p_ao_app->get_objectmusic());
+
+    ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
+
     // The casing tab!
     ui_casing_tab = new QWidget();
     ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
@@ -455,6 +489,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_casing_layout->setWidget(7, QFormLayout::FieldRole, ui_casing_cm_cb);
 
+    ui_casing_wit_lbl = new QLabel(ui_casing_widget);
+    ui_casing_wit_lbl->setText(tr("Witness:"));
+    ui_casing_wit_lbl->setToolTip(tr("If checked, you will appear amongst the potential "
+                                    "witnesses on the server."));
+
+    ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_wit_lbl);
+
+    ui_casing_wit_cb = new QCheckBox(ui_casing_widget);
+    ui_casing_wit_cb->setChecked(ao_app->get_casing_wit_enabled());
+
+    ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_wit_cb);
+
     // -- CM CASES ANNOUNCEMENTS
 
     ui_casing_cm_cases_lbl = new QLabel(ui_casing_widget);
@@ -462,12 +508,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_cm_cases_lbl->setToolTip(tr("If you're a CM, enter what cases you are "
                                           "willing to host."));
 
-    ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_cm_cases_lbl);
+    ui_casing_layout->setWidget(9, QFormLayout::LabelRole, ui_casing_cm_cases_lbl);
 
     ui_casing_cm_cases_textbox = new QLineEdit(ui_casing_widget);
     ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
 
-    ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
+    ui_casing_layout->setWidget(9, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
 
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);
@@ -485,6 +531,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
+    configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
@@ -506,6 +553,8 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("default_blip", ui_blips_volume_spinbox->value());
     configini->setValue("blip_rate", ui_bliprate_spinbox->value());
     configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
+    configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
+    configini->setValue("kill_music_on_object", ui_objectmusic_cb->isChecked());
 
     configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
     configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
@@ -514,6 +563,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_juror_enabled", ui_casing_jur_cb->isChecked());
     configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
     configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
+    configini->setValue("casing_wit_enabled", ui_casing_wit_cb->isChecked());
     configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
 
     callwordsini->close();
