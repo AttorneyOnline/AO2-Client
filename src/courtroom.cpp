@@ -3446,7 +3446,7 @@ void Courtroom::on_iniswap_edit_requested()
   QString p_path = ao_app->get_character_path(current_char, "char.ini");
   if (!file_exists(p_path))
     return;
-  QDesktopServices::openUrl(QUrl(p_path));
+  QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
 void Courtroom::on_iniswap_remove_clicked()
@@ -3558,7 +3558,7 @@ void Courtroom::on_sfx_edit_requested()
       }
     }
   }
-  QDesktopServices::openUrl(QUrl(p_path));
+  QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
 void Courtroom::on_sfx_remove_clicked()
@@ -3644,7 +3644,7 @@ void Courtroom::on_effects_edit_requested()
       return;
     }
   }
-  QDesktopServices::openUrl(QUrl(p_path));
+  QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 void Courtroom::on_character_effects_edit_requested()
 {
@@ -3653,7 +3653,7 @@ void Courtroom::on_character_effects_edit_requested()
   if (!dir_exists(p_path))
     return;
 
-  QDesktopServices::openUrl(QUrl(p_path));
+  QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
 void Courtroom::on_effects_dropdown_changed(int p_index)
