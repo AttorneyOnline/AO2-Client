@@ -509,7 +509,7 @@ Grund: </translation>
     <message>
         <location filename="../../src/charselect.cpp" line="182"/>
         <source>Could not find %1</source>
-        <translation>Konnte %1 nicht finden.</translation>
+        <translation>Konnte %1 nicht finden</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="142"/>

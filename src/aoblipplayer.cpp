@@ -30,7 +30,7 @@ void AOBlipPlayer::blip_tick()
       return;
 
   delay.start();
-  int f_cycle = m_cycle++;
+  m_cycle++;
 
   if (m_cycle == 5)
     m_cycle = 0;
@@ -77,7 +77,7 @@ void AOBlipPlayer::set_blips(QString p_sfx)
 
 void AOBlipPlayer::blip_tick()
 {
-  int f_cycle = m_cycle++;
+  m_cycle++;
 
   if (m_cycle == 5)
     m_cycle = 0;

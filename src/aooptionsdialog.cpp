@@ -276,7 +276,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_device_combobox = new QComboBox(ui_audio_widget);
 
     // Let's fill out the combobox with the available audio devices. Or don't if there is no audio
-    int a = 0;
     if (needs_default_audiodev())
     {
 
@@ -285,6 +284,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     }
     #ifdef BASSAUDIO
     BASS_DEVICEINFO info;
+    int a = 0;
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
     {
         ui_audio_device_combobox->addItem(info.name);

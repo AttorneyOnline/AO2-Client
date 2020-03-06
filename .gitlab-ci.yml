@@ -23,6 +23,8 @@ build linux x86_64:
     - >
       apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev
       clang make git sudo curl ca-certificates pkg-config upx unzip
+    - git submodule init
+    - git submodule update
 
     # Print versions
     - qmake --version
@@ -75,6 +77,8 @@ build windows i686:
     # Install dependencies
     - apt-get update
     - apt-get install --no-install-recommends -y make curl ca-certificates upx unzip
+    - git submodule init
+    - git submodule update
 
     # Extract BASS
     - mkdir bass
@@ -124,7 +128,7 @@ deploy linux x86_64:
     - *deploy_misc
 
     # Platform-specific
-    - cp -a ../lib/*.so .
+    - cp -a ../lib/* .
     - cp -a ../bin/Attorney_Online .
     - echo "#!/bin/sh" >> ./run.sh
     - echo "LD_LIBRARY_PATH=.:\$LD_LIBRARY_PATH ./Attorney_Online" >> ./run.sh

@@ -1320,8 +1320,8 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
     color = ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini").name();
   if(p_message == "Logged in as a moderator.")
   {
-    ui_guard->show();
-    append_server_chatmessage("CLIENT", "You were granted the Disable Modcalls button.", "1");
+      ui_guard->show();
+      append_server_chatmessage("CLIENT", tr("You were granted the Disable Modcalls button."), "1");
   }
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
@@ -2925,7 +2925,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   int channel = 0;
   int effect_flags = 0;
 
-  qDebug() << "playing song "+f_song;
+  qDebug() << "playing song "+ao_app->get_music_path(f_song);
 
   if (n_char < 0 || n_char >= char_list.size())
   {
@@ -3121,6 +3121,11 @@ void Courtroom::on_ooc_return_pressed()
     {
       toggle_judge_buttons(false);
     }
+  }
+  else if (ooc_message.startsWith("/login"))
+  {
+    ui_guard->show();
+    append_server_chatmessage("CLIENT", tr("You were granted the Disable Modcalls button."), "1");
   }
   else if (ooc_message.startsWith("/settings"))
   {
