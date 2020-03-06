@@ -1701,7 +1701,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   //Let the server handle actually checking if they're allowed to do this.
-  is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
+  if (ao_app->additive_enabled)
+    is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
+  else
+    is_additive = false;
 
   QString f_charname = "";
   if (f_char_id >= 0)
