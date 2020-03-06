@@ -21,6 +21,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   apng = false;
   QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
   QString alt_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".png");
+  QString alt_path_still = ao_app->get_character_path(p_char, p_emote + ".png");
   QString apng_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
   QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
   QString placeholder_default_path = ao_app->get_default_theme_path("placeholder.gif");
@@ -36,6 +37,8 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
     gif_path = original_path;
   else if (file_exists(alt_path))
     gif_path = alt_path;
+  else if (file_exists(alt_path_still))
+    gif_path = alt_path_still;
   else if (file_exists(placeholder_path))
     gif_path = placeholder_path;
   else
@@ -205,7 +208,6 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   m_movie->stop();
   m_movie->setFileName(gif_path);
   m_movie->jumpToFrame(0);
-  int real_duration = 0;
   play_once = true;
   play(p_char, p_emote, "");
 }
