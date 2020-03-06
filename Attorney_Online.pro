@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.6.2.0
+VERSION = 2.7.2.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -34,6 +34,10 @@ contains(DEFINES, QTAUDIO) {
 QT += multimedia
 }
 
+contains(CONFIG, qml_debug) {
+DEFINES += DEBUG_NETWORK
+}
+
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
 
@@ -45,7 +49,19 @@ TRANSLATIONS    =   resource/translations/ao_en.ts \
                     resource/translations/ao_jp.ts \
                     resource/translations/ao_de.ts \
                     resource/translations/ao_ru.ts \
-                    resource/translations/ao_es.ts
+                    resource/translations/ao_es.ts \
+                    resource/translations/ao_pl.ts
 
 win32:RC_ICONS = resource/logo.ico
 macx:ICON = resource/logo.icns
+
+android:DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
