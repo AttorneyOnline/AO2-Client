@@ -9,10 +9,6 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject(
 
 AOMusicPlayer::~AOMusicPlayer()
 {
-  for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
-  {
-    BASS_ChannelStop(m_stream_list[n_stream]);
-  }
   kill_loop();
 }
 
@@ -23,8 +19,6 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop, int effect_flag
       return;
   QString f_path = ao_app->get_music_path(p_song);
   BASS_ChannelStop(m_stream_list[channel]);
-
-  f_path = ao_app->get_music_path(p_song);
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE;
   if (loop)
@@ -174,6 +168,13 @@ QString AOMusicPlayer::get_path()
     return f_path;
 }
 
+void AOMusicPlayer::kill_loop()
+{
+    for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+    {
+      BASS_ChannelStop(m_stream_list[n_stream]);
+    }
+}
 #elif defined(QTAUDIO)
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
 {
@@ -183,31 +184,49 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject(
 
 AOMusicPlayer::~AOMusicPlayer()
 {
-  m_player.stop();
+    kill_loop();
 }
 
-void AOMusicPlayer::play(QString p_song)
+void AOMusicPlayer::play(QString p_song, int channel, bool loop, int effect_flags)
 {
-  m_player.stop();
+    channel = channel % m_channelmax;
+    if (channel < 0) //wtf?
+        return;
+    QString f_path = ao_app->get_music_path(p_song);
 
-  QString f_path = ao_app->get_music_path(p_song);
+    m_stream_list[channel].stop();
 
-  m_player.setMedia(QUrl::fromLocalFile(f_path));
+    m_stream_list[channel].setMedia(QUrl::fromLocalFile(f_path));
 
-  this->set_volume(100);
+    this->set_volume(100);
 
-  m_player.play();
+    m_stream_list[channel].play();
+}
+
+void AOMusicPlayer::stop(int channel)
+{
+    m_stream_list[channel].stop();
 }
 
 void AOMusicPlayer::set_volume(int p_value, int channel)
 {
-  m_volume = p_value;
+  m_volume[channel] = p_value;
 
-  qreal linearVolume = QAudio::convertVolume(m_volume / qreal(100),
+  qreal linearVolume = QAudio::convertVolume(m_volume[channel] / qreal(100),
                                              QAudio::LogarithmicVolumeScale,
                                              QAudio::LinearVolumeScale);
 
-  m_player.setVolume(linearVolume*100);
+  if (channel < 0)
+  {
+    for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+    {
+      m_stream_list[n_stream].setVolume(linearVolume*100);
+    }
+  }
+  else
+  {
+    m_stream_list[channel].setVolume(linearVolume*100);
+  }
 }
 
 QString AOMusicPlayer::get_path()
@@ -217,7 +236,10 @@ QString AOMusicPlayer::get_path()
 
 void AOMusicPlayer::kill_loop()
 {
-    m_player.stop();
+    for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+    {
+      m_stream_list[n_stream].stop();
+    }
 }
 #else
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()

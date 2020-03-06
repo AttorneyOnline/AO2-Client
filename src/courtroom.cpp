@@ -1738,7 +1738,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       ui_vp_objection->play("objection_bubble", f_char, f_custom_theme, 724);
       objection_player->play("objection", f_char, f_custom_theme);
       if(ao_app->objection_stop_music())
-          music_player->stop();
+          music_player->stop(0);
       break;
     case 3:
       ui_vp_objection->play("takethat_bubble", f_char, f_custom_theme, 724);

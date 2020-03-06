@@ -33,16 +33,16 @@ private:
   QWidget *m_parent;
   AOApplication *ao_app;
   qreal m_volume = 0;
+  const int m_channelmax = 5;
   bool looping_sfx = false;
 
   bool m_looping = true;
   void set_volume_internal(qreal p_volume);
 
-  #if defined(BASSAUDIO)
-  const int m_channelmax = 5;
+  #if defined(BASSAUDIO)  
   HSTREAM m_stream_list[5];
   #elif defined(QTAUDIO)
-  QSoundEffect m_sfx;  
+  QSoundEffect m_sfx;
   #endif
 };
 

@@ -126,18 +126,36 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app): QObject()
   ao_app = p_ao_app;
 }
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
+void AOSfxPlayer::clear()
+{
+  for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+  {
+    m_sfx.stop();
+  }
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::loop_clear()
+{
+  for (int n_stream = 0 ; n_stream < m_channelmax ; ++n_stream)
+  {
+    m_sfx.stop();
+  }
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout, int channel)
 {
   m_sfx.stop();
 
   QString misc_path = "";
   QString char_path = "";
-  QString sound_path = ao_app->get_sounds_path(p_sfx);
+  QString sound_path = ao_app->get_sfx_suffix(ao_app->get_sounds_path(p_sfx));
 
   if (shout != "")
-    misc_path = ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx;
+    misc_path = ao_app->get_sfx_suffix(ao_app->get_base_path() + "misc/" + shout + "/" + p_sfx);
   if (p_char != "")
-    char_path = ao_app->get_character_path(p_char, p_sfx);
+    char_path = ao_app->get_sfx_suffix(ao_app->get_character_path(p_char, p_sfx));
 
   QString f_path;
 
@@ -158,12 +176,12 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
   }
 }
 
-void AOSfxPlayer::setLooping(bool is_looping)
+void AOSfxPlayer::set_looping(bool toggle, int channel)
 {
-    this->looping_sfx = is_looping;
+    // TODO
 }
 
-void AOSfxPlayer::stop()
+void AOSfxPlayer::stop(int channel)
 {
   m_sfx.stop();
 }
