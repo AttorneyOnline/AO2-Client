@@ -260,6 +260,8 @@ public:
 
   void check_connection_received();
 
+  void refresh_iclog(bool skiplast);
+
   ~Courtroom();
 
 private:

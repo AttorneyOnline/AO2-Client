@@ -1653,12 +1653,14 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
    qDebug() << "MAIN CHR NAME: " <<  m_chatmessage[CHAR_NAME];
    QString tmpmsg = "";
    chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
+
    ic_chatlog_history.append(*temp);
 
   while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
   {
     ic_chatlog_history.removeFirst();
   }
+  refresh_iclog(true);
 //HERE
   if (f_showname == "")
         f_showname = m_chatmessage[CHAR_NAME];
@@ -2025,6 +2027,7 @@ void Courtroom::handle_chatmessage_3()
          ui_ic_chatlog->moveCursor(QTextCursor::End);
 
      ui_ic_chatlog->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
      start_chat_ticking();
 
      if (mirror_iclog)
@@ -2048,6 +2051,8 @@ void Courtroom::handle_chatmessage_3()
              ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[SHOWNAME] + ": </b>");
 
           }
+
+
 
         QScrollBar *scroll = ui_vp_message->verticalScrollBar();
         scroll->setValue(scroll->maximum());
@@ -4281,26 +4286,9 @@ void Courtroom::on_guard_clicked()
 
 void Courtroom::on_showname_enable_clicked()
 {
-  ui_ic_chatlog->clear();
-  first_message_sent = false;
 
-  foreach (chatlogpiece item, ic_chatlog_history) {
-      if (ui_showname_enable->isChecked())
-      {
-         if (item.get_is_song())
-           append_ic_text(item.get_message(), item.get_showname(), true);
-         else
-           append_ic_text(item.get_message(), item.get_showname(),false,true);
-      }
-      else
-      {
-          if (item.get_is_song())
-            append_ic_text(item.get_message(), item.get_name(), true);
-          else
-            append_ic_text(item.get_message(), item.get_name(),false,true);
-      }
-    }
 
+  refresh_iclog(false);
   ui_ic_chat_message->setFocus();
 }
 
@@ -4387,6 +4375,33 @@ Courtroom::~Courtroom()
   delete sfx_player;
   delete objection_player;
   delete blip_player;
+}
+
+void Courtroom::refresh_iclog(bool skiplast)
+{
+    ui_ic_chatlog->clear();
+    first_message_sent = false;
+
+    foreach (chatlogpiece item, ic_chatlog_history) {
+        if(skiplast && ic_chatlog_history.last().get_full() == item.get_full())
+        {
+            break;
+        }
+        if (ui_showname_enable->isChecked())
+        {
+           if (item.get_is_song())
+             append_ic_text(item.get_message(), item.get_showname(), true);
+           else
+             append_ic_text(item.get_message(), item.get_showname(),false,true);
+        }
+        else
+        {
+            if (item.get_is_song())
+              append_ic_text(item.get_message(), item.get_name(), true);
+            else
+              append_ic_text(item.get_message(), item.get_name(),false,true);
+        }
+      }
 }
 
 
