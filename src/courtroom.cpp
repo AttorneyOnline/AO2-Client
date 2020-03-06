@@ -2119,7 +2119,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
     QString f_rest = p_text.right(p_text.size() - check_pos);
     QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
     QString f_character;
-    int f_char_length;
+    int f_char_length = 1;
 
     tbf.toNextBoundary();
 
@@ -2501,6 +2501,7 @@ void Courtroom::preanim_done()
 
 void Courtroom::start_chat_ticking()
 {
+    qDebug() << "tick tick";
   //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
   if (text_state != 0)
     return;

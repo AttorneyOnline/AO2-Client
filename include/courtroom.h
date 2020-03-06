@@ -400,7 +400,7 @@ private:
   //the amount of time non-animated objection/hold it/takethat images stay onscreen for in ms
   const int shout_stay_time = 724;
 
-  static const int chatmessage_size = 28;
+  static const int chatmessage_size = 30;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
