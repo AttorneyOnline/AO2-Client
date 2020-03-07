@@ -1655,7 +1655,21 @@ void Courtroom::handle_chatmessage_2()
     ui_vp_chatbox->set_image("chatmed.png");
   else
   {
-    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chatbox.png";
+    QString chatbox_path;
+    QString misc_path = ao_app->get_base_path() + "misc/" + chatbox + "/chatbox.png";
+    // support for 2.4 legacy chatboxes
+    QString legacy_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
+    if (file_exists(misc_path)) 
+    {
+      chatbox_path = misc_path;
+    }
+    else if (file_exists(legacy_path))
+      chatbox_path = legacy_path;
+    else
+    {
+      QString hnngh_colonel = ao_app->get_theme_path("chatmed.png");
+      chatbox_path = hnngh_colonel;
+    }
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
