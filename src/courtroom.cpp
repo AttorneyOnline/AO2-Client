@@ -1667,8 +1667,8 @@ void Courtroom::handle_chatmessage_2()
       chatbox_path = legacy_path;
     else
     {
-      QString hnngh_colonel = ao_app->get_theme_path("chatmed.png");
-      chatbox_path = hnngh_colonel;
+      QString default_chatbox_path = ao_app->get_theme_path("chatmed.png");
+      chatbox_path = default_chatbox_path;
     }
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
