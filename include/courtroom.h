@@ -209,6 +209,9 @@ public:
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
 
+  //check whether or not current theme has images for buttons with fallback text
+  void detect_fallback_text();
+
   //these functions handle chatmessages sequentially.
   //The process itself is very convoluted and merits separate documentation
   //But the general idea is objection animation->pre animation->talking->idle
@@ -411,6 +414,15 @@ private:
 
   //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
   bool is_ao2_bg = false;
+
+  // whether or not to use text for buttons instead of images, true is text
+  bool change_char_fallback = true;
+  bool reload_theme_fallback = true;
+  bool settings_fallback = true;
+  bool call_mod_fallback = true;
+  bool casing_fallback = true;
+  bool amswap_fallback = true;
+  bool ooc_toggle_fallback = true;
 
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
