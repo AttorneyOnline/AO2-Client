@@ -36,7 +36,7 @@ void AOScene::set_image(QString p_image)
   m_movie->setFileName(background_path);
   m_movie->setScaledSize(QSize(w, h));
 
-  if (m_movie->isValid())
+  if (m_movie->isValid() && m_movie->frameCount() > 1)
   {
     this->setMovie(m_movie);
     m_movie->start();
@@ -85,7 +85,7 @@ void AOScene::set_legacy_desk(QString p_image)
 
   m_movie->setScaledSize(QSize(vp_width, final_h));
 
-  if (m_movie->isValid())
+  if (m_movie->isValid() && m_movie->frameCount() > 1)
   {
     this->setMovie(m_movie);
     m_movie->start();

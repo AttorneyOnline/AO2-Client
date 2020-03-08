@@ -240,7 +240,9 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
     else
         f_pixmap = QPixmap::fromImage(image);
 //    auto aspect_ratio = Qt::KeepAspectRatio;
-    auto transform_mode = Qt::SmoothTransformation;
+    auto transform_mode = Qt::FastTransformation;
+//    if ()
+//      transform_mode = Qt::SmoothTransformation;
 
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
     this->resize(f_pixmap.size());
