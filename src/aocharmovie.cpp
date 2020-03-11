@@ -241,8 +241,8 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
         f_pixmap = QPixmap::fromImage(image);
 //    auto aspect_ratio = Qt::KeepAspectRatio;
     auto transform_mode = Qt::FastTransformation;
-//    if ()
-//      transform_mode = Qt::SmoothTransformation;
+    if (f_pixmap.height() > f_h) //We are downscaling, use anti-aliasing.
+      transform_mode = Qt::SmoothTransformation;
 
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
     this->resize(f_pixmap.size());
