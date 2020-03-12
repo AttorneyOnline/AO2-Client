@@ -93,7 +93,7 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  return "KFO" +
+  return
   QString::number(RELEASE) + "." +
   QString::number(MAJOR_VERSION) + "." +
   QString::number(MINOR_VERSION);

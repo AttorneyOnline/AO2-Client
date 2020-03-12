@@ -114,7 +114,7 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect");
 
   set_size_and_pos(ui_version, "version");
-  ui_version->setText(tr("Version: %1").arg(ao_app->get_version_string()));
+  ui_version->setText(tr("Version: KFO%1").arg(ao_app->get_version_string()));
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about");
