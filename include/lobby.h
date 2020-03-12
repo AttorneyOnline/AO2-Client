@@ -65,6 +65,8 @@ private:
   QLabel *ui_version;
   AOButton *ui_about;
 
+  AOButton *ui_settings;
+
   QTreeWidget *ui_server_list;
   QLineEdit *ui_server_search;
 
@@ -96,6 +98,7 @@ private slots:
   void on_connect_pressed();
   void on_connect_released();
   void on_about_clicked();
+  void on_settings_clicked();
   void on_server_list_clicked(QTreeWidgetItem* p_item, int column);
   void on_server_list_doubleclicked(QTreeWidgetItem* p_item, int column);
   void on_server_search_edited(QString p_text);

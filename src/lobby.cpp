@@ -20,6 +20,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_connect = new AOButton(this, ao_app);
   ui_version = new QLabel(this);
   ui_about = new AOButton(this, ao_app);
+  ui_settings = new AOButton(this, ao_app);
 
   ui_server_list = new QTreeWidget(this);
   ui_server_list->setHeaderLabels({"#", "Name"});//, "Players"});
@@ -55,6 +56,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
+  connect(ui_settings, SIGNAL(clicked()), this, SLOT(on_settings_clicked()));
   connect(ui_server_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(on_server_list_clicked(QTreeWidgetItem*, int)));
   connect(ui_server_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_server_list_doubleclicked(QTreeWidgetItem*, int)));
   connect(ui_server_search, SIGNAL(textChanged(QString)), this, SLOT(on_server_search_edited(QString)));
@@ -116,6 +118,11 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about");
+
+  set_size_and_pos(ui_settings, "settings");
+  ui_settings->setText(tr("Settings"));
+  ui_settings->set_image("settings");
+  ui_settings->setToolTip(tr("Allows you to change various aspects of the client."));
 
   set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -364,6 +371,11 @@ void Lobby::on_about_clicked()
                    "case makers, content creators and players!")
           .arg(ao_app->get_version_string());
   QMessageBox::about(this, "About", msg);
+}
+
+void Lobby::on_settings_clicked()
+{
+    ao_app->call_settings_menu();
 }
 
 //clicked on an item in the serverlist
