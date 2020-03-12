@@ -25,6 +25,10 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list->setHeaderLabels({"#", "Name"});//, "Players"});
   ui_server_list->hideColumn(0);
 
+  ui_server_search = new QLineEdit(this);
+  ui_server_search->setFrame(false);
+  ui_server_search->setPlaceholderText(tr("Search"));
+
   ui_player_count = new QLabel(this);
   ui_description = new AOTextArea(this);
   ui_description->setOpenExternalLinks(true);
@@ -53,6 +57,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_server_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(on_server_list_clicked(QTreeWidgetItem*, int)));
   connect(ui_server_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_server_list_doubleclicked(QTreeWidgetItem*, int)));
+  connect(ui_server_search, SIGNAL(textChanged(QString)), this, SLOT(on_server_search_edited(QString)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
@@ -115,6 +120,9 @@ void Lobby::set_widgets()
   set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                   "font: bold;");
+
+  set_size_and_pos(ui_server_search, "server_search");
+  ui_server_search->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_player_count, "player_count");
   ui_player_count->setText(tr("Offline"));
@@ -409,6 +417,30 @@ void Lobby::on_server_list_doubleclicked(QTreeWidgetItem* p_item, int column)
     on_connect_released();
 }
 
+void Lobby::on_server_search_edited(QString p_text)
+{
+  // Iterate through all QTreeWidgetItem items
+  QTreeWidgetItemIterator it(ui_server_list);
+  while (*it)
+  {
+      (*it)->setHidden(p_text != "");
+      ++it;
+  }
+
+  if (p_text != "")
+  {
+    //Search in metadata
+    QList<QTreeWidgetItem*> clist = ui_server_list->findItems(ui_server_search->text(), Qt::MatchContains|Qt::MatchRecursive, 1);
+    foreach(QTreeWidgetItem* item, clist)
+    {
+      if (item->parent() != nullptr) //So the category shows up too
+        item->parent()->setHidden(false);
+      item->setHidden(false);
+    }
+  }
+}
+
+
 void Lobby::on_chatfield_return_pressed()
 {
   //no you can't send empty messages
@@ -435,13 +467,14 @@ void Lobby::list_servers()
   ui_server_list->setSortingEnabled(false);
   ui_server_list->clear();
 
+  ui_server_search->setText("");
+
   int i = 0;
   for (server_type i_server : ao_app->get_server_list())
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
     treeItem->setText(0, QString::number(i));
     treeItem->setText(1, i_server.name);
-//    treeItem->setText(2, "-");
     i++;
   }
   ui_server_list->setSortingEnabled(true);

@@ -75,6 +75,15 @@ private:
     QLabel *ui_colorlog_lbl;
     QCheckBox *ui_colorlog_cb;
 
+    QLabel *ui_stickysounds_lbl;
+    QCheckBox *ui_stickysounds_cb;
+
+    QLabel *ui_stickyeffects_lbl;
+    QCheckBox *ui_stickyeffects_cb;
+
+    QLabel *ui_stickypres_lbl;
+    QCheckBox *ui_stickypres_cb;
+
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;
     QVBoxLayout *ui_callwords_layout;

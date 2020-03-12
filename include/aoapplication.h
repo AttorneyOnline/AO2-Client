@@ -188,6 +188,18 @@ public:
   // from the config.ini.
   bool is_colorlog_enabled();
 
+  // Returns the value of whether sticky sounds should be a thing.
+  // from the config.ini.
+  bool is_stickysounds_enabled();
+
+  // Returns the value of whether sticky effects should be a thing.
+  // from the config.ini.
+  bool is_stickyeffects_enabled();
+
+  // Returns the value of whether sticky preanims should be a thing.
+  // from the config.ini.
+  bool is_stickypres_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();

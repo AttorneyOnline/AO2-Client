@@ -12,7 +12,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_settings_buttons = new QDialogButtonBox(this);
 
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+    QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
     sizePolicy1.setHeightForWidth(ui_settings_buttons->sizePolicy().hasHeightForWidth());
@@ -39,7 +39,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_tab->setSizePolicy(sizePolicy1);
     ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
     ui_form_layout_widget = new QWidget(ui_gameplay_tab);
-    ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 211));
+    ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 361));
     ui_form_layout_widget->setSizePolicy(sizePolicy1);
 
     ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
@@ -241,6 +241,42 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_colorlog_cb->setChecked(ao_app->is_colorlog_enabled());
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_colorlog_cb);
+
+    row += 1;
+    ui_stickysounds_lbl = new QLabel(ui_form_layout_widget);
+    ui_stickysounds_lbl->setText(tr("Sticky Sounds:"));
+    ui_stickysounds_lbl->setToolTip(tr("Turn this on to prevent the sound dropdown from clearing the sound after playing it."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickysounds_lbl);
+
+    ui_stickysounds_cb = new QCheckBox(ui_form_layout_widget);
+    ui_stickysounds_cb->setChecked(ao_app->is_stickysounds_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickysounds_cb);
+
+    row += 1;
+    ui_stickyeffects_lbl = new QLabel(ui_form_layout_widget);
+    ui_stickyeffects_lbl->setText(tr("Sticky Effects:"));
+    ui_stickyeffects_lbl->setToolTip(tr("Turn this on to prevent the effects dropdown from clearing the effect after playing it."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickyeffects_lbl);
+
+    ui_stickyeffects_cb = new QCheckBox(ui_form_layout_widget);
+    ui_stickyeffects_cb->setChecked(ao_app->is_stickyeffects_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickyeffects_cb);
+
+    row += 1;
+    ui_stickypres_lbl = new QLabel(ui_form_layout_widget);
+    ui_stickypres_lbl->setText(tr("Sticky Preanims:"));
+    ui_stickypres_lbl->setToolTip(tr("Turn this on to prevent preanimation checkbox from clearing after playing the emote."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickypres_lbl);
+
+    ui_stickypres_cb = new QCheckBox(ui_form_layout_widget);
+    ui_stickypres_cb->setChecked(ao_app->is_stickypres_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickypres_cb);
 
     QScrollArea *scroll = new QScrollArea;
     scroll->setWidget(ui_form_layout_widget);
@@ -599,6 +635,9 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("effects", ui_effects_cb->isChecked());
     configini->setValue("framenetwork", ui_framenetwork_cb->isChecked());
     configini->setValue("colorlog", ui_colorlog_cb->isChecked());
+    configini->setValue("stickysounds", ui_stickysounds_cb->isChecked());
+    configini->setValue("stickyeffects", ui_stickyeffects_cb->isChecked());
+    configini->setValue("stickypres", ui_stickypres_cb->isChecked());
 
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");

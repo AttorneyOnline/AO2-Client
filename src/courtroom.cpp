@@ -1214,6 +1214,7 @@ void Courtroom::enter_courtroom()
 void Courtroom::list_music()
 {
   ui_music_list->clear();
+  ui_music_search->setText("");
 
   QString f_file = "courtroom_design.ini";
 
@@ -1256,6 +1257,7 @@ void Courtroom::list_music()
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
+  ui_music_search->setText("");
 
   QString f_file = "courtroom_design.ini";
 
@@ -1292,41 +1294,38 @@ void Courtroom::list_areas()
       i_area.append(arup_locks.at(n_area));
     }
 
-    if (i_area.toLower().contains(ui_music_search->text().toLower()))
-    {
-      QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
-      treeItem->setText(0, area_list.at(n_area));
-      treeItem->setText(1, i_area);
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
+    treeItem->setText(0, area_list.at(n_area));
+    treeItem->setText(1, i_area);
 
-      if (ao_app->arup_enabled)
+    if (ao_app->arup_enabled)
+    {
+      // Coloring logic here.
+      treeItem->setBackground(0, free_brush);
+      if (arup_locks.at(n_area) == "LOCKED")
       {
-        // Coloring logic here.
-        treeItem->setBackground(0, free_brush);
-        if (arup_locks.at(n_area) == "LOCKED")
-        {
-            treeItem->setBackground(1, locked_brush);
-        }
-        else
-        {
-            if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-                treeItem->setBackground(1, lfp_brush);
-            else if (arup_statuses.at(n_area) == "CASING")
-                treeItem->setBackground(1, casing_brush);
-            else if (arup_statuses.at(n_area) == "RECESS")
-                treeItem->setBackground(1, recess_brush);
-            else if (arup_statuses.at(n_area) == "RP")
-                treeItem->setBackground(1, rp_brush);
-            else if (arup_statuses.at(n_area) == "GAMING")
-                treeItem->setBackground(1, gaming_brush);
-        }
+          treeItem->setBackground(1, locked_brush);
       }
       else
       {
-        treeItem->setBackground(1, free_brush);
+          if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
+              treeItem->setBackground(1, lfp_brush);
+          else if (arup_statuses.at(n_area) == "CASING")
+              treeItem->setBackground(1, casing_brush);
+          else if (arup_statuses.at(n_area) == "RECESS")
+              treeItem->setBackground(1, recess_brush);
+          else if (arup_statuses.at(n_area) == "RP")
+              treeItem->setBackground(1, rp_brush);
+          else if (arup_statuses.at(n_area) == "GAMING")
+              treeItem->setBackground(1, gaming_brush);
       }
-
-      ++n_listed_areas;
     }
+    else
+    {
+      treeItem->setBackground(1, free_brush);
+    }
+
+    ++n_listed_areas;
   }
 }
 
@@ -1412,6 +1411,13 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(current_side);
 
   packet_contents.append(get_char_sfx());
+  if (ui_pre->isChecked() && !ao_app->is_stickysounds_enabled())
+  {
+    ui_sfx_dropdown->blockSignals(true);
+    ui_sfx_dropdown->setCurrentIndex(0);
+    ui_sfx_dropdown->blockSignals(false);
+    ui_sfx_remove->hide();
+  }
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -1568,10 +1574,13 @@ void Courtroom::on_chat_return_pressed()
     QString fx_sound = ao_app->get_effect_sound(effect, current_char);
     QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
     packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
-    ui_effects_dropdown->blockSignals(true);
-    ui_effects_dropdown->setCurrentIndex(0);
-    ui_effects_dropdown->blockSignals(false);
-    effect = "";
+    if (!ao_app->is_stickyeffects_enabled())
+    {
+      ui_effects_dropdown->blockSignals(true);
+      ui_effects_dropdown->setCurrentIndex(0);
+      ui_effects_dropdown->blockSignals(false);
+      effect = "";
+    }
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
@@ -1658,7 +1667,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     realization_state = 0;
     screenshake_state = 0;
     is_presenting_evidence = false;
-    ui_pre->setChecked(false);
+    if (!ao_app->is_stickypres_enabled())
+      ui_pre->setChecked(false);
     ui_hold_it->set_image("holdit");
     ui_objection->set_image("objection");
     ui_take_that->set_image("takethat");
@@ -3327,25 +3337,52 @@ void Courtroom::on_ooc_toggle_clicked()
 void Courtroom::on_music_search_edited(QString p_text)
 {
   // Iterate through all QTreeWidgetItem items
-  QTreeWidgetItemIterator it(ui_music_list);
-  while (*it)
+  if (!ui_music_list->isHidden())
   {
-      (*it)->setHidden(p_text != "");
-      ++it;
+    QTreeWidgetItemIterator it(ui_music_list);
+    while (*it)
+    {
+        (*it)->setHidden(p_text != "");
+        ++it;
+    }
+  }
+
+  if (!ui_area_list->isHidden())
+  {
+    QTreeWidgetItemIterator ait(ui_area_list);
+    while (*ait)
+    {
+        (*ait)->setHidden(p_text != "");
+        ++ait;
+    }
   }
 
   if (p_text != "")
   {
-    //Search in metadata
-    QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 1);
-    foreach(QTreeWidgetItem* item, clist)
+    if (!ui_music_list->isHidden())
     {
-      if (item->parent() != nullptr) //So the category shows up too
-        item->parent()->setHidden(false);
-      item->setHidden(false);
+      //Search in metadata
+      QList<QTreeWidgetItem*> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 1);
+      foreach(QTreeWidgetItem* item, clist)
+      {
+        if (item->parent() != nullptr) //So the category shows up too
+          item->parent()->setHidden(false);
+        item->setHidden(false);
+      }
+    }
+
+    if (!ui_area_list->isHidden())
+    {
+      //Search in metadata
+      QList<QTreeWidgetItem*> alist = ui_area_list->findItems(ui_music_search->text(), Qt::MatchContains|Qt::MatchRecursive, 1);
+      foreach(QTreeWidgetItem* item, alist)
+      {
+        if (item->parent() != nullptr) //So the category shows up too
+          item->parent()->setHidden(false);
+        item->setHidden(false);
+      }
     }
   }
-  list_areas();
 }
 
 void Courtroom::on_pos_dropdown_changed(int p_index)
