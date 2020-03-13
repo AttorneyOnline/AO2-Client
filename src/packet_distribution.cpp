@@ -151,6 +151,16 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   delete p_packet;
 }
 
+bool AOApplication::is_music_track(QString trackname)
+{
+    return (trackname.startsWith("==") ||
+            trackname.endsWith(".wav") ||
+            trackname.endsWith(".mp3") ||
+            trackname.endsWith(".mp4") ||
+            trackname.endsWith(".ogg") ||
+            trackname.endsWith(".opus"));
+}
+
 void AOApplication::server_packet_received(AOPacket *p_packet)
 {
   p_packet->net_decode();
@@ -434,11 +444,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
       else
       {
-          if (f_music.endsWith(".wav") ||
-                  f_music.endsWith(".mp3") ||
-                  f_music.endsWith(".mp4") ||
-                  f_music.endsWith(".ogg") ||
-                  f_music.endsWith(".opus"))
+          if (is_music_track(f_music))
           {
               musiclist_start = true;
               areas--;
@@ -519,12 +525,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
           for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
           {
-            if (!musiclist_start && (f_contents.at(n_element).startsWith("==") ||
-                                 f_contents.at(n_element).endsWith(".wav") ||
-                                 f_contents.at(n_element).endsWith(".mp3") ||
-                                 f_contents.at(n_element).endsWith(".mp4") ||
-                                 f_contents.at(n_element).endsWith(".ogg") ||
-                                 f_contents.at(n_element).endsWith(".opus")))
+            if (!musiclist_start && is_music_track(f_contents.at(n_element)))
             {
                 musiclist_start = true;
                 continue;
