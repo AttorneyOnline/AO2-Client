@@ -411,7 +411,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    bool musics_time = false;
+    bool musiclist_start = false;
     int areas = 0;
 
     for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
@@ -428,7 +428,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
 
-      if (musics_time)
+      if (musiclist_start)
       {
           w_courtroom->append_music(f_music);
       }
@@ -440,7 +440,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                   f_music.endsWith(".ogg") ||
                   f_music.endsWith(".opus"))
           {
-              musics_time = true;
+              musiclist_start = true;
               areas--;
               //w_courtroom->fix_last_area();
               w_courtroom->append_music(f_music);
@@ -514,22 +514,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (!courtroom_constructed)
             goto end;
 
-          bool musics_time = false;
+          bool musiclist_start = false;
           area_count = 0;
 
           for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
           {
-            if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
+            if (!musiclist_start && (f_contents.at(n_element).startsWith("==") ||
                                  f_contents.at(n_element).endsWith(".wav") ||
                                  f_contents.at(n_element).endsWith(".mp3") ||
                                  f_contents.at(n_element).endsWith(".mp4") ||
                                  f_contents.at(n_element).endsWith(".ogg") ||
                                  f_contents.at(n_element).endsWith(".opus")))
             {
-                musics_time = true;
+                musiclist_start = true;
                 continue;
             }
-            AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musics_time);
+            AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musiclist_start);
             QThreadPool::globalInstance()->start(music_load);
             ++loaded_music;
             int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
