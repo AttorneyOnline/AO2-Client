@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -496,7 +496,7 @@
      <x>0</x>
      <y>0</y>
      <width>672</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuPlayer">
@@ -509,7 +509,6 @@
     <addaction name="mute"/>
     <addaction name="pair"/>
     <addaction name="call_mod"/>
-    <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="change_character"/>
     <addaction name="quit"/>
@@ -539,22 +538,26 @@
      <string>Downloading (0.3 MB/12 MB)</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuWindow">
+   <widget class="QMenu" name="window_menu">
     <property name="title">
      <string>Window</string>
     </property>
     <addaction name="toggle_ic_log"/>
+    <addaction name="toggle_evidence"/>
+    <addaction name="separator"/>
     <addaction name="toggle_server_chat"/>
     <addaction name="toggle_ms_chat"/>
-    <addaction name="toggle_room_chooser"/>
+    <addaction name="separator"/>
     <addaction name="toggle_room_controls"/>
+    <addaction name="toggle_room_chooser"/>
+    <addaction name="separator"/>
     <addaction name="toggle_jukebox"/>
     <addaction name="toggle_mixer"/>
    </widget>
    <addaction name="menuPlayer"/>
    <addaction name="menuCase"/>
    <addaction name="menuOptions"/>
-   <addaction name="menuWindow"/>
+   <addaction name="window_menu"/>
    <addaction name="assetStatus"/>
   </widget>
   <widget class="QDockWidget" name="ic_chatlog_dock">
@@ -574,7 +577,7 @@
     <string>Transcript</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="AOICLog" name="ic_chatlog"/>
   </widget>
@@ -598,59 +601,18 @@ QLineEdit { background-color: #575757; color: white; }</string>
     </property>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="ms_chat_dock">
+  <widget class="QDockWidget" name="ic_dock">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
    <property name="windowTitle">
-    <string>Master chat</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="AOServerChat" name="ms_chat">
-    <property name="styleSheet">
-     <string notr="true">QTextBrowser { background-color: #8b8b8b; }
-QLineEdit { background-color: #575757; color: white; }</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="jukebox_dock">
-   <property name="windowTitle">
-    <string>Jukebox</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="AOJukebox" name="jukebox"/>
-  </widget>
-  <widget class="QDockWidget" name="rooms_dock">
-   <property name="windowTitle">
-    <string>Rooms</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="AORoomChooser" name="room_chooser"/>
-  </widget>
-  <widget class="QDockWidget" name="mixer_dock">
-   <property name="windowTitle">
-    <string>Mixer</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="AOMixer" name="mixer"/>
-  </widget>
-  <widget class="QDockWidget" name="ic_dock">
-   <property name="windowTitle">
     <string>Chat: (character)</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>8</number>
    </attribute>
    <widget class="AOChat" name="ic_chat"/>
   </widget>
@@ -798,6 +760,11 @@ QLineEdit { background-color: #575757; color: white; }</string>
     <string>jukebox</string>
    </property>
   </action>
+  <action name="toggle_evidence">
+   <property name="text">
+    <string>Evidence</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -816,24 +783,6 @@ QLineEdit { background-color: #575757; color: white; }</string>
    <class>AOICLog</class>
    <extends>QWidget</extends>
    <header>widgets/aoiclog.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AOJukebox</class>
-   <extends>QWidget</extends>
-   <header>widgets/aojukebox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AORoomChooser</class>
-   <extends>QWidget</extends>
-   <header>widgets/aorooms.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AOMixer</class>
-   <extends>QWidget</extends>
-   <header>widgets/aomixer.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

@@ -3,14 +3,15 @@
 #include "widgets/courtroom.h"
 
 #include <QLayout>
+#include <QMenu>
 #include <aocharselect.h>
 
 #include <widgets/aocaseannouncerdialog.h>
 #include <widgets/aomutedialog.h>
 #include <widgets/aooptionsdialog.h>
 
-Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
-  : QMainWindow(), ao_app(p_ao_app), client(client)
+Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
+  : QMainWindow(), ao_app(ao_app), client(client)
 {
   initBASS();
 
@@ -20,9 +21,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
   QMainWindow *windowWidget = static_cast<QMainWindow *>(loader.load(&uiFile, this));
   QMetaObject::connectSlotsByName(this);
 
-//  QVBoxLayout *parentLayout = new QVBoxLayout;
-//  parentLayout->addWidget(windowWidget);
-//  setLayout(parentLayout);
   windowWidget->setWindowFlag(Qt::Window, false);
   windowWidget->setWindowFlag(Qt::Widget);
   windowWidget->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
@@ -32,15 +30,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
   setWindowIcon(QIcon(":/logo.png"));
 
   FROM_UI(AOViewport, viewport)
-  FROM_UI(AOICLog, ic_chatlog)
-  FROM_UI(AOServerChat, ms_chat)
-  FROM_UI(AOServerChat, server_chat)
-  FROM_UI(AOJukebox, music_list)
-  FROM_UI(AORoomChooser, room_chooser)
-  FROM_UI(AOMixer, mixer)
   FROM_UI(AOChat, ic_chat)
-  FROM_UI(AORoomControls, room_controls)
-  FROM_UI(AOEvidence, evidence)
 
   FROM_UI(QAction, change_character)
   FROM_UI(QAction, reload_theme)
@@ -51,13 +41,19 @@ Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
   FROM_UI(QAction, casing)
   FROM_UI(QAction, showname_enable)
 
-  FROM_UI(QAction, toggle_ic_log)
-  FROM_UI(QAction, toggle_server_chat)
-  FROM_UI(QAction, toggle_ms_chat)
-  FROM_UI(QAction, toggle_room_chooser)
-  FROM_UI(QAction, toggle_room_controls)
-  FROM_UI(QAction, toggle_jukebox)
-  FROM_UI(QAction, toggle_mixer)
+  FROM_UI(QMenu, window_menu)
+
+  // Connect each widget to its toggle button. If the widget was not instantiated
+  // in the .ui file, then instantiate it now. Even if a widget is hidden,
+  // it will not be destroyed, so connections will not be invalidated.
+  REGISTER_WINDOW(AOICLog, ic_chatlog, toggle_ic_log, ao_app)
+  REGISTER_WINDOW(AOServerChat, ms_chat, toggle_ms_chat, ao_app)
+  REGISTER_WINDOW(AOServerChat, server_chat, toggle_server_chat, ao_app)
+  REGISTER_WINDOW(AOJukebox, music_list, toggle_jukebox, ao_app)
+  REGISTER_WINDOW(AORoomChooser, room_chooser, toggle_room_chooser, ao_app)
+  REGISTER_WINDOW(AOMixer, mixer, toggle_mixer, ao_app)
+  REGISTER_WINDOW(AORoomControls, room_controls, toggle_room_controls, ao_app)
+  REGISTER_WINDOW(AOEvidence, evidence, toggle_evidence, ao_app)
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
@@ -88,10 +84,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client)
   connect(client.get(), &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
   connect(client.get(), &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
   connect(client.get(), &Client::areasUpdated, this, [&] {
-    ui_room_chooser->setAreas(client->rooms());
+    ui_room_chooser->setAreas(this->client->rooms());
   });
   connect(client.get(), &Client::evidenceChanged, this, [&] {
-    ui_evidence->setEvidenceList(client->evidence());
+    ui_evidence->setEvidenceList(this->client->evidence());
   });
 
   ui_room_chooser->setAreas(client->rooms());

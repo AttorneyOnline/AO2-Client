@@ -1,5 +1,7 @@
 #include "network/hdid.h"
 
+#include <QFile>
+#include <QTextStream>
 #include <QUuid>
 
 namespace AttorneyOnline {
@@ -22,9 +24,6 @@ QString hdid()
 }
 
 #elif (defined (LINUX) || defined (__linux__))
-
-#include <QFile>
-#include <QTextStream>
 
 QString hdid()
 {

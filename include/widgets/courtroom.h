@@ -50,6 +50,25 @@
 #include <QFileDialog>
 #include <QAction>
 
+#define REGISTER_WINDOW(type, widget, toggleAction, ...) \
+  FROM_UI(QAction, toggleAction) \
+  FROM_UI(type, widget) \
+  if (ui_##widget == nullptr) \
+  { \
+    ui_##widget = new type(this, ##__VA_ARGS__); \
+    ui_##widget->setWindowFlag(Qt::WindowType::Tool);\
+  } \
+  else \
+  { \
+    ui_##toggleAction->setChecked(true); \
+  } \
+  connect(ui_##toggleAction, &QAction::toggled, this, [&](bool toggled) { \
+    ui_##widget->setVisible(toggled); \
+  }); \
+  connect(ui_window_menu, &QMenu::aboutToShow, this, [&] { \
+    ui_##toggleAction->setChecked(ui_##widget->isVisible()); \
+  });
+
 using namespace AttorneyOnline;
 
 class AOApplication;
@@ -127,6 +146,7 @@ private:
   QAction *ui_casing;
   QAction *ui_showname_enable;
 
+  QMenu *ui_window_menu;
   QAction *ui_toggle_ic_log;
   QAction *ui_toggle_server_chat;
   QAction *ui_toggle_ms_chat;
@@ -134,6 +154,7 @@ private:
   QAction *ui_toggle_room_controls;
   QAction *ui_toggle_jukebox;
   QAction *ui_toggle_mixer;
+  QAction *ui_toggle_evidence;
 
   void initBASS();
 

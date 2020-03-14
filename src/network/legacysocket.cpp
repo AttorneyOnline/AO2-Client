@@ -1,5 +1,6 @@
 #include "network/legacysocket.h"
 
+#include <QRegularExpression>
 #include <QStringBuilder>
 
 namespace AttorneyOnline {
@@ -48,7 +49,11 @@ void LegacySocket::packetReceived()
     if (msg[msg.size() - 1] == '#')
       args.removeLast();
 
-    qDebug() << "recv:" << header << args;
+    QStringList debugArgs = args;
+    debugArgs.replaceInStrings(QRegularExpression("(.{60}).+(.{60})"),
+                               "\\1...\\2");
+    qDebug() << "recv:" << header << debugArgs;
+
     emit messageReceived(header, args);
 
     // (Unfortunately QByteArray is not a circular buffer. You wish it were,

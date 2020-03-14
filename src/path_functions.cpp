@@ -75,6 +75,7 @@ QString AOApplication::get_theme_path(QString p_file)
 QString AOApplication::get_character_path(QString p_char, QString p_file)
 {
   QString path = get_base_path() + "characters/" + p_char + "/" + p_file;
+  qDebug().noquote() << "Loading character:" << path;
 #ifndef CASE_SENSITIVE_FILESYSTEM
   return path;
 #else

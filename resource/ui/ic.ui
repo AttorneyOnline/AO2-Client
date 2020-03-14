@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>334</width>
-    <height>224</height>
+    <width>408</width>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -217,9 +217,9 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
        <horstretch>0</horstretch>
-       <verstretch>5</verstretch>
+       <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="title">
@@ -244,7 +244,7 @@
       <item>
        <widget class="QListWidget" name="emotes">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
