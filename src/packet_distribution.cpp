@@ -515,10 +515,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RM#%"));
   }
-  else if (header == "SM")
+  else if (header == "SM" || header == "FM")
   {
       if (!courtroom_constructed)
             goto end;
+
+      w_courtroom->clear_music();
+      w_courtroom->clear_areas();
 
           bool musiclist_start = false;
           area_count = 0;
@@ -543,8 +546,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
             }
           }
           QThreadPool::globalInstance()->waitForDone();
-
-          send_server_packet(new AOPacket("RD#%"));
+          if (header == "SM")
+            send_server_packet(new AOPacket("RD#%"));
   }
   else if (header == "DONE")
   {
