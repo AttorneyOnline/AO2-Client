@@ -144,6 +144,13 @@ enum AUDIO_TYPE
   BLIPS
 };
 
+enum DESK_MODIFIER
+{
+  DEFAULT_DESK_MOD,
+  NO_DESK,
+  ALWAYS_DESK
+};
+
 enum EMOTE_MODIFIER
 {
   NO_PREANIM = 0,
@@ -189,7 +196,7 @@ inline casing_flags_to_bitset(bool def, bool pro, bool jud, bool jur,
 
 struct chat_message_type
 {
-  bool desk;
+  DESK_MODIFIER desk;
   QString preanim;
   QString character;
   QString anim;
@@ -220,7 +227,8 @@ struct chat_message_type
 
   chat_message_type(const QStringList &contents)
   {
-    desk = contents[0].toInt();
+    desk = contents[0] == "chat" ? DEFAULT_DESK_MOD
+                                 : static_cast<DESK_MODIFIER>(contents[0].toInt());
     preanim = contents[1];
     character = contents[2];
     anim = contents[3];
@@ -231,28 +239,28 @@ struct chat_message_type
     char_id = contents[8].toInt();
     sfx_delay = contents[9].toInt();
     objection_modifier = static_cast<OBJECTION_TYPE>(contents[10].toInt());
-    evidence = contents[10].toInt();
-    flip = contents[11].toInt();
-    realization = contents[12].toInt();
-    text_color = static_cast<COLOR>(contents[13].toInt());
+    evidence = contents[11].toInt();
+    flip = contents[12].toInt();
+    realization = contents[13].toInt();
+    text_color = static_cast<COLOR>(contents[14].toInt());
 
-    if (contents.size() < 15)
+    if (contents.size() < 16)
       return;
 
-    showname = contents[14];
+    showname = contents[15];
 
     // pair_char_id is basically unused. Stupid...
     bool ok;
-    pair_char_id = contents[15].toInt(&ok);
+    pair_char_id = contents[16].toInt(&ok);
     if (!ok)
       pair_char_id = -1;
 
-    pair_character = contents[16];
-    pair_anim = contents[17];
-    self_offset = contents[18].toInt();
-    pair_offset = contents[19].toInt();
-    pair_flip = contents[20].toInt();
-    noninterrupting_preanim = contents[21].toInt();
+    pair_character = contents[17];
+    pair_anim = contents[18];
+    self_offset = contents[19].toInt();
+    pair_offset = contents[20].toInt();
+    pair_flip = contents[21].toInt();
+    noninterrupting_preanim = contents[22].toInt();
   }
 
   operator QStringList() const

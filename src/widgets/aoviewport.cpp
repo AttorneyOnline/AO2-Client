@@ -878,7 +878,7 @@ void AOViewport::set_scene()
   //witness is default if pos is invalid
   QString f_background = "witnessempty";
   QString f_desk_image = "stand";
-  bool f_desk_mod = m_chatmessage.desk;
+  DESK_MODIFIER f_desk_mod = m_chatmessage.desk;
   QString f_side = m_chatmessage.side;
 
   if (f_side == "def")
@@ -936,10 +936,11 @@ void AOViewport::set_scene()
   ui_vp_desk->set_image(current_background, f_desk_image);
   ui_vp_legacy_desk->set_legacy_desk(current_background, f_desk_image);
 
-  if (f_desk_mod || (!f_desk_mod &&
-           (f_side == "jud" ||
-            f_side == "hld" ||
-            f_side == "hlp")))
+  if (f_desk_mod == NO_DESK ||
+      (f_desk_mod == DEFAULT_DESK_MOD &&
+       (f_side == "jud" ||
+        f_side == "hld" ||
+        f_side == "hlp")))
   {
     ui_vp_desk->hide();
     ui_vp_legacy_desk->hide();

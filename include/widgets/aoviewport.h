@@ -107,7 +107,7 @@ private:
   QString current_background = "default";
 
   //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
+  bool is_ao2_bg = true;
 
   AOSfxPlayer *sfx_player;
   AOSfxPlayer *objection_player;

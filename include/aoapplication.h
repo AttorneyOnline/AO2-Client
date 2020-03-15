@@ -148,7 +148,7 @@ public:
   EMOTE_MODIFIER get_emote_mod(QString p_char, int p_emote);
 
   //Returns the desk modifier for p_char's p_emote
-  int get_desk_mod(QString p_char, int p_emote);
+  DESK_MODIFIER get_desk_mod(QString p_char, int p_emote);
 
   //Returns p_char's gender
   QString get_gender(QString p_char);

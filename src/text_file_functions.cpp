@@ -335,20 +335,20 @@ EMOTE_MODIFIER AOApplication::get_emote_mod(QString p_char, int p_emote)
   else return static_cast<EMOTE_MODIFIER>(result_contents.at(3).toInt());
 }
 
-int AOApplication::get_desk_mod(QString p_char, int p_emote)
+DESK_MODIFIER AOApplication::get_desk_mod(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Emotions");
 
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 5)
-    return -1;
+    return DEFAULT_DESK_MOD;
 
   QString string_result = result_contents.at(4);
   if (string_result == "")
-    return -1;
+    return DEFAULT_DESK_MOD;
 
-  else return string_result.toInt();
+  else return static_cast<DESK_MODIFIER>(string_result.toInt());
 }
 
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)
