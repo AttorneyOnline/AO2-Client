@@ -139,7 +139,7 @@ private:
   QAction *ui_change_character;
   QAction *ui_reload_theme;
   QAction *ui_call_mod;
-  QAction *ui_settings;
+  QAction *ui_open_settings;
   QAction *ui_announce_case;
 
   QAction *ui_modcall_notify;
@@ -184,7 +184,7 @@ private slots:
   void on_change_character_triggered();
   void on_reload_theme_triggered();
   void on_call_mod_triggered();
-  void on_settings_triggered();
+  void on_open_settings_triggered();
   void on_announce_case_triggered();
 
   void on_showname_enable_triggered();

@@ -35,7 +35,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   FROM_UI(QAction, change_character)
   FROM_UI(QAction, reload_theme)
   FROM_UI(QAction, call_mod)
-  FROM_UI(QAction, settings)
+  FROM_UI(QAction, open_settings)
   FROM_UI(QAction, announce_case)
   FROM_UI(QAction, modcall_notify)
   FROM_UI(QAction, casing)
@@ -513,7 +513,7 @@ void Courtroom::on_call_mod_triggered()
   client->callMod(text);
 }
 
-void Courtroom::on_settings_triggered()
+void Courtroom::on_open_settings_triggered()
 {
   AOOptionsDialog(nullptr, ao_app).exec();
 }

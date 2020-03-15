@@ -496,7 +496,7 @@
      <x>0</x>
      <y>0</y>
      <width>672</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuPlayer">
@@ -517,7 +517,7 @@
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="settings"/>
+    <addaction name="open_settings"/>
     <addaction name="separator"/>
     <addaction name="showname_enable"/>
     <addaction name="modcall_notify"/>
@@ -664,12 +664,9 @@ QLineEdit { background-color: #575757; color: white; }</string>
     <string>Call Mod…</string>
    </property>
   </action>
-  <action name="settings">
+  <action name="open_settings">
    <property name="text">
     <string>Settings…</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::PreferencesRole</enum>
    </property>
   </action>
   <action name="showname_enable">
