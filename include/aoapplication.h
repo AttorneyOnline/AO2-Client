@@ -58,6 +58,8 @@ public:
   void construct_courtroom();
   void destruct_courtroom();
 
+  bool is_music_track(QString trackname);
+
   void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);
 
