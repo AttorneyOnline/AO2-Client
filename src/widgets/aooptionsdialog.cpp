@@ -36,7 +36,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     // Let's add the tabs one by one.
     // First, we'll start with 'Gameplay'.
-    ui_gameplay_tab = new QWidget();
+    ui_gameplay_tab = new QWidget(ui_settings_tabs);
     ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
 
     ui_form_layout_widget = new QWidget(ui_gameplay_tab);
@@ -165,7 +165,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
 
     // Here we start the callwords tab.
-    ui_callwords_tab = new QWidget();
+    ui_callwords_tab = new QWidget(ui_settings_tabs);
     ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
 
     ui_callwords_widget = new QWidget(ui_callwords_tab);
@@ -196,7 +196,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
 
     // The audio tab.
-    ui_audio_tab = new QWidget();
+    ui_audio_tab = new QWidget(ui_settings_tabs);
     ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
 
     ui_audio_widget = new QWidget(ui_audio_tab);
@@ -310,7 +310,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
 
     // The casing tab!
-    ui_casing_tab = new QWidget();
+    ui_casing_tab = new QWidget(ui_settings_tabs);
     ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
 
     ui_casing_widget = new QWidget(ui_casing_tab);
@@ -452,17 +452,17 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
 
-    QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
+    QFile callwordsini(ao_app->get_base_path() + "callwords.ini");
 
-    if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    if (!callwordsini.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
     {
         // Nevermind!
     }
     else
     {
-        QTextStream out(callwordsini);
+        QTextStream out(&callwordsini);
         out << ui_callwords_textbox->toPlainText();
-        callwordsini->close();
+        callwordsini.close();
     }
 
     configini->setValue("default_audio_device", ui_audio_device_combobox->currentText());
@@ -480,7 +480,6 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
     configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
 
-    callwordsini->close();
     done(0);
 }
 
