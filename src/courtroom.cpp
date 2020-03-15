@@ -185,6 +185,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
+  ui_ooc_chat_message->setPlaceholderText(tr("OOC Message"));
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
@@ -411,6 +412,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   set_widgets();
 
   set_char_select();
+  detect_fallback_text();
 }
 
 void Courtroom::set_mute_list()
@@ -730,7 +732,16 @@ void Courtroom::set_widgets()
   ui_take_that->set_image("takethat");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
-  ui_ooc_toggle->setText(tr("Server"));
+
+  if (ooc_toggle_fallback)
+  {
+    ui_ooc_toggle->setText(tr("Server"));
+  }
+  else
+  {
+    ui_ooc_toggle->set_image("ooc_toggle_server.png");
+    ui_ooc_toggle->setText(tr(""));
+  }
   ui_ooc_toggle->setToolTip(tr("Toggle between server chat and global AO2 chat."));
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
@@ -749,33 +760,75 @@ void Courtroom::set_widgets()
   ui_not_guilty->setToolTip(tr("This will display the animation in the viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_change_character, "change_character");
-  ui_change_character->setText(tr("Change character"));
-  ui_change_character->set_image("change_character");
+  if (change_char_fallback)
+  {
+      ui_change_character->setText(tr("Change character"));
+  }
+  else
+  {
+      ui_change_character->set_image("change_character.png");
+      ui_change_character->setText(tr("")); // set text to empty otherwise it just sits there
+  }
   ui_change_character->setToolTip(tr("Bring up the Character Select Screen and change your character."));
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
-  ui_reload_theme->setText(tr("Reload theme"));
-  ui_reload_theme->set_image("reload_theme");
+  if (reload_theme_fallback)
+  {
+      ui_reload_theme->setText(tr("Reload theme"));
+  }
+  else
+  {
+      ui_reload_theme->set_image("reload_theme.png");
+      ui_reload_theme->setText(tr(""));
+  }
   ui_reload_theme->setToolTip(tr("Refresh the theme and update all of the ui elements to match."));
 
   set_size_and_pos(ui_call_mod, "call_mod");
-  ui_call_mod->setText(tr("Call mod"));
-  ui_call_mod->set_image("call_mod");
+  if (call_mod_fallback)
+  {
+      ui_call_mod->setText(tr("Call mod"));
+  }
+  else
+  {
+      ui_call_mod->set_image("call_mod.png");
+      ui_call_mod->setText(tr(""));
+  }
   ui_call_mod->setToolTip(tr("Request the attention of the current server's moderator."));
 
   set_size_and_pos(ui_settings, "settings");
-  ui_settings->setText(tr("Settings"));
-  ui_settings->set_image("settings");
+  if (settings_fallback)
+  {
+      ui_settings->setText(tr("Settings"));
+  }
+  else
+  {
+      ui_settings->set_image("settings.png");
+      ui_settings->setText(tr(""));
+  }
   ui_settings->setToolTip(tr("Allows you to change various aspects of the client."));
 
   set_size_and_pos(ui_announce_casing, "casing_button");
-  ui_announce_casing->setText(tr("Casing"));
-  ui_announce_casing->set_image("casing_button");
+  if (casing_fallback)
+  {
+      ui_announce_casing->setText(tr("Casing"));
+  }
+  else
+  {
+      ui_announce_casing->set_image("casing.png");
+      ui_announce_casing->setText(tr(""));
+  }
   ui_announce_casing->setToolTip(tr("An interface to help you announce a case (you have to be a CM first to be able to announce cases)"));
-
+  
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
-  ui_switch_area_music->setText(tr("A/M"));
-  ui_switch_area_music->set_image("switch_area_music");
+  if (amswap_fallback)
+  {
+      ui_switch_area_music->setText(tr("A/M"));
+  }
+  else
+  {
+      ui_switch_area_music->set_image("amswap.png");
+      ui_switch_area_music->setText(tr(""));
+  }
   ui_switch_area_music->setToolTip(tr("Switch between Areas and Music lists"));
 
   set_size_and_pos(ui_pre, "pre");
@@ -1325,6 +1378,32 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
   }
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
+}
+
+void Courtroom::detect_fallback_text()
+{
+  QString change_char_path = ao_app->get_theme_path("change_character.png");
+  QString reload_theme_path = ao_app->get_theme_path("reload_theme.png");
+  QString settings_path = ao_app->get_theme_path("settings.png");
+  QString call_mod_path = ao_app->get_theme_path("call_mod.png");
+  QString casing_path = ao_app->get_theme_path("casing.png");
+  QString amswap_path = ao_app->get_theme_path("amswap.png");
+  QString ooc_toggle_path = ao_app->get_theme_path("ooc_toggle_ms.png");
+
+  if (file_exists(change_char_path)) {change_char_fallback = false;}
+  else {change_char_fallback = true;}
+  if (file_exists(reload_theme_path)) {reload_theme_fallback = false;}
+  else {reload_theme_fallback = true;}
+  if (file_exists(settings_path)) {settings_fallback = false;}
+  else {settings_fallback = true;}
+  if (file_exists(call_mod_path)) {call_mod_fallback = false;}
+  else {call_mod_fallback = true;}
+  if (file_exists(casing_path)) {casing_fallback = false;}
+  else {casing_fallback = true;}
+  if (file_exists(amswap_path)) {amswap_fallback = false;}
+  else {amswap_fallback = true;}
+  if (file_exists(ooc_toggle_path)) {ooc_toggle_fallback = false;}
+  else {ooc_toggle_fallback = true;}
 }
 
 class AOFrameThreadingPre : public QRunnable
@@ -3391,16 +3470,24 @@ void Courtroom::on_ooc_toggle_clicked()
   {
     ui_ms_chatlog->show();
     ui_server_chatlog->hide();
-    ui_ooc_toggle->setText(tr("Master"));
-
+    ui_ooc_toggle->setText(tr(""));
+    ui_ooc_toggle->set_image("ooc_toggle_ms.png");
+    if (ooc_toggle_fallback)
+    {
+      ui_ooc_toggle->setText(tr("Master"));
+    }
     server_ooc = false;
   }
   else
   {
     ui_ms_chatlog->hide();
     ui_server_chatlog->show();
-    ui_ooc_toggle->setText(tr("Server"));
-
+    ui_ooc_toggle->setText(tr(""));
+    ui_ooc_toggle->set_image("ooc_toggle_server.png");
+    if (ooc_toggle_fallback)
+    {
+      ui_ooc_toggle->setText(tr("Server"));
+    }
     server_ooc = true;
   }
 }
@@ -4333,6 +4420,10 @@ void Courtroom::on_reload_theme_clicked()
 {
   ao_app->reload_theme();
 
+  //to update status on the background
+  set_background(current_background);
+  //to update fallback text bools
+  detect_fallback_text();
   enter_courtroom();
   update_character(m_cid);
 

@@ -30,7 +30,7 @@ void AOBlipPlayer::blip_tick()
       return;
 
   delay.start();
-  m_cycle++;
+  int f_cycle = m_cycle++;
 
   if (m_cycle == 5)
     m_cycle = 0;
