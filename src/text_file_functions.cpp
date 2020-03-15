@@ -527,7 +527,7 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
-    if (sound_to_check.contains(".")) //We have what we could call a file extension
+    if (file_exists(sound_to_check))
         return sound_to_check;
     if (file_exists(sound_to_check + ".opus"))
         return sound_to_check + ".opus";
@@ -542,7 +542,7 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
-    if (path_to_check.contains(".")) //We have what we could call a file extension
+    if (file_exists(path_to_check))
         return path_to_check;
     if (file_exists(path_to_check + ".webp"))
         return path_to_check + ".webp";
@@ -903,9 +903,12 @@ QStringList AOApplication::get_effects(QString p_char)
   return effects;
 }
 
-QString AOApplication::get_effect(QString effect, QString p_char)
+QString AOApplication::get_effect(QString effect, QString p_char, QString p_folder)
 {
-  QString p_effect = read_char_ini(p_char, "effects", "Options");
+  QString p_effect = p_folder;
+  if (p_folder == "")
+    p_effect = read_char_ini(p_char, "effects", "Options");
+
   QString p_path = get_image_suffix(get_base_path() + "misc/" + p_effect + "/" + effect);
   QString design_ini_path = get_image_suffix(get_theme_path("effects/" + effect));
   QString default_path = get_image_suffix(get_default_theme_path("effects/" + effect));
@@ -978,15 +981,45 @@ bool AOApplication::is_discord_enabled()
     return result.startsWith("true");
 }
 
-bool AOApplication::is_shake_flash_enabled()
+bool AOApplication::is_shake_enabled()
 {
-    QString result = configini->value("shakeandflash", "true").value<QString>();
+    QString result = configini->value("shake", "true").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::is_effects_enabled()
+{
+    QString result = configini->value("effects", "true").value<QString>();
     return result.startsWith("true");
 }
 
 bool AOApplication::is_frame_network_enabled()
 {
     QString result = configini->value("framenetwork", "true").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::is_colorlog_enabled()
+{
+    QString result = configini->value("colorlog", "true").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::is_stickysounds_enabled()
+{
+    QString result = configini->value("stickysounds", "false").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::is_stickyeffects_enabled()
+{
+    QString result = configini->value("stickyeffects", "false").value<QString>();
+    return result.startsWith("true");
+}
+
+bool AOApplication::is_stickypres_enabled()
+{
+    QString result = configini->value("stickypres", "false").value<QString>();
     return result.startsWith("true");
 }
 

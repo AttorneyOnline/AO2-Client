@@ -67,8 +67,25 @@ private:
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
 
+    QLabel *ui_shake_lbl;
+    QCheckBox *ui_shake_cb;
+    QLabel *ui_effects_lbl;
+    QCheckBox *ui_effects_cb;
+
     QLabel *ui_framenetwork_lbl;
     QCheckBox *ui_framenetwork_cb;
+
+    QLabel *ui_colorlog_lbl;
+    QCheckBox *ui_colorlog_cb;
+
+    QLabel *ui_stickysounds_lbl;
+    QCheckBox *ui_stickysounds_cb;
+
+    QLabel *ui_stickyeffects_lbl;
+    QCheckBox *ui_stickyeffects_cb;
+
+    QLabel *ui_stickypres_lbl;
+    QCheckBox *ui_stickypres_cb;
 
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;

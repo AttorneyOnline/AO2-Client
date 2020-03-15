@@ -51,6 +51,9 @@ void AOCharMovie::load_image(QString p_char, QString p_emote, QString emote_pref
   movie_delays.clear();
   movie_effects.clear();
 
+  if (!file_exists(emote_path))
+    return;
+
   m_reader->setFileName(emote_path);
   QPixmap f_pixmap = this->get_pixmap(m_reader->read());
   int f_delay = m_reader->nextImageDelay();
@@ -259,7 +262,9 @@ QPixmap AOCharMovie::get_pixmap(QImage image)
     else
         f_pixmap = QPixmap::fromImage(image);
 //    auto aspect_ratio = Qt::KeepAspectRatio;
-    auto transform_mode = Qt::SmoothTransformation;
+    auto transform_mode = Qt::FastTransformation;
+    if (f_pixmap.height() > f_h) //We are downscaling, use anti-aliasing.
+      transform_mode = Qt::SmoothTransformation;
 
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
     this->resize(f_pixmap.size());

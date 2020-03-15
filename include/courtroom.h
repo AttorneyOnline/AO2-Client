@@ -194,6 +194,9 @@ public:
   //sets the local character pos/side to use.
   void set_side(QString p_side);
 
+  //sets the pos dropdown
+  void set_pos_dropdown(QStringList pos_dropdowns);
+
   //sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
@@ -469,6 +472,9 @@ private:
   QVector<bool> color_markdown_talking_list;
   //Text Color-related optimization END
 
+  //List of all currently available pos
+  QStringList pos_dropdown_list;
+
   bool is_presenting_evidence = false;
 
   QString effect = "";
@@ -700,7 +706,7 @@ public slots:
   void objection_done();
   void preanim_done();
   void do_flash();
-  void do_effect(QString fx_path, QString fx_sound, QString p_char);
+  void do_effect(QString fx_path, QString fx_sound, QString p_char, QString p_folder);
   void play_char_sfx(QString sfx_name);
 
   void show_testimony();

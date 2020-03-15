@@ -20,7 +20,16 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_connect = new AOButton(this, ao_app);
   ui_version = new QLabel(this);
   ui_about = new AOButton(this, ao_app);
-  ui_server_list = new QListWidget(this);
+  ui_settings = new AOButton(this, ao_app);
+
+  ui_server_list = new QTreeWidget(this);
+  ui_server_list->setHeaderLabels({"#", "Name"});//, "Players"});
+  ui_server_list->hideColumn(0);
+
+  ui_server_search = new QLineEdit(this);
+  ui_server_search->setFrame(false);
+  ui_server_search->setPlaceholderText(tr("Search"));
+
   ui_player_count = new QLabel(this);
   ui_description = new AOTextArea(this);
   ui_description->setOpenExternalLinks(true);
@@ -47,8 +56,10 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
-  connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
-  connect(ui_server_list, SIGNAL(activated(QModelIndex)), this, SLOT(on_server_list_doubleclicked(QModelIndex)));
+  connect(ui_settings, SIGNAL(clicked()), this, SLOT(on_settings_clicked()));
+  connect(ui_server_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(on_server_list_clicked(QTreeWidgetItem*, int)));
+  connect(ui_server_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(on_server_list_doubleclicked(QTreeWidgetItem*, int)));
+  connect(ui_server_search, SIGNAL(textChanged(QString)), this, SLOT(on_server_search_edited(QString)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
@@ -103,14 +114,22 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect");
 
   set_size_and_pos(ui_version, "version");
-  ui_version->setText(tr("Version: %1").arg(ao_app->get_version_string()));
+  ui_version->setText(tr("Version: KFO%1").arg(ao_app->get_version_string()));
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about");
 
+  set_size_and_pos(ui_settings, "settings");
+  ui_settings->setText(tr("Settings"));
+  ui_settings->set_image("settings");
+  ui_settings->setToolTip(tr("Allows you to change various aspects of the client."));
+
   set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                   "font: bold;");
+
+  set_size_and_pos(ui_server_search, "server_search");
+  ui_server_search->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_player_count, "player_count");
   ui_player_count->setText(tr("Offline"));
@@ -257,7 +276,7 @@ QString Lobby::get_chatlog()
 
 int Lobby::get_selected_server()
 {
-  return ui_server_list->currentRow();
+  return ui_server_list->currentItem()->text(0).toInt();
 }
 
 void Lobby::set_loading_value(int p_value)
@@ -315,7 +334,7 @@ void Lobby::on_add_to_fav_released()
   if (!public_servers_selected)
     return;
 
-  ao_app->add_favorite_server(ui_server_list->currentRow());
+  ao_app->add_favorite_server(get_selected_server());
 }
 
 void Lobby::on_connect_pressed()
@@ -359,33 +378,39 @@ void Lobby::on_about_clicked()
   QMessageBox::about(this, "About", msg);
 }
 
-//clicked on an item in the serverlist
-void Lobby::on_server_list_clicked(QModelIndex p_model)
+void Lobby::on_settings_clicked()
 {
-  if (p_model != last_model)
+    ao_app->call_settings_menu();
+}
+
+//clicked on an item in the serverlist
+void Lobby::on_server_list_clicked(QTreeWidgetItem* p_item, int column)
+{
+  column = 0;
+  if (p_item->text(column).toInt() != last_index)
   {
-  server_type f_server;
-  last_model = p_model;
-  int n_server = p_model.row();
+    server_type f_server;
+    int n_server = p_item->text(column).toInt();
+    last_index = n_server;
 
-  if (n_server < 0)
-    return;
-
-  if (public_servers_selected)
-  {
-    QVector<server_type> f_server_list = ao_app->get_server_list();
-
-    if (n_server >= f_server_list.size())
+    if (n_server < 0)
       return;
 
-    f_server = f_server_list.at(p_model.row());
-  }
-  else
-  {
-    if (n_server >= ao_app->get_favorite_list().size())
-      return;
+    if (public_servers_selected)
+    {
+      QVector<server_type> f_server_list = ao_app->get_server_list();
 
-    f_server = ao_app->get_favorite_list().at(p_model.row());
+      if (n_server >= f_server_list.size())
+        return;
+
+      f_server = f_server_list.at(n_server);
+    }
+    else
+    {
+      if (n_server >= ao_app->get_favorite_list().size())
+        return;
+
+      f_server = ao_app->get_favorite_list().at(n_server);
   }
 
   ui_description->clear();
@@ -403,11 +428,35 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 }
 
 //doubleclicked on an item in the serverlist so we'll connect right away
-void Lobby::on_server_list_doubleclicked(QModelIndex p_model)
+void Lobby::on_server_list_doubleclicked(QTreeWidgetItem* p_item, int column)
 {
-    on_server_list_clicked(p_model);
+    on_server_list_clicked(p_item, column);
     on_connect_released();
 }
+
+void Lobby::on_server_search_edited(QString p_text)
+{
+  // Iterate through all QTreeWidgetItem items
+  QTreeWidgetItemIterator it(ui_server_list);
+  while (*it)
+  {
+      (*it)->setHidden(p_text != "");
+      ++it;
+  }
+
+  if (p_text != "")
+  {
+    //Search in metadata
+    QList<QTreeWidgetItem*> clist = ui_server_list->findItems(ui_server_search->text(), Qt::MatchContains|Qt::MatchRecursive, 1);
+    foreach(QTreeWidgetItem* item, clist)
+    {
+      if (item->parent() != nullptr) //So the category shows up too
+        item->parent()->setHidden(false);
+      item->setHidden(false);
+    }
+  }
+}
+
 
 void Lobby::on_chatfield_return_pressed()
 {
@@ -432,22 +481,37 @@ void Lobby::list_servers()
   ui_favorites->set_image("favorites");
   ui_public_servers->set_image("publicservers_selected");
 
+  ui_server_list->setSortingEnabled(false);
   ui_server_list->clear();
 
+  ui_server_search->setText("");
+
+  int i = 0;
   for (server_type i_server : ao_app->get_server_list())
   {
-    ui_server_list->addItem(i_server.name);
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
+    treeItem->setText(0, QString::number(i));
+    treeItem->setText(1, i_server.name);
+    i++;
   }
+  ui_server_list->setSortingEnabled(true);
 }
 
 void Lobby::list_favorites()
 {
+  ui_server_list->setSortingEnabled(false);
   ui_server_list->clear();
 
+  int i = 0;
   for (server_type i_server : ao_app->get_favorite_list())
   {
-    ui_server_list->addItem(i_server.name);
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
+    treeItem->setText(0, QString::number(i));
+    treeItem->setText(1, i_server.name);
+//    treeItem->setText(2, "-");
+    i++;
   }
+  ui_server_list->setSortingEnabled(true);
 }
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)

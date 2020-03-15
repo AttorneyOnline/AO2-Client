@@ -12,7 +12,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_settings_buttons = new QDialogButtonBox(this);
 
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+    QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
     sizePolicy1.setHeightForWidth(ui_settings_buttons->sizePolicy().hasHeightForWidth());
@@ -39,7 +39,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_tab->setSizePolicy(sizePolicy1);
     ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
     ui_form_layout_widget = new QWidget(ui_gameplay_tab);
-    ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 211));
+    ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 361));
     ui_form_layout_widget->setSizePolicy(sizePolicy1);
 
     ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
@@ -179,30 +179,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_discord_cb);
 
     row += 1;
-    ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
-    ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
-    ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
-
-    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_epilepsy_lbl);
-
-    ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
-    ui_epilepsy_cb->setChecked(ao_app->is_shake_flash_enabled());
-
-    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_epilepsy_cb);
-  
-    row += 1;
-    ui_framenetwork_lbl = new QLabel(ui_form_layout_widget);
-    ui_framenetwork_lbl->setText(tr("Network Frame Effects:"));
-    ui_framenetwork_lbl->setToolTip(tr("Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality."));
-
-    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_framenetwork_lbl);
-
-    ui_framenetwork_cb = new QCheckBox(ui_form_layout_widget);
-    ui_framenetwork_cb->setChecked(ao_app->is_shake_flash_enabled());
-
-    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_framenetwork_cb);
-  
-    row += 1;
     ui_language_label = new QLabel(ui_form_layout_widget);
     ui_language_label->setText(tr("Language:"));
     ui_language_label->setToolTip(tr("Sets the language if you don't want to use your system language."));
@@ -216,6 +192,92 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("es - Español");
     ui_language_combobox->addItem("jp - 日本語");
     ui_language_combobox->addItem("ru - Русский");
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_language_combobox);
+
+    row += 1;
+    ui_shake_lbl = new QLabel(ui_form_layout_widget);
+    ui_shake_lbl->setText(tr("Allow Screenshake:"));
+    ui_shake_lbl->setToolTip(tr("Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_shake_lbl);
+
+    ui_shake_cb = new QCheckBox(ui_form_layout_widget);
+    ui_shake_cb->setChecked(ao_app->is_shake_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_shake_cb);
+
+    row += 1;
+    ui_effects_lbl = new QLabel(ui_form_layout_widget);
+    ui_effects_lbl->setText(tr("Allow Effects:"));
+    ui_effects_lbl->setToolTip(tr("Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_effects_lbl);
+
+    ui_effects_cb = new QCheckBox(ui_form_layout_widget);
+    ui_effects_cb->setChecked(ao_app->is_effects_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_effects_cb);
+
+    row += 1;
+    ui_framenetwork_lbl = new QLabel(ui_form_layout_widget);
+    ui_framenetwork_lbl->setText(tr("Network Frame Effects:"));
+    ui_framenetwork_lbl->setToolTip(tr("Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_framenetwork_lbl);
+
+    ui_framenetwork_cb = new QCheckBox(ui_form_layout_widget);
+    ui_framenetwork_cb->setChecked(ao_app->is_frame_network_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_framenetwork_cb);
+
+    row += 1;
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_language_label);
+    ui_colorlog_lbl = new QLabel(ui_form_layout_widget);
+    ui_colorlog_lbl->setText(tr("Colors in IC Log:"));
+    ui_colorlog_lbl->setToolTip(tr("Use the markup colors in the server IC chatlog."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_colorlog_lbl);
+
+    ui_colorlog_cb = new QCheckBox(ui_form_layout_widget);
+    ui_colorlog_cb->setChecked(ao_app->is_colorlog_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_colorlog_cb);
+
+    row += 1;
+    ui_stickysounds_lbl = new QLabel(ui_form_layout_widget);
+    ui_stickysounds_lbl->setText(tr("Sticky Sounds:"));
+    ui_stickysounds_lbl->setToolTip(tr("Turn this on to prevent the sound dropdown from clearing the sound after playing it."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickysounds_lbl);
+
+    ui_stickysounds_cb = new QCheckBox(ui_form_layout_widget);
+    ui_stickysounds_cb->setChecked(ao_app->is_stickysounds_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickysounds_cb);
+
+    row += 1;
+    ui_stickyeffects_lbl = new QLabel(ui_form_layout_widget);
+    ui_stickyeffects_lbl->setText(tr("Sticky Effects:"));
+    ui_stickyeffects_lbl->setToolTip(tr("Turn this on to prevent the effects dropdown from clearing the effect after playing it."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickyeffects_lbl);
+
+    ui_stickyeffects_cb = new QCheckBox(ui_form_layout_widget);
+    ui_stickyeffects_cb->setChecked(ao_app->is_stickyeffects_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickyeffects_cb);
+
+    row += 1;
+    ui_stickypres_lbl = new QLabel(ui_form_layout_widget);
+    ui_stickypres_lbl->setText(tr("Sticky Preanims:"));
+    ui_stickypres_lbl->setToolTip(tr("Turn this on to prevent preanimation checkbox from clearing after playing the emote."));
+
+    ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickypres_lbl);
+
+    ui_stickypres_cb = new QCheckBox(ui_form_layout_widget);
+    ui_stickypres_cb->setChecked(ao_app->is_stickypres_enabled());
+
+    ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickypres_cb);
 
     QScrollArea *scroll = new QScrollArea;
     scroll->setWidget(ui_form_layout_widget);
@@ -409,29 +471,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_objectmusic_cb);
 
-    ui_loopsfx_lbl = new QLabel(ui_audio_widget);
-    ui_loopsfx_lbl->setText(tr("Enable Looping SFX:"));
-    ui_loopsfx_lbl->setToolTip(tr("If true, the game will allow looping sound effects to play on preanimations."));
-
-    ui_audio_layout->setWidget(8, QFormLayout::LabelRole, ui_loopsfx_lbl);
-
-    ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
-    ui_loopsfx_cb->setChecked(p_ao_app->get_looping_sfx());
-
-    ui_audio_layout->setWidget(8, QFormLayout::FieldRole, ui_loopsfx_cb);
-
-
-    ui_objectmusic_lbl = new QLabel(ui_audio_widget);
-    ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
-    ui_objectmusic_lbl->setToolTip(tr("If true, the game will stop music when someone objects, like in the actual games."));
-
-    ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
-
-    ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
-    ui_objectmusic_cb->setChecked(p_ao_app->objection_stop_music());
-
-    ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
-
     // The casing tab!
     ui_casing_tab = new QWidget();
     ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
@@ -561,17 +600,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_cm_cb);
 
+    // -- WITNESS ANNOUNCEMENTS
+
+    row += 1;
     ui_casing_wit_lbl = new QLabel(ui_casing_widget);
     ui_casing_wit_lbl->setText(tr("Witness:"));
     ui_casing_wit_lbl->setToolTip(tr("If checked, you will appear amongst the potential "
                                     "witnesses on the server."));
 
-    ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_wit_lbl);
+    ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_wit_lbl);
 
     ui_casing_wit_cb = new QCheckBox(ui_casing_widget);
     ui_casing_wit_cb->setChecked(ao_app->get_casing_wit_enabled());
 
-    ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_wit_cb);
+    ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_wit_cb);
 
     // -- CM CASES ANNOUNCEMENTS
 
@@ -587,7 +629,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
 
     ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
-    ui_casing_layout->setWidget(9, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
 
     // When we're done, we should continue the updates!
     setUpdatesEnabled(true);
@@ -605,10 +646,15 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
     configini->setValue("master", ui_ms_textbox->text());
     configini->setValue("discord", ui_discord_cb->isChecked());
-    configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
-    configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
+    configini->setValue("shake", ui_shake_cb->isChecked());
+    configini->setValue("effects", ui_effects_cb->isChecked());
     configini->setValue("framenetwork", ui_framenetwork_cb->isChecked());
+    configini->setValue("colorlog", ui_colorlog_cb->isChecked());
+    configini->setValue("stickysounds", ui_stickysounds_cb->isChecked());
+    configini->setValue("stickyeffects", ui_stickyeffects_cb->isChecked());
+    configini->setValue("stickypres", ui_stickypres_cb->isChecked());
+
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
@@ -626,7 +672,6 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("blip_rate", ui_bliprate_spinbox->value());
     configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
     configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
-
     configini->setValue("objection_stop_music", ui_objectmusic_cb->isChecked());
 
     configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());

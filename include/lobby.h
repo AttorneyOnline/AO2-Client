@@ -8,6 +8,7 @@
 
 #include <QMainWindow>
 #include <QListWidget>
+#include <QTreeWidget>
 #include <QLabel>
 #include <QPlainTextEdit>
 #include <QLineEdit>
@@ -64,7 +65,10 @@ private:
   QLabel *ui_version;
   AOButton *ui_about;
 
-  QListWidget *ui_server_list;
+  AOButton *ui_settings;
+
+  QTreeWidget *ui_server_list;
+  QLineEdit *ui_server_search;
 
   QLabel *ui_player_count;
   AOTextArea *ui_description;
@@ -79,7 +83,7 @@ private:
   QProgressBar *ui_progress_bar;
   AOButton *ui_cancel;
 
-  QModelIndex last_model;
+  int last_index;
 
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 public slots:
@@ -95,8 +99,10 @@ private slots:
   void on_connect_pressed();
   void on_connect_released();
   void on_about_clicked();
-  void on_server_list_clicked(QModelIndex p_model);
-  void on_server_list_doubleclicked(QModelIndex p_model);
+  void on_settings_clicked();
+  void on_server_list_clicked(QTreeWidgetItem* p_item, int column);
+  void on_server_list_doubleclicked(QTreeWidgetItem* p_item, int column);
+  void on_server_search_edited(QString p_text);
   void on_chatfield_return_pressed();
 };
 

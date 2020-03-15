@@ -192,7 +192,6 @@ The traditional route is by undergoing the [AO2 Rite of Passage](https://gist.gi
 
 ### Dependencies
 
-- [QtApng](https://github.com/Skycoder42/QtApng)
 - [BASS](http://un4seen.com) (proprietary, but will become optional in the future; see #35)
 - [Discord Rich Presence](https://github.com/discordapp/discord-rpc)
 
