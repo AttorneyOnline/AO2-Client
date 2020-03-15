@@ -56,10 +56,13 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   REGISTER_WINDOW(AOEvidence, evidence, toggle_evidence, ao_app)
 
   music_player = new AOMusicPlayer(this, ao_app);
-  music_player->set_volume(0);
+  music_player->set_volume(options.defaultMusicVolume());
 
   modcall_player = new AOSfxPlayer(this, ao_app);
   modcall_player->set_volume(50);
+
+  ui_viewport->set_sfx_volume(options.defaultSfxVolume());
+  ui_viewport->set_blip_volume(options.defaultBlipVolume());
 
   ui_casing->setChecked(options.casingEnabled());
   ui_showname_enable->setChecked(options.shownamesEnabled());
@@ -220,6 +223,7 @@ void Courtroom::on_client_icReceived(const chat_message_type &message)
   {
     if (f_message.contains(word, Qt::CaseInsensitive))
     {
+      qDebug() << "Word call triggered:" << word;
       modcall_player->play(ao_app->get_sfx("word_call"));
       ao_app->alert(this);
       break;

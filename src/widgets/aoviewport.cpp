@@ -128,6 +128,10 @@ void AOViewport::set_background(QString p_background)
   is_ao2_bg = file_exists(get_background_path("defensedesk.png")) &&
               file_exists(get_background_path("prosecutiondesk.png")) &&
               file_exists(get_background_path("stand.png"));
+
+  if (!is_ao2_bg)
+    qWarning().nospace() << "Some background files not found for "
+                         << p_background << ". Falling back to AO1 filenames.";
 }
 
 void AOViewport::objection_done()

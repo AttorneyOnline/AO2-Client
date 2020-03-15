@@ -37,6 +37,8 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   else
     gif_path = placeholder_default_path;
 
+  qDebug() << "Loading sprite" << gif_path;
+
   m_movie->stop();
   m_movie->setFileName(gif_path);
 

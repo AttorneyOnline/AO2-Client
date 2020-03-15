@@ -30,15 +30,18 @@ void AOScene::set_image(QString background, QString p_image)
 
   if (m_movie->isValid())
   {
+    qDebug() << "Loading animated scene image:" << animated_background_path;
     this->setMovie(m_movie);
     m_movie->start();
   }
   else if (file_exists(background_path))
   {
+    qDebug() << "Loading scene image:" << background_path;
     this->setPixmap(background_image.scaled(w, h));
   }
   else
   {
+    qDebug() << "Loading fallback scene image:" << default_path;
     this->setPixmap(default_bg_image.scaled(w, h));
   }
 }
