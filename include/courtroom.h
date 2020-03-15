@@ -79,7 +79,6 @@ public:
   void append_area(QString f_area){area_list.append(f_area);}
   void clear_music(){music_list.clear();}
   void clear_areas(){area_list.clear();}
-  void fix_last_area()
   void handle_failed_login();
   QString threading_sfx = "";
   QString threading_shake = "";
