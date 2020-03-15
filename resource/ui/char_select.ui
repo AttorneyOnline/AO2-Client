@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <widget class="QWidget" name="Dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -44,6 +44,9 @@
      </property>
      <property name="flow">
       <enum>QListView::LeftToRight</enum>
+     </property>
+     <property name="resizeMode">
+      <enum>QListView::Adjust</enum>
      </property>
      <property name="layoutMode">
       <enum>QListView::Batched</enum>
