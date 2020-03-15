@@ -94,7 +94,7 @@ QStringList Options::callWords() const
 
   QString list = QString::fromUtf8(file.readAll());
   list.replace(QRegularExpression("\\r"), QStringLiteral());
-  return list.split('\n');
+  return list.split('\n', QString::SkipEmptyParts);
 }
 
 /*! Adds a server to the favorites list. */
