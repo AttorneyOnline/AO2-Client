@@ -208,7 +208,6 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   m_movie->stop();
   m_movie->setFileName(gif_path);
   m_movie->jumpToFrame(0);
-  int real_duration = 0;
   play_once = true;
   play(p_char, p_emote, "");
 }
