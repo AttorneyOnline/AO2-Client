@@ -127,16 +127,16 @@ void LegacyClient::mapSignals()
     }
     else if (header == "MC")
     {
-      ENFORCE_MIN_LENGTH(1)
+      ENFORCE_MIN_LENGTH(2)
 
       bool ok;
-      int charId = args[0].toInt(&ok);
+      int charId = args[1].toInt(&ok);
 
       QString character;
-      if (args.size() >= 2)
+      if (args.size() >= 3)
       {
         // Use custom showname
-        character = args[1];
+        character = args[2];
       }
       else if (ok && charId >= 0 && charId < charsList.size())
       {
