@@ -66,6 +66,8 @@ private:
     QCheckBox *ui_epilepsy_cb;
 
     QCheckBox *ui_discord_cb;
+    QLabel *ui_epilepsy_lbl;
+    QCheckBox *ui_epilepsy_cb;
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
 
@@ -101,6 +103,10 @@ private:
     QLabel *ui_bliprate_lbl;
     QCheckBox *ui_blank_blips_cb;
     QLabel *ui_blank_blips_lbl;
+    QLabel *ui_loopsfx_lbl;
+    QCheckBox *ui_loopsfx_cb;
+    QLabel *ui_objectmusic_lbl;
+    QCheckBox *ui_objectmusic_cb;
     QDialogButtonBox *ui_settings_buttons;
 
     QWidget *ui_casing_tab;
@@ -121,6 +127,8 @@ private:
     QCheckBox *ui_casing_steno_cb;
     QLabel *ui_casing_cm_lbl;
     QCheckBox *ui_casing_cm_cb;
+    QLabel *ui_casing_wit_lbl;
+    QCheckBox *ui_casing_wit_cb;
     QLabel *ui_casing_cm_cases_lbl;
     QLineEdit *ui_casing_cm_cases_textbox;
 

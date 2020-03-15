@@ -36,6 +36,7 @@
 #include <QComboBox>
 #include <QSlider>
 #include <QVector>
+#include <QSignalMapper>
 #include <QCloseEvent>
 #include <QSignalMapper>
 #include <QMap>
@@ -79,15 +80,32 @@ public:
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
   void append_area(QString f_area){area_list.append(f_area);}
-
-  void fix_last_area()
+  void handle_failed_login();
+  QString threading_sfx = "";
+  QString threading_shake = "";
+  QString threading_flash = "";
+  QString threading_prefix = "";
+  //cid and this may differ in cases of ini-editing
+  QString current_char = "";
+  int current_emote = 0;
+  AOApplication *ao_app;
+  //abstract widget to hold char buttons
+  QWidget *ui_char_buttons;
+  QVector<char_type> char_list;
+  QVector<evi_type> evidence_list;
+  QVector<QString> music_list;
+  QVector<QString> area_list;
+  QSignalMapper *char_button_mapper;
+  QVector<AOCharButton*> ui_char_button_list;
+  QVector<AOCharButton*> ui_char_button_list_filtered;
+  QLineEdit *ui_char_search;
+  QCheckBox *ui_char_passworded;
+  QCheckBox *ui_char_taken;
+  void mt_pre_framegetter(int frameNumber);
+  void mt_framegetter(int frameNumber);
+  void reset_music_list()
   {
-    if (area_list.size() > 0)
-    {
-      QString malplaced = area_list.last();
-      area_list.removeLast();
-      append_music(malplaced);
-    }
+      music_list.clear();
   }
   void handle_failed_login();
    QString threading_sfx = "";
@@ -164,7 +182,7 @@ public:
 
   //reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-
+  QPoint get_theme_pos(QString p_identifier);
   //sets status as taken on character with cid n_char and places proper shading on charselect
   void set_taken(int n_char, bool p_taken);
 
@@ -214,6 +232,9 @@ public:
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
+  // set the character using an ID
+  void set_character(int char_id);
+
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
   void list_areas();
@@ -256,9 +277,11 @@ public:
   void doScreenShake();
   void doRealization();
 
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
+  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno, bool wit);
 
   void check_connection_received();
+  void doScreenShake();
+  void doRealization();
 
   ~Courtroom();
 
@@ -275,13 +298,10 @@ private:
 
   bool first_message_sent = false;
   int maximumMessages = 0;
-
   QPropertyAnimation *screenshake_animation;
-   QPropertyAnimation *chatbox_screenshake_animation;
-   QParallelAnimationGroup *screenshake_group;
-   QMovie *frame_emote_checker;
-
-
+  QPropertyAnimation *chatbox_screenshake_animation;
+  QParallelAnimationGroup *screenshake_group;
+  QMovie *frame_emote_checker;
   // This is for inline message-colouring.
 
   enum INLINE_COLOURS {
@@ -300,7 +320,7 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {30, 40, 50, 60, 75, 100, 120};
+  int message_display_speed[7] = {10, 20, 30, 40, 50, 60, 75};
 
   // This is for checking if the character should start talking again
   // when an inline blue text ends.
@@ -449,9 +469,8 @@ private:
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
   AOSfxPlayer *misc_sfx_player;
-    AOSfxPlayer *frame_emote_sfx_player;
-    AOSfxPlayer *pair_frame_emote_sfx_player;
-
+  AOSfxPlayer *frame_emote_sfx_player;
+  AOSfxPlayer *pair_frame_emote_sfx_player;
   AOSfxPlayer *objection_player;
   AOBlipPlayer *blip_player;
 
@@ -590,8 +609,6 @@ private:
 
   AOImage *ui_char_select_background;
 
-
-
   AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
@@ -602,8 +619,6 @@ private:
   AOButton *ui_char_select_right;
 
   AOButton *ui_spectator;
-
-
 
   void construct_char_select();
   void set_char_select();
@@ -624,7 +639,7 @@ public slots:
 
   void mod_called(QString p_ip);
 
-  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno, bool witness);
 
 private slots:
   void start_chat_ticking();
@@ -726,7 +741,7 @@ private slots:
 
   void on_spectator_clicked();
 
-   void char_clicked(int n_char);
+  void char_clicked(int n_char);
 
   void on_switch_area_music_clicked();
 
