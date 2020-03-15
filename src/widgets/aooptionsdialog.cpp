@@ -331,9 +331,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     else
       ui_casing_supported_lbl->setText(tr("This server does not support case alerts."));
     ui_casing_supported_lbl->setToolTip(tr("Pretty self-explanatory."));
+    ui_casing_layout->setWidget(0, QFormLayout::FieldRole, ui_casing_supported_lbl);
     */
 
-    ui_casing_layout->setWidget(0, QFormLayout::FieldRole, ui_casing_supported_lbl);
 
     // -- CASE ANNOUNCEMENTS
 
