@@ -189,7 +189,7 @@ void AOEvidence::setEvidenceList(QVector<evi_type> list)
   int originalIndex = ui_list->currentRow();
 
   // Update existing items
-  for (int i = 0; i < ui_list->count() - 1; i++)
+  for (int i = 0; i < ui_list->count() - 1 && i < list.count(); i++)
   {
     QString imagePath = ao_app->get_evidence_path(evidence[i].image);
     auto item = ui_list->item(i);
