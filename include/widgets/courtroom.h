@@ -88,13 +88,10 @@ class Courtroom : public QMainWindow
 public:
   explicit Courtroom(AOApplication *p_ao_app, std::shared_ptr<Client> client);
 
-  bool chooseCharacter();
+  void chooseCharacter();
 
   void arup_append(int players, QString status, QString cm, QString locked);
   void arup_modify(int type, int place, QString value);
-
-  //properly sets up some varibles: resets user state
-  void enter_courtroom(int p_cid);
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
@@ -116,6 +113,10 @@ private:
   std::shared_ptr<Client> client;
 
   QString previous_ic_message = "";
+
+  // Whether or not the character selection screen will quit the server
+  // when canceling.
+  bool quitOnCancel = true;
 
   //char id, muted or not
   // XXX: needs rework
@@ -159,6 +160,8 @@ private:
   void initBASS();
 
 private slots:
+  void resetCourtroom();
+
   void on_ic_chat_messageSent();
   void on_client_icReceived(const chat_message_type &message);
   void on_client_kicked(const QString &message, bool banned);

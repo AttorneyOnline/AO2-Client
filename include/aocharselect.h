@@ -26,10 +26,14 @@ private:
 
   void done(int retval);
 
+signals:
+  void characterSelected(int charId);
+
 public slots:
   // TODO: the data structure for characters has not been
   // set in stone yet
   void setCharacters(QVector<char_type> characters);
+  void responseReceived();
 
 private slots:
   void on_charList_itemChanged(QListWidgetItem *item);

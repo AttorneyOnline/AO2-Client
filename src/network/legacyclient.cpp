@@ -329,7 +329,7 @@ char_type LegacyClient::character()
   }
   else
   {
-    return char_type { "Spectator", QStringLiteral(), QStringLiteral(), false };
+    return { QStringLiteral(), QStringLiteral(), QStringLiteral(), false };
   }
 }
 
@@ -356,6 +356,17 @@ void LegacyClient::joinRoom(QString &name)
 void LegacyClient::setCharacter(int charId)
 {
   socket.send("CC", { "0", QString::number(charId), hdid() });
+
+  if (charId == -1)
+  {
+    // Don't wait for response. Server usually does not respond to spectate
+    // requests, so just emulate a response.
+    // Note that there is a common server-side bug where the character
+    // slot is not freed when switching directly to spectator mode, even
+    // when the character ID is requested to be switched to -1.
+    currentCharId = -1;
+    emit characterChanged(currentCharId);
+  }
 }
 
 /*!

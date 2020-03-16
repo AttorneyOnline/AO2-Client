@@ -6,6 +6,7 @@
 #include "aouiloader.h"
 
 #include <QVBoxLayout>
+#include <aocharselect.h>
 
 #include <network/legacyclient.h>
 
@@ -144,8 +145,7 @@ void Lobby::on_connect_released()
     courtroom->show();
     hide();
 
-    if (!courtroom->chooseCharacter())
-      courtroom->deleteLater();
+    courtroom->chooseCharacter();
 
     deleteLater();
   });

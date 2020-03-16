@@ -82,7 +82,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
           [&](const QString &name, const QString &message) {
     append_server_chatmessage(name, message, false);
   });
-  connect(client.get(), &Client::characterChanged, this, &Courtroom::enter_courtroom);
+  connect(client.get(), &Client::characterChanged, this, &Courtroom::resetCourtroom);
   connect(client.get(), &Client::backgroundChanged, ui_viewport, &AOViewport::set_background);
   connect(client.get(), &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
   connect(client.get(), &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
@@ -97,33 +97,51 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   ui_music_list->setTracks(client->tracks().toVector());
 }
 
-bool Courtroom::chooseCharacter()
+void Courtroom::chooseCharacter()
 {
-  AOCharSelect charSelect(this, ao_app);
-  charSelect.setCharacters(client->characters());
-  if (charSelect.exec() == QDialog::Accepted)
-  {
-    enter_courtroom(charSelect.selectedCharacterIndex());
-    return true;
-  }
+  auto charSelect = new AOCharSelect(this, ao_app);
 
-  return false;
+  charSelect->setCharacters(client->characters());
+
+  connect(client.get(), &Client::takenCharsChanged, charSelect, [this, charSelect] {
+    qDebug() << "taken characters updated";
+    charSelect->setCharacters(client->characters());
+  });
+
+  connect(charSelect, &AOCharSelect::characterSelected, this, [&](int charId) {
+    qDebug() << "character selected:" << charId;
+    client->setCharacter(charId);
+  });
+
+  connect(charSelect, &QDialog::rejected, this, [&] {
+    qDebug() << "quit on cancel!!";
+    if (quitOnCancel)
+      on_quit_triggered();
+  });
+
+  connect(client.get(), &Client::characterChanged,
+          charSelect, &AOCharSelect::responseReceived);
+
+  connect(charSelect, &QDialog::accepted, this, &Courtroom::resetCourtroom);
+
+  charSelect->open();
 }
 
-void Courtroom::enter_courtroom(int p_cid)
+void Courtroom::resetCourtroom()
 {
-  QString f_char;
+  quitOnCancel = false;
 
-  if (p_cid == -1)
+  const char_type character = client->character();
+  QString f_char = character.name;
+
+  if (client->spectating())
   {
-    f_char = "";
-
     if (options.discordEnabled())
       ao_app->discord->state_spectate();
   }
   else
   {
-    f_char = ao_app->get_char_name(client->character().name);
+    f_char = ao_app->get_char_name(character.name);
 
     if (options.discordEnabled())
       ao_app->discord->state_character(f_char.toStdString());
