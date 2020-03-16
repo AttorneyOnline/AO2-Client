@@ -65,6 +65,13 @@ void LegacyClient::mapSignals()
 
       emit characterChanged(currentCharId);
     }
+    else if (header == "DONE")
+    {
+      // Usually, this packet is used outside of the handshake process
+      // to kick people off the current character.
+      currentCharId = -1;
+      emit characterChanged(currentCharId);
+    }
     else if (header == "SM")
     {
       tracksList.clear();
