@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
+#include <QStackedWidget>
 #include <QTextEdit>
 #include <QWidget>
 
@@ -22,6 +23,10 @@ public:
 
 private:
   AOApplication *ao_app;
+
+  QStackedWidget *ui_stacked_widget;
+  QWidget *ui_page_normal;
+  QWidget *ui_page_spectator;
 
   QPushButton *ui_custom_interjection;
   QPushButton *ui_holdit;

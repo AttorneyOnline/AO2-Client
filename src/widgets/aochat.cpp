@@ -19,6 +19,9 @@ AOChat::AOChat(QWidget *parent, AOApplication *p_ao_app)
   parentLayout->addWidget(windowWidget);
   setLayout(parentLayout);
 
+  FROM_UI(QStackedWidget, stacked_widget)
+  FROM_UI(QWidget, page_normal)
+  FROM_UI(QWidget, page_spectator)
   FROM_UI(QPushButton, custom_interjection)
   FROM_UI(QPushButton, holdit)
   FROM_UI(QPushButton, objection)
@@ -50,7 +53,12 @@ void AOChat::setCharacter(const QString &character)
                                character.isEmpty() ? "(none)" : character));
 
   if (character.isEmpty())
+  {
+    ui_stacked_widget->setCurrentWidget(ui_page_spectator);
     return;
+  }
+
+  ui_stacked_widget->setCurrentWidget(ui_page_normal);
 
   // Show custom button
   const bool custom =

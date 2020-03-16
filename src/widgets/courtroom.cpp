@@ -104,17 +104,14 @@ void Courtroom::chooseCharacter()
   charSelect->setCharacters(client->characters());
 
   connect(client.get(), &Client::takenCharsChanged, charSelect, [this, charSelect] {
-    qDebug() << "taken characters updated";
     charSelect->setCharacters(client->characters());
   });
 
   connect(charSelect, &AOCharSelect::characterSelected, this, [&](int charId) {
-    qDebug() << "character selected:" << charId;
     client->setCharacter(charId);
   });
 
   connect(charSelect, &QDialog::rejected, this, [&] {
-    qDebug() << "quit on cancel!!";
     if (quitOnCancel)
       on_quit_triggered();
   });
