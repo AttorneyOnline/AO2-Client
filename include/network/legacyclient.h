@@ -46,6 +46,11 @@ private:
   // IC message. Otherwise, the promise is rejected and discarded.
   const int IC_ECHO_TIMEOUT = 5 * 1000;
 
+  // Whether or not this client has already been kicked by the server.
+  // This is used to prevent the connectionLost signal from being sent
+  // twice, once by the server and again by the socket.
+  bool kicked = false;
+
   LegacySocket socket;
 
   void mapSignals();

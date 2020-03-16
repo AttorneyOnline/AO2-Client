@@ -73,7 +73,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   // TODO: remove the autoconnect name of these slots - they don't autoconnect
   // due to the nature of the shared_ptr
   connect(client.get(), &Client::icReceived, this, &Courtroom::on_client_icReceived);
-  connect(client.get(), &Client::kicked, this, &Courtroom::on_client_kicked);
+  connect(client.get(), &Client::connectionLost, this, &Courtroom::on_client_disconnected);
   connect(client.get(), &Client::trackChanged, this, &Courtroom::on_client_trackChanged);
   connect(client.get(), &Client::modCalled, this, &Courtroom::on_client_modCalled);
   connect(client.get(), &Client::caseCalled, this, &Courtroom::on_client_caseCalled);
@@ -248,13 +248,18 @@ void Courtroom::on_client_icReceived(const chat_message_type &message)
   ui_viewport->chat(message, f_showname, evidence_image);
 }
 
-void Courtroom::on_client_kicked(const QString &message, bool banned)
+void Courtroom::on_client_disconnected(DisconnectReason code, const QString &message)
 {
-  const QString verb = banned ? tr("banned") : tr("kicked");
+  const QString reasonText = QMap<DisconnectReason, QString> {
+    {CONNECTION_RESET, tr("Connection to the server was lost.")},
+    {KICKED, tr("You were kicked.")},
+    {BANNED, tr("You were banned.")}
+  }[code];
+
   if (!message.isEmpty()) {
-    call_notice(tr("You were %1.\nMessage: %2").arg(verb).arg(message));
+    call_notice(tr("%1\nMessage: %2").arg(reasonText).arg(message));
   } else {
-    call_notice(tr("You were %1.").arg(verb));
+    call_notice(tr("%1").arg(reasonText));
   }
 
   ao_app->openLobby();
@@ -499,6 +504,9 @@ void Courtroom::on_reload_theme_triggered()
 
 void Courtroom::on_quit_triggered()
 {
+  disconnect(client.get(), &Client::connectionLost,
+             this, &Courtroom::on_client_disconnected);
+
   ao_app->openLobby();
   deleteLater();
 }

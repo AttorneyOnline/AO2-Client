@@ -237,12 +237,14 @@ void LegacyClient::mapSignals()
     else if (header == "KK")
     {
       const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
-      emit kicked(msg, false);
+      kicked = true;
+      emit connectionLost(KICKED, msg);
     }
     else if (header == "KB" || header == "BD")
     {
       const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
-      emit kicked(msg, true);
+      kicked = true;
+      emit connectionLost(BANNED, msg);
     }
     else if (header == "ZZ")
     {
@@ -268,6 +270,12 @@ QPromise<void> LegacyClient::connect(const QString &address,
                     << QStringLiteral("(probe: %1)").arg(probeOnly ? "yes" : "no");
 
   emit connectProgress(0, 100, tr("Connecting to server..."));
+
+  QObject::connect(&socket, &LegacySocket::connectionLost, this, [&] {
+    if (kicked)
+      return;
+    emit connectionLost(CONNECTION_RESET, QStringLiteral());
+  });
 
   auto promise = socket.connect(address, port)
       .then([&](void) {

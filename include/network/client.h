@@ -11,6 +11,12 @@ using namespace QtPromise;
 
 namespace AttorneyOnline {
 
+enum DisconnectReason {
+  CONNECTION_RESET,
+  KICKED,
+  BANNED,
+};
+
 class Client : public QObject {
   Q_OBJECT
 
@@ -73,7 +79,7 @@ signals:
   void caseCalled(const QString &message,
                   const std::bitset<CASING_FLAGS_COUNT> casingFlags);
 
-  void kicked(const QString &message, bool banned = false);
+  void connectionLost(DisconnectReason code, const QString &message);
   void modCalled(const QString &message);
 };
 

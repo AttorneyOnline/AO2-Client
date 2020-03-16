@@ -164,7 +164,7 @@ private slots:
 
   void on_ic_chat_messageSent();
   void on_client_icReceived(const chat_message_type &message);
-  void on_client_kicked(const QString &message, bool banned);
+  void on_client_disconnected(DisconnectReason code, const QString &message);
   void on_client_trackChanged(const QString &track, const QString &showname);
   void on_client_modCalled(const QString &message);
   void on_client_caseCalled(const QString &message,
