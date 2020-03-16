@@ -473,12 +473,12 @@ void Courtroom::on_mixer_volumeChanged(AUDIO_TYPE type, int volume)
   }
 }
 
-void Courtroom::on_roomControls_requestHealthChange(HEALTH_TYPE type, int value)
+void Courtroom::on_room_controls_requestHealthChange(HEALTH_TYPE type, int value)
 {
   client->sendHealth(type, value);
 }
 
-void Courtroom::on_roomControls_wtce(WTCE_TYPE type)
+void Courtroom::on_room_controls_wtce(WTCE_TYPE type)
 {
   client->sendWTCE(type);
 }

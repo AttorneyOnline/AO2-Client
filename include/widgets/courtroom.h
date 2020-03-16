@@ -181,8 +181,8 @@ private slots:
 
   void on_mixer_volumeChanged(AUDIO_TYPE type, int volume);
 
-  void on_roomControls_requestHealthChange(HEALTH_TYPE type, int value);
-  void on_roomControls_wtce(WTCE_TYPE type);
+  void on_room_controls_requestHealthChange(HEALTH_TYPE type, int value);
+  void on_room_controls_wtce(WTCE_TYPE type);
 
   void on_change_character_triggered();
   void on_reload_theme_triggered();
