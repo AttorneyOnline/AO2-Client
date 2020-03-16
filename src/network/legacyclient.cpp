@@ -333,7 +333,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
  */
 void LegacyClient::sendKeepalive()
 {
-  socket.send("CHECK");
+  socket.send("CH");
 }
 
 char_type LegacyClient::character()
