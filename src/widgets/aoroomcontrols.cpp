@@ -17,18 +17,18 @@ AORoomControls::AORoomControls(QWidget *parent, AOApplication *p_ao_app)
   parentLayout->addWidget(windowWidget);
   setLayout(parentLayout);
 
-  ui_witness_testimony = findChild<QPushButton *>("witness_testimony");
-  ui_cross_examination = findChild<QPushButton *>("cross_examination");
-  ui_not_guilty = findChild<QPushButton *>("not_guilty");
-  ui_guilty = findChild<QPushButton *>("guilty");
+  FROM_UI(QPushButton, witness_testimony)
+  FROM_UI(QPushButton, cross_examination)
+  FROM_UI(QPushButton, not_guilty)
+  FROM_UI(QPushButton, guilty)
 
-  ui_def_health = findChild<QProgressBar *>("def_health");
-  ui_def_plus = findChild<QPushButton *>("def_plus");
-  ui_def_minus = findChild<QPushButton *>("def_minus");
+  FROM_UI(QProgressBar, def_health)
+  FROM_UI(QPushButton, def_plus)
+  FROM_UI(QPushButton, def_minus)
 
-  ui_pro_health = findChild<QProgressBar *>("pro_health");
-  ui_pro_plus = findChild<QPushButton *>("pro_plus");
-  ui_pro_minus = findChild<QPushButton *>("pro_minus");
+  FROM_UI(QProgressBar, pro_health)
+  FROM_UI(QPushButton, pro_plus)
+  FROM_UI(QPushButton, pro_minus)
 }
 
 void AORoomControls::setHealth(HEALTH_TYPE type, int value)
@@ -44,6 +44,7 @@ void AORoomControls::setHealth(HEALTH_TYPE type, int value)
 void AORoomControls::toggleJudgeControls(bool visible)
 {
   QWidget * const judgeControls[] = {ui_witness_testimony, ui_cross_examination,
+                                     ui_not_guilty, ui_guilty,
                                      ui_def_plus, ui_def_minus, ui_pro_plus, ui_pro_minus};
   for (auto widget : judgeControls)
   {
