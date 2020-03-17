@@ -216,9 +216,7 @@ struct chat_message_type
   int self_offset = 0;
   bool noninterrupting_preanim = false;
 
-  // client -> server: int
-  // server -> client: string
-  QVariant pair_character;
+  QString pair_character;
   QString pair_anim;
   int pair_offset;
   bool pair_flip;
@@ -263,10 +261,10 @@ struct chat_message_type
     noninterrupting_preanim = contents[22].toInt();
   }
 
-  operator QStringList() const
+  QStringList serialize(bool extended) const
   {
-    return {
-      QString::number(desk),
+    QStringList list = {
+      desk == 0 ? "chat" : QString::number(desk),
       preanim,
       character,
       anim,
@@ -281,15 +279,19 @@ struct chat_message_type
       QString::number(flip),
       QString::number(realization),
       QString::number(text_color),
-      showname,
-      QString::number(pair_char_id),
-      QString::number(pair_character.toInt()),
-      pair_anim,
-      QString::number(self_offset),
-      QString::number(pair_offset),
-      QString::number(pair_flip),
-      QString::number(noninterrupting_preanim)
     };
+
+    if (extended)
+    {
+      list.append({
+        showname,
+        QString::number(pair_char_id),
+        QString::number(pair_offset),
+        QString::number(noninterrupting_preanim)
+      });
+    }
+
+    return list;
   }
 };
 

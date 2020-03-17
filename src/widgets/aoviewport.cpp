@@ -364,7 +364,7 @@ void AOViewport::handle_chatmessage_2()
       ui_vp_sideplayer_char->set_flipped(true);
     else
       ui_vp_sideplayer_char->set_flipped(false);
-    ui_vp_sideplayer_char->play_idle(m_chatmessage.pair_character.toString(),
+    ui_vp_sideplayer_char->play_idle(m_chatmessage.pair_character,
                                      m_chatmessage.pair_anim);
   }
 

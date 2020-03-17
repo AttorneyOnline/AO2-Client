@@ -411,7 +411,7 @@ QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
   auto msgCopy = message;
   msgCopy.char_id = currentCharId;
 
-  socket.send("MS", msgCopy);
+  socket.send("MS", msgCopy.serialize(caseCafeFeatures));
 
   return QPromise<void>([&](const QPromiseResolve<void>& resolve) {
     std::shared_ptr<QMetaObject::Connection> connection {
