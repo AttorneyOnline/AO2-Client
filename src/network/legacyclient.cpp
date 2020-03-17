@@ -419,7 +419,7 @@ QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
     };
 
     *connection = QObject::connect(this, &LegacyClient::icReceived,
-                                   [=, &connection](const chat_message_type &message) {
+                                   [=](const chat_message_type &message) {
       // If you ever design a protocol, don't do this - this is a really bad
       // heuristic. There could be various players in the room with the same
       // character, or your messages might be being intentionally delayed.
