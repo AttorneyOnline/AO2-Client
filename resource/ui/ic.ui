@@ -632,7 +632,7 @@ background: transparent;
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QTextEdit" name="chat_entry">
+    <widget class="AOChatEntry" name="chat_entry">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
@@ -660,6 +660,9 @@ background: transparent;
      <property name="tabChangesFocus">
       <bool>true</bool>
      </property>
+     <property name="acceptRichText">
+      <bool>false</bool>
+     </property>
      <property name="placeholderText">
       <string>Message</string>
      </property>
@@ -667,6 +670,13 @@ background: transparent;
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AOChatEntry</class>
+   <extends>QTextEdit</extends>
+   <header location="global">widgets/aochatentry.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

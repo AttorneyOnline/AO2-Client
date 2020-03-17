@@ -1,4 +1,5 @@
 #include "widgets/aocharmovie.h"
+#include "widgets/aochatentry.h"
 #include "widgets/aoevidencedisplay.h"
 #include "widgets/aoimage.h"
 #include "widgets/aomovie.h"
@@ -34,6 +35,7 @@ QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent, con
   AO_WIDGET(AORoomChooser, ao_app)
   AO_WIDGET(AOMixer, ao_app)
   AO_WIDGET(AOChat, ao_app)
+  AO_WIDGET(AOChatEntry)
   AO_WIDGET(AORoomControls, ao_app)
   else
   {

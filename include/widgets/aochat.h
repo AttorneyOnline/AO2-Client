@@ -12,6 +12,8 @@
 #include <QTextEdit>
 #include <QWidget>
 
+#include "widgets/aochatentry.h"
+
 class AOChat : public QWidget
 {
   Q_OBJECT
@@ -37,7 +39,7 @@ private:
     ui_custom_interjection, ui_holdit, ui_objection, ui_takethat
   };
 
-  QTextEdit *ui_chat_entry;
+  AOChatEntry *ui_chat_entry;
   QComboBox *ui_color;
   QComboBox *ui_emote;
   QComboBox *ui_side;
@@ -72,7 +74,7 @@ private slots:
   void on_emotes_itemClicked(QListWidgetItem *emote);
 
   // TODO - need to subclass chatEntry to create this signal
-  void on_chatEntry_enterPressed();
+  void on_chat_entry_enterPressed();
 };
 
 #endif // AOCHAT_H

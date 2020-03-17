@@ -26,7 +26,7 @@ AOChat::AOChat(QWidget *parent, AOApplication *p_ao_app)
   FROM_UI(QPushButton, holdit)
   FROM_UI(QPushButton, objection)
   FROM_UI(QPushButton, takethat)
-  FROM_UI(QTextEdit, chat_entry)
+  FROM_UI(AOChatEntry, chat_entry)
   FROM_UI(QComboBox, color)
   FROM_UI(QComboBox, emote)
   FROM_UI(QComboBox, side)
@@ -159,7 +159,7 @@ void AOChat::on_emotes_itemClicked(QListWidgetItem *emote)
     ui_preanim->toggle();
 }
 
-void AOChat::on_chatEntry_enterPressed()
+void AOChat::on_chat_entry_enterPressed()
 {
   QString message = ui_chat_entry->document()->toPlainText().trimmed();
   if (message.isEmpty())
