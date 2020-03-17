@@ -41,6 +41,11 @@ AOChat::AOChat(QWidget *parent, AOApplication *p_ao_app)
   connect(ui_holdit, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
   connect(ui_objection, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
   connect(ui_takethat, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
+
+  interjectionButtons[0] = ui_custom_interjection;
+  interjectionButtons[1] = ui_holdit;
+  interjectionButtons[2] = ui_objection;
+  interjectionButtons[3] = ui_takethat;
 }
 
 void AOChat::setCharacter(const QString &character)

@@ -35,9 +35,7 @@ private:
   QPushButton *ui_objection;
   QPushButton *ui_takethat;
 
-  QPushButton * const interjectionButtons[4] = {
-    ui_custom_interjection, ui_holdit, ui_objection, ui_takethat
-  };
+  QPushButton *interjectionButtons[4];
 
   AOChatEntry *ui_chat_entry;
   QComboBox *ui_color;
