@@ -107,33 +107,7 @@ public:
   {
       music_list.clear();
   }
-  void handle_failed_login();
-   QString threading_sfx = "";
-   QString threading_shake = "";
-   QString threading_flash = "";
-   QString threading_prefix = "";
-   //cid and this may differ in cases of ini-editing
-   QString current_char = "";
-   int current_emote = 0;
-   AOApplication *ao_app;
-   //abstract widget to hold char buttons
-   QWidget *ui_char_buttons;
-   QVector<char_type> char_list;
-   QVector<evi_type> evidence_list;
-   QVector<QString> music_list;
-   QVector<QString> area_list;
-   QSignalMapper *char_button_mapper;
-   QVector<AOCharButton*> ui_char_button_list;
-   QVector<AOCharButton*> ui_char_button_list_filtered;
-   QLineEdit *ui_char_search;
-   QCheckBox *ui_char_passworded;
-   QCheckBox *ui_char_taken;
-   void mt_pre_framegetter(int frameNumber);
-   void mt_framegetter(int frameNumber);
-   void reset_music_list()
-   {
-       music_list.clear();
-   }
+
 
   void arup_append(int players, QString status, QString cm, QString locked)
   {
@@ -182,7 +156,6 @@ public:
 
   //reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-  QPoint get_theme_pos(QString p_identifier);
   //sets status as taken on character with cid n_char and places proper shading on charselect
   void set_taken(int n_char, bool p_taken);
 
@@ -232,8 +205,6 @@ public:
   //properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
-  // set the character using an ID
-  void set_character(int char_id);
 
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
@@ -280,8 +251,6 @@ public:
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno, bool wit);
 
   void check_connection_received();
-  void doScreenShake();
-  void doRealization();
 
   void refresh_iclog(bool skiplast);
 
@@ -751,9 +720,9 @@ private slots:
 
   void ping_server();
 
-
+#ifdef BASSAUDIO
   void load_bass_opus_plugin();
-
+#endif
 
 };
 

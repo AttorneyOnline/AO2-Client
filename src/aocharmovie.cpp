@@ -148,9 +148,6 @@ void AOCharMovie::sfx_two_network_boogaloo()
 
 void AOCharMovie::movie_ticker()
 {
-  if(apng){
-      ticker->start(m_movie->nextFrameDelay());
-  }
   if(m_movie->currentFrameNumber() == m_movie->frameCount() - 1)
   {
     delete m_movie;
@@ -172,9 +169,9 @@ void AOCharMovie::movie_ticker()
   // imagine if QT had sane stuff like "mirror on QMovie" or "resize the image on QT" or "interface with the current QMovie image" or anything else
 
   this->play_frame_sfx();
-  if(!apng){
-      ticker->start(m_movie->nextFrameDelay());
-  }
+
+  ticker->start(m_movie->nextFrameDelay());
+
 
 }
 

@@ -773,51 +773,7 @@ bool AOApplication::colorlog_restricted_enabled()
     return result.startsWith("true");
 }
 
-QString AOApplication::get_sfx_looping(QString p_char, int p_emote)
-{
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "SoundL");
 
-  if (f_result == "")
-    return "0";
-  else return f_result;
-}
-
-QString AOApplication::get_frame_sfx_name(QString p_char, QString p_emote, int n_frame)
-{
-  QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameSFX"));
-  if (f_result == "")
-    return "";
-  else return f_result;
-}
-
-QString AOApplication::get_screenshake_frame(QString p_char, QString p_emote, int n_frame)
-{
-  QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameScreenshake"));
-  if (f_result == "")
-    return "";
-  else return f_result;
-}
-
-
-QString AOApplication::get_realization_frame(QString p_char, QString p_emote, int n_frame)
-{
-  QString f_result = read_char_ini(p_char, QString::number(n_frame), p_emote.append("_FrameRealization"));
-  if (f_result == "")
-    return "";
-  else return f_result;
-}
-
-bool AOApplication::get_looping_sfx()
-{
-    QString result = configini->value("looping_sfx", "true").value<QString>();
-    return result.startsWith("true");
-}
-
-bool AOApplication::get_objectmusic()
-{
-    QString result = configini->value("kill_music_on_object", "false").value<QString>();
-    return result.startsWith("true");
-}
 bool AOApplication::is_shakeandflash_enabled()
 {
     QString result = configini->value("shakeandflash", "true").value<QString>();

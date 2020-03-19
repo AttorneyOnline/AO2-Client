@@ -528,7 +528,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                  f_contents.at(n_element).endsWith(".opus")))
             {
                 musics_time = true;
-                w_courtroom->fix_last_area();
+                //w_courtroom->fix_last_area();
                 continue;
 
             }
@@ -720,7 +720,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "CASEA")
   {
     if (courtroom_constructed && f_contents.size() > 7)
-      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1", f_contents.at(2) == "1", f_contents.at(3) == "1", f_contents.at(4) == "1", f_contents.at(5) == "1");
+      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1", f_contents.at(2) == "1", f_contents.at(3) == "1", f_contents.at(4) == "1", f_contents.at(5) == "1",f_contents.at(6) == "1");
   }
 
   end:

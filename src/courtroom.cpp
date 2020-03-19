@@ -1250,65 +1250,9 @@ public:
 };
 
 
-class AOFrameThreadingPre : public QRunnable
-{
-public:
-    Courtroom *thisCourtroom;
-    int my_frameNumber;
-    AOFrameThreadingPre(Courtroom *my_courtroom, int frameNumber){
-        thisCourtroom = my_courtroom;
-        my_frameNumber = frameNumber;
-    }
-    void run()
-    {
-        qDebug() << my_frameNumber << " FRAME NUMBER" << " from" << QThread::currentThread();
-        QString sfx_to_play = thisCourtroom->ao_app->get_frame_sfx_name(thisCourtroom->current_char, thisCourtroom->ao_app->get_pre_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
-        QString screenshake_to_play = thisCourtroom->ao_app->get_screenshake_frame(thisCourtroom->current_char, thisCourtroom->ao_app->get_pre_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
-        QString realization_to_play = thisCourtroom->ao_app->get_realization_frame(thisCourtroom->current_char, thisCourtroom->ao_app->get_pre_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
-        if(sfx_to_play != "")
-        {
-            thisCourtroom->threading_sfx += "|" + QString::number(my_frameNumber) + "=" + sfx_to_play;
-        }
-        if(screenshake_to_play != "")
-        {
-            thisCourtroom->threading_shake += "|" + QString::number(my_frameNumber) + "=" + screenshake_to_play;
-        }
-        if(realization_to_play != "")
-        {
-            thisCourtroom->threading_flash += "|" + QString::number(my_frameNumber) + "=" + realization_to_play;
-        }
-    }
-};
 
 
-class AOFrameThreading : public QRunnable
-{
-public:
-    Courtroom *thisCourtroom;
-    int my_frameNumber;
-    AOFrameThreading(Courtroom *my_courtroom, int frameNumber){
-        thisCourtroom = my_courtroom;
-        my_frameNumber = frameNumber;
-    }
-    void run()
-    {
-        QString sfx_to_play = thisCourtroom->ao_app->get_frame_sfx_name(thisCourtroom->current_char, thisCourtroom->threading_prefix + thisCourtroom->ao_app->get_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
-        QString screenshake_to_play = thisCourtroom->ao_app->get_screenshake_frame(thisCourtroom->current_char, thisCourtroom->threading_prefix + thisCourtroom->ao_app->get_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
-        QString realization_to_play = thisCourtroom->ao_app->get_realization_frame(thisCourtroom->current_char, thisCourtroom->threading_prefix + thisCourtroom->ao_app->get_emote(thisCourtroom->current_char, thisCourtroom->current_emote), my_frameNumber);
-        if(sfx_to_play != "")
-        {
-            thisCourtroom->threading_sfx += "|" + QString::number(my_frameNumber) + "=" + sfx_to_play;
-        }
-        if(screenshake_to_play != "")
-        {
-            thisCourtroom->threading_shake += "|" + QString::number(my_frameNumber) + "=" + screenshake_to_play;
-        }
-        if(realization_to_play != "")
-        {
-            thisCourtroom->threading_flash += "|" + QString::number(my_frameNumber) + "=" + realization_to_play;
-        }
-    }
-};
+
 
 void Courtroom::on_chat_return_pressed()
 {
@@ -2093,55 +2037,6 @@ void Courtroom::doScreenShake()
     screenshake_group->start(QAbstractAnimation::DeletionPolicy::DeleteWhenStopped);
 }
 
-void Courtroom::doScreenShake()
-{
-    if(!ao_app->is_shakeandflash_enabled())
-        return;
-    screenshake_group = new QParallelAnimationGroup;
-    screenshake_animation = new QPropertyAnimation(ui_viewport, "pos", this);
-    chatbox_screenshake_animation = new QPropertyAnimation(ui_vp_chatbox, "pos", this);
-    int screen_x = get_theme_pos("viewport").x();
-    int screen_y = get_theme_pos("viewport").y();
-    QPoint pos_default = QPoint(screen_x, screen_y);
-    QPoint pos1 = QPoint(screen_x + 3, screen_y + -5);
-    QPoint pos2 = QPoint(screen_x + 3, screen_y + -5);
-    QPoint pos3 = QPoint(screen_x + -3, screen_y + 5);
-    QPoint pos4 = QPoint(screen_x + 3, screen_y + -5);
-    QPoint pos5 = QPoint(screen_x + -3,screen_y + -5);
-
-    int chatbox_x = get_theme_pos("ao2_chatbox").x();
-    int chatbox_y = get_theme_pos("ao2_chatbox").y();
-    QPoint chatbox_pos_default = QPoint(chatbox_x, chatbox_y);
-    QPoint chatbox_pos1 = QPoint(chatbox_x + 3, chatbox_y + -5);
-    QPoint chatbox_pos2 = QPoint(chatbox_x + 3, chatbox_y + -5);
-    QPoint chatbox_pos3 = QPoint(chatbox_x + -3, chatbox_y + 5);
-    QPoint chatbox_pos4 = QPoint(chatbox_x + 3, chatbox_y + -5);
-    QPoint chatbox_pos5 = QPoint(chatbox_x + -3,chatbox_y + -5);
-
-    screenshake_animation->setDuration(200);
-    screenshake_animation->setKeyValueAt(0, pos_default);
-    screenshake_animation->setKeyValueAt(0.1, pos1);
-    screenshake_animation->setKeyValueAt(0.3, pos2);
-    screenshake_animation->setKeyValueAt(0.5, pos3);
-    screenshake_animation->setKeyValueAt(0.7, pos4);
-    screenshake_animation->setKeyValueAt(0.9, pos5);
-    screenshake_animation->setEndValue(pos_default);
-    screenshake_animation->setEasingCurve(QEasingCurve::Linear);
-    chatbox_screenshake_animation->setDuration(200);
-    chatbox_screenshake_animation->setKeyValueAt(0, chatbox_pos_default);
-    chatbox_screenshake_animation->setKeyValueAt(0.1, chatbox_pos3);
-    chatbox_screenshake_animation->setKeyValueAt(0.3, chatbox_pos5);
-    chatbox_screenshake_animation->setKeyValueAt(0.5, chatbox_pos2);
-    chatbox_screenshake_animation->setKeyValueAt(0.7, chatbox_pos1);
-    chatbox_screenshake_animation->setKeyValueAt(0.9, chatbox_pos4);
-    chatbox_screenshake_animation->setEndValue(chatbox_pos_default);
-    chatbox_screenshake_animation->setEasingCurve(QEasingCurve::Linear);
-
-    screenshake_group->addAnimation(screenshake_animation);
-    screenshake_group->addAnimation(chatbox_screenshake_animation);
-    screenshake_group->start(QAbstractAnimation::DeletionPolicy::DeleteWhenStopped);
-}
-
 void Courtroom::handle_chatmessage_3()
 {
      if(!log_goes_downwards && mirror_iclog)
@@ -2729,14 +2624,7 @@ void Courtroom::doRealization()
 
 }
 
-void Courtroom::doRealization()
-{
-    if(!ao_app->is_shakeandflash_enabled())
-        return;
-    realization_timer->start(60);
-    ui_vp_realization->show();
 
-}
 
 void Courtroom::start_chat_ticking()
 {
@@ -4549,7 +4437,7 @@ void Courtroom::refresh_iclog(bool skiplast)
       }
 }
 
-
+#ifdef BASSAUDIO
 #if (defined (_WIN32) || defined (_WIN64))
 void Courtroom::load_bass_opus_plugin()
 {
