@@ -442,7 +442,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           {
               musics_time = true;
               areas--;
-              w_courtroom->fix_last_area();
+              //w_courtroom->fix_last_area();
               w_courtroom->append_music(f_music);
 
           }

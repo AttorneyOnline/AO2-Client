@@ -86,7 +86,6 @@ public:
   bool modcall_reason_enabled = false;
   bool looping_sfx_support_enabled = false;
 
-
   ///////////////loading info///////////////////
 
   //player number, it's hardly used but might be needed for some old servers
@@ -306,6 +305,17 @@ public:
   //Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
 
+  //Returns if an emote loops it's SFX
+  QString get_sfx_looping(QString p_char, int p_emote);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_frame_sfx_name(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_realization_frame(QString p_char, QString p_emote, int n_frame);
+
+  //Returns if an emote has a frame specific SFX for it
+  QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
 
   //Not in use
   int get_sfx_delay(QString p_char, int p_emote);
@@ -347,6 +357,9 @@ public:
   // Same for CM.
   bool get_casing_cm_enabled();
 
+  // Same for witnesses.
+  bool get_casing_wit_enabled();
+
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
@@ -361,8 +374,8 @@ public:
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 6;
-  const int MINOR_VERSION = 2;
+  const int MAJOR_VERSION = 7;
+  const int MINOR_VERSION = 0;
 
   QString current_theme = "default";
 
