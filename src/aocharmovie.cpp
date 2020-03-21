@@ -53,7 +53,10 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage());
   this->show();
   this->play_frame_sfx();
-  ticker->start(m_movie->nextFrameDelay());
+  // if the frame count is 0 (i.e. it's a static PNG) don't try to play the next frame, ya goofus
+  if (m_movie->frameCount() != 0) {
+    ticker->start(m_movie->nextFrameDelay());
+  }
 }
 
 void AOCharMovie::play_frame_sfx()
