@@ -460,11 +460,11 @@ private:
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;
-  AOMovie *ui_vp_realization;
+  AOImage *ui_vp_realization;
   AOMovie *ui_vp_testimony;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
-
+  void realization_done();
 
   bool colorf_iclog = false;
   bool mirror_iclog = false;

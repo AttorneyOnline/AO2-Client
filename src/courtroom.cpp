@@ -56,7 +56,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   sfx_delay_timer->setSingleShot(true);
 
   realization_timer = new QTimer(this);
-
+  realization_timer->setSingleShot(true);
 
   char_button_mapper = new QSignalMapper(this);
 
@@ -113,7 +113,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_testimony = new AOMovie(this, ao_app);
   ui_vp_testimony->set_play_once(false);
-  ui_vp_realization = new AOMovie(this, ao_app);
+  ui_vp_realization = new AOImage(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
@@ -313,7 +313,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
-
+  connect(realization_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
@@ -525,9 +525,10 @@ void Courtroom::set_widgets()
 
   ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
-
+  ui_vp_realization->resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_realization->set_image("realizationflash.png");
+  ui_vp_realization->hide();
   ui_vp_realization->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_realization->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -1988,6 +1989,11 @@ void Courtroom::handle_chatmessage_2()
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
   }
 }
+void Courtroom::realization_done()
+{
+  ui_vp_realization->hide();
+}
+
 void Courtroom::doScreenShake()
 {
     if(!ao_app->is_shakeandflash_enabled())
@@ -2360,7 +2366,7 @@ QString Courtroom::filter_ic_text(QString p_text,bool skip_filter,int chat_color
             }
 
         }
-        else if (!(chat_color == WHITE) && !colorf_limit){
+        else if (!(chat_color == WHITE || chat_color == RAINBOW) && !colorf_limit){
            trick_check_pos++;
            QString html_color;
            switch (chat_color)
