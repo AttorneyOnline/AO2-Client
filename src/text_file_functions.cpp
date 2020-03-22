@@ -936,7 +936,7 @@ QString AOApplication::get_custom_realization(QString p_char)
 
   if (f_result == "")
     return get_sfx("realization");
-  else return get_sfx_suffix(f_result);
+  else return get_sfx_suffix(get_sounds_path(f_result));
 }
 
 bool AOApplication::get_blank_blip()
