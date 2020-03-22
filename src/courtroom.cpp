@@ -1669,7 +1669,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
    qDebug() << "BACKUP CHR NAME: " <<  m_chatmessage_tmp[CHAR_NAME];
    qDebug() << "MAIN CHR NAME: " <<  m_chatmessage[CHAR_NAME];
    QString tmpmsg = "";
-   chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false);
+   chatlogpiece* temp = new chatlogpiece(ao_app->get_showname(char_list.at(f_char_id).name), f_showname, ": " + m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
 
    ic_chatlog_history.append(*temp);
 
@@ -1682,7 +1682,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_showname == "")
         f_showname = m_chatmessage[CHAR_NAME];
   if(!mirror_iclog)
-    append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
+    append_ic_text(": " + m_chatmessage[MESSAGE], f_showname,m_chatmessage[text_color].toInt());
 
   previous_ic_message = f_message;
   bool ok;
@@ -2051,7 +2051,7 @@ void Courtroom::handle_chatmessage_3()
      if (mirror_iclog)
      {
         if(!log_goes_downwards)//BMK
-            append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false);
+            append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false,m_chatmessage[text_color].toInt());
         if (!ui_showname_enable->isChecked() || m_chatmessage[SHOWNAME] == "")
          {
           if(first_message_sent)
@@ -2170,7 +2170,7 @@ void Courtroom::handle_chatmessage_3()
 
 }
 
-QString Courtroom::filter_ic_text(QString p_text)
+QString Courtroom::filter_ic_text(QString p_text,bool skip_filter,int chat_color)
 {
   //BMKCOMMENT
   // Get rid of centering.
@@ -2197,10 +2197,12 @@ QString Courtroom::filter_ic_text(QString p_text)
   while (trick_check_pos < p_text.size())
   {
       f_character = p_text.at(trick_check_pos);
+      if(!skip_filter){
       if (f_character == "<")
           f_character = "&lt;";
       else if (f_character == ">")
           f_character = "&gt;";
+      }
       // Escape character.
       if (f_character == "\\" and !ic_next_is_not_special)
       {
@@ -2357,7 +2359,36 @@ QString Courtroom::filter_ic_text(QString p_text)
             }
 
         }
-        else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW && !colorf_limit)
+        else if (!(chat_color == WHITE) && !colorf_limit){
+           trick_check_pos++;
+           QString html_color;
+           switch (chat_color)
+           {
+           case 1:
+             html_color = get_text_color(QString::number(GREEN)).name();
+             break;
+           case 2:
+             html_color = get_text_color(QString::number(RED)).name();
+             break;
+           case 3:
+             html_color = get_text_color(QString::number(ORANGE)).name();
+             break;
+           case 4:
+             html_color = get_text_color(QString::number(BLUE)).name();
+             break;
+           case 5:
+             html_color = get_text_color(QString::number(YELLOW)).name();
+             break;
+           case 7:
+              html_color = get_text_color(QString::number(PINK)).name();
+              break;
+           case 8:
+              html_color = get_text_color(QString::number(CYAN)).name();
+              break;
+           }
+         final_text += "<font color=\""+ html_color + "\">" + f_character + "</font>";
+       }
+        else if (chat_color == RAINBOW && !colorf_limit)
         {
               QString html_color;
 
@@ -2384,35 +2415,7 @@ QString Courtroom::filter_ic_text(QString p_text)
                final_text += "<font color=\"" + html_color + "\">" + f_character + "</font>";
                trick_check_pos++;
         }
-        else if (!(m_chatmessage[TEXT_COLOR].toInt() == WHITE) && !colorf_limit){
-            trick_check_pos++;
-            QString html_color;
-            switch (m_chatmessage[TEXT_COLOR].toInt())
-            {
-            case 1:
-              html_color = get_text_color(QString::number(GREEN)).name();
-              break;
-            case 2:
-              html_color = get_text_color(QString::number(RED)).name();
-              break;
-            case 3:
-              html_color = get_text_color(QString::number(ORANGE)).name();
-              break;
-            case 4:
-              html_color = get_text_color(QString::number(BLUE)).name();
-              break;
-            case 5:
-              html_color = get_text_color(QString::number(YELLOW)).name();
-              break;
-            case 7:
-               html_color = get_text_color(QString::number(PINK)).name();
-               break;
-            case 8:
-               html_color = get_text_color(QString::number(CYAN)).name();
-               break;
-            }
-          final_text += "<font color=\""+ html_color + "\">" + f_character + "</font>";
-        }
+
         else
         {
             final_text += f_character;
@@ -2426,6 +2429,7 @@ QString Courtroom::filter_ic_text(QString p_text)
       }
 
  }
+
   if( colorf_iclog)
     return final_text;
   else {
@@ -2433,7 +2437,7 @@ QString Courtroom::filter_ic_text(QString p_text)
   }
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange, bool force_write)
+void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange, bool force_write, bool skip_filter, int chat_color)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2445,7 +2449,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
 
   if ((!is_songchange && !mirror_iclog) || force_write)
-    p_text = filter_ic_text(p_text);
+    p_text = filter_ic_text(p_text,skip_filter,chat_color);
   if(is_songchange && mirror_iclog)
   {
       ui_server_chatlog->append_chatmessage(p_name," has played a song: " + p_text + ".",ao_app->get_color("ooc_server_color", "courtroom_design.ini").name(),true);
@@ -2713,7 +2717,7 @@ void Courtroom::chat_tick()
     if (log_goes_downwards && mirror_iclog)
     {
 
-        append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false);
+        append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false,m_chatmessage[text_color].toInt());
         ui_ic_chatlog->moveCursor(QTextCursor::End);
     }
     if (anim_state != 4)
@@ -2949,9 +2953,6 @@ void Courtroom::chat_tick()
               ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
               if(mirror_iclog && colorf_iclog)
                 ui_ic_chatlog->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
-              break;
-          default:
-              ui_vp_message->insertHtml(f_character);
               break;
           }
 
@@ -3294,7 +3295,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
     if (!mute_map.value(n_char))
     {
-      chatlogpiece* temp = new chatlogpiece(str_char, str_show, f_song, true);
+      chatlogpiece* temp = new chatlogpiece(str_char, str_show, f_song, true, m_chatmessage[TEXT_COLOR].toInt());
       ic_chatlog_history.append(*temp);
 
       while(ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
@@ -3997,6 +3998,7 @@ void Courtroom::on_custom_objection_clicked()
   {
     ui_custom_objection->set_image("custom.png");
     objection_state = 0;
+    objection_custom = "";
   }
   else
   {
@@ -4423,16 +4425,16 @@ void Courtroom::refresh_iclog(bool skiplast)
         if (ui_showname_enable->isChecked())
         {
            if (item.get_is_song())
-             append_ic_text(item.get_message(), item.get_showname(), true);
+             append_ic_text(item.get_message(), item.get_showname(), true,false,false);
            else
-             append_ic_text(item.get_message(), item.get_showname(),false,true);
+             append_ic_text(item.get_message(), item.get_showname(),false,true,true, item.get_chat_color());
         }
         else
         {
             if (item.get_is_song())
-              append_ic_text(item.get_message(), item.get_name(), true);
+              append_ic_text(item.get_message(), item.get_name(), true,false,true);
             else
-              append_ic_text(item.get_message(), item.get_name(),false,true);
+              append_ic_text(item.get_message(), item.get_name(),false,true,false,item.get_chat_color());
         }
       }
 }
