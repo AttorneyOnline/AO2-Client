@@ -178,8 +178,13 @@ void AOCharMovie::movie_ticker()
   // imagine if QT had sane stuff like "mirror on QMovie" or "resize the image on QT" or "interface with the current QMovie image" or anything else
 
   this->play_frame_sfx();
-  if(!apng){
+  if (m_movie->frameCount() == 0) {
+    //qDebug() << "Frame count was checked again, and it's still 0";
+    return;
+  }
+  else if(!apng) {
       ticker->start(m_movie->nextFrameDelay());
+  }
   }
 
 }
