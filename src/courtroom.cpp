@@ -1682,7 +1682,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_showname == "")
         f_showname = m_chatmessage[CHAR_NAME];
   if(!mirror_iclog)
-    append_ic_text(": " + m_chatmessage[MESSAGE], f_showname,m_chatmessage[text_color].toInt());
+    append_ic_text(": " + m_chatmessage[MESSAGE], f_showname,false,true,false,m_chatmessage[TEXT_COLOR].toInt());
 
   previous_ic_message = f_message;
   bool ok;
@@ -2215,6 +2215,7 @@ QString Courtroom::filter_ic_text(QString p_text,bool skip_filter,int chat_color
               f_character = " ";
           }
 
+
       }
 
       // Text speed modifier.
@@ -2717,7 +2718,7 @@ void Courtroom::chat_tick()
     if (log_goes_downwards && mirror_iclog)
     {
 
-        append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false,m_chatmessage[text_color].toInt());
+        append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false);
         ui_ic_chatlog->moveCursor(QTextCursor::End);
     }
     if (anim_state != 4)
@@ -2758,7 +2759,7 @@ void Courtroom::chat_tick()
     // Escape character.
     else if (f_character == "\\")
     {
-        if( f_message[1] == 'n')
+        if( f_message[tick_pos + 1] == 'n')
         {
             ui_vp_message->insertHtml("<br>");
             ui_ic_chatlog->insertPlainText(" ");
