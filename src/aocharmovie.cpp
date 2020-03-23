@@ -53,7 +53,10 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage());
   this->show();
   this->play_frame_sfx();
-  ticker->start(m_movie->nextFrameDelay());
+  // if the frame count is 0 (i.e. it's a static PNG) don't try to play the next frame, ya goofus
+  if (m_movie->frameCount() != 0) {
+    ticker->start(m_movie->nextFrameDelay());
+  }
 }
 
 void AOCharMovie::play_frame_sfx()
@@ -175,10 +178,15 @@ void AOCharMovie::movie_ticker()
   // imagine if QT had sane stuff like "mirror on QMovie" or "resize the image on QT" or "interface with the current QMovie image" or anything else
 
   this->play_frame_sfx();
-  if(!apng){
-      ticker->start(m_movie->nextFrameDelay());
-  }
 
+  if (m_movie->frameCount() == 0)
+  {
+    return;
+  }
+  else if (!apng)
+  {
+    ticker->start(m_movie->nextFrameDelay());
+  }
 }
 
 void AOCharMovie::LoadImageWithStupidMethodForFlipSupport(QImage image)
@@ -208,7 +216,6 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   m_movie->stop();
   m_movie->setFileName(gif_path);
   m_movie->jumpToFrame(0);
-  int real_duration = 0;
   play_once = true;
   play(p_char, p_emote, "");
 }
