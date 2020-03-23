@@ -26,6 +26,13 @@ void LegacyClient::mapSignals()
       if (args.contains("cccc_ic_support"))
         caseCafeFeatures = true;
     }
+    else if (header == "PN")
+    {
+      ENFORCE_MIN_LENGTH(2)
+
+      curPlayers = args[0].toInt();
+      maxPlayers = args[1].toInt();
+    }
     else if (header == "SC")
     {
       charsList.clear();
@@ -279,6 +286,9 @@ QPromise<void> LegacyClient::connect(const QString &address,
 
   auto promise = socket.connect(address, port)
       .then([&](void) {
+    // Once we map the signals, we don't need to parse any more
+    // messages explicitly here.
+    mapSignals();
     emit connectProgress(10, 100, tr("Getting player information..."));
     // Send HDID. Ignore fantacrypt - no AO server requires communicating
     // over fantacrypt anymore.
@@ -286,11 +296,6 @@ QPromise<void> LegacyClient::connect(const QString &address,
     // TODO: fix application version
     socket.send("ID", { "AO2", QCoreApplication::applicationVersion() });
     return socket.waitForMessage("PN");
-  }).then([&](const QStringList &playerCount) {
-    curPlayers = playerCount[0].toInt();
-    maxPlayers = playerCount[1].toInt();
-
-    return QPromise<QStringList>::resolve(playerCount);
   });
 
   if (probeOnly)
@@ -301,9 +306,6 @@ QPromise<void> LegacyClient::connect(const QString &address,
     socket.send("askchaa");
     return socket.waitForMessage("SI");
   }).then([&] {
-    // Once we map the signals, we don't need to parse any more
-    // messages explicitly here.
-    mapSignals();
     socket.send("RC");
     return socket.waitForMessage("SC");
   }).then([&] {
