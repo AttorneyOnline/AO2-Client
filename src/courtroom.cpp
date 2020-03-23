@@ -1347,6 +1347,13 @@ void Courtroom::on_chat_return_pressed()
       else
         f_emote_mod = 2;
     }
+    else
+    {
+      if (f_emote_mod == 1)
+        f_emote_mod = 0;
+      else if (f_emote_mod == 4)
+        f_emote_mod = 5;
+    }
   }
   else if (ui_pre->isChecked() and !ui_pre_non_interrupt->isChecked())
   {
