@@ -150,6 +150,8 @@ void AOChat::on_emotes_currentItemChanged(QListWidgetItem *cur, QListWidgetItem 
 
   EMOTE_MODIFIER modifier = ao_app->get_emote_mod(character, emote);
   ui_preanim->setChecked(modifier == PREANIM);
+
+  clickDebounce = true;
 }
 
 void AOChat::on_emotes_itemClicked(QListWidgetItem *emote)
@@ -157,10 +159,14 @@ void AOChat::on_emotes_itemClicked(QListWidgetItem *emote)
   if (emote == nullptr)
     return;
 
-  // This is probably not going to work the way that I expected because
-  // this depends on the order in which order itemClicked and
-  // currentItemChanged are handled. If this slot is handled too late,
-  // then this condition will always be true.
+  // Don't handle this event if currentItemChanged was just triggered
+  // and the user is just now letting go of the mouse button.
+  if (clickDebounce)
+  {
+    clickDebounce = false;
+    return;
+  }
+
   if (emote->data(Qt::UserRole) == ui_emote->currentData())
     ui_preanim->toggle();
 }

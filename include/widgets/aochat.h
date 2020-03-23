@@ -55,6 +55,7 @@ private:
   QLineEdit *ui_showname;
 
   QString character;
+  bool clickDebounce = false;
 
 signals:
   void messageSent();
