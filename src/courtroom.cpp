@@ -1991,6 +1991,7 @@ void Courtroom::handle_chatmessage_2()
 }
 void Courtroom::realization_done()
 {
+  realization_timer->stop();
   ui_vp_realization->hide();
 }
 
@@ -2628,6 +2629,7 @@ void Courtroom::preanim_done()
 
 void Courtroom::doRealization()
 {
+    realization_timer->stop();
     if(!ao_app->is_shakeandflash_enabled())
         return;
     realization_timer->start(60);
@@ -2692,7 +2694,8 @@ void Courtroom::chat_tick()
 {
   //note: this is called fairly often(every 60 ms when char is talking)
   //do not perform heavy operations here
-
+    QString timem = QString::number(realization_timer->remainingTime());
+  qDebug() << "TIME: " << timem;
   QString f_message = m_chatmessage[MESSAGE];
 
   //f_message.remove(0, tick_pos); SAFECHECK
@@ -2760,6 +2763,7 @@ void Courtroom::chat_tick()
         else if (f_character == "$" and !next_character_is_not_special)
         {
             this->doRealization();
+
             formatting_char = true;
         }
     // Escape character.
