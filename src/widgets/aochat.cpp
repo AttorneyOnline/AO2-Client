@@ -79,9 +79,10 @@ void AOChat::setCharacter(const QString &character)
   ui_emote->clear();
 
   const int totalEmotes = ao_app->get_emote_number(character);
-  for (int i = 1; i < totalEmotes; i++)
+  for (int i = 0; i < totalEmotes; i++)
   {
-    const QString imagePath = QStringLiteral("emotions/button%1%2").arg(i);
+    int compatId = i + 1;
+    const QString imagePath = QStringLiteral("emotions/button%1%2").arg(compatId);
     const QString imagePathOff = ao_app->get_character_path(character, imagePath.arg("_off.png"));
     const QString imagePathOn = ao_app->get_character_path(character, imagePath.arg("_on.png"));
     const QString emoteName = ao_app->get_emote_comment(character, i);
