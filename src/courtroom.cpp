@@ -2169,7 +2169,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
         skip = true;
       }
       //Nothing related to colors here
-      else if (f_character == "{" || f_character == "}" || f_character == "@" || f_character == "$")
+      else if (f_character == "{" || f_character == "}") //|| f_character == "@" || f_character == "$")
       {
         skip = true;
       }
@@ -2268,6 +2268,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
         check_pos_escaped += appendage.size();
         skip = true;
       }
+      if (f_character == "s" || f_character == "f") // screenshake/flash
+        skip = true;
 
       ic_next_is_not_special = false;
     }
@@ -2636,19 +2638,6 @@ void Courtroom::chat_tick()
         formatting_char = true;
     }
 
-    //Screenshake.
-    else if (f_character == "@")
-    {
-        this->do_screenshake();
-        formatting_char = true;
-    }
-
-    //Flash.
-    else if (f_character == "$")
-    {
-        this->do_flash();
-        formatting_char = true;
-    }
     else
     {
       //Parse markdown colors
@@ -2673,13 +2662,23 @@ void Courtroom::chat_tick()
   {
     if (f_character == "n")
       formatting_char = true; //it's a newline
+    if (f_character == "s") //Screenshake.
+    {
+      this->do_screenshake();
+      formatting_char = true;
+    }
+    if (f_character == "f")//Flash.
+    {
+      this->do_flash();
+      formatting_char = true;
+    }
     next_character_is_not_special = false;
   }
 
   if ((message_display_speed[current_display_speed] <= 0 && tick_pos < f_message.size()-1) || formatting_char)
   {
     chat_tick_timer->start(0); //Don't bother rendering anything out as we're doing the SPEED. (there's latency otherwise)
-    if (!formatting_char || f_character == "n")
+    if (!formatting_char || f_character == "n" || f_character == "f" || f_character == "s")
       real_tick_pos += f_char_length; //Adjust the tick position for the scrollbar convenience
   }
   else
