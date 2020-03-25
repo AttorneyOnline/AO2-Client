@@ -16,7 +16,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   // Create the QSettings class that points to the config.ini.
   configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
-  ms = std::make_shared<LegacyMasterServer>(nullptr);
+  ms = std::make_shared<LegacyMasterServer>(this);
   discord = std::make_shared<Discord>();
 }
 

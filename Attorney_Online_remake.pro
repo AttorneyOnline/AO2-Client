@@ -36,7 +36,7 @@ HEADERS += $$files($$PWD/include/*.h, true)
 # compile dynamically. If your primary distribution method is via the launcher, then
 # a simple dynamic compilation is recommended.
 unix:LIBS += -L$$PWD -lbass -ldiscord-rpc
-win32:LIBS += -L$$PWD/lib "$$PWD/lib/bass.dll" -ldiscord-rpc
+win32:LIBS += -L$$PWD/lib  -ldiscord-rpc "$$PWD/lib/bass.dll" -lbass --enable-stdcall-fixup
 INCLUDEPATH += $$PWD/include
 
 CONFIG += c++11
