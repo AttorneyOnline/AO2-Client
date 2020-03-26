@@ -601,7 +601,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
     </property>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="ic_dock">
+  <widget class="QDockWidget" name="ic_chat_dock">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
      <horstretch>0</horstretch>
@@ -702,6 +702,12 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_ic_log">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Transcript</string>
    </property>
@@ -710,6 +716,12 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_server_chat">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Server Chat</string>
    </property>
@@ -718,6 +730,9 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_ms_chat">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Global Chat</string>
    </property>
@@ -726,6 +741,9 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_room_chooser">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Room List</string>
    </property>
@@ -734,6 +752,12 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_room_controls">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Room Controls</string>
    </property>
@@ -742,6 +766,9 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_mixer">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Sound Mixer</string>
    </property>
@@ -750,6 +777,9 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_jukebox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Music List</string>
    </property>
@@ -758,6 +788,9 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
   </action>
   <action name="toggle_evidence">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Evidence</string>
    </property>
