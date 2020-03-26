@@ -1,5 +1,6 @@
 #include "aocharselect.h"
 #include "aouiloader.h"
+#include "file_functions.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -84,6 +85,8 @@ void AOCharSelect::setCharacters(QVector<char_type> characters)
   {
     QString imagePath = ao_app->get_character_path(character.name,
                                                    "char_icon.png");
+    if (!file_exists(imagePath))
+      imagePath = ao_app->get_default_theme_path("char_selector.png");
 
     // nullptr is required to select an overload that doesn't require
     // specifying any text. If any text at all is specified, the
