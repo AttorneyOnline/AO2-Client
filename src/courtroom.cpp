@@ -487,7 +487,7 @@ void Courtroom::set_widgets()
   ui_settings->show();
 
   ui_vp_background->move(0, 0);
-  ui_vp_background->resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_speedlines->move(0, 0);
   ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -500,7 +500,7 @@ void Courtroom::set_widgets()
 
   //the AO2 desk element
   ui_vp_desk->move(0, 0);
-  ui_vp_desk->resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_desk->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   //the size of the ui_vp_legacy_desk element relies on various factors and is set in set_scene()
 

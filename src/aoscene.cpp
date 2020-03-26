@@ -26,25 +26,35 @@ void AOScene::set_image(QString p_image)
   if (file_exists(background_path) && background_path == last_image)
     return;
 
-  int w = this->width();
-  int h = this->height();
-
   this->clear();
   this->setMovie(nullptr);
 
   m_movie->stop();
   m_movie->setFileName(background_path);
-  m_movie->setScaledSize(QSize(w, h));
 
   if (m_movie->isValid() && m_movie->frameCount() > 1)
   {
+    float scale_factor = f_h / m_movie->frameRect().height();
+    //preserve aspect ratio
+    int n_w = static_cast<int>(static_cast<float>(m_movie->frameRect().width()) * scale_factor);
+    int n_h = static_cast<int>(static_cast<float>(m_movie->frameRect().height()) * scale_factor);
+    m_movie->setScaledSize(QSize(n_w, n_h));
+    this->resize(m_movie->scaledSize());
     this->setMovie(m_movie);
+    QLabel::move(x + (f_w - n_w)/2, y + (f_h - n_h)); //Always center horizontally, always put at the bottom vertically
     m_movie->start();
   }
   else
   {
     QPixmap background(background_path);
-    this->setPixmap(background.scaled(w, h));
+    auto transform_mode = Qt::FastTransformation;
+    if (background.height() > f_h) //We are downscaling, use anti-aliasing.
+      transform_mode = Qt::SmoothTransformation;
+
+    background = background.scaledToHeight(f_h, transform_mode);
+    this->resize(background.size());
+    this->setPixmap(background);
+    QLabel::move(x + (f_w - background.width())/2, y + (f_h - background.height())/2); //Always center horizontally, always center vertically
   }
   last_image = background_path;
 }
@@ -92,8 +102,23 @@ void AOScene::set_legacy_desk(QString p_image)
   }
   else
   {
-      this->resize(vp_width, final_h);
-      this->setPixmap(f_desk.scaled(vp_width, final_h));
+    this->resize(vp_width, final_h);
+    this->setPixmap(f_desk.scaled(vp_width, final_h));
   }
   last_image = desk_path;
+}
+
+void AOScene::combo_resize(int w, int h)
+{
+  QSize f_size(w, h);
+  f_w = w;
+  f_h = h;
+  this->resize(f_size);
+}
+
+void AOScene::move(int ax, int ay)
+{
+  x = ax;
+  y = ay;
+  QLabel::move(x, y);
 }
