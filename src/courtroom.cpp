@@ -1214,7 +1214,7 @@ void Courtroom::enter_courtroom()
 void Courtroom::list_music()
 {
   ui_music_list->clear();
-  ui_music_search->setText("");
+//  ui_music_search->setText("");
 
   QString f_file = "courtroom_design.ini";
 
@@ -1251,13 +1251,17 @@ void Courtroom::list_music()
   }
 
   ui_music_list->expandAll(); //Needs to somehow remember which categories were expanded/collapsed if the music list didn't change since last time
+  if (ui_music_search->text() != "")
+  {
+    on_music_search_edited(ui_music_search->text());
+  }
 }
 
 //Todo: multithread this due to some servers having large as hell area list
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
-  ui_music_search->setText("");
+//  ui_music_search->setText("");
 
   QString f_file = "courtroom_design.ini";
 
@@ -1326,6 +1330,11 @@ void Courtroom::list_areas()
     }
 
     ++n_listed_areas;
+  }
+
+  if (ui_music_search->text() != "")
+  {
+    on_music_search_edited(ui_music_search->text());
   }
 }
 
@@ -3386,8 +3395,6 @@ void Courtroom::on_music_search_edited(QString p_text)
 
 void Courtroom::on_pos_dropdown_changed(int p_index)
 {
-  ui_ic_chat_message->setFocus();
-
   if (p_index < 0 || p_index > 7)
     return;
 
@@ -4399,6 +4406,8 @@ void Courtroom::on_evidence_button_clicked()
 
 void Courtroom::on_switch_area_music_clicked()
 {
+    ui_music_search->setText("");
+    on_music_search_edited(ui_music_search->text());
     if (ui_area_list->isHidden())
     {
         ui_area_list->show();
