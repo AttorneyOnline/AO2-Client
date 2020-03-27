@@ -2414,6 +2414,10 @@ void Courtroom::start_chat_ticking()
     this->doRealization();
     misc_sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
+  if (m_chatmessage[SCREENSHAKE] == "1")
+  {
+    this->doScreenShake();
+  }
   ui_vp_message->clear();
   set_text_color();
   rainbow_counter = 0;
