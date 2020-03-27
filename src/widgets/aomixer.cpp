@@ -12,6 +12,8 @@ AOMixer::AOMixer(QWidget *parent, AOApplication *p_ao_app)
   QWidget *windowWidget = loader.load(&uiFile, this);
   QMetaObject::connectSlotsByName(this);
 
+  setWindowTitle(tr("Sound Mixer"));
+
   QVBoxLayout *parentLayout = new QVBoxLayout;
   parentLayout->setMargin(0);
   parentLayout->addWidget(windowWidget);

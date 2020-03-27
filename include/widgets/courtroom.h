@@ -30,6 +30,7 @@
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QListWidget>
+#include <QDockWidget>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSlider>
@@ -51,22 +52,29 @@
 #include <QAction>
 
 #define REGISTER_WINDOW(type, widget, toggleAction, ...) \
-  FROM_UI(QAction, toggleAction) \
   FROM_UI(type, widget) \
+  FROM_UI(QDockWidget, widget##_dock) \
+  FROM_UI(QAction, toggleAction) \
   if (ui_##widget == nullptr) \
   { \
-    ui_##widget = new type(this, ##__VA_ARGS__); \
-    ui_##widget->setWindowFlag(Qt::WindowType::Tool);\
+    ui_##widget##_dock = new QDockWidget(this); \
+    ui_##widget = new type(ui_##widget##_dock, ##__VA_ARGS__); \
+    ui_##widget##_dock->setWidget(ui_##widget); \
+    ui_##widget##_dock->setWindowTitle(ui_##widget->windowTitle()); \
+    windowWidget->addDockWidget(Qt::BottomDockWidgetArea, ui_##widget##_dock); \
+    ui_##widget##_dock->setFloating(true); \
+    \
+    ui_##widget##_dock->setVisible(false); \
   } \
   else \
   { \
     ui_##toggleAction->setChecked(true); \
   } \
   connect(ui_##toggleAction, &QAction::toggled, this, [&](bool toggled) { \
-    ui_##widget->setVisible(toggled); \
+    ui_##widget##_dock->setVisible(toggled); \
   }); \
   connect(ui_window_menu, &QMenu::aboutToShow, this, [&] { \
-    ui_##toggleAction->setChecked(ui_##widget->isVisible()); \
+    ui_##toggleAction->setChecked(ui_##widget##_dock->isVisible()); \
   });
 
 using namespace AttorneyOnline;
@@ -126,16 +134,42 @@ private:
   AOSfxPlayer *modcall_player;
 
   AOViewport *ui_viewport;
+  QDockWidget *ui_viewport_dock;
+
   AOICLog *ui_ic_chatlog;
+  QDockWidget *ui_ic_chatlog_dock;
+  QAction *ui_toggle_ic_log;
+
   AORoomChooser *ui_room_chooser;
+  QDockWidget *ui_room_chooser_dock;
+  QAction *ui_toggle_room_chooser;
+
   AOJukebox *ui_music_list;
+  QDockWidget *ui_music_list_dock;
+  QAction *ui_toggle_jukebox;
+
   AOMixer *ui_mixer;
+  QDockWidget *ui_mixer_dock;
+  QAction *ui_toggle_mixer;
+
   AOChat *ui_ic_chat;
+  QDockWidget *ui_ic_chat_dock;
+
   AORoomControls *ui_room_controls;
+  QDockWidget *ui_room_controls_dock;
+  QAction *ui_toggle_room_controls;
+
   AOEvidence *ui_evidence;
+  QDockWidget *ui_evidence_dock;
+  QAction *ui_toggle_evidence;
 
   AOServerChat *ui_ms_chat;
+  QDockWidget *ui_ms_chat_dock;
+  QAction *ui_toggle_ms_chat;
+
   AOServerChat *ui_server_chat;
+  QDockWidget *ui_server_chat_dock;
+  QAction *ui_toggle_server_chat;
 
   QAction *ui_change_character;
   QAction *ui_reload_theme;
@@ -148,14 +182,6 @@ private:
   QAction *ui_showname_enable;
 
   QMenu *ui_window_menu;
-  QAction *ui_toggle_ic_log;
-  QAction *ui_toggle_server_chat;
-  QAction *ui_toggle_ms_chat;
-  QAction *ui_toggle_room_chooser;
-  QAction *ui_toggle_room_controls;
-  QAction *ui_toggle_jukebox;
-  QAction *ui_toggle_mixer;
-  QAction *ui_toggle_evidence;
 
   void initBASS();
 

@@ -24,6 +24,10 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   windowWidget->setWindowFlag(Qt::Window, false);
   windowWidget->setWindowFlag(Qt::Widget);
   windowWidget->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
+
+  windowWidget->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+  windowWidget->setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+
   windowWidget->show();
 
   setWindowTitle("Attorney Online 2");
@@ -54,6 +58,8 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   REGISTER_WINDOW(AOMixer, mixer, toggle_mixer, ao_app)
   REGISTER_WINDOW(AORoomControls, room_controls, toggle_room_controls, ao_app)
   REGISTER_WINDOW(AOEvidence, evidence, toggle_evidence, ao_app)
+
+  ui_ms_chat->setWindowTitle(tr("Master Chat"));
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(options.defaultMusicVolume());
@@ -414,7 +420,7 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
 
 void Courtroom::on_ms_return_pressed(QString name, QString message)
 {
-  client->sendOOC(name, message);
+  append_ms_chatmessage("Client", "Not implemented yet.");
 }
 
 void Courtroom::on_icChat_positionChanged(QString pos)
