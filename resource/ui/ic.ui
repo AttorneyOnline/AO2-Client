@@ -677,6 +677,22 @@ background: transparent;
    <header location="global">widgets/aochatentry.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>chat_entry</tabstop>
+  <tabstop>holdit</tabstop>
+  <tabstop>objection</tabstop>
+  <tabstop>takethat</tabstop>
+  <tabstop>custom_interjection</tabstop>
+  <tabstop>emotes</tabstop>
+  <tabstop>emote</tabstop>
+  <tabstop>color</tabstop>
+  <tabstop>side</tabstop>
+  <tabstop>preanim</tabstop>
+  <tabstop>flip</tabstop>
+  <tabstop>realization</tabstop>
+  <tabstop>no_interrupt</tabstop>
+  <tabstop>showname</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
