@@ -520,16 +520,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
           for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
           {
+            int element2check = n_element + 1;
+            if (element2check > f_contents.size())
+            {
+                element2check = n_element; //I know this is very lazy code but cba
+            }
             if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
-                                 f_contents.at(n_element).endsWith(".wav") ||
-                                 f_contents.at(n_element).endsWith(".mp3") ||
-                                 f_contents.at(n_element).endsWith(".mp4") ||
-                                 f_contents.at(n_element).endsWith(".ogg") ||
-                                 f_contents.at(n_element).endsWith(".opus")))
+                                 f_contents.at(element2check).endsWith(".wav") ||
+                                 f_contents.at(element2check).endsWith(".mp3") ||
+                                 f_contents.at(element2check).endsWith(".mp4") ||
+                                 f_contents.at(element2check).endsWith(".ogg") ||
+                                 f_contents.at(element2check).endsWith(".opus")))
             {
                 musics_time = true;
+
                 //w_courtroom->fix_last_area();
-                continue;
+                //continue;
 
             }
 

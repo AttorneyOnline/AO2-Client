@@ -1092,82 +1092,82 @@ void Courtroom::list_music()
 
 void Courtroom::list_areas()
 {
-    ui_area_list->clear();
-      area_row_to_number.clear();
+  ui_area_list->clear();
+  area_row_to_number.clear();
 
-      QString f_file = "courtroom_design.ini";
+  QString f_file = "courtroom_design.ini";
 
-      QBrush free_brush(ao_app->get_color("area_free_color", f_file));
-      QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
-      QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
-      QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
-      QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
-      QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
-      QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
+  QBrush free_brush(ao_app->get_color("area_free_color", f_file));
+  QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
+  QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
+  QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
+  QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
+  QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
+  QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
 
-      int n_listed_areas = 0;
+  int n_listed_areas = 0;
 
-      for (int n_area = 0 ; n_area < area_list.size() ; ++n_area)
+  for (int n_area = 0 ; n_area < area_list.size(); ++n_area)
+  {
+    QString i_area = "";
+//    i_area.append("[");
+//    i_area.append(QString::number(n_area));
+//    i_area.append("] ");
+
+    i_area.append(area_list.at(n_area));
+
+    if (ao_app->arup_enabled)
+    {
+      i_area.append("\n  ");
+
+      i_area.append(arup_statuses.at(n_area));
+      i_area.append(" | CM: ");
+      i_area.append(arup_cms.at(n_area));
+
+      i_area.append("\n  ");
+
+      i_area.append(QString::number(arup_players.at(n_area)));
+      i_area.append(" users | ");
+
+      i_area.append(arup_locks.at(n_area));
+    }
+
+    if (i_area.toLower().contains(ui_music_search->text().toLower()))
+    {
+      ui_area_list->addItem(i_area);
+      area_row_to_number.append(n_area);
+
+      if (ao_app->arup_enabled)
       {
-        QString i_area = "";
-        i_area.append("[");
-        i_area.append(QString::number(n_area));
-        i_area.append("] ");
-
-        i_area.append(area_list.at(n_area));
-
-        if (ao_app->arup_enabled)
+        // Colouring logic here.
+        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+        if (arup_locks.at(n_area) == "LOCKED")
         {
-          i_area.append("\n  ");
-
-          i_area.append(arup_statuses.at(n_area));
-          i_area.append(" | CM: ");
-          i_area.append(arup_cms.at(n_area));
-
-          i_area.append("\n  ");
-
-          i_area.append(QString::number(arup_players.at(n_area)));
-          i_area.append(" users | ");
-
-          i_area.append(arup_locks.at(n_area));
+            ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
         }
-
-        if (i_area.toLower().contains(ui_music_search->text().toLower()))
+        else
         {
-          ui_area_list->addItem(i_area);
-          area_row_to_number.append(n_area);
-
-          if (ao_app->arup_enabled)
-          {
-            // Colouring logic here.
-            ui_area_list->item(n_listed_areas)->setBackground(free_brush);
-            if (arup_locks.at(n_area) == "LOCKED")
-            {
-                ui_area_list->item(n_listed_areas)->setBackground(locked_brush);
-            }
-            else
-            {
-                if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-                    ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
-                else if (arup_statuses.at(n_area) == "CASING")
-                    ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
-                else if (arup_statuses.at(n_area) == "RECESS")
-                    ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
-                else if (arup_statuses.at(n_area) == "RP")
-                    ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
-                else if (arup_statuses.at(n_area) == "GAMING")
-                    ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
-            }
-          }
-          else
-          {
-            ui_area_list->item(n_listed_areas)->setBackground(free_brush);
-          }
-
-          ++n_listed_areas;
+            if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
+                ui_area_list->item(n_listed_areas)->setBackground(lfp_brush);
+            else if (arup_statuses.at(n_area) == "CASING")
+                ui_area_list->item(n_listed_areas)->setBackground(casing_brush);
+            else if (arup_statuses.at(n_area) == "RECESS")
+                ui_area_list->item(n_listed_areas)->setBackground(recess_brush);
+            else if (arup_statuses.at(n_area) == "RP")
+                ui_area_list->item(n_listed_areas)->setBackground(rp_brush);
+            else if (arup_statuses.at(n_area) == "GAMING")
+                ui_area_list->item(n_listed_areas)->setBackground(gaming_brush);
         }
       }
+      else
+      {
+        ui_area_list->item(n_listed_areas)->setBackground(free_brush);
+      }
+
+      ++n_listed_areas;
     }
+  }
+}
 
 void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
 {
