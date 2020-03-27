@@ -38,7 +38,6 @@
 #include <QVector>
 #include <QSignalMapper>
 #include <QCloseEvent>
-#include <QSignalMapper>
 #include <QMap>
 #include <QTextBrowser>
 #include <QSpinBox>
@@ -364,7 +363,7 @@ private:
     //the amount of time non-animated witness testimony/cross-examination images stay onscreen for in ms
     const int wtce_stay_time = 1500;
 
-  static const int chatmessage_size = 23;
+  static const int chatmessage_size = 28;
   QString m_chatmessage[chatmessage_size];
   QString m_chatmessage_tmp[chatmessage_size];
   bool chatmessage_is_empty = false;
@@ -462,7 +461,7 @@ private:
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;
-  AOImage *ui_vp_realization;
+  AOMovie *ui_vp_realization;
   AOMovie *ui_vp_testimony;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;

@@ -113,7 +113,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_testimony = new AOMovie(this, ao_app);
   ui_vp_testimony->set_play_once(false);
-  ui_vp_realization = new AOImage(this, ao_app);
+  ui_vp_realization = new AOMovie(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
@@ -525,10 +525,10 @@ void Courtroom::set_widgets()
 
   ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_realization->resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_realization->set_image("realizationflash.png");
-  ui_vp_realization->hide();
+
   ui_vp_realization->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_realization->combo_resize(ui_viewport->width(), ui_viewport->height());
+
 
   ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -1605,7 +1605,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
-
+  qDebug() <<"MS_PACKET" << p_contents;
   if (f_message == previous_ic_message)
     return;
 
@@ -1628,7 +1628,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     realization_state = 0;
     screenshake_state = 0;
     is_presenting_evidence = false;
-     screenshake_state = 0;
     ui_pre->setChecked(false);
     ui_hold_it->set_image("holdit.png");
     ui_objection->set_image("objection.png");
@@ -1991,7 +1990,6 @@ void Courtroom::handle_chatmessage_2()
 }
 void Courtroom::realization_done()
 {
-  realization_timer->stop();
   ui_vp_realization->hide();
 }
 
@@ -2632,8 +2630,7 @@ void Courtroom::doRealization()
     realization_timer->stop();
     if(!ao_app->is_shakeandflash_enabled())
         return;
-    realization_timer->start(60);
-    ui_vp_realization->show();
+    ui_vp_realization->play("realizationflash", "", "",shown, 90);
 
 }
 
@@ -2649,6 +2646,10 @@ void Courtroom::start_chat_ticking()
   {
     this->doRealization();
     misc_sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
+  }
+  if (m_chatmessage[SCREENSHAKE] == "1")
+  {
+    this->doScreenShake();
   }
   ui_vp_message->clear();
   set_text_color();
@@ -2760,7 +2761,7 @@ void Courtroom::chat_tick()
             formatting_char = true;
         }
 
-        else if (f_character == "$" and !next_character_is_not_special)
+        else if (f_character == "^" and !next_character_is_not_special)
         {
             this->doRealization();
 
