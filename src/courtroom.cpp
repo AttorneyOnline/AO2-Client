@@ -4038,7 +4038,7 @@ void Courtroom::ShowContextMenu(const QPoint& pos)
             ui_hold_it->set_image("holdit.png");
             ui_custom_objection->set_image("custom_selected.png");
             if(selecteditem->text() == "Default")
-                objection_custom = ""
+                objection_custom = "";
 
             objection_custom = selecteditem->text();
             objection_state = 4;
