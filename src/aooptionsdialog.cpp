@@ -203,18 +203,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(13, QFormLayout::FieldRole, ui_keepevi_cb);
 
-    ui_keepcobj_lbl = new QLabel(ui_form_layout_widget);
-    ui_keepcobj_lbl->setText(tr("Maintain Custom objections:"));
-    ui_keepcobj_lbl->setToolTip(tr("Instead of clearing the custom objection selected each use, "
-                                  "the last selected custom objection will be used until another one is chosen. "));
-
-    ui_gameplay_form->setWidget(14, QFormLayout::LabelRole, ui_keepcobj_lbl);
-
-    ui_keepcobj_cb = new QCheckBox(ui_form_layout_widget);
-    ui_keepcobj_cb->setChecked(ao_app->is_keepcobj_enabled());
-
-    ui_gameplay_form->setWidget(14, QFormLayout::FieldRole, ui_keepcobj_cb);
-
     //
     // CALLWORDS
     //
@@ -652,7 +640,6 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("language", ui_language_combobox->currentText().left(2));
     configini->setValue("punctuation_delay",ui_pun_delay_spinbox->value());
     configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
-    configini->setValue("keep_custom_objections", ui_keepcobj_cb->isChecked());
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
     if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))

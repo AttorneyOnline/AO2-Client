@@ -32,3 +32,5 @@ discord/
 moc*
 /Attorney_Online_CC_resource.rc
 /attorney_online_cc_plugin_import.cpp
+
+*.autosave

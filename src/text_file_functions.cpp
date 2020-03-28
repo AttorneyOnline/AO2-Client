@@ -702,11 +702,6 @@ bool AOApplication::is_keepevi_enabled()
     return result.startsWith("true");
 }
 
-bool AOApplication::is_keepcobj_enabled()
-{
-    QString result = configini->value("keep_custom_objections", "false").value<QString>();
-    return result.startsWith("true");
-}
 bool AOApplication::get_casing_enabled()
 {
     QString result = configini->value("casing_enabled", "false").value<QString>();
