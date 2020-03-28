@@ -1623,7 +1623,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   {
     ui_ic_chat_message->clear();
     objection_state = 0;
-    objection_custom = "";
+    if (!keep_custom_objection)
+        objection_custom = "";
     char_name = m_chatmessage[CHAR_NAME];
     realization_state = 0;
     screenshake_state = 0;
@@ -1678,7 +1679,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ic_chatlog_history.removeFirst();
   }
   refresh_iclog(true);
-//HERE
+
   if (f_showname == "")
         f_showname = m_chatmessage[CHAR_NAME];
   if(!mirror_iclog)
@@ -1687,11 +1688,11 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   previous_ic_message = f_message;
   bool ok;
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt(&ok, 10); //checks if its a custom obj.
-  objection_custom = ""; //added this for safety reasons
+  QString custom_objection = "";
   if(!ok && m_chatmessage[OBJECTION_MOD].contains("4&"))
   {
       objection_mod = 4;
-      objection_custom = m_chatmessage[OBJECTION_MOD].split("4&")[1]; //takes the name of custom objection.
+      custom_objection = m_chatmessage[OBJECTION_MOD].split("4&")[1]; //takes the name of custom objection.
   }
   QString f_char = char_name;
   if(shown)
@@ -1721,10 +1722,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       break;
     //case 4 is AO2 only
     case 4:
-      if(objection_custom != "")
+      if(custom_objection != "")
       {
-          ui_vp_objection->play("custom_objections/" + objection_custom, f_char, f_custom_theme, shout_stay_time);
-          objection_player->play("custom_objections/" + objection_custom.split('.')[0] + ".wav", f_char, f_custom_theme);
+          ui_vp_objection->play("custom_objections/" + custom_objection, f_char, f_custom_theme, shout_stay_time);
+          objection_player->play("custom_objections/" + custom_objection.split('.')[0] + ".wav", f_char, f_custom_theme);
       }
       else
       {
@@ -4010,7 +4011,8 @@ void Courtroom::on_custom_objection_clicked()
   {
     ui_custom_objection->set_image("custom.png");
     objection_state = 0;
-    objection_custom = "";
+    if(!keep_custom_objection)
+        objection_custom = "";
   }
   else
   {

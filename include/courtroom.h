@@ -398,6 +398,7 @@ private:
   QString char_name = "";
 
   int objection_state = 0;
+  bool keep_custom_objection = false;
   QString objection_custom = "";
   int realization_state = 0;
   int screenshake_state = 0;

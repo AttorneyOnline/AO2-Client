@@ -34,7 +34,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_vertical_layout->addWidget(ui_settings_buttons);
 
     // Let's add the tabs one by one.
-    // First, we'll start with 'Gameplay'.
+
+    //
+    // GAMEPLAY
+    //
+
     ui_gameplay_tab = new QWidget();
     ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
 
@@ -186,7 +190,34 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_gameplay_form->setWidget(12, QFormLayout::FieldRole, ui_pun_delay_spinbox);
     ui_gameplay_form->setWidget(12, QFormLayout::LabelRole, ui_pun_delay);
 
-    // Here we start the callwords tab.
+
+    ui_keepevi_lbl = new QLabel(ui_form_layout_widget);
+    ui_keepevi_lbl->setText(tr("Maintain evidence:"));
+    ui_keepevi_lbl->setToolTip(tr("Instead of removing the evidence icon each time somebody speaks, "
+                                  "the evidence icon will remain until it is replaced. "));
+
+    ui_gameplay_form->setWidget(13, QFormLayout::LabelRole, ui_keepevi_lbl);
+
+    ui_keepevi_cb = new QCheckBox(ui_form_layout_widget);
+    ui_keepevi_cb->setChecked(ao_app->is_keepevi_enabled());
+
+    ui_gameplay_form->setWidget(13, QFormLayout::FieldRole, ui_keepevi_cb);
+
+    ui_keepcobj_lbl = new QLabel(ui_form_layout_widget);
+    ui_keepcobj_lbl->setText(tr("Maintain Custom objections:"));
+    ui_keepcobj_lbl->setToolTip(tr("Instead of clearing the custom objection selected each use, "
+                                  "the last selected custom objection will be used until another one is chosen. "));
+
+    ui_gameplay_form->setWidget(14, QFormLayout::LabelRole, ui_keepcobj_lbl);
+
+    ui_keepcobj_cb = new QCheckBox(ui_form_layout_widget);
+    ui_keepcobj_cb->setChecked(ao_app->is_keepcobj_enabled());
+
+    ui_gameplay_form->setWidget(14, QFormLayout::FieldRole, ui_keepcobj_cb);
+
+    //
+    // CALLWORDS
+    //
     ui_callwords_tab = new QWidget();
     ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
 
@@ -196,17 +227,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_callwords_layout = new QVBoxLayout(ui_callwords_widget);
     ui_callwords_layout->setContentsMargins(0,0,0,0);
 
-    ui_keepevi_lbl = new QLabel(ui_form_layout_widget);
-    ui_keepevi_lbl->setText(tr("Maintain evidence:"));
-    ui_keepevi_lbl->setToolTip(tr("Instead of removing the evidence icon each time somebody speaks, "
-                                  "the evidence icon will remain until be replaced. "));
-
-    ui_gameplay_form->setWidget(13, QFormLayout::LabelRole, ui_keepevi_lbl);
-
-    ui_keepevi_cb = new QCheckBox(ui_form_layout_widget);
-    ui_keepevi_cb->setChecked(ao_app->is_discord_enabled());
-
-    ui_gameplay_form->setWidget(13, QFormLayout::FieldRole, ui_keepevi_cb);
 
     ui_callwords_textbox = new QPlainTextEdit(ui_callwords_widget);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -214,6 +234,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(ui_callwords_textbox->sizePolicy().hasHeightForWidth());
     ui_callwords_textbox->setSizePolicy(sizePolicy);
+
+
+
+
+
 
     // Let's fill the callwords text edit with the already present callwords.
     ui_callwords_textbox->document()->clear();
@@ -229,7 +254,10 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
 
-    // The audio tab.
+
+    //
+    // AUDIO
+    //
     ui_audio_tab = new QWidget();
     ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
 
@@ -374,8 +402,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
        ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
 
-
-    // The casing tab!
+    //
+    // CASING
+    //
     ui_casing_tab = new QWidget();
     ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
 
@@ -526,7 +555,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_casing_layout->setWidget(9, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
 
 
-    //other
+    //ICLOG
 
 
 
@@ -622,7 +651,8 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
     configini->setValue("punctuation_delay",ui_pun_delay_spinbox->value());
-        configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
+    configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
+    configini->setValue("keep_custom_objections", ui_keepcobj_cb->isChecked());
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
     if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))

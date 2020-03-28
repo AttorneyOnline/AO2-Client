@@ -183,6 +183,9 @@ public:
   //Returns whether evidence should be maintained ic
   bool is_keepevi_enabled();
 
+  //Returns wether custom objections should be maintained
+  bool is_keepcobj_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();

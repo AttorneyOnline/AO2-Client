@@ -72,6 +72,9 @@ private:
     QLabel *ui_keepevi_lbl;
     QCheckBox *ui_keepevi_cb;
 
+    QLabel *ui_keepcobj_lbl;
+    QCheckBox *ui_keepcobj_cb;
+
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;
     QVBoxLayout *ui_callwords_layout;
