@@ -2499,7 +2499,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
           ui_ic_chatlog->textCursor().deleteChar();
           //qDebug() << ui_ic_chatlog->document()->blockCount() << " < " << log_maximum_blocks;
       }
-      qDebug() << ui_ic_chatlog->verticalScrollBar()->maximum();
 
       if (old_cursor.hasSelection() || !is_scrolled_down)
       {
