@@ -1604,7 +1604,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
 
-  qDebug() <<"MS_PACKET" << p_contents;
   if (f_message == previous_ic_message)
     return;
 
