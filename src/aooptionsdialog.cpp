@@ -686,7 +686,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
 
     configini->setValue("color_iclog_enabled",ui_other_fancy_icl_enabled_cb->isChecked());
-    configini->setValue("mirror_iclog_enabled",ui_other_mirror_icl_enabled_cb->isChecked());//ui_other_fancy_icl_limit_cb
+    configini->setValue("mirror_iclog_enabled",ui_other_mirror_icl_enabled_cb->isChecked());
     configini->setValue("mirror_iclog_restricted",ui_other_fancy_icl_limit_cb->isChecked());
 
     callwordsini->close();
