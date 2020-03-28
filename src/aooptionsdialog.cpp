@@ -580,7 +580,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_other_layout->setWidget(1, QFormLayout::FieldRole, ui_other_fancy_icl_enabled_cb);
 
     ui_other_fancy_icl_limit_lb = new QLabel(ui_other_widget);
-    ui_other_fancy_icl_limit_lb->setText(tr("     Only inline coloring:"));
+    ui_other_fancy_icl_limit_lb->setText(tr("Only inline coloring:"));
     ui_other_fancy_icl_limit_lb->setToolTip(tr("Only inline coloring will be shown"));
     ui_other_layout->setWidget(2,QFormLayout::LabelRole, ui_other_fancy_icl_limit_lb);
     ui_other_fancy_icl_limit_cb = new QCheckBox(ui_other_widget);
