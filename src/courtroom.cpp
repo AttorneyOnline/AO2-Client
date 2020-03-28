@@ -1554,7 +1554,6 @@ void Courtroom::on_chat_return_pressed()
         packet_contents.append(frame_realization);
         packet_contents.append(frame_sfx);
     }//Honestly this is a copy paste dump and I have no idea what this does. If this breaks blame aov thanks
-   qDebug() << "Packet contents: " << packet_contents;
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 void Courtroom::handle_chatmessage(QStringList *p_contents)
