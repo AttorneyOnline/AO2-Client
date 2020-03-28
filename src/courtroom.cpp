@@ -985,6 +985,10 @@ void Courtroom::enter_courtroom(int p_cid)
         custom_obj_menu->clear();
         QDir directory(ao_app->get_character_path(current_char, "custom_objections"));
         QStringList custom_obj = directory.entryList(QStringList() << "*.gif" << "*.apng",QDir::Files);
+        if(keep_custom_objection)
+        {
+            custom_obj_menu->addAction("Default");
+        }
         foreach(QString filename, custom_obj) {
             custom_obj_menu->addAction(filename);
         }
@@ -4036,6 +4040,9 @@ void Courtroom::ShowContextMenu(const QPoint& pos)
             ui_take_that->set_image("takethat.png");
             ui_hold_it->set_image("holdit.png");
             ui_custom_objection->set_image("custom_selected.png");
+            if(selecteditem->text() == "Default")
+                objection_custom = ""
+
             objection_custom = selecteditem->text();
             objection_state = 4;
     }
