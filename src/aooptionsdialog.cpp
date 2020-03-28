@@ -572,7 +572,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
 
     ui_other_fancy_icl_enabled_lb = new QLabel(ui_other_widget);
-    ui_other_fancy_icl_enabled_lb->setText(tr("Colorfull IC log:"));
+    ui_other_fancy_icl_enabled_lb->setText(tr("Colorful IC log:"));
     ui_other_fancy_icl_enabled_lb->setToolTip(tr("Enables html on log. Basically it will enable colors in ic log."));
     ui_other_layout->setWidget(1,QFormLayout::LabelRole, ui_other_fancy_icl_enabled_lb);
     ui_other_fancy_icl_enabled_cb = new QCheckBox(ui_other_widget);
