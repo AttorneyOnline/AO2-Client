@@ -4,7 +4,6 @@
 #include "courtroom.h"
 #include "networkmanager.h"
 #include "debug_functions.h"
-#include "update_manager.h"
 #include "aooptionsdialog.h"
 #include "aocaseannouncerdialog.h"
 
@@ -93,16 +92,10 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  if(file_exists(get_base_path() + "/updates/update.ini"))
-  {
-      //  ##### V DO NOT ENABLE THIS V  #####
-      //client_updater = new update_manager(this);
-     // client_updater->get_latest_update();
-      return "Update system works";
-  }
-  else{
-    return "CR Version - V1.5";
-    }
+    return
+      QString::number(RELEASE) + "." +
+      QString::number(MAJOR_VERSION) + "." +
+      QString::number(MINOR_VERSION);
 }
 
 void AOApplication::reload_theme()
@@ -141,8 +134,8 @@ void AOApplication::server_disconnected()
 {
   if (courtroom_constructed)
   {
-    call_notice(tr("Disconnected from server."));
     beep();
+    call_notice(tr("Disconnected from server."));
     construct_lobby();
     destruct_courtroom();
   }

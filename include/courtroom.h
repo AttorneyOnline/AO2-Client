@@ -227,7 +227,7 @@ public:
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", bool is_songchange = false, bool force_write = false, bool skip_filter = false, int chat_color = 0);
+  void append_ic_text(QString p_text, QString p_name = "", bool is_songchange = false, bool force_filter = false, bool skip_filter = false, int chat_color = 0);
 
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
@@ -365,7 +365,6 @@ private:
 
   static const int chatmessage_size = 28;
   QString m_chatmessage[chatmessage_size];
-  QString m_chatmessage_tmp[chatmessage_size];
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
@@ -376,8 +375,7 @@ private:
   //QVector<int> muted_cids;
 
   bool is_muted = false;
-  bool shown = true;
-  bool toshow = true;
+
   //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 = noniterrupting preanim
   int anim_state = 3;
 

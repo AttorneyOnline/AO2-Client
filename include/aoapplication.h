@@ -35,7 +35,6 @@
 class NetworkManager;
 class Lobby;
 class Courtroom;
-class update_manager;
 class AOApplication : public QApplication
 {
   Q_OBJECT
@@ -45,7 +44,6 @@ public:
   ~AOApplication();
 
   NetworkManager *net_manager;
-  update_manager *client_updater;
   Lobby *w_lobby;
   Courtroom *w_courtroom;
   AttorneyOnline::Discord *discord;

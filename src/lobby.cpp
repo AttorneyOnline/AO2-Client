@@ -281,13 +281,11 @@ void Lobby::on_about_clicked()
                    "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
                    "https://github.com/AttorneyOnline/AO2-Client</a>"
                    "<p><b>Major development:</b><br>"
-                   "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter"
-                   "<p><b>CR Client development:</b><br>"
-                   "Cents02, Raidensnake"
+                   "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Cents02"
                    "<p><b>Special thanks:</b><br>"
                    "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
                    "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
-                   "Noevain, Cronnicossy")
+                   "Noevain, Cronnicossy, Raidensnake")
           .arg(ao_app->get_version_string());
   QMessageBox::about(this, "About", msg);
 }
@@ -404,9 +402,6 @@ void Lobby::enable_connect_button()
   ui_connect->setEnabled(true);
 }
 
-void Lobby::check_update()
-{
-}
 Lobby::~Lobby()
 {
 

@@ -28,7 +28,7 @@ void AOMovie::start_timer(int delay)
 }
 
 
-void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, bool shown, int duration)
+void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme, int duration)
 {
 
 
