@@ -165,6 +165,18 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
   QVariant value = settings.value(p_identifier);
+  if(value.isNull()) //Since the value wasn't found, maybe it uses the proper config system
+  {
+    int last_underscore_index = p_identifier.lastIndexOf('_'); // we will use this in order to check wether it is just showname or showname_something
+    if(last_underscore_index != -1){
+        p_identifier.replace(last_underscore_index,1,'/'); //we replace the last dash in order to access the category, e.g from showname_font -> showname/font
+        value = settings.value(p_identifier);
+    }
+    else if(!settings.value(p_identifier + "/size").isNull()) //This is to check whether showname/size exists, because size is defined as widgetname = x
+    {
+        value = settings.value(p_identifier + "/size");
+    }
+  }
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
   } else {
