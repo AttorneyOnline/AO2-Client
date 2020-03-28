@@ -1086,9 +1086,14 @@ void Courtroom::set_side(QString p_side)
 
 void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
 {
+  //Block the signals to prevent setCurrentIndex from triggering a pos change
+  ui_pos_dropdown->blockSignals(true);
   pos_dropdown_list = pos_dropdowns;
   ui_pos_dropdown->clear();
   ui_pos_dropdown->addItems(pos_dropdown_list);
+  //Unblock the signals so the element can be used for setting pos again
+  ui_pos_dropdown->blockSignals(false);
+
   qDebug() << pos_dropdown_list;
 }
 
