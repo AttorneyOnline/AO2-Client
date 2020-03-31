@@ -34,14 +34,16 @@ void AOScene::set_image(QString p_image)
 
   if (m_movie->isValid() && m_movie->frameCount() > 1)
   {
-    float scale_factor = f_h / m_movie->frameRect().height();
+    m_movie->jumpToNextFrame();
+    float scale_factor = static_cast<float>(f_h) / static_cast<float>(m_movie->frameRect().height());
     //preserve aspect ratio
-    int n_w = static_cast<int>(static_cast<float>(m_movie->frameRect().width()) * scale_factor);
-    int n_h = static_cast<int>(static_cast<float>(m_movie->frameRect().height()) * scale_factor);
+    int n_w = static_cast<int>(m_movie->frameRect().width() * scale_factor);
+    int n_h = static_cast<int>(m_movie->frameRect().height() * scale_factor);
+
     m_movie->setScaledSize(QSize(n_w, n_h));
     this->resize(m_movie->scaledSize());
     this->setMovie(m_movie);
-    QLabel::move(x + (f_w - n_w)/2, y + (f_h - n_h)); //Always center horizontally, always put at the bottom vertically
+    QLabel::move(x + (f_w - n_w)/2, y + (f_h - n_h)/2); //Center
     m_movie->start();
   }
   else
