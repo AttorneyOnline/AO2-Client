@@ -1793,7 +1793,8 @@ void Courtroom::handle_chatmessage_2()
   }
   else //Aw yeah dude do some showname resizing magic
   {
-    ui_vp_chatbox->set_image("chat");
+    if (!ui_vp_chatbox->set_image("chat"))
+        ui_vp_chatbox->set_image("chatbox");
 
     QFontMetrics fm(ui_vp_showname->font());
     int fm_width=fm.horizontalAdvance(ui_vp_showname->text());
@@ -1803,7 +1804,8 @@ void Courtroom::handle_chatmessage_2()
     if (chatbox != "")
     {
       chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-      ui_vp_chatbox->set_chatbox(chatbox_path);
+      if (!ui_vp_chatbox->set_chatbox(chatbox_path))
+        ui_vp_chatbox->set_chatbox(chatbox_path + "box");
     }
 
     pos_size_type default_width = ao_app->get_element_dimensions("showname", "courtroom_design.ini");
