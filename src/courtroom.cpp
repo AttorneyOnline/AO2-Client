@@ -1803,6 +1803,7 @@ void Courtroom::handle_chatmessage_2()
     if (chatbox != "")
     {
       chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
+      ui_vp_chatbox->set_chatbox(chatbox_path);
     }
 
     pos_size_type default_width = ao_app->get_element_dimensions("showname", "courtroom_design.ini");
