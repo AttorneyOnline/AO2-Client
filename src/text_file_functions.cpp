@@ -264,11 +264,12 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
   return return_value;
 }
 
-pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file)
+pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file, QString p_char)
 {
+  QString char_ini_path = get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
   QString design_ini_path = get_theme_path(p_file);
   QString default_path = get_default_theme_path(p_file);
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QString f_result = read_design_ini(p_identifier, char_ini_path);
 
   pos_size_type return_value;
 
@@ -279,10 +280,14 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QStrin
 
   if (f_result == "")
   {
-    f_result = read_design_ini(p_identifier, default_path);
-
+    f_result = read_design_ini(p_identifier, design_ini_path);
     if (f_result == "")
-      return return_value;
+    {
+      f_result = read_design_ini(p_identifier, default_path);
+
+      if (f_result == "")
+        return return_value;
+    }
   }
 
   QStringList sub_line_elements = f_result.split(",");
@@ -297,13 +302,18 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QStrin
 
   return return_value;
 }
-QString AOApplication::get_design_element(QString p_identifier, QString p_file)
+QString AOApplication::get_design_element(QString p_identifier, QString p_file, QString p_char)
 {
+  QString char_ini_path = get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
   QString design_ini_path = get_theme_path(p_file);
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
   QString default_path = get_default_theme_path(p_file);
+  QString f_result = read_design_ini(p_identifier, char_ini_path);
   if (f_result == "")
-    f_result = read_design_ini(p_identifier, default_path);
+  {
+    f_result = read_design_ini(p_identifier, design_ini_path);
+    if (f_result == "")
+      f_result = read_design_ini(p_identifier, default_path);
+  }
   return f_result;
 }
 QString AOApplication::get_font_name(QString p_identifier, QString p_file)

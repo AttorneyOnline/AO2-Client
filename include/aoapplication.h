@@ -248,10 +248,10 @@ public:
   QPoint get_button_spacing(QString p_identifier, QString p_file);
 
   //Returns the dimensions of widget with specified identifier from p_file
-  pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
+  pos_size_type get_element_dimensions(QString p_identifier, QString p_file, QString p_char="");
 
   //Returns the value to you
-  QString get_design_element(QString p_identifier, QString p_file);
+  QString get_design_element(QString p_identifier, QString p_file, QString p_char="");
 
   //Returns the name of the font with p_identifier from p_file
   QString get_font_name(QString p_identifier, QString p_file);

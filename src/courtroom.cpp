@@ -1806,10 +1806,22 @@ void Courtroom::handle_chatmessage_2()
       chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
       if (!ui_vp_chatbox->set_chatbox(chatbox_path))
         ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+
+      pos_size_type design_ini_result = ao_app->get_element_dimensions("chat_arrow", "courtroom_design.ini", m_chatmessage[CHAR_NAME]);
+      if (design_ini_result.width < 0 || design_ini_result.height < 0)
+      {
+        qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+        ui_vp_chat_arrow->hide();
+      }
+      else
+      {
+        ui_vp_chat_arrow->move(design_ini_result.x, design_ini_result.y);
+        ui_vp_chat_arrow->combo_resize(design_ini_result.width, design_ini_result.height);
+      }
     }
 
-    pos_size_type default_width = ao_app->get_element_dimensions("showname", "courtroom_design.ini");
-    int extra_width = ao_app->get_design_element("showname_extra_width", "courtroom_design.ini").toInt();
+    pos_size_type default_width = ao_app->get_element_dimensions("showname", "courtroom_design.ini", m_chatmessage[CHAR_NAME]);
+    int extra_width = ao_app->get_design_element("showname_extra_width", "courtroom_design.ini", m_chatmessage[CHAR_NAME]).toInt();
 
     if(extra_width > 0)
     {
