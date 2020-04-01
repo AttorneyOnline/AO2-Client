@@ -1310,7 +1310,7 @@ void Courtroom::list_areas()
     if (ao_app->arup_enabled)
     {
       // Coloring logic here.
-      treeItem->setBackground(0, free_brush);
+      treeItem->setBackground(1, free_brush);
       if (arup_locks.at(n_area) == "LOCKED")
       {
           treeItem->setBackground(1, locked_brush);
@@ -3921,8 +3921,8 @@ void Courtroom::music_list_collapse_all()
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
-  column = 1; //The metadata
-  QString p_area = p_item->text(1);
+  column = 0; //The metadata
+  QString p_area = p_item->text(0);
 
   QStringList packet_contents;
   packet_contents.append(p_area);
