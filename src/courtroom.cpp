@@ -3917,6 +3917,10 @@ void Courtroom::music_list_expand_all()
 void Courtroom::music_list_collapse_all()
 {
   ui_music_list->collapseAll();
+  QTreeWidgetItem *current = ui_music_list->selectedItems()[0];
+  if (current->parent() != nullptr)
+    current = current->parent();
+  ui_music_list->setCurrentItem(current);
 }
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
