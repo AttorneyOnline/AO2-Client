@@ -21,10 +21,6 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
 
   sfx_player->set_volume(p_volume);
 
-  QString f_evidence_path = ao_app->get_evidence_path(p_evidence_image);
-
-  QPixmap f_pixmap(f_evidence_path);
-
   QString final_gif_path;
   QString gif_name;
   QString icon_identifier;
@@ -40,12 +36,15 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
     gif_name = "evidence_appear_right";
   }
 
+  QString f_evidence_path = ao_app->get_evidence_path(p_evidence_image);
+  QPixmap f_pixmap(f_evidence_path);
+
   pos_size_type icon_dimensions = ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
+  f_pixmap = f_pixmap.scaled(icon_dimensions.width, icon_dimensions.height);
+  evidence_icon->setPixmap(f_pixmap);
+  evidence_icon->resize(f_pixmap.size());
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
-  evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
-
-  evidence_icon->setPixmap(f_pixmap.scaled(evidence_icon->width(), evidence_icon->height(), Qt::IgnoreAspectRatio));
 
   evidence_movie->play(gif_name);
   sfx_player->play(ao_app->get_sfx("evidence_present"));
