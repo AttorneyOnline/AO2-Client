@@ -56,7 +56,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   list_servers();
 
   set_widgets();
-  check_update();
 }
 
 //sets images, position and size

@@ -14,7 +14,7 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message, QString p
   this->moveCursor(QTextCursor::End);
 
   this->append("");
-  if(song)//  add <i> here v
+  if(song)
       this->insertHtml("<b><font color=" + p_colour + ">" + p_name.toHtmlEscaped() + "</font></b>&nbsp;");
   else
       this->insertHtml("<b><font color=" + p_colour + ">" + p_name.toHtmlEscaped() + "</font></b>:&nbsp;");

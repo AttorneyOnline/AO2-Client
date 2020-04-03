@@ -70,11 +70,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   objection_player->set_volume(0);
 
   misc_sfx_player = new AOSfxPlayer(this, ao_app);
-    misc_sfx_player->set_volume(0);
-    frame_emote_sfx_player = new AOSfxPlayer(this, ao_app);
-    frame_emote_sfx_player->set_volume(0);
-    pair_frame_emote_sfx_player = new AOSfxPlayer(this, ao_app); // todo: recode pair
-    pair_frame_emote_sfx_player->set_volume(0);
+  misc_sfx_player->set_volume(0);
+  frame_emote_sfx_player = new AOSfxPlayer(this, ao_app);
+  frame_emote_sfx_player->set_volume(0);
+  pair_frame_emote_sfx_player = new AOSfxPlayer(this, ao_app);
+  pair_frame_emote_sfx_player->set_volume(0);
 
 
   char_button_mapper = new QSignalMapper(this);
@@ -1470,8 +1470,9 @@ void Courtroom::on_chat_return_pressed()
         threading_flash = preemote_flash;
 
         for(int i=0; i < frame_emote_checker->frameCount(); i++){
-            AOFrameThreadingPre *testfuck = new AOFrameThreadingPre(this, i);
-            QThreadPool::globalInstance()->start(testfuck);
+            AOFrameThreadingPre *frame_thread = new AOFrameThreadingPre(this, i);
+            QThreadPool::globalInstance()->start(frame_thread);
+            frame_thread->setAutoDelete(true);
         }
         QThreadPool::globalInstance()->waitForDone();
         preemote_sfx = threading_sfx;
@@ -1499,8 +1500,9 @@ void Courtroom::on_chat_return_pressed()
         threading_prefix = QString("(b)");
 
         for(int i=0; i < frame_emote_checker->frameCount(); i++){
-            AOFrameThreading *testfuck = new AOFrameThreading(this, i);
-            QThreadPool::globalInstance()->start(testfuck);
+            AOFrameThreading *frame_thread = new AOFrameThreading(this, i);
+            QThreadPool::globalInstance()->start(frame_thread);
+            frame_thread->setAutoDelete(true);
         }
         QThreadPool::globalInstance()->waitForDone();
 
@@ -1528,8 +1530,9 @@ void Courtroom::on_chat_return_pressed()
         threading_flash = idleemote_flash;
         threading_prefix = QString("(a)");
         for(int i=0; i < frame_emote_checker->frameCount(); i++){
-            AOFrameThreading *testfuck = new AOFrameThreading(this, i);
-            QThreadPool::globalInstance()->start(testfuck);
+            AOFrameThreading *frame_thread = new AOFrameThreading(this, i);
+            QThreadPool::globalInstance()->start(frame_thread);
+            frame_thread->setAutoDelete(true);
         }
         QThreadPool::globalInstance()->waitForDone();
         idleemote_sfx = threading_sfx;
@@ -2018,27 +2021,23 @@ void Courtroom::handle_chatmessage_3()
 
      if (mirror_iclog)
      {
-        if(!log_goes_downwards)//BMK
+        if(!log_goes_downwards)
             append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME], false,m_chatmessage[text_color].toInt());
         if (!ui_showname_enable->isChecked() || m_chatmessage[SHOWNAME] == "")
          {
           if(first_message_sent)
               ui_ic_chatlog->textCursor().insertHtml("<br>");
-          else
-              first_message_sent = true;
+
           ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[CHAR_NAME] + ": </b>");
 
          }
         else{
             if(first_message_sent)
                 ui_ic_chatlog->textCursor().insertHtml("<br>");
-            else
-                first_message_sent = true;
+
              ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[SHOWNAME] + ": </b>");
 
           }
-
-
 
         QScrollBar *scroll = ui_vp_message->verticalScrollBar();
         scroll->setValue(scroll->maximum());
@@ -2405,6 +2404,15 @@ QString Courtroom::filter_ic_text(QString p_text,bool skip_filter,int chat_color
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange, bool force_filter, bool skip_filter, int chat_color)
 {
+  /*
+   * ###### Quick Variable Guide #######
+   * p_text: The text to be appended || p_name: The name of the character/entity who sent said text
+   * is_songchange: Whether we are appending a song entry
+   * force_filter: If we are sending plain text and we want to force the filtering regardless of its status (e.g chat entry, song change etc)
+   * skip_filter: If we are sending appending text such as html so we skip the filter
+   * chat_color: The color of the message sent
+   */
+
   QTextCharFormat bold;
   QTextCharFormat normal;
   QTextCharFormat italics;
@@ -2416,40 +2424,42 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
 
   if ((!is_songchange && !mirror_iclog) || force_filter)
     p_text = filter_ic_text(p_text,skip_filter,chat_color);
-  if(is_songchange && mirror_iclog)
-  {
-      ui_server_chatlog->append_chatmessage(p_name," has played a song: " + p_text + ".",ao_app->get_color("ooc_server_color", "courtroom_design.ini").name(),true);
-  }
-  else if (log_goes_downwards)
+
+  if (log_goes_downwards)
   {
       const bool is_scrolled_down = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
 
       ui_ic_chatlog->moveCursor(QTextCursor::End);
 
-      if (!first_message_sent && (force_filter || !mirror_iclog || is_songchange))
+      if (!first_message_sent && (force_filter ||!mirror_iclog || is_songchange))
       {
+          //If the first message hasn't been sent, and we are handling basic text, we put the name without the newline.
           ui_ic_chatlog->textCursor().insertText(p_name, bold);
           first_message_sent = true;
       }
-      else if(force_filter || !mirror_iclog || is_songchange)
+      else if(force_filter || is_songchange ||!mirror_iclog )
       {
-
+          //Otherwise we just add the plaintext with the new line.
           ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
       }
-
-      if (is_songchange)
+      if (is_songchange && !mirror_iclog)
       {
-        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-        ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
+          //If its a song with mirror mode enabled, we do not need to repeat it as it is already shown in the ooc.
+          ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+          ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
       }
       else if(colorf_iclog && (!mirror_iclog || force_filter))
-      { //insertText(p_text, normal);
-        ui_ic_chatlog->textCursor().insertHtml(p_text);
+      {
+          //if we are handling already formatted text and we have enabled colors in the iclog, then we insert the text
+          ui_ic_chatlog->textCursor().insertHtml(p_text);
       }
+
       else if((!colorf_iclog && !mirror_iclog) || force_filter)
       {
+          //If html is not enabled then we insert it as plain text.
           ui_ic_chatlog->textCursor().insertText(p_text, normal);
       }
+
 
       // If we got too many blocks in the current log, delete some from the top.
       while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks && log_maximum_blocks > 0)
@@ -2473,11 +2483,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
           ui_ic_chatlog->moveCursor(QTextCursor::End);
           ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
       }
-      if(mirror_iclog && is_songchange){
-        ui_ic_chatlog->moveCursor(QTextCursor::End);
-        ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
-      }
-}
+  }
   else
   {
       const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
@@ -2490,9 +2496,9 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
           first_message_sent = true;
       }
       else if(!mirror_iclog)
-        ui_ic_chatlog->textCursor().insertText(p_name, bold);//fix here
+        ui_ic_chatlog->textCursor().insertText(p_name, bold);
 
-      if (is_songchange)
+      if (is_songchange && !mirror_iclog)
       {
         ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
         ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
@@ -2507,6 +2513,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
       }
       if(!mirror_iclog)
         ui_ic_chatlog->textCursor().insertHtml("<br>");
+
 
 
       // If we got too many blocks in the current log, delete some from the bottom.
@@ -3269,7 +3276,10 @@ void Courtroom::handle_song(QStringList *p_contents)
       {
         ic_chatlog_history.removeFirst();
       }
-
+      if(mirror_iclog) //If mirror is enabled, we display the song in the ooc chat rather than ic log for a more realistic expierence.
+      {
+          ui_server_chatlog->append_chatmessage(str_show," has played a song: " + f_song_clear + ".",ao_app->get_color("ooc_server_color", "courtroom_design.ini").name(),true);
+      }
       append_ic_text(f_song_clear, str_show, true);
       music_player->play(ao_app->get_music_prefix(f_song));
     }
@@ -3665,16 +3675,7 @@ void Courtroom::on_ooc_return_pressed()
       ui_ooc_chat_message->clear();
       return;
   }
-  else if(ooc_message.startsWith("/magic")) //keep this out of documentation thx
-  {
-       ui_vp_message->setStyleSheet("background-color: rgba(" + QString::number(qrand() % 251) + "," +QString::number(qrand() % 251) + ","  + QString::number(qrand() % 251) + "," + QString::number(qrand() % 251) + ");");
-       ui_ic_chatlog->setStyleSheet("background-color: rgba(" + QString::number(qrand() % 251) + "," +QString::number(qrand() % 251) + ","  + QString::number(qrand() % 251) + "," + QString::number(qrand() % 251) + ");");
-       ui_server_chatlog->setStyleSheet("background-color: rgba(" + QString::number(qrand() % 251) + "," +QString::number(qrand() % 251) + ","  + QString::number(qrand() % 251) + "," + QString::number(qrand() % 251) + ");");
 
-       append_server_chatmessage("CLIENT", tr("Abra kadabra"), "1");
-      ui_ooc_chat_message->clear();
-      return;
-  }
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ooc_message);
