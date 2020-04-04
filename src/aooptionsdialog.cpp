@@ -688,7 +688,8 @@ void AOOptionsDialog::save_pressed()
   if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |
                           QIODevice::Text)) {
     // Nevermind!
-  } else {
+  }
+  else {
     QTextStream out(callwordsini);
     out << ui_callwords_textbox->toPlainText();
     callwordsini->close();
