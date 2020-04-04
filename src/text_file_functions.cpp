@@ -768,7 +768,7 @@ QString AOApplication::get_casing_can_host_cases()
   return result;
 }
 
-bool AOApplication::get_icfan_enabled()
+bool AOApplication::get_colored_iclog_enabled()
 {
     QString result = configini->value("color_iclog_enabled","false").value<QString>();
     return result.startsWith("true");

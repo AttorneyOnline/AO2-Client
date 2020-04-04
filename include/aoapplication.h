@@ -349,7 +349,7 @@ public:
   QString get_casing_can_host_cases();
 
   // Get if html for ic log is enabled
-  bool get_icfan_enabled();
+  bool get_colored_iclog_enabled();
 
   // Get if ic log mirror is enabled
   bool get_iclmir_enabled();
