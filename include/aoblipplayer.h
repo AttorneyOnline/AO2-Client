@@ -9,13 +9,11 @@
 
 #include "aoapplication.h"
 
+#include <QDebug>
 #include <QWidget>
 #include <string.h>
-#include <QDebug>
 
-
-class AOBlipPlayer
-{
+class AOBlipPlayer {
 public:
   AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
 
@@ -32,11 +30,11 @@ private:
 
   void set_volume_internal(qreal p_volume);
 
-  #if defined(BASSAUDIO)
+#if defined(BASSAUDIO)
   HSTREAM m_stream_list[5];
-  #elif defined(QTAUDIO)
+#elif defined(QTAUDIO)
   QSoundEffect m_blips;
-  #endif
+#endif
 };
 
 #endif // AOBLIPPLAYER_H

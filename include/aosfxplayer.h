@@ -9,13 +9,12 @@
 
 #include "aoapplication.h"
 
-#include <QWidget>
-#include <string.h>
 #include <QDebug>
 #include <QTimer>
+#include <QWidget>
+#include <string.h>
 
-class AOSfxPlayer : public QObject
-{
+class AOSfxPlayer : public QObject {
   Q_OBJECT
 public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
@@ -33,11 +32,11 @@ private:
 
   void set_volume_internal(qreal p_volume);
 
-  #if defined(BASSAUDIO)
+#if defined(BASSAUDIO)
   HSTREAM m_stream;
-  #elif defined(QTAUDIO)
+#elif defined(QTAUDIO)
   QSoundEffect m_sfx;
-  #endif
+#endif
 };
 
 #endif // AOSFXPLAYER_H

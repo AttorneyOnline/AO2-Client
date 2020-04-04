@@ -7,8 +7,7 @@
 class Courtroom;
 class AOApplication;
 
-class AOMovie : public QLabel
-{
+class AOMovie : public QLabel {
   Q_OBJECT
 
 public:
@@ -16,7 +15,8 @@ public:
 
   void set_play_once(bool p_play_once);
   void start_timer(int delay);
-  void play(QString p_gif, QString p_char = "", QString p_custom_theme = "", int default_duration = 0);
+  void play(QString p_gif, QString p_char = "", QString p_custom_theme = "",
+            int default_duration = 0);
   void combo_resize(int w, int h);
   void stop();
 
