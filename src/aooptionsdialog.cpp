@@ -2,7 +2,8 @@
 #include "aoapplication.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
-    : QDialog(parent) {
+    : QDialog(parent)
+{
   ao_app = p_ao_app;
 
   // Setting up the basics.
@@ -666,7 +667,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   setUpdatesEnabled(true);
 }
 
-void AOOptionsDialog::save_pressed() {
+void AOOptionsDialog::save_pressed()
+{
   // Save everything into the config.ini.
   QSettings *configini = ao_app->configini;
 

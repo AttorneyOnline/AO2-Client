@@ -1,6 +1,7 @@
 ﻿#include "courtroom.h"
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow() {
+Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+{
   ao_app = p_ao_app;
 #ifdef BASSAUDIO
   // Change the default audio output device to be the one the user has given
@@ -417,7 +418,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow() {
   set_char_select();
 }
 
-void Courtroom::set_mute_list() {
+void Courtroom::set_mute_list()
+{
   mute_map.clear();
 
   // maps which characters are muted based on cid, none are muted by default
@@ -438,7 +440,8 @@ void Courtroom::set_mute_list() {
   }
 }
 
-void Courtroom::set_pair_list() {
+void Courtroom::set_pair_list()
+{
   QStringList sorted_pair_list;
 
   for (char_type i_char : char_list)
@@ -451,7 +454,8 @@ void Courtroom::set_pair_list() {
   }
 }
 
-void Courtroom::set_widgets() {
+void Courtroom::set_widgets()
+{
   blip_rate = ao_app->read_blip_rate();
   blank_blip = ao_app->get_blank_blip();
 
@@ -775,7 +779,8 @@ void Courtroom::set_widgets() {
   set_size_and_pos(ui_spectator, "spectator");
 }
 
-void Courtroom::set_fonts() {
+void Courtroom::set_fonts()
+{
   set_font(ui_vp_showname, "showname");
   set_font(ui_vp_message, "message");
   set_font(ui_ic_chatlog, "ic_chatlog");
@@ -797,7 +802,8 @@ void Courtroom::set_fonts() {
   setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_font(QWidget *widget, QString p_identifier) {
+void Courtroom::set_font(QWidget *widget, QString p_identifier)
+{
   QString design_file = "courtroom_fonts.ini";
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
@@ -815,11 +821,13 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier) {
   widget->setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_window_title(QString p_title) {
+void Courtroom::set_window_title(QString p_title)
+{
   this->setWindowTitle(p_title);
 }
 
-void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier) {
+void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
+{
   QString filename = "courtroom_design.ini";
 
   pos_size_type design_ini_result =
@@ -834,7 +842,8 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier) {
   }
 }
 
-QPoint Courtroom::get_theme_pos(QString p_identifier) {
+QPoint Courtroom::get_theme_pos(QString p_identifier)
+{
   QString filename = "courtroom_design.ini";
 
   pos_size_type design_ini_result =
@@ -848,7 +857,8 @@ QPoint Courtroom::get_theme_pos(QString p_identifier) {
   }
 }
 
-void Courtroom::set_taken(int n_char, bool p_taken) {
+void Courtroom::set_taken(int n_char, bool p_taken)
+{
   if (n_char >= char_list.size()) {
     qDebug()
         << "W: set_taken attempted to set an index bigger than char_list size";
@@ -864,7 +874,8 @@ void Courtroom::set_taken(int n_char, bool p_taken) {
   char_list.replace(n_char, f_char);
 }
 
-void Courtroom::done_received() {
+void Courtroom::done_received()
+{
   m_cid = -1;
 
   music_player->set_volume(0);
@@ -884,7 +895,8 @@ void Courtroom::done_received() {
   ui_spectator->show();
 }
 
-void Courtroom::set_background(QString p_background) {
+void Courtroom::set_background(QString p_background)
+{
   ui_vp_testimony->stop();
 
   current_background = p_background;
@@ -902,7 +914,8 @@ void Courtroom::set_background(QString p_background) {
   }
 }
 
-void Courtroom::set_character(int char_id) {
+void Courtroom::set_character(int char_id)
+{
   m_cid = char_id;
 
   QString f_char;
@@ -940,7 +953,8 @@ void Courtroom::set_character(int char_id) {
     ui_custom_objection->hide();
 }
 
-void Courtroom::enter_courtroom(int p_cid) {
+void Courtroom::enter_courtroom(int p_cid)
+{
   this->set_character(p_cid);
   current_evidence_page = 0;
   current_evidence = 0;
@@ -1026,7 +1040,8 @@ void Courtroom::enter_courtroom(int p_cid) {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::list_music() {
+void Courtroom::list_music()
+{
   ui_music_list->clear();
 
   QString f_file = "courtroom_design.ini";
@@ -1086,7 +1101,8 @@ void Courtroom::list_music() {
                               // change since last time
 }
 
-void Courtroom::list_areas() {
+void Courtroom::list_areas()
+{
   ui_area_list->clear();
   area_row_to_number.clear();
 
@@ -1155,7 +1171,8 @@ void Courtroom::list_areas() {
   }
 }
 
-void Courtroom::append_ms_chatmessage(QString f_name, QString f_message) {
+void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
+{
   ui_ms_chatlog->append_chatmessage(
       f_name, f_message,
       ao_app->get_color("ooc_default_color", "courtroom_design.ini").name(),
@@ -1163,7 +1180,8 @@ void Courtroom::append_ms_chatmessage(QString f_name, QString f_message) {
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
-                                          QString p_colour) {
+                                          QString p_colour)
+{
   QString colour = "#000000";
 
   if (p_colour == "0")
@@ -1180,15 +1198,18 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, colour, false);
 }
-class AOFrameThreadingPre : public QRunnable {
+class AOFrameThreadingPre : public QRunnable
+{
 public:
   Courtroom *thisCourtroom;
   int my_frameNumber;
-  AOFrameThreadingPre(Courtroom *my_courtroom, int frameNumber) {
+  AOFrameThreadingPre(Courtroom *my_courtroom, int frameNumber)
+  {
     thisCourtroom = my_courtroom;
     my_frameNumber = frameNumber;
   }
-  void run() {
+  void run()
+  {
     qDebug() << my_frameNumber << " FRAME NUMBER"
              << " from" << QThread::currentThread();
     QString sfx_to_play = thisCourtroom->ao_app->get_frame_sfx_name(
@@ -1221,15 +1242,18 @@ public:
   }
 };
 
-class AOFrameThreading : public QRunnable {
+class AOFrameThreading : public QRunnable
+{
 public:
   Courtroom *thisCourtroom;
   int my_frameNumber;
-  AOFrameThreading(Courtroom *my_courtroom, int frameNumber) {
+  AOFrameThreading(Courtroom *my_courtroom, int frameNumber)
+  {
     thisCourtroom = my_courtroom;
     my_frameNumber = frameNumber;
   }
-  void run() {
+  void run()
+  {
     QString sfx_to_play = thisCourtroom->ao_app->get_frame_sfx_name(
         thisCourtroom->current_char,
         thisCourtroom->threading_prefix +
@@ -1263,7 +1287,8 @@ public:
   }
 };
 
-void Courtroom::on_chat_return_pressed() {
+void Courtroom::on_chat_return_pressed()
+{
   if (ui_ic_chat_message->text() == "" || is_muted)
     return;
 
@@ -1557,7 +1582,8 @@ void Courtroom::on_chat_return_pressed() {
     // this breaks blame aov thanks
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
-void Courtroom::handle_chatmessage(QStringList *p_contents) {
+void Courtroom::handle_chatmessage(QStringList *p_contents)
+{
   // Instead of checking for whether a message has at least chatmessage_size
   // amount of packages, we'll check if it has at least 15.
   // That was the original chatmessage_size.
@@ -1713,7 +1739,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents) {
 
 void Courtroom::objection_done() { handle_chatmessage_2(); }
 
-void Courtroom::handle_chatmessage_2() {
+void Courtroom::handle_chatmessage_2()
+{
   ui_vp_speedlines->stop();
   // ui_vp_player_char->stop();
   ui_vp_player_char->frame_sfx_hellstring = m_chatmessage[FRAME_SFX];
@@ -1921,7 +1948,8 @@ void Courtroom::handle_chatmessage_2() {
 }
 void Courtroom::realization_done() { ui_vp_realization->hide(); }
 
-void Courtroom::doScreenShake() {
+void Courtroom::doScreenShake()
+{
   if (!ao_app->is_shakeandflash_enabled())
     return;
   screenshake_group = new QParallelAnimationGroup;
@@ -1971,7 +1999,8 @@ void Courtroom::doScreenShake() {
       QAbstractAnimation::DeletionPolicy::DeleteWhenStopped);
 }
 
-void Courtroom::handle_chatmessage_3() {
+void Courtroom::handle_chatmessage_3()
+{
   if (!log_goes_downwards && mirror_iclog)
     ui_ic_chatlog->moveCursor(QTextCursor::Start);
   else if (mirror_iclog)
@@ -2087,7 +2116,8 @@ void Courtroom::handle_chatmessage_3() {
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
-                                  int chat_color) {
+                                  int chat_color)
+{
   // BMKCOMMENT
   // Get rid of centering.
   if (p_text.startsWith(": ~~")) {
@@ -2327,7 +2357,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
 
 void Courtroom::append_ic_text(QString p_text, QString p_name,
                                bool is_songchange, bool force_filter,
-                               bool skip_filter, int chat_color) {
+                               bool skip_filter, int chat_color)
+{
 
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2446,7 +2477,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name,
   }
 }
 
-void Courtroom::play_preanim(bool noninterrupting) {
+void Courtroom::play_preanim(bool noninterrupting)
+{
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_preanim = m_chatmessage[PRE_EMOTE];
 
@@ -2489,19 +2521,22 @@ void Courtroom::play_preanim(bool noninterrupting) {
     handle_chatmessage_3();
 }
 
-void Courtroom::preanim_done() {
+void Courtroom::preanim_done()
+{
   anim_state = 1;
   handle_chatmessage_3();
 }
 
-void Courtroom::doRealization() {
+void Courtroom::doRealization()
+{
   realization_timer->stop();
   if (!ao_app->is_shakeandflash_enabled())
     return;
   ui_vp_realization->play("realizationflash", "", "", 90);
 }
 
-void Courtroom::start_chat_ticking() {
+void Courtroom::start_chat_ticking()
+{
   // we need to ensure that the text isn't already ticking because this function
   // can be called by two logic paths
   if (text_state != 0)
@@ -2553,7 +2588,8 @@ void Courtroom::start_chat_ticking() {
   text_state = 1;
 }
 
-void Courtroom::chat_tick() {
+void Courtroom::chat_tick()
+{
   // note: this is called fairly often(every 60 ms when char is talking)
   // do not perform heavy operations here
   QString timem = QString::number(realization_timer->remainingTime());
@@ -2912,7 +2948,8 @@ void Courtroom::chat_tick() {
   }
 }
 
-void Courtroom::play_sfx() {
+void Courtroom::play_sfx()
+{
   QString sfx_name = m_chatmessage[SFX_NAME];
 
   if (sfx_name == "1")
@@ -2921,7 +2958,8 @@ void Courtroom::play_sfx() {
   sfx_player->play(ao_app->get_sfx_suffix(sfx_name));
 }
 
-void Courtroom::set_scene() {
+void Courtroom::set_scene()
+{
 
   // witness is default if pos is invalid
   QString f_background = "witnessempty";
@@ -2991,7 +3029,8 @@ void Courtroom::set_scene() {
   }
 }
 
-void Courtroom::set_text_color() {
+void Courtroom::set_text_color()
+{
   QString f_char = m_chatmessage[CHAR_NAME];
   QColor textcolor = ao_app->get_chat_color(m_chatmessage[TEXT_COLOR],
                                             ao_app->get_chat(f_char));
@@ -3011,18 +3050,21 @@ void Courtroom::set_text_color() {
   ui_vp_message->setStyleSheet(style);
 }
 
-QColor Courtroom::get_text_color(QString color) {
+QColor Courtroom::get_text_color(QString color)
+{
   QString f_char = m_chatmessage[CHAR_NAME];
   return ao_app->get_chat_color(color, ao_app->get_chat(f_char));
 }
 
-void Courtroom::set_ip_list(QString p_list) {
+void Courtroom::set_ip_list(QString p_list)
+{
   QString f_list = p_list.replace("|", ":").replace("*", "\n");
 
   ui_server_chatlog->append(f_list);
 }
 
-void Courtroom::set_mute(bool p_muted, int p_cid) {
+void Courtroom::set_mute(bool p_muted, int p_cid)
+{
   if (p_cid != m_cid && p_cid != -1)
     return;
 
@@ -3040,7 +3082,8 @@ void Courtroom::set_mute(bool p_muted, int p_cid) {
   ui_ic_chat_message->setEnabled(!p_muted);
 }
 
-void Courtroom::set_ban(int p_cid) {
+void Courtroom::set_ban(int p_cid)
+{
   if (p_cid != m_cid && p_cid != -1)
     return;
 
@@ -3050,7 +3093,8 @@ void Courtroom::set_ban(int p_cid) {
   ao_app->destruct_courtroom();
 }
 
-void Courtroom::handle_song(QStringList *p_contents) {
+void Courtroom::handle_song(QStringList *p_contents)
+{
   QStringList f_contents = *p_contents;
 
   if (f_contents.size() < 2)
@@ -3104,11 +3148,13 @@ void Courtroom::handle_song(QStringList *p_contents) {
     }
   }
 }
-void Courtroom::handle_failed_login() {
+void Courtroom::handle_failed_login()
+{
   music_player->enable_looping = false;
   music_player->play("failed_login");
 }
-void Courtroom::handle_wtce(QString p_wtce, int variant) {
+void Courtroom::handle_wtce(QString p_wtce, int variant)
+{
   QString sfx_file = "courtroom_sounds.ini";
 
   // witness testimony
@@ -3135,7 +3181,8 @@ void Courtroom::handle_wtce(QString p_wtce, int variant) {
   }
 }
 
-void Courtroom::set_hp_bar(int p_bar, int p_state) {
+void Courtroom::set_hp_bar(int p_bar, int p_state)
+{
   if (p_state < 0 || p_state > 10)
     return;
 
@@ -3149,7 +3196,8 @@ void Courtroom::set_hp_bar(int p_bar, int p_state) {
   }
 }
 
-void Courtroom::toggle_judge_buttons(bool is_on) {
+void Courtroom::toggle_judge_buttons(bool is_on)
+{
   if (is_on) {
     ui_witness_testimony->show();
     ui_cross_examination->show();
@@ -3171,7 +3219,8 @@ void Courtroom::toggle_judge_buttons(bool is_on) {
   }
 }
 
-void Courtroom::mod_called(QString p_ip) {
+void Courtroom::mod_called(QString p_ip)
+{
   ui_server_chatlog->append(p_ip);
   if (!ui_guard->isChecked()) {
     modcall_player->play(ao_app->get_sfx("mod_call"));
@@ -3180,7 +3229,8 @@ void Courtroom::mod_called(QString p_ip) {
 }
 
 void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
-                            bool steno, bool witness) {
+                            bool steno, bool witness)
+{
   if (ui_casing->isChecked()) {
     ui_server_chatlog->append(msg);
     if ((ao_app->get_casing_defence_enabled() && def) ||
@@ -3195,7 +3245,8 @@ void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
   }
 }
 
-void Courtroom::on_ooc_return_pressed() {
+void Courtroom::on_ooc_return_pressed()
+{
   QString ooc_message = ui_ooc_chat_message->text();
 
   if (ooc_message == "" || ui_ooc_chat_name->text() == "")
@@ -3501,7 +3552,8 @@ void Courtroom::on_ooc_return_pressed() {
   ui_ooc_chat_message->setFocus();
 }
 
-void Courtroom::on_ooc_toggle_clicked() {
+void Courtroom::on_ooc_toggle_clicked()
+{
   if (server_ooc) {
     ui_ms_chatlog->show();
     ui_server_chatlog->hide();
@@ -3517,20 +3569,23 @@ void Courtroom::on_ooc_toggle_clicked() {
   }
 }
 
-void Courtroom::on_music_search_keypr() {
+void Courtroom::on_music_search_keypr()
+{
   if (ui_music_search->text() == "") {
     ui_music_list->collapseAll();
   }
 }
 
-void Courtroom::on_music_search_edited(QString p_text) {
+void Courtroom::on_music_search_edited(QString p_text)
+{
   // preventing compiler warnings
   p_text += "a";
   list_music();
   list_areas();
 }
 
-void Courtroom::on_pos_dropdown_changed(int p_index) {
+void Courtroom::on_pos_dropdown_changed(int p_index)
+{
   ui_ic_chat_message->setFocus();
 
   if (p_index < 0 || p_index > 5)
@@ -3571,7 +3626,8 @@ void Courtroom::on_pos_dropdown_changed(int p_index) {
       new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
 }
 
-void Courtroom::on_mute_list_clicked(QModelIndex p_index) {
+void Courtroom::on_mute_list_clicked(QModelIndex p_index)
+{
   QListWidgetItem *f_item = ui_mute_list->item(p_index.row());
   QString f_char = f_item->text();
   QString real_char;
@@ -3602,7 +3658,8 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index) {
   }
 }
 
-void Courtroom::on_pair_list_clicked(QModelIndex p_index) {
+void Courtroom::on_pair_list_clicked(QModelIndex p_index)
+{
   QListWidgetItem *f_item = ui_pair_list->item(p_index.row());
   QString f_char = f_item->text();
   QString real_char;
@@ -3643,7 +3700,8 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index) {
 }
 
 void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
-                                             int column) {
+                                             int column)
+{
   if (is_muted)
     return;
 
@@ -3672,7 +3730,8 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
       false);
 }
 
-void Courtroom::on_hold_it_clicked() {
+void Courtroom::on_hold_it_clicked()
+{
   if (objection_state == 1) {
     ui_hold_it->set_image("holdit.png");
     objection_state = 0;
@@ -3688,7 +3747,8 @@ void Courtroom::on_hold_it_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_objection_clicked() {
+void Courtroom::on_objection_clicked()
+{
   if (objection_state == 2) {
     ui_objection->set_image("objection.png");
     objection_state = 0;
@@ -3704,7 +3764,8 @@ void Courtroom::on_objection_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_take_that_clicked() {
+void Courtroom::on_take_that_clicked()
+{
   if (objection_state == 3) {
     ui_take_that->set_image("takethat.png");
     objection_state = 0;
@@ -3720,7 +3781,8 @@ void Courtroom::on_take_that_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_custom_objection_clicked() {
+void Courtroom::on_custom_objection_clicked()
+{
   if (objection_state == 4) {
     ui_custom_objection->set_image("custom.png");
     objection_state = 0;
@@ -3736,7 +3798,8 @@ void Courtroom::on_custom_objection_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::ShowContextMenu(const QPoint &pos) {
+void Courtroom::ShowContextMenu(const QPoint &pos)
+{
   QPoint globalPos = ui_custom_objection->mapToGlobal(pos);
   QAction *selecteditem = custom_obj_menu->exec(globalPos);
   if (selecteditem) {
@@ -3749,7 +3812,8 @@ void Courtroom::ShowContextMenu(const QPoint &pos) {
   }
 }
 
-void Courtroom::on_realization_clicked() {
+void Courtroom::on_realization_clicked()
+{
   if (realization_state == 0) {
     realization_state = 1;
     ui_realization->set_image("realization_pressed.png");
@@ -3760,7 +3824,8 @@ void Courtroom::on_realization_clicked() {
 
   ui_ic_chat_message->setFocus();
 }
-void Courtroom::on_screenshake_clicked() {
+void Courtroom::on_screenshake_clicked()
+{
   if (screenshake_state == 0) {
     screenshake_state = 1;
     ui_screenshake->set_image("screenshake_pressed.png");
@@ -3771,7 +3836,8 @@ void Courtroom::on_screenshake_clicked() {
 
   ui_ic_chat_message->setFocus();
 }
-void Courtroom::on_mute_clicked() {
+void Courtroom::on_mute_clicked()
+{
   if (ui_mute_list->isHidden()) {
     ui_mute_list->show();
     ui_pair_list->hide();
@@ -3784,7 +3850,8 @@ void Courtroom::on_mute_clicked() {
   }
 }
 
-void Courtroom::on_pair_clicked() {
+void Courtroom::on_pair_clicked()
+{
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
@@ -3798,7 +3865,8 @@ void Courtroom::on_pair_clicked() {
   }
 }
 
-void Courtroom::on_defense_minus_clicked() {
+void Courtroom::on_defense_minus_clicked()
+{
   int f_state = defense_bar_state - 1;
 
   if (f_state >= 0)
@@ -3806,7 +3874,8 @@ void Courtroom::on_defense_minus_clicked() {
         new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
 }
 
-void Courtroom::on_defense_plus_clicked() {
+void Courtroom::on_defense_plus_clicked()
+{
   int f_state = defense_bar_state + 1;
 
   if (f_state <= 10)
@@ -3814,7 +3883,8 @@ void Courtroom::on_defense_plus_clicked() {
         new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
 }
 
-void Courtroom::on_prosecution_minus_clicked() {
+void Courtroom::on_prosecution_minus_clicked()
+{
   int f_state = prosecution_bar_state - 1;
 
   if (f_state >= 0)
@@ -3822,7 +3892,8 @@ void Courtroom::on_prosecution_minus_clicked() {
         new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
-void Courtroom::on_prosecution_plus_clicked() {
+void Courtroom::on_prosecution_plus_clicked()
+{
   int f_state = prosecution_bar_state + 1;
 
   if (f_state <= 10)
@@ -3830,17 +3901,20 @@ void Courtroom::on_prosecution_plus_clicked() {
         new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
-void Courtroom::on_text_color_changed(int p_color) {
+void Courtroom::on_text_color_changed(int p_color)
+{
   text_color = p_color;
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_music_slider_moved(int p_value) {
+void Courtroom::on_music_slider_moved(int p_value)
+{
   music_player->set_volume(p_value);
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_sfx_slider_moved(int p_value) {
+void Courtroom::on_sfx_slider_moved(int p_value)
+{
   sfx_player->set_volume(p_value);
   objection_player->set_volume(p_value);
   misc_sfx_player->set_volume(p_value);
@@ -3849,7 +3923,8 @@ void Courtroom::on_sfx_slider_moved(int p_value) {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_blip_slider_moved(int p_value) {
+void Courtroom::on_blip_slider_moved(int p_value)
+{
   blip_player->set_volume(p_value);
   ui_ic_chat_message->setFocus();
 }
@@ -3858,7 +3933,8 @@ void Courtroom::on_log_limit_changed(int value) { log_maximum_blocks = value; }
 
 void Courtroom::on_pair_offset_changed(int value) { offset_with_pair = value; }
 
-void Courtroom::on_witness_testimony_clicked() {
+void Courtroom::on_witness_testimony_clicked()
+{
   if (is_muted)
     return;
 
@@ -3867,7 +3943,8 @@ void Courtroom::on_witness_testimony_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_cross_examination_clicked() {
+void Courtroom::on_cross_examination_clicked()
+{
   if (is_muted)
     return;
 
@@ -3876,7 +3953,8 @@ void Courtroom::on_cross_examination_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_not_guilty_clicked() {
+void Courtroom::on_not_guilty_clicked()
+{
   if (is_muted)
     return;
 
@@ -3885,7 +3963,8 @@ void Courtroom::on_not_guilty_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_guilty_clicked() {
+void Courtroom::on_guilty_clicked()
+{
   if (is_muted)
     return;
 
@@ -3894,7 +3973,8 @@ void Courtroom::on_guilty_clicked() {
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_change_character_clicked() {
+void Courtroom::on_change_character_clicked()
+{
   music_player->set_volume(0);
   sfx_player->set_volume(0);
   sfx_player->set_volume(0);
@@ -3906,7 +3986,8 @@ void Courtroom::on_change_character_clicked() {
   ui_spectator->hide();
 }
 
-void Courtroom::on_reload_theme_clicked() {
+void Courtroom::on_reload_theme_clicked()
+{
   ao_app->reload_theme();
   punctuation_modifier = ao_app->get_pundelay();
   colorf_iclog = ao_app->get_colored_iclog_enabled();
@@ -3921,22 +4002,26 @@ void Courtroom::on_reload_theme_clicked() {
   text_state = 3;
 }
 
-void Courtroom::on_back_to_lobby_clicked() {
+void Courtroom::on_back_to_lobby_clicked()
+{
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
 }
 
-void Courtroom::on_char_select_left_clicked() {
+void Courtroom::on_char_select_left_clicked()
+{
   --current_char_page;
   set_char_select_page();
 }
 
-void Courtroom::on_char_select_right_clicked() {
+void Courtroom::on_char_select_right_clicked()
+{
   ++current_char_page;
   set_char_select_page();
 }
 
-void Courtroom::on_spectator_clicked() {
+void Courtroom::on_spectator_clicked()
+{
   this->set_character(-1);
 
   ui_emotes->hide();
@@ -3944,7 +4029,8 @@ void Courtroom::on_spectator_clicked() {
   ui_char_select_background->hide();
 }
 
-void Courtroom::on_call_mod_clicked() {
+void Courtroom::on_call_mod_clicked()
+{
   if (ao_app->modcall_reason_enabled) {
     QMessageBox errorBox;
     QInputDialog input;
@@ -3979,7 +4065,8 @@ void Courtroom::on_call_mod_clicked() {
 
 void Courtroom::on_settings_clicked() { ao_app->call_settings_menu(); }
 
-void Courtroom::on_announce_casing_clicked() {
+void Courtroom::on_announce_casing_clicked()
+{
   ao_app->call_announce_menu(this);
 }
 
@@ -3989,13 +4076,15 @@ void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_guard_clicked() { ui_ic_chat_message->setFocus(); }
 
-void Courtroom::on_showname_enable_clicked() {
+void Courtroom::on_showname_enable_clicked()
+{
 
   refresh_iclog(false);
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_evidence_button_clicked() {
+void Courtroom::on_evidence_button_clicked()
+{
   if (ui_evidence->isHidden()) {
     ui_evidence->show();
     ui_evidence_overlay->hide();
@@ -4004,7 +4093,8 @@ void Courtroom::on_evidence_button_clicked() {
   }
 }
 
-void Courtroom::on_switch_area_music_clicked() {
+void Courtroom::on_switch_area_music_clicked()
+{
 
   if (ui_area_list->isHidden()) {
     music_search_par = ui_music_search->text();
@@ -4019,12 +4109,14 @@ void Courtroom::on_switch_area_music_clicked() {
   }
 }
 
-void Courtroom::ping_server() {
+void Courtroom::ping_server()
+{
   ao_app->send_server_packet(
       new AOPacket("CH#" + QString::number(m_cid) + "#%"));
 }
 
-void Courtroom::on_casing_clicked() {
+void Courtroom::on_casing_clicked()
+{
   if (ao_app->casing_alerts_enabled) {
     if (ui_casing->isChecked()) {
       QStringList f_packet;
@@ -4046,7 +4138,8 @@ void Courtroom::on_casing_clicked() {
 }
 
 void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
-                              bool jur, bool steno, bool wit) {
+                              bool jur, bool steno, bool wit)
+{
   if (ao_app->casing_alerts_enabled) {
     QStringList f_packet;
 
@@ -4062,14 +4155,16 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
   }
 }
 
-Courtroom::~Courtroom() {
+Courtroom::~Courtroom()
+{
   delete music_player;
   delete sfx_player;
   delete objection_player;
   delete blip_player;
 }
 
-void Courtroom::refresh_iclog(bool skiplast) {
+void Courtroom::refresh_iclog(bool skiplast)
+{
   ui_ic_chatlog->clear();
   first_message_sent = false;
 
@@ -4098,11 +4193,13 @@ void Courtroom::refresh_iclog(bool skiplast) {
 #if (defined(_WIN32) || defined(_WIN64))
 void Courtroom::load_bass_opus_plugin() { BASS_PluginLoad("bassopus.dll", 0); }
 #elif (defined(LINUX) || defined(__linux__))
-void Courtroom::load_bass_opus_plugin() {
+void Courtroom::load_bass_opus_plugin()
+{
   BASS_PluginLoad("libbassopus.so", 0);
 }
 #elif defined __APPLE__
-void Courtroom::load_bass_opus_plugin() {
+void Courtroom::load_bass_opus_plugin()
+{
   QString libpath =
       ao_app->get_base_path() + "../../Frameworks/libbassopus.dylib";
   QByteArray ba = libpath.toLocal8Bit();
