@@ -1,7 +1,9 @@
 #include "aocaseannouncerdialog.h"
 
-AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, AOApplication *p_ao_app, Courtroom *p_court)
-  : QDialog(parent)
+AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent,
+                                             AOApplication *p_ao_app,
+                                             Courtroom *p_court)
+    : QDialog(parent)
 {
   ao_app = p_ao_app;
   court = p_court;
@@ -14,21 +16,27 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, AOApplication *p_a
   QSizePolicy sizepolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   sizepolicy.setHorizontalStretch(0);
   sizepolicy.setVerticalStretch(0);
-  sizepolicy.setHeightForWidth(ui_announcer_buttons->sizePolicy().hasHeightForWidth());
+  sizepolicy.setHeightForWidth(
+      ui_announcer_buttons->sizePolicy().hasHeightForWidth());
   ui_announcer_buttons->setSizePolicy(sizepolicy);
   ui_announcer_buttons->setOrientation(Qt::Horizontal);
-  ui_announcer_buttons->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  ui_announcer_buttons->setStandardButtons(QDialogButtonBox::Ok |
+                                           QDialogButtonBox::Cancel);
 
-  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this, SLOT(ok_pressed()));
-  QObject::connect(ui_announcer_buttons, SIGNAL(rejected()), this, SLOT(cancel_pressed()));
+  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this,
+                   SLOT(ok_pressed()));
+  QObject::connect(ui_announcer_buttons, SIGNAL(rejected()), this,
+                   SLOT(cancel_pressed()));
 
   setUpdatesEnabled(false);
 
   ui_vbox_layout = new QVBoxLayout(this);
 
   ui_form_layout = new QFormLayout(this);
-  ui_form_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignVCenter);
-  ui_form_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
+  ui_form_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                    Qt::AlignVCenter);
+  ui_form_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                   Qt::AlignTop);
   ui_form_layout->setContentsMargins(6, 6, 6, 6);
 
   ui_vbox_layout->addItem(ui_form_layout);
@@ -69,18 +77,13 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent, AOApplication *p_a
 
 void AOCaseAnnouncerDialog::ok_pressed()
 {
-  court->announce_case(ui_case_title_textbox->text(),
-                       ui_defense_needed->isChecked(),
-                       ui_prosecutor_needed->isChecked(),
-                       ui_judge_needed->isChecked(),
-                       ui_juror_needed->isChecked(),
-                       ui_steno_needed->isChecked(),
-                       ui_witness_needed->isChecked());
+  court->announce_case(
+      ui_case_title_textbox->text(), ui_defense_needed->isChecked(),
+      ui_prosecutor_needed->isChecked(), ui_judge_needed->isChecked(),
+      ui_juror_needed->isChecked(), ui_steno_needed->isChecked(),
+      ui_witness_needed->isChecked());
 
   done(0);
 }
 
-void AOCaseAnnouncerDialog::cancel_pressed()
-{
-  done(0);
-}
+void AOCaseAnnouncerDialog::cancel_pressed() { done(0); }

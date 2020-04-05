@@ -9,15 +9,14 @@
 
 #include "aoapplication.h"
 
+#include <QDebug>
+#include <QObject>
+#include <QTimer>
 #include <QWidget>
 #include <string.h>
-#include <QDebug>
-#include <QTimer>
-#include <QObject>
 
 #if defined(BASSAUDIO)
-class AOMusicPlayer : public QObject
-{
+class AOMusicPlayer : public QObject {
   Q_OBJECT
 public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
@@ -38,11 +37,9 @@ private:
   QString f_path;
 
   HSTREAM m_stream;
-
 };
 #elif defined(QTAUDIO)
-class AOMusicPlayer : public QObject
-{
+class AOMusicPlayer : public QObject {
 public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   ~AOMusicPlayer();
@@ -64,8 +61,7 @@ private:
   QString f_path;
 };
 #else
-class AOMusicPlayer : public QObject
-{
+class AOMusicPlayer : public QObject {
 public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   ~AOMusicPlayer();

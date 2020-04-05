@@ -6,38 +6,36 @@
 #include "discord_rich_presence.h"
 
 #include <QApplication>
-#include <QVector>
 #include <QFile>
 #include <QSettings>
+#include <QVector>
 
 #include <QDebug>
-#include <QRect>
 #include <QDesktopWidget>
+#include <QRect>
 
 #include <QCryptographicHash>
 
 #include <QDir>
 #include <QStandardPaths>
 
-#include <QTextStream>
-#include <QStringList>
 #include <QColor>
 #include <QScreen>
+#include <QStringList>
+#include <QTextStream>
 #ifdef QTAUDIO
 #include <QAudioDeviceInfo>
 #endif
 
-#include <QtConcurrent/QtConcurrent>
+#include <QFuture>
 #include <QThread>
 #include <QThreadPool>
-#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
 
 class NetworkManager;
 class Lobby;
 class Courtroom;
-
-class AOApplication : public QApplication
-{
+class AOApplication : public QApplication {
   Q_OBJECT
 
 public:
@@ -89,7 +87,7 @@ public:
 
   ///////////////loading info///////////////////
 
-  //player number, it's hardly used but might be needed for some old servers
+  // player number, it's hardly used but might be needed for some old servers
   int s_pv = 0;
 
   QString server_software = "";
@@ -102,7 +100,6 @@ public:
   int music_list_size = 0;
   int loaded_music = 0;
   int area_count = 0;
-
   bool courtroom_loaded = false;
 
   //////////////////versioning///////////////
@@ -115,19 +112,19 @@ public:
   ///////////////////////////////////////////
 
   void set_favorite_list();
-  QVector<server_type>& get_favorite_list() {return favorite_list;}
+  QVector<server_type> &get_favorite_list() { return favorite_list; }
   void add_favorite_server(int p_server);
 
   void set_server_list();
-  QVector<server_type>& get_server_list() {return server_list;}
+  QVector<server_type> &get_server_list() { return server_list; }
 
-  //reads the theme from config.ini and sets it accordingly
+  // reads the theme from config.ini and sets it accordingly
   void reload_theme();
 
-  //Returns the character the player has currently selected
+  // Returns the character the player has currently selected
   QString get_current_char();
 
-  //implementation in path_functions.cpp
+  // implementation in path_functions.cpp
   QString get_base_path();
   QString get_data_path();
   QString get_theme_path(QString p_file);
@@ -147,31 +144,32 @@ public:
   // Instead of reinventing the wheel, we'll use a QSettings class.
   QSettings *configini;
 
-  //Reads the theme from config.ini and loads it into the current_theme variable
+  // Reads the theme from config.ini and loads it into the current_theme
+  // variable
   QString read_theme();
 
-  //Returns the value of ooc_name in config.ini
+  // Returns the value of ooc_name in config.ini
   QString get_ooc_name();
 
-  //Returns the blip rate from config.ini
+  // Returns the blip rate from config.ini
   int read_blip_rate();
 
-  //Returns true if blank blips is enabled in config.ini and false otherwise
+  // Returns true if blank blips is enabled in config.ini and false otherwise
   bool get_blank_blip();
 
-  //Returns true if looping sound effects are enabled in the config.ini
+  // Returns true if looping sound effects are enabled in the config.ini
   bool get_looping_sfx();
 
-  //Returns true if kill music on object is enabled in the config.ini
+  // Returns true if kill music on object is enabled in the config.ini
   bool get_objectmusic();
 
-  //Returns the value of default_music in config.ini
+  // Returns the value of default_music in config.ini
   int get_default_music();
 
-  //Returns the value of default_sfx in config.ini
+  // Returns the value of default_sfx in config.ini
   int get_default_sfx();
 
-  //Returns the value of default_blip in config.ini
+  // Returns the value of default_blip in config.ini
   int get_default_blip();
 
   // Returns the value of whether Discord should be enabled on startup
@@ -182,9 +180,15 @@ public:
   // from the config.ini.
   bool is_shakeandflash_enabled();
 
+  // Returns whether evidence should be maintained ic
+  bool is_keepevi_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();
+
+  // Gets the punctuation delay modifier
+  int get_pundelay();
 
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
@@ -195,119 +199,125 @@ public:
 
   // Returns the audio device used for the client.
   QString get_audio_output_device();
-  #ifdef QTAUDIO
+#ifdef QTAUDIO
   QAudioDeviceInfo QtAudioDevice;
-  #endif
+#endif
 
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();
 
-  //Returns the list of words in callwords.ini
+  // Returns the list of words in callwords.ini
   QStringList get_call_words();
 
-  //Appends the argument string to serverlist.txt
+  // Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
 
-  //Returns the contents of serverlist.txt
+  // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
 
-  //Returns the value of p_identifier in the design.ini file in p_design_path
+  // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
-  //Returns the coordinates of widget with p_identifier from p_file
+  // Returns the coordinates of widget with p_identifier from p_file
   QPoint get_button_spacing(QString p_identifier, QString p_file);
 
-  //Returns the dimensions of widget with specified identifier from p_file
+  // Returns the dimensions of widget with specified identifier from p_file
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
 
-  //Returns the name of the font with p_identifier from p_file
+  // Returns the name of the font with p_identifier from p_file
   QString get_font_name(QString p_identifier, QString p_file);
 
-  //Returns the value of font_size with p_identifier from p_file
+  // Returns the value of font_size with p_identifier from p_file
   int get_font_size(QString p_identifier, QString p_file);
 
-  //Returns the color with p_identifier from p_file
+  // Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);
 
   // Returns the colour from the misc folder.
   QColor get_chat_color(QString p_identifier, QString p_chat);
 
-  //Returns the sfx with p_identifier from sounds.ini in the current theme path
+  // Returns the sfx with p_identifier from sounds.ini in the current theme path
   QString get_sfx(QString p_identifier);
 
-  //Figure out if we can opus this or if we should fall back to wav
+  // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
 
-  // Can we use APNG for this? If not, fall back to a gif.
+  // figure out if we can find what prefix this song uses
+  QString get_music_prefix(QString song_to_check);
+
+  // Can we use APNG for this? If not, WEBP? if not, GIF? If not, fall back to a
+  // gif.
   QString get_image_suffix(QString path_to_check);
 
-  //Returns the value of p_search_line within target_tag and terminator_tag
-  QString read_char_ini(QString p_char, QString p_search_line, QString target_tag);
+  // Returns the value of p_search_line within target_tag and terminator_tag
+  QString read_char_ini(QString p_char, QString p_search_line,
+                        QString target_tag);
 
-  //Returns the side of the p_char character from that characters ini file
+  // Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
 
-  //Returns the showname from the ini of p_char
+  // Returns the showname from the ini of p_char
   QString get_showname(QString p_char);
 
-  //Returns the value of chat from the specific p_char's ini file
+  // Returns the value of chat from the specific p_char's ini file
   QString get_chat(QString p_char);
 
-  //Returns the value of shouts from the specified p_char's ini file
+  // Returns the value of shouts from the specified p_char's ini file
   QString get_char_shouts(QString p_char);
 
-  //Returns the preanim duration of p_char's p_emote
+  // Returns the preanim duration of p_char's p_emote
   int get_preanim_duration(QString p_char, QString p_emote);
 
-  //Same as above, but only returns if it has a % in front(refer to Preanims section in the manual)
+  // Same as above, but only returns if it has a % in front(refer to Preanims
+  // section in the manual)
   int get_ao2_preanim_duration(QString p_char, QString p_emote);
 
-  //Not in use
+  // Not in use
   int get_text_delay(QString p_char, QString p_emote);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
 
-  //Returns the name of p_char
+  // Returns the name of p_char
   QString get_char_name(QString p_char);
 
-  //Returns the total amount of emotes of p_char
+  // Returns the total amount of emotes of p_char
   int get_emote_number(QString p_char);
 
-  //Returns the emote comment of p_char's p_emote
+  // Returns the emote comment of p_char's p_emote
   QString get_emote_comment(QString p_char, int p_emote);
 
-  //Returns the base name of p_char's p_emote
-  QString get_emote(QString p_char, int p_emote);
-
-  //Returns the preanimation name of p_char's p_emote
-  QString get_pre_emote(QString p_char, int p_emote);
-
-  //Returns the sfx of p_char's p_emote
-  QString get_sfx_name(QString p_char, int p_emote);
-
-  //Returns if an emote loops it's SFX
+  // Returns if an emote loops it's SFX
   QString get_sfx_looping(QString p_char, int p_emote);
 
-  //Returns if an emote has a frame specific SFX for it
+  // Returns if an emote has a frame specific SFX for it
   QString get_frame_sfx_name(QString p_char, QString p_emote, int n_frame);
 
-  //Returns if an emote has a frame specific SFX for it
+  // Returns if an emote has a frame specific SFX for it
   QString get_realization_frame(QString p_char, QString p_emote, int n_frame);
 
-  //Returns if an emote has a frame specific SFX for it
+  // Returns if an emote has a frame specific SFX for it
   QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
 
-  //Not in use
+  // Returns the base name of p_char's p_emote
+  QString get_emote(QString p_char, int p_emote);
+
+  // Returns the preanimation name of p_char's p_emote
+  QString get_pre_emote(QString p_char, int p_emote);
+
+  // Returns the sfx of p_char's p_emote
+  QString get_sfx_name(QString p_char, int p_emote);
+
+  // Not in use
   int get_sfx_delay(QString p_char, int p_emote);
 
-  //Returns the modifier for p_char's p_emote
+  // Returns the modifier for p_char's p_emote
   int get_emote_mod(QString p_char, int p_emote);
 
-  //Returns the desk modifier for p_char's p_emote
+  // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  //Returns p_char's gender
+  // Returns p_char's gender
   QString get_gender(QString p_char);
 
   // ======
@@ -326,6 +336,9 @@ public:
   // Same for judge.
   bool get_casing_judge_enabled();
 
+  // Same for witnesses.
+  bool get_casing_wit_enabled();
+
   // Same for juror.
   bool get_casing_juror_enabled();
 
@@ -335,11 +348,17 @@ public:
   // Same for CM.
   bool get_casing_cm_enabled();
 
-  // Same for witnesses.
-  bool get_casing_wit_enabled();
-
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
+
+  // Get if html for ic log is enabled
+  bool get_colored_iclog_enabled();
+
+  // Get if ic log mirror is enabled
+  bool get_iclmir_enabled();
+
+  // Get if only inline coloring should be shown in log
+  bool colorlog_restricted_enabled();
 
 private:
   const int RELEASE = 2;
