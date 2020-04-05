@@ -27,6 +27,8 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".png");
   QString apng_path =
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
+   QString alt_path_still = 
+      ao_app->get_character_path(p_char, p_emote + ".png");  
 
   QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
   QString placeholder_default_path =
