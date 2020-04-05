@@ -72,10 +72,13 @@ class Courtroom : public QMainWindow {
 public:
   explicit Courtroom(AOApplication *p_ao_app);
 
-  void append_char(char_type p_char) { char_list.append(p_char); }
-  void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
-  void append_music(QString f_music) { music_list.append(f_music); }
-  void append_area(QString f_area) { area_list.append(f_area); }
+
+  void append_char(char_type p_char){char_list.append(p_char);}
+  void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
+  void append_music(QString f_music){music_list.append(f_music);}
+  void append_area(QString f_area){area_list.append(f_area);}
+  void clear_music(){music_list.clear();}
+  void clear_areas(){area_list.clear();}
   void handle_failed_login();
   QString threading_sfx = "";
   QString threading_shake = "";
@@ -205,9 +208,13 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_colour);
 
-  // these functions handle chatmessages sequentially.
-  // The process itself is very convoluted and merits separate documentation
-  // But the general idea is objection animation->pre animation->talking->idle
+
+  //check whether or not current theme has images for buttons with fallback text
+  void detect_fallback_text();
+  
+  //these functions handle chatmessages sequentially.
+  //The process itself is very convoluted and merits separate documentation
+  //But the general idea is objection animation->pre animation->talking->idle
   void handle_chatmessage(QStringList *p_contents);
   void handle_chatmessage_2();
   void handle_chatmessage_3();
@@ -426,7 +433,17 @@ private:
   // prosecutiondesk.png and stand.png
   bool is_ao2_bg = false;
 
-  // whether the ooc chat is server or master chat, true is server
+
+  // whether or not to use text for buttons instead of images, true is text
+  bool change_char_fallback = true;
+  bool reload_theme_fallback = true;
+  bool settings_fallback = true;
+  bool call_mod_fallback = true;
+  bool casing_fallback = true;
+  bool amswap_fallback = true;
+  bool ooc_toggle_fallback = true;
+
+  //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
   // Is AFK enabled

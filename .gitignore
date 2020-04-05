@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.pro.autosave
+*.pro.user
 base_override.h
 .DS_Store
 

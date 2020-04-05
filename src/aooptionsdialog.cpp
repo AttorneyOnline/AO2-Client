@@ -319,12 +319,38 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_music_volume_lbl->setText(tr("Music:"));
   ui_music_volume_lbl->setToolTip(tr("Sets the music's default volume."));
 
+    // Let's fill out the combobox with the available audio devices. Or don't if there is no audio
+    if (needs_default_audiodev())
+    {
+
+
   ui_audio_layout->setWidget(2, QFormLayout::LabelRole, ui_music_volume_lbl);
+
 
   ui_music_volume_spinbox = new QSpinBox(ui_audio_widget);
   ui_music_volume_spinbox->setValue(p_ao_app->get_default_music());
   ui_music_volume_spinbox->setMaximum(100);
   ui_music_volume_spinbox->setSuffix("%");
+
+    }
+    #ifdef BASSAUDIO
+    BASS_DEVICEINFO info;
+    int a = 0;
+    for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
+    {
+        ui_audio_device_combobox->addItem(info.name);
+        if (p_ao_app->get_audio_output_device() == info.name)
+            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
+    }
+    #elif defined QTAUDIO
+    foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
+    {
+        ui_audio_device_combobox->addItem(deviceInfo.deviceName());
+        if (p_ao_app->get_audio_output_device() == deviceInfo.deviceName())
+            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
+    }
+    #endif
+    ui_audio_layout->setWidget(0, QFormLayout::FieldRole, ui_audio_device_combobox);
 
   ui_audio_layout->setWidget(2, QFormLayout::FieldRole,
                              ui_music_volume_spinbox);

@@ -62,7 +62,7 @@ void AOMusicPlayer::play(QString p_song)
 
   m_player.setMedia(QUrl::fromLocalFile(f_path));
 
-  this->set_volume(m_volume);
+  this->set_volume(100);
 
   m_player.play();
 }
@@ -70,14 +70,20 @@ void AOMusicPlayer::play(QString p_song)
 void AOMusicPlayer::set_volume(int p_value)
 {
   m_volume = p_value;
-  m_player.setVolume(m_volume);
+
+  qreal linearVolume = QAudio::convertVolume(m_volume / qreal(100),
+                                             QAudio::LogarithmicVolumeScale,
+                                             QAudio::LinearVolumeScale);
+
+  m_player.setVolume(linearVolume*100);
 }
 
 QString AOMusicPlayer::get_path() { return f_path; }
 
 void AOMusicPlayer::kill_loop()
 {
-  // TODO QTAUDIO
+
+    m_player.stop();
 }
 #else
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
@@ -95,5 +101,6 @@ void AOMusicPlayer::set_volume(int p_value) {}
 
 QString AOMusicPlayer::get_path() { return f_path; }
 
-void AOMusicPlayer::kill_loop() {}
+}
+
 #endif

@@ -136,6 +136,16 @@ end:
   delete p_packet;
 }
 
+bool AOApplication::is_music_track(QString trackname)
+{
+    return (trackname.startsWith("==") ||
+            trackname.endsWith(".wav") ||
+            trackname.endsWith(".mp3") ||
+            trackname.endsWith(".mp4") ||
+            trackname.endsWith(".ogg") ||
+            trackname.endsWith(".opus"));
+}
+
 void AOApplication::server_packet_received(AOPacket *p_packet)
 {
   p_packet->net_decode();
@@ -397,7 +407,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    bool musics_time = false;
+    bool musiclist_start = false;
     int areas = 0;
 
     for (int n_element = 0; n_element < f_contents.size(); n_element += 2) {
@@ -431,6 +441,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           w_courtroom->append_area(f_music);
           areas++;
         }
+
       }
 
       for (int area_n = 0; area_n < areas; area_n++) {
@@ -495,6 +506,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RM#%"));
   }
+
   else if (header == "SM") {
     if (!courtroom_constructed)
       goto end;
@@ -514,9 +526,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                            f_contents.at(element2check).endsWith(".ogg") ||
                            f_contents.at(element2check).endsWith(".opus"))) {
         musics_time = true;
-
-        // w_courtroom->fix_last_area();
-        // continue;
       }
 
       AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(
@@ -544,6 +553,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     send_server_packet(new AOPacket("RD#%"));
   }
   else if (header == "DONE") {
+
     if (!courtroom_constructed)
       goto end;
 
@@ -566,6 +576,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->list_music();
   }
   else if (header == "BN") {
+
     if (f_contents.size() < 1)
       goto end;
 

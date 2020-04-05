@@ -20,12 +20,14 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
   apng = false;
+
   QString original_path =
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
   QString alt_path =
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".png");
   QString apng_path =
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
+
   QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
   QString placeholder_default_path =
       ao_app->get_default_theme_path("placeholder.gif");
@@ -40,6 +42,8 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
     gif_path = original_path;
   else if (file_exists(alt_path))
     gif_path = alt_path;
+  else if (file_exists(alt_path_still))
+    gif_path = alt_path_still;
   else if (file_exists(placeholder_path))
     gif_path = placeholder_path;
   else
@@ -54,7 +58,10 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage());
   this->show();
   this->play_frame_sfx();
-  ticker->start(m_movie->nextFrameDelay());
+  // if the frame count is 0 (i.e. it's a static PNG) don't try to play the next frame, ya goofus
+  if (m_movie->frameCount() != 0) {
+    ticker->start(m_movie->nextFrameDelay());
+  }
 }
 
 void AOCharMovie::play_frame_sfx()
@@ -172,7 +179,17 @@ void AOCharMovie::movie_ticker()
 
   this->play_frame_sfx();
 
-  ticker->start(m_movie->nextFrameDelay());
+
+
+  if (m_movie->frameCount() == 0)
+  {
+    return;
+  }
+  else if (!apng)
+  {
+    ticker->start(m_movie->nextFrameDelay());
+  }
+
 }
 
 void AOCharMovie::LoadImageWithStupidMethodForFlipSupport(QImage image)
@@ -205,7 +222,6 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   m_movie->stop();
   m_movie->setFileName(gif_path);
   m_movie->jumpToFrame(0);
-  int real_duration = 0;
   play_once = true;
   play(p_char, p_emote, "");
 }
