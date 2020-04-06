@@ -75,16 +75,12 @@ void AOMusicPlayer::set_volume(int p_value)
                                              QAudio::LogarithmicVolumeScale,
                                              QAudio::LinearVolumeScale);
 
-  m_player.setVolume(linearVolume*100);
+  m_player.setVolume(linearVolume * 100);
 }
 
 QString AOMusicPlayer::get_path() { return f_path; }
 
-void AOMusicPlayer::kill_loop()
-{
-
-    m_player.stop();
-}
+void AOMusicPlayer::kill_loop() { m_player.stop(); }
 #else
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
     : QObject()
@@ -101,6 +97,5 @@ void AOMusicPlayer::set_volume(int p_value) {}
 
 QString AOMusicPlayer::get_path() { return f_path; }
 
-}
-
+void AOMusicPlayer::kill_loop() {}
 #endif

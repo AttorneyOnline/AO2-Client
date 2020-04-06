@@ -27,8 +27,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".png");
   QString apng_path =
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
-   QString alt_path_still = 
-      ao_app->get_character_path(p_char, p_emote + ".png");  
+  QString alt_path_still = ao_app->get_character_path(p_char, p_emote + ".png");
 
   QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
   QString placeholder_default_path =
@@ -60,7 +59,8 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   this->LoadImageWithStupidMethodForFlipSupport(m_movie->currentImage());
   this->show();
   this->play_frame_sfx();
-  // if the frame count is 0 (i.e. it's a static PNG) don't try to play the next frame, ya goofus
+  // if the frame count is 0 (i.e. it's a static PNG) don't try to play the next
+  // frame, ya goofus
   if (m_movie->frameCount() != 0) {
     ticker->start(m_movie->nextFrameDelay());
   }
@@ -181,17 +181,12 @@ void AOCharMovie::movie_ticker()
 
   this->play_frame_sfx();
 
-
-
-  if (m_movie->frameCount() == 0)
-  {
+  if (m_movie->frameCount() == 0) {
     return;
   }
-  else if (!apng)
-  {
+  else if (!apng) {
     ticker->start(m_movie->nextFrameDelay());
   }
-
 }
 
 void AOCharMovie::LoadImageWithStupidMethodForFlipSupport(QImage image)

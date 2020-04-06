@@ -138,12 +138,9 @@ end:
 
 bool AOApplication::is_music_track(QString trackname)
 {
-    return (trackname.startsWith("==") ||
-            trackname.endsWith(".wav") ||
-            trackname.endsWith(".mp3") ||
-            trackname.endsWith(".mp4") ||
-            trackname.endsWith(".ogg") ||
-            trackname.endsWith(".opus"));
+  return (trackname.startsWith("==") || trackname.endsWith(".wav") ||
+          trackname.endsWith(".mp3") || trackname.endsWith(".mp4") ||
+          trackname.endsWith(".ogg") || trackname.endsWith(".opus"));
 }
 
 void AOApplication::server_packet_received(AOPacket *p_packet)
@@ -424,25 +421,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text(tr("Loading music:\n%1/%2")
                                     .arg(QString::number(loaded_music))
                                     .arg(QString::number(music_list_size)));
-
-      if (musics_time) {
-        w_courtroom->append_music(f_music);
-      }
-      else {
-        if (f_music.endsWith(".wav") || f_music.endsWith(".mp3") ||
-            f_music.endsWith(".mp4") || f_music.endsWith(".ogg") ||
-            f_music.endsWith(".opus")) {
-          musics_time = true;
-          areas--;
-          // w_courtroom->fix_last_area();
-          w_courtroom->append_music(f_music);
-        }
-        else {
-          w_courtroom->append_area(f_music);
-          areas++;
-        }
-
-      }
 
       for (int area_n = 0; area_n < areas; area_n++) {
         w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");

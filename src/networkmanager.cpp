@@ -126,12 +126,10 @@ void NetworkManager::on_srv_lookup()
   else {
     const auto srv_records = ms_dns->serviceRecords();
 
-
-    for (const QDnsServiceRecord &record : srv_records)
-    {
-      #ifdef DEBUG_NETWORK
+    for (const QDnsServiceRecord &record : srv_records) {
+#ifdef DEBUG_NETWORK
       qDebug() << "Connecting to " << record.target() << ":" << record.port();
-      #endif
+#endif
       ms_socket->connectToHost(record.target(), record.port());
       QTime timer;
       timer.start();
