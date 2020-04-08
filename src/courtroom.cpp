@@ -2156,11 +2156,6 @@ void Courtroom::handle_chatmessage_3()
   ui_ic_chatlog->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
   if (mirror_iclog) {
-    // if(!log_goes_downwards)
-    //    append_ic_text(m_chatmessage[MESSAGE],m_chatmessage[CHAR_NAME],
-    //    false,true,false,m_chatmessage[text_color].toInt());
-    // else
-    //  first_message_sent = true;
     if (!ui_showname_enable->isChecked() || m_chatmessage[SHOWNAME] == "") {
       if (first_message_sent)
         ui_ic_chatlog->textCursor().insertHtml("<br>");
@@ -2536,24 +2531,27 @@ void Courtroom::append_ic_text(QString p_text, QString p_name,
         old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
 
     ui_ic_chatlog->moveCursor(QTextCursor::End);
+    if (!(is_songchange && mirror_iclog)) {
+      if (!first_message_sent &&
+          (force_filter || !mirror_iclog || is_songchange)) {
+        // If the first message hasn't been sent, and we are handling basic
+        // text, we put the name without the newline.
+        ui_ic_chatlog->textCursor().insertText(p_name, bold);
+        first_message_sent = true;
+      }
+      else if (force_filter || is_songchange || !mirror_iclog) {
+        // Otherwise we just add the plaintext with the new line.
+        ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+      }
+    }
 
-    if (!first_message_sent &&
-        (force_filter || !mirror_iclog || is_songchange)) {
-      // If the first message hasn't been sent, and we are handling basic text,
-      // we put the name without the newline.
-      ui_ic_chatlog->textCursor().insertText(p_name, bold);
-      first_message_sent = true;
-    }
-    else if (force_filter || is_songchange || !mirror_iclog) {
-      // Otherwise we just add the plaintext with the new line.
-      ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-    }
     if (is_songchange && !mirror_iclog) {
       // If its a song with mirror mode enabled, we do not need to repeat it as
       // it is already shown in the ooc.
       ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
       ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
     }
+
     else if (colorf_iclog && (!mirror_iclog || force_filter)) {
       // if we are handling already formatted text and we have enabled colors in
       // the iclog, then we insert the text
@@ -2595,14 +2593,15 @@ void Courtroom::append_ic_text(QString p_text, QString p_name,
         old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
 
     ui_ic_chatlog->moveCursor(QTextCursor::Start);
-    if (!first_message_sent &&
-        (force_filter || !mirror_iclog || is_songchange)) {
-      ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-      first_message_sent = true;
+    if (!(is_songchange && mirror_iclog)) {
+      if (!first_message_sent &&
+          (force_filter || !mirror_iclog || is_songchange)) {
+        ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+        first_message_sent = true;
+      }
+      else if (force_filter || is_songchange || !mirror_iclog)
+        ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
     }
-    else if (force_filter || is_songchange || !mirror_iclog)
-      ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-
     if (is_songchange && !mirror_iclog) {
       ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
       ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
