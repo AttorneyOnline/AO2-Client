@@ -2157,7 +2157,7 @@ void Courtroom::handle_chatmessage_3()
 
   if (mirror_iclog) {
     if (!ui_showname_enable->isChecked() || m_chatmessage[SHOWNAME] == "") {
-      if (first_message_sent)
+      if (first_message_sent && log_goes_downwards)
         ui_ic_chatlog->textCursor().insertHtml("<br>");
       else
         first_message_sent = true;
@@ -2166,7 +2166,7 @@ void Courtroom::handle_chatmessage_3()
                                              ": </b>");
     }
     else {
-      if (first_message_sent)
+      if (first_message_sent && log_goes_downwards)
         ui_ic_chatlog->textCursor().insertHtml("<br>");
       else
         first_message_sent = true;
@@ -2596,11 +2596,22 @@ void Courtroom::append_ic_text(QString p_text, QString p_name,
     if (!(is_songchange && mirror_iclog)) {
       if (!first_message_sent &&
           (force_filter || !mirror_iclog || is_songchange)) {
-        ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-        first_message_sent = true;
+        if (mirror_iclog) {
+          ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+        }
+        else {
+          ui_ic_chatlog->textCursor().insertText(p_name, bold);
+          first_message_sent = true;
+        }
       }
-      else if (force_filter || is_songchange || !mirror_iclog)
-        ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+      else if (force_filter || is_songchange || !mirror_iclog) {
+        if (mirror_iclog) {
+          ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
+        }
+        else {
+          ui_ic_chatlog->textCursor().insertText(p_name, bold);
+        }
+      }
     }
     if (is_songchange && !mirror_iclog) {
       ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
