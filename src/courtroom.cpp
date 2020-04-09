@@ -2532,37 +2532,40 @@ void Courtroom::append_ic_text(QString p_text, QString p_name,
 
     ui_ic_chatlog->moveCursor(QTextCursor::End);
     if (!(is_songchange && mirror_iclog)) {
-      if (!first_message_sent &&
-          (force_filter || !mirror_iclog || is_songchange)) {
-        // If the first message hasn't been sent, and we are handling basic
-        // text, we put the name without the newline.
+      // The only case where no new log entry should be made is when there is a
+      // music entry while mirror log is active This is to protect the log, as
+      // if there is a songchange during a new message being typed, then they
+      // will destructively interfere with eachother
+
+      // If the first message hasn't been sent, and we are handling basic
+      // text, we put the name without the newline.
+      if (!first_message_sent)
         ui_ic_chatlog->textCursor().insertText(p_name, bold);
-        first_message_sent = true;
-      }
+
       else if (force_filter || is_songchange || !mirror_iclog) {
         // Otherwise we just add the plaintext with the new line.
         ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
       }
-    }
+      first_message_sent = true;
 
-    if (is_songchange && !mirror_iclog) {
-      // If its a song with mirror mode enabled, we do not need to repeat it as
-      // it is already shown in the ooc.
-      ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
-    }
+      if (is_songchange) {
+        // If its a song with mirror mode enabled, we do not need to repeat it
+        // as it is already shown in the ooc.
+        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+        ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
+      }
 
-    else if (colorf_iclog && (!mirror_iclog || force_filter)) {
-      // if we are handling already formatted text and we have enabled colors in
-      // the iclog, then we insert the text
-      ui_ic_chatlog->textCursor().insertHtml(p_text);
-    }
+      else if (colorf_iclog && (!mirror_iclog || force_filter)) {
+        // if we are handling already formatted text and we have enabled colors
+        // in the iclog, then we insert the text
+        ui_ic_chatlog->textCursor().insertHtml(p_text);
+      }
 
-    else if ((!colorf_iclog && !mirror_iclog) || force_filter) {
-      // If html is not enabled then we insert it as plain text.
-      ui_ic_chatlog->textCursor().insertText(p_text, normal);
+      else if ((!colorf_iclog && !mirror_iclog) || force_filter) {
+        // If html is not enabled then we insert it as plain text.
+        ui_ic_chatlog->textCursor().insertText(p_text, normal);
+      }
     }
-
     // If we got too many blocks in the current log, delete some from the top.
     while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
            log_maximum_blocks > 0) {
@@ -2594,38 +2597,40 @@ void Courtroom::append_ic_text(QString p_text, QString p_name,
 
     ui_ic_chatlog->moveCursor(QTextCursor::Start);
     if (!(is_songchange && mirror_iclog)) {
-      if (!first_message_sent &&
-          (force_filter || !mirror_iclog || is_songchange)) {
-        if (mirror_iclog) {
-          ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-        }
-        else {
-          ui_ic_chatlog->textCursor().insertText(p_name, bold);
-          first_message_sent = true;
-        }
-      }
-      else if (force_filter || is_songchange || !mirror_iclog) {
-        if (mirror_iclog) {
-          ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-        }
-        else {
-          ui_ic_chatlog->textCursor().insertText(p_name, bold);
-        }
-      }
-    }
-    if (is_songchange && !mirror_iclog) {
-      ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
-    }
-    else if (colorf_iclog && (!mirror_iclog || force_filter)) {
-      ui_ic_chatlog->textCursor().insertHtml(p_text);
-    }
-    else if ((!colorf_iclog && !mirror_iclog) || force_filter) {
-      ui_ic_chatlog->textCursor().insertText(p_text, normal);
-    }
-    if (!mirror_iclog)
-      ui_ic_chatlog->textCursor().insertHtml("<br>");
+      // The only case where no new log entry should be made is when there is a
+      // music entry while mirror log is active This is to protect the log, as
+      // if there is a songchange during a new message being typed, then they
+      // will destructively interfere with eachother
 
+      if ((force_filter || !mirror_iclog || is_songchange)) {
+
+        if (mirror_iclog)
+          // If mirror is enabled we need to make space on the top so the text
+          // can be inserted without any interuptions If mirror mode is not
+          // enabled, then we do not need to clear out the top line as the new
+          // entry pushes it automatically down.
+          p_name = '\n' + p_name;
+
+        if (!first_message_sent)
+          first_message_sent = true;
+
+        ui_ic_chatlog->textCursor().insertText(p_name, bold);
+      }
+
+      if (is_songchange) {
+        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+        ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
+      }
+
+      else if (colorf_iclog && (!mirror_iclog || force_filter)) {
+        ui_ic_chatlog->textCursor().insertHtml(p_text);
+      }
+      else if ((!colorf_iclog && !mirror_iclog) || force_filter) {
+        ui_ic_chatlog->textCursor().insertText(p_text, normal);
+      }
+      if (!mirror_iclog)
+        ui_ic_chatlog->textCursor().insertHtml("<br>");
+    }
     // If we got too many blocks in the current log, delete some from the
     // bottom.
     while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
