@@ -10,20 +10,18 @@ public:
   Courtroom *thisCourtroom;
   int char_num;
   AOCharButton *char_button;
-  AOCharSelectGenerationThreading(Courtroom *my_courtroom, int character_number,
-                                  AOCharButton *charbut)
+  AOCharSelectGenerationThreading(Courtroom *my_courtroom, int character_number)
   {
     thisCourtroom = my_courtroom;
     char_num = character_number;
-    char_button = charbut;
   }
   void run()
   {
-    AOCharButton *thisCharacterButton = char_button;
+    //we take the button we are supposed to mess with, and not whatever comes first
+    AOCharButton *thisCharacterButton = thisCourtroom->ui_char_button_list.at(char_num);
     thisCharacterButton->reset();
     thisCharacterButton->hide();
     thisCharacterButton->set_image(thisCourtroom->char_list.at(char_num).name);
-    thisCourtroom->ui_char_button_list.append(thisCharacterButton);
 
     thisCourtroom->connect(thisCharacterButton, SIGNAL(clicked()),
                            thisCourtroom->char_button_mapper, SLOT(map()));
@@ -32,16 +30,7 @@ public:
   }
 };
 
-class AOCharSelectFilterThreading : public QRunnable {
-public:
-  Courtroom *thisCourtroom;
-  int char_num;
-  AOCharSelectFilterThreading(Courtroom *my_courtroom, int character_number)
-  {
-    thisCourtroom = my_courtroom;
-    char_num = character_number;
-  }
-  void run()
+  void AOCharSelectFilter(Courtroom *thisCourtroom, int char_num)
   {
     AOCharButton *current_char =
         thisCourtroom->ui_char_button_list.at(char_num);
@@ -62,7 +51,7 @@ public:
 
     thisCourtroom->ui_char_button_list_filtered.append(current_char);
   }
-};
+
 
 void Courtroom::construct_char_select()
 {
@@ -261,13 +250,17 @@ void Courtroom::character_loading_finished()
   }
 
   // First, we'll make all the character buttons in the very beginning.
+  // Since we can't trust what will happen during the multi threading process, we assign the buttons their locations in the list according to the character list.
+  for (int n = 0; n < char_list.size(); n++) {
+      AOCharButton *characterButton = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+      ui_char_button_list.append(characterButton);
+  }
+
   // We also hide them all, so they can't be accidentally clicked.
   // Later on, we'll be revealing buttons as we need them.
   for (int n = 0; n < char_list.size(); n++) {
-    AOCharButton *characterButton =
-        new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
     AOCharSelectGenerationThreading *char_generate =
-        new AOCharSelectGenerationThreading(this, n, characterButton);
+        new AOCharSelectGenerationThreading(this, n);
     QThreadPool::globalInstance()->start(char_generate);
     if (QThreadPool::globalInstance()->activeThreadCount() ==
         QThreadPool::globalInstance()->maxThreadCount()) {
@@ -282,15 +275,8 @@ void Courtroom::filter_character_list()
 {
   ui_char_button_list_filtered.clear();
   for (int i = 0; i < char_list.size(); i++) {
-    AOCharSelectFilterThreading *char_filter =
-        new AOCharSelectFilterThreading(this, i);
-    QThreadPool::globalInstance()->start(char_filter);
-    if (QThreadPool::globalInstance()->activeThreadCount() ==
-        QThreadPool::globalInstance()->maxThreadCount()) {
-      QThreadPool::globalInstance()->waitForDone();
-    }
+     AOCharSelectFilter(this, i);
   }
-  QThreadPool::globalInstance()->waitForDone();
 
   current_char_page = 0;
   set_char_select_page();
