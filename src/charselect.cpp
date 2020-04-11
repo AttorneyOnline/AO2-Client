@@ -26,7 +26,7 @@ public:
     thisCourtroom->connect(thisCharacterButton, SIGNAL(clicked()),
                            thisCourtroom->char_button_mapper, SLOT(map()));
     thisCourtroom->char_button_mapper->setMapping(
-        thisCharacterButton, thisCourtroom->ui_char_button_list.size() - 1);
+        thisCharacterButton, char_num);
   }
 };
 
