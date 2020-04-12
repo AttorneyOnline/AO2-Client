@@ -3007,7 +3007,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
 void Courtroom::handle_failed_login()
 {
-
+  modcall_player->play("./music/failed_login"); // aov memes
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)
