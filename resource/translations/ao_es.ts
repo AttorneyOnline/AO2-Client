@@ -501,6 +501,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="142"/>
         <source>Showname</source>
+        <translatorcomment>A translation wouldn&apos;t fit because of the shitty theme system.</translatorcomment>
         <translation></translation>
     </message>
     <message>
@@ -516,11 +517,13 @@ Razón: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="210"/>
         <source>Pre</source>
+        <translatorcomment>A translation wouldn&apos;t fit because of the shitty theme system.</translatorcomment>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="213"/>
         <source>Flip</source>
+        <translatorcomment>A translation wouldn&apos;t fit because of the shitty theme system.</translatorcomment>
         <translation></translation>
     </message>
     <message>
@@ -531,16 +534,19 @@ Razón: </translation>
         <location filename="../../src/courtroom.cpp" line="224"/>
         <location filename="../../src/courtroom.cpp" line="681"/>
         <source>Casing</source>
-        <translation>Caso</translation>
+        <translatorcomment>This could be translated as &apos;caso&apos; and it wouldn&apos;t get cut, but there are so many other buttons that can&apos;t be translated on the courtroom window that might as well leave this also untranslated so it&apos;s at least consistent.</translatorcomment>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="229"/>
         <source>Shownames</source>
+        <translatorcomment>A translation wouldn&apos;t fit because of the shitty theme system.</translatorcomment>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="232"/>
         <source>No Interrupt</source>
+        <translatorcomment>A translation wouldn&apos;t fit because of the shitty theme system.</translatorcomment>
         <translation></translation>
     </message>
     <message>
@@ -646,7 +652,8 @@ Razón: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="782"/>
         <source>Back to Lobby</source>
-        <translation>Volver al lobby</translation>
+        <translatorcomment>&apos;Volver al lobby&apos; got cut, changed to just Lobby</translatorcomment>
+        <translation>Lobby</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="1186"/>
