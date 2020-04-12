@@ -25,7 +25,8 @@ Please check your Internet connection and firewall, and please try again.</sourc
         <location filename="../../src/packet_distribution.cpp" line="135"/>
         <source>Outdated version! Your version: %1
 Please go to aceattorneyonline.com to update.</source>
-        <translation>¡Versión desactualizada! Su versión: %1 Vaya a aceattorneyonline.com para actualizar.</translation>
+        <translation>¡Versión desactualizada! Su versión: %1
+Ingrese a aceattorneyonline.com para actualizar.</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="143"/>
@@ -37,7 +38,7 @@ Que tengas un buen día.</translation>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="293"/>
         <source>Attorney Online 2</source>
-        <translation>Attorney Online 2</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="319"/>
@@ -473,7 +474,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/charselect.cpp" line="88"/>
         <source>Passworded</source>
-        <translation>Contraseña</translation>
+        <translation>Con contraseña</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="92"/>
@@ -630,12 +631,12 @@ Razón: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="670"/>
         <source>Settings</source>
-        <translation>Ajustes</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="692"/>
         <source>A/M</source>
-        <translation>A/M</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="701"/>
@@ -649,12 +650,12 @@ Razón: </translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="1186"/>
-        <location filename="../../src/courtroom.cpp" line="3131"/>
+        <location filename="../../src/courtroom.cpp" line="3135"/>
         <source>You were granted the Disable Modcalls button.</source>
         <translation>Se le concedió el botón  para deshabilitar llamadas a moderadores.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="2936"/>
+        <location filename="../../src/courtroom.cpp" line="2940"/>
         <source>You have been banned.</source>
         <translation>Has sido vetado.</translation>
     </message>
@@ -663,104 +664,104 @@ Razón: </translation>
         <translation type="obsolete">Te ha sido otorgado el botón Guardia.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3138"/>
+        <location filename="../../src/courtroom.cpp" line="3142"/>
         <source>This does nothing, but there you go.</source>
         <translation>Esto no hace nada, pero ahí lo tienes.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3145"/>
+        <location filename="../../src/courtroom.cpp" line="3149"/>
         <source>You opened the settings menu.</source>
         <translation>Abriste el menú de configuración.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3160"/>
+        <location filename="../../src/courtroom.cpp" line="3164"/>
         <source>You will now pair up with </source>
         <translation>Ahora te emparejarás con </translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3162"/>
+        <location filename="../../src/courtroom.cpp" line="3166"/>
         <source> if they also choose your character in return.</source>
         <translation> si ellos también eligen a tu personaje a cambio.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3168"/>
+        <location filename="../../src/courtroom.cpp" line="3172"/>
         <source>You are no longer paired with anyone.</source>
         <translation>Ya no estás emparejado con nadie.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3173"/>
+        <location filename="../../src/courtroom.cpp" line="3177"/>
         <source>Are you sure you typed that well? The char ID could not be recognised.</source>
         <translation>¿Estás seguro de que lo escribiste bien? El ID de personaje no pudo ser reconocido.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3189"/>
+        <location filename="../../src/courtroom.cpp" line="3193"/>
         <source>You have set your offset to </source>
         <translation>Ha configurado su desplazamiento en </translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3196"/>
+        <location filename="../../src/courtroom.cpp" line="3200"/>
         <source>Your offset must be between -100% and 100%!</source>
         <translation>¡Su desplazamiento debe estar entre -100% y 100%!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3201"/>
+        <location filename="../../src/courtroom.cpp" line="3205"/>
         <source>That offset does not look like one.</source>
         <translation>Ese desplazamiento no se parece a uno.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3207"/>
+        <location filename="../../src/courtroom.cpp" line="3211"/>
         <source>You switched your music and area list.</source>
         <translation>Cambiaste tu lista de música y área.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3214"/>
+        <location filename="../../src/courtroom.cpp" line="3218"/>
         <source>You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.</source>
         <translation>Ha habilitado forzosamente funciones que el servidor puede no admitir. Es posible que no pueda hablar IC, o peor, debido a esto.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3225"/>
+        <location filename="../../src/courtroom.cpp" line="3229"/>
         <source>Your pre-animations interrupt again.</source>
         <translation>Sus pre-animaciones interrumpen de nuevo.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3227"/>
+        <location filename="../../src/courtroom.cpp" line="3231"/>
         <source>Your pre-animations will not interrupt text.</source>
         <translation>Sus pre-animaciones no interrumpirán el texto.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3238"/>
+        <location filename="../../src/courtroom.cpp" line="3242"/>
         <source>Couldn&apos;t open chatlog.txt to write into.</source>
         <translation>No se pudo abrir chatlog.txt para escribir.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3251"/>
+        <location filename="../../src/courtroom.cpp" line="3255"/>
         <source>The IC chatlog has been saved.</source>
         <translation>El chat IC se ha guardado.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3263"/>
+        <location filename="../../src/courtroom.cpp" line="3267"/>
         <source>You don&apos;t have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it&apos;s likely the case file you&apos;re looking for can&apos;t be found in there.</source>
         <translation>¡No tienes una carpeta `base/cases /`! Ha sido creada para ti. Pero debido a que no existia la carpeta, tampoco habían casos guardados ahí.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3274"/>
+        <location filename="../../src/courtroom.cpp" line="3278"/>
         <source>You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.
 Cases you can load: %1</source>
         <translation>¡Debe dar un nombre de archivo para cargar (no se necesita extensión)! Asegúrese de que esté en la carpeta `base/cases/` y de que tenga el formato correcto.
 Casos que puede cargar: %1</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3295"/>
+        <location filename="../../src/courtroom.cpp" line="3299"/>
         <source>Case made by %1.</source>
         <translation>Caso hecho por %1.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3301"/>
+        <location filename="../../src/courtroom.cpp" line="3305"/>
         <source>Navigate to %1 for the CM doc.</source>
         <translation>Navegue a %1 para el documento del CM.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3320"/>
+        <location filename="../../src/courtroom.cpp" line="3324"/>
         <source>Your case &quot;%1&quot; was loaded!</source>
         <translation>Su caso &quot;%1&quot; fue cargado!</translation>
     </message>
@@ -771,7 +772,7 @@ Cases you can load: </source>
 Casos que puede cargar: </translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3282"/>
+        <location filename="../../src/courtroom.cpp" line="3286"/>
         <source>Too many arguments to load a case! You only need one filename, without extension.</source>
         <translation>¡Demasiados argumentos para cargar un caso! Solo necesita un nombre de archivo, sin extensión.</translation>
     </message>
@@ -796,34 +797,34 @@ Casos que puede cargar: </translation>
         <translation type="obsolete">&quot; fue cargado!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3332"/>
+        <location filename="../../src/courtroom.cpp" line="3336"/>
         <source>You don&apos;t have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it&apos;s likely that you somehow deleted it.</source>
         <translation>¡No tienes una carpeta `base/cases /`! Fue creada para ti.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3343"/>
+        <location filename="../../src/courtroom.cpp" line="3347"/>
         <source>You need to give a filename to save (extension not needed) and the courtroom status!</source>
         <translation>¡Debe dar un nombre de archivo para guardar (no se necesita la extensión) y el estado de la sala del tribunal!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3351"/>
+        <location filename="../../src/courtroom.cpp" line="3355"/>
         <source>Too many arguments to save a case! You only need a filename without extension and the courtroom status!</source>
         <translatorcomment>why two exclamations, seems excesive.</translatorcomment>
         <translation>¡Demasiados argumentos para salvar un caso! Solo necesita un nombre de archivo sin extensión y el estado de la sala del tribunal.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3373"/>
+        <location filename="../../src/courtroom.cpp" line="3377"/>
         <source>Succesfully saved, edit doc and cmdoc link on the ini!</source>
         <translation>¡Guardado con éxito, puede editar el doc y doc link en el archivo ini!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3405"/>
+        <location filename="../../src/courtroom.cpp" line="3409"/>
         <source>Master</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="616"/>
-        <location filename="../../src/courtroom.cpp" line="3417"/>
+        <location filename="../../src/courtroom.cpp" line="3421"/>
         <source>Server</source>
         <translation></translation>
     </message>
@@ -838,28 +839,28 @@ Casos que puede cargar: </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3901"/>
+        <location filename="../../src/courtroom.cpp" line="3905"/>
         <source>Reason:</source>
         <translation>Razón:</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3902"/>
+        <location filename="../../src/courtroom.cpp" line="3906"/>
         <source>Call Moderator</source>
         <translation>Llamar Moderador</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3910"/>
-        <location filename="../../src/courtroom.cpp" line="3913"/>
+        <location filename="../../src/courtroom.cpp" line="3914"/>
+        <location filename="../../src/courtroom.cpp" line="3917"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3910"/>
+        <location filename="../../src/courtroom.cpp" line="3914"/>
         <source>You must provide a reason.</source>
         <translation>Debes proporcionar una razón.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3913"/>
+        <location filename="../../src/courtroom.cpp" line="3917"/>
         <source>The message is too long.</source>
         <translation>El mensaje es muy largo.</translation>
     </message>
@@ -884,7 +885,7 @@ Casos que puede cargar: </translation>
     <message>
         <location filename="../../src/lobby.cpp" line="12"/>
         <source>Attorney Online 2</source>
-        <translation>Attorney Online 2</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="29"/>
@@ -935,18 +936,18 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../../src/debug_functions.cpp" line="10"/>
         <source>Error: %1</source>
-        <translation>Error: %1</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/debug_functions.cpp" line="11"/>
         <source>Error</source>
-        <translation>Error</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/debug_functions.cpp" line="23"/>
         <source>Notice</source>
         <translatorcomment>In spanish it would be &quot;Aviso&quot;, but i believe it&apos;s going to be more useful for bug reports to not translate any debug string.</translatorcomment>
-        <translation>Notice</translation>
+        <translation></translation>
     </message>
 </context>
 </TS>
