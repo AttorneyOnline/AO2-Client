@@ -188,6 +188,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("en - English");
     ui_language_combobox->addItem("de - Deutsch");
     ui_language_combobox->addItem("es - Español");
+    ui_language_combobox->addItem("pt - Português");
     ui_language_combobox->addItem("jp - 日本語");
     ui_language_combobox->addItem("ru - Русский");
     ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);

@@ -50,6 +50,7 @@ TRANSLATIONS    =   resource/translations/ao_en.ts \
                     resource/translations/ao_de.ts \
                     resource/translations/ao_ru.ts \
                     resource/translations/ao_es.ts \
+                    resource/translations/ao_pt.ts \
                     resource/translations/ao_pl.ts
 
 win32:RC_ICONS = resource/logo.ico
