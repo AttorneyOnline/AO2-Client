@@ -1338,22 +1338,12 @@ void Courtroom::on_chat_return_pressed()
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
   //needed or else legacy won't understand what we're saying
-  if (objection_state > 0)
+  if (objection_state > 0 && ui_pre->isChecked())
   {
-    if (ui_pre->isChecked())
-    {
-      if (f_emote_mod == 5)
-        f_emote_mod = 6;
-      else
-        f_emote_mod = 2;
-    }
+    if (f_emote_mod == 5)
+      f_emote_mod = 6;
     else
-    {
-      if (f_emote_mod == 1)
-        f_emote_mod = 0;
-      else if (f_emote_mod == 4)
-        f_emote_mod = 5;
-    }
+      f_emote_mod = 2;
   }
   else if (ui_pre->isChecked() and !ui_pre_non_interrupt->isChecked())
   {
