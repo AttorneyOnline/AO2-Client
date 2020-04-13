@@ -2036,13 +2036,28 @@ void Courtroom::handle_chatmessage_3()
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
+  QString f_showname;
+  int f_char_id = m_chatmessage[CHAR_ID].toInt();
+  if (f_char_id > 0 && (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked()))
+  {
+    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+  }
+  else
+  {
+    f_showname = m_chatmessage[SHOWNAME];
+  }
+  if(f_showname.trimmed().isEmpty()) //Pure whitespace showname, get outta here.
+    f_showname = m_chatmessage[CHAR_NAME];
+
   if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
   {
     //shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
+    QString f_name = local_evidence_list.at(f_evi_id - 1).name;
     //def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud" || f_side == "jur");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side, ui_sfx_slider->value());
+    append_ic_text(f_name, f_showname, "has presented evidence");
   }
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
@@ -2353,7 +2368,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
   return p_text_escaped;
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchange)
+void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2364,7 +2379,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
 
-  if (!is_songchange)
+  if (p_action == "")
     p_text = filter_ic_text(p_text, ao_app->is_colorlog_enabled(), -1, m_chatmessage[TEXT_COLOR].toInt());
 
   if (log_goes_downwards)
@@ -2383,9 +2398,9 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
           ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
       }
 
-      if (is_songchange)
+      if (p_action != "")
       {
-        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+        ui_ic_chatlog->textCursor().insertText(" " + p_action + ": ", normal);
         ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
       }
       else
@@ -2424,9 +2439,9 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, bool is_songchang
 
       ui_ic_chatlog->textCursor().insertText(p_name, bold);
 
-      if (is_songchange)
+      if (p_action != "")
       {
-        ui_ic_chatlog->textCursor().insertText(" has played a song: ", normal);
+        ui_ic_chatlog->textCursor().insertText(" " + p_action + ": ", normal);
         ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
       }
       else
@@ -2956,7 +2971,7 @@ void Courtroom::handle_song(QStringList *p_contents)
         ic_chatlog_history.removeFirst();
       }
 
-      append_ic_text(f_song_clear, str_show, true);
+      append_ic_text(f_song_clear, str_show, "has played a song");
 
       music_player->play(f_song, channel, looping, effect_flags);
       if (channel == 0)
@@ -4399,14 +4414,14 @@ void Courtroom::on_showname_enable_clicked()
       if (ui_showname_enable->isChecked())
       {
          if (item.is_song())
-           append_ic_text(item.get_message(), item.get_showname(), true);
+           append_ic_text(item.get_message(), item.get_showname(), "has played a song");
          else
            append_ic_text(item.get_message(), item.get_showname());
       }
       else
       {
           if (item.is_song())
-            append_ic_text(item.get_message(), item.get_name(), true);
+            append_ic_text(item.get_message(), item.get_name(), "has played a song");
           else
             append_ic_text(item.get_message(), item.get_name());
       }
