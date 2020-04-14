@@ -791,9 +791,11 @@ int Courtroom::save_ooc_chatlog()
       case 1: // raw HTML
         out << ui_server_chatlog->toHtml();
         break;
-      case 2: // Markdown
-        out << ui_server_chatlog->toMarkdown();
-        break;
+      #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        case 2: // Markdown (Qt 5.14+ only)
+          out << ui_server_chatlog->toMarkdown();
+          break;
+      #endif
       default: // plain text, this is equivalent to saved_ooc_format = 0
         out << ui_server_chatlog->toPlainText();
         break;
