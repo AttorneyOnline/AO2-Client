@@ -1017,7 +1017,15 @@ void Courtroom::enter_courtroom(int p_cid)
 
   QString side = ao_app->get_char_side(current_char);
 
+
+  // We block signals from ui_pos_dropdown to stop on_pos_dropdown_changed from firing here.
+  // Per the Qt docs, QSignalBlocker only affects the rest of this function,
+  // so it doesn't stop the dropdown from working once we finish here.
+  const QSignalBlocker blocker(ui_pos_dropdown);
+  ui_pos_dropdown->setCurrentText(side);
+
   if (side == "jud") {
+ 
     ui_witness_testimony->show();
     ui_cross_examination->show();
     ui_not_guilty->show();
@@ -3359,8 +3367,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 }
 void Courtroom::handle_failed_login()
 {
-  music_player->enable_looping = false;
-  music_player->play("failed_login");
+  modcall_player->play("./music/failed_login"); // aov memes
 }
 void Courtroom::handle_wtce(QString p_wtce, int variant)
 {
@@ -3826,7 +3833,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
 
-  if (p_index < 0 || p_index > 5)
+  if (p_index < 0 || p_index > 7)
     return;
 
   toggle_judge_buttons(false);
@@ -3852,6 +3859,12 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
     break;
   case 5:
     f_pos = "hlp";
+    break;
+  case 6:
+    f_pos = "jur";
+    break;
+  case 7:
+    f_pos = "sea";
     break;
   default:
     f_pos = "";
