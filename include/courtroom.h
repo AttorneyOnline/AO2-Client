@@ -252,6 +252,14 @@ public:
   void doScreenShake();
   void doRealization();
 
+  // Attempts to save the IC log to a file, and returns a code based on whether or not it was successful
+  // 0 = success, 1 = directory error, 2 = file error
+  int save_ic_chatlog();
+  // Same thing, but for the OOC log.
+  int save_ooc_chatlog();
+
+  QVector<chatlogpiece> ic_chatlog_history;
+
   ~Courtroom();
 
 private:
@@ -310,7 +318,7 @@ private:
   QVector<QString> arup_cms;
   QVector<QString> arup_locks;
 
-  QVector<chatlogpiece> ic_chatlog_history;
+
 
   // These map music row items and area row items to their actual IDs.
   QVector<int> music_row_to_number;

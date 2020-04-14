@@ -3233,27 +3233,52 @@ void Courtroom::on_ooc_return_pressed()
     ui_ooc_chat_message->clear();
     return;
   }
-  else if (ooc_message.startsWith("/save_chatlog"))
+  else if (ooc_message.startsWith("/save_ic"))
   {
-    QFile file("chatlog.txt");
-
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    int result = save_ic_chatlog();
+    switch (result)
     {
-      append_server_chatmessage("CLIENT", tr("Couldn't open chatlog.txt to write into."), "1");
-      ui_ooc_chat_message->clear();
-      return;
+      case 2: // 2 = file creation error
+        append_server_chatmessage("CLIENT", tr("Couldn't create a log file, please check folder permissions."), "1");
+        ui_ooc_chat_message->clear();
+        break;
+      case 1: // 1 = directory creation error
+        append_server_chatmessage("CLIENT", tr("Unable to create user-specified log directory, please check folder permissions."), "1");
+        ui_ooc_chat_message->clear();
+        break;
+      case 0: // 0 = success
+        append_server_chatmessage("CLIENT", tr("The IC chatlog has been saved."), "1");
+        ui_ooc_chat_message->clear();
+        break;
+      default: // should never happen
+        append_server_chatmessage("CLIENT", tr("An unknown error occurred while saving the chatlog."), "1");
+        ui_ooc_chat_message->clear();
+        break;
     }
-
-    QTextStream out(&file);
-
-    foreach (chatlogpiece item, ic_chatlog_history) {
-        out << item.get_full() << '\n';
-      }
-
-    file.close();
-
-    append_server_chatmessage("CLIENT", tr("The IC chatlog has been saved."), "1");
-    ui_ooc_chat_message->clear();
+    return;
+  }
+  else if (ooc_message.startsWith("/save_ooc"))
+  {
+    int result = save_ooc_chatlog();
+    switch (result)
+    {
+      case 2: // 2 = file creation error
+        append_server_chatmessage("CLIENT", tr("Couldn't create a log file, please check folder permissions."), "1");
+        ui_ooc_chat_message->clear();
+        break;
+      case 1: // 1 = directory creation error
+        append_server_chatmessage("CLIENT", tr("Unable to create user-specified log directory, please check folder permissions."), "1");
+        ui_ooc_chat_message->clear();
+        break;
+      case 0: // 0 = success
+        append_server_chatmessage("CLIENT", tr("The OOC chatlog has been saved."), "1");
+        ui_ooc_chat_message->clear();
+        break;
+      default: // should never happen
+        append_server_chatmessage("CLIENT", tr("An unknown error occurred while saving the chatlog."), "1");
+        ui_ooc_chat_message->clear();
+        break;
+    }
     return;
   }
   else if (ooc_message.startsWith("/load_case"))

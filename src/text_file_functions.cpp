@@ -715,3 +715,95 @@ QString AOApplication::get_casing_can_host_cases()
   QString result = configini->value("casing_can_host_cases", "Turnabout Check Your Settings").value<QString>();
   return result;
 }
+
+int AOApplication::get_saved_ooc_format()
+{
+  int result = configini->value("saved_ooc_format", 0).toInt();
+  return result;
+}
+
+int Courtroom::save_ic_chatlog()
+{
+    QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":","."); // colons are illegal in Windows filenames, and spaces are for chumps
+    QString logfile = "ICLog-" + dtstamp_clean +  ".log";
+    int f_result = -1; // -1 = unknown error (there is no case for this)
+    QDir logfolder("logs");
+    if (!logfolder.exists())
+    {
+      qDebug() << "I: directory ./logs does not exist, attempting to create";
+      QDir::current().mkdir(logfolder.dirName());
+      if (!logfolder.exists()) { // check again to be sure the folder was created
+        qDebug() << "W: attempted to create dir ./logs unsuccessfully";
+        f_result = 1; // 1 = directory error - we tried to make the folder and couldn't
+        return f_result;
+      }
+    }
+    QFile file(logfolder.dirName() + '/' + logfile);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    {
+      qDebug() << "E: could not create log file (" << file.errorString() << ")";
+      f_result = 2; // 2 = read/write error - we tried to make the file and couldn't
+      return f_result;
+    }
+    file.open(QIODevice::WriteOnly);
+    QTextStream out(&file);
+    out << "#####" << '\n' << "Saved IC history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
+    foreach (chatlogpiece item, ic_chatlog_history) {
+        out << item.get_full() << '\n';
+      }
+
+    file.close();
+    if (file_exists(file.fileName()))
+      f_result = 0; // 0 = success
+    else
+      f_result = -1; // -1 = you broke it
+    return f_result;
+}
+
+int Courtroom::save_ooc_chatlog()
+{
+    QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":",".");
+    QString logfile = "OOCLog-" + dtstamp_clean +  ".log";
+    int f_result = -1; // -1 = unknown error (there is no case for this)
+    QDir logfolder("logs");
+    if (!logfolder.exists())
+    {
+      qDebug() << "I: directory ./logs does not exist, attempting to create";
+      QDir::current().mkdir(logfolder.dirName());
+      if (!logfolder.exists()) { // check again to be sure the folder was created
+        qDebug() << "W: attempted to create dir ./logs unsuccessfully";
+        f_result = 1; // 1 = directory error - we tried to make the folder and couldn't
+        return f_result;
+      }
+    }
+    QFile file(logfolder.dirName() + '/' + logfile);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    {
+      qDebug() << "E: could not create log file (" << file.errorString() << ")";
+      f_result = 2; // 2 = read/write error - we tried to make the file and couldn't
+      return f_result;
+    }
+    file.open(QIODevice::WriteOnly);
+    QTextStream out(&file);
+    out << "#####" << '\n' << "Saved OOC history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
+    int saved_ooc_format = 0; // TEMPORARY
+    switch (ao_app->get_saved_ooc_format())
+    {
+      case 1: // raw HTML
+        out << ui_server_chatlog->toHtml();
+        break;
+      case 2: // Markdown
+        out << ui_server_chatlog->toMarkdown();
+        break;
+      default: // plain text, this is equivalent to saved_ooc_format = 0
+        out << ui_server_chatlog->toPlainText();
+        break;
+    }
+
+    file.close();
+    if (file_exists(file.fileName()))
+      f_result = 0; // 0 = success
+    else
+      f_result = -1; // -1 = you broke it
+    return f_result;
+}

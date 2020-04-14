@@ -65,6 +65,8 @@ private:
     QCheckBox *ui_epilepsy_cb;
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
+    QLabel *ui_ooc_format_label;
+    QComboBox *ui_ooc_format_combobox;
 
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;

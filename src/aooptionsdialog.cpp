@@ -192,6 +192,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_language_combobox->addItem("ru - Русский");
     ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
 
+    ui_ooc_format_label = new QLabel(ui_form_layout_widget);
+    ui_ooc_format_label->setText(tr("Saved OOC Log Format:"));
+    ui_ooc_format_label->setToolTip(tr("Sets the formatting used when saving the OOC log via /save_ooc. If you're not sure, just use plain text."));
+    ui_gameplay_form->setWidget(12, QFormLayout::LabelRole, ui_ooc_format_label);
+
+    ui_ooc_format_combobox = new QComboBox(ui_form_layout_widget);
+    ui_ooc_format_combobox->addItem("Plain text (default)");
+    ui_ooc_format_combobox->addItem("Raw HTML");
+    ui_ooc_format_combobox->addItem("Markdown");
+    ui_ooc_format_combobox->setCurrentIndex(p_ao_app->get_saved_ooc_format());
+    ui_gameplay_form->setWidget(12, QFormLayout::FieldRole, ui_ooc_format_combobox);
+
     // Here we start the callwords tab.
     ui_callwords_tab = new QWidget();
     ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
@@ -533,6 +545,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("discord", ui_discord_cb->isChecked());
     configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
+    configini->setValue("saved_ooc_format", QString::number(ui_ooc_format_combobox->currentIndex()));
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 

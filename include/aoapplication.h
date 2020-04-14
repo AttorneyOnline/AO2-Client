@@ -69,6 +69,10 @@ public:
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
 
+  // used for debug slash logging purposes
+  QString current_server_name = "";
+  QString current_server_address = "";
+
   /////////////////server metadata//////////////////
 
   unsigned int s_decryptor = 5;
@@ -340,6 +344,9 @@ public:
 
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
+
+  // Get the format to use for saved OOC logs. 0 = Plaintext, 1 = raw HTML, 2 = Markdown
+  int get_saved_ooc_format();
 
 private:
   const int RELEASE = 2;

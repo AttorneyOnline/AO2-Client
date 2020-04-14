@@ -2,6 +2,7 @@
 #define TEXT_FILE_FUNCTIONS_H
 
 #include "aoapplication.h"
+#include "courtroom.h"
 #include "file_functions.h"
 #include <QTextStream>
 #include <QStringList>

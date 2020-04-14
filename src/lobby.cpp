@@ -327,6 +327,9 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_connect->setEnabled(false);
 
   ao_app->net_manager->connect_to_server(f_server);
+
+  ao_app->current_server_name = f_server.name;
+  ao_app->current_server_address = f_server.ip + ":" + QString::number(f_server.port); // port is not stored as a string, has to be converted here
   }
 }
 
