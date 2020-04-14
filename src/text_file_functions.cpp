@@ -786,7 +786,6 @@ int Courtroom::save_ooc_chatlog()
     file.open(QIODevice::WriteOnly);
     QTextStream out(&file);
     out << "#####" << '\n' << "Saved OOC history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
-    int saved_ooc_format = 0; // TEMPORARY
     switch (ao_app->get_saved_ooc_format())
     {
       case 1: // raw HTML
