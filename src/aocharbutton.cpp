@@ -60,7 +60,6 @@ void AOCharButton::set_passworded() { ui_passworded->show(); }
 void AOCharButton::set_image(QString p_character)
 {
   QString image_path = ao_app->get_character_path(p_character, "char_icon.png");
-
   this->setText("");
 
   if (file_exists(image_path))

@@ -17,41 +17,41 @@ public:
   }
   void run()
   {
-    //we take the button we are supposed to mess with, and not whatever comes first
-    AOCharButton *thisCharacterButton = thisCourtroom->ui_char_button_list.at(char_num);
+    // we take the button we are supposed to mess with, and not whatever comes
+    // first
+    AOCharButton *thisCharacterButton =
+        thisCourtroom->ui_char_button_list.at(char_num);
     thisCharacterButton->reset();
     thisCharacterButton->hide();
     thisCharacterButton->set_image(thisCourtroom->char_list.at(char_num).name);
 
     thisCourtroom->connect(thisCharacterButton, SIGNAL(clicked()),
                            thisCourtroom->char_button_mapper, SLOT(map()));
-    thisCourtroom->char_button_mapper->setMapping(
-        thisCharacterButton, char_num);
+    thisCourtroom->char_button_mapper->setMapping(thisCharacterButton,
+                                                  char_num);
   }
 };
 
-  void AOCharSelectFilter(Courtroom *thisCourtroom, int char_num)
-  {
-    AOCharButton *current_char =
-        thisCourtroom->ui_char_button_list.at(char_num);
+void AOCharSelectFilter(Courtroom *thisCourtroom, int char_num)
+{
+  AOCharButton *current_char = thisCourtroom->ui_char_button_list.at(char_num);
 
-    if (!thisCourtroom->ui_char_taken->isChecked() &&
-        thisCourtroom->char_list.at(char_num).taken)
-      return;
+  if (!thisCourtroom->ui_char_taken->isChecked() &&
+      thisCourtroom->char_list.at(char_num).taken)
+    return;
 
-    if (!thisCourtroom->char_list.at(char_num).name.contains(
-            thisCourtroom->ui_char_search->text(), Qt::CaseInsensitive))
-      return;
+  if (!thisCourtroom->char_list.at(char_num).name.contains(
+          thisCourtroom->ui_char_search->text(), Qt::CaseInsensitive))
+    return;
 
-    // We only really need to update the fact that a character is taken
-    // for the buttons that actually appear.
-    // You'd also update the passwordedness and etc. here later.
-    current_char->reset();
-    current_char->set_taken(thisCourtroom->char_list.at(char_num).taken);
+  // We only really need to update the fact that a character is taken
+  // for the buttons that actually appear.
+  // You'd also update the passwordedness and etc. here later.
+  current_char->reset();
+  current_char->set_taken(thisCourtroom->char_list.at(char_num).taken);
 
-    thisCourtroom->ui_char_button_list_filtered.append(current_char);
-  }
-
+  thisCourtroom->ui_char_button_list_filtered.append(current_char);
+}
 
 void Courtroom::construct_char_select()
 {
@@ -250,10 +250,13 @@ void Courtroom::character_loading_finished()
   }
 
   // First, we'll make all the character buttons in the very beginning.
-  // Since we can't trust what will happen during the multi threading process, we assign the buttons their locations in the list according to the character list.
+  // Since we can't trust what will happen during the multi threading process,
+  // we assign the buttons their locations in the list according to the
+  // character list.
   for (int n = 0; n < char_list.size(); n++) {
-      AOCharButton *characterButton = new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
-      ui_char_button_list.append(characterButton);
+    AOCharButton *characterButton =
+        new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+    ui_char_button_list.append(characterButton);
   }
 
   // We also hide them all, so they can't be accidentally clicked.
@@ -275,7 +278,7 @@ void Courtroom::filter_character_list()
 {
   ui_char_button_list_filtered.clear();
   for (int i = 0; i < char_list.size(); i++) {
-     AOCharSelectFilter(this, i);
+    AOCharSelectFilter(this, i);
   }
 
   current_char_page = 0;

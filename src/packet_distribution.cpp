@@ -7,32 +7,19 @@
 #include "lobby.h"
 #include "networkmanager.h"
 
-class AOPacketLoadMusicThreading : public QRunnable {
-public:
-  AOApplication *myapp;
-  QString filename;
-  bool ismusic;
-  AOPacketLoadMusicThreading(AOApplication *my_app, QString file_name,
-                             bool is_music)
-  {
-    myapp = my_app;
-    filename = file_name;
-    ismusic = is_music;
+void AOPacketLoadMusic(AOApplication *my_app, QString file_name, bool is_music)
+{
+  if (is_music) {
+    my_app->w_courtroom->append_music(file_name);
   }
-  void run()
-  {
-    if (ismusic) {
-      myapp->w_courtroom->append_music(filename);
-    }
-    else {
-      myapp->w_courtroom->append_area(filename);
-      myapp->area_count++;
-    }
-    for (int area_n = 0; area_n < myapp->area_count; area_n++) {
-      myapp->w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
-    }
+  else {
+    my_app->w_courtroom->append_area(file_name);
+    my_app->area_count++;
   }
-};
+  for (int area_n = 0; area_n < my_app->area_count; area_n++) {
+    my_app->w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+  }
+}
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
@@ -506,9 +493,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         musics_time = true;
       }
 
-      AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(
-          this, f_contents.at(n_element), musics_time);
-      QThreadPool::globalInstance()->start(music_load);
+      // Not everything needs to have a thread.
+      AOPacketLoadMusic(this, f_contents.at(n_element), musics_time);
       ++loaded_music;
       int total_loading_size =
           char_list_size * 2 + evidence_list_size + music_list_size;
@@ -520,13 +506,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_lobby->set_loading_text(tr("Loading music:\n%1/%2")
                                     .arg(QString::number(loaded_music))
                                     .arg(QString::number(music_list_size)));
-      if (QThreadPool::globalInstance()->activeThreadCount() ==
-          QThreadPool::globalInstance()->maxThreadCount()) {
-        QThreadPool::globalInstance()
-            ->waitForDone(); // out of order music is bad
-      }
     }
-    QThreadPool::globalInstance()->waitForDone();
 
     send_server_packet(new AOPacket("RD#%"));
   }
