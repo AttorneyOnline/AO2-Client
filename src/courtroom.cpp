@@ -3239,11 +3239,11 @@ void Courtroom::on_ooc_return_pressed()
     switch (result)
     {
       case 2: // 2 = file creation error
-        append_server_chatmessage("CLIENT", tr("Couldn't create a log file, please check folder permissions."), "1");
+        append_server_chatmessage("CLIENT", tr("Couldn't create the log file, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
       case 1: // 1 = directory creation error
-        append_server_chatmessage("CLIENT", tr("Unable to create user-specified log directory, please check folder permissions."), "1");
+        append_server_chatmessage("CLIENT", tr("Unable to create log directory, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
       case 0: // 0 = success
@@ -3263,11 +3263,11 @@ void Courtroom::on_ooc_return_pressed()
     switch (result)
     {
       case 2: // 2 = file creation error
-        append_server_chatmessage("CLIENT", tr("Couldn't create a log file, please check folder permissions."), "1");
+        append_server_chatmessage("CLIENT", tr("Couldn't create the log file, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
       case 1: // 1 = directory creation error
-        append_server_chatmessage("CLIENT", tr("Unable to create user-specified log directory, please check folder permissions."), "1");
+        append_server_chatmessage("CLIENT", tr("Unable to create log directory, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
       case 0: // 0 = success
