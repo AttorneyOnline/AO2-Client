@@ -252,11 +252,20 @@ public:
   void doScreenShake();
   void doRealization();
 
-  // Attempts to save the IC log to a file, and returns a code based on whether or not it was successful
-  // 0 = success, 1 = directory error, 2 = file error
-  int save_ic_chatlog();
+  enum save_log_result {
+    ERR_UNKNOWN, 
+    ERR_CREATEDIR, //couldn't create directory
+    ERR_CREATELOG, //couldn't create log file
+    SUCCESS
+  };
+  save_log_result ic_result;
+  save_log_result ooc_result;
+
+  // Attempts to save the IC log to a file, and sets ic_result to the result. 
+  // Returns the name of the log file (even if the file was not created)
+  QString save_ic_chatlog();
   // Same thing, but for the OOC log.
-  int save_ooc_chatlog();
+  QString save_ooc_chatlog();
 
   QVector<chatlogpiece> ic_chatlog_history;
 

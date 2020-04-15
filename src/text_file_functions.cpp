@@ -722,11 +722,11 @@ int AOApplication::get_saved_ooc_format()
   return result;
 }
 
-int Courtroom::save_ic_chatlog()
+QString Courtroom::save_ic_chatlog()
 {
     QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":","."); // colons are illegal in Windows filenames, and spaces are for chumps
     QString logfile = "ICLog-" + dtstamp_clean +  ".log";
-    int f_result = -1; // -1 = unknown error (there is no case for this)
+    ic_result = ERR_UNKNOWN;
     QDir logfolder("logs");
     if (!logfolder.exists())
     {
@@ -734,16 +734,16 @@ int Courtroom::save_ic_chatlog()
       QDir::current().mkdir(logfolder.dirName());
       if (!logfolder.exists()) { // check again to be sure the folder was created
         qDebug() << "W: attempted to create dir ./logs unsuccessfully";
-        f_result = 1; // 1 = directory error - we tried to make the folder and couldn't
-        return f_result;
+        ic_result = ERR_CREATEDIR;
+        return logfile;
       }
     }
     QFile file(logfolder.dirName() + '/' + logfile);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
       qDebug() << "E: could not create log file (" << file.errorString() << ")";
-      f_result = 2; // 2 = read/write error - we tried to make the file and couldn't
-      return f_result;
+      ic_result = ERR_CREATELOG;
+      return logfile;
     }
     file.open(QIODevice::WriteOnly);
     QTextStream out(&file);
@@ -754,17 +754,17 @@ int Courtroom::save_ic_chatlog()
 
     file.close();
     if (file_exists(file.fileName()))
-      f_result = 0; // 0 = success
+      ic_result = SUCCESS;
     else
-      f_result = -1; // -1 = you broke it
-    return f_result;
+      ic_result = ERR_UNKNOWN;
+    return logfile;
 }
 
-int Courtroom::save_ooc_chatlog()
+QString Courtroom::save_ooc_chatlog()
 {
     QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":",".");
     QString logfile = "OOCLog-" + dtstamp_clean +  ".log";
-    int f_result = -1; // -1 = unknown error (there is no case for this)
+    ooc_result = ERR_UNKNOWN;
     QDir logfolder("logs");
     if (!logfolder.exists())
     {
@@ -772,16 +772,16 @@ int Courtroom::save_ooc_chatlog()
       QDir::current().mkdir(logfolder.dirName());
       if (!logfolder.exists()) { // check again to be sure the folder was created
         qDebug() << "W: attempted to create dir ./logs unsuccessfully";
-        f_result = 1; // 1 = directory error - we tried to make the folder and couldn't
-        return f_result;
+        ooc_result = ERR_CREATEDIR;
+        return logfile;
       }
     }
     QFile file(logfolder.dirName() + '/' + logfile);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
       qDebug() << "E: could not create log file (" << file.errorString() << ")";
-      f_result = 2; // 2 = read/write error - we tried to make the file and couldn't
-      return f_result;
+      ooc_result = ERR_CREATELOG;
+      return logfile;
     }
     file.open(QIODevice::WriteOnly);
     QTextStream out(&file);
@@ -803,8 +803,8 @@ int Courtroom::save_ooc_chatlog()
 
     file.close();
     if (file_exists(file.fileName()))
-      f_result = 0; // 0 = success
+      ooc_result = SUCCESS;
     else
-      f_result = -1; // -1 = you broke it
-    return f_result;
+      ooc_result = ERR_UNKNOWN;
+      return logfile;
 }
