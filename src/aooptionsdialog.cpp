@@ -190,7 +190,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_language_combobox->addItem("en - English");
   ui_language_combobox->addItem("de - Deutsch");
   ui_language_combobox->addItem("es - Español");
-  ui_language_combobox->addItem("es - Español");
+  ui_language_combobox->addItem("pt - Português");
   ui_language_combobox->addItem("jp - 日本語");
   ui_language_combobox->addItem("ru - Русский");
   ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
@@ -596,9 +596,10 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_other_fancy_icl_enabled_lb = new QLabel(ui_other_widget);
   ui_other_fancy_icl_enabled_lb->setText(tr("Colorful IC log:"));
-  ui_other_fancy_icl_enabled_lb->setToolTip(tr("Enables fancy text in log."));
+  ui_other_fancy_icl_enabled_lb->setToolTip(tr("Enables colored text in the log."));
   ui_other_layout->setWidget(1, QFormLayout::LabelRole,
-                             ui_other_fancy_icl_enabled_lb);
+                           ui_other_fancy_icl_enabled_lb);
+
   ui_other_fancy_icl_enabled_cb = new QCheckBox(ui_other_widget);
   ui_other_fancy_icl_enabled_cb->setChecked(
       ao_app->get_colored_iclog_enabled());
@@ -608,7 +609,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_other_fancy_icl_limit_lb = new QLabel(ui_other_widget);
   ui_other_fancy_icl_limit_lb->setText(tr("Only inline coloring:"));
   ui_other_fancy_icl_limit_lb->setToolTip(
-      tr("Only inline coloring will be shown"));
+      tr("Only inline coloring will be shown such as <>,|| etc"));
   ui_other_layout->setWidget(2, QFormLayout::LabelRole,
                              ui_other_fancy_icl_limit_lb);
   ui_other_fancy_icl_limit_cb = new QCheckBox(ui_other_widget);
@@ -658,12 +659,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
 
   ui_other_layout->setWidget(5, QFormLayout::FieldRole, ui_length_spinbox);
-
-  ui_log_names_divider = new QFrame(ui_other_widget);
-  ui_log_names_divider->setFrameShape(QFrame::HLine);
-  ui_log_names_divider->setFrameShadow(QFrame::Sunken);
-
-  ui_other_layout->setWidget(5, QFormLayout::FieldRole, ui_log_names_divider);
 
   // When we're done, we should continue the updates!
   setUpdatesEnabled(true);
