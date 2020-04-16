@@ -55,7 +55,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                                       Qt::AlignVCenter);
   ui_gameplay_form->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
                                      Qt::AlignTop);
-  ui_gameplay_form->setContentsMargins(0, 0, 0, 3);
+  ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
 
   ui_theme_label = new QLabel(ui_form_layout_widget);
   ui_theme_label->setText(tr("Theme:"));
@@ -87,6 +87,40 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_theme_log_divider->setFrameShadow(QFrame::Sunken);
 
   ui_gameplay_form->setWidget(1, QFormLayout::FieldRole, ui_theme_log_divider);
+
+  ui_downwards_lbl = new QLabel(ui_form_layout_widget);
+  ui_downwards_lbl->setText(tr("Log goes downwards:"));
+  ui_downwards_lbl->setToolTip(
+      tr("If ticked, new messages will appear at "
+         "the bottom (like the OOC chatlog). The traditional "
+         "(AO1) behaviour is equivalent to this being unticked."));
+
+  ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_downwards_lbl);
+
+  ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
+  ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
+
+  ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_downwards_cb);
+
+  ui_length_lbl = new QLabel(ui_form_layout_widget);
+  ui_length_lbl->setText(tr("Log length:"));
+  ui_length_lbl->setToolTip(tr(
+      "The amount of messages the IC chatlog will keep before "
+      "deleting older messages. A value of 0 or below counts as 'infinite'."));
+
+  ui_gameplay_form->setWidget(3, QFormLayout::LabelRole, ui_length_lbl);
+
+  ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_length_spinbox->setMaximum(10000);
+  ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
+
+  ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_length_spinbox);
+
+  ui_log_names_divider = new QFrame(ui_form_layout_widget);
+  ui_log_names_divider->setFrameShape(QFrame::HLine);
+  ui_log_names_divider->setFrameShadow(QFrame::Sunken);
+
+  ui_gameplay_form->setWidget(4, QFormLayout::FieldRole, ui_log_names_divider);
 
   ui_username_lbl = new QLabel(ui_form_layout_widget);
   ui_username_lbl->setText(tr("Default username:"));
@@ -169,19 +203,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       tr("Sets the language if you don't want to use your system language."));
   ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_language_label);
 
-  ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
-  ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
-  ui_epilepsy_lbl->setToolTip(
-      tr("Allows screenshaking and flashing. Disable this if you have concerns "
-         "or issues with photosensitivity and/or seizures."));
-
-  ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_epilepsy_lbl);
-
-  ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
-  ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
-
-  ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_epilepsy_cb);
-
   ui_language_combobox = new QComboBox(ui_form_layout_widget);
   ui_language_combobox->addItem(
       configini->value("language", "  ").value<QString>() +
@@ -195,33 +216,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_language_combobox->addItem("ru - Русский");
   ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
 
-  ui_pun_delay = new QLabel(ui_form_layout_widget);
-  ui_pun_delay->setText(tr("Punctation Delay:"));
-  ui_pun_delay->setToolTip(tr("Punctation delay modifier."
-                              " Set it to 1 for no additional delay."));
-  ui_pun_delay_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_pun_delay_spinbox->setMinimum(1);
-  ui_pun_delay_spinbox->setMaximum(3);
-  ui_pun_delay_spinbox->setValue(p_ao_app->get_pundelay());
-  ui_gameplay_form->setWidget(12, QFormLayout::FieldRole, ui_pun_delay_spinbox);
-  ui_gameplay_form->setWidget(12, QFormLayout::LabelRole, ui_pun_delay);
-
-  ui_keepevi_lbl = new QLabel(ui_form_layout_widget);
-  ui_keepevi_lbl->setText(tr("Maintain evidence:"));
-  ui_keepevi_lbl->setToolTip(
-      tr("Instead of removing the evidence icon each time somebody speaks, "
-         "the evidence icon will remain until it is replaced. "));
-
-  ui_gameplay_form->setWidget(13, QFormLayout::LabelRole, ui_keepevi_lbl);
-
-  ui_keepevi_cb = new QCheckBox(ui_form_layout_widget);
-  ui_keepevi_cb->setChecked(ao_app->is_keepevi_enabled());
-
-  ui_gameplay_form->setWidget(13, QFormLayout::FieldRole, ui_keepevi_cb);
-
-  //
-  // CALLWORDS
-  //
+  // Here we start the callwords tab.
   ui_callwords_tab = new QWidget();
   ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
 
@@ -258,9 +253,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
 
-  //
-  // AUDIO
-  //
+  // The audio tab.
   ui_audio_tab = new QWidget();
   ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
 
@@ -308,7 +301,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 #endif
   ui_audio_layout->setWidget(0, QFormLayout::FieldRole,
                              ui_audio_device_combobox);
-
 
   ui_audio_volume_divider = new QFrame(ui_audio_widget);
   ui_audio_volume_divider->setFrameShape(QFrame::HLine);
@@ -596,9 +588,10 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_other_fancy_icl_enabled_lb = new QLabel(ui_other_widget);
   ui_other_fancy_icl_enabled_lb->setText(tr("Colorful IC log:"));
-  ui_other_fancy_icl_enabled_lb->setToolTip(tr("Enables colored text in the log."));
+  ui_other_fancy_icl_enabled_lb->setToolTip(
+      tr("Enables colored text in the log."));
   ui_other_layout->setWidget(1, QFormLayout::LabelRole,
-                           ui_other_fancy_icl_enabled_lb);
+                             ui_other_fancy_icl_enabled_lb);
 
   ui_other_fancy_icl_enabled_cb = new QCheckBox(ui_other_widget);
   ui_other_fancy_icl_enabled_cb->setChecked(

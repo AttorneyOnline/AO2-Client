@@ -1017,15 +1017,14 @@ void Courtroom::enter_courtroom(int p_cid)
 
   QString side = ao_app->get_char_side(current_char);
 
-
-  // We block signals from ui_pos_dropdown to stop on_pos_dropdown_changed from firing here.
-  // Per the Qt docs, QSignalBlocker only affects the rest of this function,
-  // so it doesn't stop the dropdown from working once we finish here.
+  // We block signals from ui_pos_dropdown to stop on_pos_dropdown_changed from
+  // firing here. Per the Qt docs, QSignalBlocker only affects the rest of this
+  // function, so it doesn't stop the dropdown from working once we finish here.
   const QSignalBlocker blocker(ui_pos_dropdown);
   ui_pos_dropdown->setCurrentText(side);
 
   if (side == "jud") {
- 
+
     ui_witness_testimony->show();
     ui_cross_examination->show();
     ui_not_guilty->show();
