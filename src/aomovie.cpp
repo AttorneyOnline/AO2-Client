@@ -18,10 +18,7 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   connect(timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 
-void AOMovie::set_play_once(bool p_play_once)
-{
-  play_once = p_play_once;
-}
+void AOMovie::set_play_once(bool p_play_once) { play_once = p_play_once; }
 void AOMovie::start_timer(int delay) { timer->start(delay); }
 
 void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme,

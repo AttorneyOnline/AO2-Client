@@ -2,7 +2,9 @@
 
 #include "file_functions.h"
 
-AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken) : QPushButton(parent)
+AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
+                           int y_pos, bool is_taken)
+    : QPushButton(parent)
 {
   m_parent = parent;
 
@@ -40,45 +42,35 @@ void AOCharButton::reset()
   ui_selector->hide();
 }
 
-void AOCharButton::set_taken(bool is_taken)
-{
-  taken = is_taken;
-}
+void AOCharButton::set_taken(bool is_taken) { taken = is_taken; }
 
 void AOCharButton::apply_taken_image()
 {
-  if (taken)
-  {
-    ui_taken->move(0,0);
+  if (taken) {
+    ui_taken->move(0, 0);
     ui_taken->show();
   }
-  else
-  {
+  else {
     ui_taken->hide();
   }
 }
 
-void AOCharButton::set_passworded()
-{
-  ui_passworded->show();
-}
+void AOCharButton::set_passworded() { ui_passworded->show(); }
 
 void AOCharButton::set_image(QString p_character)
 {
   QString image_path = ao_app->get_character_path(p_character, "char_icon.png");
-
   this->setText("");
 
   if (file_exists(image_path))
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
-  else
-  {
+  else {
     this->setStyleSheet("border-image:url()");
     this->setText(p_character);
   }
 }
 
-void AOCharButton::enterEvent(QEvent * e)
+void AOCharButton::enterEvent(QEvent *e)
 {
   ui_selector->move(this->x() - 1, this->y() - 1);
   ui_selector->raise();
@@ -88,10 +80,8 @@ void AOCharButton::enterEvent(QEvent * e)
   QPushButton::enterEvent(e);
 }
 
-void AOCharButton::leaveEvent(QEvent * e)
+void AOCharButton::leaveEvent(QEvent *e)
 {
   ui_selector->hide();
   QPushButton::leaveEvent(e);
 }
-
-

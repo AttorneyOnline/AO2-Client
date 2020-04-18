@@ -3,11 +3,11 @@
 
 #include "aoapplication.h"
 #include "file_functions.h"
-#include <QTextStream>
-#include <QStringList>
-#include <QVector>
-#include <QDebug>
 #include <QColor>
+#include <QDebug>
 #include <QSettings>
+#include <QStringList>
+#include <QTextStream>
+#include <QVector>
 
 #endif // TEXT_FILE_FUNCTIONS_H
