@@ -169,25 +169,25 @@ Razón: </translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="92"/>
-        <location filename="../../src/aooptionsdialog.cpp" line="629"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="630"/>
         <source>Log goes downwards:</source>
         <translation>Invertir historial IC:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="94"/>
-        <location filename="../../src/aooptionsdialog.cpp" line="631"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="632"/>
         <source>If ticked, new messages will appear at the bottom (like the OOC chatlog). The traditional (AO1) behaviour is equivalent to this being unticked.</source>
         <translation>Si está marcado, los nuevos mensajes aparecerán en la parte inferior (como el chat OOC).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="106"/>
-        <location filename="../../src/aooptionsdialog.cpp" line="643"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="644"/>
         <source>Log length:</source>
         <translation>Limite del historial:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="107"/>
-        <location filename="../../src/aooptionsdialog.cpp" line="644"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="645"/>
         <source>The amount of messages the IC chatlog will keep before deleting older messages. A value of 0 or below counts as &apos;infinite&apos;.</source>
         <translation>La cantidad de mensajes que mantendrá el historial del chat IC antes de eliminar mensajes más antiguos. 0 significa &apos;infinito&apos;.</translation>
     </message>
@@ -251,32 +251,32 @@ Razón: </translation>
         <translation>Establece el idioma si no desea utilizar el idioma de su sistema.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="221"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="222"/>
         <source>Callwords</source>
         <translation>Palabras clave</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="248"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="249"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Ingrese tantas palabras de llamada como desee.&lt;br&gt;Esto no distingue entre mayúsculas y minúsculas. ¡Asegúrese de dejar cada palabra en su propia línea!&lt;br&gt;No deje una línea con un espacio al final; recibirá una alerta cada vez que alguien use un espacio en sus mensajes.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="258"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="259"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="271"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="272"/>
         <source>Audio device:</source>
         <translation>Dispositivo:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="272"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="273"/>
         <source>Sets the audio device for all sounds.</source>
         <translation>Establece el dispositivo de audio.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="313"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="314"/>
         <source>Music:</source>
         <translation>Música:</translation>
     </message>
@@ -285,7 +285,7 @@ Razón: </translation>
         <translation type="obsolete">Establece el volumen predeterminado de la música.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="327"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="328"/>
         <source>SFX:</source>
         <translation>SFX:</translation>
     </message>
@@ -299,187 +299,187 @@ Razón: </translation>
         <translation>Activa la casilla &apos;Mostrar nombres&apos; de forma predeterminada en el juego, que a su vez determina si el cliente debe mostrar nombres personalizados en los personajes.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="314"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="315"/>
         <source>Sets the default volume for music.</source>
         <translation>Establece el volumen predeterminado de la música.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="329"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="330"/>
         <source>Sets the default volume for SFX sounds, like interjections or other character sound effects.</source>
         <translation>Establece el volumen predeterminado para sonidos SFX, como las interjecciones y otros efectos de sonido de personajes.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="342"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="343"/>
         <source>Blips:</source>
         <translation>Blips:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="344"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="345"/>
         <source>Sets the volume of the blips, the talking sound effects.</source>
         <translation>Establece el volumen de los blips, el sonido al hablar.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="363"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="364"/>
         <source>Blip rate:</source>
         <translation>Tasa de blips:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="365"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="366"/>
         <source>Sets the delay between playing the blip sounds.</source>
         <translation>Establece el retraso entre la reproducción de los sonidos blip.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="376"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="377"/>
         <source>Blank blips:</source>
         <translation>Blips en blanco:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="378"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="379"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
         <translation>Si está marcada, el juego reproducirá un sonido blip incluso cuando se &apos;dice&apos; un espacio.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="389"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="390"/>
         <source>Enable Looping SFX:</source>
         <translation>Habilitar repetición de SFX:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="390"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="391"/>
         <source>If true, the game will allow looping sound effects to play on preanimations.</source>
         <translation>Si está habilitado, el juego permitirá que se reproduzcan efectos de sonido en bucle en preanimaciones.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="401"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="402"/>
         <source>Kill Music On Objection:</source>
         <translation>Parar la música al objetar:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="403"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="404"/>
         <source>If true, the game will stop music when someone objects, like in the actual games.</source>
         <translation>Si está habilitado, el juego detendrá la música cuando alguien haga una objeción, como en los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="417"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="418"/>
         <source>Casing</source>
         <translation>Caso</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="433"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="434"/>
         <source>This server supports case alerts.</source>
         <translation>Este servidor admite alertas de casos.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="436"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="437"/>
         <source>This server does not support case alerts.</source>
         <translation>Este servidor no admite alertas de casos.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="437"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="438"/>
         <source>Pretty self-explanatory.</source>
         <translation>Bastante autoexplicativo.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="445"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="446"/>
         <source>Casing:</source>
         <translation>Caso:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="447"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="448"/>
         <source>If checked, you will get alerts about case announcements.</source>
         <translation>Si está marcado, recibirá anuncios de casos.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="460"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="461"/>
         <source>Defense:</source>
         <translation>Abogado:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="461"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="462"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
         <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un lugar de abogado libre.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="474"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="475"/>
         <source>Prosecution:</source>
         <translation>Fiscal:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="476"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="477"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
         <translation>Si está marcada, recibirá alertas sobre anuncios de casos si hay un puesto de fiscal libre.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="489"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="490"/>
         <source>Judge:</source>
         <translation>Juez:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="490"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="491"/>
         <source>If checked, you will get alerts about case announcements if the judge spot is open.</source>
         <translation>Si está marcado, recibirá alertas sobre anuncios de casos si el puesto de juez está libre.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="503"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="504"/>
         <source>Juror:</source>
         <translation>Jurado:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="504"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="505"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
         <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un puesto de jurado libre.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="517"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="518"/>
         <source>Stenographer:</source>
         <translation>Taquígrafo:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="519"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="520"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
         <translation>Si está marcado, recibirá alertas sobre anuncios de casos si hay un lugar de taquígrafo libre.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="532"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="533"/>
         <source>CM:</source>
         <translation>CM:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="534"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="535"/>
         <source>If checked, you will appear amongst the potential CMs on the server.</source>
         <translation>Si está marcado, aparecerá entre los posibles CM en el servidor.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="545"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="546"/>
         <source>Witness:</source>
         <translation>Testigo:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="547"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="548"/>
         <source>If checked, you will appear amongst the potential witnesses on the server.</source>
         <translation>Si está marcado, aparecerá entre los posibles testigos en el servidor.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="560"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="561"/>
         <source>Hosting cases:</source>
         <translation>Casos:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="562"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="563"/>
         <source>If you&apos;re a CM, enter what cases you are willing to host.</source>
         <translation>Si eres un CM, ingresa qué casos estás dispuesto a organizar.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="577"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="578"/>
         <source>IC Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="605"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="606"/>
         <source>Only inline coloring will be shown such as &lt;&gt;,|| etc.</source>
         <translation>Solo se mostrará el color en línea, como &lt;&gt;, ||, etc.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="617"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="618"/>
         <source>IC log will mirror the IC box. Meaning that if somebody gets interrupted nobody will know what they wanted to say. Enable for a more realistic experience.</source>
         <translation>El registro de IC reflejará el chat In-Character. Lo que significa que si alguien es interrumpido, nadie sabrá lo que se iba a decir. Habilitar para una experiencia más realista.</translation>
     </message>
@@ -488,17 +488,17 @@ Razón: </translation>
         <translation type="obsolete">El registro de IC reflejará el chat In-Character. Lo que significa que si alguien es interrumpido, nadie sabrá lo que se iba a decir. Habilitar para una experiencia más realista.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="590"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="591"/>
         <source>Colorful IC log:</source>
-        <translation>IC log colorido:</translation>
+        <translation>Log IC colorido:</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="592"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="593"/>
         <source>Enables colored text in the log.</source>
         <translation>Habilita texto con color en el log.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="603"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="604"/>
         <source>Only inline coloring:</source>
         <translation>Solo coloración en línea:</translation>
     </message>
@@ -507,7 +507,7 @@ Razón: </translation>
         <translation type="obsolete">Solo se mostrará el color en línea, como &lt;&gt;, ||, etc.</translation>
     </message>
     <message>
-        <location filename="../../src/aooptionsdialog.cpp" line="615"/>
+        <location filename="../../src/aooptionsdialog.cpp" line="616"/>
         <source>Mirror IC log:</source>
         <translation>IC log refleja interrupciones:</translation>
     </message>
