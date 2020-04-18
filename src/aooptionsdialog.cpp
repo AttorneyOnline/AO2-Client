@@ -602,7 +602,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_other_fancy_icl_limit_lb = new QLabel(ui_other_widget);
   ui_other_fancy_icl_limit_lb->setText(tr("Only inline coloring:"));
   ui_other_fancy_icl_limit_lb->setToolTip(
-      tr("Only inline coloring will be shown such as <>,|| etc"));
+      tr("Only inline coloring will be shown such as <>,|| etc."));
   ui_other_layout->setWidget(2, QFormLayout::LabelRole,
                              ui_other_fancy_icl_limit_lb);
   ui_other_fancy_icl_limit_cb = new QCheckBox(ui_other_widget);
@@ -617,7 +617,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       tr("IC log will mirror the IC box. "
          "Meaning that if somebody gets interrupted nobody will know what they "
          "wanted to say. "
-         "Enable for a more realistic experience"));
+         "Enable for a more realistic experience."));
   ui_other_layout->setWidget(3, QFormLayout::LabelRole,
                              ui_other_mirror_icl_enabled_lb);
   ui_other_mirror_icl_enabled_cb = new QCheckBox(ui_other_widget);
