@@ -20,3 +20,5 @@ cp ../lib/* ../bin/Attorney_Online.app/Contents/Frameworks
 
 # libbass has a funny path for some reason, just use rpath
 install_name_tool -change @loader_path/libbass.dylib @rpath/libbass.dylib ../bin/Attorney_Online.app/Contents/MacOS/Attorney_Online
+
+zip -r ../bin/Attorney_Online_mac_x86_64.zip ../bin/
