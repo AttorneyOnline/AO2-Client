@@ -11,34 +11,35 @@
     <message>
         <location filename="../../src/aoapplication.cpp" line="163"/>
         <source>Error connecting to master server. Will try again in %1 seconds.</source>
-        <translation>Błąd podczas łączenia się do głównego serwera. Spróbuj ponownie za %1 sekundy.</translation>
+        <translation>Błąd podczas łączenia się z głównym serwerem. Spróbuj ponownie za %1 sekundy.</translation>
     </message>
     <message>
         <location filename="../../src/aoapplication.cpp" line="167"/>
         <source>There was an error connecting to the master server.
 We deploy multiple master servers to mitigate any possible downtime, but the client appears to have exhausted all possible methods of finding and connecting to one.
 Please check your Internet connection and firewall, and please try again.</source>
-        <translation>Odkryto błąd podczas łączania się do głównego serwera.
-Używamy wielu głównych serwerów, aby zminimalizować każdą możliwą przerwę, ale klient wyczerpał jaką kolwiek możliwość znalazienia i połączenia się do któregoś.
-Proszę sprawdzić swoje połączenie internetowe oraz zaporę ogniową i spróbować ponownie.</translation>
+        <translation>Odkryto błąd podczas łączenia się z głównym serwerem.
+Używamy wielu głównych serwerów, aby zminimalizować każdą możliwą przerwę, ale klient wyczerpał jakąkolwiek możliwość znalezienia i połączenia się z jednym.
+Sprawdź swoje połączenie internetowe oraz zaporę ogniową i spróbuj ponownie.</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="135"/>
         <source>Outdated version! Your version: %1
 Please go to aceattorneyonline.com to update.</source>
         <translation>Nieaktualna wersja! Twoja wersja: %1
-Proszę udać się do  aceattorneyonline.com, aby zaktualizować.</translation>
+Udaj się do aceattorneyonline.com, aby zaktualizować.</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="143"/>
         <source>You have been exiled from AO.
 Have a nice day.</source>
-        <translation>Zostałeś wygnany z AO2.
-Życzę miłego dnia.</translation>
+        <translation>Zostałeś wygnany z AO.
+Życzymy miłego dnia.</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="283"/>
         <source>Attorney Online 2</source>
+        <translatorcomment>Prawnik w Internecie 2</translatorcomment>
         <translation></translation>
     </message>
     <message>
@@ -96,7 +97,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="9"/>
         <source>Case Announcer</source>
-        <translation>Ogłaszanie rozpraw</translation>
+        <translation>Ogłaszacz rozpraw</translation>
     </message>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="38"/>
@@ -131,7 +132,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aocaseannouncerdialog.cpp" line="58"/>
         <source>Witness needed</source>
-        <translation type="unfinished"></translation>
+        <translation>Potrzebny świadek</translation>
     </message>
 </context>
 <context>
@@ -194,7 +195,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="126"/>
         <source>Gives the default value for the in-game &apos;Custom shownames&apos; tickbox, which in turn determines whether the client should display custom in-character names.</source>
-        <translation>Daje domyślną wartość przyciskowi wyboru &apos;Niestandardowe ksywki&apos;, który określa czy klient powinien pokazywać niestandardowe IC nazwy.</translation>
+        <translation>Daje domyślną wartość przyciskowi &apos;Niestandardowe ksywki&apos;, który określa, czy klient powinien pokazywać niestandardowe nazwy IC.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="144"/>
@@ -219,12 +220,12 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="170"/>
         <source>Allow Shake/Flash:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zezwalaj Wstrząśnięcia/Błyśnięcia:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="171"/>
         <source>Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozwala na wstrząśnięcia ekranu i błyśnięcia. Wyłącz to, jeśli przejmujesz się lub masz problemy z światłoczułością oraz/lub napady padaczkowe.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="181"/>
@@ -244,7 +245,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="222"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Wpisz tyle zawołań, ile dusza zapragnie. Wielkość liter nie ma znaczenia. Miej na uwadze, aby każde zawołanie było na swojej lini!&lt;br&gt;Nie zostawiaj spacji na końcu -- zostaniesz zaalarmowany za każdym razem, kiedy ktoś użyje spacji w swojej wiadomości.&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Wpisz tyle zawołań, ile dusza zapragnie. Wielkość liter nie ma znaczenia. Miej na uwadze, aby każde zawołanie było w swojej lini!&lt;br&gt;Nie zostawiaj spacji na końcu -- zostaniesz zaalarmowany za każdym razem, kiedy ktoś użyje spacji w swojej wiadomości.&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="228"/>
@@ -259,7 +260,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="240"/>
         <source>Sets the audio device for all sounds.</source>
-        <translation>Ustawia urządzenie dźwiękowe na wszystkie dźwięki.</translation>
+        <translation>Ustawia urządzenie dźwiękowe dla wszystkich dźwięków.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="279"/>
@@ -279,7 +280,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="293"/>
         <source>Sets the SFX&apos;s default volume. Interjections and actual sound effects count as &apos;SFX&apos;.</source>
-        <translation>Ustawia domyślną głośność efektów specjalnych (SFX). Wtrącenia się i same efekty specjalne są zaliczane jako &apos;SFX&apos;.</translation>
+        <translation>Ustawia domyślną głośność efektów dźwiękowych (SFX). Sprzeciwy i same efekty specjalne są zaliczane jako &apos;SFX&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="306"/>
@@ -310,32 +311,32 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="338"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
-        <translation>Jeśli prawdziwe, gra zagra dźwięk blip za każdym razem spacja &apos;jest mówiona&apos;.</translation>
+        <translation>Jeżeli zaznaczone, gra zagra dźwięk blip za każdym razem spacja &apos;jest mówiona&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="349"/>
         <source>Enable Looping SFX:</source>
-        <translation type="unfinished"></translation>
+        <translation>Włącz pętlące się efekty dźwiękowe (SFX):</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="350"/>
         <source>If true, the game will allow looping sound effects to play on preanimations.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeśli zaznaczone, gra zezwoli na pętlące się efekty dźwiękowe (SFX).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="361"/>
         <source>Kill Music On Objection:</source>
-        <translation type="unfinished"></translation>
+        <translation>Przerwij muzykę w czasie sprzeciwu:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="362"/>
         <source>If true, the game will stop music when someone objects, like in the actual games.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeśli zaznaczone, gra przerwie muzykę, kiedy ktoś sprzeciwi się, tak jak w oryginalnych grach.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="373"/>
         <source>Casing</source>
-        <translation>Rozprawa</translation>
+        <translation>Rozprawy</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="387"/>
@@ -370,7 +371,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="412"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
-        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce obrony jest otwarte.</translation>
+        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce obrony jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="425"/>
@@ -380,7 +381,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="426"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
-        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce prokuratury jest otwarte.</translation>
+        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce prokuratora jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="439"/>
@@ -400,7 +401,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="454"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
-        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce ławnika jest otwarte.</translation>
+        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce ławnika jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="467"/>
@@ -410,27 +411,27 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="468"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
-        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce stenografa jest otwarte.</translation>
+        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce stenografa jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="481"/>
         <source>CM:</source>
-        <translation>Mistrz rozpraw (CM):</translation>
+        <translation>Zarządca rozpraw (CM):</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="482"/>
         <source>If checked, you will appear amongst the potential CMs on the server.</source>
-        <translation>Jeśli zaznaczone, pojawisz się wśród potencjalnych mistrzów rozpraw (CM) na serwerze.</translation>
+        <translation>Jeśli zaznaczone, pojawisz się wśród potencjalnych zarządców rozpraw (CM) na serwerze.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="493"/>
         <source>Witness:</source>
-        <translation type="unfinished"></translation>
+        <translation>Świadek:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="494"/>
         <source>If checked, you will appear amongst the potential witnesses on the server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeżeli zaznaczone, pojawisz się wśród potencjalnych świadków na serwerze.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="507"/>
@@ -440,7 +441,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="508"/>
         <source>If you&apos;re a CM, enter what cases you are willing to host.</source>
-        <translation>Jeśli jesteś mistrzem rozpraw (CM), wpisz jakie rozprawy jesteś chętny hostowania.</translation>
+        <translation>Jeżeli jesteś zarządcą rozpraw (CM), wpisz jakie rozprawy jesteś chętny hostowania.</translation>
     </message>
 </context>
 <context>
@@ -474,7 +475,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/charselect.cpp" line="182"/>
         <source>Could not find %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie znaleziono %1</translation>
     </message>
     <message>
         <source>Generating chars:
@@ -525,7 +526,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="231"/>
         <source>No Interrupt</source>
-        <translation>Bez przerwy</translation>
+        <translation>Bez ociągania się</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="246"/>
@@ -603,7 +604,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="217"/>
         <source>Disable Modcalls</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyłącz wezwania moda</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="253"/>
@@ -643,7 +644,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="625"/>
         <source>Change character</source>
-        <translation>Zmiena postaci</translation>
+        <translation>Zmiana postaci</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="628"/>
@@ -669,12 +670,13 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="643"/>
         <source>Preanim</source>
+        <translatorcomment>Sounds weird but I don&apos;t know how to translate it other than this.</translatorcomment>
         <translation>przed-animacja</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="2838"/>
         <source>You have been banned.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zostałeś zbanowany.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3033"/>
@@ -719,7 +721,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="3103"/>
         <source>That offset does not look like one.</source>
-        <translation>To wyrównanie nie wygląda na jedno.</translation>
+        <translation>To wyrównanie nie wygląda na takie.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3109"/>
@@ -729,7 +731,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="3116"/>
         <source>You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.</source>
-        <translation>Włączyłeś funkcje, które ten serwer może nie wspierać. Możliwe że, nie możesz rozmawiać na czacie IC lub gorzej przez to.</translation>
+        <translation>Włączyłeś funkcje, które ten serwer może nie wspierać. Możliwe że, nie możesz rozmawiać na czacie IC lub gorzej z powodu tego.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3127"/>
@@ -744,7 +746,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="3140"/>
         <source>Couldn&apos;t open chatlog.txt to write into.</source>
-        <translation>Nie można było otworzyć chatlog.txt, aby zapisać do niego.</translation>
+        <translation>Nie można było otworzyć chatlog.txt, aby pisać w nim.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3153"/>
@@ -759,7 +761,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="3184"/>
         <source>Too many arguments to load a case! You only need one filename, without extension.</source>
-        <translation>Za dużo parametrów, aby załadować rozprawę! Potrzebujesz tylko jedną nazwę pliku, bez rozszerzenia nazwy pliku.</translation>
+        <translation>Zbyt dużo parametrów, aby załadować rozprawę! Potrzebujesz tylko jedną nazwę pliku, bez rozszerzenia nazwy pliku.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3234"/>
@@ -774,7 +776,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="3253"/>
         <source>Too many arguments to save a case! You only need a filename without extension and the courtroom status!</source>
-        <translation>Za dużo parametrów, aby zapisać rozprawę! Potrzebujesz tylko jedną nazwę pliku, bez rozszerzenia nazwy pliku i statusu sali sądowej!</translation>
+        <translation>Zbyt dużo parametrów, aby zapisać rozprawę! Potrzebujesz tylko jedną nazwę pliku, bez rozszerzenia nazwy pliku i statusu sali sądowej!</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3275"/>
