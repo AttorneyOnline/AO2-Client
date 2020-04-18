@@ -311,7 +311,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_music_volume_lbl = new QLabel(ui_audio_widget);
   ui_music_volume_lbl->setText(tr("Music:"));
-  ui_music_volume_lbl->setToolTip(tr("Sets the music's default volume."));
+  ui_music_volume_lbl->setToolTip(tr("Sets the default volume for music."));
 
   ui_audio_layout->setWidget(2, QFormLayout::LabelRole, ui_music_volume_lbl);
 
@@ -326,8 +326,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_sfx_volume_lbl = new QLabel(ui_audio_widget);
   ui_sfx_volume_lbl->setText(tr("SFX:"));
   ui_sfx_volume_lbl->setToolTip(
-      tr("Sets the SFX's default volume. "
-         "Interjections and actual sound effects count as 'SFX'."));
+      tr("Sets the default volume for SFX sounds, "
+         "like interjections or other character sound effects."));
 
   ui_audio_layout->setWidget(3, QFormLayout::LabelRole, ui_sfx_volume_lbl);
 
