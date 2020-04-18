@@ -3731,7 +3731,7 @@ void Courtroom::on_ooc_return_pressed()
       append_server_chatmessage(
           "CLIENT",
           tr("Too many arguments to save a case! You only need a filename "
-             "without extension and the courtroom status!"),
+             "without extension and the courtroom status."),
           "1");
       ui_ooc_chat_message->clear();
       return;
