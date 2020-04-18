@@ -51,6 +51,8 @@ private:
     QCheckBox *ui_downwards_cb;
     QLabel *ui_length_lbl;
     QSpinBox *ui_length_spinbox;
+  QLabel *ui_pun_delay;
+  QSpinBox *ui_pun_delay_spinbox;
     QFrame *ui_log_names_divider;
     QLineEdit *ui_username_textbox;
     QLabel *ui_username_lbl;
@@ -65,6 +67,12 @@ private:
     QCheckBox *ui_epilepsy_cb;
     QLabel *ui_language_label;
     QComboBox *ui_language_combobox;
+
+  QLabel *ui_keepevi_lbl;
+  QCheckBox *ui_keepevi_cb;
+
+  QLabel *ui_keepcobj_lbl;
+  QCheckBox *ui_keepcobj_cb;
 
     QWidget *ui_callwords_tab;
     QWidget *ui_callwords_widget;
@@ -119,7 +127,18 @@ private:
     QLabel *ui_casing_cm_cases_lbl;
     QLineEdit *ui_casing_cm_cases_textbox;
 
-    bool needs_default_audiodev();
+  QWidget *ui_other_tab;
+  QWidget *ui_other_widget;
+  QFormLayout *ui_other_layout;
+  QLabel *ui_other_fancy_icl_enabled_lb;
+  QCheckBox *ui_other_fancy_icl_enabled_cb;
+  QLabel *ui_other_mirror_icl_enabled_lb;
+  QCheckBox *ui_other_mirror_icl_enabled_cb;
+
+  QLabel *ui_other_fancy_icl_limit_lb;
+  QCheckBox *ui_other_fancy_icl_limit_cb;
+
+  bool needs_default_audiodev();
 
 signals:
 

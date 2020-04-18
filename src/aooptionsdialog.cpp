@@ -1,596 +1,731 @@
 #include "aooptionsdialog.h"
 #include "aoapplication.h"
 
-AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDialog(parent)
+AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
+    : QDialog(parent)
 {
-    ao_app = p_ao_app;
-
-    // Setting up the basics.
-    // setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("Settings"));
-    resize(398, 320);
+  ao_app = p_ao_app;
+
+  // Setting up the basics.
+  // setAttribute(Qt::WA_DeleteOnClose);
+  setWindowTitle(tr("Settings"));
+  resize(398, 360);
+
+  ui_settings_buttons = new QDialogButtonBox(this);
+
+  QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
+  sizePolicy1.setHorizontalStretch(0);
+  sizePolicy1.setVerticalStretch(0);
+  sizePolicy1.setHeightForWidth(
+      ui_settings_buttons->sizePolicy().hasHeightForWidth());
+  ui_settings_buttons->setSizePolicy(sizePolicy1);
+  ui_settings_buttons->setOrientation(Qt::Horizontal);
+  ui_settings_buttons->setStandardButtons(QDialogButtonBox::Cancel |
+                                          QDialogButtonBox::Save);
+
+  QObject::connect(ui_settings_buttons, SIGNAL(accepted()), this,
+                   SLOT(save_pressed()));
+  QObject::connect(ui_settings_buttons, SIGNAL(rejected()), this,
+                   SLOT(discard_pressed()));
+
+  // We'll stop updates so that the window won't flicker while it's being made.
+  setUpdatesEnabled(false);
+
+  // First of all, we want a tabbed dialog, so let's add some layout.
+  ui_vertical_layout = new QVBoxLayout(this);
+  ui_settings_tabs = new QTabWidget(this);
+
+  ui_vertical_layout->addWidget(ui_settings_tabs);
+  ui_vertical_layout->addWidget(ui_settings_buttons);
+
+  // Let's add the tabs one by one.
+
+  //
+  // GAMEPLAY
+  //
+
+  ui_gameplay_tab = new QWidget();
+  ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
+
+  ui_form_layout_widget = new QWidget(ui_gameplay_tab);
+  ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 240));
+
+  ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
+  ui_gameplay_form->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                      Qt::AlignVCenter);
+  ui_gameplay_form->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                     Qt::AlignTop);
+  ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
 
-    ui_settings_buttons = new QDialogButtonBox(this);
+  ui_theme_label = new QLabel(ui_form_layout_widget);
+  ui_theme_label->setText(tr("Theme:"));
+  ui_theme_label->setToolTip(
+      tr("Sets the theme used in-game. If the new theme changes "
+         "the lobby's look as well, you'll need to reload the "
+         "lobby for the changes to take effect, such as by joining "
+         "a server and leaving it."));
+  ui_gameplay_form->setWidget(0, QFormLayout::LabelRole, ui_theme_label);
 
-    QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    sizePolicy1.setHorizontalStretch(0);
-    sizePolicy1.setVerticalStretch(0);
-    sizePolicy1.setHeightForWidth(ui_settings_buttons->sizePolicy().hasHeightForWidth());
-    ui_settings_buttons->setSizePolicy(sizePolicy1);
-    ui_settings_buttons->setOrientation(Qt::Horizontal);
-    ui_settings_buttons->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Save);
+  ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
-    QObject::connect(ui_settings_buttons, SIGNAL(accepted()), this, SLOT(save_pressed()));
-    QObject::connect(ui_settings_buttons, SIGNAL(rejected()), this, SLOT(discard_pressed()));
+  // Fill the combobox with the names of the themes.
+  QDirIterator it(p_ao_app->get_base_path() + "themes", QDir::Dirs,
+                  QDirIterator::NoIteratorFlags);
+  while (it.hasNext()) {
+    QString actualname = QDir(it.next()).dirName();
+    if (actualname != "." && actualname != "..")
+      ui_theme_combobox->addItem(actualname);
+    if (actualname == p_ao_app->read_theme())
+      ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count() - 1);
+  }
 
-    // We'll stop updates so that the window won't flicker while it's being made.
-    setUpdatesEnabled(false);
+  ui_gameplay_form->setWidget(0, QFormLayout::FieldRole, ui_theme_combobox);
 
-    // First of all, we want a tabbed dialog, so let's add some layout.
-    ui_vertical_layout = new QVBoxLayout(this);
-    ui_settings_tabs = new QTabWidget(this);
+  ui_theme_log_divider = new QFrame(ui_form_layout_widget);
+  ui_theme_log_divider->setMidLineWidth(0);
+  ui_theme_log_divider->setFrameShape(QFrame::HLine);
+  ui_theme_log_divider->setFrameShadow(QFrame::Sunken);
 
-    ui_vertical_layout->addWidget(ui_settings_tabs);
-    ui_vertical_layout->addWidget(ui_settings_buttons);
+  ui_gameplay_form->setWidget(1, QFormLayout::FieldRole, ui_theme_log_divider);
 
-    // Let's add the tabs one by one.
-    // First, we'll start with 'Gameplay'.
-    ui_gameplay_tab = new QWidget();
-    ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
+  ui_downwards_lbl = new QLabel(ui_form_layout_widget);
+  ui_downwards_lbl->setText(tr("Log goes downwards:"));
+  ui_downwards_lbl->setToolTip(
+      tr("If ticked, new messages will appear at "
+         "the bottom (like the OOC chatlog). The traditional "
+         "(AO1) behaviour is equivalent to this being unticked."));
 
-    ui_form_layout_widget = new QWidget(ui_gameplay_tab);
-    ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 211));
+  ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_downwards_lbl);
 
-    ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
-    ui_gameplay_form->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-    ui_gameplay_form->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
+  ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
+  ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
 
-    ui_theme_label = new QLabel(ui_form_layout_widget);
-    ui_theme_label->setText(tr("Theme:"));
-    ui_theme_label->setToolTip(tr("Sets the theme used in-game. If the new theme changes "
-                                  "the lobby's look as well, you'll need to reload the "
-                                  "lobby for the changes to take effect, such as by joining "
-                                  "a server and leaving it."));
-    ui_gameplay_form->setWidget(0, QFormLayout::LabelRole, ui_theme_label);
+  ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_downwards_cb);
 
-    ui_theme_combobox = new QComboBox(ui_form_layout_widget);
+  ui_length_lbl = new QLabel(ui_form_layout_widget);
+  ui_length_lbl->setText(tr("Log length:"));
+  ui_length_lbl->setToolTip(tr(
+      "The amount of messages the IC chatlog will keep before "
+      "deleting older messages. A value of 0 or below counts as 'infinite'."));
 
-    // Fill the combobox with the names of the themes.
-    QDirIterator it(p_ao_app->get_base_path() + "themes", QDir::Dirs, QDirIterator::NoIteratorFlags);
-    while (it.hasNext())
-    {
-        QString actualname = QDir(it.next()).dirName();
-        if (actualname != "." && actualname != "..")
-            ui_theme_combobox->addItem(actualname);
-        if (actualname == p_ao_app->read_theme())
-            ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count()-1);
-    }
+  ui_gameplay_form->setWidget(3, QFormLayout::LabelRole, ui_length_lbl);
 
-    ui_gameplay_form->setWidget(0, QFormLayout::FieldRole, ui_theme_combobox);
+  ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_length_spinbox->setMaximum(10000);
+  ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
 
-    ui_theme_log_divider = new QFrame(ui_form_layout_widget);
-    ui_theme_log_divider->setMidLineWidth(0);
-    ui_theme_log_divider->setFrameShape(QFrame::HLine);
-    ui_theme_log_divider->setFrameShadow(QFrame::Sunken);
+  ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_length_spinbox);
 
-    ui_gameplay_form->setWidget(1, QFormLayout::FieldRole, ui_theme_log_divider);
+  ui_log_names_divider = new QFrame(ui_form_layout_widget);
+  ui_log_names_divider->setFrameShape(QFrame::HLine);
+  ui_log_names_divider->setFrameShadow(QFrame::Sunken);
 
-    ui_downwards_lbl = new QLabel(ui_form_layout_widget);
-    ui_downwards_lbl->setText(tr("Log goes downwards:"));
-    ui_downwards_lbl->setToolTip(tr("If ticked, new messages will appear at "
-                                    "the bottom (like the OOC chatlog). The traditional "
-                                    "(AO1) behaviour is equivalent to this being unticked."));
+  ui_gameplay_form->setWidget(4, QFormLayout::FieldRole, ui_log_names_divider);
 
-    ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_downwards_lbl);
+  ui_username_lbl = new QLabel(ui_form_layout_widget);
+  ui_username_lbl->setText(tr("Default username:"));
+  ui_username_lbl->setToolTip(
+      tr("Your OOC name will be automatically set to this value "
+         "when you join a server."));
 
-    ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-    ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
+  ui_gameplay_form->setWidget(5, QFormLayout::LabelRole, ui_username_lbl);
 
-    ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_downwards_cb);
+  ui_username_textbox = new QLineEdit(ui_form_layout_widget);
+  ui_username_textbox->setMaxLength(30);
+  ui_username_textbox->setText(p_ao_app->get_default_username());
 
-    ui_length_lbl = new QLabel(ui_form_layout_widget);
-    ui_length_lbl->setText(tr("Log length:"));
-    ui_length_lbl->setToolTip(tr("The amount of messages the IC chatlog will keep before "
-                                 "deleting older messages. A value of 0 or below counts as 'infinite'."));
+  ui_gameplay_form->setWidget(5, QFormLayout::FieldRole, ui_username_textbox);
 
-    ui_gameplay_form->setWidget(3, QFormLayout::LabelRole, ui_length_lbl);
+  ui_showname_lbl = new QLabel(ui_form_layout_widget);
+  ui_showname_lbl->setText(tr("Custom shownames:"));
+  ui_showname_lbl->setToolTip(
+      tr("Gives the default value for the in-game 'Custom shownames' "
+         "tickbox, which in turn determines whether the client should "
+         "display custom in-character names."));
 
-    ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
-    ui_length_spinbox->setMaximum(10000);
-    ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
+  ui_gameplay_form->setWidget(6, QFormLayout::LabelRole, ui_showname_lbl);
 
-    ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_length_spinbox);
+  ui_showname_cb = new QCheckBox(ui_form_layout_widget);
+  ui_showname_cb->setChecked(p_ao_app->get_showname_enabled_by_default());
 
-    ui_log_names_divider = new QFrame(ui_form_layout_widget);
-    ui_log_names_divider->setFrameShape(QFrame::HLine);
-    ui_log_names_divider->setFrameShadow(QFrame::Sunken);
+  ui_gameplay_form->setWidget(6, QFormLayout::FieldRole, ui_showname_cb);
+
+  ui_net_divider = new QFrame(ui_form_layout_widget);
+  ui_net_divider->setFrameShape(QFrame::HLine);
+  ui_net_divider->setFrameShadow(QFrame::Sunken);
 
-    ui_gameplay_form->setWidget(4, QFormLayout::FieldRole, ui_log_names_divider);
+  ui_gameplay_form->setWidget(7, QFormLayout::FieldRole, ui_net_divider);
 
-    ui_username_lbl = new QLabel(ui_form_layout_widget);
-    ui_username_lbl->setText(tr("Default username:"));
-    ui_username_lbl->setToolTip(tr("Your OOC name will be automatically set to this value "
-                                   "when you join a server."));
+  ui_ms_lbl = new QLabel(ui_form_layout_widget);
+  ui_ms_lbl->setText(tr("Backup MS:"));
+  ui_ms_lbl->setToolTip(
+      tr("If the built-in server lookups fail, the game will try the "
+         "address given here and use it as a backup master server address."));
 
-    ui_gameplay_form->setWidget(5, QFormLayout::LabelRole, ui_username_lbl);
+  ui_gameplay_form->setWidget(8, QFormLayout::LabelRole, ui_ms_lbl);
 
-    ui_username_textbox = new QLineEdit(ui_form_layout_widget);
-    ui_username_textbox->setMaxLength(30);
-    ui_username_textbox->setText(p_ao_app->get_default_username());
+  QSettings *configini = ao_app->configini;
+  ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
+  ui_ms_textbox->setText(configini->value("master", "").value<QString>());
 
-    ui_gameplay_form->setWidget(5, QFormLayout::FieldRole, ui_username_textbox);
+  ui_gameplay_form->setWidget(8, QFormLayout::FieldRole, ui_ms_textbox);
+
+  ui_discord_lbl = new QLabel(ui_form_layout_widget);
+  ui_discord_lbl->setText(tr("Discord:"));
+  ui_discord_lbl->setToolTip(
+      tr("Allows others on Discord to see what server you are in, "
+         "what character are you playing, and how long you have "
+         "been playing for."));
 
-    ui_showname_lbl = new QLabel(ui_form_layout_widget);
-    ui_showname_lbl->setText(tr("Custom shownames:"));
-    ui_showname_lbl->setToolTip(tr("Gives the default value for the in-game 'Custom shownames' "
-                                   "tickbox, which in turn determines whether the client should "
-                                   "display custom in-character names."));
+  ui_gameplay_form->setWidget(9, QFormLayout::LabelRole, ui_discord_lbl);
 
-    ui_gameplay_form->setWidget(6, QFormLayout::LabelRole, ui_showname_lbl);
+  ui_discord_cb = new QCheckBox(ui_form_layout_widget);
+  ui_discord_cb->setChecked(ao_app->is_discord_enabled());
 
-    ui_showname_cb = new QCheckBox(ui_form_layout_widget);
-    ui_showname_cb->setChecked(p_ao_app->get_showname_enabled_by_default());
+  ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
 
-    ui_gameplay_form->setWidget(6, QFormLayout::FieldRole, ui_showname_cb);
+  ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
+  ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
+  ui_epilepsy_lbl->setToolTip(
+      tr("Allows screenshaking and flashing. Disable this if you have concerns "
+         "or issues with photosensitivity and/or seizures."));
+
+  ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_epilepsy_lbl);
+
+  ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
+  ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
+
+  ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_epilepsy_cb);
+
+  ui_language_label = new QLabel(ui_form_layout_widget);
+  ui_language_label->setText(tr("Language:"));
+  ui_language_label->setToolTip(
+      tr("Sets the language if you don't want to use your system language."));
+  ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_language_label);
+
+  ui_language_combobox = new QComboBox(ui_form_layout_widget);
+  ui_language_combobox->addItem(
+      configini->value("language", "  ").value<QString>() +
+      " - Keep current setting");
+  ui_language_combobox->addItem("   - Default");
+  ui_language_combobox->addItem("en - English");
+  ui_language_combobox->addItem("de - Deutsch");
+  ui_language_combobox->addItem("es - Español");
+  ui_language_combobox->addItem("pt - Português");
+  ui_language_combobox->addItem("jp - 日本語");
+  ui_language_combobox->addItem("ru - Русский");
+  ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
+
+  // Here we start the callwords tab.
+  ui_callwords_tab = new QWidget();
+  ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
+
+  ui_callwords_widget = new QWidget(ui_callwords_tab);
+  ui_callwords_widget->setGeometry(QRect(10, 10, 361, 211));
+
+  ui_callwords_layout = new QVBoxLayout(ui_callwords_widget);
+  ui_callwords_layout->setContentsMargins(0, 0, 0, 0);
+
+  ui_callwords_textbox = new QPlainTextEdit(ui_callwords_widget);
+  QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  sizePolicy.setHorizontalStretch(0);
+  sizePolicy.setVerticalStretch(0);
+  sizePolicy.setHeightForWidth(
+      ui_callwords_textbox->sizePolicy().hasHeightForWidth());
+  ui_callwords_textbox->setSizePolicy(sizePolicy);
+
+  // Let's fill the callwords text edit with the already present callwords.
+  ui_callwords_textbox->document()->clear();
+  foreach (QString callword, p_ao_app->get_call_words()) {
+    ui_callwords_textbox->appendPlainText(callword);
+  }
+
+  ui_callwords_layout->addWidget(ui_callwords_textbox);
+
+  ui_callwords_explain_lbl = new QLabel(ui_callwords_widget);
+  ui_callwords_explain_lbl->setWordWrap(true);
+  ui_callwords_explain_lbl->setText(
+      tr("<html><head/><body>Enter as many callwords as you would like. These "
+         "are case insensitive. Make sure to leave every callword in its own "
+         "line!<br>Do not leave a line with a space at the end -- you will be "
+         "alerted everytime someone uses a space in their "
+         "messages.</body></html>"));
+
+  ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
+
+  // The audio tab.
+  ui_audio_tab = new QWidget();
+  ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
+
+  ui_audio_widget = new QWidget(ui_audio_tab);
+  ui_audio_widget->setGeometry(QRect(10, 10, 361, 211));
+
+  ui_audio_layout = new QFormLayout(ui_audio_widget);
+  ui_audio_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                     Qt::AlignVCenter);
+  ui_audio_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                    Qt::AlignTop);
+  ui_audio_layout->setContentsMargins(0, 0, 0, 0);
+
+  ui_audio_device_lbl = new QLabel(ui_audio_widget);
+  ui_audio_device_lbl->setText(tr("Audio device:"));
+  ui_audio_device_lbl->setToolTip(tr("Sets the audio device for all sounds."));
+
+  ui_audio_layout->setWidget(0, QFormLayout::LabelRole, ui_audio_device_lbl);
+
+  ui_audio_device_combobox = new QComboBox(ui_audio_widget);
+
+  // Let's fill out the combobox with the available audio devices. Or don't if
+  // there is no audio
+  if (needs_default_audiodev()) {
+
+    ui_audio_device_combobox->addItem("default");
+  }
+#ifdef BASSAUDIO
+  BASS_DEVICEINFO info;
+  int a = 0;
+  for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
+    ui_audio_device_combobox->addItem(info.name);
+    if (p_ao_app->get_audio_output_device() == info.name)
+      ui_audio_device_combobox->setCurrentIndex(
+          ui_audio_device_combobox->count() - 1);
+  }
+#elif defined QTAUDIO
+  foreach (const QAudioDeviceInfo &deviceInfo,
+           QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+    ui_audio_device_combobox->addItem(deviceInfo.deviceName());
+    if (p_ao_app->get_audio_output_device() == deviceInfo.deviceName())
+      ui_audio_device_combobox->setCurrentIndex(
+          ui_audio_device_combobox->count() - 1);
+  }
+#endif
+  ui_audio_layout->setWidget(0, QFormLayout::FieldRole,
+                             ui_audio_device_combobox);
+
+  ui_audio_volume_divider = new QFrame(ui_audio_widget);
+  ui_audio_volume_divider->setFrameShape(QFrame::HLine);
+  ui_audio_volume_divider->setFrameShadow(QFrame::Sunken);
 
-    ui_net_divider = new QFrame(ui_form_layout_widget);
-    ui_net_divider->setFrameShape(QFrame::HLine);
-    ui_net_divider->setFrameShadow(QFrame::Sunken);
+  ui_audio_layout->setWidget(1, QFormLayout::FieldRole,
+                             ui_audio_volume_divider);
 
-    ui_gameplay_form->setWidget(7, QFormLayout::FieldRole, ui_net_divider);
+  ui_music_volume_lbl = new QLabel(ui_audio_widget);
+  ui_music_volume_lbl->setText(tr("Music:"));
+  ui_music_volume_lbl->setToolTip(tr("Sets the music's default volume."));
 
-    ui_ms_lbl = new QLabel(ui_form_layout_widget);
-    ui_ms_lbl->setText(tr("Backup MS:"));
-    ui_ms_lbl->setToolTip(tr("If the built-in server lookups fail, the game will try the "
-                             "address given here and use it as a backup master server address."));
+  ui_audio_layout->setWidget(2, QFormLayout::LabelRole, ui_music_volume_lbl);
 
-    ui_gameplay_form->setWidget(8, QFormLayout::LabelRole, ui_ms_lbl);
+  ui_music_volume_spinbox = new QSpinBox(ui_audio_widget);
+  ui_music_volume_spinbox->setValue(p_ao_app->get_default_music());
+  ui_music_volume_spinbox->setMaximum(100);
+  ui_music_volume_spinbox->setSuffix("%");
 
-    QSettings* configini = ao_app->configini;
-    ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
-    ui_ms_textbox->setText(configini->value("master", "").value<QString>());
+  ui_audio_layout->setWidget(2, QFormLayout::FieldRole,
+                             ui_music_volume_spinbox);
 
-    ui_gameplay_form->setWidget(8, QFormLayout::FieldRole, ui_ms_textbox);
+  ui_sfx_volume_lbl = new QLabel(ui_audio_widget);
+  ui_sfx_volume_lbl->setText(tr("SFX:"));
+  ui_sfx_volume_lbl->setToolTip(
+      tr("Sets the SFX's default volume. "
+         "Interjections and actual sound effects count as 'SFX'."));
 
-    ui_discord_lbl = new QLabel(ui_form_layout_widget);
-    ui_discord_lbl->setText(tr("Discord:"));
-    ui_discord_lbl->setToolTip(tr("Allows others on Discord to see what server you are in, "
-                                  "what character are you playing, and how long you have "
-                                  "been playing for."));
+  ui_audio_layout->setWidget(3, QFormLayout::LabelRole, ui_sfx_volume_lbl);
 
-    ui_gameplay_form->setWidget(9, QFormLayout::LabelRole, ui_discord_lbl);
+  ui_sfx_volume_spinbox = new QSpinBox(ui_audio_widget);
+  ui_sfx_volume_spinbox->setValue(p_ao_app->get_default_sfx());
+  ui_sfx_volume_spinbox->setMaximum(100);
+  ui_sfx_volume_spinbox->setSuffix("%");
+
+  ui_audio_layout->setWidget(3, QFormLayout::FieldRole, ui_sfx_volume_spinbox);
+
+  ui_blips_volume_lbl = new QLabel(ui_audio_widget);
+  ui_blips_volume_lbl->setText(tr("Blips:"));
+  ui_blips_volume_lbl->setToolTip(
+      tr("Sets the volume of the blips, the talking sound effects."));
 
-    ui_discord_cb = new QCheckBox(ui_form_layout_widget);
-    ui_discord_cb->setChecked(ao_app->is_discord_enabled());
+  ui_audio_layout->setWidget(4, QFormLayout::LabelRole, ui_blips_volume_lbl);
 
-    ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
+  ui_blips_volume_spinbox = new QSpinBox(ui_audio_widget);
+  ui_blips_volume_spinbox->setValue(p_ao_app->get_default_blip());
+  ui_blips_volume_spinbox->setMaximum(100);
+  ui_blips_volume_spinbox->setSuffix("%");
 
-    ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
-    ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
-    ui_epilepsy_lbl->setToolTip(tr("Allows screenshaking and flashing. Disable this if you have concerns or issues with photosensitivity and/or seizures."));
+  ui_audio_layout->setWidget(4, QFormLayout::FieldRole,
+                             ui_blips_volume_spinbox);
 
-    ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_epilepsy_lbl);
+  ui_volume_blip_divider = new QFrame(ui_audio_widget);
+  ui_volume_blip_divider->setFrameShape(QFrame::HLine);
+  ui_volume_blip_divider->setFrameShadow(QFrame::Sunken);
 
-    ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
-    ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
+  ui_audio_layout->setWidget(5, QFormLayout::FieldRole, ui_volume_blip_divider);
 
-    ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_epilepsy_cb);
+  ui_bliprate_lbl = new QLabel(ui_audio_widget);
+  ui_bliprate_lbl->setText(tr("Blip rate:"));
+  ui_bliprate_lbl->setToolTip(
+      tr("Sets the delay between playing the blip sounds."));
 
-    ui_language_label = new QLabel(ui_form_layout_widget);
-    ui_language_label->setText(tr("Language:"));
-    ui_language_label->setToolTip(tr("Sets the language if you don't want to use your system language."));
-    ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_language_label);
+  ui_audio_layout->setWidget(6, QFormLayout::LabelRole, ui_bliprate_lbl);
 
-    ui_language_combobox = new QComboBox(ui_form_layout_widget);
-    ui_language_combobox->addItem(configini->value("language", "  ").value<QString>() + " - Keep current setting");
-    ui_language_combobox->addItem("   - Default");
-    ui_language_combobox->addItem("en - English");
-    ui_language_combobox->addItem("de - Deutsch");
-    ui_language_combobox->addItem("es - Español");
-    ui_language_combobox->addItem("pt - Português");
-    ui_language_combobox->addItem("jp - 日本語");
-    ui_language_combobox->addItem("ru - Русский");
-    ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
+  ui_bliprate_spinbox = new QSpinBox(ui_audio_widget);
+  ui_bliprate_spinbox->setValue(p_ao_app->read_blip_rate());
+  ui_bliprate_spinbox->setMinimum(1);
 
-    // Here we start the callwords tab.
-    ui_callwords_tab = new QWidget();
-    ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
+  ui_audio_layout->setWidget(6, QFormLayout::FieldRole, ui_bliprate_spinbox);
 
-    ui_callwords_widget = new QWidget(ui_callwords_tab);
-    ui_callwords_widget->setGeometry(QRect(10, 10, 361, 211));
+  ui_blank_blips_lbl = new QLabel(ui_audio_widget);
+  ui_blank_blips_lbl->setText(tr("Blank blips:"));
+  ui_blank_blips_lbl->setToolTip(
+      tr("If true, the game will play a blip sound even "
+         "when a space is 'being said'."));
 
-    ui_callwords_layout = new QVBoxLayout(ui_callwords_widget);
-    ui_callwords_layout->setContentsMargins(0,0,0,0);
+  ui_audio_layout->setWidget(7, QFormLayout::LabelRole, ui_blank_blips_lbl);
 
-    ui_callwords_textbox = new QPlainTextEdit(ui_callwords_widget);
-    QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    sizePolicy.setHorizontalStretch(0);
-    sizePolicy.setVerticalStretch(0);
-    sizePolicy.setHeightForWidth(ui_callwords_textbox->sizePolicy().hasHeightForWidth());
-    ui_callwords_textbox->setSizePolicy(sizePolicy);
+  ui_blank_blips_cb = new QCheckBox(ui_audio_widget);
+  ui_blank_blips_cb->setChecked(p_ao_app->get_blank_blip());
 
-    // Let's fill the callwords text edit with the already present callwords.
-    ui_callwords_textbox->document()->clear();
-    foreach (QString callword, p_ao_app->get_call_words()) {
-        ui_callwords_textbox->appendPlainText(callword);
-    }
+  ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
 
-    ui_callwords_layout->addWidget(ui_callwords_textbox);
+  ui_loopsfx_lbl = new QLabel(ui_audio_widget);
+  ui_loopsfx_lbl->setText(tr("Enable Looping SFX:"));
+  ui_loopsfx_lbl->setToolTip(tr("If true, the game will allow looping sound "
+                                "effects to play on preanimations."));
 
-    ui_callwords_explain_lbl = new QLabel(ui_callwords_widget);
-    ui_callwords_explain_lbl->setWordWrap(true);
-    ui_callwords_explain_lbl->setText(tr("<html><head/><body>Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!<br>Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.</body></html>"));
+  ui_audio_layout->setWidget(8, QFormLayout::LabelRole, ui_loopsfx_lbl);
 
-    ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
+  ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
+  ui_loopsfx_cb->setChecked(p_ao_app->get_looping_sfx());
 
-    // The audio tab.
-    ui_audio_tab = new QWidget();
-    ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
+  ui_audio_layout->setWidget(8, QFormLayout::FieldRole, ui_loopsfx_cb);
 
-    ui_audio_widget = new QWidget(ui_audio_tab);
-    ui_audio_widget->setGeometry(QRect(10, 10, 361, 211));
+  ui_objectmusic_lbl = new QLabel(ui_audio_widget);
+  ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
+  ui_objectmusic_lbl->setToolTip(
+      tr("If true, the game will stop music when someone objects, like in the "
+         "actual games."));
 
-    ui_audio_layout = new QFormLayout(ui_audio_widget);
-    ui_audio_layout->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-    ui_audio_layout->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    ui_audio_layout->setContentsMargins(0, 0, 0, 0);
+  ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
 
-    ui_audio_device_lbl = new QLabel(ui_audio_widget);
-    ui_audio_device_lbl->setText(tr("Audio device:"));
-    ui_audio_device_lbl->setToolTip(tr("Sets the audio device for all sounds."));
+  ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
+  ui_objectmusic_cb->setChecked(p_ao_app->get_objectmusic());
 
-    ui_audio_layout->setWidget(0, QFormLayout::LabelRole, ui_audio_device_lbl);
+  ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
 
-    ui_audio_device_combobox = new QComboBox(ui_audio_widget);
+  //
+  // CASING
+  //
+  ui_casing_tab = new QWidget();
+  ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
 
-    // Let's fill out the combobox with the available audio devices. Or don't if there is no audio
-    if (needs_default_audiodev())
-    {
+  ui_casing_widget = new QWidget(ui_casing_tab);
+  ui_casing_widget->setGeometry(QRect(10, 10, 361, 211));
 
-        ui_audio_device_combobox->addItem("default");
+  ui_casing_layout = new QFormLayout(ui_casing_widget);
+  ui_casing_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                      Qt::AlignVCenter);
+  ui_casing_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                     Qt::AlignTop);
+  ui_casing_layout->setContentsMargins(0, 0, 0, 0);
 
-    }
-    #ifdef BASSAUDIO
-    BASS_DEVICEINFO info;
-    int a = 0;
-    for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
-    {
-        ui_audio_device_combobox->addItem(info.name);
-        if (p_ao_app->get_audio_output_device() == info.name)
-            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
-    }
-    #elif defined QTAUDIO
-    foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
-    {
-        ui_audio_device_combobox->addItem(deviceInfo.deviceName());
-        if (p_ao_app->get_audio_output_device() == deviceInfo.deviceName())
-            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
-    }
-    #endif
-    ui_audio_layout->setWidget(0, QFormLayout::FieldRole, ui_audio_device_combobox);
+  // -- SERVER SUPPORTS CASING
 
-    ui_audio_volume_divider = new QFrame(ui_audio_widget);
-    ui_audio_volume_divider->setFrameShape(QFrame::HLine);
-    ui_audio_volume_divider->setFrameShadow(QFrame::Sunken);
+  ui_casing_supported_lbl = new QLabel(ui_casing_widget);
+  if (ao_app->casing_alerts_enabled)
+    ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
+  else
+    ui_casing_supported_lbl->setText(
+        tr("This server does not support case alerts."));
+  ui_casing_supported_lbl->setToolTip(tr("Pretty self-explanatory."));
 
-    ui_audio_layout->setWidget(1, QFormLayout::FieldRole, ui_audio_volume_divider);
+  ui_casing_layout->setWidget(0, QFormLayout::FieldRole,
+                              ui_casing_supported_lbl);
 
-    ui_music_volume_lbl = new QLabel(ui_audio_widget);
-    ui_music_volume_lbl->setText(tr("Music:"));
-    ui_music_volume_lbl->setToolTip(tr("Sets the music's default volume."));
+  // -- CASE ANNOUNCEMENTS
 
-    ui_audio_layout->setWidget(2, QFormLayout::LabelRole, ui_music_volume_lbl);
+  ui_casing_enabled_lbl = new QLabel(ui_casing_widget);
+  ui_casing_enabled_lbl->setText(tr("Casing:"));
+  ui_casing_enabled_lbl->setToolTip(
+      tr("If checked, you will get alerts about case "
+         "announcements."));
 
-    ui_music_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_music_volume_spinbox->setValue(p_ao_app->get_default_music());
-    ui_music_volume_spinbox->setMaximum(100);
-    ui_music_volume_spinbox->setSuffix("%");
+  ui_casing_layout->setWidget(1, QFormLayout::LabelRole, ui_casing_enabled_lbl);
 
-    ui_audio_layout->setWidget(2, QFormLayout::FieldRole, ui_music_volume_spinbox);
+  ui_casing_enabled_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
 
-    ui_sfx_volume_lbl = new QLabel(ui_audio_widget);
-    ui_sfx_volume_lbl->setText(tr("SFX:"));
-    ui_sfx_volume_lbl->setToolTip(tr("Sets the SFX's default volume. "
-                                     "Interjections and actual sound effects count as 'SFX'."));
+  ui_casing_layout->setWidget(1, QFormLayout::FieldRole, ui_casing_enabled_cb);
 
-    ui_audio_layout->setWidget(3, QFormLayout::LabelRole, ui_sfx_volume_lbl);
+  // -- DEFENSE ANNOUNCEMENTS
 
-    ui_sfx_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_sfx_volume_spinbox->setValue(p_ao_app->get_default_sfx());
-    ui_sfx_volume_spinbox->setMaximum(100);
-    ui_sfx_volume_spinbox->setSuffix("%");
+  ui_casing_def_lbl = new QLabel(ui_casing_widget);
+  ui_casing_def_lbl->setText(tr("Defense:"));
+  ui_casing_def_lbl->setToolTip(tr("If checked, you will get alerts about case "
+                                   "announcements if a defense spot is open."));
 
-    ui_audio_layout->setWidget(3, QFormLayout::FieldRole, ui_sfx_volume_spinbox);
+  ui_casing_layout->setWidget(2, QFormLayout::LabelRole, ui_casing_def_lbl);
 
-    ui_blips_volume_lbl = new QLabel(ui_audio_widget);
-    ui_blips_volume_lbl->setText(tr("Blips:"));
-    ui_blips_volume_lbl->setToolTip(tr("Sets the volume of the blips, the talking sound effects."));
+  ui_casing_def_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
 
-    ui_audio_layout->setWidget(4, QFormLayout::LabelRole, ui_blips_volume_lbl);
+  ui_casing_layout->setWidget(2, QFormLayout::FieldRole, ui_casing_def_cb);
 
-    ui_blips_volume_spinbox = new QSpinBox(ui_audio_widget);
-    ui_blips_volume_spinbox->setValue(p_ao_app->get_default_blip());
-    ui_blips_volume_spinbox->setMaximum(100);
-    ui_blips_volume_spinbox->setSuffix("%");
+  // -- PROSECUTOR ANNOUNCEMENTS
 
-    ui_audio_layout->setWidget(4, QFormLayout::FieldRole, ui_blips_volume_spinbox);
+  ui_casing_pro_lbl = new QLabel(ui_casing_widget);
+  ui_casing_pro_lbl->setText(tr("Prosecution:"));
+  ui_casing_pro_lbl->setToolTip(
+      tr("If checked, you will get alerts about case "
+         "announcements if a prosecutor spot is open."));
 
-    ui_volume_blip_divider = new QFrame(ui_audio_widget);
-    ui_volume_blip_divider->setFrameShape(QFrame::HLine);
-    ui_volume_blip_divider->setFrameShadow(QFrame::Sunken);
+  ui_casing_layout->setWidget(3, QFormLayout::LabelRole, ui_casing_pro_lbl);
 
-    ui_audio_layout->setWidget(5, QFormLayout::FieldRole, ui_volume_blip_divider);
+  ui_casing_pro_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
 
-    ui_bliprate_lbl = new QLabel(ui_audio_widget);
-    ui_bliprate_lbl->setText(tr("Blip rate:"));
-    ui_bliprate_lbl->setToolTip(tr("Sets the delay between playing the blip sounds."));
+  ui_casing_layout->setWidget(3, QFormLayout::FieldRole, ui_casing_pro_cb);
 
-    ui_audio_layout->setWidget(6, QFormLayout::LabelRole, ui_bliprate_lbl);
+  // -- JUDGE ANNOUNCEMENTS
 
-    ui_bliprate_spinbox = new QSpinBox(ui_audio_widget);
-    ui_bliprate_spinbox->setValue(p_ao_app->read_blip_rate());
-    ui_bliprate_spinbox->setMinimum(1);
+  ui_casing_jud_lbl = new QLabel(ui_casing_widget);
+  ui_casing_jud_lbl->setText(tr("Judge:"));
+  ui_casing_jud_lbl->setToolTip(tr("If checked, you will get alerts about case "
+                                   "announcements if the judge spot is open."));
 
-    ui_audio_layout->setWidget(6, QFormLayout::FieldRole, ui_bliprate_spinbox);
+  ui_casing_layout->setWidget(4, QFormLayout::LabelRole, ui_casing_jud_lbl);
 
-    ui_blank_blips_lbl = new QLabel(ui_audio_widget);
-    ui_blank_blips_lbl->setText(tr("Blank blips:"));
-    ui_blank_blips_lbl->setToolTip(tr("If true, the game will play a blip sound even "
-                                      "when a space is 'being said'."));
+  ui_casing_jud_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_jud_cb->setChecked(ao_app->get_casing_judge_enabled());
 
-    ui_audio_layout->setWidget(7, QFormLayout::LabelRole, ui_blank_blips_lbl);
+  ui_casing_layout->setWidget(4, QFormLayout::FieldRole, ui_casing_jud_cb);
 
-    ui_blank_blips_cb = new QCheckBox(ui_audio_widget);
-    ui_blank_blips_cb->setChecked(p_ao_app->get_blank_blip());
+  // -- JUROR ANNOUNCEMENTS
 
-    ui_audio_layout->setWidget(7, QFormLayout::FieldRole, ui_blank_blips_cb);
+  ui_casing_jur_lbl = new QLabel(ui_casing_widget);
+  ui_casing_jur_lbl->setText(tr("Juror:"));
+  ui_casing_jur_lbl->setToolTip(tr("If checked, you will get alerts about case "
+                                   "announcements if a juror spot is open."));
 
-    ui_loopsfx_lbl = new QLabel(ui_audio_widget);
-    ui_loopsfx_lbl->setText(tr("Enable Looping SFX:"));
-    ui_loopsfx_lbl->setToolTip(tr("If true, the game will allow looping sound effects to play on preanimations."));
+  ui_casing_layout->setWidget(5, QFormLayout::LabelRole, ui_casing_jur_lbl);
 
-    ui_audio_layout->setWidget(8, QFormLayout::LabelRole, ui_loopsfx_lbl);
+  ui_casing_jur_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
 
-    ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
-    ui_loopsfx_cb->setChecked(p_ao_app->get_looping_sfx());
+  ui_casing_layout->setWidget(5, QFormLayout::FieldRole, ui_casing_jur_cb);
 
-    ui_audio_layout->setWidget(8, QFormLayout::FieldRole, ui_loopsfx_cb);
+  // -- STENO ANNOUNCEMENTS
 
+  ui_casing_steno_lbl = new QLabel(ui_casing_widget);
+  ui_casing_steno_lbl->setText(tr("Stenographer:"));
+  ui_casing_steno_lbl->setToolTip(
+      tr("If checked, you will get alerts about case "
+         "announcements if a stenographer spot is open."));
 
-    ui_objectmusic_lbl = new QLabel(ui_audio_widget);
-    ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
-    ui_objectmusic_lbl->setToolTip(tr("If true, the game will stop music when someone objects, like in the actual games."));
+  ui_casing_layout->setWidget(6, QFormLayout::LabelRole, ui_casing_steno_lbl);
 
-    ui_audio_layout->setWidget(9, QFormLayout::LabelRole, ui_objectmusic_lbl);
+  ui_casing_steno_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
 
-    ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
-    ui_objectmusic_cb->setChecked(p_ao_app->get_objectmusic());
+  ui_casing_layout->setWidget(6, QFormLayout::FieldRole, ui_casing_steno_cb);
 
-    ui_audio_layout->setWidget(9, QFormLayout::FieldRole, ui_objectmusic_cb);
+  // -- CM ANNOUNCEMENTS
 
-    // The casing tab!
-    ui_casing_tab = new QWidget();
-    ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
+  ui_casing_cm_lbl = new QLabel(ui_casing_widget);
+  ui_casing_cm_lbl->setText(tr("CM:"));
+  ui_casing_cm_lbl->setToolTip(
+      tr("If checked, you will appear amongst the potential "
+         "CMs on the server."));
 
-    ui_casing_widget = new QWidget(ui_casing_tab);
-    ui_casing_widget->setGeometry(QRect(10,10, 361, 211));
+  ui_casing_layout->setWidget(7, QFormLayout::LabelRole, ui_casing_cm_lbl);
 
-    ui_casing_layout = new QFormLayout(ui_casing_widget);
-    ui_casing_layout->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-    ui_casing_layout->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-    ui_casing_layout->setContentsMargins(0, 0, 0, 0);
+  ui_casing_cm_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
 
-    // -- SERVER SUPPORTS CASING
+  ui_casing_layout->setWidget(7, QFormLayout::FieldRole, ui_casing_cm_cb);
 
-    ui_casing_supported_lbl = new QLabel(ui_casing_widget);
-    if (ao_app->casing_alerts_enabled)
-      ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
-    else
-      ui_casing_supported_lbl->setText(tr("This server does not support case alerts."));
-    ui_casing_supported_lbl->setToolTip(tr("Pretty self-explanatory."));
+  ui_casing_wit_lbl = new QLabel(ui_casing_widget);
+  ui_casing_wit_lbl->setText(tr("Witness:"));
+  ui_casing_wit_lbl->setToolTip(
+      tr("If checked, you will appear amongst the potential "
+         "witnesses on the server."));
 
-    ui_casing_layout->setWidget(0, QFormLayout::FieldRole, ui_casing_supported_lbl);
+  ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_wit_lbl);
 
-    // -- CASE ANNOUNCEMENTS
+  ui_casing_wit_cb = new QCheckBox(ui_casing_widget);
+  ui_casing_wit_cb->setChecked(ao_app->get_casing_wit_enabled());
 
-    ui_casing_enabled_lbl = new QLabel(ui_casing_widget);
-    ui_casing_enabled_lbl->setText(tr("Casing:"));
-    ui_casing_enabled_lbl->setToolTip(tr("If checked, you will get alerts about case "
-                                         "announcements."));
+  ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_wit_cb);
 
-    ui_casing_layout->setWidget(1, QFormLayout::LabelRole, ui_casing_enabled_lbl);
+  // -- CM CASES ANNOUNCEMENTS
 
-    ui_casing_enabled_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
+  ui_casing_cm_cases_lbl = new QLabel(ui_casing_widget);
+  ui_casing_cm_cases_lbl->setText(tr("Hosting cases:"));
+  ui_casing_cm_cases_lbl->setToolTip(
+      tr("If you're a CM, enter what cases you are "
+         "willing to host."));
 
-    ui_casing_layout->setWidget(1, QFormLayout::FieldRole, ui_casing_enabled_cb);
+  ui_casing_layout->setWidget(9, QFormLayout::LabelRole,
+                              ui_casing_cm_cases_lbl);
 
-    // -- DEFENSE ANNOUNCEMENTS
+  ui_casing_cm_cases_textbox = new QLineEdit(ui_casing_widget);
+  ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
 
-    ui_casing_def_lbl = new QLabel(ui_casing_widget);
-    ui_casing_def_lbl->setText(tr("Defense:"));
-    ui_casing_def_lbl->setToolTip(tr("If checked, you will get alerts about case "
-                                     "announcements if a defense spot is open."));
+  ui_casing_layout->setWidget(9, QFormLayout::FieldRole,
+                              ui_casing_cm_cases_textbox);
 
-    ui_casing_layout->setWidget(2, QFormLayout::LabelRole, ui_casing_def_lbl);
+  // ICLOG
 
-    ui_casing_def_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
+  ui_other_tab = new QWidget();
+  ui_settings_tabs->addTab(ui_other_tab, tr("IC_Log"));
 
-    ui_casing_layout->setWidget(2, QFormLayout::FieldRole, ui_casing_def_cb);
+  ui_other_widget = new QWidget(ui_other_tab);
+  ui_other_widget->setGeometry(QRect(10, 10, 361, 211));
 
-    // -- PROSECUTOR ANNOUNCEMENTS
+  ui_other_layout = new QFormLayout(ui_other_widget);
+  ui_other_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                     Qt::AlignVCenter);
+  ui_other_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                    Qt::AlignTop);
+  ui_other_layout->setContentsMargins(0, 0, 0, 0);
 
-    ui_casing_pro_lbl = new QLabel(ui_casing_widget);
-    ui_casing_pro_lbl->setText(tr("Prosecution:"));
-    ui_casing_pro_lbl->setToolTip(tr("If checked, you will get alerts about case "
-                                     "announcements if a prosecutor spot is open."));
+  ui_other_fancy_icl_enabled_lb = new QLabel(ui_other_widget);
+  ui_other_fancy_icl_enabled_lb->setText(tr("Colorful IC log:"));
+  ui_other_fancy_icl_enabled_lb->setToolTip(
+      tr("Enables colored text in the log."));
+  ui_other_layout->setWidget(1, QFormLayout::LabelRole,
+                             ui_other_fancy_icl_enabled_lb);
 
-    ui_casing_layout->setWidget(3, QFormLayout::LabelRole, ui_casing_pro_lbl);
+  ui_other_fancy_icl_enabled_cb = new QCheckBox(ui_other_widget);
+  ui_other_fancy_icl_enabled_cb->setChecked(
+      ao_app->get_colored_iclog_enabled());
+  ui_other_layout->setWidget(1, QFormLayout::FieldRole,
+                             ui_other_fancy_icl_enabled_cb);
 
-    ui_casing_pro_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
+  ui_other_fancy_icl_limit_lb = new QLabel(ui_other_widget);
+  ui_other_fancy_icl_limit_lb->setText(tr("Only inline coloring:"));
+  ui_other_fancy_icl_limit_lb->setToolTip(
+      tr("Only inline coloring will be shown such as <>,|| etc"));
+  ui_other_layout->setWidget(2, QFormLayout::LabelRole,
+                             ui_other_fancy_icl_limit_lb);
+  ui_other_fancy_icl_limit_cb = new QCheckBox(ui_other_widget);
+  ui_other_fancy_icl_limit_cb->setChecked(
+      ao_app->colorlog_restricted_enabled());
+  ui_other_layout->setWidget(2, QFormLayout::FieldRole,
+                             ui_other_fancy_icl_limit_cb);
 
-    ui_casing_layout->setWidget(3, QFormLayout::FieldRole, ui_casing_pro_cb);
+  ui_other_mirror_icl_enabled_lb = new QLabel(ui_other_widget);
+  ui_other_mirror_icl_enabled_lb->setText(tr("Mirror IC log:"));
+  ui_other_mirror_icl_enabled_lb->setToolTip(
+      tr("IC log will mirror the IC box. "
+         "Meaning that if somebody gets interupted nobody will know what they "
+         "wanted to say. "
+         "Enable for a more realistic expierence"));
+  ui_other_layout->setWidget(3, QFormLayout::LabelRole,
+                             ui_other_mirror_icl_enabled_lb);
+  ui_other_mirror_icl_enabled_cb = new QCheckBox(ui_other_widget);
+  ui_other_mirror_icl_enabled_cb->setChecked(ao_app->get_iclmir_enabled());
+  ui_other_layout->setWidget(3, QFormLayout::FieldRole,
+                             ui_other_mirror_icl_enabled_cb);
 
-    // -- JUDGE ANNOUNCEMENTS
+  ui_downwards_lbl = new QLabel(ui_other_widget);
+  ui_downwards_lbl->setText(tr("Log goes downwards:"));
+  ui_downwards_lbl->setToolTip(
+      tr("If ticked, new messages will appear at "
+         "the bottom (like the OOC chatlog). The traditional "
+         "(AO1) behaviour is equivalent to this being unticked."));
 
-    ui_casing_jud_lbl = new QLabel(ui_casing_widget);
-    ui_casing_jud_lbl->setText(tr("Judge:"));
-    ui_casing_jud_lbl->setToolTip(tr("If checked, you will get alerts about case "
-                                     "announcements if the judge spot is open."));
+  ui_other_layout->setWidget(4, QFormLayout::LabelRole, ui_downwards_lbl);
 
-    ui_casing_layout->setWidget(4, QFormLayout::LabelRole, ui_casing_jud_lbl);
+  ui_downwards_cb = new QCheckBox(ui_other_widget);
+  ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
 
-    ui_casing_jud_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_jud_cb->setChecked(ao_app->get_casing_judge_enabled());
+  ui_other_layout->setWidget(4, QFormLayout::FieldRole, ui_downwards_cb);
 
-    ui_casing_layout->setWidget(4, QFormLayout::FieldRole, ui_casing_jud_cb);
+  ui_length_lbl = new QLabel(ui_other_widget);
+  ui_length_lbl->setText(tr("Log length:"));
+  ui_length_lbl->setToolTip(tr(
+      "The amount of messages the IC chatlog will keep before "
+      "deleting older messages. A value of 0 or below counts as 'infinite'."));
 
-    // -- JUROR ANNOUNCEMENTS
+  ui_other_layout->setWidget(5, QFormLayout::LabelRole, ui_length_lbl);
 
-    ui_casing_jur_lbl = new QLabel(ui_casing_widget);
-    ui_casing_jur_lbl->setText(tr("Juror:"));
-    ui_casing_jur_lbl->setToolTip(tr("If checked, you will get alerts about case "
-                                     "announcements if a juror spot is open."));
+  ui_length_spinbox = new QSpinBox(ui_other_widget);
+  ui_length_spinbox->setMaximum(10000);
+  ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
 
-    ui_casing_layout->setWidget(5, QFormLayout::LabelRole, ui_casing_jur_lbl);
+  ui_other_layout->setWidget(5, QFormLayout::FieldRole, ui_length_spinbox);
 
-    ui_casing_jur_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
-
-    ui_casing_layout->setWidget(5, QFormLayout::FieldRole, ui_casing_jur_cb);
-
-    // -- STENO ANNOUNCEMENTS
-
-    ui_casing_steno_lbl = new QLabel(ui_casing_widget);
-    ui_casing_steno_lbl->setText(tr("Stenographer:"));
-    ui_casing_steno_lbl->setToolTip(tr("If checked, you will get alerts about case "
-                                       "announcements if a stenographer spot is open."));
-
-    ui_casing_layout->setWidget(6, QFormLayout::LabelRole, ui_casing_steno_lbl);
-
-    ui_casing_steno_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
-
-    ui_casing_layout->setWidget(6, QFormLayout::FieldRole, ui_casing_steno_cb);
-
-    // -- CM ANNOUNCEMENTS
-
-    ui_casing_cm_lbl = new QLabel(ui_casing_widget);
-    ui_casing_cm_lbl->setText(tr("CM:"));
-    ui_casing_cm_lbl->setToolTip(tr("If checked, you will appear amongst the potential "
-                                    "CMs on the server."));
-
-    ui_casing_layout->setWidget(7, QFormLayout::LabelRole, ui_casing_cm_lbl);
-
-    ui_casing_cm_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
-
-    ui_casing_layout->setWidget(7, QFormLayout::FieldRole, ui_casing_cm_cb);
-
-    ui_casing_wit_lbl = new QLabel(ui_casing_widget);
-    ui_casing_wit_lbl->setText(tr("Witness:"));
-    ui_casing_wit_lbl->setToolTip(tr("If checked, you will appear amongst the potential "
-                                    "witnesses on the server."));
-
-    ui_casing_layout->setWidget(8, QFormLayout::LabelRole, ui_casing_wit_lbl);
-
-    ui_casing_wit_cb = new QCheckBox(ui_casing_widget);
-    ui_casing_wit_cb->setChecked(ao_app->get_casing_wit_enabled());
-
-    ui_casing_layout->setWidget(8, QFormLayout::FieldRole, ui_casing_wit_cb);
-
-    // -- CM CASES ANNOUNCEMENTS
-
-    ui_casing_cm_cases_lbl = new QLabel(ui_casing_widget);
-    ui_casing_cm_cases_lbl->setText(tr("Hosting cases:"));
-    ui_casing_cm_cases_lbl->setToolTip(tr("If you're a CM, enter what cases you are "
-                                          "willing to host."));
-
-    ui_casing_layout->setWidget(9, QFormLayout::LabelRole, ui_casing_cm_cases_lbl);
-
-    ui_casing_cm_cases_textbox = new QLineEdit(ui_casing_widget);
-    ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
-
-    ui_casing_layout->setWidget(9, QFormLayout::FieldRole, ui_casing_cm_cases_textbox);
-
-    // When we're done, we should continue the updates!
-    setUpdatesEnabled(true);
+  // When we're done, we should continue the updates!
+  setUpdatesEnabled(true);
 }
 
 void AOOptionsDialog::save_pressed()
 {
-    // Save everything into the config.ini.
-    QSettings* configini = ao_app->configini;
+  // Save everything into the config.ini.
+  QSettings *configini = ao_app->configini;
 
-    configini->setValue("theme", ui_theme_combobox->currentText());
-    configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
-    configini->setValue("log_maximum", ui_length_spinbox->value());
-    configini->setValue("default_username", ui_username_textbox->text());
-    configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
-    configini->setValue("master", ui_ms_textbox->text());
-    configini->setValue("discord", ui_discord_cb->isChecked());
-    configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
-    configini->setValue("language", ui_language_combobox->currentText().left(2));
+  configini->setValue("theme", ui_theme_combobox->currentText());
+  configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
+  configini->setValue("log_maximum", ui_length_spinbox->value());
+  configini->setValue("default_username", ui_username_textbox->text());
+  configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
+  configini->setValue("master", ui_ms_textbox->text());
+  configini->setValue("discord", ui_discord_cb->isChecked());
+  configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
+  configini->setValue("language", ui_language_combobox->currentText().left(2));
+  configini->setValue("punctuation_delay", ui_pun_delay_spinbox->value());
+  configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
+  QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
-    QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
-
-    if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-    {
-        // Nevermind!
-    }
-    else
-    {
-        QTextStream out(callwordsini);
-        out << ui_callwords_textbox->toPlainText();
-        callwordsini->close();
-    }
-
-    configini->setValue("default_audio_device", ui_audio_device_combobox->currentText());
-    configini->setValue("default_music", ui_music_volume_spinbox->value());
-    configini->setValue("default_sfx", ui_sfx_volume_spinbox->value());
-    configini->setValue("default_blip", ui_blips_volume_spinbox->value());
-    configini->setValue("blip_rate", ui_bliprate_spinbox->value());
-    configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
-    configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
-    configini->setValue("kill_music_on_object", ui_objectmusic_cb->isChecked());
-
-    configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
-    configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
-    configini->setValue("casing_prosecution_enabled", ui_casing_pro_cb->isChecked());
-    configini->setValue("casing_judge_enabled", ui_casing_jud_cb->isChecked());
-    configini->setValue("casing_juror_enabled", ui_casing_jur_cb->isChecked());
-    configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
-    configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
-    configini->setValue("casing_wit_enabled", ui_casing_wit_cb->isChecked());
-    configini->setValue("casing_can_host_cases", ui_casing_cm_cases_textbox->text());
-
+  if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |
+                          QIODevice::Text)) {
+    // Nevermind!
+  }
+  else {
+    QTextStream out(callwordsini);
+    out << ui_callwords_textbox->toPlainText();
     callwordsini->close();
-    done(0);
+  }
+
+  configini->setValue("default_audio_device",
+                      ui_audio_device_combobox->currentText());
+  configini->setValue("default_music", ui_music_volume_spinbox->value());
+  configini->setValue("default_sfx", ui_sfx_volume_spinbox->value());
+  configini->setValue("default_blip", ui_blips_volume_spinbox->value());
+  configini->setValue("blip_rate", ui_bliprate_spinbox->value());
+  configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
+  configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
+  configini->setValue("kill_music_on_object", ui_objectmusic_cb->isChecked());
+
+  configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
+  configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
+  configini->setValue("casing_prosecution_enabled",
+                      ui_casing_pro_cb->isChecked());
+  configini->setValue("casing_judge_enabled", ui_casing_jud_cb->isChecked());
+  configini->setValue("casing_juror_enabled", ui_casing_jur_cb->isChecked());
+  configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
+  configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
+  configini->setValue("casing_wit_enabled", ui_casing_wit_cb->isChecked());
+  configini->setValue("casing_can_host_cases",
+                      ui_casing_cm_cases_textbox->text());
+
+  configini->setValue("color_iclog_enabled",
+                      ui_other_fancy_icl_enabled_cb->isChecked());
+  configini->setValue("mirror_iclog_enabled",
+                      ui_other_mirror_icl_enabled_cb->isChecked());
+  configini->setValue("mirror_iclog_restricted",
+                      ui_other_fancy_icl_limit_cb->isChecked());
+
+  callwordsini->close();
+  done(0);
 }
 
-void AOOptionsDialog::discard_pressed()
-{
-    done(0);
-}
+void AOOptionsDialog::discard_pressed() { done(0); }
 
-#if (defined (_WIN32) || defined (_WIN64))
-bool AOOptionsDialog::needs_default_audiodev()
-{
-    return true;
-}
-#elif (defined (LINUX) || defined (__linux__))
-bool AOOptionsDialog::needs_default_audiodev()
-{
-    return false;
-}
+#if (defined(_WIN32) || defined(_WIN64))
+bool AOOptionsDialog::needs_default_audiodev() { return true; }
+#elif (defined(LINUX) || defined(__linux__))
+bool AOOptionsDialog::needs_default_audiodev() { return false; }
 #elif defined __APPLE__
-bool AOOptionsDialog::needs_default_audiodev()
-{
-    return true;
-}
+bool AOOptionsDialog::needs_default_audiodev() { return true; }
 #else
 #error This operating system is not supported.
 #endif

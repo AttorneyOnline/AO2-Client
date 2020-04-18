@@ -5,7 +5,8 @@ AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
 
 }
 
-void AOTextArea::append_chatmessage(QString p_name, QString p_message, QString p_colour)
+void AOTextArea::append_chatmessage(QString p_name, QString p_message,
+                                    QString p_colour, bool song)
 {
   const QTextCursor old_cursor = this->textCursor();
   const int old_scrollbar_value = this->verticalScrollBar()->value();
@@ -14,7 +15,12 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message, QString p
   this->moveCursor(QTextCursor::End);
 
   this->append("");
-  this->insertHtml("<b><font color=" + p_colour + ">" + p_name.toHtmlEscaped() + "</font></b>:&nbsp;");
+  if (song)
+    this->insertHtml("<b><font color=" + p_colour + ">" +
+                     p_name.toHtmlEscaped() + "</font></b>&nbsp;");
+  else
+    this->insertHtml("<b><font color=" + p_colour + ">" +
+                     p_name.toHtmlEscaped() + "</font></b>:&nbsp;");
 
   //cheap workarounds ahoy
   p_message += " ";

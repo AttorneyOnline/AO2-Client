@@ -7,34 +7,19 @@
 #include "hardware_functions.h"
 #include "debug_functions.h"
 
-class AOPacketLoadMusicThreading : public QRunnable
-{
-public:
-    AOApplication *myapp;
-    QString filename;
-    bool ismusic;
-    AOPacketLoadMusicThreading(AOApplication *my_app, QString file_name, bool is_music){
-        myapp = my_app;
-        filename = file_name;
-        ismusic = is_music;
-    }
-    void run()
-    {
-        if(ismusic)
+void AOPacketLoadMusic(AOApplication *my_app, QString file_name, bool is_music)
         {
-            myapp->w_courtroom->append_music(filename);
+  if (is_music) {
+    my_app->w_courtroom->append_music(file_name);
         }
-        else
-        {
-            myapp->w_courtroom->append_area(filename);
-            myapp->area_count++;
+  else {
+    my_app->w_courtroom->append_area(file_name);
+    my_app->area_count++;
         }
-        for (int area_n = 0; area_n < myapp->area_count; area_n++)
-        {
-            myapp->w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+  for (int area_n = 0; area_n < my_app->area_count; area_n++) {
+    my_app->w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
         }
     }
-};
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
@@ -438,26 +423,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
 
-      if (musiclist_start)
-      {
-          w_courtroom->append_music(f_music);
-      }
-      else
-      {
-          if (is_music_track(f_music))
-          {
-              musiclist_start = true;
-              areas--;
-              //w_courtroom->fix_last_area();
-              w_courtroom->append_music(f_music);
-          }
-          else
-          {
-              w_courtroom->append_area(f_music);
-              areas++;
-          }
-      }
-
       for (int area_n = 0; area_n < areas; area_n++)
       {
           w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
@@ -515,38 +480,43 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RM#%"));
   }
-  else if (header == "SM" || header == "FM")
-  {
+
+  else if (header == "SM") {
       if (!courtroom_constructed)
             goto end;
 
-      w_courtroom->clear_music();
-      w_courtroom->clear_areas();
-
-          bool musiclist_start = false;
+    bool musics_time = false;
           area_count = 0;
 
-          for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
-          {
-            if (!musiclist_start && is_music_track(f_contents.at(n_element)))
-            {
-                musiclist_start = true;
-                continue;
+    for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
+      int element2check = n_element + 1;
+      if (element2check > f_contents.size()) {
+        element2check = n_element; // I know this is very lazy code but cba
+      }
+      if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
+                           f_contents.at(element2check).endsWith(".wav") ||
+                           f_contents.at(element2check).endsWith(".mp3") ||
+                           f_contents.at(element2check).endsWith(".mp4") ||
+                           f_contents.at(element2check).endsWith(".ogg") ||
+                           f_contents.at(element2check).endsWith(".opus"))) {
+        musics_time = true;
             }
-            AOPacketLoadMusicThreading *music_load = new AOPacketLoadMusicThreading(this, f_contents.at(n_element), musiclist_start);
-            QThreadPool::globalInstance()->start(music_load);
+
+      // Not everything needs to have a thread.
+      AOPacketLoadMusic(this, f_contents.at(n_element), musics_time);
             ++loaded_music;
-            int total_loading_size = char_list_size * 2 + evidence_list_size + music_list_size;
-            int loading_value = int(((loaded_chars + generated_chars + loaded_music + loaded_evidence) / static_cast<double>(total_loading_size)) * 100);
+      int total_loading_size =
+          char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(
+          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
+           static_cast<double>(total_loading_size)) *
+          100);
             w_lobby->set_loading_value(loading_value);
-            w_lobby->set_loading_text(tr("Loading music:\n%1/%2").arg(QString::number(loaded_music)).arg(QString::number(music_list_size)));
-            if(QThreadPool::globalInstance()->activeThreadCount() == QThreadPool::globalInstance()->maxThreadCount())
-            {
-              QThreadPool::globalInstance()->waitForDone(); //out of order music is bad
-            }
+      w_lobby->set_loading_text(tr("Loading music:\n%1/%2")
+                                    .arg(QString::number(loaded_music))
+                                    .arg(QString::number(music_list_size)));
           }
-          QThreadPool::globalInstance()->waitForDone();
-          if (header == "SM")
+
             send_server_packet(new AOPacket("RD#%"));
   }
   else if (header == "DONE")
@@ -761,6 +731,7 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
   }
   else
   {
+    qDebug() << "S:" << f_packet;
 #ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
 #endif

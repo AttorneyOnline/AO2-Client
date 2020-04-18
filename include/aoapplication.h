@@ -182,9 +182,15 @@ public:
   // from the config.ini.
   bool is_shakeandflash_enabled();
 
+  // Returns whether evidence should be maintained ic
+  bool is_keepevi_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();
+
+  // Gets the punctuation delay modifier
+  int get_pundelay();
 
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
@@ -238,7 +244,11 @@ public:
   //Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
 
-  // Can we use APNG for this? If not, fall back to a gif.
+  // figure out if we can find what prefix this song uses
+  QString get_music_prefix(QString song_to_check);
+
+  // Can we use APNG for this? If not, WEBP? if not, GIF? If not, fall back to a
+  // gif.
   QString get_image_suffix(QString path_to_check);
 
   //Returns the value of p_search_line within target_tag and terminator_tag
@@ -340,6 +350,15 @@ public:
 
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
+
+  // Get if html for ic log is enabled
+  bool get_colored_iclog_enabled();
+
+  // Get if ic log mirror is enabled
+  bool get_iclmir_enabled();
+
+  // Get if only inline coloring should be shown in log
+  bool colorlog_restricted_enabled();
 
 private:
   const int RELEASE = 2;

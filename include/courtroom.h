@@ -223,15 +223,18 @@ public:
 
   //This function filters out the common CC inline text trickery, for appending to
   //the IC chatlog.
-  QString filter_ic_text(QString p_text);
+  QString filter_ic_text(QString p_text, bool skip_filter, int chat_color);
 
   //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   //this function keeps the chatlog scrolled to the top unless there's text selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", bool is_songchange = false);
+  void append_ic_text(QString p_text, QString p_name = "",
+                      bool is_songchange = false, bool force_filter = false,
+                      bool skip_filter = false, int chat_color = 0);
 
-  //prints who played the song to IC chat and plays said song(if found on local filesystem)
-  //takes in a list where the first element is the song name and the second is the char id of who played it
+  // prints who played the song to IC chat and plays said song(if found on local
+  // filesystem) takes in a list where the first element is the song name and
+  // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
   void play_preanim(bool noninterrupting);
@@ -251,6 +254,7 @@ public:
   void check_connection_received();
   void doScreenShake();
   void doRealization();
+  void refresh_iclog(bool skiplast);
 
   ~Courtroom();
 
@@ -331,6 +335,8 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
 
+  // The cursor to write with in mirror mode
+  QTextCursor *mirror_cursor;
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
 
@@ -346,27 +352,26 @@ private:
   //keeps track of how long realization is visible(it's just a white square and should be visible less than a second)
   QTimer *realization_timer;
 
-  //times how long the blinking testimony should be shown(green one in the corner)
-  QTimer *testimony_show_timer;
-  //times how long the blinking testimony should be hidden
-  QTimer *testimony_hide_timer;
-
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
+
+  // the amount of time non-animated objection/hold it/takethat images stay
+  // onscreen for in ms
+  const int shout_stay_time = 724;
+
+  // the amount of time non-animated guilty/not guilty images stay onscreen for
+  // in ms
+  const int verdict_stay_time = 3000;
+
+  // the amount of time non-animated witness testimony/cross-examination images
+  // stay onscreen for in ms
+  const int wtce_stay_time = 1500;
 
   static const int chatmessage_size = 28;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
-
-  bool testimony_in_progress = false;
-
-  //in milliseconds
-  const int testimony_show_time = 1500;
-
-  //in milliseconds
-  const int testimony_hide_time = 500;
 
   //char id, muted or not
   QMap<int, bool> mute_map;
@@ -381,10 +386,21 @@ private:
   //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
   int text_state = 2;
 
-  //character id, which index of the char_list the player is
+  // characters we consider punctuation
+  const QString punctuation_chars = ".,?!:;";
+
+  // amount by which we multiply the delay when we parse punctuation chars
+  int punctuation_modifier = 2;
+
+  // character id, which index of the char_list the player is
   int m_cid = -1;
+  // cid and this may differ in cases of ini-editing
+
+  QString char_name = "";
 
   int objection_state = 0;
+  bool keep_custom_objection = false;
+  QString objection_custom = "";
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -429,6 +445,8 @@ private:
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
+  // Is AFK enabled
+  bool isafk = false;
   QString current_background = "default";
 
   AOMusicPlayer *music_player;
@@ -454,10 +472,17 @@ private:
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
   QTextEdit *ui_vp_message;
-  AOImage *ui_vp_testimony;
-  AOImage *ui_vp_realization;
+  AOMovie *ui_vp_realization;
+  AOMovie *ui_vp_testimony;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
+  void realization_done();
+
+  bool colorf_iclog = false;
+  bool mirror_iclog = false;
+  bool colorf_limit = false;
+
+  bool keep_evidence_display = false;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -466,7 +491,7 @@ private:
 
   QListWidget *ui_mute_list;
   QListWidget *ui_area_list;
-  QListWidget *ui_music_list;
+  QTreeWidget *ui_music_list;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
@@ -480,6 +505,8 @@ private:
 
   //QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
+  QString music_search_par = "";
+  QString area_search_par = "";
 
   QWidget *ui_emotes;
   QVector<AOEmoteButton*> ui_emote_list;
@@ -526,6 +553,8 @@ private:
   AOButton *ui_realization;
   AOButton *ui_screenshake;
   AOButton *ui_mute;
+
+  QMenu *custom_obj_menu;
 
   AOButton *ui_defense_plus;
   AOButton *ui_defense_minus;
@@ -589,11 +618,6 @@ public slots:
   void objection_done();
   void preanim_done();
 
-  void realization_done();
-
-  void show_testimony();
-  void hide_testimony();
-
   void mod_called(QString p_ip);
 
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno, bool witness);
@@ -611,8 +635,9 @@ private slots:
 
   void on_ooc_return_pressed();
 
+  void on_music_search_keypr();
   void on_music_search_edited(QString p_text);
-  void on_music_list_double_clicked(QModelIndex p_model);
+  void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_area_list_double_clicked(QModelIndex p_model);
 
   void select_emote(int p_id);
@@ -641,6 +666,7 @@ private slots:
   void on_objection_clicked();
   void on_take_that_clicked();
   void on_custom_objection_clicked();
+  void ShowContextMenu(const QPoint &pos);
 
   void on_realization_clicked();
   void on_screenshake_clicked();

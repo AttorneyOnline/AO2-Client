@@ -272,17 +272,19 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-  QString msg = tr("<h2>Attorney Online %1</h2>"
+  QString msg =
+      tr("<h2>Attorney Online %1</h2>"
                    "The courtroom drama simulator"
                    "<p><b>Source code:</b> "
                    "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
                    "https://github.com/AttorneyOnline/AO2-Client</a>"
                    "<p><b>Major development:</b><br>"
-                   "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter"
+         "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
+         "Cents02"
                    "<p><b>Special thanks:</b><br>"
                    "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
                    "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
-                   "Noevain, Cronnicossy")
+         "Noevain, Cronnicossy, Raidensnake")
           .arg(ao_app->get_version_string());
   QMessageBox::about(this, "About", msg);
 }
@@ -380,7 +382,10 @@ void Lobby::list_favorites()
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  ui_chatbox->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_chatbox->append_chatmessage(
+      f_name, f_message,
+      ao_app->get_color("ooc_default_color", "courtroom_design.ini").name(),
+      false);
 }
 
 void Lobby::append_error(QString f_message)

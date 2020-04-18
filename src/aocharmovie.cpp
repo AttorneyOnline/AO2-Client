@@ -154,9 +154,6 @@ void AOCharMovie::sfx_two_network_boogaloo()
 
 void AOCharMovie::movie_ticker()
 {
-  if(apng){
-      ticker->start(m_movie->nextFrameDelay());
-  }
   if(m_movie->currentFrameNumber() == m_movie->frameCount() - 1)
   {
     delete m_movie;

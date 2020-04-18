@@ -135,6 +135,7 @@ void AOApplication::server_disconnected()
 {
   if (courtroom_constructed)
   {
+    beep();
     call_notice(tr("Disconnected from server."));
     construct_lobby();
     destruct_courtroom();

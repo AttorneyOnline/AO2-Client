@@ -46,6 +46,15 @@ int AOApplication::get_max_log_size()
   return result;
 }
 
+int AOApplication::get_pundelay()
+{
+  int result = configini->value("punctuation_delay", 2).toInt();
+  if (result < 1 || result > 3) {
+    result = 2;
+  }
+  return result;
+}
+
 bool AOApplication::get_log_goes_downwards()
 {
   QString result = configini->value("log_goes_downwards", "false").value<QString>();
@@ -154,6 +163,26 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
   QVariant value = settings.value(p_identifier);
+  if (value.isNull()) // Since the value wasn't found, maybe it uses the proper
+                      // config system
+  {
+    int last_underscore_index = p_identifier.lastIndexOf(
+        '_'); // we will use this in order to check wether it is just showname
+              // or showname_something
+    if (last_underscore_index != -1) {
+      p_identifier.replace(
+          last_underscore_index, 1,
+          '/'); // we replace the last dash in order to access the category, e.g
+                // from showname_font -> showname/font
+      value = settings.value(p_identifier);
+    }
+    else if (!settings.value(p_identifier + "/size")
+                  .isNull()) // This is to check whether showname/size exists,
+                             // because size is defined as widgetname = x
+    {
+      value = settings.value(p_identifier + "/size");
+    }
+  }
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
   } else {
@@ -368,8 +397,27 @@ QString AOApplication::get_sfx(QString p_identifier)
   return return_sfx;
 }
 
+QString AOApplication::get_music_prefix(QString song_to_check)
+{
+  if (!file_exists(get_music_path(song_to_check))) {
+    QString mp3_check = get_music_path(song_to_check + ".mp3");
+    QString opus_check = get_music_path(song_to_check + ".opus");
+    if (file_exists(opus_check)) {
+      return song_to_check + ".opus";
+    }
+    else if (file_exists(mp3_check)) {
+      return song_to_check + ".mp3";
+    }
+    return song_to_check + ".wav";
+  }
+  else {
+    return song_to_check;
+  }
+}
+
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
 {
+  if (!file_exists(get_sounds_path(sound_to_check))) {
     QString mp3_check = get_sounds_path(sound_to_check + ".mp3");
     QString opus_check = get_sounds_path(sound_to_check + ".opus");
     if (file_exists(opus_check))
@@ -381,16 +429,21 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
         return sound_to_check + ".mp3";
     }
     return sound_to_check + ".wav";
+  }
+  else {
+    return sound_to_check;
+  }
 }
 
 QString AOApplication::get_image_suffix(QString path_to_check)
 {
-    QString apng_check = path_to_check + ".apng";
-    if (file_exists(apng_check))
-    {
-        return apng_check;
-    }
+  if (file_exists(path_to_check + ".webp"))
+    return path_to_check + ".webp";
+  if (file_exists(path_to_check + ".apng"))
+    return path_to_check + ".apng";
+  if (file_exists(path_to_check + ".gif"))
     return path_to_check + ".gif";
+  return path_to_check + ".png";
 }
 
 
@@ -655,9 +708,9 @@ bool AOApplication::is_discord_enabled()
     return result.startsWith("true");
 }
 
-bool AOApplication::is_shakeandflash_enabled()
+bool AOApplication::is_keepevi_enabled()
 {
-    QString result = configini->value("shakeandflash", "true").value<QString>();
+  QString result = configini->value("keep_evidence", "false").value<QString>();
     return result.startsWith("true");
 }
 
@@ -714,4 +767,30 @@ QString AOApplication::get_casing_can_host_cases()
 {
   QString result = configini->value("casing_can_host_cases", "Turnabout Check Your Settings").value<QString>();
   return result;
+}
+
+bool AOApplication::get_colored_iclog_enabled()
+{
+  QString result =
+      configini->value("color_iclog_enabled", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::get_iclmir_enabled()
+{
+  QString result =
+      configini->value("mirror_iclog_enabled", "false").value<QString>();
+  return result.startsWith("true");
+}
+bool AOApplication::colorlog_restricted_enabled()
+{
+  QString result =
+      configini->value("mirror_iclog_restricted", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::is_shakeandflash_enabled()
+{
+  QString result = configini->value("shakeandflash", "true").value<QString>();
+  return result.startsWith("true");
 }
