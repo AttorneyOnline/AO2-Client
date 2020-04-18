@@ -17,4 +17,5 @@ deploy:
   file: "../bin/Attorney_Online_mac_x86_64.zip"
   draft: true
   on:
+    tags: true
     repo: AttorneyOnline/AO2-Client
