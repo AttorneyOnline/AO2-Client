@@ -140,7 +140,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_showname_lbl->setText(tr("Show custom IC names:"));
   ui_showname_lbl->setToolTip(
       tr("Gives the default value for the in-game 'Custom shownames' "
-         "tickbox, which in turn determines whether the client should "
+         "checkbox, which in turn determines whether the client should "
          "display custom in-character names."));
 
   ui_gameplay_form->setWidget(6, QFormLayout::LabelRole, ui_showname_lbl);
