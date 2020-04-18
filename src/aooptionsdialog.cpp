@@ -615,9 +615,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_other_mirror_icl_enabled_lb->setText(tr("Mirror IC log:"));
   ui_other_mirror_icl_enabled_lb->setToolTip(
       tr("IC log will mirror the IC box. "
-         "Meaning that if somebody gets interupted nobody will know what they "
+         "Meaning that if somebody gets interrupted nobody will know what they "
          "wanted to say. "
-         "Enable for a more realistic expierence"));
+         "Enable for a more realistic experience"));
   ui_other_layout->setWidget(3, QFormLayout::LabelRole,
                              ui_other_mirror_icl_enabled_lb);
   ui_other_mirror_icl_enabled_cb = new QCheckBox(ui_other_widget);
