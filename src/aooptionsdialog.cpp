@@ -574,7 +574,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // ICLOG
 
   ui_other_tab = new QWidget();
-  ui_settings_tabs->addTab(ui_other_tab, tr("IC_Log"));
+  ui_settings_tabs->addTab(ui_other_tab, tr("IC Log"));
 
   ui_other_widget = new QWidget(ui_other_tab);
   ui_other_widget->setGeometry(QRect(10, 10, 361, 211));
