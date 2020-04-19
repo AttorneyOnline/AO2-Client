@@ -88,39 +88,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(1, QFormLayout::FieldRole, ui_theme_log_divider);
 
-  ui_downwards_lbl = new QLabel(ui_form_layout_widget);
-  ui_downwards_lbl->setText(tr("Log goes downwards:"));
-  ui_downwards_lbl->setToolTip(
-      tr("If ticked, new messages will appear at "
-         "the bottom (like the OOC chatlog). The traditional "
-         "(AO1) behaviour is equivalent to this being unticked."));
-
-  ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_downwards_lbl);
-
-  ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-  ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
-
-  ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_downwards_cb);
-
-  ui_length_lbl = new QLabel(ui_form_layout_widget);
-  ui_length_lbl->setText(tr("Log length:"));
-  ui_length_lbl->setToolTip(tr(
-      "The amount of messages the IC chatlog will keep before "
-      "deleting older messages. A value of 0 or below counts as 'infinite'."));
-
-  ui_gameplay_form->setWidget(3, QFormLayout::LabelRole, ui_length_lbl);
-
-  ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_length_spinbox->setMaximum(10000);
-  ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
-
-  ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_length_spinbox);
-
-  ui_log_names_divider = new QFrame(ui_form_layout_widget);
-  ui_log_names_divider->setFrameShape(QFrame::HLine);
-  ui_log_names_divider->setFrameShadow(QFrame::Sunken);
-
-  ui_gameplay_form->setWidget(4, QFormLayout::FieldRole, ui_log_names_divider);
 
   ui_username_lbl = new QLabel(ui_form_layout_widget);
   ui_username_lbl->setText(tr("Default username:"));
@@ -128,13 +95,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       tr("Your OOC name will be automatically set to this value "
          "when you join a server."));
 
-  ui_gameplay_form->setWidget(5, QFormLayout::LabelRole, ui_username_lbl);
+  ui_gameplay_form->setWidget(2, QFormLayout::LabelRole, ui_username_lbl);
 
   ui_username_textbox = new QLineEdit(ui_form_layout_widget);
   ui_username_textbox->setMaxLength(30);
   ui_username_textbox->setText(p_ao_app->get_default_username());
 
-  ui_gameplay_form->setWidget(5, QFormLayout::FieldRole, ui_username_textbox);
+  ui_gameplay_form->setWidget(2, QFormLayout::FieldRole, ui_username_textbox);
 
   ui_showname_lbl = new QLabel(ui_form_layout_widget);
   ui_showname_lbl->setText(tr("Custom shownames:"));
@@ -143,18 +110,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
          "checkbox, which in turn determines whether the client should "
          "display custom in-character names."));
 
-  ui_gameplay_form->setWidget(6, QFormLayout::LabelRole, ui_showname_lbl);
+  ui_gameplay_form->setWidget(3, QFormLayout::LabelRole, ui_showname_lbl);
 
   ui_showname_cb = new QCheckBox(ui_form_layout_widget);
   ui_showname_cb->setChecked(p_ao_app->get_showname_enabled_by_default());
 
-  ui_gameplay_form->setWidget(6, QFormLayout::FieldRole, ui_showname_cb);
+  ui_gameplay_form->setWidget(3, QFormLayout::FieldRole, ui_showname_cb);
 
   ui_net_divider = new QFrame(ui_form_layout_widget);
   ui_net_divider->setFrameShape(QFrame::HLine);
   ui_net_divider->setFrameShadow(QFrame::Sunken);
 
-  ui_gameplay_form->setWidget(7, QFormLayout::FieldRole, ui_net_divider);
+  ui_gameplay_form->setWidget(4, QFormLayout::FieldRole, ui_net_divider);
 
   ui_ms_lbl = new QLabel(ui_form_layout_widget);
   ui_ms_lbl->setText(tr("Backup MS:"));
@@ -162,13 +129,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       tr("If the built-in server lookups fail, the game will try the "
          "address given here and use it as a backup master server address."));
 
-  ui_gameplay_form->setWidget(8, QFormLayout::LabelRole, ui_ms_lbl);
+  ui_gameplay_form->setWidget(5, QFormLayout::LabelRole, ui_ms_lbl);
 
   QSettings *configini = ao_app->configini;
   ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
   ui_ms_textbox->setText(configini->value("master", "").value<QString>());
 
-  ui_gameplay_form->setWidget(8, QFormLayout::FieldRole, ui_ms_textbox);
+  ui_gameplay_form->setWidget(5, QFormLayout::FieldRole, ui_ms_textbox);
 
   ui_discord_lbl = new QLabel(ui_form_layout_widget);
   ui_discord_lbl->setText(tr("Discord:"));
@@ -177,12 +144,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
          "what character are you playing, and how long you have "
          "been playing for."));
 
-  ui_gameplay_form->setWidget(9, QFormLayout::LabelRole, ui_discord_lbl);
+  ui_gameplay_form->setWidget(6, QFormLayout::LabelRole, ui_discord_lbl);
 
   ui_discord_cb = new QCheckBox(ui_form_layout_widget);
   ui_discord_cb->setChecked(ao_app->is_discord_enabled());
 
-  ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_discord_cb);
+  ui_gameplay_form->setWidget(6, QFormLayout::FieldRole, ui_discord_cb);
 
   ui_epilepsy_lbl = new QLabel(ui_form_layout_widget);
   ui_epilepsy_lbl->setText(tr("Allow Shake/Flash:"));
@@ -190,18 +157,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       tr("Allows screenshaking and flashing. Disable this if you have concerns "
          "or issues with photosensitivity and/or seizures."));
 
-  ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_epilepsy_lbl);
+  ui_gameplay_form->setWidget(7, QFormLayout::LabelRole, ui_epilepsy_lbl);
 
   ui_epilepsy_cb = new QCheckBox(ui_form_layout_widget);
   ui_epilepsy_cb->setChecked(ao_app->is_shakeandflash_enabled());
 
-  ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_epilepsy_cb);
+  ui_gameplay_form->setWidget(7, QFormLayout::FieldRole, ui_epilepsy_cb);
 
   ui_language_label = new QLabel(ui_form_layout_widget);
   ui_language_label->setText(tr("Language:"));
   ui_language_label->setToolTip(
       tr("Sets the language if you don't want to use your system language."));
-  ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_language_label);
+  ui_gameplay_form->setWidget(8, QFormLayout::LabelRole, ui_language_label);
 
   ui_language_combobox = new QComboBox(ui_form_layout_widget);
   ui_language_combobox->addItem(
@@ -215,7 +182,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_language_combobox->addItem("pl - Polski");
   ui_language_combobox->addItem("jp - 日本語");
   ui_language_combobox->addItem("ru - Русский");
-  ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_language_combobox);
+  ui_gameplay_form->setWidget(8, QFormLayout::FieldRole, ui_language_combobox);
+
+  ui_net_divider = new QFrame(ui_form_layout_widget);
+  ui_net_divider->setFrameShape(QFrame::HLine);
+  ui_net_divider->setFrameShadow(QFrame::Sunken);
+  ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_net_divider);
 
   ui_pun_delay = new QLabel(ui_form_layout_widget);
   ui_pun_delay->setText(tr("Punctation Delay:"));
@@ -225,8 +197,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_pun_delay_spinbox->setMinimum(1);
   ui_pun_delay_spinbox->setMaximum(3);
   ui_pun_delay_spinbox->setValue(p_ao_app->get_pundelay());
-  ui_gameplay_form->setWidget(12, QFormLayout::FieldRole, ui_pun_delay_spinbox);
-  ui_gameplay_form->setWidget(12, QFormLayout::LabelRole, ui_pun_delay);
+  ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_pun_delay_spinbox);
+  ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_pun_delay);
 
   // Here we start the callwords tab.
   ui_callwords_tab = new QWidget();
