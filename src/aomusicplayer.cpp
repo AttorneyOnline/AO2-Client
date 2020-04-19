@@ -18,7 +18,11 @@ void AOMusicPlayer::play(QString p_song)
 
   f_path = ao_app->get_music_path(p_song);
 
-  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  if (p_song.startsWith("http")) {
+    m_stream = BASS_StreamCreateURL(f_path.toStdWString().c_str(), 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE, NULL, NULL);
+  } else {
+    m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  }
 
   this->set_volume(m_volume);
 
