@@ -193,7 +193,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_slower_blips_lb->setText(tr("Slower text speed:"));
   ui_slower_blips_lb->setToolTip(tr("Set the text speed to be the same as the AA games."));
   ui_slower_blips_cb = new QCheckBox(ui_form_layout_widget);
-  ui_slower_blips_cb->setChecked(p_ao_app->get_pundelay());
+  ui_slower_blips_cb->setChecked(p_ao_app->get_slower_blips());
   ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_slower_blips_cb);
   ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_slower_blips_lb);
 

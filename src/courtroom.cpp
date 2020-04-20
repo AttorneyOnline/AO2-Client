@@ -166,6 +166,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_name->setText(p_ao_app->get_default_username());
 
   punctuation_modifier = p_ao_app->get_pundelay();
+  slower_blips = p_ao_app->get_slower_blips();
   colorf_iclog = p_ao_app->get_colored_iclog_enabled();
   mirror_iclog = p_ao_app->get_iclmir_enabled();
   colorf_limit = p_ao_app->colorlog_restricted_enabled();
@@ -4256,6 +4257,7 @@ void Courtroom::on_reload_theme_clicked()
 {
   ao_app->reload_theme();
   punctuation_modifier = ao_app->get_pundelay();
+  slower_blips = ao_app->get_slower_blips();
   colorf_iclog = ao_app->get_colored_iclog_enabled();
   mirror_iclog = ao_app->get_iclmir_enabled();
   colorf_limit = ao_app->colorlog_restricted_enabled();
