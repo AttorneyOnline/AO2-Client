@@ -722,11 +722,17 @@ int AOApplication::get_saved_ooc_format()
   return result;
 }
 
-QString Courtroom::save_ic_chatlog()
+int Courtroom::save_chatlog(bool is_ooc)
 {
+    QString log_type;
+    if (!is_ooc)
+      log_type = "IC";
+    else
+      log_type = "OOC";
     QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":","."); // colons are illegal in Windows filenames, and spaces are for chumps
-    QString logfile = "ICLog-" + dtstamp_clean +  ".log";
-    ic_result = ERR_UNKNOWN;
+    QString logfile = "Log" + log_type + '-' + dtstamp_clean +  ".log";
+    save_log_result result = ERR_UNKNOWN;
+
     QDir logfolder("logs");
     if (!logfolder.exists())
     {
@@ -734,77 +740,51 @@ QString Courtroom::save_ic_chatlog()
       QDir::current().mkdir(logfolder.dirName());
       if (!logfolder.exists()) { // check again to be sure the folder was created
         qDebug() << "W: attempted to create dir ./logs unsuccessfully";
-        ic_result = ERR_CREATEDIR;
-        return logfile;
+        result = ERR_CREATEDIR;
+        return result;
       }
     }
+
     QFile file(logfolder.dirName() + '/' + logfile);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
       qDebug() << "E: could not create log file (" << file.errorString() << ")";
-      ic_result = ERR_CREATELOG;
-      return logfile;
+      result = ERR_CREATELOG;
+      return result;
     }
+
     file.open(QIODevice::WriteOnly);
     QTextStream out(&file);
-    out << "#####" << '\n' << "Saved IC history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
-    foreach (chatlogpiece item, ic_chatlog_history) {
+    out << "#####" << '\n' << "Saved " + log_type + " history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
+    if (!is_ooc) 
+    {
+      foreach (chatlogpiece item, ic_chatlog_history) 
+      {
         out << item.get_full() << '\n';
       }
-
-    file.close();
-    if (file_exists(file.fileName()))
-      ic_result = SUCCESS;
-    else
-      ic_result = ERR_UNKNOWN;
-    return logfile;
-}
-
-QString Courtroom::save_ooc_chatlog()
-{
-    QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":",".");
-    QString logfile = "OOCLog-" + dtstamp_clean +  ".log";
-    ooc_result = ERR_UNKNOWN;
-    QDir logfolder("logs");
-    if (!logfolder.exists())
+    }
+    else 
     {
-      qDebug() << "I: directory ./logs does not exist, attempting to create";
-      QDir::current().mkdir(logfolder.dirName());
-      if (!logfolder.exists()) { // check again to be sure the folder was created
-        qDebug() << "W: attempted to create dir ./logs unsuccessfully";
-        ooc_result = ERR_CREATEDIR;
-        return logfile;
+      switch (ao_app->get_saved_ooc_format())
+      {
+        case 1: // raw HTML
+          out << ui_server_chatlog->toHtml();
+          break;
+        #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+          case 2: // Markdown (Qt 5.14+ only)
+            out << ui_server_chatlog->toMarkdown();
+            break;
+        #endif
+        default: // plain text, this is equivalent to saved_ooc_format = 0
+          out << ui_server_chatlog->toPlainText();
+          break;
       }
     }
-    QFile file(logfolder.dirName() + '/' + logfile);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
-    {
-      qDebug() << "E: could not create log file (" << file.errorString() << ")";
-      ooc_result = ERR_CREATELOG;
-      return logfile;
-    }
-    file.open(QIODevice::WriteOnly);
-    QTextStream out(&file);
-    out << "#####" << '\n' << "Saved OOC history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
-    switch (ao_app->get_saved_ooc_format())
-    {
-      case 1: // raw HTML
-        out << ui_server_chatlog->toHtml();
-        break;
-      #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-        case 2: // Markdown (Qt 5.14+ only)
-          out << ui_server_chatlog->toMarkdown();
-          break;
-      #endif
-      default: // plain text, this is equivalent to saved_ooc_format = 0
-        out << ui_server_chatlog->toPlainText();
-        break;
-    }
 
     file.close();
     if (file_exists(file.fileName()))
-      ooc_result = SUCCESS;
+      result = SUCCESS;
     else
-      ooc_result = ERR_UNKNOWN;
-      return logfile;
+      result = ERR_UNKNOWN;
+    return result;
 }

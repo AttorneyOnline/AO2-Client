@@ -3233,49 +3233,30 @@ void Courtroom::on_ooc_return_pressed()
     ui_ooc_chat_message->clear();
     return;
   }
-  else if (ooc_message.startsWith("/save_ic"))
+  else if (ooc_message.startsWith("/save_ic") || ooc_message.startsWith("/save_ooc"))
   {
-    QString log_filename = save_ic_chatlog();
-    switch (ic_result)
+    bool is_ooc;
+    if (ooc_message.startsWith("/save_ic"))
+      is_ooc = false;
+    else
+      is_ooc = true;
+    int result = save_chatlog(is_ooc);
+    switch (result)
     {
-      case ERR_UNKNOWN:
+      case 0: // ERR_UNKNOWN
         append_server_chatmessage("CLIENT", tr("An unknown error occurred while saving the chatlog."), "1");
         ui_ooc_chat_message->clear();
         break;
-      case ERR_CREATELOG:
+      case 1: // ERR_CREATELOG
         append_server_chatmessage("CLIENT", tr("Couldn't create the log file, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
-      case ERR_CREATEDIR:
+      case 2: // ERR_CREATEDIR
         append_server_chatmessage("CLIENT", tr("Unable to create log directory, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
-      case SUCCESS:
-        append_server_chatmessage("CLIENT", tr("The IC chatlog has been saved."), "1");
-        ui_ooc_chat_message->clear();
-        break;
-    }
-    return;
-  }
-  else if (ooc_message.startsWith("/save_ooc"))
-  {
-    QString log_filename = save_ooc_chatlog();
-    switch (ooc_result)
-    {
-      case ERR_UNKNOWN:
-        append_server_chatmessage("CLIENT", tr("An unknown error occurred while saving the chatlog."), "1");
-        ui_ooc_chat_message->clear();
-        break;
-      case ERR_CREATELOG:
-        append_server_chatmessage("CLIENT", tr("Couldn't create the log file, please check folder permissions."), "1");
-        ui_ooc_chat_message->clear();
-        break;
-      case ERR_CREATEDIR:
-        append_server_chatmessage("CLIENT", tr("Unable to create log directory, please check folder permissions."), "1");
-        ui_ooc_chat_message->clear();
-        break;
-      case SUCCESS:
-        append_server_chatmessage("CLIENT", tr("The OOC chatlog has been saved."), "1");
+      case 3: // SUCCESS
+        append_server_chatmessage("CLIENT", tr("The requested chatlog has been saved."), "1");
         ui_ooc_chat_message->clear();
         break;
     }
