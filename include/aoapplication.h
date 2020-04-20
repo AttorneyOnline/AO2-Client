@@ -188,8 +188,10 @@ public:
   int get_max_log_size();
 
   // Gets the punctuation delay modifier
-  int get_pundelay();
+  bool get_pundelay();
 
+  //Gets whether slower text speed is enabled
+  bool get_slower_blips();
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();

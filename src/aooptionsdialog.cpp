@@ -189,16 +189,23 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_net_divider->setFrameShadow(QFrame::Sunken);
   ui_gameplay_form->setWidget(9, QFormLayout::FieldRole, ui_net_divider);
 
+  ui_slower_blips_lb = new QLabel(ui_form_layout_widget);
+  ui_slower_blips_lb->setText(tr("Slower text speed:"));
+  ui_slower_blips_lb->setToolTip(tr("Set the text speed to be the same as the AA games."));
+  ui_slower_blips_cb = new QCheckBox(ui_form_layout_widget);
+  ui_slower_blips_cb->setChecked(p_ao_app->get_pundelay());
+  ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_slower_blips_cb);
+  ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_slower_blips_lb);
+
   ui_pun_delay = new QLabel(ui_form_layout_widget);
-  ui_pun_delay->setText(tr("Punctation Delay:"));
+  ui_pun_delay->setText(tr("Blip delay on punctuations:"));
   ui_pun_delay->setToolTip(tr("Punctation delay modifier."
-                              " Set it to 1 for no additional delay."));
-  ui_pun_delay_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_pun_delay_spinbox->setMinimum(1);
-  ui_pun_delay_spinbox->setMaximum(3);
-  ui_pun_delay_spinbox->setValue(p_ao_app->get_pundelay());
-  ui_gameplay_form->setWidget(10, QFormLayout::FieldRole, ui_pun_delay_spinbox);
-  ui_gameplay_form->setWidget(10, QFormLayout::LabelRole, ui_pun_delay);
+                              " Enable it for the blips to slow down on punctuations."));
+  ui_pun_delay_cb = new QCheckBox(ui_form_layout_widget);
+  ui_pun_delay_cb->setChecked(p_ao_app->get_pundelay());
+  ui_gameplay_form->setWidget(11, QFormLayout::FieldRole, ui_pun_delay_cb);
+  ui_gameplay_form->setWidget(11, QFormLayout::LabelRole, ui_pun_delay);
+
 
   // Here we start the callwords tab.
   ui_callwords_tab = new QWidget();
@@ -655,8 +662,8 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("discord", ui_discord_cb->isChecked());
   configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
   configini->setValue("language", ui_language_combobox->currentText().left(2));
-  configini->setValue("punctuation_delay", ui_pun_delay_spinbox->value());
-  configini->setValue("keep_evidence", ui_keepevi_cb->isChecked());
+  configini->setValue("punctuation_delay", ui_pun_delay_cb->isChecked());
+  configini->setValue("slower_blips", ui_slower_blips_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (!callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |

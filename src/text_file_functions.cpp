@@ -46,13 +46,18 @@ int AOApplication::get_max_log_size()
   return result;
 }
 
-int AOApplication::get_pundelay()
+bool AOApplication::get_slower_blips()
 {
-  int result = configini->value("punctuation_delay", 2).toInt();
-  if (result < 1 || result > 3) {
-    result = 2;
-  }
-  return result;
+  QString result =
+          configini->value("slower_blips", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::get_pundelay()
+{
+  QString result =
+          configini->value("punctuation_delay", "false").value<QString>();
+  return result.startsWith("true");
 }
 
 bool AOApplication::get_log_goes_downwards()

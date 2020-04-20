@@ -52,8 +52,9 @@ private:
   QLabel *ui_length_lbl;
   QSpinBox *ui_length_spinbox;
   QLabel *ui_pun_delay;
-  QSpinBox *ui_pun_delay_spinbox;
-  QFrame *ui_log_names_divider;
+  QCheckBox *ui_pun_delay_cb;
+  QLabel *ui_slower_blips_lb;
+  QCheckBox *ui_slower_blips_cb;
   QLineEdit *ui_username_textbox;
   QLabel *ui_username_lbl;
   QLabel *ui_showname_lbl;

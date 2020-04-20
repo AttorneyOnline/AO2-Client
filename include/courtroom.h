@@ -288,7 +288,8 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {30, 40, 50, 60, 75, 100, 120};
+  int message_display_speed_slow[7] = {30, 40, 50, 60, 75, 100, 120};
+  int message_display_speed[7] = {10, 20, 30, 40, 50, 60, 75};
 
   // This is for checking if the character should start talking again
   // when an inline blue text ends.
@@ -388,8 +389,8 @@ private:
   const QString punctuation_chars = ".,?!:;";
 
   // amount by which we multiply the delay when we parse punctuation chars
-  int punctuation_modifier = 2;
-
+  int punctuation_modifier = 0;
+  bool slower_blips = false;
   // character id, which index of the char_list the player is
   int m_cid = -1;
   // cid and this may differ in cases of ini-editing

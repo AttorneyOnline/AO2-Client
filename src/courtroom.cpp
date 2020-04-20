@@ -1761,7 +1761,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_objection->stop();
   // ui_vp_player_char->stop();
   chat_tick_timer->stop();
-  if (keep_evidence_display)
+  if (!keep_evidence_display)
     ui_vp_evidence_display->reset();
 
   chatmessage_is_empty =
@@ -2769,7 +2769,10 @@ void Courtroom::start_chat_ticking()
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
-  chat_tick_timer->start(message_display_speed[current_display_speed]);
+  if (slower_blips)
+    chat_tick_timer->start(message_display_speed_slow[current_display_speed]);
+  else
+    chat_tick_timer->start(message_display_speed[current_display_speed]);
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_gender = ao_app->get_gender(f_char);
@@ -2793,6 +2796,8 @@ void Courtroom::chat_tick()
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
   int msg_delay = message_display_speed[current_display_speed];
+  if (slower_blips)
+      msg_delay = message_display_speed_slow[current_display_speed];
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
 
@@ -2829,7 +2834,7 @@ void Courtroom::chat_tick()
 
     f_character = f_character.toHtmlEscaped();
     if (punctuation_chars.contains(f_character)) {
-      msg_delay *= punctuation_modifier;
+      msg_delay *= punctuation_modifier + 1; // Since we are handling a boolean, if its true its double (1 + 1) or false (1 + 0).
       // ui_vp_message->insertPlainText(f_character);
     }
 
