@@ -259,7 +259,7 @@ public:
     SUCCESS
   };
 
-  // Attempts to save a chatlog to a file, returns the result as an integer corresponding to
+  // Attempts to save a chatlog to a file, returns the result as an instance of
   // the above enumeration. is_ooc tells it which log to save - if true, save OOC, if false, save IC.
   save_log_result save_chatlog(bool is_ooc);
 

@@ -731,7 +731,7 @@ int AOApplication::get_saved_ooc_format()
   return result;
 }
 
-int Courtroom::save_chatlog(bool is_ooc)
+Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
 {
     QString log_type;
     if (!is_ooc)
@@ -762,7 +762,6 @@ int Courtroom::save_chatlog(bool is_ooc)
       return result;
     }
 
-    file.open(QIODevice::WriteOnly);
     QTextStream out(&file);
     out << "#####" << '\n' << "Saved " + log_type + " history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
     if (!is_ooc) 

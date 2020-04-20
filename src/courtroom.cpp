@@ -3240,22 +3240,22 @@ void Courtroom::on_ooc_return_pressed()
       is_ooc = false;
     else
       is_ooc = true;
-    int result = save_chatlog(is_ooc);
+    save_log_result result = save_chatlog(is_ooc);
     switch (result)
     {
-      case 0: // ERR_UNKNOWN
+      case ERR_UNKNOWN:
         append_server_chatmessage("CLIENT", tr("An unknown error occurred while saving the chatlog."), "1");
         ui_ooc_chat_message->clear();
         break;
-      case 1: // ERR_CREATELOG
+      case ERR_CREATELOG:
         append_server_chatmessage("CLIENT", tr("Couldn't create the log file, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
-      case 2: // ERR_CREATEDIR
+      case ERR_CREATEDIR:
         append_server_chatmessage("CLIENT", tr("Unable to create log directory, please check folder permissions."), "1");
         ui_ooc_chat_message->clear();
         break;
-      case 3: // SUCCESS
+      case SUCCESS:
         append_server_chatmessage("CLIENT", tr("The requested chatlog has been saved."), "1");
         ui_ooc_chat_message->clear();
         break;
