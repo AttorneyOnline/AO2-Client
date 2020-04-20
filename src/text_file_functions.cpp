@@ -718,7 +718,16 @@ QString AOApplication::get_casing_can_host_cases()
 
 int AOApplication::get_saved_ooc_format()
 {
-  int result = configini->value("saved_ooc_format", 0).toInt();
+  QString value_string = configini->value("saved_ooc_format", "Plain text (default)").value<QString>();
+  format_ooc result;
+  if (value_string == "Raw HTML")
+    result = HTML;
+  #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    else if (value_string == "Markdown")
+      result = MARKDOWN;
+  #endif
+  else
+    result = PLAINTEXT;
   return result;
 }
 

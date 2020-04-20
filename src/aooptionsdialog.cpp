@@ -547,7 +547,7 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("discord", ui_discord_cb->isChecked());
     configini->setValue("shakeandflash", ui_epilepsy_cb->isChecked());
     configini->setValue("language", ui_language_combobox->currentText().left(2));
-    configini->setValue("saved_ooc_format", QString::number(ui_ooc_format_combobox->currentIndex()));
+    configini->setValue("saved_ooc_format", ui_ooc_format_combobox->currentText());
 
     QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 

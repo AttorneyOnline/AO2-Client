@@ -215,6 +215,16 @@ public:
   //Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
 
+  enum format_ooc {
+    PLAINTEXT,
+    HTML,
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+      MARKDOWN // only works with Qt 5.14+
+    #endif
+  };
+  // Get the format to use for saved OOC logs.
+  int get_saved_ooc_format();
+
   //Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
@@ -345,8 +355,6 @@ public:
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
-  // Get the format to use for saved OOC logs. 0 = Plaintext, 1 = raw HTML, 2 = Markdown
-  int get_saved_ooc_format();
 
 private:
   const int RELEASE = 2;
