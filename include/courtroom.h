@@ -261,7 +261,7 @@ public:
 
   // Attempts to save a chatlog to a file, returns the result as an integer corresponding to
   // the above enumeration. is_ooc tells it which log to save - if true, save OOC, if false, save IC.
-  int save_chatlog(bool is_ooc);
+  save_log_result save_chatlog(bool is_ooc);
 
   QVector<chatlogpiece> ic_chatlog_history;
 
