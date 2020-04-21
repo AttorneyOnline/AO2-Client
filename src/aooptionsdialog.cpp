@@ -200,7 +200,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_ooc_format_combobox = new QComboBox(ui_form_layout_widget);
     ui_ooc_format_combobox->addItem("Plain text (default)");
     ui_ooc_format_combobox->addItem("Raw HTML");
-    #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    #ifdef MARKDOWN_SUPPORTED
       ui_ooc_format_combobox->addItem("Markdown"); // Qt 5.14+ only
     #endif
     ui_ooc_format_combobox->setCurrentIndex(p_ao_app->get_saved_ooc_format());

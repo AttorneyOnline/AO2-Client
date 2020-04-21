@@ -716,19 +716,17 @@ QString AOApplication::get_casing_can_host_cases()
   return result;
 }
 
-int AOApplication::get_saved_ooc_format()
+AOApplication::format_ooc AOApplication::get_saved_ooc_format()
 {
   QString value_string = configini->value("saved_ooc_format", "Plain text (default)").value<QString>();
-  format_ooc result;
   if (value_string == "Raw HTML")
-    result = HTML;
-  #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    return HTML;
+  #ifdef MARKDOWN_SUPPORTED
     else if (value_string == "Markdown")
-      result = MARKDOWN;
+      return MARKDOWN;
   #endif
   else
-    result = PLAINTEXT;
-  return result;
+    return PLAINTEXT;
 }
 
 Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
@@ -771,7 +769,7 @@ Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
         case 1: // raw HTML
           out << ui_server_chatlog->toHtml();
           break;
-        #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        #ifdef MARKDOWN_SUPPORTED
           case 2: // Markdown (Qt 5.14+ only)
             out << ui_server_chatlog->toMarkdown();
             break;

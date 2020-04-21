@@ -215,15 +215,21 @@ public:
   //Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
 
+  #ifndef MARKDOWN_SUPPORTED
+  #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  #define MARKDOWN_SUPPORTED
+  #endif
+  #endif
+
   enum format_ooc {
     PLAINTEXT,
     HTML,
-    #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    #ifdef MARKDOWN_SUPPORTED
       MARKDOWN // only works with Qt 5.14+
     #endif
   };
   // Get the format to use for saved OOC logs.
-  int get_saved_ooc_format();
+  format_ooc get_saved_ooc_format();
 
   //Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
