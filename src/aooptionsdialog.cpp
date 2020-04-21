@@ -199,7 +199,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_pun_delay = new QLabel(ui_form_layout_widget);
   ui_pun_delay->setText(tr("Blip delay on punctuations:"));
-  ui_pun_delay->setToolTip(tr("Punctation delay modifier."
+  ui_pun_delay->setToolTip(tr("Punctuation delay modifier."
                               " Enable it for the blips to slow down on punctuations."));
   ui_pun_delay_cb = new QCheckBox(ui_form_layout_widget);
   ui_pun_delay_cb->setChecked(p_ao_app->get_pundelay());
