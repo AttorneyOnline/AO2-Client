@@ -978,6 +978,8 @@ void Courtroom::set_character(int char_id)
       ui_custom_objection->show();
     else
       ui_custom_objection->hide();
+    if (m_cid != -1) // there is no name at char_list -1, and we crash if we try to find one
+      ui_ic_chat_name->setPlaceholderText(char_list.at(char_id).name);
 }
 
 void Courtroom::enter_courtroom(int p_cid)
