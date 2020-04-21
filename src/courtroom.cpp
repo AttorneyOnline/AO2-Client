@@ -3877,6 +3877,24 @@ void Courtroom::on_reload_theme_clicked()
   detect_fallback_text();
   enter_courtroom(m_cid);
 
+  switch (objection_state)
+  {
+    case 1:
+      ui_hold_it->set_image("holdit_selected.png");
+      break;
+    case 2:
+      ui_objection->set_image("objection_selected.png");
+      break;
+    case 3:
+      ui_take_that->set_image("takethat_selected.png");
+      break;
+    case 4:
+      ui_custom_objection->set_image("custom_selected.png");
+      break;
+    default:
+      break;
+  }
+
   anim_state = 4;
   text_state = 3;
 }
