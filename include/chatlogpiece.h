@@ -11,14 +11,14 @@ public:
   chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song);
   chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song, QDateTime p_datetime);
 
-  QString get_name();
-  QString get_showname();
-  QString get_message();
+  QString get_name() const;
+  QString get_showname() const;
+  QString get_message() const;
   bool get_is_song();
-  QDateTime get_datetime();
-  QString get_datetime_as_string();
+  QDateTime get_datetime() const;
+  QString get_datetime_as_string() const;
 
-  QString get_full();
+  QString get_full() const;
 
 private:
   QString name;

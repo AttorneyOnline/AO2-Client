@@ -27,22 +27,22 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname, QString p_message
   datetime = p_datetime.toUTC();
 }
 
-QString chatlogpiece::get_name()
+QString chatlogpiece::get_name() const
 {
   return name;
 }
 
-QString chatlogpiece::get_showname()
+QString chatlogpiece::get_showname() const
 {
   return showname;
 }
 
-QString chatlogpiece::get_message()
+QString chatlogpiece::get_message() const
 {
   return message;
 }
 
-QDateTime chatlogpiece::get_datetime()
+QDateTime chatlogpiece::get_datetime() const
 {
   return datetime;
 }
@@ -52,13 +52,13 @@ bool chatlogpiece::get_is_song()
   return is_song;
 }
 
-QString chatlogpiece::get_datetime_as_string()
+QString chatlogpiece::get_datetime_as_string() const
 {
   return datetime.toString();
 }
 
 
-QString chatlogpiece::get_full()
+QString chatlogpiece::get_full() const
 {
   QString full = "[";
 

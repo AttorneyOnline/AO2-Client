@@ -738,8 +738,8 @@ Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
       log_type = "IC";
     else
       log_type = "OOC";
-    QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":","."); // colons are illegal in Windows filenames, and spaces are for chumps
-    QString logfile = "Log" + log_type + '-' + dtstamp_clean +  ".log";
+    QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":",".").replace("GMT",""); // colons are illegal in Windows filenames, and spaces are for chumps
+    QString logfile = "Log-" + dtstamp_clean + log_type + ".log";
     save_log_result result = ERR_UNKNOWN;
 
     QDir logfolder("logs");
@@ -766,7 +766,7 @@ Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
     out << "#####" << '\n' << "Saved " + log_type + " history from " << ao_app->current_server_name << " (" << ao_app->current_server_address << ") on " << QDateTime::currentDateTimeUtc().toString() << '\n' << "#####" << '\n';
     if (!is_ooc) 
     {
-      foreach (chatlogpiece item, ic_chatlog_history) 
+      for (const chatlogpiece &item : ic_chatlog_history) 
       {
         out << item.get_full() << '\n';
       }
