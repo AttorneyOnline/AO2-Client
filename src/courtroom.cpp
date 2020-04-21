@@ -3235,11 +3235,7 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if (ooc_message.startsWith("/save_ic") || ooc_message.startsWith("/save_ooc"))
   {
-    bool is_ooc;
-    if (ooc_message.startsWith("/save_ic"))
-      is_ooc = false;
-    else
-      is_ooc = true;
+    bool is_ooc = !ooc_message.startsWith("/save_ic");
     save_log_result result = save_chatlog(is_ooc);
     switch (result)
     {

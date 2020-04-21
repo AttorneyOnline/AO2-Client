@@ -733,14 +733,9 @@ int AOApplication::get_saved_ooc_format()
 
 Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
 {
-    QString log_type;
-    if (!is_ooc)
-      log_type = "IC";
-    else
-      log_type = "OOC";
+    QString log_type = is_ooc ? "OOC" : "IC";
     QString dtstamp_clean = QDateTime::currentDateTimeUtc().toString().replace(" ","-").replace(":",".").replace("GMT",""); // colons are illegal in Windows filenames, and spaces are for chumps
     QString logfile = "Log-" + dtstamp_clean + log_type + ".log";
-    save_log_result result = ERR_UNKNOWN;
 
     QDir logfolder("logs");
     if (!logfolder.exists())
@@ -749,8 +744,7 @@ Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
       QDir::current().mkdir(logfolder.dirName());
       if (!logfolder.exists()) { // check again to be sure the folder was created
         qDebug() << "W: attempted to create dir ./logs unsuccessfully";
-        result = ERR_CREATEDIR;
-        return result;
+        return ERR_CREATEDIR;
       }
     }
 
@@ -758,8 +752,7 @@ Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
       qDebug() << "E: could not create log file (" << file.errorString() << ")";
-      result = ERR_CREATELOG;
-      return result;
+      return ERR_CREATELOG;
     }
 
     QTextStream out(&file);
@@ -790,9 +783,7 @@ Courtroom::save_log_result Courtroom::save_chatlog(bool is_ooc)
     }
 
     file.close();
-    if (file_exists(file.fileName()))
-      result = SUCCESS;
-    else
-      result = ERR_UNKNOWN;
-    return result;
+    if (!file_exists(file.fileName()))
+      return ERR_UNKNOWN;
+    return SUCCESS;
 }
