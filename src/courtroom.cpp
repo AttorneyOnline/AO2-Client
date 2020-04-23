@@ -2169,8 +2169,8 @@ void Courtroom::handle_chatmessage_3()
         ui_ic_chatlog->textCursor().insertHtml("<br>");
       else
         first_message_sent = true;
-
-      ui_ic_chatlog->textCursor().insertHtml("<b>" + m_chatmessage[CHAR_NAME] +
+      QString char_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
+      ui_ic_chatlog->textCursor().insertHtml("<b>" + char_name +
                                              ": </b>");
     }
     else {
@@ -2512,9 +2512,9 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
  * \param p_name The name of the character/entity who sent said text
  * \param is_songchange Whether we are appending a song entry
  * \param force_filter If we are sending plain text and we want to force the
- * filtering regardless of its status (e.g chat entry, song change etc) \param
- * skip_filter If we are sending appending text such as html so we skip the
- * filter \param chat_color The color of the message sent
+ * \param filtering regardless of its status (e.g chat entry, song change etc)
+ * \param skip_filter If we are sending appending text such as html so we skip the
+ * \param filter chat_color The color of the message sent
  */
 
 void Courtroom::append_ic_text(QString p_text, QString p_name,
