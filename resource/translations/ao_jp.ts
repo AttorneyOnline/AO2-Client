@@ -650,12 +650,12 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="271"/>
         <source>Pink</source>
-        <translation type="unfinished"></translation>
+        <translation>ピンク</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="272"/>
         <source>Cyan</source>
-        <translation type="unfinished"></translation>
+        <translation>シアン</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="295"/>
@@ -903,7 +903,7 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/lobby.cpp" line="29"/>
         <source>Name</source>
-        <translation type="unfinished">名前</translation>
+        <translation>名前</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="82"/>
@@ -958,7 +958,7 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../../src/debug_functions.cpp" line="26"/>
         <source>Notice</source>
-        <translation type="unfinished"></translation>
+        <translation>通知</translation>
     </message>
 </context>
 </TS>
