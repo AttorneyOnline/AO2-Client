@@ -183,52 +183,52 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="109"/>
         <source>Gives the default value for the in-game &apos;Custom shownames&apos; checkbox, which in turn determines whether the client should display custom in-character names.</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzt den Standardwerd für den eigenen Anzeigenamen.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="305"/>
         <source>Sets the default volume for music.</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardlautstärke für die Musik.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="320"/>
         <source>Sets the default volume for SFX sounds, like interjections or other character sound effects.</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardlautstärke für Soundeffekte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="568"/>
         <source>IC Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="581"/>
         <source>Colorful IC log:</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbiges Log:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="583"/>
         <source>Enables colored text in the log.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviert farbigen Text im Log.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="594"/>
         <source>Only inline coloring:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur in-Zeilen Farben:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="596"/>
         <source>Only inline coloring will be shown such as &lt;&gt;,|| etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur die in-Zeilen Farben wie &lt;&gt;,|| etc. werden gezeigt.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="606"/>
         <source>Mirror IC log:</source>
-        <translation type="unfinished"></translation>
+        <translation>Log spiegeln:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="608"/>
         <source>IC log will mirror the IC box. Meaning that if somebody gets interrupted nobody will know what they wanted to say. Enable for a more realistic experience.</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Log spiegelt die Nachrichten. Bedeutet dass wenn jemand unterbrochen wird, kann man nicht sehen was derjenige sagen wollte. Für ein realistischeres Spielerlebnis.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="620"/>
@@ -312,22 +312,22 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="193"/>
         <source>Slower text speed:</source>
-        <translation type="unfinished"></translation>
+        <translation>Langsamerer Text:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="194"/>
         <source>Set the text speed to be the same as the AA games.</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzt den Text auf die gleiche Geschwindigkeit wie in den AA Spielen.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="201"/>
         <source>Blip delay on punctuations:</source>
-        <translation type="unfinished"></translation>
+        <translation>Blip Pausen bei Satzzeichen:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="202"/>
         <source>Punctuation delay modifier. Enable it for the blips to slow down on punctuations.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktivieren damit die Blips bei Satzzeichen langsamer werden.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="212"/>
@@ -591,7 +591,7 @@ Grund: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="160"/>
         <source>OOC Message</source>
-        <translation type="unfinished"></translation>
+        <translation>OOC Nachricht</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="164"/>
@@ -728,7 +728,7 @@ Grund: </translation>
         <location filename="../../src/courtroom.cpp" line="1265"/>
         <location filename="../../src/courtroom.cpp" line="3492"/>
         <source>You were granted the Disable Modcalls button.</source>
-        <translation type="unfinished"></translation>
+        <translation>Du hast nun den &quot;Modcall deaktivieren&quot; Knopf.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3310"/>
@@ -738,7 +738,7 @@ Grund: </translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="3739"/>
         <source>Too many arguments to save a case! You only need a filename without extension and the courtroom status.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zu viele Argumente zum Speichern! Bitte gib nur den Dateinamen ohne Erweiterung und den Saalstatus an.</translation>
     </message>
     <message>
         <source>%1 has played a song: %2</source>
@@ -1039,7 +1039,7 @@ Hast du ALLES von tiny.cc/getao heruntergeladen und entpackt, auch den großen &
     <message>
         <location filename="../../src/lobby.cpp" line="279"/>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Cents02&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy, Raidensnake</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;Der Gerichtsdrama Simulator&lt;p&gt;&lt;b&gt;Quelltext:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Leitende Entwicklung:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Cents02&lt;p&gt;&lt;b&gt;Danksagungen:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy, Raidensnake</translation>
     </message>
     <message>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</source>
