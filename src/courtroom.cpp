@@ -1479,7 +1479,7 @@ void Courtroom::on_chat_return_pressed()
         f_emote_mod = 2;
     }
   }
-  else if (ui_pre->isChecked() and !ui_pre_non_interrupt->isChecked()) {
+  else if (ui_pre->isChecked() && !ui_pre_non_interrupt->isChecked()) {
     if (f_emote_mod == 0)
       f_emote_mod = 1;
     else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
@@ -2300,7 +2300,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
         f_character = "&gt;";
     }
     // Escape character.
-    if (f_character == "\\" and !ic_next_is_not_special) {
+    if (f_character == "\\" && !ic_next_is_not_special) {
       ic_next_is_not_special = true;
       p_text.remove(trick_check_pos, 1);
       f_character = "";
@@ -2316,17 +2316,17 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
       p_text.remove(trick_check_pos, 1);
       f_character = "";
     }
-    else if (f_character == "$" and !ic_next_is_not_special) {
+    else if (f_character == "$" && !ic_next_is_not_special) {
       p_text.remove(trick_check_pos, 1);
       f_character = "";
     }
-    else if (f_character == "@" and !ic_next_is_not_special) {
+    else if (f_character == "@" && !ic_next_is_not_special) {
       p_text.remove(trick_check_pos, 1);
       f_character = "";
     }
 
     // Orange inline colourisation.
-    else if (f_character == "|" and !ic_next_is_not_special) {
+    else if (f_character == "|" && !ic_next_is_not_special) {
       if (!ic_colour_stack.empty()) {
         if (ic_colour_stack.top() == INLINE_ORANGE) {
           ic_colour_stack.pop();
@@ -2345,12 +2345,12 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
     }
 
     // Blue inline colourisation.
-    else if (f_character == "(" and !ic_next_is_not_special) {
+    else if (f_character == "(" && !ic_next_is_not_special) {
       ic_colour_stack.push(INLINE_BLUE);
       if (!colorf_iclog)
         trick_check_pos++;
     }
-    else if (f_character == ")" and !ic_next_is_not_special and
+    else if (f_character == ")" && !ic_next_is_not_special &&
              !ic_colour_stack.empty()) {
       if (ic_colour_stack.top() == INLINE_BLUE) {
         // ic_colour_stack.pop();
@@ -2364,12 +2364,12 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
     }
 
     // Grey inline colourisation.
-    else if (f_character == "[" and !ic_next_is_not_special) {
+    else if (f_character == "[" && !ic_next_is_not_special) {
       ic_colour_stack.push(INLINE_GREY);
       if (!colorf_iclog)
         trick_check_pos++;
     }
-    else if (f_character == "]" and !ic_next_is_not_special and
+    else if (f_character == "]" && !ic_next_is_not_special &&
              !ic_colour_stack.empty()) {
       if (ic_colour_stack.top() == INLINE_GREY) {
         // ic_colour_stack.pop();
@@ -2383,7 +2383,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
     }
 
     // Green inline colourisation.
-    else if (f_character == "`" and !ic_next_is_not_special) {
+    else if (f_character == "`" && !ic_next_is_not_special) {
       if (!ic_colour_stack.empty()) {
         if (ic_colour_stack.top() == INLINE_GREEN) {
           ic_colour_stack.pop();
@@ -2844,12 +2844,12 @@ void Courtroom::chat_tick()
       if (mirror_iclog)
         ui_ic_chatlog->insertPlainText(" ");
     }
-    else if (f_character == "@" and !next_character_is_not_special) {
+    else if (f_character == "@" && !next_character_is_not_special) {
       this->doScreenShake();
       formatting_char = true;
     }
 
-    else if (f_character == "^" and !next_character_is_not_special) {
+    else if (f_character == "^" && !next_character_is_not_special) {
       this->doRealization();
 
       formatting_char = true;
@@ -2871,30 +2871,30 @@ void Courtroom::chat_tick()
     }
 
     // Text speed modifier.
-    else if (f_character == "{" and !next_character_is_not_special) {
+    else if (f_character == "{" && !next_character_is_not_special) {
       // ++, because it INCREASES delay!
       current_display_speed++;
       msg_delay++;
       formatting_char = true;
     }
-    else if (f_character == "}" and !next_character_is_not_special) {
+    else if (f_character == "}" && !next_character_is_not_special) {
       current_display_speed--;
       msg_delay++;
       formatting_char = true;
     }
 
-    else if (f_character == "@" and !next_character_is_not_special) {
+    else if (f_character == "@" && !next_character_is_not_special) {
       this->doScreenShake();
       formatting_char = true;
     }
 
-    else if (f_character == "$" and !next_character_is_not_special) {
+    else if (f_character == "$" && !next_character_is_not_special) {
       this->doRealization();
       formatting_char = true;
     }
 
     // Orange inline colourisation.
-    else if (f_character == "|" and !next_character_is_not_special) {
+    else if (f_character == "|" && !next_character_is_not_special) {
       if (!inline_colour_stack.empty()) {
         if (inline_colour_stack.top() == INLINE_ORANGE) {
           inline_colour_stack.pop();
@@ -2911,7 +2911,7 @@ void Courtroom::chat_tick()
     }
 
     // Blue inline colourisation.
-    else if (f_character == "(" and
+    else if (f_character == "(" &&
              !next_character_is_not_special) // EXAMPLE HERE
     {
       inline_colour_stack.push(INLINE_BLUE);
@@ -2927,13 +2927,13 @@ void Courtroom::chat_tick()
 
       // Here, we check if the entire message is blue.
       // If it isn't, we stop talking.
-      if (!entire_message_is_blue and anim_state != 4) {
+      if (!entire_message_is_blue && anim_state != 4) {
         f_char = m_chatmessage[CHAR_NAME];
         QString f_emote = m_chatmessage[EMOTE];
         ui_vp_player_char->play_idle(f_char, f_emote);
       }
     }
-    else if (f_character == ")" and !next_character_is_not_special and
+    else if (f_character == ")" && !next_character_is_not_special &&
              !inline_colour_stack.empty()) {
       if (inline_colour_stack.top() == INLINE_BLUE) {
         inline_colour_stack.pop();
@@ -2954,7 +2954,7 @@ void Courtroom::chat_tick()
           if (!entire_message_is_blue) {
             // We should only go back to talking if we're out of inline blues,
             // not during a non. int. pre, and not on the last character.
-            if (inline_blue_depth == 0 and anim_state != 4 and
+            if (inline_blue_depth == 0 && anim_state != 4 &&
                 !(tick_pos + 1 >= f_message.size())) {
               QString f_char = char_name;
               f_char = m_chatmessage[CHAR_NAME];
@@ -2971,7 +2971,7 @@ void Courtroom::chat_tick()
     }
 
     // Grey inline colourisation.
-    else if (f_character == "[" and !next_character_is_not_special) {
+    else if (f_character == "[" && !next_character_is_not_special) {
       inline_colour_stack.push(INLINE_GREY);
       ui_vp_message->insertHtml("<font color=\"" +
                                 get_text_color("_inline_grey").name() + "\">" +
@@ -2981,7 +2981,7 @@ void Courtroom::chat_tick()
                                   get_text_color("_inline_grey").name() +
                                   "\">" + f_character + "</font>");
     }
-    else if (f_character == "]" and !next_character_is_not_special and
+    else if (f_character == "]" && !next_character_is_not_special &&
              !inline_colour_stack.empty()) {
       if (inline_colour_stack.top() == INLINE_GREY) {
         inline_colour_stack.pop();
@@ -3000,7 +3000,7 @@ void Courtroom::chat_tick()
     }
 
     // Green inline colourisation.
-    else if (f_character == "`" and !next_character_is_not_special) {
+    else if (f_character == "`" && !next_character_is_not_special) {
       if (!inline_colour_stack.empty()) {
         if (inline_colour_stack.top() == INLINE_GREEN) {
           inline_colour_stack.pop();
