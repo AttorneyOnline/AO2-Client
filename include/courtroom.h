@@ -29,6 +29,7 @@
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QComboBox>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QFileDialog>
 #include <QFont>
@@ -256,6 +257,10 @@ public:
   void check_connection_received();
 
   void refresh_iclog(bool skiplast);
+
+  // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
+  void truncate_label_text(QCheckBox* p_checkbox, QString p_identifier);
+  void truncate_label_text(QLabel* p_label, QString p_identifier);
 
   ~Courtroom();
 
