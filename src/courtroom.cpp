@@ -840,8 +840,6 @@ void Courtroom::set_widgets()
   truncate_label_text(ui_sfx_label, "sfx_label");
   truncate_label_text(ui_blip_label, "blip_label");
 
-  // Test of automatic stoppage when given a wrong widget
-  truncate_label_text(ui_log_limit_spinbox, "log_limit_spinbox");
 }
 
 void Courtroom::set_fonts()
