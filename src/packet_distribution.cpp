@@ -632,6 +632,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "KK") {
     if (courtroom_constructed && f_contents.size() >= 1) {
+      const QSignalBlocker blocker(net_manager->server_socket);
       call_notice(tr("You have been kicked from the server.\nReason: %1")
                       .arg(f_contents.at(0)));
       construct_lobby();
@@ -640,7 +641,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "KB") {
     if (courtroom_constructed && f_contents.size() >= 1) {
+      const QSignalBlocker blocker(net_manager->server_socket);
       call_notice(tr("You have been banned from the server.\nReason: %1")
+                      .arg(f_contents.at(0)));
+      construct_lobby();
+      destruct_courtroom();
+    }
+  }
+  else if (header == "DC") {
+    if (courtroom_constructed && f_contents.size() >= 1) {
+      const QSignalBlocker blocker(net_manager->server_socket);
+      call_notice(tr("Disconnected from server.\nMore info: %1")
                       .arg(f_contents.at(0)));
       construct_lobby();
       destruct_courtroom();
