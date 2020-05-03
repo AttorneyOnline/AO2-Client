@@ -1,8 +1,8 @@
 #ifndef FILE_FUNCTIONS_H
 #define FILE_FUNCTIONS_H
 
-#include <QFileInfo>
 #include <QDir>
+#include <QFileInfo>
 #include <QString>
 
 bool file_exists(QString file_path);

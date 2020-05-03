@@ -157,19 +157,19 @@ Areas can be listed by clicking the A/M button (or `/switch_am`). The statuses o
 	- `ic_chat_name`, which is an input field for your custom showname. Needs the same stuff.
 	- `ao2_ic_chat_name`, which is the same as above, but comes into play when the background has a desk.
 		- Further comments on this: all `ao2_` UI elements come into play when the background has a desk. However, in AO2 nowadays, it's customary for every background to have a desk, even if it's just an empty gif. So you most likely have never seen the `ao2_`-less UI elements ever come into play, unless someone mis-named a desk or something.
-	- `showname_enable` is a tickbox that toggles whether you should see shownames or not. This does not influence whether you can USE custom shownames or not, so you can have it off, while still showing a custom showname to everyone else. Needs X, Y, width, height as usual.
+	- `showname_enable` is a checkbox that toggles whether you should see shownames or not. This does not influence whether you can USE custom shownames or not, so you can have it off, while still showing a custom showname to everyone else. Needs X, Y, width, height as usual.
 	- `settings` is a plain button that takes up the OS's looks, like the 'Call mod' button. Takes the same arguments as above.
 		- You can also just type `/settings` in OOC.
 	- `char_search` is a text input box on the character selection screen, which allows you to filter characters down to name. Needs the same arguments.
-	- `char_passworded` is a tickbox, that when ticked, shows all passworded characters on the character selection screen. Needs the same as above.
-	- `char_taken` is another tickbox, that does the same, but for characters that are taken.
+	- `char_passworded` is a checkbox, that when ticked, shows all passworded characters on the character selection screen. Needs the same as above.
+	- `char_taken` is another checkbox, that does the same, but for characters that are taken.
 	- `not_guilty` is a button similar to the CE / WT buttons, that if pressed, plays the Not Guilty verdict animation. Needs the same arguments.
 	- `guilty` is similar to `not_guilty`, but for the Guilty verdict.
 	- `pair_button` is a toggleable button, that shows and hides the pairing list and the offset spinbox. Works similarly to the mute button.
 	- `pair_list` is a list of all characters in alphabetical order, shown when the user presses the Pair button. If a character is clicked on it, it is selected as the character the user wants to pair up with.
 	- `pair_offset_spinbox` is a spinbox that allows the user to choose between offsets of -100% to 100%.
 	- `switch_area_music` is a button with the text 'A/M', that toggles between the music list and the areas list. Though the two are different, they are programmed to take the same space.
-	- `pre_no_interrupt` is a tickbox with the text 'No Intrpt', that toggles whether preanimations should delay the text or not.
+	- `pre_no_interrupt` is a checkbox with the text 'No Intrpt', that toggles whether preanimations should delay the text or not.
 	- `area_free_color` is a combination of red, green, and blue values ranging from 0 to 255. This determines the colour of the area in the Area list if it's free, and has a status of `IDLE`.
 	- `area_lfp_color` determines the colour of the area if its status is `LOOKING-FOR-PLAYERS`.
 	- `area_casing_color` determines the colour of the area if its status is `CASING`.
@@ -180,7 +180,7 @@ Areas can be listed by clicking the A/M button (or `/switch_am`). The statuses o
 	- `ooc_default_color` determines the colour of the username in the OOC chat if the message doesn't come from the server.
 	- `ooc_server_color` determines the colour of the username if the message arrived from the server.
 	- `casing_button` is a button with the text 'Casing' that when clicked, brings up the Case Announcements dialog. You can give the case a name, and tick whom do you want to alert. You need to be a CM for it to go through. Only people who have at least one of the roles ticked will get the alert.
-	- `casing` is a tickbox with the text 'Casing'. If ticked, you will get the case announcements alerts you should get, in accordance to the above. In the settings, you can change your defaults on the 'Casing' tab. (That's a buncha things titled 'Casing'!)
+	- `casing` is a checkbox with the text 'Casing'. If ticked, you will get the case announcements alerts you should get, in accordance to the above. In the settings, you can change your defaults on the 'Casing' tab. (That's a buncha things titled 'Casing'!)
 
 ---
 

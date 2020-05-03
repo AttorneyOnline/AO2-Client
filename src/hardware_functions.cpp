@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#if (defined (_WIN32) || defined (_WIN64))
+#if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
 
 static DWORD dwVolSerial;
@@ -10,17 +10,18 @@ static BOOL bIsRetrieved;
 
 QString get_hdid()
 {
-  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), nullptr, 0, &dwVolSerial, nullptr, nullptr, nullptr, 0);
+  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), nullptr, 0, &dwVolSerial,
+                                      nullptr, nullptr, nullptr, 0);
 
   if (bIsRetrieved)
     return QString::number(dwVolSerial, 16);
   else
-    //a totally random string
-    //what could possibly go wrong
+    // a totally random string
+    // what could possibly go wrong
     return "gxsps32sa9fnwic92mfbs0";
 }
 
-#elif (defined (LINUX) || defined (__linux__))
+#elif (defined(LINUX) || defined(__linux__))
 
 #include <QFile>
 #include <QTextStream>
@@ -33,12 +34,10 @@ QString get_hdid()
 
   QTextStream in(&fstab_file);
 
-  while(!in.atEnd())
-  {
+  while (!in.atEnd()) {
     QString line = in.readLine();
 
-    if (line.startsWith("UUID"))
-    {
+    if (line.startsWith("UUID")) {
       QStringList line_elements = line.split("=");
 
       if (line_elements.size() > 1)
@@ -55,26 +54,25 @@ QString get_hdid()
 
 QString get_hdid()
 {
-    CFStringRef serial;
-        char buffer[64] = {0};
-        QString hdid;
-        io_service_t platformExpert = IOServiceGetMatchingService(kIOMasterPortDefault,
-                                                              IOServiceMatching("IOPlatformExpertDevice"));
-        if (platformExpert)
-        {
-            CFTypeRef serialNumberAsCFString = IORegistryEntryCreateCFProperty(platformExpert,
-                                                                           CFSTR(kIOPlatformSerialNumberKey),
-                                                                           kCFAllocatorDefault, 0);
-            if (serialNumberAsCFString) {
-                serial = (CFStringRef)serialNumberAsCFString;
-            }
-            if (CFStringGetCString(serial, buffer, 64, kCFStringEncodingUTF8)) {
-                hdid = buffer;
-            }
+  CFStringRef serial;
+  char buffer[64] = {0};
+  QString hdid;
+  io_service_t platformExpert = IOServiceGetMatchingService(
+      kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
+  if (platformExpert) {
+    CFTypeRef serialNumberAsCFString = IORegistryEntryCreateCFProperty(
+        platformExpert, CFSTR(kIOPlatformSerialNumberKey), kCFAllocatorDefault,
+        0);
+    if (serialNumberAsCFString) {
+      serial = (CFStringRef)serialNumberAsCFString;
+    }
+    if (CFStringGetCString(serial, buffer, 64, kCFStringEncodingUTF8)) {
+      hdid = buffer;
+    }
 
-            IOObjectRelease(platformExpert);
-        }
-        return hdid;
+    IOObjectRelease(platformExpert);
+  }
+  return hdid;
 }
 
 #else
