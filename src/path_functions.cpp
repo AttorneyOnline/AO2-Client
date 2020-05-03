@@ -100,7 +100,7 @@ QString AOApplication::get_music_path(QString p_song)
       //it's an URL
       return p_song;
   }
-  else if (file_exists(opus_check))
+  else if (file_exists(opus_check)) {
 #ifndef CASE_SENSITIVE_FILESYSTEM
     return opus_check;
 #else
@@ -123,7 +123,6 @@ QString AOApplication::get_music_path(QString p_song)
   }
 #ifndef CASE_SENSITIVE_FILESYSTEM
   return get_base_path() + "sounds/music/" + p_song + ".wav";
-  ;
 #else
   return get_case_sensitive_path(get_base_path() + "sounds/music/" + p_song +
                                  ".wav");
