@@ -8,6 +8,9 @@ cache:
   paths:
     - lib/
 
+variables:
+  DEBIAN_FRONTEND: noninteractive
+
 before_script:
   - echo Current working directory is $(pwd)
 
