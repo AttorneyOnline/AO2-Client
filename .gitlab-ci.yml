@@ -25,7 +25,7 @@ build linux x86_64:
     - apt-get update
     - >
       apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev
-      clang make git sudo curl ca-certificates pkg-config upx unzip
+      clang make git sudo curl ca-certificates pkg-config upx unzip xz-utils
     - git submodule init
     - git submodule update
 
