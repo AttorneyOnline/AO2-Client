@@ -83,6 +83,9 @@ build windows i686:
     - git submodule init
     - git submodule update
 
+    # Print versions
+    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake --version
+
     # Extract BASS
     - mkdir bass
     - cd bass
@@ -92,6 +95,14 @@ build windows i686:
     - curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
     - unzip bassopus.zip
     - cp bassopus.dll ../lib
+    - cd ..
+
+    # Extract QtApng
+    - mkdir qtapng
+    - cd qtapng
+    - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.2-2/qtapng_mingw73_32_5.13.0.zip -o apng.zip
+    - unzip apng.zip
+    - cp mingw73_32/plugins/imageformats/qapng.dll ../lib
     - cd ..
 
     # Build
@@ -165,6 +176,8 @@ deploy windows i686:
 
     # Platform-specific
     - cp -a ../lib/*.dll .
+    - mkdir imageformats
+    - cp -a ../lib/imageformats/*.dll imageformats/
     - cp -a ../bin/Attorney_Online.exe .
 
     # Zipping
