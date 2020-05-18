@@ -102,7 +102,8 @@ build windows i686:
     - cd qtapng
     - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.2-2/qtapng_mingw73_32_5.13.0.zip -o apng.zip
     - unzip apng.zip
-    - cp mingw73_32/plugins/imageformats/qapng.dll ../lib
+    - mkdir ../lib/imageformats
+    - cp mingw73_32/plugins/imageformats/qapng.dll ../lib/imageformats/
     - cd ..
 
     # Build
