@@ -65,7 +65,6 @@ private:
   bool m_flipped = false;
 
   bool play_once = true;
-  bool apng = false;
 
 signals:
   void done();

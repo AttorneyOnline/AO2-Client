@@ -19,8 +19,6 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  apng = false;
-
   QString original_path =
       ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
   QString alt_path =
@@ -35,10 +33,8 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   QString gif_path;
   current_emote = emote_prefix + p_emote;
   current_char = p_char;
-  if (file_exists(apng_path)) {
+  if (file_exists(apng_path))
     gif_path = apng_path;
-    apng = true;
-  }
   else if (file_exists(original_path))
     gif_path = original_path;
   else if (file_exists(alt_path))
@@ -184,7 +180,7 @@ void AOCharMovie::movie_ticker()
   if (m_movie->frameCount() == 0) {
     return;
   }
-  else if (!apng) {
+  else {
     ticker->start(m_movie->nextFrameDelay());
   }
 }
