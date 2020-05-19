@@ -98,13 +98,15 @@ build windows i686:
     - cd ..
 
     # Extract QtApng
-    - mkdir qtapng
-    - cd qtapng
-    - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.2-2/qtapng_mingw73_32_5.13.0.zip -o apng.zip
-    - unzip apng.zip
-    - mkdir ../lib/imageformats
-    - cp mingw73_32/plugins/imageformats/qapng.dll ../lib/imageformats/
-    - cd ..
+    # - mkdir qtapng
+    # - cd qtapng
+    # - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.2-2/qtapng_mingw73_32_5.13.0.zip -o apng.zip
+    # - unzip apng.zip
+    # - mkdir ../lib/imageformats
+    # - cp mingw73_32/plugins/imageformats/qapng.dll ../lib/imageformats/
+    # - cd ..
+
+    - ls lib
 
     # Build
     - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += DISCORD BASSAUDIO"
@@ -178,7 +180,7 @@ deploy windows i686:
     # Platform-specific
     - cp -a ../lib/*.dll .
     - mkdir imageformats
-    - cp -a ../lib/imageformats/*.dll imageformats/
+    - cp -a ../lib/imageformats/*.dll imageformats/ || :
     - cp -a ../bin/Attorney_Online.exe .
 
     # Zipping
