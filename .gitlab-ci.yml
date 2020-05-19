@@ -180,7 +180,7 @@ deploy windows i686:
     # Platform-specific
     - cp -a ../lib/*.dll .
     - mkdir imageformats
-    - cp -a ../lib/imageformats/*.dll imageformats/ || :
+    - 'cp -a ../lib/imageformats/*.dll imageformats/ || :'
     - cp -a ../bin/Attorney_Online.exe .
 
     # Zipping
