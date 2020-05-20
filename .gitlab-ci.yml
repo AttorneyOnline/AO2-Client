@@ -214,13 +214,16 @@ publish linux x86_64:
   when: manual
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y git nodejs awscli
+    - apt-get install --no-install-recommends -y git nodejs npm awscli
+    - cd scripts
+    - npm install
+    - cd ..
 
     - cd zip
     - ../scripts/wasabi_program.sh
   variables:
     MANIFEST: program_linux_x86_64.json
-    ARTIFACT_SUFFIX: _linux_x64.tar.xz
+    ARTIFACT_SUFFIX: linux_x64.tar.xz
 
 publish windows i686:
   image: ubuntu
@@ -230,10 +233,13 @@ publish windows i686:
   when: manual
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y git nodejs awscli
+    - apt-get install --no-install-recommends -y git nodejs npm awscli
+    - cd scripts
+    - npm install
+    - cd ..
 
     - cd zip
     - ../scripts/wasabi_program.sh
   variables:
     MANIFEST: program_winnt_i386.json
-    ARTIFACT_SUFFIX: _windows_x86.zip
+    ARTIFACT_SUFFIX: windows_x86.zip
