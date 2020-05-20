@@ -839,7 +839,6 @@ void Courtroom::set_widgets()
   truncate_label_text(ui_music_label, "music_label");
   truncate_label_text(ui_sfx_label, "sfx_label");
   truncate_label_text(ui_blip_label, "blip_label");
-
 }
 
 void Courtroom::set_fonts()
@@ -2182,8 +2181,7 @@ void Courtroom::handle_chatmessage_3()
       else
         first_message_sent = true;
       QString char_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
-      ui_ic_chatlog->textCursor().insertHtml("<b>" + char_name +
-                                             ": </b>");
+      ui_ic_chatlog->textCursor().insertHtml("<b>" + char_name + ": </b>");
     }
     else {
       if (first_message_sent && log_goes_downwards)
@@ -2525,8 +2523,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
  * \param is_songchange Whether we are appending a song entry
  * \param force_filter If we are sending plain text and we want to force the
  * \param filtering regardless of its status (e.g chat entry, song change etc)
- * \param skip_filter If we are sending appending text such as html so we skip the
- * \param filter chat_color The color of the message sent
+ * \param skip_filter If we are sending appending text such as html so we skip
+ * the \param filter chat_color The color of the message sent
  */
 
 void Courtroom::append_ic_text(QString p_text, QString p_name,
@@ -2810,7 +2808,7 @@ void Courtroom::chat_tick()
   chat_tick_timer->stop();
   int msg_delay = message_display_speed[current_display_speed];
   if (slower_blips)
-      msg_delay = message_display_speed_slow[current_display_speed];
+    msg_delay = message_display_speed_slow[current_display_speed];
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
 
@@ -2847,7 +2845,9 @@ void Courtroom::chat_tick()
 
     f_character = f_character.toHtmlEscaped();
     if (punctuation_chars.contains(f_character)) {
-      msg_delay *= punctuation_modifier + 1; // Since we are handling a boolean, if its true its double (1 + 1) or false (1 + 0).
+      msg_delay *=
+          punctuation_modifier + 1; // Since we are handling a boolean, if its
+                                    // true its double (1 + 1) or false (1 + 0).
       // ui_vp_message->insertPlainText(f_character);
     }
 
@@ -4477,60 +4477,75 @@ void Courtroom::refresh_iclog(bool skiplast)
   }
 }
 
-void Courtroom::truncate_label_text(QWidget* p_widget, QString p_identifier)
+void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
 {
-  int label_theme_width;
-  QString label_text_tr;
   // Get the pixel width of the string if it were p_widget's label
-  int label_px_width = p_widget->fontMetrics().boundingRect(label_text_tr).width();
   QString filename = "courtroom_design.ini";
   // Get the width of the element as defined by the current theme
-  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result =
+      ao_app->get_element_dimensions(p_identifier, filename);
 
-  QLabel* p_label = qobject_cast<QLabel *>(p_widget); // QLabel-specific operations
-  if (p_label != nullptr) {
-    label_theme_width = design_ini_result.width;
-    label_text_tr = QCoreApplication::translate(p_widget->metaObject()->className(), "%1").arg(p_label->text());
-    p_label->setToolTip(label_text_tr);
-  }
-  QCheckBox* p_checkbox = qobject_cast<QCheckBox *>(p_widget); // QCheckBox-specific operations
-  if (p_checkbox != nullptr) {
-    label_theme_width = design_ini_result.width - 18; // the width of a checkbox on win10 + 5px of padding, should probably try to fetch the actual size
-    label_text_tr = QCoreApplication::translate(p_widget->metaObject()->className(), "%1").arg(p_checkbox->text());
-    p_checkbox->setToolTip(label_text_tr);
-  }
-  if (p_checkbox == nullptr && p_label == nullptr) { // i.e. the given p_widget isn't a QLabel or a QCheckBox
+  QLabel *p_label = qobject_cast<QLabel *>(p_widget);
+  QCheckBox *p_checkbox = qobject_cast<QCheckBox *>(p_widget);
+
+  if (p_checkbox == nullptr &&
+      p_label ==
+          nullptr) { // i.e. the given p_widget isn't a QLabel or a QCheckBox
     qWarning() << "W: Tried to truncate an unsupported widget:" << p_identifier;
     return;
   }
-  //qInfo() << "I: Width of label text: " << label_px_width << "px. Theme's width: " << label_theme_width << "px.";
-  
-  // we can't do much with a 0-width widget, and there's no need to truncate if the theme gives us enough space
+
+  QString label_text_untr =
+      (p_label != nullptr ? p_label->text() : p_checkbox->text());
+  QString label_text_tr =
+      QCoreApplication::translate(p_widget->metaObject()->className(), "%1")
+          .arg(label_text_untr);
+  int label_theme_width =
+      (p_label != nullptr
+           ? design_ini_result.width
+           : design_ini_result.width -
+                 18); // 18 is the width of a checkbox on win10 + 5px of
+                      // padding, should probably try to fetch the actual size
+  int label_px_width =
+      p_widget->fontMetrics().boundingRect(label_text_tr).width();
+  p_widget->setToolTip(label_text_tr);
+  // qInfo() << "I: Width of label text: " << label_px_width << "px. Theme's
+  // width: " << label_theme_width << "px.";
+
+  // we can't do much with a 0-width widget, and there's no need to truncate if
+  // the theme gives us enough space
   if (label_theme_width <= 0 || label_px_width < label_theme_width) {
-    qInfo() << "I: Truncation aborted for label text " << label_text_tr << ", either theme width <= 0 or label width < theme width.";
+    qInfo() << "I: Truncation aborted for label text " << label_text_tr
+            << ", either theme width <= 0 or label width < theme width.";
     return;
   }
-  
+
   QString truncated_label = label_text_tr;
   int truncated_px_width = label_px_width;
-  while (truncated_px_width > label_theme_width && truncated_label != "…")
-  {
+  while (truncated_px_width > label_theme_width && truncated_label != "…") {
     truncated_label.chop(2);
     truncated_label.append("…");
-    //qInfo() << "I: Attempted to truncate label to string: " << truncated_label;
-    truncated_px_width = p_widget->fontMetrics().boundingRect(truncated_label).width();
+    // qInfo() << "I: Attempted to truncate label to string: " <<
+    // truncated_label;
+    truncated_px_width =
+        p_widget->fontMetrics().boundingRect(truncated_label).width();
   }
   if (truncated_label == "…") {
-    // Safeguard against edge case where label text is shorter in px than '…' causing an infinite loop
-    // additionally having just an ellipse for a label looks strange so we don't set the new label
-    qWarning() << "W: Potential infinite loop prevented: Label text " << label_text_tr << "truncated to '…', so truncation was aborted.";
+    // Safeguard against edge case where label text is shorter in px than '…',
+    // causing an infinite loop. Additionally, having just an ellipse for a label
+    // looks strange, so we don't set the new label.
+    qWarning() << "W: Potential infinite loop prevented: Label text "
+               << label_text_tr
+               << "truncated to '…', so truncation was aborted.";
     return;
   }
   if (p_label != nullptr)
     p_label->setText(truncated_label);
   else if (p_checkbox != nullptr)
     p_checkbox->setText(truncated_label);
-  qInfo() << "I: Truncated label text from " << label_text_tr << " (" << label_px_width << "px ) to " << truncated_label << " (" << truncated_px_width << "px )";
+  qInfo() << "I: Truncated label text from " << label_text_tr << " ("
+          << label_px_width << "px ) to " << truncated_label << " ("
+          << truncated_px_width << "px )";
 }
 
 #ifdef BASSAUDIO
