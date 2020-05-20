@@ -214,7 +214,7 @@ publish linux x86_64:
   when: manual
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y awscli
+    - apt-get install --no-install-recommends -y git nodejs awscli
 
     - cd zip
     - ../scripts/wasabi_program.sh
@@ -230,7 +230,7 @@ publish windows i686:
   when: manual
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y awscli
+    - apt-get install --no-install-recommends -y git nodejs awscli
 
     - cd zip
     - ../scripts/wasabi_program.sh
