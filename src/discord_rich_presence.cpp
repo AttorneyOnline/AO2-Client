@@ -8,23 +8,18 @@ Discord::Discord()
   DiscordEventHandlers handlers;
   std::memset(&handlers, 0, sizeof(handlers));
   handlers = {};
-  handlers.ready = [] {
-    qInfo() << "Discord RPC ready";
-  };
-  handlers.disconnected = [](int errorCode, const char* message) {
+  handlers.ready = [] { qInfo() << "Discord RPC ready"; };
+  handlers.disconnected = [](int errorCode, const char *message) {
     qInfo() << "Discord RPC disconnected! " << message << errorCode;
   };
-  handlers.errored = [](int errorCode, const char* message) {
+  handlers.errored = [](int errorCode, const char *message) {
     qWarning() << "Discord RPC errored out! " << message << errorCode;
   };
   qInfo() << "Initializing Discord RPC";
   Discord_Initialize(APPLICATION_ID, &handlers, 1, nullptr);
 }
 
-Discord::~Discord()
-{
-  Discord_Shutdown();
-}
+Discord::~Discord() { Discord_Shutdown(); }
 
 void Discord::state_lobby()
 {
@@ -64,10 +59,12 @@ void Discord::state_server(std::string name, std::string server_id)
 
 void Discord::state_character(std::string name)
 {
-  auto name_internal = QString(name.c_str()).toLower().replace(' ', '_').toStdString();
+  auto name_internal =
+      QString(name.c_str()).toLower().replace(' ', '_').toStdString();
   auto name_friendly = QString(name.c_str()).replace('_', ' ').toStdString();
   const std::string playing_as = "Playing as " + name_friendly;
-  qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str() << ")";
+  qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str()
+           << ")";
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
@@ -101,20 +98,11 @@ void Discord::state_spectate()
   Discord_UpdatePresence(&presence);
 }
 #else
-Discord::Discord()
-{
+Discord::Discord() {}
 
-}
+Discord::~Discord() {}
 
-Discord::~Discord()
-{
-
-}
-
-void Discord::state_lobby()
-{
-
-}
+void Discord::state_lobby() {}
 
 void Discord::state_server(std::string name, std::string server_id)
 {
@@ -129,7 +117,6 @@ void Discord::state_character(std::string name)
 void Discord::state_spectate()
 {
   qDebug() << "Discord RPC: Setting specator state";
-
 }
 #endif
-}
+} // namespace AttorneyOnline

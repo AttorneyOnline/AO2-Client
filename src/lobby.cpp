@@ -1,9 +1,9 @@
 #include "lobby.h"
 
-#include "debug_functions.h"
 #include "aoapplication.h"
-#include "networkmanager.h"
 #include "aosfxplayer.h"
+#include "debug_functions.h"
+#include "networkmanager.h"
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -37,18 +37,24 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_progress_bar->setStyleSheet("QProgressBar{ color: white; }");
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
-  connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
+  connect(ui_public_servers, SIGNAL(clicked()), this,
+          SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
   connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
-  connect(ui_add_to_fav, SIGNAL(pressed()), this, SLOT(on_add_to_fav_pressed()));
-  connect(ui_add_to_fav, SIGNAL(released()), this, SLOT(on_add_to_fav_released()));
+  connect(ui_add_to_fav, SIGNAL(pressed()), this,
+          SLOT(on_add_to_fav_pressed()));
+  connect(ui_add_to_fav, SIGNAL(released()), this,
+          SLOT(on_add_to_fav_released()));
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
-  connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
-  connect(ui_server_list, SIGNAL(activated(QModelIndex)), this, SLOT(on_server_list_doubleclicked(QModelIndex)));
-  connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
+  connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this,
+          SLOT(on_server_list_clicked(QModelIndex)));
+  connect(ui_server_list, SIGNAL(activated(QModelIndex)), this,
+          SLOT(on_server_list_doubleclicked(QModelIndex)));
+  connect(ui_chatmessage, SIGNAL(returnPressed()), this,
+          SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   ui_connect->setEnabled(false);
@@ -58,7 +64,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   set_widgets();
 }
 
-//sets images, position and size
+// sets images, position and size
 void Lobby::set_widgets()
 {
   ao_app->reload_theme();
@@ -67,19 +73,19 @@ void Lobby::set_widgets()
 
   pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
 
-  if (f_lobby.width < 0 || f_lobby.height < 0)
-  {
-    qDebug() << "W: did not find lobby width or height in " << ao_app->get_theme_path(filename);
+  if (f_lobby.width < 0 || f_lobby.height < 0) {
+    qDebug() << "W: did not find lobby width or height in "
+             << ao_app->get_theme_path(filename);
 
     // Most common symptom of bad config files and missing assets.
-    call_notice(tr("It doesn't look like your client is set up correctly.\n"
-                "Did you download all resources correctly from tiny.cc/getao, "
-                "including the large 'base' folder?"));
+    call_notice(
+        tr("It doesn't look like your client is set up correctly.\n"
+           "Did you download all resources correctly from tiny.cc/getao, "
+           "including the large 'base' folder?"));
 
     this->resize(517, 666);
   }
-  else
-  {
+  else {
     this->resize(f_lobby.width, f_lobby.height);
   }
 
@@ -109,7 +115,7 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_server_list, "server_list");
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                  "font: bold;");
+                                "font: bold;");
 
   set_size_and_pos(ui_player_count, "player_count");
   ui_player_count->setText(tr("Offline"));
@@ -124,19 +130,20 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
-  ui_chatbox->setStyleSheet("QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
+  ui_chatbox->setStyleSheet(
+      "QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
 
   set_size_and_pos(ui_chatname, "chatname");
   ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                              "selection-background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_chatmessage, "chatmessage");
-  ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                "selection-background-color: rgba(0, 0, 0, 0);");
+  ui_chatmessage->setStyleSheet(
+      "background-color: rgba(0, 0, 0, 0);"
+      "selection-background-color: rgba(0, 0, 0, 0);");
 
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground.png");
-
 
   set_size_and_pos(ui_loading_text, "loading_label");
   ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
@@ -152,29 +159,28 @@ void Lobby::set_widgets()
   ui_cancel->setText(tr("Cancel"));
 
   ui_loading_background->hide();
+}
 
+void Lobby::lobbyThreadHandler(QString loadingText)
+{
+  this->set_loading_text(loadingText);
 }
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "lobby_design.ini";
 
-  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result =
+      ao_app->get_element_dimensions(p_identifier, filename);
 
-  if (design_ini_result.width < 0 || design_ini_result.height < 0)
-  {
+  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
     qDebug() << "W: could not find " << p_identifier << " in " << filename;
     p_widget->hide();
   }
-  else
-  {
+  else {
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
-}
-
-void Lobby::lobbyThreadHandler(QString loadingText){
-    this->set_loading_text(loadingText);
 }
 
 void Lobby::set_loading_text(QString p_text)
@@ -191,10 +197,7 @@ QString Lobby::get_chatlog()
   return return_value;
 }
 
-int Lobby::get_selected_server()
-{
-  return ui_server_list->currentRow();
-}
+int Lobby::get_selected_server() { return ui_server_list->currentRow(); }
 
 void Lobby::set_loading_value(int p_value)
 {
@@ -217,7 +220,7 @@ void Lobby::on_favorites_clicked()
   ui_public_servers->set_image("publicservers.png");
 
   ao_app->set_favorite_list();
-  //ao_app->favorite_list = read_serverlist_txt();
+  // ao_app->favorite_list = read_serverlist_txt();
 
   list_favorites();
 
@@ -247,7 +250,7 @@ void Lobby::on_add_to_fav_released()
 {
   ui_add_to_fav->set_image("addtofav.png");
 
-  //you cant add favorites from favorites m8
+  // you cant add favorites from favorites m8
   if (!public_servers_selected)
     return;
 
@@ -272,77 +275,75 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-  QString msg = tr("<h2>Attorney Online %1</h2>"
-                   "The courtroom drama simulator"
-                   "<p><b>Source code:</b> "
-                   "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
-                   "https://github.com/AttorneyOnline/AO2-Client</a>"
-                   "<p><b>Major development:</b><br>"
-                   "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter"
-                   "<p><b>Special thanks:</b><br>"
-                   "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
-                   "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
-                   "Noevain, Cronnicossy")
+  QString msg =
+      tr("<h2>Attorney Online %1</h2>"
+         "The courtroom drama simulator"
+         "<p><b>Source code:</b> "
+         "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
+         "https://github.com/AttorneyOnline/AO2-Client</a>"
+         "<p><b>Major development:</b><br>"
+         "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
+         "Cents02"
+         "<p><b>Special thanks:</b><br>"
+         "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
+         "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
+         "Noevain, Cronnicossy, Raidensnake")
           .arg(ao_app->get_version_string());
   QMessageBox::about(this, "About", msg);
 }
 
-//clicked on an item in the serverlist
+// clicked on an item in the serverlist
 void Lobby::on_server_list_clicked(QModelIndex p_model)
 {
-  if (p_model != last_model)
-  {
-  server_type f_server;
-  last_model = p_model;
-  int n_server = p_model.row();
+  if (p_model != last_model) {
+    server_type f_server;
+    last_model = p_model;
+    int n_server = p_model.row();
 
-  if (n_server < 0)
-    return;
-
-  if (public_servers_selected)
-  {
-    QVector<server_type> f_server_list = ao_app->get_server_list();
-
-    if (n_server >= f_server_list.size())
+    if (n_server < 0)
       return;
 
-    f_server = f_server_list.at(p_model.row());
-  }
-  else
-  {
-    if (n_server >= ao_app->get_favorite_list().size())
-      return;
+    if (public_servers_selected) {
+      QVector<server_type> f_server_list = ao_app->get_server_list();
 
-    f_server = ao_app->get_favorite_list().at(p_model.row());
-  }
+      if (n_server >= f_server_list.size())
+        return;
 
-  ui_description->clear();
-  ui_description->append(f_server.desc);
+      f_server = f_server_list.at(p_model.row());
+    }
+    else {
+      if (n_server >= ao_app->get_favorite_list().size())
+        return;
 
-  ui_description->moveCursor(QTextCursor::Start);
-  ui_description->ensureCursorVisible();
+      f_server = ao_app->get_favorite_list().at(p_model.row());
+    }
 
-  ui_player_count->setText(tr("Offline"));
+    ui_description->clear();
+    ui_description->append(f_server.desc);
 
-  ui_connect->setEnabled(false);
+    ui_description->moveCursor(QTextCursor::Start);
+    ui_description->ensureCursorVisible();
 
-  ao_app->net_manager->connect_to_server(f_server);
+    ui_player_count->setText(tr("Offline"));
+
+    ui_connect->setEnabled(false);
+
+    ao_app->net_manager->connect_to_server(f_server);
   }
 }
 
-//doubleclicked on an item in the serverlist so we'll connect right away
+// doubleclicked on an item in the serverlist so we'll connect right away
 void Lobby::on_server_list_doubleclicked(QModelIndex p_model)
 {
-    on_server_list_clicked(p_model);
-    on_connect_released();
+  on_server_list_clicked(p_model);
+  on_connect_released();
 }
 
 void Lobby::on_chatfield_return_pressed()
 {
-  //no you can't send empty messages
+  // no you can't send empty messages
   if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
     return;
-
 
   QString f_header = "CT";
   QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
@@ -362,8 +363,7 @@ void Lobby::list_servers()
 
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->get_server_list())
-  {
+  for (server_type i_server : ao_app->get_server_list()) {
     ui_server_list->addItem(i_server.name);
   }
 }
@@ -372,15 +372,17 @@ void Lobby::list_favorites()
 {
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->get_favorite_list())
-  {
+  for (server_type i_server : ao_app->get_favorite_list()) {
     ui_server_list->addItem(i_server.name);
   }
 }
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
 {
-  ui_chatbox->append_chatmessage(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
+  ui_chatbox->append_chatmessage(
+      f_name, f_message,
+      ao_app->get_color("ooc_default_color", "courtroom_design.ini").name(),
+      false);
 }
 
 void Lobby::append_error(QString f_message)
@@ -390,16 +392,12 @@ void Lobby::append_error(QString f_message)
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = tr("Online: %1/%2").arg(QString::number(players_online)).arg(QString::number(max_players));
+  QString f_string = tr("Online: %1/%2")
+                         .arg(QString::number(players_online))
+                         .arg(QString::number(max_players));
   ui_player_count->setText(f_string);
 }
 
-void Lobby::enable_connect_button()
-{
-  ui_connect->setEnabled(true);
-}
+void Lobby::enable_connect_button() { ui_connect->setEnabled(true); }
 
-Lobby::~Lobby()
-{
-
-}
+Lobby::~Lobby() {}

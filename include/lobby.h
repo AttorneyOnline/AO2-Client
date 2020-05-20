@@ -1,16 +1,16 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include "aoimage.h"
 #include "aobutton.h"
+#include "aoimage.h"
 #include "aopacket.h"
 #include "aotextarea.h"
 
-#include <QMainWindow>
-#include <QListWidget>
 #include <QLabel>
-#include <QPlainTextEdit>
 #include <QLineEdit>
+#include <QListWidget>
+#include <QMainWindow>
+#include <QPlainTextEdit>
 #include <QProgressBar>
 #include <QTextBrowser>
 
@@ -19,8 +19,7 @@
 
 class AOApplication;
 
-class Lobby : public QMainWindow
-{
+class Lobby : public QMainWindow {
   Q_OBJECT
 
 public:
@@ -33,12 +32,12 @@ public:
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
-  void show_loading_overlay(){ui_loading_background->show();}
-  void hide_loading_overlay(){ui_loading_background->hide();}
+  void show_loading_overlay() { ui_loading_background->show(); }
+  void hide_loading_overlay() { ui_loading_background->hide(); }
   QString get_chatlog();
   int get_selected_server();
   void enable_connect_button();
-
+  void check_update();
   void set_loading_value(int p_value);
 
   bool public_servers_selected = true;

@@ -15,7 +15,4 @@ void AOLineEdit::mouseDoubleClickEvent(QMouseEvent *e)
   this->setReadOnly(false);
 }
 
-void AOLineEdit::on_enter_pressed()
-{
-  this->setReadOnly(true);
-}
+void AOLineEdit::on_enter_pressed() { this->setReadOnly(true); }
