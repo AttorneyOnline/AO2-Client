@@ -1,19 +1,17 @@
 #ifndef AOCHARMOVIE_H
 #define AOCHARMOVIE_H
 
-#include <QMovie>
-#include <QLabel>
-#include <QTimer>
-#include <QDebug>
-#include <QImageReader>
-#include <QPainter>
 #include "include/aosfxplayer.h"
 #include "include/courtroom.h"
-
+#include <QDebug>
+#include <QImageReader>
+#include <QLabel>
+#include <QMovie>
+#include <QPainter>
+#include <QTimer>
 
 class AOApplication;
-class AOCharMovie : public QLabel
-{
+class AOCharMovie : public QLabel {
   Q_OBJECT
 
 public:
@@ -24,12 +22,10 @@ public:
   void play_talking(QString p_char, QString p_emote);
   void play_idle(QString p_char, QString p_emote);
 
-  void set_flipped(bool p_flipped) {m_flipped = p_flipped;}
+  void set_flipped(bool p_flipped) { m_flipped = p_flipped; }
   void LoadImageWithStupidMethodForFlipSupport(QImage image);
   void stop();
 
-  void move(int ax, int ay);
-  void combo_resize(int w, int h);
   void play_frame_sfx();
 
   void sfx_two_network_boogaloo();
@@ -42,6 +38,10 @@ public:
   QString frame_screenshake_hellstring = "";
   QString frame_realization_hellstring = "";
   bool use_networked_framehell = false;
+
+  void move(int ax, int ay);
+  void combo_resize(int w, int h);
+
 private:
   AOApplication *ao_app;
 
@@ -52,19 +52,19 @@ private:
   QString last_path;
   QString current_emote;
   QString current_char;
+  int default_w;
+  int default_h;
 
   const int time_mod = 62;
 
-  // These are the X and Y values before they are fixed based on the sprite's width.
+  // These are the X and Y values before they are fixed based on the sprite's
+  // width.
   int x = 0;
   int y = 0;
-  int default_w;
-  int default_h;
 
   bool m_flipped = false;
 
   bool play_once = true;
-  bool apng = false;
 
 signals:
   void done();

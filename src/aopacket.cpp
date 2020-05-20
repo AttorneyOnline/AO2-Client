@@ -8,8 +8,7 @@ AOPacket::AOPacket(QString p_packet_string)
 
   m_header = packet_contents.at(0);
 
-  for(int n_string = 1 ; n_string < packet_contents.size() - 1 ; ++n_string)
-  {
+  for (int n_string = 1; n_string < packet_contents.size() - 1; ++n_string) {
     m_contents.append(packet_contents.at(n_string));
   }
 }
@@ -20,22 +19,17 @@ AOPacket::AOPacket(QString p_header, QStringList &p_contents)
   m_contents = p_contents;
 }
 
-AOPacket::~AOPacket()
-{
-
-}
+AOPacket::~AOPacket() {}
 
 QString AOPacket::to_string()
 {
   QString f_string = m_header;
 
-  for (QString i_string : m_contents)
-  {
+  for (QString i_string : m_contents) {
     f_string += ("#" + i_string);
   }
 
   f_string += "#%";
-
 
   if (encrypted)
     return "#" + f_string;
@@ -59,10 +53,12 @@ void AOPacket::decrypt_header(unsigned int p_key)
 
 void AOPacket::net_encode()
 {
-  for (int n_element = 0 ; n_element < m_contents.size() ; ++n_element)
-  {
+  for (int n_element = 0; n_element < m_contents.size(); ++n_element) {
     QString f_element = m_contents.at(n_element);
-    f_element.replace("#", "<num>").replace("%", "<percent>").replace("$", "<dollar>").replace("&", "<and>");
+    f_element.replace("#", "<num>")
+        .replace("%", "<percent>")
+        .replace("$", "<dollar>")
+        .replace("&", "<and>");
 
     m_contents.removeAt(n_element);
     m_contents.insert(n_element, f_element);
@@ -71,13 +67,14 @@ void AOPacket::net_encode()
 
 void AOPacket::net_decode()
 {
-  for (int n_element = 0 ; n_element < m_contents.size() ; ++n_element)
-  {
+  for (int n_element = 0; n_element < m_contents.size(); ++n_element) {
     QString f_element = m_contents.at(n_element);
-    f_element.replace("<num>", "#").replace("<percent>", "%").replace("<dollar>", "$").replace("<and>", "&");
+    f_element.replace("<num>", "#")
+        .replace("<percent>", "%")
+        .replace("<dollar>", "$")
+        .replace("<and>", "&");
 
     m_contents.removeAt(n_element);
     m_contents.insert(n_element, f_element);
   }
 }
-

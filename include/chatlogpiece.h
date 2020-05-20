@@ -1,15 +1,16 @@
 #ifndef CHATLOGPIECE_H
 #define CHATLOGPIECE_H
 
-#include <QString>
 #include <QDateTime>
+#include <QString>
 
-class chatlogpiece
-{
+class chatlogpiece {
 public:
   chatlogpiece();
-  chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song);
-  chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song, QDateTime p_datetime);
+  chatlogpiece(QString p_name, QString p_showname, QString p_message,
+               bool p_song);
+  chatlogpiece(QString p_name, QString p_showname, QString p_message,
+               bool p_song, QDateTime p_datetime);
 
   QString get_name() const;
   QString get_showname() const;
@@ -17,6 +18,7 @@ public:
   bool get_is_song();
   QDateTime get_datetime() const;
   QString get_datetime_as_string() const;
+  int get_chat_color();
 
   QString get_full() const;
 
@@ -26,6 +28,7 @@ private:
   QString message;
   QDateTime datetime;
   bool is_song;
+  int color;
 };
 
 #endif // CHATLOGPIECE_H
