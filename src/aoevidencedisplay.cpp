@@ -49,7 +49,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
   if (icon_dimensions.width == -1 || icon_dimensions.height == -1) // user's default theme is missing the values
-    evidence_icon->resize(70,70);
+    evidence_icon->resize(70, 70);
   else
     evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
 
