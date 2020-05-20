@@ -545,7 +545,7 @@ void Courtroom::set_widgets()
   ui_vp_legacy_desk->move(0, final_y);
   ui_vp_legacy_desk->hide();
 
-  ui_vp_evidence_display->move(0, 0);
+  ui_vp_evidence_display->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_vp_showname, "showname");

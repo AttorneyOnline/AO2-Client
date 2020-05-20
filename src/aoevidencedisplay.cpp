@@ -32,6 +32,9 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
   QString gif_name;
   QString icon_identifier;
 
+  pos_size_type viewport_dimensions =
+      ao_app->get_element_dimensions("viewport", "courtroom_design.ini");
+
   if (is_left_side) {
     icon_identifier = "left_evidence_icon";
     gif_name = "evidence_appear_left.gif";
@@ -45,7 +48,10 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
       ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
-  evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
+  if (icon_dimensions.width == -1 || icon_dimensions.height == -1) // user's default theme is missing the values
+    evidence_icon->resize(70,70);
+  else
+    evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
 
   evidence_icon->setPixmap(f_pixmap.scaled(
       evidence_icon->width(), evidence_icon->height(), Qt::IgnoreAspectRatio));
@@ -59,6 +65,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
     final_gif_path = f_default_gif_path;
 
   evidence_movie->setFileName(final_gif_path);
+  evidence_movie->setScaledSize(QSize(viewport_dimensions.width, viewport_dimensions.height));
 
   if (evidence_movie->frameCount() < 1)
     return;
