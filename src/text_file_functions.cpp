@@ -167,6 +167,7 @@ QString AOApplication::read_design_ini(QString p_identifier,
                                        QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   QVariant value = settings.value(p_identifier);
   if (value.isNull()) // Since the value wasn't found, maybe it uses the proper
                       // config system
@@ -450,6 +451,7 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
 {
   QSettings settings(get_character_path(p_char, "char.ini"),
                      QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   settings.beginGroup(target_tag);
   QString value = settings.value(p_search_line).toString();
   settings.endGroup();
