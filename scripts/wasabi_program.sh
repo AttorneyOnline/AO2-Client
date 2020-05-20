@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Updates the specified program manifest to a new archive and version
 # and uploads the new archive and manifest to S3/Wasabi.
 #
