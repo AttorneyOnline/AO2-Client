@@ -4495,11 +4495,9 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     return;
   }
 
-  QString label_text_untr =
-      (p_label != nullptr ? p_label->text() : p_checkbox->text());
   QString label_text_tr =
       QCoreApplication::translate(p_widget->metaObject()->className(), "%1")
-          .arg(label_text_untr);
+          .arg((p_label != nullptr ? p_label->text() : p_checkbox->text()));
   int label_theme_width =
       (p_label != nullptr
            ? design_ini_result.width
@@ -4532,8 +4530,8 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
   }
   if (truncated_label == "…") {
     // Safeguard against edge case where label text is shorter in px than '…',
-    // causing an infinite loop. Additionally, having just an ellipse for a label
-    // looks strange, so we don't set the new label.
+    // causing an infinite loop. Additionally, having just an ellipse for a
+    // label looks strange, so we don't set the new label.
     qWarning() << "W: Potential infinite loop prevented: Label text "
                << label_text_tr
                << "truncated to '…', so truncation was aborted.";
