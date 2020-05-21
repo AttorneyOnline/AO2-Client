@@ -83,6 +83,9 @@ build windows i686:
     - git submodule init
     - git submodule update
 
+    # Print versions
+    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake --version
+
     # Extract BASS
     - mkdir bass
     - cd bass
@@ -93,6 +96,17 @@ build windows i686:
     - unzip bassopus.zip
     - cp bassopus.dll ../lib
     - cd ..
+
+    # Extract QtApng
+    # - mkdir qtapng
+    # - cd qtapng
+    # - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.2-2/qtapng_mingw73_32_5.13.0.zip -o apng.zip
+    # - unzip apng.zip
+    # - mkdir ../lib/imageformats
+    # - cp mingw73_32/plugins/imageformats/qapng.dll ../lib/imageformats/
+    # - cd ..
+
+    - ls lib
 
     # Build
     - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += DISCORD BASSAUDIO"
@@ -165,6 +179,8 @@ deploy windows i686:
 
     # Platform-specific
     - cp -a ../lib/*.dll .
+    - mkdir imageformats
+    - 'cp -a ../lib/imageformats/*.dll imageformats/ || :'
     - cp -a ../bin/Attorney_Online.exe .
 
     # Zipping
@@ -197,11 +213,17 @@ publish linux x86_64:
     - deploy linux x86_64
   when: manual
   script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y git nodejs npm awscli
+    - cd scripts
+    - npm install
+    - cd ..
+
     - cd zip
-    - ../scripts/wasabi.sh
+    - ../scripts/wasabi_program.sh
   variables:
     MANIFEST: program_linux_x86_64.json
-    ARTIFACT_SUFFIX: _linux_x64.tar.xz
+    ARTIFACT_SUFFIX: linux_x64.tar.xz
 
 publish windows i686:
   image: ubuntu
@@ -210,8 +232,14 @@ publish windows i686:
     - deploy windows i686
   when: manual
   script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y git nodejs npm awscli
+    - cd scripts
+    - npm install
+    - cd ..
+
     - cd zip
-    - ../scripts/wasabi.sh
+    - ../scripts/wasabi_program.sh
   variables:
     MANIFEST: program_winnt_i386.json
-    ARTIFACT_SUFFIX: _windows_x86.zip
+    ARTIFACT_SUFFIX: windows_x86.zip
