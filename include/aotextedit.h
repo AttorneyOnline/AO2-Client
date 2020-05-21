@@ -3,21 +3,19 @@
 
 #include <QPlainTextEdit>
 
-class AOTextEdit : public QPlainTextEdit
-{
-  Q_OBJECT
+class AOTextEdit : public QPlainTextEdit {
+    Q_OBJECT
 public:
-  AOTextEdit(QWidget *parent);
+    AOTextEdit(QWidget *parent);
 
 protected:
-  void mouseDoubleClickEvent(QMouseEvent *e);
+    void mouseDoubleClickEvent(QMouseEvent *e);
 
 signals:
-  void double_clicked();
+    void double_clicked();
 
 private slots:
-  void on_enter_pressed();
-
+    void on_enter_pressed();
 };
 
 #endif // AOTEXTEDIT_H

@@ -1,13 +1,13 @@
 #include "aoapplication.h"
 
-#include "datatypes.h"
-#include "networkmanager.h"
-#include "lobby.h"
 #include "courtroom.h"
-#include <QPluginLoader>
+#include "datatypes.h"
+#include "lobby.h"
+#include "networkmanager.h"
 #include <QDebug>
-#include <QTranslator>
 #include <QLibraryInfo>
+#include <QPluginLoader>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + p_language,
-            QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     main_app.installTranslator(&qtTranslator);
 
     QTranslator appTranslator;

@@ -3,20 +3,19 @@
 
 #include "aoapplication.h"
 
-#include <QPushButton>
 #include <QDebug>
+#include <QPushButton>
 
-class AOButton : public QPushButton
-{
-  Q_OBJECT
+class AOButton : public QPushButton {
+    Q_OBJECT
 
 public:
-  AOButton(QWidget *parent, AOApplication *p_ao_app);
-  ~AOButton();
+    AOButton(QWidget *parent, AOApplication *p_ao_app);
+    ~AOButton();
 
-  AOApplication *ao_app;
+    AOApplication *ao_app;
 
-  void set_image(QString p_image);
+    void set_image(QString p_image);
 };
 
 #endif // AOBUTTON_H

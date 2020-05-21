@@ -5,21 +5,20 @@
 
 #include "aoapplication.h"
 
-#include <QLabel>
 #include <QDebug>
+#include <QLabel>
 
-class AOImage : public QLabel
-{
+class AOImage : public QLabel {
 public:
-  AOImage(QWidget *parent, AOApplication *p_ao_app);
-  ~AOImage();
+    AOImage(QWidget *parent, AOApplication *p_ao_app);
+    ~AOImage();
 
-  QWidget *m_parent;
-  AOApplication *ao_app;
+    QWidget *m_parent;
+    AOApplication *ao_app;
 
-  bool set_image(QString p_image);
-  bool set_chatbox(QString p_path);
-  void set_size_and_pos(QString identifier);
+    bool set_image(QString p_image);
+    bool set_chatbox(QString p_path);
+    void set_size_and_pos(QString identifier);
 };
 
 #endif // AOIMAGE_H

@@ -1,15 +1,13 @@
 #ifndef SCROLLTEXT_H
 #define SCROLLTEXT_H
 
-#include <QWidget>
+#include <QDebug>
+#include <QPainter>
 #include <QStaticText>
 #include <QTimer>
-#include <QPainter>
-#include <QDebug>
+#include <QWidget>
 
-
-class ScrollText : public QWidget
-{
+class ScrollText : public QWidget {
     Q_OBJECT
     Q_PROPERTY(QString text READ text WRITE setText)
     Q_PROPERTY(QString separator READ separator WRITE setSeparator)
@@ -23,7 +21,6 @@ public slots:
 
     QString separator() const;
     void setSeparator(QString separator);
-
 
 protected:
     virtual void paintEvent(QPaintEvent *);

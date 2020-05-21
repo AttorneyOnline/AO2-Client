@@ -21,17 +21,16 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QScrollArea>
 
 #include <QDirIterator>
 #include <QTextStream>
 
-class AOOptionsDialog: public QDialog
-{
+class AOOptionsDialog : public QDialog {
     Q_OBJECT
 public:
     explicit AOOptionsDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);

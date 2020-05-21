@@ -4,24 +4,23 @@
 #include <QLineEdit>
 #include <QMouseEvent>
 
-class AOLineEdit : public QLineEdit
-{
-  Q_OBJECT
+class AOLineEdit : public QLineEdit {
+    Q_OBJECT
 
 public:
-  AOLineEdit(QWidget *parent);
+    AOLineEdit(QWidget *parent);
 
-  void preserve_selection(bool toggle) {p_selection = toggle;}
+    void preserve_selection(bool toggle) { p_selection = toggle; }
 
 private:
-  bool p_selection = false;
+    bool p_selection = false;
 
 protected:
-  void mouseDoubleClickEvent(QMouseEvent *e);
-  void focusOutEvent(QFocusEvent *ev);
+    void mouseDoubleClickEvent(QMouseEvent *e);
+    void focusOutEvent(QFocusEvent *ev);
 
 signals:
-  void double_clicked();
+    void double_clicked();
 };
 
 #endif // AOLINEEDIT_H

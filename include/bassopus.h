@@ -10,7 +10,7 @@
 
 #include "bass.h"
 
-#if BASSVERSION!=0x204
+#if BASSVERSION != 0x204
 #error conflicting BASS and BASSOPUS versions
 #endif
 
@@ -23,11 +23,11 @@ extern "C" {
 #endif
 
 // BASS_CHANNELINFO type
-#define BASS_CTYPE_STREAM_OPUS		0x11200
+#define BASS_CTYPE_STREAM_OPUS 0x11200
 
 // Additional attributes
-#define BASS_ATTRIB_OPUS_ORIGFREQ	0x13000
-#define BASS_ATTRIB_OPUS_GAIN		0x13001
+#define BASS_ATTRIB_OPUS_ORIGFREQ 0x13000
+#define BASS_ATTRIB_OPUS_GAIN 0x13001
 
 HSTREAM BASSOPUSDEF(BASS_OPUS_StreamCreateFile)(BOOL mem, const void *file, QWORD offset, QWORD length, DWORD flags);
 HSTREAM BASSOPUSDEF(BASS_OPUS_StreamCreateURL)(const char *url, DWORD offset, DWORD flags, DOWNLOADPROC *proc, void *user);
@@ -39,12 +39,12 @@ HSTREAM BASSOPUSDEF(BASS_OPUS_StreamCreateFileUser)(DWORD system, DWORD flags, c
 #if defined(_WIN32) && !defined(NOBASSOVERLOADS)
 static inline HSTREAM BASS_OPUS_StreamCreateFile(BOOL mem, const WCHAR *file, QWORD offset, QWORD length, DWORD flags)
 {
-	return BASS_OPUS_StreamCreateFile(mem, (const void*)file, offset, length, flags|BASS_UNICODE);
+    return BASS_OPUS_StreamCreateFile(mem, (const void *)file, offset, length, flags | BASS_UNICODE);
 }
 
 static inline HSTREAM BASS_OPUS_StreamCreateURL(const WCHAR *url, DWORD offset, DWORD flags, DOWNLOADPROC *proc, void *user)
 {
-	return BASS_OPUS_StreamCreateURL((const char*)url, offset, flags|BASS_UNICODE, proc, user);
+    return BASS_OPUS_StreamCreateURL((const char *)url, offset, flags | BASS_UNICODE, proc, user);
 }
 #endif
 #endif

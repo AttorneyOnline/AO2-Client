@@ -4,41 +4,40 @@
 #include "aoapplication.h"
 #include "aoimage.h"
 
+#include <QFile>
 #include <QPushButton>
 #include <QString>
 #include <QWidget>
-#include <QFile>
 
-class AOCharButton : public QPushButton
-{
-  Q_OBJECT
+class AOCharButton : public QPushButton {
+    Q_OBJECT
 
 public:
-  AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken);
+    AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken);
 
-  AOApplication *ao_app;
+    AOApplication *ao_app;
 
-  void refresh();
-  void reset();
-  void set_taken(bool is_taken);
-  void set_passworded();
+    void refresh();
+    void reset();
+    void set_taken(bool is_taken);
+    void set_passworded();
 
-  void apply_taken_image();
+    void apply_taken_image();
 
-  void set_image(QString p_character);
+    void set_image(QString p_character);
 
 private:
-  bool taken;
+    bool taken;
 
-  QWidget *m_parent;
+    QWidget *m_parent;
 
-  AOImage *ui_taken;
-  AOImage *ui_passworded;
-  AOImage *ui_selector;
+    AOImage *ui_taken;
+    AOImage *ui_passworded;
+    AOImage *ui_selector;
 
 protected:
-  void enterEvent(QEvent *e);
-  void leaveEvent(QEvent *e);
+    void enterEvent(QEvent *e);
+    void leaveEvent(QEvent *e);
 };
 
 #endif // AOCHARBUTTON_H

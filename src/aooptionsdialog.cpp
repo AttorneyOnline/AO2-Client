@@ -43,8 +43,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_form_layout_widget->setSizePolicy(sizePolicy1);
 
     ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
-    ui_gameplay_form->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-    ui_gameplay_form->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    ui_gameplay_form->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignVCenter);
+    ui_gameplay_form->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
     ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
     ui_gameplay_form->setSpacing(2);
 
@@ -61,13 +61,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     // Fill the combobox with the names of the themes.
     QDirIterator it(p_ao_app->get_base_path() + "themes", QDir::Dirs, QDirIterator::NoIteratorFlags);
-    while (it.hasNext())
-    {
+    while (it.hasNext()) {
         QString actualname = QDir(it.next()).dirName();
         if (actualname != "." && actualname != "..")
             ui_theme_combobox->addItem(actualname);
         if (actualname == p_ao_app->read_theme())
-            ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count()-1);
+            ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count() - 1);
     }
 
     ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
@@ -158,7 +157,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_ms_lbl);
 
-    QSettings* configini = ao_app->configini;
+    QSettings *configini = ao_app->configini;
     ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
     ui_ms_textbox->setText(configini->value("master", "").value<QString>());
 
@@ -292,7 +291,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_callwords_widget->setGeometry(QRect(10, 10, 361, 211));
 
     ui_callwords_layout = new QVBoxLayout(ui_callwords_widget);
-    ui_callwords_layout->setContentsMargins(0,0,0,0);
+    ui_callwords_layout->setContentsMargins(0, 0, 0, 0);
 
     ui_callwords_textbox = new QPlainTextEdit(ui_callwords_widget);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -323,8 +322,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_audio_widget->setGeometry(QRect(10, 10, 361, 211));
 
     ui_audio_layout = new QFormLayout(ui_audio_widget);
-    ui_audio_layout->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-    ui_audio_layout->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    ui_audio_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignVCenter);
+    ui_audio_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
     ui_audio_layout->setContentsMargins(0, 0, 0, 0);
     row = 0;
 
@@ -338,28 +337,24 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     // Let's fill out the combobox with the available audio devices. Or don't if there is no audio
     int a = 0;
-    if (needs_default_audiodev())
-    {
+    if (needs_default_audiodev()) {
 
         ui_audio_device_combobox->addItem("default");
-
     }
-    #ifdef BASSAUDIO
+#ifdef BASSAUDIO
     BASS_DEVICEINFO info;
-    for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
-    {
+    for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
         ui_audio_device_combobox->addItem(info.name);
         if (p_ao_app->get_audio_output_device() == info.name)
-            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
+            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count() - 1);
     }
-    #elif defined QTAUDIO
-    foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
-    {
+#elif defined QTAUDIO
+    foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
         ui_audio_device_combobox->addItem(deviceInfo.deviceName());
         if (p_ao_app->get_audio_output_device() == deviceInfo.deviceName())
-            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count()-1);
+            ui_audio_device_combobox->setCurrentIndex(ui_audio_device_combobox->count() - 1);
     }
-    #endif
+#endif
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_audio_device_combobox);
 
     row += 1;
@@ -429,7 +424,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_bliprate_spinbox->setValue(p_ao_app->read_blip_rate());
     ui_bliprate_spinbox->setMinimum(1);
     ui_bliprate_spinbox->setToolTip(tr("Play a blip sound \"once per every X symbols\", where "
-                                      "X is the blip rate."));
+                                       "X is the blip rate."));
 
     ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_bliprate_spinbox);
 
@@ -475,11 +470,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
     ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
 
     ui_casing_widget = new QWidget(ui_casing_tab);
-    ui_casing_widget->setGeometry(QRect(10,10, 361, 211));
+    ui_casing_widget->setGeometry(QRect(10, 10, 361, 211));
 
     ui_casing_layout = new QFormLayout(ui_casing_widget);
-    ui_casing_layout->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-    ui_casing_layout->setFormAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+    ui_casing_layout->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignVCenter);
+    ui_casing_layout->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
     ui_casing_layout->setContentsMargins(0, 0, 0, 0);
     row = 0;
 
@@ -487,9 +482,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 
     ui_casing_supported_lbl = new QLabel(ui_casing_widget);
     if (ao_app->casing_alerts_enabled)
-      ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
+        ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
     else
-      ui_casing_supported_lbl->setText(tr("This server does not support case alerts."));
+        ui_casing_supported_lbl->setText(tr("This server does not support case alerts."));
     ui_casing_supported_lbl->setToolTip(tr("Pretty self-explanatory."));
 
     ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_supported_lbl);
@@ -621,7 +616,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app) : QDi
 void AOOptionsDialog::save_pressed()
 {
     // Save everything into the config.ini.
-    QSettings* configini = ao_app->configini;
+    QSettings *configini = ao_app->configini;
 
     configini->setValue("theme", ui_theme_combobox->currentText());
     configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
@@ -639,11 +634,9 @@ void AOOptionsDialog::save_pressed()
     configini->setValue("stickyeffects", ui_stickyeffects_cb->isChecked());
     configini->setValue("stickypres", ui_stickypres_cb->isChecked());
 
+    QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
-    QFile* callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
-
-    if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-    {
+    if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
         QTextStream out(callwordsini);
         out << ui_callwords_textbox->toPlainText();
         callwordsini->close();
@@ -676,12 +669,12 @@ void AOOptionsDialog::discard_pressed()
     done(0);
 }
 
-#if (defined (_WIN32) || defined (_WIN64))
+#if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needs_default_audiodev()
 {
     return true;
 }
-#elif (defined (LINUX) || defined (__linux__))
+#elif (defined(LINUX) || defined(__linux__))
 bool AOOptionsDialog::needs_default_audiodev()
 {
     return false;
