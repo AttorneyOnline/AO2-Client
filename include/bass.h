@@ -1,8 +1,8 @@
 /*
-	BASS 2.4 C/C++ header file
-	Copyright (c) 1999-2019 Un4seen Developments Ltd.
+        BASS 2.4 C/C++ header file
+        Copyright (c) 1999-2019 Un4seen Developments Ltd.
 
-	See the BASS.CHM file for more detailed documentation
+        See the BASS.CHM file for more detailed documentation
 */
 
 #ifndef BASS_H
@@ -152,13 +152,14 @@ typedef DWORD HPLUGIN;  // Plugin handle
 #define BASS_CONFIG_LIBSSL 64
 
 // BASS_Init flags
-#define BASS_DEVICE_8BITS 1            // 8 bit
-#define BASS_DEVICE_MONO 2             // mono
-#define BASS_DEVICE_3D 4               // enable 3D functionality
-#define BASS_DEVICE_16BITS 8           // limit output to 16 bit
-#define BASS_DEVICE_LATENCY 0x100      // calculate device latency (BASS_INFO struct)
-#define BASS_DEVICE_CPSPEAKERS 0x400   // detect speakers via Windows control panel
-#define BASS_DEVICE_SPEAKERS 0x800     // force enabling of speaker assignment
+#define BASS_DEVICE_8BITS 1       // 8 bit
+#define BASS_DEVICE_MONO 2        // mono
+#define BASS_DEVICE_3D 4          // enable 3D functionality
+#define BASS_DEVICE_16BITS 8      // limit output to 16 bit
+#define BASS_DEVICE_LATENCY 0x100 // calculate device latency (BASS_INFO struct)
+#define BASS_DEVICE_CPSPEAKERS                                                 \
+  0x400                            // detect speakers via Windows control panel
+#define BASS_DEVICE_SPEAKERS 0x800 // force enabling of speaker assignment
 #define BASS_DEVICE_NOSPEAKER 0x1000   // ignore speaker arrangement
 #define BASS_DEVICE_DMIX 0x2000        // use ALSA "dmix" plugin
 #define BASS_DEVICE_FREQ 0x4000        // set device sample rate
@@ -173,14 +174,15 @@ typedef DWORD HPLUGIN;  // Plugin handle
 
 // Device info structure
 typedef struct {
-#if defined(_WIN32_WCE) || (WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
-    const wchar_t *name;   // description
-    const wchar_t *driver; // driver
+#if defined(_WIN32_WCE) ||                                                     \
+    (WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
+  const wchar_t *name;   // description
+  const wchar_t *driver; // driver
 #else
-    const char *name;     // description
-    const char *driver;   // driver
+  const char *name;     // description
+  const char *driver;   // driver
 #endif
-    DWORD flags;
+  DWORD flags;
 } BASS_DEVICEINFO;
 
 // BASS_DEVICEINFO flags
@@ -206,26 +208,32 @@ typedef struct {
 #define BASS_DEVICES_AIRPLAY 0x1000000
 
 typedef struct {
-    DWORD flags;     // device capabilities (DSCAPS_xxx flags)
-    DWORD hwsize;    // size of total device hardware memory
-    DWORD hwfree;    // size of free device hardware memory
-    DWORD freesam;   // number of free sample slots in the hardware
-    DWORD free3d;    // number of free 3D sample slots in the hardware
-    DWORD minrate;   // min sample rate supported by the hardware
-    DWORD maxrate;   // max sample rate supported by the hardware
-    BOOL eax;        // device supports EAX? (always FALSE if BASS_DEVICE_3D was not used)
-    DWORD minbuf;    // recommended minimum buffer length in ms (requires BASS_DEVICE_LATENCY)
-    DWORD dsver;     // DirectSound version
-    DWORD latency;   // delay (in ms) before start of playback (requires BASS_DEVICE_LATENCY)
-    DWORD initflags; // BASS_Init "flags" parameter
-    DWORD speakers;  // number of speakers available
-    DWORD freq;      // current output rate
+  DWORD flags;   // device capabilities (DSCAPS_xxx flags)
+  DWORD hwsize;  // size of total device hardware memory
+  DWORD hwfree;  // size of free device hardware memory
+  DWORD freesam; // number of free sample slots in the hardware
+  DWORD free3d;  // number of free 3D sample slots in the hardware
+  DWORD minrate; // min sample rate supported by the hardware
+  DWORD maxrate; // max sample rate supported by the hardware
+  BOOL
+      eax; // device supports EAX? (always FALSE if BASS_DEVICE_3D was not used)
+  DWORD minbuf;    // recommended minimum buffer length in ms (requires
+                   // BASS_DEVICE_LATENCY)
+  DWORD dsver;     // DirectSound version
+  DWORD latency;   // delay (in ms) before start of playback (requires
+                   // BASS_DEVICE_LATENCY)
+  DWORD initflags; // BASS_Init "flags" parameter
+  DWORD speakers;  // number of speakers available
+  DWORD freq;      // current output rate
 } BASS_INFO;
 
 // BASS_INFO flags (from DSOUND.H)
-#define DSCAPS_CONTINUOUSRATE 0x00000010  // supports all sample rates between min/maxrate
-#define DSCAPS_EMULDRIVER 0x00000020      // device does NOT have hardware DirectSound support
-#define DSCAPS_CERTIFIED 0x00000040       // device driver has been certified by Microsoft
+#define DSCAPS_CONTINUOUSRATE                                                  \
+  0x00000010 // supports all sample rates between min/maxrate
+#define DSCAPS_EMULDRIVER                                                      \
+  0x00000020 // device does NOT have hardware DirectSound support
+#define DSCAPS_CERTIFIED                                                       \
+  0x00000040 // device driver has been certified by Microsoft
 #define DSCAPS_SECONDARYMONO 0x00000100   // mono
 #define DSCAPS_SECONDARYSTEREO 0x00000200 // stereo
 #define DSCAPS_SECONDARY8BIT 0x00000400   // 8 bit
@@ -233,16 +241,19 @@ typedef struct {
 
 // Recording device info structure
 typedef struct {
-    DWORD flags;   // device capabilities (DSCCAPS_xxx flags)
-    DWORD formats; // supported standard formats (WAVE_FORMAT_xxx flags)
-    DWORD inputs;  // number of inputs
-    BOOL singlein; // TRUE = only 1 input can be set at a time
-    DWORD freq;    // current input rate
+  DWORD flags;   // device capabilities (DSCCAPS_xxx flags)
+  DWORD formats; // supported standard formats (WAVE_FORMAT_xxx flags)
+  DWORD inputs;  // number of inputs
+  BOOL singlein; // TRUE = only 1 input can be set at a time
+  DWORD freq;    // current input rate
 } BASS_RECORDINFO;
 
 // BASS_RECORDINFO flags (from DSOUND.H)
-#define DSCCAPS_EMULDRIVER DSCAPS_EMULDRIVER // device does NOT have hardware DirectSound recording support
-#define DSCCAPS_CERTIFIED DSCAPS_CERTIFIED   // device driver has been certified by Microsoft
+#define DSCCAPS_EMULDRIVER                                                     \
+  DSCAPS_EMULDRIVER // device does NOT have hardware DirectSound recording
+                    // support
+#define DSCCAPS_CERTIFIED                                                      \
+  DSCAPS_CERTIFIED // device driver has been certified by Microsoft
 
 // defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
 #ifndef WAVE_FORMAT_1M08
@@ -262,46 +273,54 @@ typedef struct {
 
 // Sample info structure
 typedef struct {
-    DWORD freq;     // default playback rate
-    float volume;   // default volume (0-1)
-    float pan;      // default pan (-1=left, 0=middle, 1=right)
-    DWORD flags;    // BASS_SAMPLE_xxx flags
-    DWORD length;   // length (in bytes)
-    DWORD max;      // maximum simultaneous playbacks
-    DWORD origres;  // original resolution
-    DWORD chans;    // number of channels
-    DWORD mingap;   // minimum gap (ms) between creating channels
-    DWORD mode3d;   // BASS_3DMODE_xxx mode
-    float mindist;  // minimum distance
-    float maxdist;  // maximum distance
-    DWORD iangle;   // angle of inside projection cone
-    DWORD oangle;   // angle of outside projection cone
-    float outvol;   // delta-volume outside the projection cone
-    DWORD vam;      // voice allocation/management flags (BASS_VAM_xxx)
-    DWORD priority; // priority (0=lowest, 0xffffffff=highest)
+  DWORD freq;     // default playback rate
+  float volume;   // default volume (0-1)
+  float pan;      // default pan (-1=left, 0=middle, 1=right)
+  DWORD flags;    // BASS_SAMPLE_xxx flags
+  DWORD length;   // length (in bytes)
+  DWORD max;      // maximum simultaneous playbacks
+  DWORD origres;  // original resolution
+  DWORD chans;    // number of channels
+  DWORD mingap;   // minimum gap (ms) between creating channels
+  DWORD mode3d;   // BASS_3DMODE_xxx mode
+  float mindist;  // minimum distance
+  float maxdist;  // maximum distance
+  DWORD iangle;   // angle of inside projection cone
+  DWORD oangle;   // angle of outside projection cone
+  float outvol;   // delta-volume outside the projection cone
+  DWORD vam;      // voice allocation/management flags (BASS_VAM_xxx)
+  DWORD priority; // priority (0=lowest, 0xffffffff=highest)
 } BASS_SAMPLE;
 
-#define BASS_SAMPLE_8BITS 1           // 8 bit
-#define BASS_SAMPLE_FLOAT 256         // 32 bit floating-point
-#define BASS_SAMPLE_MONO 2            // mono
-#define BASS_SAMPLE_LOOP 4            // looped
-#define BASS_SAMPLE_3D 8              // 3D functionality
-#define BASS_SAMPLE_SOFTWARE 16       // not using hardware mixing
-#define BASS_SAMPLE_MUTEMAX 32        // mute at max distance (3D only)
-#define BASS_SAMPLE_VAM 64            // DX7 voice allocation & management
-#define BASS_SAMPLE_FX 128            // old implementation of DX8 effects
-#define BASS_SAMPLE_OVER_VOL 0x10000  // override lowest volume
-#define BASS_SAMPLE_OVER_POS 0x20000  // override longest playing
-#define BASS_SAMPLE_OVER_DIST 0x30000 // override furthest from listener (3D only)
+#define BASS_SAMPLE_8BITS 1          // 8 bit
+#define BASS_SAMPLE_FLOAT 256        // 32 bit floating-point
+#define BASS_SAMPLE_MONO 2           // mono
+#define BASS_SAMPLE_LOOP 4           // looped
+#define BASS_SAMPLE_3D 8             // 3D functionality
+#define BASS_SAMPLE_SOFTWARE 16      // not using hardware mixing
+#define BASS_SAMPLE_MUTEMAX 32       // mute at max distance (3D only)
+#define BASS_SAMPLE_VAM 64           // DX7 voice allocation & management
+#define BASS_SAMPLE_FX 128           // old implementation of DX8 effects
+#define BASS_SAMPLE_OVER_VOL 0x10000 // override lowest volume
+#define BASS_SAMPLE_OVER_POS 0x20000 // override longest playing
+#define BASS_SAMPLE_OVER_DIST                                                  \
+  0x30000 // override furthest from listener (3D only)
 
-#define BASS_STREAM_PRESCAN 0x20000  // enable pin-point seeking/length (MP3/MP2/MP1)
-#define BASS_STREAM_AUTOFREE 0x40000 // automatically free the stream when it stop/ends
-#define BASS_STREAM_RESTRATE 0x80000 // restrict the download rate of internet file streams
-#define BASS_STREAM_BLOCK 0x100000   // download/play internet file stream in small blocks
-#define BASS_STREAM_DECODE 0x200000  // don't play the stream, only decode (BASS_ChannelGetData)
-#define BASS_STREAM_STATUS 0x800000  // give server status info (HTTP/ICY tags) in DOWNLOADPROC
+#define BASS_STREAM_PRESCAN                                                    \
+  0x20000 // enable pin-point seeking/length (MP3/MP2/MP1)
+#define BASS_STREAM_AUTOFREE                                                   \
+  0x40000 // automatically free the stream when it stop/ends
+#define BASS_STREAM_RESTRATE                                                   \
+  0x80000 // restrict the download rate of internet file streams
+#define BASS_STREAM_BLOCK                                                      \
+  0x100000 // download/play internet file stream in small blocks
+#define BASS_STREAM_DECODE                                                     \
+  0x200000 // don't play the stream, only decode (BASS_ChannelGetData)
+#define BASS_STREAM_STATUS                                                     \
+  0x800000 // give server status info (HTTP/ICY tags) in DOWNLOADPROC
 
-#define BASS_MP3_IGNOREDELAY 0x200 // ignore LAME/Xing/VBRI/iTunes delay & padding info
+#define BASS_MP3_IGNOREDELAY                                                   \
+  0x200 // ignore LAME/Xing/VBRI/iTunes delay & padding info
 #define BASS_MP3_SETPOS BASS_STREAM_PRESCAN
 
 #define BASS_MUSIC_FLOAT BASS_SAMPLE_FLOAT
@@ -313,19 +332,20 @@ typedef struct {
 #define BASS_MUSIC_DECODE BASS_STREAM_DECODE
 #define BASS_MUSIC_PRESCAN BASS_STREAM_PRESCAN // calculate playback length
 #define BASS_MUSIC_CALCLEN BASS_MUSIC_PRESCAN
-#define BASS_MUSIC_RAMP 0x200          // normal ramping
-#define BASS_MUSIC_RAMPS 0x400         // sensitive ramping
-#define BASS_MUSIC_SURROUND 0x800      // surround sound
-#define BASS_MUSIC_SURROUND2 0x1000    // surround sound (mode 2)
-#define BASS_MUSIC_FT2PAN 0x2000       // apply FastTracker 2 panning to XM files
-#define BASS_MUSIC_FT2MOD 0x2000       // play .MOD as FastTracker 2 does
-#define BASS_MUSIC_PT1MOD 0x4000       // play .MOD as ProTracker 1 does
-#define BASS_MUSIC_NONINTER 0x10000    // non-interpolated sample mixing
-#define BASS_MUSIC_SINCINTER 0x800000  // sinc interpolated sample mixing
-#define BASS_MUSIC_POSRESET 0x8000     // stop all notes when moving position
-#define BASS_MUSIC_POSRESETEX 0x400000 // stop all notes and reset bmp/etc when moving position
-#define BASS_MUSIC_STOPBACK 0x80000    // stop the music on a backwards jump effect
-#define BASS_MUSIC_NOSAMPLE 0x100000   // don't load the samples
+#define BASS_MUSIC_RAMP 0x200         // normal ramping
+#define BASS_MUSIC_RAMPS 0x400        // sensitive ramping
+#define BASS_MUSIC_SURROUND 0x800     // surround sound
+#define BASS_MUSIC_SURROUND2 0x1000   // surround sound (mode 2)
+#define BASS_MUSIC_FT2PAN 0x2000      // apply FastTracker 2 panning to XM files
+#define BASS_MUSIC_FT2MOD 0x2000      // play .MOD as FastTracker 2 does
+#define BASS_MUSIC_PT1MOD 0x4000      // play .MOD as ProTracker 1 does
+#define BASS_MUSIC_NONINTER 0x10000   // non-interpolated sample mixing
+#define BASS_MUSIC_SINCINTER 0x800000 // sinc interpolated sample mixing
+#define BASS_MUSIC_POSRESET 0x8000    // stop all notes when moving position
+#define BASS_MUSIC_POSRESETEX                                                  \
+  0x400000 // stop all notes and reset bmp/etc when moving position
+#define BASS_MUSIC_STOPBACK 0x80000 // stop the music on a backwards jump effect
+#define BASS_MUSIC_NOSAMPLE 0x100000 // don't load the samples
 
 // Speaker assignment flags
 #define BASS_SPEAKER_FRONT 0x1000000  // front speakers
@@ -360,14 +380,14 @@ typedef struct {
 
 // Channel info structure
 typedef struct {
-    DWORD freq;           // default playback rate
-    DWORD chans;          // channels
-    DWORD flags;          // BASS_SAMPLE/STREAM/MUSIC/SPEAKER flags
-    DWORD ctype;          // type of channel
-    DWORD origres;        // original resolution
-    HPLUGIN plugin;       // plugin
-    HSAMPLE sample;       // sample
-    const char *filename; // filename
+  DWORD freq;           // default playback rate
+  DWORD chans;          // channels
+  DWORD flags;          // BASS_SAMPLE/STREAM/MUSIC/SPEAKER flags
+  DWORD ctype;          // type of channel
+  DWORD origres;        // original resolution
+  HPLUGIN plugin;       // plugin
+  HSAMPLE sample;       // sample
+  const char *filename; // filename
 } BASS_CHANNELINFO;
 
 #define BASS_ORIGRES_FLOAT 0x10000
@@ -397,31 +417,32 @@ typedef struct {
 #define BASS_CTYPE_MUSIC_MO3 0x00100 // MO3 flag
 
 typedef struct {
-    DWORD ctype; // channel type
-#if defined(_WIN32_WCE) || (WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
-    const wchar_t *name; // format description
-    const wchar_t *exts; // file extension filter (*.ext1;*.ext2;etc...)
+  DWORD ctype; // channel type
+#if defined(_WIN32_WCE) ||                                                     \
+    (WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
+  const wchar_t *name; // format description
+  const wchar_t *exts; // file extension filter (*.ext1;*.ext2;etc...)
 #else
-    const char *name;     // format description
-    const char *exts;     // file extension filter (*.ext1;*.ext2;etc...)
+  const char *name;     // format description
+  const char *exts;     // file extension filter (*.ext1;*.ext2;etc...)
 #endif
 } BASS_PLUGINFORM;
 
 typedef struct {
-    DWORD version;                  // version (same form as BASS_GetVersion)
-    DWORD formatc;                  // number of formats
-    const BASS_PLUGINFORM *formats; // the array of formats
+  DWORD version;                  // version (same form as BASS_GetVersion)
+  DWORD formatc;                  // number of formats
+  const BASS_PLUGINFORM *formats; // the array of formats
 } BASS_PLUGININFO;
 
 // 3D vector (for 3D positions/velocities/orientations)
 typedef struct BASS_3DVECTOR {
 #ifdef __cplusplus
-    BASS_3DVECTOR(){};
-    BASS_3DVECTOR(float _x, float _y, float _z) : x(_x), y(_y), z(_z){};
+  BASS_3DVECTOR(){};
+  BASS_3DVECTOR(float _x, float _y, float _z) : x(_x), y(_y), z(_z){};
 #endif
-    float x; // +=right, -=left
-    float y; // +=up, -=down
-    float z; // +=front, -=behind
+  float x; // +=right, -=left
+  float y; // +=up, -=down
+  float z; // +=front, -=behind
 } BASS_3DVECTOR;
 
 // 3D channel modes
@@ -437,34 +458,34 @@ typedef struct BASS_3DVECTOR {
 
 // EAX environments, use with BASS_SetEAXParameters
 enum {
-    EAX_ENVIRONMENT_GENERIC,
-    EAX_ENVIRONMENT_PADDEDCELL,
-    EAX_ENVIRONMENT_ROOM,
-    EAX_ENVIRONMENT_BATHROOM,
-    EAX_ENVIRONMENT_LIVINGROOM,
-    EAX_ENVIRONMENT_STONEROOM,
-    EAX_ENVIRONMENT_AUDITORIUM,
-    EAX_ENVIRONMENT_CONCERTHALL,
-    EAX_ENVIRONMENT_CAVE,
-    EAX_ENVIRONMENT_ARENA,
-    EAX_ENVIRONMENT_HANGAR,
-    EAX_ENVIRONMENT_CARPETEDHALLWAY,
-    EAX_ENVIRONMENT_HALLWAY,
-    EAX_ENVIRONMENT_STONECORRIDOR,
-    EAX_ENVIRONMENT_ALLEY,
-    EAX_ENVIRONMENT_FOREST,
-    EAX_ENVIRONMENT_CITY,
-    EAX_ENVIRONMENT_MOUNTAINS,
-    EAX_ENVIRONMENT_QUARRY,
-    EAX_ENVIRONMENT_PLAIN,
-    EAX_ENVIRONMENT_PARKINGLOT,
-    EAX_ENVIRONMENT_SEWERPIPE,
-    EAX_ENVIRONMENT_UNDERWATER,
-    EAX_ENVIRONMENT_DRUGGED,
-    EAX_ENVIRONMENT_DIZZY,
-    EAX_ENVIRONMENT_PSYCHOTIC,
+  EAX_ENVIRONMENT_GENERIC,
+  EAX_ENVIRONMENT_PADDEDCELL,
+  EAX_ENVIRONMENT_ROOM,
+  EAX_ENVIRONMENT_BATHROOM,
+  EAX_ENVIRONMENT_LIVINGROOM,
+  EAX_ENVIRONMENT_STONEROOM,
+  EAX_ENVIRONMENT_AUDITORIUM,
+  EAX_ENVIRONMENT_CONCERTHALL,
+  EAX_ENVIRONMENT_CAVE,
+  EAX_ENVIRONMENT_ARENA,
+  EAX_ENVIRONMENT_HANGAR,
+  EAX_ENVIRONMENT_CARPETEDHALLWAY,
+  EAX_ENVIRONMENT_HALLWAY,
+  EAX_ENVIRONMENT_STONECORRIDOR,
+  EAX_ENVIRONMENT_ALLEY,
+  EAX_ENVIRONMENT_FOREST,
+  EAX_ENVIRONMENT_CITY,
+  EAX_ENVIRONMENT_MOUNTAINS,
+  EAX_ENVIRONMENT_QUARRY,
+  EAX_ENVIRONMENT_PLAIN,
+  EAX_ENVIRONMENT_PARKINGLOT,
+  EAX_ENVIRONMENT_SEWERPIPE,
+  EAX_ENVIRONMENT_UNDERWATER,
+  EAX_ENVIRONMENT_DRUGGED,
+  EAX_ENVIRONMENT_DIZZY,
+  EAX_ENVIRONMENT_PSYCHOTIC,
 
-    EAX_ENVIRONMENT_COUNT // total number of environments
+  EAX_ENVIRONMENT_COUNT // total number of environments
 };
 
 // EAX presets, usage: BASS_SetEAXParameters(EAX_PRESET_xxx)
@@ -479,9 +500,11 @@ enum {
 #define EAX_PRESET_CAVE EAX_ENVIRONMENT_CAVE, 0.5F, 2.886F, 1.304F
 #define EAX_PRESET_ARENA EAX_ENVIRONMENT_ARENA, 0.361F, 7.284F, 0.332F
 #define EAX_PRESET_HANGAR EAX_ENVIRONMENT_HANGAR, 0.5F, 10.0F, 0.3F
-#define EAX_PRESET_CARPETEDHALLWAY EAX_ENVIRONMENT_CARPETEDHALLWAY, 0.153F, 0.259F, 2.0F
+#define EAX_PRESET_CARPETEDHALLWAY                                             \
+  EAX_ENVIRONMENT_CARPETEDHALLWAY, 0.153F, 0.259F, 2.0F
 #define EAX_PRESET_HALLWAY EAX_ENVIRONMENT_HALLWAY, 0.361F, 1.493F, 0.0F
-#define EAX_PRESET_STONECORRIDOR EAX_ENVIRONMENT_STONECORRIDOR, 0.444F, 2.697F, 0.638F
+#define EAX_PRESET_STONECORRIDOR                                               \
+  EAX_ENVIRONMENT_STONECORRIDOR, 0.444F, 2.697F, 0.638F
 #define EAX_PRESET_ALLEY EAX_ENVIRONMENT_ALLEY, 0.25F, 1.752F, 0.776F
 #define EAX_PRESET_FOREST EAX_ENVIRONMENT_FOREST, 0.111F, 3.145F, 0.472F
 #define EAX_PRESET_CITY EAX_ENVIRONMENT_CITY, 0.111F, 2.767F, 0.224F
@@ -495,14 +518,14 @@ enum {
 #define EAX_PRESET_DIZZY EAX_ENVIRONMENT_DIZZY, 0.139F, 17.234F, 0.666F
 #define EAX_PRESET_PSYCHOTIC EAX_ENVIRONMENT_PSYCHOTIC, 0.486F, 7.563F, 0.806F
 
-typedef DWORD(CALLBACK STREAMPROC)(HSTREAM handle, void *buffer, DWORD length, void *user);
-/* User stream callback function. NOTE: A stream function should obviously be as quick
-as possible, other streams (and MOD musics) can't be mixed until it's finished.
-handle : The stream that needs writing
-buffer : Buffer to write the samples in
-length : Number of bytes to write
-user   : The 'user' parameter value given when calling BASS_StreamCreate
-RETURN : Number of bytes written. Set the BASS_STREAMPROC_END flag to end the stream. */
+typedef DWORD(CALLBACK STREAMPROC)(HSTREAM handle, void *buffer, DWORD length,
+                                   void *user);
+/* User stream callback function. NOTE: A stream function should obviously be as
+quick as possible, other streams (and MOD musics) can't be mixed until it's
+finished. handle : The stream that needs writing buffer : Buffer to write the
+samples in length : Number of bytes to write user   : The 'user' parameter value
+given when calling BASS_StreamCreate RETURN : Number of bytes written. Set the
+BASS_STREAMPROC_END flag to end the stream. */
 
 #define BASS_STREAMPROC_END 0x80000000 // end of user stream flag
 
@@ -524,10 +547,10 @@ typedef DWORD(CALLBACK FILEREADPROC)(void *buffer, DWORD length, void *user);
 typedef BOOL(CALLBACK FILESEEKPROC)(QWORD offset, void *user);
 
 typedef struct {
-    FILECLOSEPROC *close;
-    FILELENPROC *length;
-    FILEREADPROC *read;
-    FILESEEKPROC *seek;
+  FILECLOSEPROC *close;
+  FILELENPROC *length;
+  FILEREADPROC *read;
+  FILESEEKPROC *seek;
 } BASS_FILEPROCS;
 
 // BASS_StreamPutFileData options
@@ -546,7 +569,8 @@ typedef struct {
 #define BASS_FILEPOS_SIZE 8
 #define BASS_FILEPOS_BUFFERING 9
 
-typedef void(CALLBACK DOWNLOADPROC)(const void *buffer, DWORD length, void *user);
+typedef void(CALLBACK DOWNLOADPROC)(const void *buffer, DWORD length,
+                                    void *user);
 /* Internet stream download callback function.
 buffer : Buffer containing the downloaded data... NULL=end of download
 length : Number of bytes in the buffer
@@ -570,7 +594,8 @@ user   : The 'user' parameter value given when calling BASS_StreamCreateURL */
 #define BASS_SYNC_MIXTIME 0x40000000 // flag: sync at mixtime, else at playtime
 #define BASS_SYNC_ONETIME 0x80000000 // flag: sync only once, else continuously
 
-typedef void(CALLBACK SYNCPROC)(HSYNC handle, DWORD channel, DWORD data, void *user);
+typedef void(CALLBACK SYNCPROC)(HSYNC handle, DWORD channel, DWORD data,
+                                void *user);
 /* Sync callback function. NOTE: a sync callback function should be very
 quick as other syncs can't be processed until it has finished. If the sync
 is a "mixtime" sync, then other streams and MOD musics can't be mixed until
@@ -580,7 +605,8 @@ channel: Channel that the sync occured in
 data   : Additional data associated with the sync's occurance
 user   : The 'user' parameter given when calling BASS_ChannelSetSync */
 
-typedef void(CALLBACK DSPPROC)(HDSP handle, DWORD channel, void *buffer, DWORD length, void *user);
+typedef void(CALLBACK DSPPROC)(HDSP handle, DWORD channel, void *buffer,
+                               DWORD length, void *user);
 /* DSP callback function. NOTE: A DSP function should obviously be as quick as
 possible... other DSP functions, streams and MOD musics can not be processed
 until it's finished.
@@ -590,7 +616,8 @@ buffer : Buffer to apply the DSP to
 length : Number of bytes in the buffer
 user   : The 'user' parameter given when calling BASS_ChannelSetDSP */
 
-typedef BOOL(CALLBACK RECORDPROC)(HRECORD handle, const void *buffer, DWORD length, void *user);
+typedef BOOL(CALLBACK RECORDPROC)(HRECORD handle, const void *buffer,
+                                  DWORD length, void *user);
 /* Recording callback function.
 handle : The recording handle
 buffer : Buffer containing the recorded sample data
@@ -644,11 +671,12 @@ RETURN : TRUE = continue recording, FALSE = stop */
 #define BASS_DATA_FFT8192 0x80000005  // 8192 FFT
 #define BASS_DATA_FFT16384 0x80000006 // 16384 FFT
 #define BASS_DATA_FFT32768 0x80000007 // 32768 FFT
-#define BASS_DATA_FFT_INDIVIDUAL 0x10 // FFT flag: FFT for each channel, else all combined
-#define BASS_DATA_FFT_NOWINDOW 0x20   // FFT flag: no Hanning window
-#define BASS_DATA_FFT_REMOVEDC 0x40   // FFT flag: pre-remove DC bias
-#define BASS_DATA_FFT_COMPLEX 0x80    // FFT flag: return complex data
-#define BASS_DATA_FFT_NYQUIST 0x100   // FFT flag: return extra Nyquist value
+#define BASS_DATA_FFT_INDIVIDUAL                                               \
+  0x10 // FFT flag: FFT for each channel, else all combined
+#define BASS_DATA_FFT_NOWINDOW 0x20 // FFT flag: no Hanning window
+#define BASS_DATA_FFT_REMOVEDC 0x40 // FFT flag: pre-remove DC bias
+#define BASS_DATA_FFT_COMPLEX 0x80  // FFT flag: return complex data
+#define BASS_DATA_FFT_NYQUIST 0x100 // FFT flag: return extra Nyquist value
 
 // BASS_ChannelGetLevelEx flags
 #define BASS_LEVEL_MONO 1
@@ -657,52 +685,59 @@ RETURN : TRUE = continue recording, FALSE = stop */
 #define BASS_LEVEL_VOLPAN 8
 
 // BASS_ChannelGetTags types : what's returned
-#define BASS_TAG_ID3 0                 // ID3v1 tags : TAG_ID3 structure
-#define BASS_TAG_ID3V2 1               // ID3v2 tags : variable length block
-#define BASS_TAG_OGG 2                 // OGG comments : series of null-terminated UTF-8 strings
-#define BASS_TAG_HTTP 3                // HTTP headers : series of null-terminated ANSI strings
-#define BASS_TAG_ICY 4                 // ICY headers : series of null-terminated ANSI strings
-#define BASS_TAG_META 5                // ICY metadata : ANSI string
-#define BASS_TAG_APE 6                 // APE tags : series of null-terminated UTF-8 strings
-#define BASS_TAG_MP4 7                 // MP4/iTunes metadata : series of null-terminated UTF-8 strings
-#define BASS_TAG_WMA 8                 // WMA tags : series of null-terminated UTF-8 strings
-#define BASS_TAG_VENDOR 9              // OGG encoder : UTF-8 string
-#define BASS_TAG_LYRICS3 10            // Lyric3v2 tag : ASCII string
-#define BASS_TAG_CA_CODEC 11           // CoreAudio codec info : TAG_CA_CODEC structure
-#define BASS_TAG_MF 13                 // Media Foundation tags : series of null-terminated UTF-8 strings
-#define BASS_TAG_WAVEFORMAT 14         // WAVE format : WAVEFORMATEEX structure
-#define BASS_TAG_AM_MIME 15            // Android Media MIME type : ASCII string
-#define BASS_TAG_AM_NAME 16            // Android Media codec name : ASCII string
-#define BASS_TAG_RIFF_INFO 0x100       // RIFF "INFO" tags : series of null-terminated ANSI strings
-#define BASS_TAG_RIFF_BEXT 0x101       // RIFF/BWF "bext" tags : TAG_BEXT structure
-#define BASS_TAG_RIFF_CART 0x102       // RIFF/BWF "cart" tags : TAG_CART structure
-#define BASS_TAG_RIFF_DISP 0x103       // RIFF "DISP" text tag : ANSI string
-#define BASS_TAG_RIFF_CUE 0x104        // RIFF "cue " chunk : TAG_CUE structure
-#define BASS_TAG_RIFF_SMPL 0x105       // RIFF "smpl" chunk : TAG_SMPL structure
-#define BASS_TAG_APE_BINARY 0x1000     // + index #, binary APE tag : TAG_APE_BINARY structure
+#define BASS_TAG_ID3 0   // ID3v1 tags : TAG_ID3 structure
+#define BASS_TAG_ID3V2 1 // ID3v2 tags : variable length block
+#define BASS_TAG_OGG 2 // OGG comments : series of null-terminated UTF-8 strings
+#define BASS_TAG_HTTP 3 // HTTP headers : series of null-terminated ANSI strings
+#define BASS_TAG_ICY 4  // ICY headers : series of null-terminated ANSI strings
+#define BASS_TAG_META 5 // ICY metadata : ANSI string
+#define BASS_TAG_APE 6  // APE tags : series of null-terminated UTF-8 strings
+#define BASS_TAG_MP4                                                           \
+  7 // MP4/iTunes metadata : series of null-terminated UTF-8 strings
+#define BASS_TAG_WMA 8    // WMA tags : series of null-terminated UTF-8 strings
+#define BASS_TAG_VENDOR 9 // OGG encoder : UTF-8 string
+#define BASS_TAG_LYRICS3 10  // Lyric3v2 tag : ASCII string
+#define BASS_TAG_CA_CODEC 11 // CoreAudio codec info : TAG_CA_CODEC structure
+#define BASS_TAG_MF                                                            \
+  13 // Media Foundation tags : series of null-terminated UTF-8 strings
+#define BASS_TAG_WAVEFORMAT 14 // WAVE format : WAVEFORMATEEX structure
+#define BASS_TAG_AM_MIME 15    // Android Media MIME type : ASCII string
+#define BASS_TAG_AM_NAME 16    // Android Media codec name : ASCII string
+#define BASS_TAG_RIFF_INFO                                                     \
+  0x100 // RIFF "INFO" tags : series of null-terminated ANSI strings
+#define BASS_TAG_RIFF_BEXT 0x101 // RIFF/BWF "bext" tags : TAG_BEXT structure
+#define BASS_TAG_RIFF_CART 0x102 // RIFF/BWF "cart" tags : TAG_CART structure
+#define BASS_TAG_RIFF_DISP 0x103 // RIFF "DISP" text tag : ANSI string
+#define BASS_TAG_RIFF_CUE 0x104  // RIFF "cue " chunk : TAG_CUE structure
+#define BASS_TAG_RIFF_SMPL 0x105 // RIFF "smpl" chunk : TAG_SMPL structure
+#define BASS_TAG_APE_BINARY                                                    \
+  0x1000 // + index #, binary APE tag : TAG_APE_BINARY structure
 #define BASS_TAG_MUSIC_NAME 0x10000    // MOD music name : ANSI string
 #define BASS_TAG_MUSIC_MESSAGE 0x10001 // MOD message : ANSI string
-#define BASS_TAG_MUSIC_ORDERS 0x10002  // MOD order list : BYTE array of pattern numbers
-#define BASS_TAG_MUSIC_AUTH 0x10003    // MOD author : UTF-8 string
-#define BASS_TAG_MUSIC_INST 0x10100    // + instrument #, MOD instrument name : ANSI string
-#define BASS_TAG_MUSIC_SAMPLE 0x10300  // + sample #, MOD sample name : ANSI string
+#define BASS_TAG_MUSIC_ORDERS                                                  \
+  0x10002 // MOD order list : BYTE array of pattern numbers
+#define BASS_TAG_MUSIC_AUTH 0x10003 // MOD author : UTF-8 string
+#define BASS_TAG_MUSIC_INST                                                    \
+  0x10100 // + instrument #, MOD instrument name : ANSI string
+#define BASS_TAG_MUSIC_SAMPLE                                                  \
+  0x10300 // + sample #, MOD sample name : ANSI string
 
 // ID3v1 tag structure
 typedef struct {
-    char id[3];
-    char title[30];
-    char artist[30];
-    char album[30];
-    char year[4];
-    char comment[30];
-    BYTE genre;
+  char id[3];
+  char title[30];
+  char artist[30];
+  char album[30];
+  char year[4];
+  char comment[30];
+  BYTE genre;
 } TAG_ID3;
 
 // Binary APE tag structure
 typedef struct {
-    const char *key;
-    const void *data;
-    DWORD length;
+  const char *key;
+  const void *data;
+  DWORD length;
 } TAG_APE_BINARY;
 
 // BWF "bext" tag structure
@@ -712,113 +747,107 @@ typedef struct {
 #endif
 #pragma pack(push, 1)
 typedef struct {
-    char Description[256];        // description
-    char Originator[32];          // name of the originator
-    char OriginatorReference[32]; // reference of the originator
-    char OriginationDate[10];     // date of creation (yyyy-mm-dd)
-    char OriginationTime[8];      // time of creation (hh-mm-ss)
-    QWORD TimeReference;          // first sample count since midnight (little-endian)
-    WORD Version;                 // BWF version (little-endian)
-    BYTE UMID[64];                // SMPTE UMID
-    BYTE Reserved[190];
+  char Description[256];        // description
+  char Originator[32];          // name of the originator
+  char OriginatorReference[32]; // reference of the originator
+  char OriginationDate[10];     // date of creation (yyyy-mm-dd)
+  char OriginationTime[8];      // time of creation (hh-mm-ss)
+  QWORD TimeReference; // first sample count since midnight (little-endian)
+  WORD Version;        // BWF version (little-endian)
+  BYTE UMID[64];       // SMPTE UMID
+  BYTE Reserved[190];
 #if defined(__GNUC__) && __GNUC__ < 3
-    char CodingHistory[0]; // history
-#elif 1                    // change to 0 if compiler fails the following line
-    char CodingHistory[]; // history
+  char CodingHistory[0]; // history
+#elif 1                  // change to 0 if compiler fails the following line
+  char CodingHistory[]; // history
 #else
-    char CodingHistory[1]; // history
+  char CodingHistory[1]; // history
 #endif
 } TAG_BEXT;
 #pragma pack(pop)
 
 // BWF "cart" tag structures
-typedef struct
-{
-    DWORD dwUsage; // FOURCC timer usage ID
-    DWORD dwValue; // timer value in samples from head
+typedef struct {
+  DWORD dwUsage; // FOURCC timer usage ID
+  DWORD dwValue; // timer value in samples from head
 } TAG_CART_TIMER;
 
-typedef struct
-{
-    char Version[4];             // version of the data structure
-    char Title[64];              // title of cart audio sequence
-    char Artist[64];             // artist or creator name
-    char CutID[64];              // cut number identification
-    char ClientID[64];           // client identification
-    char Category[64];           // category ID, PSA, NEWS, etc
-    char Classification[64];     // classification or auxiliary key
-    char OutCue[64];             // out cue text
-    char StartDate[10];          // yyyy-mm-dd
-    char StartTime[8];           // hh:mm:ss
-    char EndDate[10];            // yyyy-mm-dd
-    char EndTime[8];             // hh:mm:ss
-    char ProducerAppID[64];      // name of vendor or application
-    char ProducerAppVersion[64]; // version of producer application
-    char UserDef[64];            // user defined text
-    DWORD dwLevelReference;      // sample value for 0 dB reference
-    TAG_CART_TIMER PostTimer[8]; // 8 time markers after head
-    char Reserved[276];
-    char URL[1024]; // uniform resource locator
+typedef struct {
+  char Version[4];             // version of the data structure
+  char Title[64];              // title of cart audio sequence
+  char Artist[64];             // artist or creator name
+  char CutID[64];              // cut number identification
+  char ClientID[64];           // client identification
+  char Category[64];           // category ID, PSA, NEWS, etc
+  char Classification[64];     // classification or auxiliary key
+  char OutCue[64];             // out cue text
+  char StartDate[10];          // yyyy-mm-dd
+  char StartTime[8];           // hh:mm:ss
+  char EndDate[10];            // yyyy-mm-dd
+  char EndTime[8];             // hh:mm:ss
+  char ProducerAppID[64];      // name of vendor or application
+  char ProducerAppVersion[64]; // version of producer application
+  char UserDef[64];            // user defined text
+  DWORD dwLevelReference;      // sample value for 0 dB reference
+  TAG_CART_TIMER PostTimer[8]; // 8 time markers after head
+  char Reserved[276];
+  char URL[1024]; // uniform resource locator
 #if defined(__GNUC__) && __GNUC__ < 3
-    char TagText[0]; // free form text for scripts or tags
-#elif 1              // change to 0 if compiler fails the following line
-    char TagText[];       // free form text for scripts or tags
+  char TagText[0]; // free form text for scripts or tags
+#elif 1            // change to 0 if compiler fails the following line
+  char TagText[];       // free form text for scripts or tags
 #else
-    char TagText[1];       // free form text for scripts or tags
+  char TagText[1];       // free form text for scripts or tags
 #endif
 } TAG_CART;
 
 // RIFF "cue " tag structures
-typedef struct
-{
-    DWORD dwName;
-    DWORD dwPosition;
-    DWORD fccChunk;
-    DWORD dwChunkStart;
-    DWORD dwBlockStart;
-    DWORD dwSampleOffset;
+typedef struct {
+  DWORD dwName;
+  DWORD dwPosition;
+  DWORD fccChunk;
+  DWORD dwChunkStart;
+  DWORD dwBlockStart;
+  DWORD dwSampleOffset;
 } TAG_CUE_POINT;
 
-typedef struct
-{
-    DWORD dwCuePoints;
+typedef struct {
+  DWORD dwCuePoints;
 #if defined(__GNUC__) && __GNUC__ < 3
-    TAG_CUE_POINT CuePoints[0];
+  TAG_CUE_POINT CuePoints[0];
 #elif 1 // change to 0 if compiler fails the following line
-    TAG_CUE_POINT CuePoints[];
+  TAG_CUE_POINT CuePoints[];
 #else
-    TAG_CUE_POINT CuePoints[1];
+  TAG_CUE_POINT CuePoints[1];
 #endif
 } TAG_CUE;
 
 // RIFF "smpl" tag structures
-typedef struct
-{
-    DWORD dwIdentifier;
-    DWORD dwType;
-    DWORD dwStart;
-    DWORD dwEnd;
-    DWORD dwFraction;
-    DWORD dwPlayCount;
+typedef struct {
+  DWORD dwIdentifier;
+  DWORD dwType;
+  DWORD dwStart;
+  DWORD dwEnd;
+  DWORD dwFraction;
+  DWORD dwPlayCount;
 } TAG_SMPL_LOOP;
 
-typedef struct
-{
-    DWORD dwManufacturer;
-    DWORD dwProduct;
-    DWORD dwSamplePeriod;
-    DWORD dwMIDIUnityNote;
-    DWORD dwMIDIPitchFraction;
-    DWORD dwSMPTEFormat;
-    DWORD dwSMPTEOffset;
-    DWORD cSampleLoops;
-    DWORD cbSamplerData;
+typedef struct {
+  DWORD dwManufacturer;
+  DWORD dwProduct;
+  DWORD dwSamplePeriod;
+  DWORD dwMIDIUnityNote;
+  DWORD dwMIDIPitchFraction;
+  DWORD dwSMPTEFormat;
+  DWORD dwSMPTEOffset;
+  DWORD cSampleLoops;
+  DWORD cbSamplerData;
 #if defined(__GNUC__) && __GNUC__ < 3
-    TAG_SMPL_LOOP SampleLoops[0];
+  TAG_SMPL_LOOP SampleLoops[0];
 #elif 1 // change to 0 if compiler fails the following line
-    TAG_SMPL_LOOP SampleLoops[];
+  TAG_SMPL_LOOP SampleLoops[];
 #else
-    TAG_SMPL_LOOP SampleLoops[1];
+  TAG_SMPL_LOOP SampleLoops[1];
 #endif
 } TAG_SMPL;
 #ifdef _MSC_VER
@@ -827,37 +856,40 @@ typedef struct
 
 // CoreAudio codec info structure
 typedef struct {
-    DWORD ftype;      // file format
-    DWORD atype;      // audio format
-    const char *name; // description
+  DWORD ftype;      // file format
+  DWORD atype;      // audio format
+  const char *name; // description
 } TAG_CA_CODEC;
 
 #ifndef _WAVEFORMATEX_
 #define _WAVEFORMATEX_
 #pragma pack(push, 1)
 typedef struct tWAVEFORMATEX {
-    WORD wFormatTag;
-    WORD nChannels;
-    DWORD nSamplesPerSec;
-    DWORD nAvgBytesPerSec;
-    WORD nBlockAlign;
-    WORD wBitsPerSample;
-    WORD cbSize;
+  WORD wFormatTag;
+  WORD nChannels;
+  DWORD nSamplesPerSec;
+  DWORD nAvgBytesPerSec;
+  WORD nBlockAlign;
+  WORD wBitsPerSample;
+  WORD cbSize;
 } WAVEFORMATEX, *PWAVEFORMATEX, *LPWAVEFORMATEX;
 typedef const WAVEFORMATEX *LPCWAVEFORMATEX;
 #pragma pack(pop)
 #endif
 
 // BASS_ChannelGetLength/GetPosition/SetPosition modes
-#define BASS_POS_BYTE 0              // byte position
-#define BASS_POS_MUSIC_ORDER 1       // order.row position, MAKELONG(order,row)
-#define BASS_POS_OGG 3               // OGG bitstream number
-#define BASS_POS_RESET 0x2000000     // flag: reset user file buffers
-#define BASS_POS_RELATIVE 0x4000000  // flag: seek relative to the current position
-#define BASS_POS_INEXACT 0x8000000   // flag: allow seeking to inexact position
-#define BASS_POS_DECODE 0x10000000   // flag: get the decoding (not playing) position
-#define BASS_POS_DECODETO 0x20000000 // flag: decode to the position instead of seeking
-#define BASS_POS_SCAN 0x40000000     // flag: scan to the position
+#define BASS_POS_BYTE 0          // byte position
+#define BASS_POS_MUSIC_ORDER 1   // order.row position, MAKELONG(order,row)
+#define BASS_POS_OGG 3           // OGG bitstream number
+#define BASS_POS_RESET 0x2000000 // flag: reset user file buffers
+#define BASS_POS_RELATIVE                                                      \
+  0x4000000 // flag: seek relative to the current position
+#define BASS_POS_INEXACT 0x8000000 // flag: allow seeking to inexact position
+#define BASS_POS_DECODE                                                        \
+  0x10000000 // flag: get the decoding (not playing) position
+#define BASS_POS_DECODETO                                                      \
+  0x20000000 // flag: decode to the position instead of seeking
+#define BASS_POS_SCAN 0x40000000 // flag: scan to the position
 
 // BASS_ChannelSetDevice/GetDevice option
 #define BASS_NODEVICE 0x20000
@@ -892,81 +924,81 @@ typedef const WAVEFORMATEX *LPCWAVEFORMATEX;
 #define BASS_FX_VOLUME 9
 
 typedef struct {
-    float fWetDryMix;
-    float fDepth;
-    float fFeedback;
-    float fFrequency;
-    DWORD lWaveform; // 0=triangle, 1=sine
-    float fDelay;
-    DWORD lPhase; // BASS_DX8_PHASE_xxx
+  float fWetDryMix;
+  float fDepth;
+  float fFeedback;
+  float fFrequency;
+  DWORD lWaveform; // 0=triangle, 1=sine
+  float fDelay;
+  DWORD lPhase; // BASS_DX8_PHASE_xxx
 } BASS_DX8_CHORUS;
 
 typedef struct {
-    float fGain;
-    float fAttack;
-    float fRelease;
-    float fThreshold;
-    float fRatio;
-    float fPredelay;
+  float fGain;
+  float fAttack;
+  float fRelease;
+  float fThreshold;
+  float fRatio;
+  float fPredelay;
 } BASS_DX8_COMPRESSOR;
 
 typedef struct {
-    float fGain;
-    float fEdge;
-    float fPostEQCenterFrequency;
-    float fPostEQBandwidth;
-    float fPreLowpassCutoff;
+  float fGain;
+  float fEdge;
+  float fPostEQCenterFrequency;
+  float fPostEQBandwidth;
+  float fPreLowpassCutoff;
 } BASS_DX8_DISTORTION;
 
 typedef struct {
-    float fWetDryMix;
-    float fFeedback;
-    float fLeftDelay;
-    float fRightDelay;
-    BOOL lPanDelay;
+  float fWetDryMix;
+  float fFeedback;
+  float fLeftDelay;
+  float fRightDelay;
+  BOOL lPanDelay;
 } BASS_DX8_ECHO;
 
 typedef struct {
-    float fWetDryMix;
-    float fDepth;
-    float fFeedback;
-    float fFrequency;
-    DWORD lWaveform; // 0=triangle, 1=sine
-    float fDelay;
-    DWORD lPhase; // BASS_DX8_PHASE_xxx
+  float fWetDryMix;
+  float fDepth;
+  float fFeedback;
+  float fFrequency;
+  DWORD lWaveform; // 0=triangle, 1=sine
+  float fDelay;
+  DWORD lPhase; // BASS_DX8_PHASE_xxx
 } BASS_DX8_FLANGER;
 
 typedef struct {
-    DWORD dwRateHz;    // Rate of modulation in hz
-    DWORD dwWaveShape; // 0=triangle, 1=square
+  DWORD dwRateHz;    // Rate of modulation in hz
+  DWORD dwWaveShape; // 0=triangle, 1=square
 } BASS_DX8_GARGLE;
 
 typedef struct {
-    int lRoom;                 // [-10000, 0]      default: -1000 mB
-    int lRoomHF;               // [-10000, 0]      default: 0 mB
-    float flRoomRolloffFactor; // [0.0, 10.0]      default: 0.0
-    float flDecayTime;         // [0.1, 20.0]      default: 1.49s
-    float flDecayHFRatio;      // [0.1, 2.0]       default: 0.83
-    int lReflections;          // [-10000, 1000]   default: -2602 mB
-    float flReflectionsDelay;  // [0.0, 0.3]       default: 0.007 s
-    int lReverb;               // [-10000, 2000]   default: 200 mB
-    float flReverbDelay;       // [0.0, 0.1]       default: 0.011 s
-    float flDiffusion;         // [0.0, 100.0]     default: 100.0 %
-    float flDensity;           // [0.0, 100.0]     default: 100.0 %
-    float flHFReference;       // [20.0, 20000.0]  default: 5000.0 Hz
+  int lRoom;                 // [-10000, 0]      default: -1000 mB
+  int lRoomHF;               // [-10000, 0]      default: 0 mB
+  float flRoomRolloffFactor; // [0.0, 10.0]      default: 0.0
+  float flDecayTime;         // [0.1, 20.0]      default: 1.49s
+  float flDecayHFRatio;      // [0.1, 2.0]       default: 0.83
+  int lReflections;          // [-10000, 1000]   default: -2602 mB
+  float flReflectionsDelay;  // [0.0, 0.3]       default: 0.007 s
+  int lReverb;               // [-10000, 2000]   default: 200 mB
+  float flReverbDelay;       // [0.0, 0.1]       default: 0.011 s
+  float flDiffusion;         // [0.0, 100.0]     default: 100.0 %
+  float flDensity;           // [0.0, 100.0]     default: 100.0 %
+  float flHFReference;       // [20.0, 20000.0]  default: 5000.0 Hz
 } BASS_DX8_I3DL2REVERB;
 
 typedef struct {
-    float fCenter;
-    float fBandwidth;
-    float fGain;
+  float fCenter;
+  float fBandwidth;
+  float fGain;
 } BASS_DX8_PARAMEQ;
 
 typedef struct {
-    float fInGain;          // [-96.0,0.0]            default: 0.0 dB
-    float fReverbMix;       // [-96.0,0.0]            default: 0.0 db
-    float fReverbTime;      // [0.001,3000.0]         default: 1000.0 ms
-    float fHighFreqRTRatio; // [0.001,0.999]          default: 0.001
+  float fInGain;          // [-96.0,0.0]            default: 0.0 dB
+  float fReverbMix;       // [-96.0,0.0]            default: 0.0 db
+  float fReverbTime;      // [0.001,3000.0]         default: 1000.0 ms
+  float fHighFreqRTRatio; // [0.001,0.999]          default: 0.001
 } BASS_DX8_REVERB;
 
 #define BASS_DX8_PHASE_NEG_180 0
@@ -976,10 +1008,10 @@ typedef struct {
 #define BASS_DX8_PHASE_180 4
 
 typedef struct {
-    float fTarget;
-    float fCurrent;
-    float fTime;
-    DWORD lCurve;
+  float fTarget;
+  float fCurrent;
+  float fTime;
+  DWORD lCurve;
 } BASS_FX_VOLUME_PARAM;
 
 typedef void(CALLBACK IOSNOTIFYPROC)(DWORD status);
@@ -996,15 +1028,19 @@ void *BASSDEF(BASS_GetConfigPtr)(DWORD option);
 DWORD BASSDEF(BASS_GetVersion)();
 int BASSDEF(BASS_ErrorGetCode)();
 BOOL BASSDEF(BASS_GetDeviceInfo)(DWORD device, BASS_DEVICEINFO *info);
-#if defined(_WIN32) && !defined(_WIN32_WCE) && !(WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
-BOOL BASSDEF(BASS_Init)(int device, DWORD freq, DWORD flags, HWND win, const GUID *dsguid);
+#if defined(_WIN32) && !defined(_WIN32_WCE) &&                                 \
+    !(WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
+BOOL BASSDEF(BASS_Init)(int device, DWORD freq, DWORD flags, HWND win,
+                        const GUID *dsguid);
 #else
-BOOL BASSDEF(BASS_Init)(int device, DWORD freq, DWORD flags, void *win, void *dsguid);
+BOOL BASSDEF(BASS_Init)(int device, DWORD freq, DWORD flags, void *win,
+                        void *dsguid);
 #endif
 BOOL BASSDEF(BASS_SetDevice)(DWORD device);
 DWORD BASSDEF(BASS_GetDevice)();
 BOOL BASSDEF(BASS_Free)();
-#if defined(_WIN32) && !defined(_WIN32_WCE) && !(WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
+#if defined(_WIN32) && !defined(_WIN32_WCE) &&                                 \
+    !(WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
 void *BASSDEF(BASS_GetDSoundObject)(DWORD object);
 #endif
 BOOL BASSDEF(BASS_GetInfo)(BASS_INFO *info);
@@ -1023,19 +1059,29 @@ const BASS_PLUGININFO *BASSDEF(BASS_PluginGetInfo)(HPLUGIN handle);
 
 BOOL BASSDEF(BASS_Set3DFactors)(float distf, float rollf, float doppf);
 BOOL BASSDEF(BASS_Get3DFactors)(float *distf, float *rollf, float *doppf);
-BOOL BASSDEF(BASS_Set3DPosition)(const BASS_3DVECTOR *pos, const BASS_3DVECTOR *vel, const BASS_3DVECTOR *front, const BASS_3DVECTOR *top);
-BOOL BASSDEF(BASS_Get3DPosition)(BASS_3DVECTOR *pos, BASS_3DVECTOR *vel, BASS_3DVECTOR *front, BASS_3DVECTOR *top);
+BOOL BASSDEF(BASS_Set3DPosition)(const BASS_3DVECTOR *pos,
+                                 const BASS_3DVECTOR *vel,
+                                 const BASS_3DVECTOR *front,
+                                 const BASS_3DVECTOR *top);
+BOOL BASSDEF(BASS_Get3DPosition)(BASS_3DVECTOR *pos, BASS_3DVECTOR *vel,
+                                 BASS_3DVECTOR *front, BASS_3DVECTOR *top);
 void BASSDEF(BASS_Apply3D)();
-#if defined(_WIN32) && !defined(_WIN32_WCE) && !(WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
-BOOL BASSDEF(BASS_SetEAXParameters)(int env, float vol, float decay, float damp);
-BOOL BASSDEF(BASS_GetEAXParameters)(DWORD *env, float *vol, float *decay, float *damp);
+#if defined(_WIN32) && !defined(_WIN32_WCE) &&                                 \
+    !(WINAPI_FAMILY && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
+BOOL BASSDEF(BASS_SetEAXParameters)(int env, float vol, float decay,
+                                    float damp);
+BOOL BASSDEF(BASS_GetEAXParameters)(DWORD *env, float *vol, float *decay,
+                                    float *damp);
 #endif
 
-HMUSIC BASSDEF(BASS_MusicLoad)(BOOL mem, const void *file, QWORD offset, DWORD length, DWORD flags, DWORD freq);
+HMUSIC BASSDEF(BASS_MusicLoad)(BOOL mem, const void *file, QWORD offset,
+                               DWORD length, DWORD flags, DWORD freq);
 BOOL BASSDEF(BASS_MusicFree)(HMUSIC handle);
 
-HSAMPLE BASSDEF(BASS_SampleLoad)(BOOL mem, const void *file, QWORD offset, DWORD length, DWORD max, DWORD flags);
-HSAMPLE BASSDEF(BASS_SampleCreate)(DWORD length, DWORD freq, DWORD chans, DWORD max, DWORD flags);
+HSAMPLE BASSDEF(BASS_SampleLoad)(BOOL mem, const void *file, QWORD offset,
+                                 DWORD length, DWORD max, DWORD flags);
+HSAMPLE BASSDEF(BASS_SampleCreate)(DWORD length, DWORD freq, DWORD chans,
+                                   DWORD max, DWORD flags);
 BOOL BASSDEF(BASS_SampleFree)(HSAMPLE handle);
 BOOL BASSDEF(BASS_SampleSetData)(HSAMPLE handle, const void *buffer);
 BOOL BASSDEF(BASS_SampleGetData)(HSAMPLE handle, void *buffer);
@@ -1045,14 +1091,22 @@ HCHANNEL BASSDEF(BASS_SampleGetChannel)(HSAMPLE handle, BOOL onlynew);
 DWORD BASSDEF(BASS_SampleGetChannels)(HSAMPLE handle, HCHANNEL *channels);
 BOOL BASSDEF(BASS_SampleStop)(HSAMPLE handle);
 
-HSTREAM BASSDEF(BASS_StreamCreate)(DWORD freq, DWORD chans, DWORD flags, STREAMPROC *proc, void *user);
-HSTREAM BASSDEF(BASS_StreamCreateFile)(BOOL mem, const void *file, QWORD offset, QWORD length, DWORD flags);
-HSTREAM BASSDEF(BASS_StreamCreateURL)(const char *url, DWORD offset, DWORD flags, DOWNLOADPROC *proc, void *user);
-HSTREAM BASSDEF(BASS_StreamCreateFileUser)(DWORD system, DWORD flags, const BASS_FILEPROCS *proc, void *user);
+HSTREAM BASSDEF(BASS_StreamCreate)(DWORD freq, DWORD chans, DWORD flags,
+                                   STREAMPROC *proc, void *user);
+HSTREAM BASSDEF(BASS_StreamCreateFile)(BOOL mem, const void *file, QWORD offset,
+                                       QWORD length, DWORD flags);
+HSTREAM BASSDEF(BASS_StreamCreateURL)(const char *url, DWORD offset,
+                                      DWORD flags, DOWNLOADPROC *proc,
+                                      void *user);
+HSTREAM BASSDEF(BASS_StreamCreateFileUser)(DWORD system, DWORD flags,
+                                           const BASS_FILEPROCS *proc,
+                                           void *user);
 BOOL BASSDEF(BASS_StreamFree)(HSTREAM handle);
 QWORD BASSDEF(BASS_StreamGetFilePosition)(HSTREAM handle, DWORD mode);
-DWORD BASSDEF(BASS_StreamPutData)(HSTREAM handle, const void *buffer, DWORD length);
-DWORD BASSDEF(BASS_StreamPutFileData)(HSTREAM handle, const void *buffer, DWORD length);
+DWORD BASSDEF(BASS_StreamPutData)(HSTREAM handle, const void *buffer,
+                                  DWORD length);
+DWORD BASSDEF(BASS_StreamPutFileData)(HSTREAM handle, const void *buffer,
+                                      DWORD length);
 
 BOOL BASSDEF(BASS_RecordGetDeviceInfo)(DWORD device, BASS_DEVICEINFO *info);
 BOOL BASSDEF(BASS_RecordInit)(int device);
@@ -1063,7 +1117,8 @@ BOOL BASSDEF(BASS_RecordGetInfo)(BASS_RECORDINFO *info);
 const char *BASSDEF(BASS_RecordGetInputName)(int input);
 BOOL BASSDEF(BASS_RecordSetInput)(int input, DWORD flags, float volume);
 DWORD BASSDEF(BASS_RecordGetInput)(int input, float *volume);
-HRECORD BASSDEF(BASS_RecordStart)(DWORD freq, DWORD chans, DWORD flags, RECORDPROC *proc, void *user);
+HRECORD BASSDEF(BASS_RecordStart)(DWORD freq, DWORD chans, DWORD flags,
+                                  RECORDPROC *proc, void *user);
 
 double BASSDEF(BASS_ChannelBytes2Seconds)(DWORD handle, QWORD pos);
 QWORD BASSDEF(BASS_ChannelSeconds2Bytes)(DWORD handle, double pos);
@@ -1079,24 +1134,39 @@ BOOL BASSDEF(BASS_ChannelPlay)(DWORD handle, BOOL restart);
 BOOL BASSDEF(BASS_ChannelStop)(DWORD handle);
 BOOL BASSDEF(BASS_ChannelPause)(DWORD handle);
 BOOL BASSDEF(BASS_ChannelSetAttribute)(DWORD handle, DWORD attrib, float value);
-BOOL BASSDEF(BASS_ChannelGetAttribute)(DWORD handle, DWORD attrib, float *value);
-BOOL BASSDEF(BASS_ChannelSlideAttribute)(DWORD handle, DWORD attrib, float value, DWORD time);
+BOOL BASSDEF(BASS_ChannelGetAttribute)(DWORD handle, DWORD attrib,
+                                       float *value);
+BOOL BASSDEF(BASS_ChannelSlideAttribute)(DWORD handle, DWORD attrib,
+                                         float value, DWORD time);
 BOOL BASSDEF(BASS_ChannelIsSliding)(DWORD handle, DWORD attrib);
-BOOL BASSDEF(BASS_ChannelSetAttributeEx)(DWORD handle, DWORD attrib, void *value, DWORD size);
-DWORD BASSDEF(BASS_ChannelGetAttributeEx)(DWORD handle, DWORD attrib, void *value, DWORD size);
-BOOL BASSDEF(BASS_ChannelSet3DAttributes)(DWORD handle, int mode, float min, float max, int iangle, int oangle, float outvol);
-BOOL BASSDEF(BASS_ChannelGet3DAttributes)(DWORD handle, DWORD *mode, float *min, float *max, DWORD *iangle, DWORD *oangle, float *outvol);
-BOOL BASSDEF(BASS_ChannelSet3DPosition)(DWORD handle, const BASS_3DVECTOR *pos, const BASS_3DVECTOR *orient, const BASS_3DVECTOR *vel);
-BOOL BASSDEF(BASS_ChannelGet3DPosition)(DWORD handle, BASS_3DVECTOR *pos, BASS_3DVECTOR *orient, BASS_3DVECTOR *vel);
+BOOL BASSDEF(BASS_ChannelSetAttributeEx)(DWORD handle, DWORD attrib,
+                                         void *value, DWORD size);
+DWORD BASSDEF(BASS_ChannelGetAttributeEx)(DWORD handle, DWORD attrib,
+                                          void *value, DWORD size);
+BOOL BASSDEF(BASS_ChannelSet3DAttributes)(DWORD handle, int mode, float min,
+                                          float max, int iangle, int oangle,
+                                          float outvol);
+BOOL BASSDEF(BASS_ChannelGet3DAttributes)(DWORD handle, DWORD *mode, float *min,
+                                          float *max, DWORD *iangle,
+                                          DWORD *oangle, float *outvol);
+BOOL BASSDEF(BASS_ChannelSet3DPosition)(DWORD handle, const BASS_3DVECTOR *pos,
+                                        const BASS_3DVECTOR *orient,
+                                        const BASS_3DVECTOR *vel);
+BOOL BASSDEF(BASS_ChannelGet3DPosition)(DWORD handle, BASS_3DVECTOR *pos,
+                                        BASS_3DVECTOR *orient,
+                                        BASS_3DVECTOR *vel);
 QWORD BASSDEF(BASS_ChannelGetLength)(DWORD handle, DWORD mode);
 BOOL BASSDEF(BASS_ChannelSetPosition)(DWORD handle, QWORD pos, DWORD mode);
 QWORD BASSDEF(BASS_ChannelGetPosition)(DWORD handle, DWORD mode);
 DWORD BASSDEF(BASS_ChannelGetLevel)(DWORD handle);
-BOOL BASSDEF(BASS_ChannelGetLevelEx)(DWORD handle, float *levels, float length, DWORD flags);
+BOOL BASSDEF(BASS_ChannelGetLevelEx)(DWORD handle, float *levels, float length,
+                                     DWORD flags);
 DWORD BASSDEF(BASS_ChannelGetData)(DWORD handle, void *buffer, DWORD length);
-HSYNC BASSDEF(BASS_ChannelSetSync)(DWORD handle, DWORD type, QWORD param, SYNCPROC *proc, void *user);
+HSYNC BASSDEF(BASS_ChannelSetSync)(DWORD handle, DWORD type, QWORD param,
+                                   SYNCPROC *proc, void *user);
 BOOL BASSDEF(BASS_ChannelRemoveSync)(DWORD handle, HSYNC sync);
-HDSP BASSDEF(BASS_ChannelSetDSP)(DWORD handle, DSPPROC *proc, void *user, int priority);
+HDSP BASSDEF(BASS_ChannelSetDSP)(DWORD handle, DSPPROC *proc, void *user,
+                                 int priority);
 BOOL BASSDEF(BASS_ChannelRemoveDSP)(DWORD handle, HDSP dsp);
 BOOL BASSDEF(BASS_ChannelSetLink)(DWORD handle, DWORD chan);
 BOOL BASSDEF(BASS_ChannelRemoveLink)(DWORD handle, DWORD chan);
@@ -1114,32 +1184,42 @@ BOOL BASSDEF(BASS_FXSetPriority)(HFX handle, int priority);
 #if defined(_WIN32) && !defined(NOBASSOVERLOADS)
 static inline HPLUGIN BASS_PluginLoad(const WCHAR *file, DWORD flags)
 {
-    return BASS_PluginLoad((const char *)file, flags | BASS_UNICODE);
+  return BASS_PluginLoad((const char *)file, flags | BASS_UNICODE);
 }
 
-static inline HMUSIC BASS_MusicLoad(BOOL mem, const WCHAR *file, QWORD offset, DWORD length, DWORD flags, DWORD freq)
+static inline HMUSIC BASS_MusicLoad(BOOL mem, const WCHAR *file, QWORD offset,
+                                    DWORD length, DWORD flags, DWORD freq)
 {
-    return BASS_MusicLoad(mem, (const void *)file, offset, length, flags | BASS_UNICODE, freq);
+  return BASS_MusicLoad(mem, (const void *)file, offset, length,
+                        flags | BASS_UNICODE, freq);
 }
 
-static inline HSAMPLE BASS_SampleLoad(BOOL mem, const WCHAR *file, QWORD offset, DWORD length, DWORD max, DWORD flags)
+static inline HSAMPLE BASS_SampleLoad(BOOL mem, const WCHAR *file, QWORD offset,
+                                      DWORD length, DWORD max, DWORD flags)
 {
-    return BASS_SampleLoad(mem, (const void *)file, offset, length, max, flags | BASS_UNICODE);
+  return BASS_SampleLoad(mem, (const void *)file, offset, length, max,
+                         flags | BASS_UNICODE);
 }
 
-static inline HSTREAM BASS_StreamCreateFile(BOOL mem, const WCHAR *file, QWORD offset, QWORD length, DWORD flags)
+static inline HSTREAM BASS_StreamCreateFile(BOOL mem, const WCHAR *file,
+                                            QWORD offset, QWORD length,
+                                            DWORD flags)
 {
-    return BASS_StreamCreateFile(mem, (const void *)file, offset, length, flags | BASS_UNICODE);
+  return BASS_StreamCreateFile(mem, (const void *)file, offset, length,
+                               flags | BASS_UNICODE);
 }
 
-static inline HSTREAM BASS_StreamCreateURL(const WCHAR *url, DWORD offset, DWORD flags, DOWNLOADPROC *proc, void *user)
+static inline HSTREAM BASS_StreamCreateURL(const WCHAR *url, DWORD offset,
+                                           DWORD flags, DOWNLOADPROC *proc,
+                                           void *user)
 {
-    return BASS_StreamCreateURL((const char *)url, offset, flags | BASS_UNICODE, proc, user);
+  return BASS_StreamCreateURL((const char *)url, offset, flags | BASS_UNICODE,
+                              proc, user);
 }
 
 static inline BOOL BASS_SetConfigPtr(DWORD option, const WCHAR *value)
 {
-    return BASS_SetConfigPtr(option | BASS_UNICODE, (const void *)value);
+  return BASS_SetConfigPtr(option | BASS_UNICODE, (const void *)value);
 }
 #endif
 #endif

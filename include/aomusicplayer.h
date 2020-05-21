@@ -17,63 +17,64 @@
 #if defined(BASSAUDIO)
 class AOMusicPlayer {
 public:
-    AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
-    virtual ~AOMusicPlayer();
-    void set_volume(int p_value, int channel = -1);
-    void set_looping(bool toggle, int channel = 0);
+  AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
+  virtual ~AOMusicPlayer();
+  void set_volume(int p_value, int channel = -1);
+  void set_looping(bool toggle, int channel = 0);
 
-    const int m_channelmax = 4;
+  const int m_channelmax = 4;
 
-    //These have to be public for the stupid sync thing
-    QWORD loop_start = 0;
-    QWORD loop_end = 0;
+  // These have to be public for the stupid sync thing
+  QWORD loop_start = 0;
+  QWORD loop_end = 0;
 
 public slots:
-    void play(QString p_song, int channel = 0, bool loop = false, int effect_flags = 0);
-    void stop(int channel = 0);
+  void play(QString p_song, int channel = 0, bool loop = false,
+            int effect_flags = 0);
+  void stop(int channel = 0);
 
 private:
-    QWidget *m_parent;
-    AOApplication *ao_app;
+  QWidget *m_parent;
+  AOApplication *ao_app;
 
-    bool m_looping = false;
-    int m_volume[4] = {0, 0, 0, 0};
+  bool m_looping = false;
+  int m_volume[4] = {0, 0, 0, 0};
 
-    // Channel 0 = music
-    // Channel 1 = ambience
-    // Channel 2 = extra
-    // Channel 3 = extra
-    HSTREAM m_stream_list[4];
-    HSYNC loop_sync[4];
+  // Channel 0 = music
+  // Channel 1 = ambience
+  // Channel 2 = extra
+  // Channel 3 = extra
+  HSTREAM m_stream_list[4];
+  HSYNC loop_sync[4];
 };
 #elif defined(QTAUDIO)
 class AOMusicPlayer {
 public:
-    AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
-    ~AOMusicPlayer();
+  AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
+  ~AOMusicPlayer();
 
-    void play(QString p_song);
-    void set_volume(int p_value);
+  void play(QString p_song);
+  void set_volume(int p_value);
 
 private:
-    QMediaPlayer m_player;
-    QWidget *m_parent;
-    AOApplication *ao_app;
+  QMediaPlayer m_player;
+  QWidget *m_parent;
+  AOApplication *ao_app;
 
-    int m_volume = 0;
+  int m_volume = 0;
 };
 #else
 class AOMusicPlayer {
 public:
-    AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
-    ~AOMusicPlayer();
+  AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
+  ~AOMusicPlayer();
 
-    void play(QString p_song);
-    void set_volume(int p_value);
+  void play(QString p_song);
+  void set_volume(int p_value);
 
 private:
-    QWidget *m_parent;
-    AOApplication *ao_app;
+  QWidget *m_parent;
+  AOApplication *ao_app;
 };
 #endif
 

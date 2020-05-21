@@ -7,25 +7,25 @@
 
 class AOPacket {
 public:
-    AOPacket(QString p_packet_string);
-    AOPacket(QString header, QStringList &p_contents);
-    ~AOPacket();
+  AOPacket(QString p_packet_string);
+  AOPacket(QString header, QStringList &p_contents);
+  ~AOPacket();
 
-    QString get_header() { return m_header; }
-    QStringList &get_contents() { return m_contents; }
-    QString to_string();
+  QString get_header() { return m_header; }
+  QStringList &get_contents() { return m_contents; }
+  QString to_string();
 
-    void encrypt_header(unsigned int p_key);
-    void decrypt_header(unsigned int p_key);
+  void encrypt_header(unsigned int p_key);
+  void decrypt_header(unsigned int p_key);
 
-    void net_encode();
-    void net_decode();
+  void net_encode();
+  void net_decode();
 
 private:
-    bool encrypted = false;
+  bool encrypted = false;
 
-    QString m_header;
-    QStringList m_contents;
+  QString m_header;
+  QStringList m_contents;
 };
 
 #endif // AOPACKET_H
