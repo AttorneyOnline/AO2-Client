@@ -185,7 +185,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="583"/>
         <source>Enables colored text in the log.</source>
-        <translation>Włącza kolorwy tekst w dzienniku.</translation>
+        <translation>Włącza kolorowy tekst w dzienniku.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="594"/>
@@ -195,7 +195,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="596"/>
         <source>Only inline coloring will be shown such as &lt;&gt;,|| etc.</source>
-        <translation>Tylko kolorwanie inline będzie pokazane, dotyczy to &lt;&gt;,|| itd.</translation>
+        <translation>Tylko kolorowanie inline będzie pokazane, dotyczy to &lt;&gt;,|| itd.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="606"/>
@@ -205,7 +205,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="608"/>
         <source>IC log will mirror the IC box. Meaning that if somebody gets interrupted nobody will know what they wanted to say. Enable for a more realistic experience.</source>
-        <translation>Dziennik IC będzie odzwierciedleniem pudła IC. Oznacza to, że jeśli ktoś zostanie przerwane, nikt nie będzie wiedział co on chciał powiedzieć. Włącz dla bardziej realistycznego doświadczenia.</translation>
+        <translation>Dziennik IC będzie odzwierciedleniem pudła IC. Oznacza to, że jeśli ktoś zostanie przerwany, nikt nie będzie wiedział co on chciał powiedzieć. Włącz dla bardziej realistycznego doświadczenia.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="620"/>
