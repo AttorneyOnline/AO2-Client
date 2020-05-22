@@ -160,52 +160,52 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="109"/>
         <source>Gives the default value for the in-game &apos;Custom shownames&apos; checkbox, which in turn determines whether the client should display custom in-character names.</source>
-        <translation type="unfinished"></translation>
+        <translation>Daje domyślną wartość przyciskowi &apos;Niestandardowe ksywki&apos;, który określa, czy klient powinien pokazywać niestandardowe nazwy IC.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="305"/>
         <source>Sets the default volume for music.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawia domyślną głośność muzyki.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="320"/>
         <source>Sets the default volume for SFX sounds, like interjections or other character sound effects.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawia domyślną głośność efektów dźwiękowych (SFX). Sprzeciwy i same efekty specjalne są zaliczane jako &apos;SFX&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="568"/>
         <source>IC Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Dziennik IC</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="581"/>
         <source>Colorful IC log:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolorowy dziennik IC:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="583"/>
         <source>Enables colored text in the log.</source>
-        <translation type="unfinished"></translation>
+        <translation>Włącza kolorwy tekst w dzienniku.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="594"/>
         <source>Only inline coloring:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tylko kolorowanie inline:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="596"/>
         <source>Only inline coloring will be shown such as &lt;&gt;,|| etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tylko kolorwanie inline będzie pokazane, dotyczy to &lt;&gt;,|| itd.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="606"/>
         <source>Mirror IC log:</source>
-        <translation type="unfinished"></translation>
+        <translation>Odzwierciedlij dziennik IC:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="608"/>
         <source>IC log will mirror the IC box. Meaning that if somebody gets interrupted nobody will know what they wanted to say. Enable for a more realistic experience.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dziennik IC będzie odzwierciedleniem pudła IC. Oznacza to, że jeśli ktoś zostanie przerwane, nikt nie będzie wiedział co on chciał powiedzieć. Włącz dla bardziej realistycznego doświadczenia.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="620"/>
@@ -289,22 +289,22 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="193"/>
         <source>Slower text speed:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wolniejsza szybkość tekstu:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="194"/>
         <source>Set the text speed to be the same as the AA games.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawia szybkość tekstu na taką samą jak w grach AA.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="201"/>
         <source>Blip delay on punctuations:</source>
-        <translation type="unfinished"></translation>
+        <translation>Opóźnienia blipów na interpunkcjach:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="202"/>
         <source>Punctuation delay modifier. Enable it for the blips to slow down on punctuations.</source>
-        <translation type="unfinished"></translation>
+        <translation>Modyfikator opóźnienia interpunkcji. Włącz to dla opóźnienia blipów na interpunkcjach.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="212"/>
@@ -671,7 +671,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="160"/>
         <source>OOC Message</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiadomość OOC</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="232"/>
@@ -749,7 +749,7 @@ Rozprawy które możesz załadować: %1</translation>
         <location filename="../../src/courtroom.cpp" line="1265"/>
         <location filename="../../src/courtroom.cpp" line="3492"/>
         <source>You were granted the Disable Modcalls button.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zostałeś obdarzonym przyciskiem Poza Służbą.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3310"/>
@@ -759,7 +759,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="3739"/>
         <source>Too many arguments to save a case! You only need a filename without extension and the courtroom status.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zbyt dużo parametrów, aby zapisać rozprawę! Potrzebujesz tylko jedną nazwę pliku, bez rozszerzenia nazwy pliku i statusu sali sądowej.</translation>
     </message>
     <message>
         <source>You were granted the Guard button.</source>
@@ -948,7 +948,7 @@ Czy pobrałeś wszystkie zasoby poprawnie z tiny.cc/getao, włączając duży fo
     <message>
         <location filename="../../src/lobby.cpp" line="279"/>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Cents02&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy, Raidensnake</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h2&gt;Attorney Online: %1&lt;/h2&gt;Symulator dramy sądowej&lt;p&gt;&lt;b&gt;Kod żródłowy:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Główny rozwój:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Cents02&lt;p&gt;&lt;b&gt;Szczególne podziękowania:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy, Raidensnake</translation>
     </message>
     <message>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, Noevain, Cronnicossy</source>
