@@ -8,9 +8,6 @@ cache:
   paths:
     - lib/
 
-variables:
-  DEBIAN_FRONTEND: noninteractive
-
 before_script:
   - echo Current working directory is $(pwd)
 
@@ -25,24 +22,22 @@ build linux x86_64:
     - apt-get update
     - >
       apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev
-      clang make git sudo curl ca-certificates pkg-config upx unzip xz-utils
-    - git submodule init
-    - git submodule update
+      clang make git sudo curl ca-certificates pkg-config upx unzip
 
     # Print versions
     - qmake --version
     - clang --version
 
     # Extract BASS
-    #- mkdir bass
-    #- cd bass
-    #- curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
-    #- unzip bass.zip
-    #- cp x64/libbass.so ../lib
-    #- curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
-    #- unzip bassopus.zip
-    #- cp x64/libbassopus.so ../lib
-    #- cd ..
+    - mkdir bass
+    - cd bass
+    - curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
+    - unzip bass.zip
+    - cp x64/libbass.so ../lib
+    - curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+    - unzip bassopus.zip
+    - cp x64/libbassopus.so ../lib
+    - cd ..
 
     # Extract Discord RPC
     - mkdir discord-rpc
@@ -61,7 +56,7 @@ build linux x86_64:
     - cd ..
 
     # Build
-    - qmake -spec linux-clang "DEFINES += DISCORD QTAUDIO"
+    - qmake -spec linux-clang
     - make -j4
 
     # Post-processing
@@ -80,11 +75,6 @@ build windows i686:
     # Install dependencies
     - apt-get update
     - apt-get install --no-install-recommends -y make curl ca-certificates upx unzip
-    - git submodule init
-    - git submodule update
-
-    # Print versions
-    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake --version
 
     # Extract BASS
     - mkdir bass
@@ -97,19 +87,8 @@ build windows i686:
     - cp bassopus.dll ../lib
     - cd ..
 
-    # Extract QtApng
-    # - mkdir qtapng
-    # - cd qtapng
-    # - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.2-2/qtapng_mingw73_32_5.13.0.zip -o apng.zip
-    # - unzip apng.zip
-    # - mkdir ../lib/imageformats
-    # - cp mingw73_32/plugins/imageformats/qapng.dll ../lib/imageformats/
-    # - cd ..
-
-    - ls lib
-
     # Build
-    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += DISCORD BASSAUDIO"
+    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake
     - make -j4
 
     # Post-processing
@@ -145,7 +124,7 @@ deploy linux x86_64:
     - *deploy_misc
 
     # Platform-specific
-    - cp -a ../lib/* .
+    - cp -a ../lib/*.so .
     - cp -a ../bin/Attorney_Online .
     - echo "#!/bin/sh" >> ./run.sh
     - echo "LD_LIBRARY_PATH=.:\$LD_LIBRARY_PATH ./Attorney_Online" >> ./run.sh
@@ -179,8 +158,6 @@ deploy windows i686:
 
     # Platform-specific
     - cp -a ../lib/*.dll .
-    - mkdir imageformats
-    - 'cp -a ../lib/imageformats/*.dll imageformats/ || :'
     - cp -a ../bin/Attorney_Online.exe .
 
     # Zipping
@@ -213,17 +190,11 @@ publish linux x86_64:
     - deploy linux x86_64
   when: manual
   script:
-    - apt-get update
-    - apt-get install --no-install-recommends -y git nodejs npm awscli
-    - cd scripts
-    - npm install
-    - cd ..
-
     - cd zip
-    - ../scripts/wasabi_program.sh
+    - ../scripts/wasabi.sh
   variables:
     MANIFEST: program_linux_x86_64.json
-    ARTIFACT_SUFFIX: linux_x64.tar.xz
+    ARTIFACT_SUFFIX: _linux_x64.tar.xz
 
 publish windows i686:
   image: ubuntu
@@ -232,14 +203,8 @@ publish windows i686:
     - deploy windows i686
   when: manual
   script:
-    - apt-get update
-    - apt-get install --no-install-recommends -y git nodejs npm awscli
-    - cd scripts
-    - npm install
-    - cd ..
-
     - cd zip
-    - ../scripts/wasabi_program.sh
+    - ../scripts/wasabi.sh
   variables:
     MANIFEST: program_winnt_i386.json
-    ARTIFACT_SUFFIX: windows_x86.zip
+    ARTIFACT_SUFFIX: _windows_x86.zip

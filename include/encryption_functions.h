@@ -3,11 +3,11 @@
 
 #include <QString>
 
-#include <QVector>
 #include <cstddef>
-#include <iomanip>
-#include <sstream>
 #include <stdlib.h>
+#include <sstream>
+#include <iomanip>
+#include <QVector>
 
 QString fanta_encrypt(QString p_input, unsigned int key);
 QString fanta_decrypt(QString p_input, unsigned int key);

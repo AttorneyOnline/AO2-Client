@@ -4,7 +4,8 @@
 #include <QLineEdit>
 #include <QMouseEvent>
 
-class AOLineEdit : public QLineEdit {
+class AOLineEdit : public QLineEdit
+{
   Q_OBJECT
 
 public:
@@ -18,6 +19,8 @@ signals:
 
 private slots:
   void on_enter_pressed();
+
+
 };
 
 #endif // AOLINEEDIT_H

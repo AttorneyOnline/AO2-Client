@@ -4,17 +4,17 @@
 #include "aoapplication.h"
 #include "aoimage.h"
 
-#include <QFile>
 #include <QPushButton>
 #include <QString>
 #include <QWidget>
+#include <QFile>
 
-class AOCharButton : public QPushButton {
+class AOCharButton : public QPushButton
+{
   Q_OBJECT
 
 public:
-  AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos,
-               bool is_taken);
+  AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken);
 
   AOApplication *ao_app;
 

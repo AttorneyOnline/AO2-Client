@@ -3,14 +3,16 @@
 
 #include <QString>
 
-struct server_type {
+struct server_type
+{
   QString name;
   QString desc;
   QString ip;
   int port;
 };
 
-struct emote_type {
+struct emote_type
+{
   QString comment;
   QString preanim;
   QString anim;
@@ -20,20 +22,23 @@ struct emote_type {
   int sfx_duration;
 };
 
-struct char_type {
+struct char_type
+{
   QString name;
   QString description;
   QString evidence_string;
   bool taken;
 };
 
-struct evi_type {
+struct evi_type
+{
   QString name;
   QString description;
   QString image;
 };
 
-struct chatmessage_type {
+struct chatmessage_type
+{
   QString message;
   QString character;
   QString side;
@@ -50,25 +55,29 @@ struct chatmessage_type {
   int flip;
 };
 
-struct area_type {
+struct area_type
+{
   QString name;
   QString background;
   bool passworded;
 };
 
-struct pos_type {
+struct pos_type
+{
   int x;
   int y;
 };
 
-struct pos_size_type {
+struct pos_size_type
+{
   int x = 0;
   int y = 0;
   int width = 0;
   int height = 0;
 };
 
-enum CHAT_MESSAGE {
+enum CHAT_MESSAGE
+{
   DESK_MOD = 0,
   PRE_EMOTE,
   CHAR_NAME,
@@ -91,14 +100,20 @@ enum CHAT_MESSAGE {
   SELF_OFFSET,
   OTHER_OFFSET,
   OTHER_FLIP,
-  NONINTERRUPTING_PRE,
-  LOOPING_SFX,
-  SCREENSHAKE,
-  FRAME_SCREENSHAKE,
-  FRAME_REALIZATION,
-  FRAME_SFX
+  NONINTERRUPTING_PRE
 };
 
-enum COLOR { WHITE = 0, GREEN, RED, ORANGE, BLUE, YELLOW, RAINBOW, PINK, CYAN };
+enum COLOR
+{
+  WHITE = 0,
+  GREEN,
+  RED,
+  ORANGE,
+  BLUE,
+  YELLOW,
+  RAINBOW,
+  PINK,
+  CYAN
+};
 
 #endif // DATATYPES_H

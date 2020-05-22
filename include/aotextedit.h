@@ -3,7 +3,8 @@
 
 #include <QPlainTextEdit>
 
-class AOTextEdit : public QPlainTextEdit {
+class AOTextEdit : public QPlainTextEdit
+{
   Q_OBJECT
 public:
   AOTextEdit(QWidget *parent);
@@ -16,6 +17,7 @@ signals:
 
 private slots:
   void on_enter_pressed();
+
 };
 
 #endif // AOTEXTEDIT_H

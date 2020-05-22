@@ -4,21 +4,20 @@
 #include "aoapplication.h"
 #include "courtroom.h"
 
-#include <QDialogButtonBox>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QDialog>
+#include <QDialogButtonBox>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QFormLayout>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
-#include <QtWidgets/QVBoxLayout>
 
-class AOCaseAnnouncerDialog : public QDialog {
+class AOCaseAnnouncerDialog : public QDialog
+{
   Q_OBJECT
 
 public:
-  explicit AOCaseAnnouncerDialog(QWidget *parent = nullptr,
-                                 AOApplication *p_ao_app = nullptr,
-                                 Courtroom *p_court = nullptr);
+  explicit AOCaseAnnouncerDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr, Courtroom *p_court = nullptr);
 
 private:
   AOApplication *ao_app;
@@ -37,7 +36,6 @@ private:
   QCheckBox *ui_judge_needed;
   QCheckBox *ui_juror_needed;
   QCheckBox *ui_steno_needed;
-  QCheckBox *ui_witness_needed;
 
 public slots:
   void ok_pressed();

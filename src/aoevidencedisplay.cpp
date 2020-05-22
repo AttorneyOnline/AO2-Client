@@ -1,11 +1,10 @@
 #include "aoevidencedisplay.h"
 
-#include "datatypes.h"
 #include "file_functions.h"
+#include "datatypes.h"
 #include "misc_functions.h"
 
-AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
-    : QLabel(p_parent)
+AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
@@ -13,12 +12,10 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
   evidence_icon = new QLabel(this);
   sfx_player = new AOSfxPlayer(this, ao_app);
 
-  connect(evidence_movie, SIGNAL(frameChanged(int)), this,
-          SLOT(frame_change(int)));
+  connect(evidence_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
 
-void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
-                                      bool is_left_side, int p_volume)
+void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_side, int p_volume)
 {
   this->reset();
 
@@ -32,23 +29,23 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
   QString gif_name;
   QString icon_identifier;
 
-  if (is_left_side) {
+  if (is_left_side)
+  {
     icon_identifier = "left_evidence_icon";
     gif_name = "evidence_appear_left.gif";
   }
-  else {
+  else
+  {
     icon_identifier = "right_evidence_icon";
     gif_name = "evidence_appear_right.gif";
   }
 
-  pos_size_type icon_dimensions =
-      ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
+  pos_size_type icon_dimensions = ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
   evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
 
-  evidence_icon->setPixmap(f_pixmap.scaled(
-      evidence_icon->width(), evidence_icon->height(), Qt::IgnoreAspectRatio));
+  evidence_icon->setPixmap(f_pixmap.scaled(evidence_icon->width(), evidence_icon->height(), Qt::IgnoreAspectRatio));
 
   QString f_default_gif_path = ao_app->get_default_theme_path(gif_name);
   QString f_gif_path = ao_app->get_theme_path(gif_name);
@@ -60,7 +57,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
   evidence_movie->setFileName(final_gif_path);
 
-  if (evidence_movie->frameCount() < 1)
+  if(evidence_movie->frameCount() < 1)
     return;
 
   this->setMovie(evidence_movie);
@@ -71,8 +68,9 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
 void AOEvidenceDisplay::frame_change(int p_frame)
 {
-  if (p_frame == (evidence_movie->frameCount() - 1)) {
-    // we need this or else the last frame wont show
+  if (p_frame == (evidence_movie->frameCount() - 1))
+  {
+    //we need this or else the last frame wont show
     delay(evidence_movie->nextFrameDelay());
 
     evidence_movie->stop();
@@ -90,4 +88,9 @@ void AOEvidenceDisplay::reset()
   this->clear();
 }
 
-QLabel *AOEvidenceDisplay::get_evidence_icon() { return evidence_icon; }
+QLabel* AOEvidenceDisplay::get_evidence_icon()
+{
+  return evidence_icon;
+}
+
+

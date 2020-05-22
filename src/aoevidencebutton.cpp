@@ -2,9 +2,7 @@
 
 #include "file_functions.h"
 
-AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app,
-                                   int p_x, int p_y)
-    : QPushButton(p_parent)
+AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
 {
   ao_app = p_ao_app;
   m_parent = p_parent;
@@ -41,11 +39,13 @@ void AOEvidenceButton::set_image(QString p_image)
 {
   QString image_path = ao_app->get_evidence_path(p_image);
 
-  if (file_exists(image_path)) {
+  if (file_exists(image_path))
+  {
     this->setText("");
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
   }
-  else {
+  else
+  {
     this->setText(p_image);
     this->setStyleSheet("");
   }
@@ -75,7 +75,10 @@ void AOEvidenceButton::set_selected(bool p_selected)
     ui_selected->hide();
 }
 
-void AOEvidenceButton::on_clicked() { evidence_clicked(m_id); }
+void AOEvidenceButton::on_clicked()
+{
+  evidence_clicked(m_id);
+}
 
 void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
 {
@@ -87,15 +90,19 @@ void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
 void AOEvidenceButton::dragLeaveEvent(QMouseEvent *e)
 {
   //QWidget::dragLeaveEvent(e);
+
+  qDebug() << "drag leave event";
 }
 
 void AOEvidenceButton::dragEnterEvent(QMouseEvent *e)
 {
   //QWidget::dragEnterEvent(e);
+
+  qDebug() << "drag enter event";
 }
 */
 
-void AOEvidenceButton::enterEvent(QEvent *e)
+void AOEvidenceButton::enterEvent(QEvent * e)
 {
   ui_selector->show();
 
@@ -105,7 +112,7 @@ void AOEvidenceButton::enterEvent(QEvent *e)
   QPushButton::enterEvent(e);
 }
 
-void AOEvidenceButton::leaveEvent(QEvent *e)
+void AOEvidenceButton::leaveEvent(QEvent * e)
 {
   ui_selector->hide();
 

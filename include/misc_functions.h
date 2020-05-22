@@ -1,8 +1,8 @@
 #ifndef MISC_FUNCTIONS_H
 #define MISC_FUNCTIONS_H
 
-#include <QCoreApplication>
 #include <QTime>
+#include <QCoreApplication>
 
 void delay(int p_milliseconds);
 

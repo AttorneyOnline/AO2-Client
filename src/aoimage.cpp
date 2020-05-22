@@ -8,7 +8,10 @@ AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
   ao_app = p_ao_app;
 }
 
-AOImage::~AOImage() {}
+AOImage::~AOImage()
+{
+
+}
 
 void AOImage::set_image(QString p_image)
 {
@@ -24,8 +27,7 @@ void AOImage::set_image(QString p_image)
 
   QPixmap f_pixmap(final_image_path);
 
-  this->setPixmap(
-      f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
+  this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
 }
 
 void AOImage::set_image_from_path(QString p_path)
@@ -41,6 +43,5 @@ void AOImage::set_image_from_path(QString p_path)
 
   QPixmap f_pixmap(final_path);
 
-  this->setPixmap(
-      f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
+  this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
 }

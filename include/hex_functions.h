@@ -1,16 +1,17 @@
 #ifndef HEX_OPERATIONS_H
 #define HEX_OPERATIONS_H
 
-#include <algorithm>
 #include <bitset>
 #include <cstdint>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
+#include <algorithm>
 #include <string>
+#include <iomanip>
+#include <sstream>
 
-namespace omni {
-std::string int_to_hex(unsigned int input);
+namespace omni
+{
+  std::string int_to_hex(unsigned int input);
 }
 
-#endif // HEX_OPERATIONS_H
+#endif //HEX_OPERATIONS_H

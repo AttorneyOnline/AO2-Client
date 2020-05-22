@@ -1,16 +1,16 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include "aobutton.h"
 #include "aoimage.h"
+#include "aobutton.h"
 #include "aopacket.h"
 #include "aotextarea.h"
 
-#include <QLabel>
-#include <QLineEdit>
-#include <QListWidget>
 #include <QMainWindow>
+#include <QListWidget>
+#include <QLabel>
 #include <QPlainTextEdit>
+#include <QLineEdit>
 #include <QProgressBar>
 #include <QTextBrowser>
 
@@ -19,7 +19,8 @@
 
 class AOApplication;
 
-class Lobby : public QMainWindow {
+class Lobby : public QMainWindow
+{
   Q_OBJECT
 
 public:
@@ -32,12 +33,12 @@ public:
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
-  void show_loading_overlay() { ui_loading_background->show(); }
-  void hide_loading_overlay() { ui_loading_background->hide(); }
+  void show_loading_overlay(){ui_loading_background->show();}
+  void hide_loading_overlay(){ui_loading_background->hide();}
   QString get_chatlog();
   int get_selected_server();
   void enable_connect_button();
-  void check_update();
+
   void set_loading_value(int p_value);
 
   bool public_servers_selected = true;
@@ -74,11 +75,8 @@ private:
   QProgressBar *ui_progress_bar;
   AOButton *ui_cancel;
 
-  QModelIndex last_model;
-
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-public slots:
-  void lobbyThreadHandler(QString loadingText);
+
 private slots:
   void on_public_servers_clicked();
   void on_favorites_clicked();
@@ -91,7 +89,6 @@ private slots:
   void on_connect_released();
   void on_about_clicked();
   void on_server_list_clicked(QModelIndex p_model);
-  void on_server_list_doubleclicked(QModelIndex p_model);
   void on_chatfield_return_pressed();
 };
 

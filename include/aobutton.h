@@ -3,10 +3,11 @@
 
 #include "aoapplication.h"
 
-#include <QDebug>
 #include <QPushButton>
+#include <QDebug>
 
-class AOButton : public QPushButton {
+class AOButton : public QPushButton
+{
   Q_OBJECT
 
 public:
