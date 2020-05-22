@@ -1,15 +1,16 @@
 #ifndef CHATLOGPIECE_H
 #define CHATLOGPIECE_H
 
-#include <QString>
 #include <QDateTime>
+#include <QString>
 
-class chatlogpiece
-{
+class chatlogpiece {
 public:
   chatlogpiece();
-  chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song);
-  chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song, QDateTime p_datetime);
+  chatlogpiece(QString p_name, QString p_showname, QString p_message,
+               bool p_song);
+  chatlogpiece(QString p_name, QString p_showname, QString p_message,
+               bool p_song, QDateTime p_datetime);
 
   QString get_name();
   QString get_showname();

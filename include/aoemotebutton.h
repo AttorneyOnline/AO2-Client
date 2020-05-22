@@ -3,22 +3,21 @@
 
 #include "aoapplication.h"
 
-#include <QPushButton>
 #include <QDebug>
+#include <QPushButton>
 
-class AOEmoteButton : public QPushButton
-{
+class AOEmoteButton : public QPushButton {
   Q_OBJECT
 
 public:
   AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y);
 
-  //void set_on(QString p_char, int p_emote);
-  //void set_off(QString p_char, int p_emote);
+  // void set_on(QString p_char, int p_emote);
+  // void set_off(QString p_char, int p_emote);
   void set_image(QString p_char, int p_emote, QString suffix);
 
-  void set_id(int p_id) {m_id = p_id;}
-  int get_id() {return m_id;}
+  void set_id(int p_id) { m_id = p_id; }
+  int get_id() { return m_id; }
 
 private:
   QWidget *parent;

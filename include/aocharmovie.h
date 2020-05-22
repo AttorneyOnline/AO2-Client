@@ -1,16 +1,15 @@
 #ifndef AOCHARMOVIE_H
 #define AOCHARMOVIE_H
 
-#include <QMovie>
-#include <QLabel>
-#include <QTimer>
 #include <QDebug>
 #include <QImageReader>
+#include <QLabel>
+#include <QMovie>
+#include <QTimer>
 
 class AOApplication;
 
-class AOCharMovie : public QLabel
-{
+class AOCharMovie : public QLabel {
   Q_OBJECT
 
 public:
@@ -21,7 +20,7 @@ public:
   void play_talking(QString p_char, QString p_emote);
   void play_idle(QString p_char, QString p_emote);
 
-  void set_flipped(bool p_flipped) {m_flipped = p_flipped;}
+  void set_flipped(bool p_flipped) { m_flipped = p_flipped; }
 
   void stop();
 
@@ -38,7 +37,8 @@ private:
 
   const int time_mod = 62;
 
-  // These are the X and Y values before they are fixed based on the sprite's width.
+  // These are the X and Y values before they are fixed based on the sprite's
+  // width.
   int x = 0;
   int y = 0;
 

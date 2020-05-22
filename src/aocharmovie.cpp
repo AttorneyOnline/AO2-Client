@@ -1,10 +1,11 @@
 #include "aocharmovie.h"
 
-#include "misc_functions.h"
-#include "file_functions.h"
 #include "aoapplication.h"
+#include "file_functions.h"
+#include "misc_functions.h"
 
-AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
+    : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
@@ -19,11 +20,14 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 {
-  QString original_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
+  QString original_path =
+      ao_app->get_character_path(p_char, emote_prefix + p_emote + ".gif");
   QString alt_path = ao_app->get_character_path(p_char, p_emote + ".png");
-  QString apng_path = ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
+  QString apng_path =
+      ao_app->get_character_path(p_char, emote_prefix + p_emote + ".apng");
   QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
-  QString placeholder_default_path = ao_app->get_default_theme_path("placeholder.gif");
+  QString placeholder_default_path =
+      ao_app->get_default_theme_path("placeholder.gif");
   QString gif_path;
 
   if (file_exists(apng_path))
@@ -44,8 +48,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
 
   movie_frames.clear();
   QImage f_image = reader->read();
-  while (!f_image.isNull())
-  {
+  while (!f_image.isNull()) {
     if (m_flipped)
       movie_frames.append(f_image.mirrored(true, false));
     else
@@ -73,8 +76,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
   play_once = false;
 
-  for (int n_frame = 0 ; n_frame < m_movie->frameCount() ; ++n_frame)
-  {
+  for (int n_frame = 0; n_frame < m_movie->frameCount(); ++n_frame) {
     real_duration += m_movie->nextFrameDelay();
     m_movie->jumpToFrame(n_frame + 1);
   }
@@ -86,8 +88,7 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
   double percentage_modifier = 100.0;
 
-  if (real_duration != 0 && duration != 0)
-  {
+  if (real_duration != 0 && duration != 0) {
     double modifier = full_duration / static_cast<double>(real_duration);
     percentage_modifier = 100 / modifier;
 
@@ -99,16 +100,13 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
   qDebug() << "% mod: " << percentage_modifier;
 #endif
 
-  if (full_duration == 0 || full_duration >= real_duration)
-  {
+  if (full_duration == 0 || full_duration >= real_duration) {
     play_once = true;
   }
-  else
-  {
+  else {
     play_once = false;
     preanim_timer->start(full_duration);
   }
-
 
   m_movie->setSpeed(static_cast<int>(percentage_modifier));
   play(p_char, p_emote, "");
@@ -142,7 +140,8 @@ void AOCharMovie::play_idle(QString p_char, QString p_emote)
 
 void AOCharMovie::stop()
 {
-  //for all intents and purposes, stopping is the same as hiding. at no point do we want a frozen gif to display
+  // for all intents and purposes, stopping is the same as hiding. at no point
+  // do we want a frozen gif to display
   m_movie->stop();
   preanim_timer->stop();
   this->hide();
@@ -165,31 +164,28 @@ void AOCharMovie::move(int ax, int ay)
 void AOCharMovie::frame_change(int n_frame)
 {
 
-  if (movie_frames.size() > n_frame)
-  {
+  if (movie_frames.size() > n_frame) {
     QPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(n_frame));
     auto aspect_ratio = Qt::KeepAspectRatio;
 
     if (f_pixmap.size().width() > f_pixmap.size().height())
       aspect_ratio = Qt::KeepAspectRatioByExpanding;
 
-    if (f_pixmap.size().width() > this->size().width() || f_pixmap.size().height() > this->size().height())
-      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::SmoothTransformation));
+    if (f_pixmap.size().width() > this->size().width() ||
+        f_pixmap.size().height() > this->size().height())
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(),
+                                      aspect_ratio, Qt::SmoothTransformation));
     else
-      this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation));
+      this->setPixmap(f_pixmap.scaled(this->width(), this->height(),
+                                      aspect_ratio, Qt::FastTransformation));
 
-    QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
-   }
+    QLabel::move(x + (this->width() - this->pixmap()->width()) / 2, y);
+  }
 
-  if (m_movie->frameCount() - 1 == n_frame && play_once)
-  {
+  if (m_movie->frameCount() - 1 == n_frame && play_once) {
     preanim_timer->start(m_movie->nextFrameDelay());
     m_movie->stop();
   }
 }
 
-void AOCharMovie::timer_done()
-{
-
-  done();
-}
+void AOCharMovie::timer_done() { done(); }

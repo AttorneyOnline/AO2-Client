@@ -9,12 +9,11 @@
 
 #include "aoapplication.h"
 
+#include <QDebug>
 #include <QWidget>
 #include <string.h>
-#include <QDebug>
 
-class AOSfxPlayer
-{
+class AOSfxPlayer {
 public:
   AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app);
 
@@ -25,11 +24,11 @@ public:
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
-  #if defined(BASSAUDIO)
+#if defined(BASSAUDIO)
   HSTREAM m_stream;
-  #elif defined(QTAUDIO)
+#elif defined(QTAUDIO)
   QSoundEffect m_sfx;
-  #endif
+#endif
   int m_volume = 0;
 };
 

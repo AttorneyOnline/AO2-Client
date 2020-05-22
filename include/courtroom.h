@@ -1,73 +1,70 @@
 #ifndef COURTROOM_H
 #define COURTROOM_H
 
-#include "aoimage.h"
+#include "aoapplication.h"
+#include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
+#include "aocharmovie.h"
 #include "aoemotebutton.h"
+#include "aoevidencebutton.h"
+#include "aoevidencedisplay.h"
+#include "aoimage.h"
+#include "aolineedit.h"
+#include "aomovie.h"
+#include "aomusicplayer.h"
 #include "aopacket.h"
 #include "aoscene.h"
-#include "aomovie.h"
-#include "aocharmovie.h"
-#include "aomusicplayer.h"
 #include "aosfxplayer.h"
-#include "aoblipplayer.h"
-#include "aoevidencebutton.h"
 #include "aotextarea.h"
-#include "aolineedit.h"
 #include "aotextedit.h"
-#include "aoevidencedisplay.h"
-#include "datatypes.h"
-#include "aoapplication.h"
-#include "lobby.h"
-#include "hardware_functions.h"
-#include "file_functions.h"
+#include "chatlogpiece.h"
 #include "datatypes.h"
 #include "debug_functions.h"
-#include "chatlogpiece.h"
+#include "file_functions.h"
+#include "hardware_functions.h"
+#include "lobby.h"
 
-#include <QMainWindow>
-#include <QLineEdit>
-#include <QPlainTextEdit>
-#include <QListWidget>
 #include <QCheckBox>
-#include <QComboBox>
-#include <QSlider>
-#include <QVector>
 #include <QCloseEvent>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QMainWindow>
 #include <QMap>
-#include <QTextBrowser>
+#include <QPlainTextEdit>
+#include <QSlider>
 #include <QSpinBox>
+#include <QTextBrowser>
+#include <QVector>
 
-#include <QDebug>
-#include <QScrollBar>
-#include <QRegExp>
 #include <QBrush>
-#include <QTextCharFormat>
+#include <QDebug>
+#include <QFileDialog>
 #include <QFont>
 #include <QInputDialog>
-#include <QFileDialog>
+#include <QRegExp>
+#include <QScrollBar>
 #include <QTextBoundaryFinder>
+#include <QTextCharFormat>
 
 #include <stack>
 
 class AOApplication;
 
-class Courtroom : public QMainWindow
-{
+class Courtroom : public QMainWindow {
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
 
-  void append_char(char_type p_char){char_list.append(p_char);}
-  void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
-  void append_music(QString f_music){music_list.append(f_music);}
-  void append_area(QString f_area){area_list.append(f_area);}
+  void append_char(char_type p_char) { char_list.append(p_char); }
+  void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
+  void append_music(QString f_music) { music_list.append(f_music); }
+  void append_area(QString f_area) { area_list.append(f_area); }
 
   void fix_last_area()
   {
-    if (area_list.size() > 0)
-    {
+    if (area_list.size() > 0) {
       QString malplaced = area_list.last();
       area_list.removeLast();
       append_music(malplaced);
@@ -76,31 +73,27 @@ public:
 
   void arup_append(int players, QString status, QString cm, QString locked)
   {
-      arup_players.append(players);
-      arup_statuses.append(status);
-      arup_cms.append(cm);
-      arup_locks.append(locked);
+    arup_players.append(players);
+    arup_statuses.append(status);
+    arup_cms.append(cm);
+    arup_locks.append(locked);
   }
 
   void arup_modify(int type, int place, QString value)
   {
-    if (type == 0)
-    {
+    if (type == 0) {
       if (arup_players.size() > place)
         arup_players[place] = value.toInt();
     }
-    else if (type == 1)
-    {
+    else if (type == 1) {
       if (arup_statuses.size() > place)
         arup_statuses[place] = value;
     }
-    else if (type == 2)
-    {
+    else if (type == 2) {
       if (arup_cms.size() > place)
         arup_cms[place] = value;
     }
-    else if (type == 3)
-    {
+    else if (type == 3) {
       if (arup_locks.size() > place)
         arup_locks[place] = value;
     }
@@ -109,105 +102,114 @@ public:
 
   void character_loading_finished();
 
-  //sets position of widgets based on theme ini files
+  // sets position of widgets based on theme ini files
   void set_widgets();
-  //sets font size based on theme ini files
+  // sets font size based on theme ini files
   void set_font(QWidget *widget, QString p_identifier);
-  //helper function that calls above function on the relevant widgets
+  // helper function that calls above function on the relevant widgets
   void set_fonts();
 
   void set_window_title(QString p_title);
 
-  //reads theme inis and sets size and pos based on the identifier
+  // reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
-  //sets status as taken on character with cid n_char and places proper shading on charselect
+  // sets status as taken on character with cid n_char and places proper shading
+  // on charselect
   void set_taken(int n_char, bool p_taken);
 
-  //sets the current background to argument. also does some checks to see if it's a legacy bg
+  // sets the current background to argument. also does some checks to see if
+  // it's a legacy bg
   void set_background(QString p_background);
 
-  //sets the evidence list member variable to argument
+  // sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
-  //called when a DONE#% from the server was received
+  // called when a DONE#% from the server was received
   void done_received();
 
-  //sets the local mute list based on characters available on the server
+  // sets the local mute list based on characters available on the server
   void set_mute_list();
 
   // Sets the local pair list based on the characters available on the server.
   void set_pair_list();
 
-  //sets desk and bg based on pos in chatmessage
+  // sets desk and bg based on pos in chatmessage
   void set_scene();
 
-  //sets text color based on text color in chatmessage
+  // sets text color based on text color in chatmessage
   void set_text_color();
 
   // And gets the colour, too!
   QColor get_text_color(QString color);
 
-  //takes in serverD-formatted IP list as prints a converted version to server OOC
-  //admittedly poorly named
+  // takes in serverD-formatted IP list as prints a converted version to server
+  // OOC admittedly poorly named
   void set_ip_list(QString p_list);
 
-  //disables chat if current cid matches second argument
-  //enables if p_muted is false
+  // disables chat if current cid matches second argument
+  // enables if p_muted is false
   void set_mute(bool p_muted, int p_cid);
 
-  //send a message that the player is banned and quits the server
+  // send a message that the player is banned and quits the server
   void set_ban(int p_cid);
 
-  //cid = character id, returns the cid of the currently selected character
-  int get_cid() {return m_cid;}
-  QString get_current_char() {return current_char;}
-  QString get_current_background() {return current_background;}
+  // cid = character id, returns the cid of the currently selected character
+  int get_cid() { return m_cid; }
+  QString get_current_char() { return current_char; }
+  QString get_current_background() { return current_background; }
 
-  //properly sets up some varibles: resets user state
+  // properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
-  //helper function that populates ui_music_list with the contents of music_list
+  // helper function that populates ui_music_list with the contents of
+  // music_list
   void list_music();
   void list_areas();
 
-  //these are for OOC chat
+  // these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
-  void append_server_chatmessage(QString p_name, QString p_message, QString p_colour);
+  void append_server_chatmessage(QString p_name, QString p_message,
+                                 QString p_colour);
 
-  //these functions handle chatmessages sequentially.
-  //The process itself is very convoluted and merits separate documentation
-  //But the general idea is objection animation->pre animation->talking->idle
+  // these functions handle chatmessages sequentially.
+  // The process itself is very convoluted and merits separate documentation
+  // But the general idea is objection animation->pre animation->talking->idle
   void handle_chatmessage(QStringList *p_contents);
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
-  //This function filters out the common CC inline text trickery, for appending to
-  //the IC chatlog.
+  // This function filters out the common CC inline text trickery, for appending
+  // to the IC chatlog.
   QString filter_ic_text(QString p_text);
 
-  //adds text to the IC chatlog. p_name first as bold then p_text then a newlin
-  //this function keeps the chatlog scrolled to the top unless there's text selected
+  // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
+  // this function keeps the chatlog scrolled to the top unless there's text
+  // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", bool is_songchange = false);
+  void append_ic_text(QString p_text, QString p_name = "",
+                      bool is_songchange = false);
 
-  //prints who played the song to IC chat and plays said song(if found on local filesystem)
-  //takes in a list where the first element is the song name and the second is the char id of who played it
+  // prints who played the song to IC chat and plays said song(if found on local
+  // filesystem) takes in a list where the first element is the song name and the
+  // second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
   void play_preanim(bool noninterrupting);
 
-  //plays the witness testimony or cross examination animation based on argument
+  // plays the witness testimony or cross examination animation based on
+  // argument
   void handle_wtce(QString p_wtce, int variant);
 
-  //sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
-  //state is an number between 0 and 10 inclusive
+  // sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
+  // state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
-  //Toggles the judge buttons, whether they should appear or not.
+  // Toggles the judge buttons, whether they should appear or not.
   void toggle_judge_buttons(bool is_on);
 
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
+  void announce_case(QString title, bool def, bool pro, bool jud, bool jur,
+                     bool steno);
 
   void check_connection_received();
 
@@ -230,18 +232,13 @@ private:
 
   // This is for inline message-colouring.
 
-  enum INLINE_COLOURS {
-      INLINE_BLUE,
-      INLINE_GREEN,
-      INLINE_ORANGE,
-      INLINE_GREY
-  };
+  enum INLINE_COLOURS { INLINE_BLUE, INLINE_GREEN, INLINE_ORANGE, INLINE_GREY };
 
   // A stack of inline colours.
   std::stack<INLINE_COLOURS> inline_colour_stack;
 
   bool next_character_is_not_special = false; // If true, write the
-                        // next character as it is.
+                                              // next character as it is.
 
   bool message_is_centered = false;
 
@@ -278,15 +275,15 @@ private:
   QVector<int> music_row_to_number;
   QVector<int> area_row_to_number;
 
-  //triggers ping_server() every 60 seconds
+  // triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 
-  //determines how fast messages tick onto screen
+  // determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
-  //int chat_tick_interval = 60;
-  //which tick position(character in chat message) we are at
+  // int chat_tick_interval = 60;
+  // which tick position(character in chat message) we are at
   int tick_pos = 0;
-  //used to determine how often blips sound
+  // used to determine how often blips sound
   int blip_pos = 0;
   int blip_rate = 1;
   int rainbow_counter = 0;
@@ -299,21 +296,23 @@ private:
   // True, if the log should go downwards.
   bool log_goes_downwards = false;
 
-  //delay before chat messages starts ticking
+  // delay before chat messages starts ticking
   QTimer *text_delay_timer;
 
-  //delay before sfx plays
+  // delay before sfx plays
   QTimer *sfx_delay_timer;
 
-  //keeps track of how long realization is visible(it's just a white square and should be visible less than a second)
+  // keeps track of how long realization is visible(it's just a white square and
+  // should be visible less than a second)
   QTimer *realization_timer;
 
-  //times how long the blinking testimony should be shown(green one in the corner)
+  // times how long the blinking testimony should be shown(green one in the
+  // corner)
   QTimer *testimony_show_timer;
-  //times how long the blinking testimony should be hidden
+  // times how long the blinking testimony should be hidden
   QTimer *testimony_hide_timer;
 
-  //every time point in char.inis times this equals the final time
+  // every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
   static const int chatmessage_size = 23;
@@ -324,28 +323,30 @@ private:
 
   bool testimony_in_progress = false;
 
-  //in milliseconds
+  // in milliseconds
   const int testimony_show_time = 1500;
 
-  //in milliseconds
+  // in milliseconds
   const int testimony_hide_time = 500;
 
-  //char id, muted or not
+  // char id, muted or not
   QMap<int, bool> mute_map;
 
-  //QVector<int> muted_cids;
+  // QVector<int> muted_cids;
 
   bool is_muted = false;
 
-  //state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 = noniterrupting preanim
+  // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
+  // noniterrupting preanim
   int anim_state = 3;
 
-  //state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 = ticking done
+  // state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 =
+  // ticking done
   int text_state = 2;
 
-  //character id, which index of the char_list the player is
+  // character id, which index of the char_list the player is
   int m_cid = -1;
-  //cid and this may differ in cases of ini-editing
+  // cid and this may differ in cases of ini-editing
   QString current_char = "";
 
   int objection_state = 0;
@@ -378,10 +379,11 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
+  // is set to true if the bg folder contains defensedesk.png,
+  // prosecutiondesk.png and stand.png
   bool is_ao2_bg = false;
 
-  //whether the ooc chat is server or master chat, true is server
+  // whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
   QString current_background = "default";
@@ -430,11 +432,11 @@ private:
   QLineEdit *ui_ooc_chat_message;
   QLineEdit *ui_ooc_chat_name;
 
-  //QLineEdit *ui_area_password;
+  // QLineEdit *ui_area_password;
   QLineEdit *ui_music_search;
 
   QWidget *ui_emotes;
-  QVector<AOEmoteButton*> ui_emote_list;
+  QVector<AOEmoteButton *> ui_emote_list;
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
 
@@ -499,7 +501,7 @@ private:
   AOImage *ui_evidence;
   AOLineEdit *ui_evidence_name;
   QWidget *ui_evidence_buttons;
-  QVector<AOEvidenceButton*> ui_evidence_list;
+  QVector<AOEvidenceButton *> ui_evidence_list;
   AOButton *ui_evidence_left;
   AOButton *ui_evidence_right;
   AOButton *ui_evidence_present;
@@ -512,11 +514,11 @@ private:
 
   AOImage *ui_char_select_background;
 
-  //abstract widget to hold char buttons
+  // abstract widget to hold char buttons
   QWidget *ui_char_buttons;
 
-  QVector<AOCharButton*> ui_char_button_list;
-  QVector<AOCharButton*> ui_char_button_list_filtered;
+  QVector<AOCharButton *> ui_char_button_list;
+  QVector<AOCharButton *> ui_char_button_list_filtered;
   AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
@@ -557,7 +559,8 @@ public slots:
 
   void mod_called(QString p_ip);
 
-  void case_called(QString msg, bool def, bool pro, bool jud, bool jur, bool steno);
+  void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
+                   bool steno);
 
 private slots:
   void start_chat_ticking();

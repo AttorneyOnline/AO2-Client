@@ -7,10 +7,7 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-AOMusicPlayer::~AOMusicPlayer()
-{
-  BASS_ChannelStop(m_stream);
-}
+AOMusicPlayer::~AOMusicPlayer() { BASS_ChannelStop(m_stream); }
 
 void AOMusicPlayer::play(QString p_song)
 {
@@ -18,7 +15,9 @@ void AOMusicPlayer::play(QString p_song)
 
   QString f_path = ao_app->get_music_path(p_song);
 
-  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  m_stream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0,
+                                   BASS_STREAM_AUTOFREE | BASS_UNICODE |
+                                       BASS_ASYNCFILE);
 
   this->set_volume(m_volume);
 
@@ -40,10 +39,7 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-AOMusicPlayer::~AOMusicPlayer()
-{
-  m_player.stop();
-}
+AOMusicPlayer::~AOMusicPlayer() { m_player.stop(); }
 
 void AOMusicPlayer::play(QString p_song)
 {
@@ -70,18 +66,9 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-AOMusicPlayer::~AOMusicPlayer()
-{
+AOMusicPlayer::~AOMusicPlayer() {}
 
-}
+void AOMusicPlayer::play(QString p_song) {}
 
-void AOMusicPlayer::play(QString p_song)
-{
-
-}
-
-void AOMusicPlayer::set_volume(int p_value)
-{
-
-}
+void AOMusicPlayer::set_volume(int p_value) {}
 #endif

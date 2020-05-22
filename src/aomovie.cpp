@@ -1,7 +1,7 @@
 #include "aomovie.h"
 
-#include "file_functions.h"
 #include "courtroom.h"
+#include "file_functions.h"
 #include "misc_functions.h"
 
 AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
@@ -15,10 +15,7 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
 
-void AOMovie::set_play_once(bool p_play_once)
-{
-  play_once = p_play_once;
-}
+void AOMovie::set_play_once(bool p_play_once) { play_once = p_play_once; }
 
 void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
 {
@@ -28,16 +25,21 @@ void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
 
   QString custom_path;
   if (p_gif == "custom")
-    custom_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif));
+    custom_path =
+        ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif));
   else
-    custom_path = ao_app->get_image_suffix(ao_app->get_character_path(p_char, p_gif + "_bubble"));
+    custom_path = ao_app->get_image_suffix(
+        ao_app->get_character_path(p_char, p_gif + "_bubble"));
 
-  QString misc_path = ao_app->get_base_path() + "misc/" + p_custom_theme + "/" + p_gif + "_bubble.gif";
-  QString custom_theme_path = ao_app->get_custom_theme_path(p_custom_theme, p_gif + ".gif");
+  QString misc_path = ao_app->get_base_path() + "misc/" + p_custom_theme + "/" +
+                      p_gif + "_bubble.gif";
+  QString custom_theme_path =
+      ao_app->get_custom_theme_path(p_custom_theme, p_gif + ".gif");
   QString theme_path = ao_app->get_theme_path(p_gif + ".gif");
   QString default_theme_path = ao_app->get_default_theme_path(p_gif + ".gif");
   QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
-  QString default_placeholder_path = ao_app->get_default_theme_path("placeholder.gif");
+  QString default_placeholder_path =
+      ao_app->get_default_theme_path("placeholder.gif");
 
   if (file_exists(custom_path))
     gif_path = custom_path;
@@ -70,14 +72,13 @@ void AOMovie::stop()
 
 void AOMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1) && play_once)
-  {
-    //we need this or else the last frame wont show
+  if (n_frame == (m_movie->frameCount() - 1) && play_once) {
+    // we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());
 
     this->stop();
 
-    //signal connected to courtroom object, let it figure out what to do
+    // signal connected to courtroom object, let it figure out what to do
     done();
   }
 }

@@ -1,11 +1,11 @@
 #ifndef DISCORD_RICH_PRESENCE_H
 #define DISCORD_RICH_PRESENCE_H
 
+#include <QDebug>
 #include <cstring>
 #include <ctime>
-#include <QDebug>
-#include <string>
 #include <discord-rpc.h>
+#include <string>
 
 #include <cstring>
 #include <ctime>
@@ -14,12 +14,12 @@
 
 namespace AttorneyOnline {
 
-class Discord
-{
+class Discord {
 private:
-  const char* APPLICATION_ID = "399779271737868288";
+  const char *APPLICATION_ID = "399779271737868288";
   std::string server_name, server_id;
   int64_t timestamp;
+
 public:
   Discord();
   ~Discord();
@@ -30,5 +30,5 @@ public:
   void state_spectate();
 };
 
-}
+} // namespace AttorneyOnline
 #endif // DISCORD_RICH_PRESENCE_H

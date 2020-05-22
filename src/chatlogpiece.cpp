@@ -9,7 +9,8 @@ chatlogpiece::chatlogpiece()
   datetime = QDateTime::currentDateTime().toUTC();
 }
 
-chatlogpiece::chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song)
+chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
+                           QString p_message, bool p_song)
 {
   name = p_name;
   showname = p_showname;
@@ -18,7 +19,8 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname, QString p_message
   datetime = QDateTime::currentDateTime().toUTC();
 }
 
-chatlogpiece::chatlogpiece(QString p_name, QString p_showname, QString p_message, bool p_song, QDateTime p_datetime)
+chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
+                           QString p_message, bool p_song, QDateTime p_datetime)
 {
   name = p_name;
   showname = p_showname;
@@ -27,36 +29,17 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname, QString p_message
   datetime = p_datetime.toUTC();
 }
 
-QString chatlogpiece::get_name()
-{
-  return name;
-}
+QString chatlogpiece::get_name() { return name; }
 
-QString chatlogpiece::get_showname()
-{
-  return showname;
-}
+QString chatlogpiece::get_showname() { return showname; }
 
-QString chatlogpiece::get_message()
-{
-  return message;
-}
+QString chatlogpiece::get_message() { return message; }
 
-QDateTime chatlogpiece::get_datetime()
-{
-  return datetime;
-}
+QDateTime chatlogpiece::get_datetime() { return datetime; }
 
-bool chatlogpiece::get_is_song()
-{
-  return is_song;
-}
+bool chatlogpiece::get_is_song() { return is_song; }
 
-QString chatlogpiece::get_datetime_as_string()
-{
-  return datetime.toString();
-}
-
+QString chatlogpiece::get_datetime_as_string() { return datetime.toString(); }
 
 QString chatlogpiece::get_full()
 {

@@ -8,13 +8,12 @@
 #endif
 #include "aoapplication.h"
 
+#include <QDebug>
 #include <QWidget>
 #include <string.h>
-#include <QDebug>
 
 #if defined(BASSAUDIO)
-class AOMusicPlayer
-{
+class AOMusicPlayer {
 public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   ~AOMusicPlayer();
@@ -30,8 +29,7 @@ private:
   HSTREAM m_stream;
 };
 #elif defined(QTAUDIO)
-class AOMusicPlayer
-{
+class AOMusicPlayer {
 public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   ~AOMusicPlayer();
@@ -47,8 +45,7 @@ private:
   int m_volume = 0;
 };
 #else
-class AOMusicPlayer
-{
+class AOMusicPlayer {
 public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   ~AOMusicPlayer();

@@ -7,8 +7,7 @@ void call_error(QString p_message)
   msgBox->setText("Error: " + p_message);
   msgBox->setWindowTitle("Error");
 
-
-  //msgBox->setWindowModality(Qt::NonModal);
+  // msgBox->setWindowModality(Qt::NonModal);
   msgBox->exec();
 }
 
@@ -19,7 +18,6 @@ void call_notice(QString p_message)
   msgBox->setText(p_message);
   msgBox->setWindowTitle("Notice");
 
-
-  //msgBox->setWindowModality(Qt::NonModal);
+  // msgBox->setWindowModality(Qt::NonModal);
   msgBox->exec();
 }
