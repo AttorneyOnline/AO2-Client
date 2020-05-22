@@ -1637,7 +1637,7 @@ void Courtroom::on_chat_return_pressed()
   // emote uses it.
   if (ao_app->looping_sfx_support_enabled) {
     packet_contents.append(
-        "0"); // ao_app->get_sfx_looping(current_char, current_emote));
+        ao_app->get_sfx_looping(current_char, current_emote));
     packet_contents.append(QString::number(screenshake_state));
 
     QString pre_emote = ao_app->get_pre_emote(current_char, current_emote);
@@ -2124,10 +2124,10 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
 void Courtroom::play_char_sfx(QString sfx_name)
 {
   sfx_player->play(sfx_name);
-  if (ao_app->get_looping_sfx())
-    sfx_player->set_looping(
-        ao_app->get_sfx_looping(current_char, QString::number(current_emote)) !=
-        "0");
+  //  sfx_player->set_looping(false);
+  //  if (ao_app->get_looping_sfx())
+  //    sfx_player->set_looping(
+  //        ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
 
 void Courtroom::handle_chatmessage_3()
@@ -2877,8 +2877,8 @@ void Courtroom::play_sfx()
 
   sfx_player->play(sfx_name);
   if (ao_app->get_looping_sfx())
-    sfx_player->set_looping(ao_app->get_sfx_looping(current_char, sfx_name) !=
-                            "0");
+    sfx_player->set_looping(
+        ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
 
 void Courtroom::set_scene(QString f_desk_mod, QString f_side)

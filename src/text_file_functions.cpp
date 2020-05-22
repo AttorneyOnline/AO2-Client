@@ -558,8 +558,8 @@ QString AOApplication::get_static_image_suffix(QString path_to_check)
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and
-// terminator_tag, trimmed returns the empty string if the search line couldnt be
-// found
+// terminator_tag, trimmed returns the empty string if the search line couldnt
+// be found
 QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
                                      QString target_tag)
 {
@@ -805,13 +805,16 @@ int AOApplication::get_sfx_delay(QString p_char, int p_emote)
   return f_result.toInt();
 }
 
-QString AOApplication::get_sfx_looping(QString p_char, QString p_sfx)
+QString AOApplication::get_sfx_looping(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, p_sfx, "SoundL");
+  QString f_result =
+      read_char_ini(p_char, QString::number(p_emote + 1), "SoundL");
 
+  qDebug() << f_result;
   if (f_result == "")
     return "0";
-  return f_result;
+  else
+    return f_result;
 }
 
 QString AOApplication::get_sfx_frame(QString p_char, QString p_emote,
