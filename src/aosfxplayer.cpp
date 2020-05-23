@@ -114,9 +114,26 @@ void AOSfxPlayer::set_looping(bool toggle, int channel)
 }
 #elif defined(QTAUDIO) // Using Qt's QSoundEffect class
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
+void AOSfxPlayer::clear()
 {
-  m_sfx.stop();
+  for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
+    m_stream_list[n_stream].stop();
+  }
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::loop_clear()
+{
+  for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
+    m_stream_list[n_stream].stop();
+  }
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
+                       int channel)
+{
+  m_stream_list[channel].stop();
 
   QString misc_path = "";
   QString char_path = "";
@@ -138,15 +155,21 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 
   if (file_exists(f_path)) // if its missing, it will glitch out
   {
-    m_sfx.setSource(QUrl::fromLocalFile(f_path));
+    m_stream_list[channel].setSource(QUrl::fromLocalFile(f_path));
 
     set_volume_internal(m_volume);
 
-    m_sfx.play();
+    m_stream_list[channel].play();
   }
 }
 
-void AOSfxPlayer::stop() { m_sfx.stop(); }
+void AOSfxPlayer::stop(int channel)
+{
+  if (channel == -1) {
+    channel = m_channel;
+  }
+  m_stream_list[channel].stop();
+}
 
 void AOSfxPlayer::set_volume(qreal p_value)
 {
@@ -156,8 +179,19 @@ void AOSfxPlayer::set_volume(qreal p_value)
 
 void AOSfxPlayer::set_volume_internal(qreal p_value)
 {
-  m_volume = p_value;
-  m_sfx.setVolume(m_volume);
+  float volume = static_cast<float>(p_value);
+  for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
+    m_stream_list[n_stream].setVolume(volume);
+  }
+}
+
+void AOSfxPlayer::set_looping(bool toggle, int channel)
+{
+  if (channel == -1) {
+    channel = m_channel;
+  }
+  m_looping = toggle;
+  // TODO
 }
 #else
 void AOSfxPlayer::clear() {}
