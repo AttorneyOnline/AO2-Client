@@ -49,6 +49,10 @@ QString get_hdid()
 }
 
 #elif defined __APPLE__
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+
 QString get_hdid()
 {
   CFStringRef serial;

@@ -1,0 +1,8 @@
+translation:
+  - resource/translations/*
+  
+content:
+  - base/**/*
+  
+good_luck:
+  - src/courtroom.cpp

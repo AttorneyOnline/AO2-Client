@@ -1,11 +1,21 @@
 language: cpp
 os: osx
-
 addons:
-    homebrew:
-        packages:
-            - qt5
+  homebrew:
+    update: true
+    packages:
+    - qt5
 
 script:
-    - ./scripts/macos_build.sh
-    - ./scripts/macos_post_build.sh
+- "./scripts/macos_build.sh"
+- "./scripts/macos_post_build.sh"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: mZCNwnqKeqJP5CqgYOanYnr/KHydxueGPRhvGLpY0Pop7MiH3CIHMN5dhHbtgJvE5GGMR4xUIEhPpmkCEJw7YiPREMqT4mkV4DR531ZLB3t/FizyvIwXuP6jFwzTofZ51qHfBpcurVc9sMFeD9Pw+rLTTgIiXL2sZxUUXc8U+ZZug1lYndgcO6P00fUJd6V9lyFQUGmbSca97YbG6KuCym0fEpyRnMqzKLjYsUUo8UKRBADtmD822O6z2FSldNZDn45Mkx0MYfHWyT5hzTb7WGa+DrTB/0un1HqqsNPlb/ahjrFQQNR2qd7HNGZa+Mvwi6egTDug+k15x8lbkacUoi34U1eFq9LSTYm8dSO5g23I1OvGvjTCkDj1jOLPqB99XlbAJ0E/9Jzw7wtlLaAzvFzTj/B63TQnO3IsgHBWR14CZlf05WMOFf2irwl+kL6ktspIHnlGgaiWYYrKeAt7QJAXiQOdYDz6SaWVC6TyOE/SszXRU6xFotmCjkP2irM5yGE8SUw2uIzKjD9uG0ZXtbLcdQEFD316+qglqFTCjnKsRfbtQs2u5spZPsZSdsOZCbLfNIn0GSTFRymFsK6gsvji8AD8AZo0zcOZ/7NMVC6A8RnF3Ve+vU/xljhsIOxoLZDvZPia7WozdV99xmnepWBwkuoQs/K0xmWcnLZDcb0=
+  file: "../bin/Attorney_Online_mac_x86_64.zip"
+  draft: true
+  on:
+    tags: true
+    repo: AttorneyOnline/AO2-Client

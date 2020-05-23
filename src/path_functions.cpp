@@ -30,6 +30,8 @@ QString AOApplication::get_base_path()
     QString external_storage = getenv("EXTERNAL_STORAGE");
     base_path = external_storage + "/AO2/";
   }
+#elif defined(__APPLE__)
+  base_path = applicationDirPath() + "/../../../base/";
 #else
   base_path = applicationDirPath() + "/base/";
 #endif
