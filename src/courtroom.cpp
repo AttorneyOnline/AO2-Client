@@ -1537,7 +1537,7 @@ void Courtroom::on_chat_return_pressed()
         f_emote_mod = 2;
     }
   }
-  else if (ui_pre->isChecked() and !ui_pre_non_interrupt->isChecked()) {
+  else if (ui_pre->isChecked() && !ui_pre_non_interrupt->isChecked()) {
     if (f_emote_mod == 0)
       f_emote_mod = 1;
     else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
