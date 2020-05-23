@@ -43,3 +43,14 @@ RESOURCES += resources.qrc
 
 win32:RC_ICONS = resource/logo.ico
 macx:ICON = resource/logo.icns
+
+android:DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
