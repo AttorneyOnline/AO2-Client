@@ -170,6 +170,10 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
+void AOSfxPlayer::clear() {}
+
+void AOSfxPlayer::loop_clear() {}
+
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
                        int channel) {}
 
@@ -178,4 +182,6 @@ void AOSfxPlayer::stop(int channel) {}
 void AOSfxPlayer::set_volume(qreal p_value) {}
 
 void AOSfxPlayer::set_volume_internal(qreal p_value) {}
+
+void AOSfxPlayer::set_looping(bool toggle, int channel) {}
 #endif

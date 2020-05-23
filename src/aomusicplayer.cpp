@@ -208,5 +208,11 @@ AOMusicPlayer::~AOMusicPlayer() {}
 void AOMusicPlayer::play(QString p_song, int channel, bool loop,
                          int effect_flags) {}
 
+void AOMusicPlayer::stop(int channel) {}
+
 void AOMusicPlayer::set_volume(int p_value, int channel) {}
+
+void loopProc(int handle, int channel, int data, int *user) {}
+
+void AOMusicPlayer::set_looping(bool toggle, int channel) {}
 #endif
