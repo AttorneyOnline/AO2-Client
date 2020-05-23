@@ -13,6 +13,7 @@
 #include <QPlainTextEdit>
 #include <QProgressBar>
 #include <QTextBrowser>
+#include <QTreeWidget>
 
 #include <QDebug>
 #include <QScrollBar>
@@ -31,6 +32,10 @@ public:
   void append_chatmessage(QString f_name, QString f_message);
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
+  void set_stylesheet(QWidget *widget, QString target_tag);
+  void set_stylesheets();
+  void set_fonts();
+  void set_font(QWidget *widget, QString p_identifier);
   void set_loading_text(QString p_text);
   void show_loading_overlay() { ui_loading_background->show(); }
   void hide_loading_overlay() { ui_loading_background->hide(); }
@@ -59,7 +64,10 @@ private:
   QLabel *ui_version;
   AOButton *ui_about;
 
-  QListWidget *ui_server_list;
+  AOButton *ui_settings;
+
+  QTreeWidget *ui_server_list;
+  QLineEdit *ui_server_search;
 
   QLabel *ui_player_count;
   AOTextArea *ui_description;
@@ -74,6 +82,8 @@ private:
   QProgressBar *ui_progress_bar;
   AOButton *ui_cancel;
 
+  int last_index;
+
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
 private slots:
@@ -87,7 +97,10 @@ private slots:
   void on_connect_pressed();
   void on_connect_released();
   void on_about_clicked();
-  void on_server_list_clicked(QModelIndex p_model);
+  void on_settings_clicked();
+  void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
+  void on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column);
+  void on_server_search_edited(QString p_text);
   void on_chatfield_return_pressed();
 };
 

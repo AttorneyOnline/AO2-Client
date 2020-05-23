@@ -23,6 +23,9 @@
 #include <QScreen>
 #include <QStringList>
 #include <QTextStream>
+#ifdef QTAUDIO
+#include <QAudioDeviceInfo>
+#endif
 
 class NetworkManager;
 class Lobby;
@@ -74,6 +77,9 @@ public:
   bool arup_enabled = false;
   bool casing_alerts_enabled = false;
   bool modcall_reason_enabled = false;
+  bool looping_sfx_support_enabled = false;
+  bool additive_enabled = false;
+  bool effects_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -141,11 +147,17 @@ public:
   // Returns the value of ooc_name in config.ini
   QString get_ooc_name();
 
-  // Returns the blip rate from config.ini
+  // Returns the blip rate from config.ini (once per X symbols)
   int read_blip_rate();
 
   // Returns true if blank blips is enabled in config.ini and false otherwise
   bool get_blank_blip();
+
+  // Returns true if looping sound effects are enabled in the config.ini
+  bool get_looping_sfx();
+
+  // Returns true if stop music on objection is enabled in the config.ini
+  bool objection_stop_music();
 
   // Returns the value of default_music in config.ini
   int get_default_music();
@@ -160,6 +172,34 @@ public:
   // from the config.ini.
   bool is_discord_enabled();
 
+  // Returns the value of whether shaking should be enabled.
+  // from the config.ini.
+  bool is_shake_enabled();
+
+  // Returns the value of whether effects should be enabled.
+  // from the config.ini.
+  bool is_effects_enabled();
+
+  // Returns the value of whether frame-specific effects defined in char.ini
+  // should be sent/received over the network. from the config.ini.
+  bool is_frame_network_enabled();
+
+  // Returns the value of whether colored ic log should be a thing.
+  // from the config.ini.
+  bool is_colorlog_enabled();
+
+  // Returns the value of whether sticky sounds should be a thing.
+  // from the config.ini.
+  bool is_stickysounds_enabled();
+
+  // Returns the value of whether sticky effects should be a thing.
+  // from the config.ini.
+  bool is_stickyeffects_enabled();
+
+  // Returns the value of whether sticky preanims should be a thing.
+  // from the config.ini.
+  bool is_stickypres_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();
@@ -173,12 +213,29 @@ public:
 
   // Returns the audio device used for the client.
   QString get_audio_output_device();
+#ifdef QTAUDIO
+  QAudioDeviceInfo QtAudioDevice;
+#endif
 
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();
 
   // Returns the list of words in callwords.ini
   QStringList get_call_words();
+
+  // returns all of the file's lines in a QStringList
+  QStringList get_list_file(QString p_file);
+
+  // Process a file and return its text as a QString
+  QString read_file(QString filename);
+
+  // Write text to file. make_dir would auto-create the directory if it doesn't
+  // exist.
+  bool write_to_file(QString p_text, QString p_file, bool make_dir = false);
+
+  // Append text to the end of the file. make_dir would auto-create the
+  // directory if it doesn't exist.
+  bool append_to_file(QString p_text, QString p_file, bool make_dir = false);
 
   // Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
@@ -193,7 +250,12 @@ public:
   QPoint get_button_spacing(QString p_identifier, QString p_file);
 
   // Returns the dimensions of widget with specified identifier from p_file
-  pos_size_type get_element_dimensions(QString p_identifier, QString p_file);
+  pos_size_type get_element_dimensions(QString p_identifier, QString p_file,
+                                       QString p_char = "");
+
+  // Returns the value to you
+  QString get_design_element(QString p_identifier, QString p_file,
+                             QString p_char = "");
 
   // Returns the name of the font with p_identifier from p_file
   QString get_font_name(QString p_identifier, QString p_file);
@@ -204,7 +266,10 @@ public:
   // Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);
 
-  // Returns the colour from the misc folder.
+  // Returns the markdown symbol used for specified p_identifier such as colors
+  QString get_chat_markdown(QString p_identifier, QString p_file);
+
+  // Returns the color from the misc folder.
   QColor get_chat_color(QString p_identifier, QString p_chat);
 
   // Returns the sfx with p_identifier from sounds.ini in the current theme path
@@ -213,12 +278,30 @@ public:
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
 
-  // Can we use APNG for this? If not, fall back to a gif.
+  // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
+  // PNG.
   QString get_image_suffix(QString path_to_check);
+
+  // If this image is static and non-animated, return the supported static image
+  // formats. Currently only PNG.
+  QString get_static_image_suffix(QString path_to_check);
 
   // Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line,
                         QString target_tag);
+
+  // Returns a QStringList of all key=value definitions on a given tag.
+  QStringList read_ini_tags(QString p_file, QString target_tag = "");
+
+  // Sets the char.ini p_search_line key under tag target_tag to value.
+  void set_char_ini(QString p_char, QString value, QString p_search_line,
+                    QString target_tag);
+
+  // Returns the text between target_tag and terminator_tag in p_file
+  QString get_stylesheet(QString p_file);
+
+  // Returns the text between target_tag and terminator_tag in p_file
+  QString get_tagged_stylesheet(QString target_tag, QString p_file);
 
   // Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
@@ -226,8 +309,14 @@ public:
   // Returns the showname from the ini of p_char
   QString get_showname(QString p_char);
 
-  // Returns the value of chat from the specific p_char's ini file
+  // Returns the value of chat image from the specific p_char's ini file
   QString get_chat(QString p_char);
+
+  // Returns the value of chat font from the specific p_char's ini file
+  QString get_chat_font(QString p_char);
+
+  // Returns the value of chat font size from the specific p_char's ini file
+  int get_chat_size(QString p_char);
 
   // Returns the value of shouts from the specified p_char's ini file
   QString get_char_shouts(QString p_char);
@@ -241,6 +330,21 @@ public:
 
   // Not in use
   int get_text_delay(QString p_char, QString p_emote);
+
+  // Get the effects folder referenced by the char.ini, read it and return the
+  // list of filenames in a string
+  QStringList get_theme_effects();
+
+  // Get the theme's effects folder, read it and return the list of filenames in
+  // a string
+  QStringList get_effects(QString p_char);
+
+  // t
+  QString get_effect(QString effect, QString p_char, QString p_folder);
+
+  // Return the effect sound associated with the fx_name in the
+  // misc/effects/<char-defined>/sounds.ini, or theme/effects/sounds.ini.
+  QString get_effect_sound(QString fx_name, QString p_char);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
@@ -262,6 +366,21 @@ public:
 
   // Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
+
+  // Returns the blipsound of p_char's p_emote
+  QString get_emote_blip(QString p_char, int p_emote);
+
+  // Returns if the sfx is defined as looping in char.ini
+  QString get_sfx_looping(QString p_char, int p_emote);
+
+  // Returns if an emote has a frame specific SFX for it
+  QString get_sfx_frame(QString p_char, QString p_emote, int n_frame);
+
+  // Returns if an emote has a frame specific SFX for it
+  QString get_flash_frame(QString p_char, QString p_emote, int n_frame);
+
+  // Returns if an emote has a frame specific SFX for it
+  QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
 
   // Not in use
   int get_sfx_delay(QString p_char, int p_emote);
@@ -303,10 +422,13 @@ public:
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
+  // The file name of the log file in base/logs.
+  QString log_filename;
+
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 6;
-  const int MINOR_VERSION = 2;
+  const int MAJOR_VERSION = 8;
+  const int MINOR_VERSION = 4;
 
   QString current_theme = "default";
 

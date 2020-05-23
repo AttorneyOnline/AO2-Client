@@ -70,15 +70,15 @@ void Courtroom::set_char_select()
       ao_app->get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0) {
-    qDebug()
-        << "W: did not find courtroom width or height in courtroom_design.ini!";
+    qDebug() << "W: did not find char_select width or height in "
+                "courtroom_design.ini!";
     this->resize(714, 668);
   }
   else
     this->resize(f_charselect.width, f_charselect.height);
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
-  ui_char_select_background->set_image("charselect_background.png");
+  ui_char_select_background->set_image("charselect_background");
 
   filter_character_list();
 
@@ -133,14 +133,17 @@ void Courtroom::char_clicked(int n_char)
     return;
   }
 
-  if (n_char == m_cid) {
-    enter_courtroom(m_cid);
-  }
-  else {
+  if (n_char != m_cid) {
+    ao_app->send_server_packet(
+        new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(
         new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" +
                      QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
+  else
+    update_character(n_char);
+
+  enter_courtroom();
 
   ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }
@@ -225,8 +228,9 @@ void Courtroom::character_loading_finished()
               100);
       ao_app->w_lobby->set_loading_value(loading_value);
       ao_app->w_lobby->set_loading_text(
-          "Generating chars:\n" + QString::number(ao_app->generated_chars) +
-          "/" + QString::number(ao_app->char_list_size));
+          tr("Generating chars:\n%1/%2")
+              .arg(QString::number(ao_app->generated_chars))
+              .arg(QString::number(ao_app->char_list_size)));
     }
   }
 

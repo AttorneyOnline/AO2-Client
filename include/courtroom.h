@@ -13,6 +13,7 @@
 #include "aolineedit.h"
 #include "aomovie.h"
 #include "aomusicplayer.h"
+#include "aooptionsdialog.h"
 #include "aopacket.h"
 #include "aoscene.h"
 #include "aosfxplayer.h"
@@ -24,10 +25,12 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
+#include "scrolltext.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QComboBox>
+#include <QHeaderView>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMainWindow>
@@ -36,17 +39,24 @@
 #include <QSlider>
 #include <QSpinBox>
 #include <QTextBrowser>
+#include <QTreeWidget>
 #include <QVector>
 
 #include <QBrush>
 #include <QDebug>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QFont>
 #include <QInputDialog>
+#include <QMenu>
+#include <QMessageBox>
+#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
 #include <QRegExp>
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
+//#include <QRandomGenerator>
 
 #include <stack>
 
@@ -61,6 +71,8 @@ public:
   void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
   void append_music(QString f_music) { music_list.append(f_music); }
   void append_area(QString f_area) { area_list.append(f_area); }
+  void clear_music() { music_list.clear(); }
+  void clear_areas() { area_list.clear(); }
 
   void fix_last_area()
   {
@@ -104,15 +116,33 @@ public:
 
   // sets position of widgets based on theme ini files
   void set_widgets();
+
   // sets font size based on theme ini files
-  void set_font(QWidget *widget, QString p_identifier);
+  void set_font(QWidget *widget, QString class_name, QString p_identifier);
+
+  // Get the properly constructed font
+  QFont get_qfont(QString font_name, int f_pointsize, bool antialias = true);
+
+  // actual operation of setting the font on a widget
+  void set_qfont(QWidget *widget, QString class_name, QFont font,
+                 QColor f_color = Qt::black, bool bold = false);
+
   // helper function that calls above function on the relevant widgets
   void set_fonts();
+
+  // sets dropdown menu stylesheet
+  void set_dropdown(QWidget *widget);
+
+  // helper funciton that call above function on the relevant widgets
+  void set_dropdowns();
 
   void set_window_title(QString p_title);
 
   // reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+
+  // reads theme inis and returns the size and pos as defined by it
+  QPoint get_theme_pos(QString p_identifier);
 
   // sets status as taken on character with cid n_char and places proper shading
   // on charselect
@@ -120,7 +150,13 @@ public:
 
   // sets the current background to argument. also does some checks to see if
   // it's a legacy bg
-  void set_background(QString p_background);
+  void set_background(QString p_background, bool display = false);
+
+  // sets the local character pos/side to use.
+  void set_side(QString p_side);
+
+  // sets the pos dropdown
+  void set_pos_dropdown(QStringList pos_dropdowns);
 
   // sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
@@ -135,13 +171,7 @@ public:
   void set_pair_list();
 
   // sets desk and bg based on pos in chatmessage
-  void set_scene();
-
-  // sets text color based on text color in chatmessage
-  void set_text_color();
-
-  // And gets the colour, too!
-  QColor get_text_color(QString color);
+  void set_scene(QString f_desk_mod, QString f_side);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -159,8 +189,11 @@ public:
   QString get_current_char() { return current_char; }
   QString get_current_background() { return current_background; }
 
+  // updates character to p_cid and updates necessary ui elements
+  void update_character(int p_cid);
+
   // properly sets up some varibles: resets user state
-  void enter_courtroom(int p_cid);
+  void enter_courtroom();
 
   // helper function that populates ui_music_list with the contents of
   // music_list
@@ -170,7 +203,7 @@ public:
   // these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message,
-                                 QString p_colour);
+                                 QString p_color);
 
   // these functions handle chatmessages sequentially.
   // The process itself is very convoluted and merits separate documentation
@@ -181,14 +214,14 @@ public:
 
   // This function filters out the common CC inline text trickery, for appending
   // to the IC chatlog.
-  QString filter_ic_text(QString p_text);
+  QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1,
+                         int default_color = 0);
 
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "",
-                      bool is_songchange = false);
+  void append_ic_text(QString p_text, QString p_name = "", QString action = "");
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and the
@@ -230,12 +263,8 @@ private:
   bool first_message_sent = false;
   int maximumMessages = 0;
 
-  // This is for inline message-colouring.
-
-  enum INLINE_COLOURS { INLINE_BLUE, INLINE_GREEN, INLINE_ORANGE, INLINE_GREY };
-
-  // A stack of inline colours.
-  std::stack<INLINE_COLOURS> inline_colour_stack;
+  QParallelAnimationGroup *screenshake_animation_group =
+      new QParallelAnimationGroup;
 
   bool next_character_is_not_special = false; // If true, write the
                                               // next character as it is.
@@ -243,21 +272,16 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {30, 40, 50, 60, 75, 100, 120};
-
-  // This is for checking if the character should start talking again
-  // when an inline blue text ends.
-  bool entire_message_is_blue = false;
-
-  // And this is the inline 'talking checker'. Counts how 'deep' we are
-  // in inline blues.
-  int inline_blue_depth = 0;
+  int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
 
   // The offset this user has given if they want to appear alongside someone.
-  int offset_with_pair = 0;
+  int char_offset = 0;
+
+  // 0 = in front, 1 = behind
+  int pair_order = 0;
 
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
@@ -271,10 +295,6 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
-  // These map music row items and area row items to their actual IDs.
-  QVector<int> music_row_to_number;
-  QVector<int> area_row_to_number;
-
   // triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 
@@ -283,12 +303,18 @@ private:
   // int chat_tick_interval = 60;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
+  // the actual document tick pos we gotta worry about for making the text
+  // scroll better
+  int real_tick_pos = 0;
   // used to determine how often blips sound
-  int blip_pos = 0;
+  int blip_ticker = 0;
   int blip_rate = 1;
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+
+  // Whether or not is this message additive to the previous one
+  bool is_additive = false;
 
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
@@ -302,32 +328,33 @@ private:
   // delay before sfx plays
   QTimer *sfx_delay_timer;
 
-  // keeps track of how long realization is visible(it's just a white square and
-  // should be visible less than a second)
-  QTimer *realization_timer;
-
-  // times how long the blinking testimony should be shown(green one in the
-  // corner)
-  QTimer *testimony_show_timer;
-  // times how long the blinking testimony should be hidden
-  QTimer *testimony_hide_timer;
-
   // every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 23;
+  // the amount of time non-animated objection/hold it/takethat images stay
+  // onscreen for in ms
+  const int shout_stay_time = 724;
+
+  // the amount of time non-animated guilty/not guilty images stay onscreen for
+  // in ms
+  const int verdict_stay_time = 3000;
+
+  // the amount of time non-animated witness testimony/cross-examination images
+  // stay onscreen for in ms
+  const int wtce_stay_time = 1500;
+
+  // characters we consider punctuation
+  const QString punctuation_chars = ".,?!:;";
+
+  // amount by which we multiply the delay when we parse punctuation chars
+  const int punctuation_modifier = 3;
+
+  static const int chatmessage_size = 30;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
-
-  bool testimony_in_progress = false;
-
-  // in milliseconds
-  const int testimony_show_time = 1500;
-
-  // in milliseconds
-  const int testimony_hide_time = 500;
+  QString additive_previous = "";
 
   // char id, muted or not
   QMap<int, bool> mute_map;
@@ -340,6 +367,9 @@ private:
   // noniterrupting preanim
   int anim_state = 3;
 
+  // whether or not current color is a talking one
+  bool color_is_talking = true;
+
   // state of text ticking, 0 = not yet ticking, 1 = ticking in progress, 2 =
   // ticking done
   int text_state = 2;
@@ -351,8 +381,41 @@ private:
 
   int objection_state = 0;
   int realization_state = 0;
+  int screenshake_state = 0;
   int text_color = 0;
+
+  // How many unique user colors are possible
+  static const int max_colors = 12;
+
+  // Text Color-related optimization:
+  // Current color list indexes to real color references
+  QVector<int> color_row_to_number;
+
+  // List of associated RGB colors for this color index
+  QVector<QColor> color_rgb_list;
+
+  // List of markdown start characters, their index is tied to the color index
+  QStringList color_markdown_start_list;
+
+  // List of markdown end characters, their index is tied to the color index
+  QStringList color_markdown_end_list;
+
+  // Whether or not we're supposed to remove this char during parsing
+  QVector<bool> color_markdown_remove_list;
+
+  // Whether or not this color allows us to play the talking animation
+  QVector<bool> color_markdown_talking_list;
+  // Text Color-related optimization END
+
+  // List of all currently available pos
+  QStringList pos_dropdown_list;
+
   bool is_presenting_evidence = false;
+
+  QString effect = "";
+
+  // Music effect flags we want to send to server when we play music
+  int music_flags = 0;
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
@@ -372,6 +435,11 @@ private:
   int max_emotes_on_page = 10;
 
   QVector<evi_type> local_evidence_list;
+  QVector<evi_type> private_evidence_list;
+  QVector<evi_type> global_evidence_list;
+
+  // false = use private_evidence_list
+  bool current_evidence_global = true;
 
   int current_evidence_page = 0;
   int current_evidence = 0;
@@ -387,6 +455,7 @@ private:
   bool server_ooc = true;
 
   QString current_background = "default";
+  QString current_side = "";
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
@@ -407,9 +476,10 @@ private:
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
+  AOMovie *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOImage *ui_vp_testimony;
-  AOImage *ui_vp_realization;
+  AOMovie *ui_vp_effect;
+  AOMovie *ui_vp_testimony;
   AOMovie *ui_vp_wtce;
   AOMovie *ui_vp_objection;
 
@@ -419,14 +489,19 @@ private:
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
-  QListWidget *ui_area_list;
-  QListWidget *ui_music_list;
+  QTreeWidget *ui_area_list;
+  QTreeWidget *ui_music_list;
+
+  ScrollText *ui_music_name;
+  AOMovie *ui_music_display;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
 
-  QLineEdit *ui_ic_chat_message;
+  QComboBox *ui_pair_order_dropdown;
+
+  AOLineEdit *ui_ic_chat_message;
   QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
@@ -442,6 +517,14 @@ private:
 
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
+
+  QComboBox *ui_iniswap_dropdown;
+  AOButton *ui_iniswap_remove;
+
+  QComboBox *ui_sfx_dropdown;
+  AOButton *ui_sfx_remove;
+
+  QComboBox *ui_effects_dropdown;
 
   AOImage *ui_defense_bar;
   AOImage *ui_prosecution_bar;
@@ -470,6 +553,7 @@ private:
 
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
+  QCheckBox *ui_additive;
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
 
@@ -478,6 +562,7 @@ private:
 
   AOButton *ui_custom_objection;
   AOButton *ui_realization;
+  AOButton *ui_screenshake;
   AOButton *ui_mute;
 
   AOButton *ui_defense_plus;
@@ -494,9 +579,6 @@ private:
 
   AOImage *ui_muted;
 
-  QSpinBox *ui_log_limit_spinbox;
-  QLabel *ui_log_limit_label;
-
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
   AOLineEdit *ui_evidence_name;
@@ -510,6 +592,11 @@ private:
   AOLineEdit *ui_evidence_image_name;
   AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
+  AOButton *ui_evidence_ok;
+  AOButton *ui_evidence_switch;
+  AOButton *ui_evidence_transfer;
+  AOButton *ui_evidence_save;
+  AOButton *ui_evidence_load;
   AOTextEdit *ui_evidence_description;
 
   AOImage *ui_char_select_background;
@@ -541,21 +628,23 @@ private:
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
-  void construct_emotes();
+  void initialize_emotes();
+  void refresh_emotes();
   void set_emote_page();
   void set_emote_dropdown();
 
-  void construct_evidence();
+  void initialize_evidence();
+  void refresh_evidence();
   void set_evidence_page();
 
 public slots:
   void objection_done();
   void preanim_done();
-
-  void realization_done();
-
-  void show_testimony();
-  void hide_testimony();
+  void do_screenshake();
+  void do_flash();
+  void do_effect(QString fx_path, QString fx_sound, QString p_char,
+                 QString p_folder);
+  void play_char_sfx(QString sfx_name);
 
   void mod_called(QString p_ip);
 
@@ -576,8 +665,14 @@ private slots:
   void on_ooc_return_pressed();
 
   void on_music_search_edited(QString p_text);
-  void on_music_list_double_clicked(QModelIndex p_model);
-  void on_area_list_double_clicked(QModelIndex p_model);
+  void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
+  void on_music_list_context_menu_requested(const QPoint &pos);
+  void music_fade_out(bool toggle);
+  void music_fade_in(bool toggle);
+  void music_synchronize(bool toggle);
+  void music_list_expand_all();
+  void music_list_collapse_all();
+  void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
 
@@ -588,6 +683,28 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
+
+  void on_iniswap_dropdown_changed(int p_index);
+  void set_iniswap_dropdown();
+  void on_iniswap_context_menu_requested(const QPoint &pos);
+  void on_iniswap_edit_requested();
+  void on_iniswap_remove_clicked();
+
+  void on_sfx_dropdown_changed(int p_index);
+  void set_sfx_dropdown();
+  void on_sfx_context_menu_requested(const QPoint &pos);
+  void on_sfx_edit_requested();
+  void on_sfx_remove_clicked();
+
+  void set_effects_dropdown();
+  void on_effects_context_menu_requested(const QPoint &pos);
+  void on_effects_edit_requested();
+  void on_character_effects_edit_requested();
+  void on_effects_dropdown_changed(int p_index);
+  bool effects_dropdown_find_and_set(QString effect);
+
+  QString get_char_sfx();
+  int get_char_sfx_delay();
 
   void on_evidence_name_edited();
   void on_evidence_image_name_edited();
@@ -607,9 +724,11 @@ private slots:
   void on_custom_objection_clicked();
 
   void on_realization_clicked();
+  void on_screenshake_clicked();
 
   void on_mute_clicked();
   void on_pair_clicked();
+  void on_pair_order_dropdown_changed(int p_index);
 
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();
@@ -617,6 +736,7 @@ private slots:
   void on_prosecution_plus_clicked();
 
   void on_text_color_changed(int p_color);
+  void set_text_color_dropdown();
 
   void on_music_slider_moved(int p_value);
   void on_sfx_slider_moved(int p_value);
@@ -640,14 +760,28 @@ private slots:
 
   void on_pre_clicked();
   void on_flip_clicked();
+  void on_additive_clicked();
   void on_guard_clicked();
 
   void on_showname_enable_clicked();
 
+  void on_evidence_name_double_clicked();
+  void on_evidence_image_name_double_clicked();
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();
   void on_evidence_x_clicked();
+  void on_evidence_ok_clicked();
+  void on_evidence_switch_clicked();
+  void on_evidence_transfer_clicked();
+
+  void on_evidence_edited();
+
+  void evidence_close();
+  void evidence_switch(bool global);
+  void on_evidence_save_clicked();
+  void on_evidence_load_clicked();
+  bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
 

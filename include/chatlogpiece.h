@@ -15,7 +15,7 @@ public:
   QString get_name();
   QString get_showname();
   QString get_message();
-  bool get_is_song();
+  bool is_song();
   QDateTime get_datetime();
   QString get_datetime_as_string();
 
@@ -26,7 +26,7 @@ private:
   QString showname;
   QString message;
   QDateTime datetime;
-  bool is_song;
+  bool p_is_song;
 };
 
 #endif // CHATLOGPIECE_H

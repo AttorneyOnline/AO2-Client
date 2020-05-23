@@ -15,6 +15,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
@@ -55,6 +56,27 @@ private:
   QLineEdit *ui_ms_textbox;
   QLabel *ui_discord_lbl;
   QCheckBox *ui_discord_cb;
+  QLabel *ui_language_label;
+  QComboBox *ui_language_combobox;
+
+  QLabel *ui_shake_lbl;
+  QCheckBox *ui_shake_cb;
+  QLabel *ui_effects_lbl;
+  QCheckBox *ui_effects_cb;
+  QLabel *ui_framenetwork_lbl;
+  QCheckBox *ui_framenetwork_cb;
+
+  QLabel *ui_colorlog_lbl;
+  QCheckBox *ui_colorlog_cb;
+
+  QLabel *ui_stickysounds_lbl;
+  QCheckBox *ui_stickysounds_cb;
+
+  QLabel *ui_stickyeffects_lbl;
+  QCheckBox *ui_stickyeffects_cb;
+
+  QLabel *ui_stickypres_lbl;
+  QCheckBox *ui_stickypres_cb;
 
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
@@ -80,6 +102,10 @@ private:
   QLabel *ui_bliprate_lbl;
   QCheckBox *ui_blank_blips_cb;
   QLabel *ui_blank_blips_lbl;
+  QLabel *ui_loopsfx_lbl;
+  QCheckBox *ui_loopsfx_cb;
+  QLabel *ui_objectmusic_lbl;
+  QCheckBox *ui_objectmusic_cb;
   QDialogButtonBox *ui_settings_buttons;
 
   QWidget *ui_casing_tab;

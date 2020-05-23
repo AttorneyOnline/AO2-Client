@@ -3,51 +3,55 @@
 #include "file_functions.h"
 
 AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app,
-                                   int p_x, int p_y)
+                                   int p_x, int p_y, int p_w, int p_h)
     : QPushButton(p_parent)
 {
   ao_app = p_ao_app;
   m_parent = p_parent;
 
-  ui_selected = new AOImage(p_parent, ao_app);
-  ui_selected->resize(70, 70);
-  ui_selected->move(p_x, p_y);
-  ui_selected->set_image("evidence_selected.png");
+  ui_selected = new AOImage(this, ao_app);
+  ui_selected->resize(p_w, p_h);
+  //  ui_selected->move(p_x, p_y);
+  ui_selected->set_image("evidence_selected");
   ui_selected->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selected->hide();
 
-  ui_selector = new AOImage(p_parent, ao_app);
-  ui_selector->resize(71, 71);
-  ui_selector->move(p_x - 1, p_y - 1);
-  ui_selector->set_image("evidence_selector.png");
+  ui_selector = new AOImage(this, ao_app);
+  ui_selector->resize(p_w, p_h);
+  //  ui_selector->move(p_x - 1, p_y - 1);
+  ui_selector->set_image("evidence_selector");
   ui_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selector->hide();
 
   this->move(p_x, p_y);
-  this->resize(70, 70);
-  this->setAcceptDrops(true);
+  this->resize(p_w, p_h);
+  //  this->setAcceptDrops(true);
 
   connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
-}
-
-void AOEvidenceButton::reset()
-{
-  this->hide();
-  ui_selected->hide();
-  ui_selector->hide();
 }
 
 void AOEvidenceButton::set_image(QString p_image)
 {
   QString image_path = ao_app->get_evidence_path(p_image);
-
-  if (file_exists(image_path)) {
+  if (file_exists(p_image)) {
     this->setText("");
-    this->setStyleSheet("border-image:url(\"" + image_path + "\")");
+    this->setStyleSheet(
+        "QPushButton { border-image: url(\"" + p_image +
+        "\") 0 0 0 0 stretch stretch; }"
+        "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
+  }
+  else if (file_exists(image_path)) {
+    this->setText("");
+    this->setStyleSheet(
+        "QPushButton { border-image: url(\"" + image_path +
+        "\") 0 0 0 0 stretch stretch; }"
+        "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
   }
   else {
     this->setText(p_image);
-    this->setStyleSheet("");
+    this->setStyleSheet("QPushButton { border-image: url(); }"
+                        "QToolTip { background-image: url(); color: #000000; "
+                        "background-color: #ffffff; border: 0px; }");
   }
 }
 
@@ -63,8 +67,7 @@ void AOEvidenceButton::set_theme_image(QString p_image)
   else
     final_image_path = default_image_path;
 
-  this->setText("");
-  this->setStyleSheet("border-image:url(\"" + final_image_path + "\")");
+  this->set_image(final_image_path);
 }
 
 void AOEvidenceButton::set_selected(bool p_selected)

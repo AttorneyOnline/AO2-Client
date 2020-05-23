@@ -2,11 +2,11 @@
 #define AOEVIDENCEDISPLAY_H
 
 #include "aoapplication.h"
+#include "aomovie.h"
 #include "aosfxplayer.h"
 
 #include <QDebug>
 #include <QLabel>
-#include <QMovie>
 
 class AOEvidenceDisplay : public QLabel {
   Q_OBJECT
@@ -17,15 +17,16 @@ public:
   void show_evidence(QString p_evidence_image, bool is_left_side, int p_volume);
   QLabel *get_evidence_icon();
   void reset();
+  void combo_resize(int w, int h);
 
 private:
   AOApplication *ao_app;
-  QMovie *evidence_movie;
+  AOMovie *evidence_movie;
   QLabel *evidence_icon;
   AOSfxPlayer *sfx_player;
 
 private slots:
-  void frame_change(int p_frame);
+  void show_done();
 };
 
 #endif // AOEVIDENCEDISPLAY_H

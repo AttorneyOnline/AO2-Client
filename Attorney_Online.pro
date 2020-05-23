@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.6.2.0
+VERSION = 2.8.3.1
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -12,7 +12,6 @@ MOC_DIR = $$PWD/build
 
 SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
-
 
 LIBS += -L$$PWD/lib
 
@@ -26,6 +25,7 @@ DEFINES += BASSAUDIO
 
 contains(DEFINES, BASSAUDIO) {
 LIBS += -lbass
+LIBS += -lbassopus
 }
 
 #DEFINES += QTAUDIO

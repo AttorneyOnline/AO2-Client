@@ -1,9 +1,12 @@
 #ifndef DISCORD_RICH_PRESENCE_H
 #define DISCORD_RICH_PRESENCE_H
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <cstring>
 #include <ctime>
+#include <string>
+
 #include <discord-rpc.h>
 #include <string>
 
@@ -15,6 +18,8 @@
 namespace AttorneyOnline {
 
 class Discord {
+  Q_DECLARE_TR_FUNCTIONS(Discord)
+
 private:
   const char *APPLICATION_ID = "399779271737868288";
   std::string server_name, server_id;

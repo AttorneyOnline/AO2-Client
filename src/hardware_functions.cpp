@@ -51,8 +51,25 @@ QString get_hdid()
 #elif defined __APPLE__
 QString get_hdid()
 {
-  // hdids are broken at this point anyways
-  return "just a mac passing by";
+  CFStringRef serial;
+  char buffer[64] = {0};
+  QString hdid;
+  io_service_t platformExpert = IOServiceGetMatchingService(
+      kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
+  if (platformExpert) {
+    CFTypeRef serialNumberAsCFString = IORegistryEntryCreateCFProperty(
+        platformExpert, CFSTR(kIOPlatformSerialNumberKey), kCFAllocatorDefault,
+        0);
+    if (serialNumberAsCFString) {
+      serial = (CFStringRef)serialNumberAsCFString;
+    }
+    if (CFStringGetCString(serial, buffer, 64, kCFStringEncodingUTF8)) {
+      hdid = buffer;
+    }
+
+    IOObjectRelease(platformExpert);
+  }
+  return hdid;
 }
 
 #else

@@ -12,10 +12,9 @@ class AOEvidenceButton : public QPushButton {
   Q_OBJECT
 
 public:
-  AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x,
-                   int p_y);
+  AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y,
+                   int p_w, int p_h);
 
-  void reset();
   void set_image(QString p_image);
   void set_theme_image(QString p_image);
   void set_id(int p_id) { m_id = p_id; }
@@ -36,9 +35,9 @@ protected:
   void leaveEvent(QEvent *e);
   void mouseDoubleClickEvent(QMouseEvent *e);
   /*
-  void dragLeaveEvent(QMouseEvent *e);
-  void dragEnterEvent(QMouseEvent *e);
-  */
+void dragLeaveEvent(QMouseEvent *e);
+void dragEnterEvent(QMouseEvent *e);
+*/
 
 signals:
   void evidence_clicked(int p_id);
