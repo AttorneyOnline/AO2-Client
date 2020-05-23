@@ -1,13 +1,14 @@
 #include "aosfxplayer.h"
 #include "file_functions.h"
 
-#if defined(BASSAUDIO) // Using bass.dll for sfx
+
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
   ao_app = p_ao_app;
 }
 
+#if defined(BASSAUDIO) // Using bass.dll for sfx
 void AOSfxPlayer::clear()
 {
   for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
@@ -112,11 +113,6 @@ void AOSfxPlayer::set_looping(bool toggle, int channel)
   }
 }
 #elif defined(QTAUDIO) // Using Qt's QSoundEffect class
-AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
 
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
@@ -164,12 +160,6 @@ void AOSfxPlayer::set_volume_internal(qreal p_value)
   m_sfx.setVolume(m_volume);
 }
 #else
-AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
-
 void AOSfxPlayer::clear() {}
 
 void AOSfxPlayer::loop_clear() {}

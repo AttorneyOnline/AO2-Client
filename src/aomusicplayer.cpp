@@ -1,11 +1,13 @@
 #include "aomusicplayer.h"
 
-#ifdef BASSAUDIO
+
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
   ao_app = p_ao_app;
 }
+
+#ifdef BASSAUDIO
 
 AOMusicPlayer::~AOMusicPlayer()
 {
@@ -170,11 +172,6 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
   }
 }
 #elif defined(QTAUDIO)
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
 
 AOMusicPlayer::~AOMusicPlayer() {
     for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
@@ -211,11 +208,6 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
 }
 
 #else
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
 
 AOMusicPlayer::~AOMusicPlayer() {}
 
