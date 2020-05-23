@@ -34,11 +34,11 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
   if (is_left_side) {
     icon_identifier = "left_evidence_icon";
-    gif_name = "evidence_appear_left.gif";
+    gif_name = "evidence_appear_left";
   }
   else {
     icon_identifier = "right_evidence_icon";
-    gif_name = "evidence_appear_right.gif";
+    gif_name = "evidence_appear_right";
   }
 
   pos_size_type icon_dimensions =
@@ -49,9 +49,8 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
   evidence_icon->setPixmap(f_pixmap.scaled(
       evidence_icon->width(), evidence_icon->height(), Qt::IgnoreAspectRatio));
-
-  QString f_default_gif_path = ao_app->get_default_theme_path(gif_name);
-  QString f_gif_path = ao_app->get_theme_path(gif_name);
+  QString f_default_gif_path = ao_app->get_image_suffix(ao_app->get_default_theme_path(gif_name));
+  QString f_gif_path = ao_app->get_image_suffix(ao_app->get_theme_path(gif_name));
 
   if (file_exists(f_gif_path))
     final_gif_path = f_gif_path;
