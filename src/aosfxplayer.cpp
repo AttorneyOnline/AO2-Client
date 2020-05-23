@@ -170,9 +170,10 @@ AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout) {}
+void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
+                       int channel) {}
 
-void AOSfxPlayer::stop() {}
+void AOSfxPlayer::stop(int channel) {}
 
 void AOSfxPlayer::set_volume(qreal p_value) {}
 

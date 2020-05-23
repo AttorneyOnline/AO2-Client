@@ -100,7 +100,7 @@ void AOBlipPlayer::set_blips(QString p_sfx) {}
 
 void AOBlipPlayer::blip_tick() {}
 
-void AOBlipPlayer::set_volume(qreal p_value) {}
+void AOBlipPlayer::set_volume(int p_value) {}
 
 void AOBlipPlayer::set_volume_internal(qreal p_value) {}
 #endif
