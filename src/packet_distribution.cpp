@@ -478,19 +478,39 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     bool musics_time = false;
     area_count = 0;
-
+    bool legacy_system = false;
+    int element_ahead = 0;
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
-      int element2check = n_element + 1;
-      if (element2check > f_contents.size()) {
-        element2check = n_element; // I know this is very lazy code but cba
+      element_ahead = n_element + 1;
+      if (!musics_time && f_contents.at(n_element).startsWith("==") && (
+                           f_contents.at(element_ahead).endsWith(".wav") ||
+                           f_contents.at(element_ahead).endsWith(".mp3") ||
+                           f_contents.at(element_ahead).endsWith(".mp4") ||
+                           f_contents.at(element_ahead).endsWith(".ogg") ||
+                           f_contents.at(element_ahead).endsWith(".opus"))) {
+          legacy_system = true;
+
       }
-      if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
-                           f_contents.at(element2check).endsWith(".wav") ||
-                           f_contents.at(element2check).endsWith(".mp3") ||
-                           f_contents.at(element2check).endsWith(".mp4") ||
-                           f_contents.at(element2check).endsWith(".ogg") ||
-                           f_contents.at(element2check).endsWith(".opus"))) {
-        musics_time = true;
+      if(!legacy_system) {
+          if (!musics_time &&  (f_contents.at(n_element).startsWith("==") ||
+                               f_contents.at(element_ahead).endsWith(".wav") ||
+                               f_contents.at(element_ahead).endsWith(".mp3") ||
+                               f_contents.at(element_ahead).endsWith(".mp4") ||
+                               f_contents.at(element_ahead).endsWith(".ogg") ||
+                               f_contents.at(element_ahead).endsWith(".opus"))) {
+              musics_time = true;
+      }
+      }
+      else{
+          if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
+                               f_contents.at(n_element).endsWith(".wav") ||
+                               f_contents.at(n_element).endsWith(".mp3") ||
+                               f_contents.at(n_element).endsWith(".mp4") ||
+                               f_contents.at(n_element).endsWith(".ogg") ||
+                               f_contents.at(n_element).endsWith(".opus"))) {
+            musics_time = true;
+      }
+
       }
 
       // Not everything needs to have a thread.
