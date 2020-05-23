@@ -176,26 +176,40 @@ AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 }
 
-AOMusicPlayer::~AOMusicPlayer() { m_player.stop(); }
+AOMusicPlayer::~AOMusicPlayer() {
+    for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
+      m_stream_list[n_stream].stop();
+    }
+}
 
-void AOMusicPlayer::play(QString p_song)
+void AOMusicPlayer::play(QString p_song, int channel, bool loop,
+                         int effect_flags)
 {
-  m_player.stop();
-
+  channel = channel % m_channelmax;
+  if (channel < 0) // wtf?
+    return;
   QString f_path = ao_app->get_music_path(p_song);
 
-  m_player.setMedia(QUrl::fromLocalFile(f_path));
+  m_stream_list[channel].stop();
 
-  this->set_volume(m_volume);
+  m_stream_list[channel].setMedia(QUrl::fromLocalFile(f_path));
 
-  m_player.play();
+  this->set_volume(m_volume[channel], channel);
+
+  m_stream_list[channel].play();
 }
 
-void AOMusicPlayer::set_volume(int p_value)
+void AOMusicPlayer::stop(int channel)
 {
-  m_volume = p_value;
-  m_player.setVolume(m_volume);
+  m_stream_list[channel].stop();
 }
+
+void AOMusicPlayer::set_volume(int p_value, int channel)
+{
+  m_volume[channel] = p_value;
+  m_stream_list[channel].setVolume(m_volume[channel]);
+}
+
 #else
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
