@@ -22,7 +22,7 @@ void AOBlipPlayer::set_blips(QString p_sfx)
           FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
   }
 
-  set_volume(m_volume);
+  set_volume_internal(m_volume);
 }
 
 void AOBlipPlayer::blip_tick()
@@ -44,7 +44,9 @@ void AOBlipPlayer::blip_tick()
 
 void AOBlipPlayer::set_volume(int p_value)
 {
-  m_volume = p_value;
+  m_volume = static_cast<qreal>(p_value) / 100;
+  set_volume_internal(m_volume);
+}
 
 void AOBlipPlayer::set_volume_internal(qreal p_value)
 {

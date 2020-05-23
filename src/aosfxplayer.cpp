@@ -86,7 +86,7 @@ void AOSfxPlayer::set_volume(qreal p_value)
   set_volume_internal(m_volume);
 }
 
-void AOSfxPlayer::set_volume(int p_value)
+void AOSfxPlayer::set_volume_internal(qreal p_value)
 {
   float volume = static_cast<float>(p_value);
   for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
