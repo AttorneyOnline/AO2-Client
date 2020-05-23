@@ -9,7 +9,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowTitle("Attorney Online 2");
+  this->setWindowTitle(tr("Attorney Online 2"));
   this->setWindowIcon(QIcon(":/logo.png"));
 
   ui_background = new AOImage(this, ao_app);
@@ -36,7 +36,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
-  ui_chatname->setPlaceholderText("Name");
+  ui_chatname->setPlaceholderText(tr("Name"));
   ui_chatname->setText(ao_app->get_ooc_name());
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this, ao_app);
@@ -139,7 +139,7 @@ void Lobby::set_widgets()
   ui_server_search->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_player_count, "player_count");
-  ui_player_count->setText("Offline");
+  ui_player_count->setText(tr("Offline"));
   ui_player_count->setStyleSheet("font: bold;"
                                  "color: white;"
                                  "qproperty-alignment: AlignCenter;");
@@ -173,11 +173,11 @@ void Lobby::set_widgets()
   ui_loading_text->setFrameStyle(QFrame::NoFrame);
   ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                  "color: rgba(255, 128, 0, 255);");
-  ui_loading_text->append("Loading");
+  ui_loading_text->append(tr("Loading"));
 
   set_size_and_pos(ui_progress_bar, "progress_bar");
   set_size_and_pos(ui_cancel, "cancel");
-  ui_cancel->setText("Cancel");
+  ui_cancel->setText(tr("Cancel"));
 
   ui_loading_background->hide();
 
@@ -377,7 +377,7 @@ void Lobby::on_about_clicked()
          "Noevain, Cronnicossy, the AO2 community, server hosts, game masters,"
          "case makers, content creators and players!")
           .arg(ao_app->get_version_string());
-  QMessageBox::about(this, "About", msg);
+  QMessageBox::about(this, tr("About"), msg);
 }
 
 void Lobby::on_settings_clicked() { ao_app->call_settings_menu(); }

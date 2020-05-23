@@ -232,7 +232,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = "Attorney Online 2";
+    QString window_title = tr("Attorney Online 2");
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -260,7 +260,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->set_window_title(window_title);
 
     w_lobby->show_loading_overlay();
-    w_lobby->set_loading_text("Loading");
+    w_lobby->set_loading_text(tr("Loading"));
     w_lobby->set_loading_value(0);
 
     AOPacket *f_packet;
@@ -313,9 +313,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       ++loaded_chars;
 
-      w_lobby->set_loading_text("Loading chars:\n" +
-                                QString::number(loaded_chars) + "/" +
-                                QString::number(char_list_size));
+      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
+                                .arg(QString::number(loaded_chars))
+                                .arg(QString::number(char_list_size)));
 
       w_courtroom->append_char(f_char);
 

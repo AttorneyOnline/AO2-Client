@@ -205,7 +205,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_language_combobox = new QComboBox(ui_form_layout_widget);
   ui_language_combobox->addItem(
       configini->value("language", "  ").value<QString>() +
-      " - Keep current setting");
+      tr(" - Keep current setting"));
   ui_language_combobox->addItem("   - Default");
   ui_language_combobox->addItem("en - English");
   ui_language_combobox->addItem("de - Deutsch");
@@ -384,7 +384,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   int a = 0;
   if (needs_default_audiodev()) {
 
-    ui_audio_device_combobox->addItem("default");
+    ui_audio_device_combobox->addItem("default"); //TODO translate this without breaking the default audio device
   }
 #ifdef BASSAUDIO
   BASS_DEVICEINFO info;

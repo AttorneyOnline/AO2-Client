@@ -164,7 +164,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
-  ui_ooc_chat_name->setPlaceholderText("Name");
+  ui_ooc_chat_name->setPlaceholderText(tr("Name"));
   ui_ooc_chat_name->setMaxLength(30);
   ui_ooc_chat_name->setText(p_ao_app->get_default_username());
 
@@ -214,14 +214,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_switch_area_music = new AOButton(this, ao_app);
 
   ui_pre = new QCheckBox(this);
-  ui_pre->setText("Pre");
+  ui_pre->setText(tr("Pre"));
 
   ui_flip = new QCheckBox(this);
-  ui_flip->setText("Flip");
+  ui_flip->setText(tr("Flip"));
   ui_flip->hide();
 
   ui_guard = new QCheckBox(this);
-  ui_guard->setText("Guard");
+  ui_guard->setText(tr("Guard"));
   ui_guard->hide();
 
   ui_additive = new QCheckBox(this);
@@ -274,8 +274,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_offset_spinbox->setSuffix(tr("% offset"));
 
   ui_pair_order_dropdown = new QComboBox(this);
-  ui_pair_order_dropdown->addItem("To front");
-  ui_pair_order_dropdown->addItem("To behind");
+  ui_pair_order_dropdown->addItem(tr("To front"));
+  ui_pair_order_dropdown->addItem(tr("To behind"));
 
   ui_pair_button = new AOButton(this, ao_app);
 
@@ -739,11 +739,11 @@ void Courtroom::set_widgets()
                                 QString::number(prosecution_bar_state));
 
   set_size_and_pos(ui_music_label, "music_label");
-  ui_music_label->setText("Music");
+  ui_music_label->setText(tr("Music"));
   set_size_and_pos(ui_sfx_label, "sfx_label");
-  ui_sfx_label->setText("Sfx");
+  ui_sfx_label->setText(tr("Sfx"));
   set_size_and_pos(ui_blip_label, "blip_label");
-  ui_blip_label->setText("Blips");
+  ui_blip_label->setText(tr("Blips"));
 
   set_size_and_pos(ui_hold_it, "hold_it");
   ui_hold_it->setText(tr("Hold It!"));
@@ -1454,7 +1454,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
   if (p_message == "Logged in as a moderator.") {
     ui_guard->show();
     append_server_chatmessage(
-        "CLIENT", "You were granted the Disable Modcalls button.", "1");
+        tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
   }
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
@@ -2981,7 +2981,7 @@ void Courtroom::set_ban(int p_cid)
   if (p_cid != m_cid && p_cid != -1)
     return;
 
-  call_notice("You have been banned.");
+  call_notice(tr("You have been banned."));
 
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
@@ -3058,7 +3058,7 @@ void Courtroom::handle_song(QStringList *p_contents)
         ic_chatlog_history.removeFirst();
       }
 
-      append_ic_text(f_song_clear, str_show, "has played a song");
+      append_ic_text(f_song_clear, str_show, tr("has played a song"));
 
       music_player->play(f_song, channel, looping, effect_flags);
       if (channel == 0)
@@ -3192,9 +3192,7 @@ void Courtroom::on_ooc_return_pressed()
     if (ok) {
       if (whom > -1) {
         other_charid = whom;
-        QString msg = "You will now pair up with ";
-        msg.append(char_list.at(whom).name);
-        msg.append(" if they also choose your character in return.");
+        QString msg = tr("You will now pair up with %1 if they also choose your character in return.").arg(char_list.at(whom).name);
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
@@ -3342,7 +3340,7 @@ void Courtroom::on_ooc_return_pressed()
     QString casestatus = casefile.value("status", "").value<QString>();
 
     if (!caseauth.isEmpty())
-      append_server_chatmessage("CLIENT", tr("Case made by %1.").arg(caseauth),
+      append_server_chatmessage(tr("CLIENT"), tr("Case made by %1.").arg(caseauth),
                                 "1");
     if (!casedoc.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
@@ -3366,9 +3364,9 @@ void Courtroom::on_ooc_return_pressed()
       QStringList f_contents;
 
       f_contents.append(
-          casefile.value(evi + "/name", "UNKNOWN").value<QString>());
+          casefile.value(evi + "/name", tr("UNKNOWN")).value<QString>());
       f_contents.append(
-          casefile.value(evi + "/description", "UNKNOWN").value<QString>());
+          casefile.value(evi + "/description", tr("UNKNOWN")).value<QString>());
       f_contents.append(
           casefile.value(evi + "/image", "UNKNOWN.png").value<QString>());
 
@@ -3967,25 +3965,25 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu();
 
-  menu->addAction(QString("Expand All Categories"), this,
+  menu->addAction(QString(tr("Expand All Categories")), this,
                   SLOT(music_list_expand_all()));
-  menu->addAction(QString("Collapse All Categories"), this,
+  menu->addAction(QString(tr("Collapse All Categories")), this,
                   SLOT(music_list_collapse_all()));
   menu->addSeparator();
 
-  menu->addAction(new QAction("Fade Out Previous", this));
+  menu->addAction(new QAction(tr("Fade Out Previous"), this));
   menu->actions().back()->setCheckable(true);
   menu->actions().back()->setChecked(music_flags & FADE_OUT);
   connect(menu->actions().back(), SIGNAL(toggled(bool)), this,
           SLOT(music_fade_out(bool)));
 
-  menu->addAction(new QAction("Fade In", this));
+  menu->addAction(new QAction(tr("Fade In"), this));
   menu->actions().back()->setCheckable(true);
   menu->actions().back()->setChecked(music_flags & FADE_IN);
   connect(menu->actions().back(), SIGNAL(toggled(bool)), this,
           SLOT(music_fade_in(bool)));
 
-  menu->addAction(new QAction("Synchronize", this));
+  menu->addAction(new QAction(tr("Synchronize"), this));
   menu->actions().back()->setCheckable(true);
   menu->actions().back()->setChecked(music_flags & SYNC_POS);
   connect(menu->actions().back(), SIGNAL(toggled(bool)), this,
@@ -4416,8 +4414,8 @@ void Courtroom::on_call_mod_clicked()
     QInputDialog input;
 
     input.setWindowFlags(Qt::WindowSystemMenuHint);
-    input.setLabelText("Reason:");
-    input.setWindowTitle("Call Moderator");
+    input.setLabelText(tr("Reason:"));
+    input.setWindowTitle(tr("Call Moderator"));
     auto code = input.exec();
 
     if (code != QDialog::Accepted)
@@ -4425,7 +4423,7 @@ void Courtroom::on_call_mod_clicked()
 
     QString text = input.textValue();
     if (text.isEmpty()) {
-      errorBox.critical(nullptr, "Error", "You must provide a reason.");
+      errorBox.critical(nullptr, tr("Error"), tr("You must provide a reason."));
       return;
     }
     else if (text.length() > 256) {
@@ -4478,14 +4476,14 @@ void Courtroom::on_showname_enable_clicked()
     if (ui_showname_enable->isChecked()) {
       if (item.is_song())
         append_ic_text(item.get_message(), item.get_showname(),
-                       "has played a song");
+                       tr("has played a song"));
       else
         append_ic_text(item.get_message(), item.get_showname());
     }
     else {
       if (item.is_song())
         append_ic_text(item.get_message(), item.get_name(),
-                       "has played a song");
+                       tr("has played a song"));
       else
         append_ic_text(item.get_message(), item.get_name());
     }
