@@ -15,23 +15,28 @@ HEADERS += $$files($$PWD/include/*.h)
 
 LIBS += -L$$PWD/lib
 
-DEFINES += DISCORD
+# Uncomment to enable Discord Rich Presence
+# DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {
-LIBS += -ldiscord-rpc
+  LIBS += -ldiscord-rpc
 }
 
-DEFINES += BASSAUDIO
+# Uncomment to enable the BASS audio engine
+# (Recommended for Windows)
+# DEFINES += BASSAUDIO
 
 contains(DEFINES, BASSAUDIO) {
-LIBS += -lbass
-LIBS += -lbassopus
+  LIBS += -lbass
+  LIBS += -lbassopus
 }
 
-#DEFINES += QTAUDIO
+# Uncomment to enable the Qt audio engine
+# (Recommended for non-Windows platforms)
+# DEFINES += QTAUDIO
 
 contains(DEFINES, QTAUDIO) {
-QT += multimedia
+  QT += multimedia
 }
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
