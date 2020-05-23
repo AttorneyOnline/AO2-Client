@@ -2170,8 +2170,7 @@ void Courtroom::handle_chatmessage_3()
       else
         first_message_sent = true;
       QString char_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
-      ui_ic_chatlog->textCursor().insertHtml("<b>" + char_name +
-                                             ": </b>");
+      ui_ic_chatlog->textCursor().insertHtml("<b>" + char_name + ": </b>");
     }
     else {
       if (first_message_sent && log_goes_downwards)
@@ -2293,10 +2292,10 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
   bool delay_pop = false;
   while (trick_check_pos < p_text.size()) {
     f_character = p_text.at(trick_check_pos);
-      if (f_character == "<")
-        f_character = "&lt;";
-      else if (f_character == ">")
-        f_character = "&gt;";
+    if (f_character == "<")
+      f_character = "&lt;";
+    else if (f_character == ">")
+      f_character = "&gt;";
     // Escape character.
     if (f_character == "\\" && !ic_next_is_not_special) {
       ic_next_is_not_special = true;
@@ -2509,9 +2508,10 @@ QString Courtroom::filter_ic_text(QString p_text, bool skip_filter,
  * \param p_text The text to be appended
  * \param p_name The name of the character/entity who sent said text
  * \param is_songchange Whether we are appending a song entry
- * \param force_filter If we are sending plain text and we want to force the filtering regardless of its status (e.g chat entry, song change etc)
- * \param skip_filter If we are sending appending text such as html so we skip the html filter
- * \param chat_color The color of the message sent
+ * \param force_filter If we are sending plain text and we want to force the
+ * filtering regardless of its status (e.g chat entry, song change etc) \param
+ * skip_filter If we are sending appending text such as html so we skip the html
+ * filter \param chat_color The color of the message sent
  */
 
 void Courtroom::append_ic_text(QString p_text, QString p_name,
@@ -2795,7 +2795,7 @@ void Courtroom::chat_tick()
   chat_tick_timer->stop();
   int msg_delay = message_display_speed[current_display_speed];
   if (slower_blips)
-      msg_delay = message_display_speed_slow[current_display_speed];
+    msg_delay = message_display_speed_slow[current_display_speed];
   // Stops blips from playing when we have a formatting option.
   bool formatting_char = false;
 
@@ -2832,7 +2832,9 @@ void Courtroom::chat_tick()
 
     f_character = f_character.toHtmlEscaped();
     if (punctuation_chars.contains(f_character)) {
-      msg_delay *= punctuation_modifier + 1; // Since we are handling a boolean, if its true its double (1 + 1) or false (1 + 0).
+      msg_delay *=
+          punctuation_modifier + 1; // Since we are handling a boolean, if its
+                                    // true its double (1 + 1) or false (1 + 0).
       // ui_vp_message->insertPlainText(f_character);
     }
 
