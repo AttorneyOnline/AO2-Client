@@ -54,8 +54,8 @@ TRANSLATIONS = resource/translations/ao_en.ts \
                resource/translations/ao_pt.ts \
                resource/translations/ao_pl.ts
 
-win32:RC_ICONS = resource/logo.ico
-macx:ICON = resource/logo.icns
+win32:RC_ICONS = resource/logo_ao2.ico
+macx:ICON = resource/logo_ao2.icns
 
 android:DISTFILES += \
     android/AndroidManifest.xml \
