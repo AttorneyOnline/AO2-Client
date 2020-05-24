@@ -86,7 +86,6 @@ void AOApplication::destruct_courtroom()
   w_courtroom = nullptr;
   courtroom_constructed = false;
   net_manager->server_socket->close();
-  net_manager->server_socket->abort();
 }
 
 QString AOApplication::get_version_string()
