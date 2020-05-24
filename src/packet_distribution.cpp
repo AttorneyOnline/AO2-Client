@@ -481,7 +481,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int element_ahead = 0;
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
 
-      if (element_ahead < f_contents.size())
+      if (element_ahead < f_contents.size() - 1)
         element_ahead = n_element + 1;
 
       // If the next element is a song then it must be a song category thus
