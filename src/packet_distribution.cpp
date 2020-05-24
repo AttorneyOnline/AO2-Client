@@ -483,30 +483,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       element_ahead = n_element + 1;
       if (!musics_time && f_contents.at(n_element).startsWith("==") &&
-          (f_contents.at(element_ahead).endsWith(".wav") ||
-           f_contents.at(element_ahead).endsWith(".mp3") ||
-           f_contents.at(element_ahead).endsWith(".mp4") ||
-           f_contents.at(element_ahead).endsWith(".ogg") ||
-           f_contents.at(element_ahead).endsWith(".opus"))) {
+          is_music_track(f_contents.at(element_ahead))) {
         legacy_system = true;
       }
       if (!legacy_system) {
         if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
-                             f_contents.at(element_ahead).endsWith(".wav") ||
-                             f_contents.at(element_ahead).endsWith(".mp3") ||
-                             f_contents.at(element_ahead).endsWith(".mp4") ||
-                             f_contents.at(element_ahead).endsWith(".ogg") ||
-                             f_contents.at(element_ahead).endsWith(".opus"))) {
+                             is_music_track(f_contents.at(element_ahead)))) {
           musics_time = true;
         }
       }
       else {
-        if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
-                             f_contents.at(n_element).endsWith(".wav") ||
-                             f_contents.at(n_element).endsWith(".mp3") ||
-                             f_contents.at(n_element).endsWith(".mp4") ||
-                             f_contents.at(n_element).endsWith(".ogg") ||
-                             f_contents.at(n_element).endsWith(".opus"))) {
+        if (!musics_time && (is_music_track(f_contents.at(n_element)))) {
           musics_time = true;
         }
       }
