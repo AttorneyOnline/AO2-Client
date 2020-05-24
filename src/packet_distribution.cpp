@@ -125,9 +125,9 @@ end:
 
 bool AOApplication::is_music_track(QString trackname)
 {
-  return (trackname.endsWith(".wav") ||
-          trackname.endsWith(".mp3") || trackname.endsWith(".mp4") ||
-          trackname.endsWith(".ogg") || trackname.endsWith(".opus"));
+  return (trackname.endsWith(".wav") || trackname.endsWith(".mp3") ||
+          trackname.endsWith(".mp4") || trackname.endsWith(".ogg") ||
+          trackname.endsWith(".opus"));
 }
 
 void AOApplication::server_packet_received(AOPacket *p_packet)
