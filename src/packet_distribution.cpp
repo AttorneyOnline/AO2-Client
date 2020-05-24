@@ -480,15 +480,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     area_count = 0;
     int element_ahead = 0;
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
-      element_ahead = n_element + 1;
-      // Here we check whether we are using the old music list or the new one.
-      // We do that by checking if there is a '==' in the current element and a
-      // song in the next or if we are currently on a song
-      if (!musics_time && f_contents.at(n_element).startsWith("==") &&
-          is_music_track(f_contents.at(element_ahead))) {
-        musics_time = true;
-      }
-      else if (!musics_time && (is_music_track(f_contents.at(element_ahead)))) {
+
+      if (element_ahead < f_contents.size())
+        element_ahead = n_element + 1;
+
+      // If the next element is a song then it must be a song category thus
+      // starting the music list
+      if (!musics_time && (is_music_track(f_contents.at(element_ahead)) ||
+                           f_contents.at(n_element).startsWith("=="))) {
         musics_time = true;
       }
 
