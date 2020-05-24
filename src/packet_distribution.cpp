@@ -125,7 +125,7 @@ end:
 
 bool AOApplication::is_music_track(QString trackname)
 {
-  return (trackname.startsWith("==") || trackname.endsWith(".wav") ||
+  return (trackname.endsWith(".wav") ||
           trackname.endsWith(".mp3") || trackname.endsWith(".mp4") ||
           trackname.endsWith(".ogg") || trackname.endsWith(".opus"));
 }
@@ -488,7 +488,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           is_music_track(f_contents.at(element_ahead))) {
         musics_time = true;
       }
-      else if (!musics_time && (is_music_track(f_contents.at(n_element)))) {
+      else if (!musics_time && (is_music_track(f_contents.at(element_ahead)))) {
         musics_time = true;
       }
 
