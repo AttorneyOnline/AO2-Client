@@ -478,25 +478,18 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     bool musics_time = false;
     area_count = 0;
-    bool legacy_system = false;
     int element_ahead = 0;
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       element_ahead = n_element + 1;
+      //Here we check whether we are using the old music list or the new one. We do that by checking if there is a '==' in the current element and a song in the next or if we are currently on a song
       if (!musics_time && f_contents.at(n_element).startsWith("==") &&
           is_music_track(f_contents.at(element_ahead))) {
-        legacy_system = true;
+        musics_time = true;
       }
-      if (!legacy_system) {
-        if (!musics_time && (f_contents.at(n_element).startsWith("==") ||
-                             is_music_track(f_contents.at(element_ahead)))) {
+      else if (!musics_time && (is_music_track(f_contents.at(n_element)))) {
           musics_time = true;
         }
-      }
-      else {
-        if (!musics_time && (is_music_track(f_contents.at(n_element)))) {
-          musics_time = true;
-        }
-      }
+
 
       // Not everything needs to have a thread.
       AOPacketLoadMusic(this, f_contents.at(n_element), musics_time);
