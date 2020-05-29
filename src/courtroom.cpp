@@ -1798,7 +1798,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
          log_maximum_blocks > 0) {
     ic_chatlog_history.removeFirst();
   }
-  refresh_iclog(true);
+
+  //refresh_iclog(true);
 
   if (f_showname == "")
     f_showname = m_chatmessage[CHAR_NAME];
