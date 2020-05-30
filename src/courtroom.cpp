@@ -2533,7 +2533,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action)
     }
     else {
       ui_ic_chatlog->textCursor().insertText(": ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
+      ui_ic_chatlog->textCursor().insertHtml(p_text + "<br>");
     }
 
     // If we got too many blocks in the current log, delete some from the
