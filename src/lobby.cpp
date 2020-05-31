@@ -483,6 +483,7 @@ void Lobby::list_servers()
     i++;
   }
   ui_server_list->setSortingEnabled(true);
+  ui_server_list->sortItems(0, Qt::SortOrder::AscendingOrder);
 }
 
 void Lobby::list_favorites()
