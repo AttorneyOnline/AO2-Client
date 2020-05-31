@@ -239,20 +239,18 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
   QString font_name =
-      ao_app->get_font_name("font_" + p_identifier, design_file);
+      ao_app->get_font_name(p_identifier + "_font", design_file);
   QFont font(font_name, f_weight);
   bool use = ao_app->get_font_size("use_custom_fonts", design_file) == 1;
   if (use) {
-    widget->setFont(font);
-    QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
     bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) ==
                 1; // is the font bold or not?
+    font.setBold(bold);
+    widget->setFont(font);
+    QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
     bool center =
         ao_app->get_font_size(p_identifier + "_center", design_file) ==
         1; // should it be centered?
-    QString is_bold = "";
-    if (bold)
-      is_bold = "bold";
     QString is_center = "";
     if (center)
       is_center = "qproperty-alignment: AlignCenter;";
@@ -260,8 +258,7 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
         class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
         "color: rgba(" + QString::number(f_color.red()) + ", " +
         QString::number(f_color.green()) + ", " +
-        QString::number(f_color.blue()) + ", 255);\n" + is_center + "\n" +
-        "font: " + is_bold + "; }";
+        QString::number(f_color.blue()) + ", 255);\n" + is_center + "}";
     widget->setStyleSheet(style_sheet_string);
   }
   return;
