@@ -39,6 +39,15 @@ contains(DEFINES, QTAUDIO) {
   QT += multimedia
 }
 
+AUDIO_DEFINES = $$find(DEFINES, BASSAUDIO) $$find(DEFINES, QTAUDIO)
+count(AUDIO_DEFINES, 0) {
+  warning("No audio system selected. Your build will not have audio.")
+}
+
+count(AUDIO_DEFINES, 2) {
+  error("More than one audio system selected.")
+}
+
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
 
