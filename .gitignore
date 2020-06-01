@@ -9,7 +9,6 @@ base_override.h
 .DS_Store
 
 base-full/
-base/
 logs/
 bass.lib
 
