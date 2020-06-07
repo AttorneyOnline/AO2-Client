@@ -353,6 +353,14 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
+#ifdef BASSAUDIO
+  const QString audio = "BASS";
+#elif defined(QTAUDIO)
+  const QString audio = "Qt Multimedia";
+#else
+  const QString audio = "null";
+#endif
+
   QString msg =
       tr("<h2>Attorney Online %1</h2>"
          "The courtroom drama simulator"
@@ -360,20 +368,28 @@ void Lobby::on_about_clicked()
          "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
          "https://github.com/AttorneyOnline/AO2-Client</a>"
          "<p><b>Major development:</b><br>"
-         "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter"
-         "<p><b>2.8 Major Release development:</b><br>"
+         "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
          "Crystalwarrior, Iamgoofball"
-         "<p><b>2.8 Quality Assurance:</b><br>"
-         "WillDean, Captain N, Mr M, Riel, Seimmet, Fury McFlurry,"
-         "CedricDewitt, Chewable Tablets, Fantos, Futugaze,"
-         "Geck, Minx, Pandae, Sierra, CrazyJC, CaseyMayCazy,"
+         "<p><b>QA testing:</b><br>"
+         "WillDean, Captain N, Mr M, Riel, Seimmet, Fury McFlurry, "
+         "CedricDewitt, Chewable Tablets, Fantos, Futugaze, "
+         "Geck, Minx, Pandae, Sierra, CrazyJC, CaseyMayCazy, "
          "GreenBowers, Robotic Overlord, Veritas, Gin-Gi"
          "<p><b>Special thanks:</b><br>"
-         "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
+         "Remy, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
          "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
-         "Noevain, Cronnicossy, the AO2 community, server hosts, game masters,"
-         "case makers, content creators and players!")
-          .arg(ao_app->get_version_string());
+         "Noevain, Cronnicossy, FanatSors (AO1), server hosts, game masters, "
+         "case makers, content creators, and the whole AO2 community!"
+         "<p>The Attorney Online networked visual novel project "
+         "is copyright (c) 2016-2020 Attorney Online developers. Open-source "
+         "licenses apply. All other assets are the property of their "
+         "respective owners."
+         "<p>Running on Qt version %2 with the %3 audio engine."
+         "<p>Built on %4")
+      .arg(ao_app->get_version_string())
+      .arg(QLatin1String(QT_VERSION_STR))
+      .arg(audio)
+      .arg(QLatin1String(__DATE__));
   QMessageBox::about(this, tr("About"), msg);
 }
 
