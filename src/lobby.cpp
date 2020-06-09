@@ -497,7 +497,7 @@ void Lobby::list_servers()
   int i = 0;
   for (server_type i_server : ao_app->get_server_list()) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
-    treeItem->setText(0, QString::number(i));
+    treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
     i++;
   }
@@ -513,7 +513,7 @@ void Lobby::list_favorites()
   int i = 0;
   for (server_type i_server : ao_app->get_favorite_list()) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
-    treeItem->setText(0, QString::number(i));
+    treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
     //    treeItem->setText(2, "-");
     i++;
