@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.8.3.1
+VERSION = 2.8.4.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
