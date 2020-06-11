@@ -123,7 +123,6 @@ build windows i686:
     mkdir base
     mkdir base/themes
     cp -a ../base/themes/default base/themes/
-    cp -a ../base/config.ini base/config.sample.ini
     cp -a ../base/serverlist.txt base/serverlist.sample.txt
 
 # Miscellaneous files
