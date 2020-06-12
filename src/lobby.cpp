@@ -539,6 +539,7 @@ void Lobby::set_player_count(int players_online, int max_players)
                          .arg(QString::number(players_online))
                          .arg(QString::number(max_players));
   ui_player_count->setText(f_string);
+  enable_connect_button();
 }
 
 void Lobby::enable_connect_button() { ui_connect->setEnabled(true); }

@@ -224,8 +224,8 @@ public:
   void append_ic_text(QString p_text, QString p_name = "", QString action = "");
 
   // prints who played the song to IC chat and plays said song(if found on local
-  // filesystem) takes in a list where the first element is the song name and the
-  // second is the char id of who played it
+  // filesystem) takes in a list where the first element is the song name and
+  // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
   void play_preanim(bool noninterrupting);
@@ -380,6 +380,7 @@ private:
   QString current_char = "";
 
   int objection_state = 0;
+  QString objection_custom = "";
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -561,6 +562,7 @@ private:
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;
+  QMenu *custom_obj_menu;
   AOButton *ui_realization;
   AOButton *ui_screenshake;
   AOButton *ui_mute;
@@ -664,6 +666,7 @@ private slots:
 
   void on_ooc_return_pressed();
 
+  void on_music_search_keypr();
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_music_list_context_menu_requested(const QPoint &pos);
@@ -722,6 +725,7 @@ private slots:
   void on_objection_clicked();
   void on_take_that_clicked();
   void on_custom_objection_clicked();
+  void ShowContextMenu(const QPoint &pos);
 
   void on_realization_clicked();
   void on_screenshake_clicked();
