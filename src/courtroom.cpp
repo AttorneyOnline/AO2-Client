@@ -4162,7 +4162,7 @@ void Courtroom::on_custom_objection_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::ShowContextMenu(const QPoint &pos)
+void Courtroom::show_custom_objection_menu(const QPoint &pos)
 {
   QPoint globalPos = ui_custom_objection->mapToGlobal(pos);
   QAction *selecteditem = custom_obj_menu->exec(globalPos);
