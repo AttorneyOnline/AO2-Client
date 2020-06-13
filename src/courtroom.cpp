@@ -1273,7 +1273,8 @@ void Courtroom::update_character(int p_cid)
       QDir directory(
           ao_app->get_character_path(current_char, "custom_objections"));
       QStringList custom_obj = directory.entryList(QStringList() << "*.gif"
-                                                                 << "*.apng",
+                                                                 << "*.apng"
+                                                                 << "*.webp",
                                                    QDir::Files);
       for (const QString &filename : custom_obj) {
         custom_obj_menu->addAction(filename);
