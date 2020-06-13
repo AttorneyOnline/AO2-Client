@@ -725,7 +725,7 @@ private slots:
   void on_objection_clicked();
   void on_take_that_clicked();
   void on_custom_objection_clicked();
-  void ShowContextMenu(const QPoint &pos);
+  void show_custom_objection_menu(const QPoint &pos);
 
   void on_realization_clicked();
   void on_screenshake_clicked();
