@@ -243,7 +243,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_custom_objection->setContextMenuPolicy(Qt::CustomContextMenu);
-  custom_obj_menu = new QMenu;
+  custom_obj_menu = new QMenu(this);
   ui_realization = new AOButton(this, ao_app);
   ui_screenshake = new AOButton(this, ao_app);
   ui_mute = new AOButton(this, ao_app);
