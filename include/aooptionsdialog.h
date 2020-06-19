@@ -78,6 +78,9 @@ private:
   QLabel *ui_stickypres_lbl;
   QCheckBox *ui_stickypres_cb;
 
+  QLabel *ui_customchat_lbl;
+  QCheckBox *ui_customchat_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;
