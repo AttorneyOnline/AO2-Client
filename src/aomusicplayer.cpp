@@ -40,8 +40,8 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   QString d_path = f_path + ".txt";
 
-  loop_start = 0;
-  loop_end = BASS_ChannelGetLength(newstream, BASS_POS_BYTE);
+  loop_start[channel] = 0;
+  loop_end[channel] = BASS_ChannelGetLength(newstream, BASS_POS_BYTE);
   if (loop && file_exists(d_path)) // Contains loop/etc. information file
   {
     QStringList lines = ao_app->read_file(d_path).split("\n");
@@ -64,11 +64,11 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
       QWORD bytes = static_cast<QWORD>(args[1].trimmed().toFloat() *
                                        sample_size * num_channels);
       if (arg == "loop_start")
-        loop_start = bytes;
+        loop_start[channel] = bytes;
       else if (arg == "loop_length")
-        loop_end = loop_start + bytes;
+        loop_end[channel] = loop_start[channel] + bytes;
       else if (arg == "loop_end")
-        loop_end = bytes;
+        loop_end[channel] = bytes;
     }
     qDebug() << "Found data file for song" << p_song << "length"
              << BASS_ChannelGetLength(newstream, BASS_POS_BYTE) << "loop start"
@@ -111,7 +111,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
   else
     this->set_volume(m_volume[channel], channel);
 
-  this->set_looping(loop); // Have to do this here due to any
+  this->set_looping(loop, channel); // Have to do this here due to any
                            // crossfading-related changes, etc.
 }
 
@@ -145,6 +145,7 @@ void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
 
 void AOMusicPlayer::set_looping(bool toggle, int channel)
 {
+  qDebug() << "Setting looping for channel" << channel << "to" << toggle;
   m_looping = toggle;
   if (!m_looping) {
     if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
@@ -161,13 +162,13 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
                              loop_sync[channel]); // remove the sync
       loop_sync[channel] = 0;
     }
-    if (loop_start > 0) {
-      if (loop_end == 0)
-        loop_end = BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE);
-      if (loop_end > 0) // Don't loop zero length songs even if we're asked to
+    if (loop_start[channel] > 0) {
+      if (loop_end[channel] == 0)
+        loop_end[channel] = BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE);
+      if (loop_end[channel] > 0) // Don't loop zero length songs even if we're asked to
         loop_sync[channel] = BASS_ChannelSetSync(
-            m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME, loop_end,
-            loopProc, &loop_start);
+            m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME, loop_end[channel],
+            loopProc, &loop_start[channel]);
     }
   }
 }
