@@ -2,8 +2,16 @@
 
 AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent) {}
 
+void AOTextArea::append_linked(QString p_message)
+{
+  QString result = p_message.toHtmlEscaped()
+                       .replace("\n", "<br>")
+                       .replace(url_parser_regex, "<a href='\\1'>\\1</a>");
+  this->insertHtml(result);
+}
+
 void AOTextArea::append_chatmessage(QString p_name, QString p_message,
-                                    QString p_colour, bool song)
+                                    QString p_colour)
 {
   const QTextCursor old_cursor = this->textCursor();
   const int old_scrollbar_value = this->verticalScrollBar()->value();
@@ -13,18 +21,14 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message,
   this->moveCursor(QTextCursor::End);
 
   this->append("");
-  if (song)
-    this->insertHtml("<b><font color=" + p_colour + ">" +
-                     p_name.toHtmlEscaped() + "</font></b>&nbsp;");
-  else
-    this->insertHtml("<b><font color=" + p_colour + ">" +
-                     p_name.toHtmlEscaped() + "</font></b>:&nbsp;");
+  this->insertHtml("<b><font color=" + p_colour + ">" + p_name.toHtmlEscaped() +
+                   "</font></b>:&nbsp;");
 
   // cheap workarounds ahoy
   p_message += " ";
   QString result = p_message.toHtmlEscaped()
                        .replace("\n", "<br>")
-                       .replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>");
+                       .replace(url_parser_regex, "<a href='\\1'>\\1</a>");
 
   this->insertHtml(result);
 
@@ -44,7 +48,7 @@ void AOTextArea::append_error(QString p_message)
 
   p_message += " ";
   QString result = p_message.replace("\n", "<br>")
-                       .replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>");
+                       .replace(url_parser_regex, "<a href='\\1'>\\1</a>");
 
   this->insertHtml("<font color='red'>" + result + "</font>");
 

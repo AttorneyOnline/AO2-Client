@@ -8,6 +8,7 @@
 #include <string>
 
 #include <discord-rpc.h>
+#include <string>
 
 #include <cstring>
 #include <ctime>

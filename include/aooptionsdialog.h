@@ -2,13 +2,7 @@
 #define AOOPTIONSDIALOG_H
 
 #include "aoapplication.h"
-
-#ifdef BASSAUDIO
 #include "bass.h"
-#elif defined QTAUDIO
-#include <QAudio>
-#include <QAudioDeviceInfo>
-#endif
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -21,6 +15,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
@@ -51,10 +46,7 @@ private:
   QCheckBox *ui_downwards_cb;
   QLabel *ui_length_lbl;
   QSpinBox *ui_length_spinbox;
-  QLabel *ui_pun_delay;
-  QCheckBox *ui_pun_delay_cb;
-  QLabel *ui_slower_blips_lb;
-  QCheckBox *ui_slower_blips_cb;
+  QFrame *ui_log_names_divider;
   QLineEdit *ui_username_textbox;
   QLabel *ui_username_lbl;
   QLabel *ui_showname_lbl;
@@ -63,18 +55,28 @@ private:
   QLabel *ui_ms_lbl;
   QLineEdit *ui_ms_textbox;
   QLabel *ui_discord_lbl;
-  QLabel *ui_epilepsy_lbl;
-  QCheckBox *ui_epilepsy_cb;
-
   QCheckBox *ui_discord_cb;
   QLabel *ui_language_label;
   QComboBox *ui_language_combobox;
 
-  QLabel *ui_keepevi_lbl;
-  QCheckBox *ui_keepevi_cb;
+  QLabel *ui_shake_lbl;
+  QCheckBox *ui_shake_cb;
+  QLabel *ui_effects_lbl;
+  QCheckBox *ui_effects_cb;
+  QLabel *ui_framenetwork_lbl;
+  QCheckBox *ui_framenetwork_cb;
 
-  QLabel *ui_keepcobj_lbl;
-  QCheckBox *ui_keepcobj_cb;
+  QLabel *ui_colorlog_lbl;
+  QCheckBox *ui_colorlog_cb;
+
+  QLabel *ui_stickysounds_lbl;
+  QCheckBox *ui_stickysounds_cb;
+
+  QLabel *ui_stickyeffects_lbl;
+  QCheckBox *ui_stickyeffects_cb;
+
+  QLabel *ui_stickypres_lbl;
+  QCheckBox *ui_stickypres_cb;
 
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
@@ -92,11 +94,6 @@ private:
   QSpinBox *ui_music_volume_spinbox;
   QLabel *ui_music_volume_lbl;
   QSpinBox *ui_sfx_volume_spinbox;
-  QLabel *ui_loopsfx_lbl;
-  QCheckBox *ui_loopsfx_cb;
-  QLabel *ui_objectmusic_lbl;
-  QCheckBox *ui_objectmusic_cb;
-
   QSpinBox *ui_blips_volume_spinbox;
   QLabel *ui_sfx_volume_lbl;
   QLabel *ui_blips_volume_lbl;
@@ -105,6 +102,10 @@ private:
   QLabel *ui_bliprate_lbl;
   QCheckBox *ui_blank_blips_cb;
   QLabel *ui_blank_blips_lbl;
+  QLabel *ui_loopsfx_lbl;
+  QCheckBox *ui_loopsfx_cb;
+  QLabel *ui_objectmusic_lbl;
+  QCheckBox *ui_objectmusic_cb;
   QDialogButtonBox *ui_settings_buttons;
 
   QWidget *ui_casing_tab;
@@ -125,21 +126,8 @@ private:
   QCheckBox *ui_casing_steno_cb;
   QLabel *ui_casing_cm_lbl;
   QCheckBox *ui_casing_cm_cb;
-  QLabel *ui_casing_wit_lbl;
-  QCheckBox *ui_casing_wit_cb;
   QLabel *ui_casing_cm_cases_lbl;
   QLineEdit *ui_casing_cm_cases_textbox;
-
-  QWidget *ui_other_tab;
-  QWidget *ui_other_widget;
-  QFormLayout *ui_other_layout;
-  QLabel *ui_other_fancy_icl_enabled_lb;
-  QCheckBox *ui_other_fancy_icl_enabled_cb;
-  QLabel *ui_other_mirror_icl_enabled_lb;
-  QCheckBox *ui_other_mirror_icl_enabled_cb;
-
-  QLabel *ui_other_fancy_icl_limit_lb;
-  QCheckBox *ui_other_fancy_icl_limit_cb;
 
   bool needs_default_audiodev();
 

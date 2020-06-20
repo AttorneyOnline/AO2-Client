@@ -1,11 +1,12 @@
 #include "aoapplication.h"
 
-#include "aocaseannouncerdialog.h"
-#include "aooptionsdialog.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+
+#include "aocaseannouncerdialog.h"
+#include "aooptionsdialog.h"
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
@@ -125,7 +126,6 @@ void AOApplication::add_favorite_server(int p_server)
 void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {
-    beep();
     call_notice(tr("Disconnected from server."));
     construct_lobby();
     destruct_courtroom();
@@ -135,6 +135,7 @@ void AOApplication::server_disconnected()
 void AOApplication::loading_cancelled()
 {
   destruct_courtroom();
+
   w_lobby->hide_loading_overlay();
 }
 

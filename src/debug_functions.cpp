@@ -21,7 +21,6 @@ void call_notice(QString p_message)
   QMessageBox *msgBox = new QMessageBox;
 
   msgBox->setText(p_message);
-
   msgBox->setWindowTitle(
       QCoreApplication::translate("debug_functions", "Notice"));
 

@@ -30,7 +30,7 @@ QString AOApplication::get_base_path()
     QString external_storage = getenv("EXTERNAL_STORAGE");
     base_path = external_storage + "/AO2/";
   }
-#elif defined __APPLE__
+#elif defined(__APPLE__)
   base_path = applicationDirPath() + "/../../../base/";
 #else
   base_path = applicationDirPath() + "/base/";
@@ -93,39 +93,11 @@ QString AOApplication::get_sounds_path(QString p_file)
 
 QString AOApplication::get_music_path(QString p_song)
 {
-  QString withending_check = get_base_path() + "sounds/music/" + p_song;
-  QString mp3_check = get_base_path() + "sounds/music/" + p_song + ".mp3";
-  QString opus_check = get_base_path() + "sounds/music/" + p_song + ".opus";
-  if (p_song.startsWith("http")) {
-      //it's an URL
-      return p_song;
-  }
-  else if (file_exists(opus_check)) {
+  QString path = get_base_path() + "sounds/music/" + p_song;
 #ifndef CASE_SENSITIVE_FILESYSTEM
-    return opus_check;
+  return path;
 #else
-    return get_case_sensitive_path(opus_check);
-#endif
-  }
-  else if (file_exists(mp3_check)) {
-#ifndef CASE_SENSITIVE_FILESYSTEM
-    return mp3_check;
-#else
-    return get_case_sensitive_path(mp3_check);
-#endif
-  }
-  else if (file_exists(withending_check)) {
-#ifndef CASE_SENSITIVE_FILESYSTEM
-    return withending_check;
-#else
-    return get_case_sensitive_path(withending_check);
-#endif
-  }
-#ifndef CASE_SENSITIVE_FILESYSTEM
-  return get_base_path() + "sounds/music/" + p_song + ".wav";
-#else
-  return get_case_sensitive_path(get_base_path() + "sounds/music/" + p_song +
-                                 ".wav");
+  return get_case_sensitive_path(path);
 #endif
 }
 

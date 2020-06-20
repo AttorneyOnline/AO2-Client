@@ -1,3 +1,4 @@
+
 #include "aoapplication.h"
 
 #include "courtroom.h"
@@ -22,6 +23,14 @@ int main(int argc, char *argv[])
 
   QSettings *configini = main_app.configini;
 
+  QPluginLoader apngPlugin("qapng");
+  if (!apngPlugin.load())
+    qCritical() << "QApng plugin could not be loaded";
+
+  QPluginLoader webpPlugin("qwebp");
+  if (!webpPlugin.load())
+    qCritical() << "QWebp plugin could not be loaded";
+
   QString p_language =
       configini->value("language", QLocale::system().name()).toString();
   if (p_language == "  " || p_language == "")
@@ -38,7 +47,7 @@ int main(int argc, char *argv[])
   main_app.installTranslator(&appTranslator);
 
   main_app.construct_lobby();
-  main_app.w_lobby->show();
   main_app.net_manager->connect_to_master();
+  main_app.w_lobby->show();
   return main_app.exec();
 }

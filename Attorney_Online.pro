@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.7.2.0
+VERSION = 2.8.4.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -13,30 +13,39 @@ MOC_DIR = $$PWD/build
 SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
 
-
 LIBS += -L$$PWD/lib
 
-
-#DEFINES += DISCORD
+# Uncomment to enable Discord Rich Presence
+# DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {
-LIBS += -ldiscord-rpc
+  LIBS += -ldiscord-rpc
 }
 
-#DEFINES += BASSAUDIO
+# Uncomment to enable the BASS audio engine
+# (Recommended for Windows)
+# DEFINES += BASSAUDIO
 
 contains(DEFINES, BASSAUDIO) {
-LIBS += -lbass
+  LIBS += -lbass
+  LIBS += -lbassopus
 }
 
-#DEFINES += QTAUDIO
+# Uncomment to enable the Qt audio engine
+# (Recommended for non-Windows platforms)
+# DEFINES += QTAUDIO
 
 contains(DEFINES, QTAUDIO) {
-QT += multimedia
+  QT += multimedia
 }
 
-contains(CONFIG, qml_debug) {
-DEFINES += DEBUG_NETWORK
+AUDIO_DEFINES = $$find(DEFINES, BASSAUDIO) $$find(DEFINES, QTAUDIO)
+count(AUDIO_DEFINES, 0) {
+  warning("No audio system selected. Your build will not have audio.")
+}
+
+count(AUDIO_DEFINES, 2) {
+  error("More than one audio system selected.")
 }
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
@@ -46,16 +55,16 @@ CONFIG += c++14
 
 RESOURCES += resources.qrc
 
-TRANSLATIONS    =   resource/translations/ao_en.ts \
-                    resource/translations/ao_jp.ts \
-                    resource/translations/ao_de.ts \
-                    resource/translations/ao_ru.ts \
-                    resource/translations/ao_es.ts \
-                    resource/translations/ao_pt.ts \
-                    resource/translations/ao_pl.ts
+TRANSLATIONS = resource/translations/ao_en.ts \
+               resource/translations/ao_jp.ts \
+               resource/translations/ao_de.ts \
+               resource/translations/ao_ru.ts \
+               resource/translations/ao_es.ts \
+               resource/translations/ao_pt.ts \
+               resource/translations/ao_pl.ts
 
-win32:RC_ICONS = resource/logo.ico
-macx:ICON = resource/logo.icns
+win32:RC_ICONS = resource/logo_ao2.ico
+macx:ICON = resource/logo_ao2.icns
 
 android:DISTFILES += \
     android/AndroidManifest.xml \
