@@ -209,6 +209,7 @@ void Courtroom::character_loading_finished()
     char_button->reset();
     char_button->hide();
     char_button->set_image(char_list.at(n).name);
+    char_button->setToolTip(char_list.at(n).name);
     ui_char_button_list.append(char_button);
 
     connect(char_button, &AOCharButton::clicked,
