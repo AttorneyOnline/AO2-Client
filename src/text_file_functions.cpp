@@ -449,38 +449,6 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 {
   QColor return_color(255, 255, 255);
 
-  switch (p_identifier.toInt()) {
-  case 0: // White
-    return_color = QColor(255, 255, 255);
-    break;
-  case 1: // Green
-    return_color = QColor(0, 255, 0);
-    break;
-  case 2: // Red
-    return_color = QColor(255, 0, 0);
-    break;
-  case 3: // Orange
-    return_color = QColor(255, 165, 0);
-    break;
-  case 4: // Blue
-    return_color = QColor(45, 150, 255);
-    break;
-  case 5: // Yellow
-    return_color = QColor(255, 255, 0);
-    break;
-  case 6: // Pink
-    return_color = QColor(255, 192, 203);
-    break;
-  case 7: // Cyan
-    return_color = QColor(0, 255, 255);
-    break;
-  case 8: // Grey
-    return_color = QColor(187, 187, 187);
-    break;
-  default:
-    return_color = QColor(255, 255, 255);
-    break;
-  }
   QString design_ini_path = get_base_path() + "misc/" + p_chat + "/config.ini";
   QString default_path = get_base_path() + "misc/default/config.ini";
   QString f_result = read_design_ini("c" + p_identifier, design_ini_path);

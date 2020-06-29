@@ -4245,7 +4245,7 @@ void Courtroom::set_text_color_dropdown()
                                   current_char) == "1");
     color_markdown_talking_list.append(
         ao_app->get_chat_markdown("c" + QString::number(c) + "_talking",
-                                  current_char) == "1");
+                                  current_char) != "0");
 
     QString color_name = ao_app->get_chat_markdown(
         "c" + QString::number(c) + "_name", current_char);
