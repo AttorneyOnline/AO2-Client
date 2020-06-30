@@ -3000,13 +3000,17 @@ void Courtroom::handle_song(QStringList *p_contents)
                                     (f_song_clear.lastIndexOf("/") + 1));
   int n_char = f_contents.at(1).toInt();
 
-  bool looping = true;
+  //Assume the song doesn't loop unless told otherwise (due to most outdated servers handling looping through serverside)
+  bool looping = false;
+  //Channel 0 is the 'master music', other channels would commonly be used for ambience
   int channel = 0;
+  //No effects assumed by default - vanilla functionality
   int effect_flags = 0;
+
   if (n_char < 0 || n_char >= char_list.size()) {
     int channel = 0;
-    if (p_contents->length() > 3 && p_contents->at(3) != "-1")
-      looping = false;
+    if (p_contents->length() > 3 && p_contents->at(3) == "1")
+      looping = true;
 
     if (p_contents->length() >
         4) // eyyy we want to change this song's CHANNEL huh
@@ -3032,10 +3036,8 @@ void Courtroom::handle_song(QStringList *p_contents)
         str_show = p_contents->at(2);
       }
     }
-    if (p_contents->length() > 3 && p_contents->at(3) != "-1") {
-      // I am really confused why "-1" is "loop this song" and why anything else
-      // passes as "don't loop" (if we even have this length) but alright
-      looping = false;
+    if (p_contents->length() > 3 && p_contents->at(3) == "1") {
+      looping = true;
     }
     if (p_contents->length() >
         4) // eyyy we want to change this song's CHANNEL huh
