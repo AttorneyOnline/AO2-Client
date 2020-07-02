@@ -4234,7 +4234,7 @@ void Courtroom::set_text_color_dropdown()
   // Update markdown colors. TODO: make a loading function that only loads the
   // config file once instead of several times
   for (int c = 0; c < max_colors; ++c) {
-    QColor color = ao_app->get_chat_color(QString::number(c), current_char);
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), current_char);
     color_rgb_list.append(color);
     color_markdown_start_list.append(ao_app->get_chat_markdown(
         "c" + QString::number(c) + "_start", current_char));
