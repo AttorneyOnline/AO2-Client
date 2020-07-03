@@ -2700,8 +2700,10 @@ void Courtroom::chat_tick()
     QString f_char;
     QString f_custom_theme;
     if (ao_app->is_customchat_enabled())
+    {
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
+    }
     ui_vp_chat_arrow->play(
         "chat_arrow", f_char,
         f_custom_theme); // Chat stopped being processed, indicate that.
