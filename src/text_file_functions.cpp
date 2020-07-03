@@ -988,6 +988,12 @@ bool AOApplication::is_stickypres_enabled()
   return result.startsWith("true");
 }
 
+bool AOApplication::is_customchat_enabled()
+{
+  QString result = configini->value("customchat", "true").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::get_casing_enabled()
 {
   QString result = configini->value("casing_enabled", "false").value<QString>();
