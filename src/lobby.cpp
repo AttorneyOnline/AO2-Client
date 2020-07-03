@@ -370,6 +370,8 @@ void Lobby::on_about_clicked()
          "<p><b>Major development:</b><br>"
          "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
          "Crystalwarrior, Iamgoofball"
+         "<p><b>Client development:</b><br>"
+         "Cents02, in1tiate, raidensnake, windrammer"
          "<p><b>QA testing:</b><br>"
          "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
          "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
