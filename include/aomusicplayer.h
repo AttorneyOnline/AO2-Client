@@ -25,8 +25,8 @@ public:
   const int m_channelmax = 4;
 
   // These have to be public for the stupid sync thing
-  int loop_start = 0;
-  int loop_end = 0;
+  int loop_start[4] = {0, 0, 0, 0};
+  int loop_end[4] = {0, 0, 0, 0};
 
 public slots:
   void play(QString p_song, int channel = 0, bool loop = false,
