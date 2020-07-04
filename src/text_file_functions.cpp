@@ -601,7 +601,7 @@ QString AOApplication::get_gender(QString p_char)
   QString f_result = read_char_ini(p_char, "gender", "Options");
 
   if (f_result == "")
-    return "sfx-blipmale";
+    f_result = "male";
 
   if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
     if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))
