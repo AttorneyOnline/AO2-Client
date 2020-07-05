@@ -30,4 +30,4 @@ tar -xvf apng.tar.xz
 cp clang_64/plugins/imageformats/libqapng.dylib ../lib
 cd ..
 
-/usr/local/opt/qt/bin/qmake && make -j2
+/usr/local/opt/qt/bin/qmake "DEFINES += DISCORD QTAUDIO" && make -j2
