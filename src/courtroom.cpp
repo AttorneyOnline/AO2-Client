@@ -4396,7 +4396,7 @@ void Courtroom::on_reload_theme_clicked()
   text_state = 3;
 
   // to update status on the background
-  set_background(current_background);
+  set_background(current_background, true);
 }
 
 void Courtroom::on_back_to_lobby_clicked()
