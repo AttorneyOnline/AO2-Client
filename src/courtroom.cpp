@@ -1107,7 +1107,7 @@ void Courtroom::set_background(QString p_background, bool display)
   // Populate the dropdown list with all pos that exist on this bg
   QStringList pos_list = {};
   for (QString key : default_pos.keys()) {
-    if (file_exists(ao_app->get_static_image_suffix(
+    if (file_exists(ao_app->get_image_suffix(
             ao_app->get_background_path(key)))) {
       pos_list.append(default_pos[key]);
     }
