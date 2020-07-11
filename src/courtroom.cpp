@@ -4599,11 +4599,8 @@ void Courtroom::load_bass_opus_plugin()
 #elif defined __APPLE__
 void Courtroom::load_bass_opus_plugin()
 {
-  QString libpath =
-      ao_app->get_base_path() + "../../Frameworks/libbassopus.dylib";
-  QByteArray ba = libpath.toLocal8Bit();
 #ifdef BASSAUDIO
-  BASS_PluginLoad(ba.data(), 0);
+  BASS_PluginLoad("libbassopus.dylib", 0);
 #endif
 }
 #else
