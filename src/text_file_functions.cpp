@@ -522,6 +522,10 @@ QString AOApplication::get_image_suffix(QString path_to_check)
 
 QString AOApplication::get_static_image_suffix(QString path_to_check)
 {
+  if (file_exists(path_to_check))
+    return path_to_check;
+  if (file_exists(path_to_check + ".apng"))
+    return path_to_check + ".apng";
   return path_to_check + ".png";
 }
 
