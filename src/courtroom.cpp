@@ -1879,8 +1879,12 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_chatbox->set_image("chatbox");
 
     QFontMetrics fm(ui_vp_showname->font());
+    //Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
+    #if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
     int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
-
+    #else
+    int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
+    #endif
     QString chatbox_path = ao_app->get_theme_path("chat");
     QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
     QString customchar;
@@ -4290,7 +4294,12 @@ void Courtroom::on_text_color_changed(int p_color)
     if (markdown_end.isEmpty())
       markdown_end = markdown_start;
     int start = ui_ic_chat_message->selectionStart();
-    int end = ui_ic_chat_message->selectionEnd() + 1;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+     int end = ui_ic_chat_message->selectionEnd() + 1;
+    #else
+    int end = ui_ic_chat_message->selectedText().length() + 1;
+    #endif
+
     ui_ic_chat_message->setCursorPosition(start);
     ui_ic_chat_message->insert(markdown_start);
     ui_ic_chat_message->setCursorPosition(end);

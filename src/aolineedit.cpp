@@ -11,8 +11,11 @@ void AOLineEdit::mouseDoubleClickEvent(QMouseEvent *e)
 void AOLineEdit::focusOutEvent(QFocusEvent *ev)
 {
   int start = selectionStart();
-  int len = selectionEnd() - start; // We're not using selectionLength because
-                                    // Linux build doesn't run qt5.10
+  #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+  int len = selectionLength();
+#else
+  int len = selectedText().length();
+#endif
   QLineEdit::focusOutEvent(ev);
   if (p_selection && start != -1 && len != -1)
     this->setSelection(start, len);
