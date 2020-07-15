@@ -292,13 +292,16 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    this->log_filename = QDateTime::currentDateTime().toUTC().toString(
-        "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
-        "/'ddd MMMM yyyy hh.mm.ss t'.log'");
-    this->write_to_file("Joined server " + server_name + " on address " +
-                            server_address + " on " +
-                            QDateTime::currentDateTime().toUTC().toString(),
-                        log_filename, true);
+    if (AOApplication::get_casing_auto_logging_enabled()){
+        this->log_filename = QDateTime::currentDateTime().toUTC().toString(
+            "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
+            "/'ddd MMMM yyyy hh.mm.ss t'.log'");
+        this->write_to_file("Joined server " + server_name + " on address " +
+                                server_address + " on " +
+                                QDateTime::currentDateTime().toUTC().toString(),
+                            log_filename, true);
+    }
+
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
     if (is_discord_enabled())
