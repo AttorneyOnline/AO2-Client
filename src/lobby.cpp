@@ -404,7 +404,7 @@ void Lobby::on_settings_clicked() { ao_app->call_settings_menu(); }
 void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0;
-  if (p_item->text(column).toInt() != last_index) {
+  if (p_item->text(column).toInt() != last_index || !public_servers_selected) {
     server_type f_server;
     int n_server = p_item->text(column).toInt();
     last_index = n_server;
