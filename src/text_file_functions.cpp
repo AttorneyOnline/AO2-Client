@@ -1049,3 +1049,9 @@ QString AOApplication::get_casing_can_host_cases()
           .value<QString>();
   return result;
 }
+bool AOApplication::get_casing_auto_logging_enabled()
+{
+    QString result =
+        configini->value("automatic_logging_enabled", "false").value<QString>();
+    return result.startsWith("true");
+}
