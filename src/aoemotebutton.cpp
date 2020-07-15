@@ -25,6 +25,32 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
         "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
   }
   else {
+    if(p_image.contains("_off") || p_image.contains("_on")){
+        //Since we can't detect a button, lets just generate one!
+        QString tmp_p_image = p_image;
+        if(!file_exists(tmp_p_image.replace("_off","_on")))
+           tmp_p_image.replace("_on","_off");
+
+        QImage *tmpImage = new QImage(tmp_p_image);
+            QPoint p1, p2;
+            p2.setY(tmpImage->height());
+
+            QLinearGradient gradient(p1, p2);
+            gradient.setColorAt(0, Qt::transparent);
+            gradient.setColorAt(1, QColor(0, 0, 0, 159));
+
+            QPainter p(tmpImage);
+            p.fillRect(0, 0, tmpImage->width(), tmpImage->height(), gradient);
+
+            gradient.setColorAt(0,QColor(0, 0, 0, 159));
+            gradient.setColorAt(1, Qt::transparent);
+            p.fillRect(0,0, tmpImage->width(), tmpImage->height(), gradient);
+
+            p.end();
+       tmpImage->save(p_image,"png");
+       set_image(p_image,p_emote_comment);
+
+    }
     this->setText(p_emote_comment);
     this->setStyleSheet("QPushButton { border-image: url(); }"
                         "QToolTip { background-image: url(); color: #000000; "
@@ -34,6 +60,7 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
 
 void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
 {
+
   QString emotion_number = QString::number(p_emote + 1);
   QString image_path =
       ao_app->get_static_image_suffix(ao_app->get_character_path(
