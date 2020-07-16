@@ -1349,10 +1349,11 @@ void Courtroom::list_music()
     ++n_listed_songs;
   }
 
-  ui_music_list->expandAll(); // Needs to somehow remember which categories were
-                              // expanded/collapsed if the music list didn't
-                              // change since last time
+  ui_music_list->collapseAll();
   if (ui_music_search->text() != "") {
+      ui_music_list->expandAll(); // Needs to somehow remember which categories were
+                                  // expanded/collapsed if the music list didn't
+                                  // change since last time
     on_music_search_edited(ui_music_search->text());
   }
 }
