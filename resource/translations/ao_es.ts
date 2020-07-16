@@ -378,7 +378,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="222"/>
         <source>Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures.</source>
-        <translation>Permite el movimiento de la pantalla (Advertencia esto podría inducir convulsiones debido a imágenes parpadeantes).</translation>
+        <translation>Permite el movimiento de la pantalla (ADVERTENCIA: esto podría inducir convulsiones debido a imágenes parpadeantes).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="234"/>
@@ -388,7 +388,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="236"/>
         <source>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</source>
-        <translation>Permite efectos de pantalla (Advertencia esto podría inducir convulsiones debido a imágenes parpadeantes).</translation>
+        <translation>Permite efectos de pantalla (ADVERTENCIA: esto podría inducir convulsiones debido a imágenes parpadeantes).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="248"/>
@@ -458,7 +458,7 @@ Razón: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="534"/>
         <source>If true, AO2 will stop the music for you when you or someone else does &apos;Objection!&apos;.</source>
-        <translation>Si es activado, AO2 detendrá la música por ti cuando tú u otra persona hagan &apos;¡Objeción!&apos;.</translation>
+        <translation>Si es activado, AO2 detendrá la música por ti cuando tú u otra persona hagan un &apos;¡Protesto!&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="546"/>
@@ -926,7 +926,7 @@ char.ini [Opciones] categoría, effects = &apos;miscname&apos; donde se refiere 
     <message>
         <location filename="../../src/courtroom.cpp" line="755"/>
         <source>Objection!</source>
-        <translation>¡Objeción!</translation>
+        <translation>¡Protesto!</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="761"/>
@@ -999,7 +999,7 @@ char.ini [Opciones] categoría, effects = &apos;miscname&apos; donde se refiere 
     <message>
         <location filename="../../src/courtroom.cpp" line="841"/>
         <source>Add text to your last spoken message when checked.</source>
-        <translation>Agregue texto a su último mensaje hablado cuando esté marcado.</translation>
+        <translation>Agregar texto a su último mensaje hablado cuando esté marcado.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="845"/>
@@ -1028,7 +1028,7 @@ char.ini [Opciones] categoría, effects = &apos;miscname&apos; donde se refiere 
         <source>This will display the custom character-defined animation in the viewport as soon as it is pressed.
 To make one, your character&apos;s folder must contain custom.[webp/apng/gif/png] and custom.[wav/ogg/opus] sound effect</source>
         <translation>Esto mostrará la animación de personaje personalizada definida en el viewport tan pronto como se presione.
-Para hacer una, la carpeta de tu personaje debe contener efectos personalizados [webp/apng/gif/png]. y efectos [wav/ogg/opus] personalizados de sonido</translation>
+Para hacer una, la carpeta de tu personaje debe contener efectos personalizados [webp/apng/gif/png]. Y efectos personalizados de sonido [wav/ogg/opus]</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="868"/>
@@ -1067,7 +1067,7 @@ You can also select a part of your currently typed message and use the dropdown 
     <message>
         <location filename="../../src/courtroom.cpp" line="914"/>
         <source>Return back to the server list.</source>
-        <translation>Regresa a la lista de servidores.</translation>
+        <translation>Regresar a la lista de servidores.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="927"/>
