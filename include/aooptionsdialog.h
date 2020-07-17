@@ -2,13 +2,7 @@
 #define AOOPTIONSDIALOG_H
 
 #include "aoapplication.h"
-
-#ifdef BASSAUDIO
 #include "bass.h"
-#elif defined QTAUDIO
-#include <QAudio>
-#include <QAudioDeviceInfo>
-#endif
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -83,6 +77,9 @@ private:
 
   QLabel *ui_stickypres_lbl;
   QCheckBox *ui_stickypres_cb;
+
+  QLabel *ui_customchat_lbl;
+  QCheckBox *ui_customchat_cb;
 
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;

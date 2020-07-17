@@ -31,7 +31,7 @@ void Courtroom::initialize_evidence()
   ui_evidence_delete->setToolTip(tr("Destroy this piece of evidence"));
   ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
-  ui_evidence_image_button->setText(tr("Choose..."));
+  ui_evidence_image_button->setText(tr("Choose.."));
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_x->setToolTip(
       tr("Close the evidence display/editing overlay.\n"
@@ -45,7 +45,7 @@ void Courtroom::initialize_evidence()
                                          "color: white;");
   ui_evidence_description->setFrameStyle(QFrame::NoFrame);
   ui_evidence_description->setToolTip(
-      "Double-click to edit. Press [X] to update your changes.");
+      tr("Double-click to edit. Press [X] to update your changes."));
 
   connect(ui_evidence_name, SIGNAL(returnPressed()), this,
           SLOT(on_evidence_name_edited()));
@@ -260,13 +260,12 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
                  local_evidence_list.at(current_evidence))) {
       QMessageBox *msgBox = new QMessageBox;
 
-      msgBox->setText("The piece of evidence you've been editing has changed.");
-      msgBox->setInformativeText("Do you wish to keep your changes?");
-      msgBox->setDetailedText(
-          "Name: " + local_evidence_list.at(current_evidence).name +
-          "\nImage: " + local_evidence_list.at(current_evidence).image +
-          "\nDescription:\n" +
-          local_evidence_list.at(current_evidence).description);
+      msgBox->setText(tr("The piece of evidence you've been editing has changed."));
+      msgBox->setInformativeText(tr("Do you wish to keep your changes?"));
+      msgBox->setDetailedText(tr(
+          "Name: %1\n"
+          "Image: %2\n"
+          "Description:\n%3").arg(local_evidence_list.at(current_evidence).name).arg(local_evidence_list.at(current_evidence).image).arg(local_evidence_list.at(current_evidence).description));
       msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
       msgBox->setDefaultButton(QMessageBox::LastButton);
       // msgBox->setWindowModality(Qt::NonModal);
@@ -454,14 +453,14 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_description->clear();
   ui_evidence_description->appendPlainText(f_evi.description);
   ui_evidence_description->setReadOnly(true);
-  ui_evidence_description->setToolTip("Double-click to edit...");
+  ui_evidence_description->setToolTip(tr("Double-click to edit..."));
 
   ui_evidence_name->setText(f_evi.name);
   ui_evidence_name->setReadOnly(true);
-  ui_evidence_name->setToolTip("Double-click to edit...");
+  ui_evidence_name->setToolTip(tr("Double-click to edit..."));
   ui_evidence_image_name->setText(f_evi.image);
   ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_name->setToolTip("Double-click to edit...");
+  ui_evidence_image_name->setToolTip(tr("Double-click to edit..."));
 
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
@@ -554,8 +553,8 @@ void Courtroom::on_evidence_x_clicked()
     return;
   }
   QMessageBox *msgBox = new QMessageBox;
-  msgBox->setText("Evidence has been modified.");
-  msgBox->setInformativeText("Do you want to save your changes?");
+  msgBox->setText(tr("Evidence has been modified."));
+  msgBox->setInformativeText(tr("Do you want to save your changes?"));
   msgBox->setStandardButtons(QMessageBox::Save | QMessageBox::Discard |
                              QMessageBox::Cancel);
   msgBox->setDefaultButton(QMessageBox::Save);
@@ -657,7 +656,7 @@ void Courtroom::on_evidence_transfer_clicked()
   }
 
   QMessageBox *msgBox = new QMessageBox;
-  msgBox->setText("\"" + name + "\" has been transferred.");
+  msgBox->setText(tr("\"%1\" has been transferred.").arg(name));
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setDefaultButton(QMessageBox::Ok);
   msgBox->exec();
@@ -759,9 +758,9 @@ void Courtroom::on_evidence_load_clicked()
       continue;
 
     evi_type f_evi;
-    f_evi.name = inventory.value(evi + "/name", "UNKNOWN").value<QString>();
+    f_evi.name = inventory.value(evi + "/name", tr("UNKNOWN")).value<QString>();
     f_evi.description =
-        inventory.value(evi + "/description", "UNKNOWN").value<QString>();
+        inventory.value(evi + "/description", tr("UNKNOWN")).value<QString>();
     f_evi.image =
         inventory.value(evi + "/image", "UNKNOWN.png").value<QString>();
     local_evidence_list.append(f_evi);

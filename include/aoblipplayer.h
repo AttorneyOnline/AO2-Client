@@ -21,7 +21,7 @@ public:
 
   void set_blips(QString p_sfx);
   void blip_tick();
-  void set_volume(qreal p_volume);
+  void set_volume(int p_volume);
 
   int m_cycle = 0;
 

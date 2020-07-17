@@ -120,7 +120,7 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect");
 
   set_size_and_pos(ui_version, "version");
-  ui_version->setText(tr("Version: KFO%1").arg(ao_app->get_version_string()));
+  ui_version->setText(tr("Version: %1").arg(ao_app->get_version_string()));
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about");
@@ -239,20 +239,18 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
   QString font_name =
-      ao_app->get_font_name("font_" + p_identifier, design_file);
+      ao_app->get_font_name(p_identifier + "_font", design_file);
   QFont font(font_name, f_weight);
   bool use = ao_app->get_font_size("use_custom_fonts", design_file) == 1;
   if (use) {
-    widget->setFont(font);
-    QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
     bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) ==
                 1; // is the font bold or not?
+    font.setBold(bold);
+    widget->setFont(font);
+    QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
     bool center =
         ao_app->get_font_size(p_identifier + "_center", design_file) ==
         1; // should it be centered?
-    QString is_bold = "";
-    if (bold)
-      is_bold = "bold";
     QString is_center = "";
     if (center)
       is_center = "qproperty-alignment: AlignCenter;";
@@ -260,8 +258,7 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
         class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
         "color: rgba(" + QString::number(f_color.red()) + ", " +
         QString::number(f_color.green()) + ", " +
-        QString::number(f_color.blue()) + ", 255);\n" + is_center + "\n" +
-        "font: " + is_bold + "; }";
+        QString::number(f_color.blue()) + ", 255);\n" + is_center + "}";
     widget->setStyleSheet(style_sheet_string);
   }
   return;
@@ -356,6 +353,14 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
+#ifdef BASSAUDIO
+  const QString audio = "BASS";
+#elif defined(QTAUDIO)
+  const QString audio = "Qt Multimedia";
+#else
+  const QString audio = "null";
+#endif
+
   QString msg =
       tr("<h2>Attorney Online %1</h2>"
          "The courtroom drama simulator"
@@ -363,21 +368,34 @@ void Lobby::on_about_clicked()
          "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
          "https://github.com/AttorneyOnline/AO2-Client</a>"
          "<p><b>Major development:</b><br>"
-         "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter"
-         "<p><b>2.8 Major Release development:</b><br>"
+         "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
          "Crystalwarrior, Iamgoofball"
-         "<p><b>2.8 Quality Assurance:</b><br>"
-         "WillDean, Captain N, Mr M, Riel, Seimmet, Fury McFlurry,"
-         "CedricDewitt, Chewable Tablets, Fantos, Futugaze,"
-         "Geck, Minx, Pandae, Sierra, CrazyJC, CaseyMayCazy,"
-         "GreenBowers, Robotic Overlord, Veritas, Gin-Gi"
+         "<p><b>Client development:</b><br>"
+         "Cents02, in1tiate, raidensnake, windrammer"
+         "<p><b>QA testing:</b><br>"
+         "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
+         "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
+         "Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, "
+         "Veritas, Wiso"
          "<p><b>Special thanks:</b><br>"
-         "Remy, Iamgoofball, Hibiki, Qubrick (webAO), Ruekasu (UI design), "
-         "Draxirch (UI design), Unishred, Argoneus (tsuserver), Fiercy, "
-         "Noevain, Cronnicossy, the AO2 community, server hosts, game masters,"
-         "case makers, content creators and players!")
-          .arg(ao_app->get_version_string());
-  QMessageBox::about(this, "About", msg);
+         "CrazyJC and MaximumVolty (2.8 release); "
+         "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
+         "Rue (website); Draxirch (UI design); "
+         "Lewdton and Argoneus (tsuserver); "
+         "Fiercy, Noevain, Cronnicossy, and FanatSors (AO1); "
+         "server hosts, game masters, case makers, content creators, "
+         "and the whole AO2 community!"
+         "<p>The Attorney Online networked visual novel project "
+         "is copyright (c) 2016-2020 Attorney Online developers. Open-source "
+         "licenses apply. All other assets are the property of their "
+         "respective owners."
+         "<p>Running on Qt version %2 with the %3 audio engine."
+         "<p>Built on %4")
+      .arg(ao_app->get_version_string())
+      .arg(QLatin1String(QT_VERSION_STR))
+      .arg(audio)
+      .arg(QLatin1String(__DATE__));
+  QMessageBox::about(this, tr("About"), msg);
 }
 
 void Lobby::on_settings_clicked() { ao_app->call_settings_menu(); }
@@ -481,11 +499,12 @@ void Lobby::list_servers()
   int i = 0;
   for (server_type i_server : ao_app->get_server_list()) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
-    treeItem->setText(0, QString::number(i));
+    treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
     i++;
   }
   ui_server_list->setSortingEnabled(true);
+  ui_server_list->sortItems(0, Qt::SortOrder::AscendingOrder);
 }
 
 void Lobby::list_favorites()
@@ -496,7 +515,7 @@ void Lobby::list_favorites()
   int i = 0;
   for (server_type i_server : ao_app->get_favorite_list()) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
-    treeItem->setText(0, QString::number(i));
+    treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
     //    treeItem->setText(2, "-");
     i++;

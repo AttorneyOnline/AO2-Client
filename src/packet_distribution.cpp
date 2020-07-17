@@ -157,7 +157,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     s_pv = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
-    w_lobby->enable_connect_button();
+    if (lobby_constructed)
+      w_lobby->enable_connect_button();
 
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
@@ -315,9 +316,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       ++loaded_chars;
 
-      w_lobby->set_loading_text("Loading chars:\n" +
-                                QString::number(loaded_chars) + "/" +
-                                QString::number(char_list_size));
+      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
+                                .arg(QString::number(loaded_chars))
+                                .arg(QString::number(char_list_size)));
 
       w_courtroom->append_char(f_char);
 

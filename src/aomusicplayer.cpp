@@ -1,11 +1,13 @@
 #include "aomusicplayer.h"
 
-#ifdef BASSAUDIO
+
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
   ao_app = p_ao_app;
 }
+
+#ifdef BASSAUDIO
 
 AOMusicPlayer::~AOMusicPlayer()
 {
@@ -38,8 +40,8 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   QString d_path = f_path + ".txt";
 
-  loop_start = 0;
-  loop_end = BASS_ChannelGetLength(newstream, BASS_POS_BYTE);
+  loop_start[channel] = 0;
+  loop_end[channel] = BASS_ChannelGetLength(newstream, BASS_POS_BYTE);
   if (loop && file_exists(d_path)) // Contains loop/etc. information file
   {
     QStringList lines = ao_app->read_file(d_path).split("\n");
@@ -62,11 +64,11 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
       QWORD bytes = static_cast<QWORD>(args[1].trimmed().toFloat() *
                                        sample_size * num_channels);
       if (arg == "loop_start")
-        loop_start = bytes;
+        loop_start[channel] = bytes;
       else if (arg == "loop_length")
-        loop_end = loop_start + bytes;
+        loop_end[channel] = loop_start[channel] + bytes;
       else if (arg == "loop_end")
-        loop_end = bytes;
+        loop_end[channel] = bytes;
     }
     qDebug() << "Found data file for song" << p_song << "length"
              << BASS_ChannelGetLength(newstream, BASS_POS_BYTE) << "loop start"
@@ -109,7 +111,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
   else
     this->set_volume(m_volume[channel], channel);
 
-  this->set_looping(loop); // Have to do this here due to any
+  this->set_looping(loop, channel); // Have to do this here due to any
                            // crossfading-related changes, etc.
 }
 
@@ -143,6 +145,7 @@ void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
 
 void AOMusicPlayer::set_looping(bool toggle, int channel)
 {
+  qDebug() << "Setting looping for channel" << channel << "to" << toggle;
   m_looping = toggle;
   if (!m_looping) {
     if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
@@ -159,53 +162,64 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
                              loop_sync[channel]); // remove the sync
       loop_sync[channel] = 0;
     }
-    if (loop_start > 0) {
-      if (loop_end == 0)
-        loop_end = BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE);
-      if (loop_end > 0) // Don't loop zero length songs even if we're asked to
+    if (loop_start[channel] > 0) {
+      if (loop_end[channel] == 0)
+        loop_end[channel] = BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE);
+      if (loop_end[channel] > 0) // Don't loop zero length songs even if we're asked to
         loop_sync[channel] = BASS_ChannelSetSync(
-            m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME, loop_end,
-            loopProc, &loop_start);
+            m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME, loop_end[channel],
+            loopProc, &loop_start[channel]);
     }
   }
 }
 #elif defined(QTAUDIO)
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
+
+AOMusicPlayer::~AOMusicPlayer() {
+    for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
+      m_stream_list[n_stream].stop();
+    }
 }
 
-AOMusicPlayer::~AOMusicPlayer() { m_player.stop(); }
-
-void AOMusicPlayer::play(QString p_song)
+void AOMusicPlayer::play(QString p_song, int channel, bool loop,
+                         int effect_flags)
 {
-  m_player.stop();
-
+  channel = channel % m_channelmax;
+  if (channel < 0) // wtf?
+    return;
   QString f_path = ao_app->get_music_path(p_song);
 
-  m_player.setMedia(QUrl::fromLocalFile(f_path));
+  m_stream_list[channel].stop();
 
-  this->set_volume(m_volume);
+  m_stream_list[channel].setMedia(QUrl::fromLocalFile(f_path));
 
-  m_player.play();
+  this->set_volume(m_volume[channel], channel);
+
+  m_stream_list[channel].play();
 }
 
-void AOMusicPlayer::set_volume(int p_value)
+void AOMusicPlayer::stop(int channel)
 {
-  m_volume = p_value;
-  m_player.setVolume(m_volume);
+  m_stream_list[channel].stop();
 }
+
+void AOMusicPlayer::set_volume(int p_value, int channel)
+{
+  m_volume[channel] = p_value;
+  m_stream_list[channel].setVolume(m_volume[channel]);
+}
+
 #else
-AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
 
 AOMusicPlayer::~AOMusicPlayer() {}
 
-void AOMusicPlayer::play(QString p_song) {}
+void AOMusicPlayer::play(QString p_song, int channel, bool loop,
+                         int effect_flags) {}
 
-void AOMusicPlayer::set_volume(int p_value) {}
+void AOMusicPlayer::stop(int channel) {}
+
+void AOMusicPlayer::set_volume(int p_value, int channel) {}
+
+void loopProc(int handle, int channel, int data, int *user) {}
+
+void AOMusicPlayer::set_looping(bool toggle, int channel) {}
 #endif

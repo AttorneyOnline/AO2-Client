@@ -2,9 +2,9 @@
 
 chatlogpiece::chatlogpiece()
 {
-  name = "UNKNOWN";
-  showname = "UNKNOWN";
-  message = "UNKNOWN";
+  name = tr("UNKNOWN");
+  showname = tr("UNKNOWN");
+  message = tr("UNKNOWN");
   p_is_song = false;
   datetime = QDateTime::currentDateTime().toUTC();
 }
@@ -52,7 +52,7 @@ QString chatlogpiece::get_full()
   full.append(get_name());
   full.append(")");
   if (p_is_song)
-    full.append(" has played a song: ");
+    full.append(tr(" has played a song: "));
   else
     full.append(": ");
   full.append(get_message());

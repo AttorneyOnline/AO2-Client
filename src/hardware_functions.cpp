@@ -1,6 +1,9 @@
 #include "hardware_functions.h"
 
 #include <QDebug>
+#include <QtGlobal>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
 
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
@@ -49,6 +52,7 @@ QString get_hdid()
 }
 
 #elif defined __APPLE__
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 
@@ -78,5 +82,18 @@ QString get_hdid()
 #else
 
 #error This operating system is unsupported for hardware functions.
+
+#endif
+
+#else
+#include <QSysInfo>
+
+QByteArray machineId;
+
+QString get_hdid()
+{
+  machineId = QSysInfo::machineUniqueId();
+  return QString(machineId);
+}
 
 #endif

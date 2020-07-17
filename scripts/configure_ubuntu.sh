@@ -9,6 +9,7 @@ ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 
 cd "${ROOT_DIR}"
 
+
 #need some openGL stuff
 sudo apt install libgl1-mesa-dev
 #install curl incase of fresh vm

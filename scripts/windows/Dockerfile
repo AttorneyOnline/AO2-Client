@@ -10,5 +10,12 @@ RUN /opt/mxe/usr/bin/${TARGET_SPEC}-cmake .. -DCMAKE_INSTALL_PREFIX=/opt/mxe/usr
 RUN /opt/mxe/usr/bin/${TARGET_SPEC}-cmake --build . --config Release --target install
 WORKDIR ../..
 
-# NOTE: Do not build QtApng statically! libpng contains a self-test entry point that
-# takes precedence for some reason over the final build's entry point.
+# Build QtApng statically
+RUN git clone https://github.com/Skycoder42/QtApng
+WORKDIR QtApng
+# libpng contains a self-test entry point that takes precedence for some reason
+# over the final build's entry point.
+RUN sed -i "s/^main(/libpng_main(/g" src/3rdparty/libpng/src/pngtest.c
+RUN /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake
+RUN make && make install
+WORKDIR ..

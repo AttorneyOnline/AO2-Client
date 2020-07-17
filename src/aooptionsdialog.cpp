@@ -1,5 +1,6 @@
 #include "aooptionsdialog.h"
 #include "aoapplication.h"
+#include "bass.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     : QDialog(parent)
@@ -204,7 +205,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_language_combobox = new QComboBox(ui_form_layout_widget);
   ui_language_combobox->addItem(
       configini->value("language", "  ").value<QString>() +
-      " - Keep current setting");
+      tr(" - Keep current setting"));
   ui_language_combobox->addItem("   - Default");
   ui_language_combobox->addItem("en - English");
   ui_language_combobox->addItem("de - Deutsch");
@@ -312,6 +313,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickypres_cb);
 
+  row += 1;
+  ui_customchat_lbl = new QLabel(ui_form_layout_widget);
+  ui_customchat_lbl->setText(tr("Custom Chatboxes:"));
+  ui_customchat_lbl->setToolTip(
+      tr("Turn this on to allow characters to define their own "
+         "custom chat box designs."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_customchat_lbl);
+
+  ui_customchat_cb = new QCheckBox(ui_form_layout_widget);
+  ui_customchat_cb->setChecked(ao_app->is_customchat_enabled());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_customchat_cb);
+
   QScrollArea *scroll = new QScrollArea;
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
@@ -383,7 +398,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   int a = 0;
   if (needs_default_audiodev()) {
 
-    ui_audio_device_combobox->addItem("default");
+    ui_audio_device_combobox->addItem("default"); //TODO translate this without breaking the default audio device
   }
 #ifdef BASSAUDIO
   BASS_DEVICEINFO info;
@@ -707,6 +722,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("stickysounds", ui_stickysounds_cb->isChecked());
   configini->setValue("stickyeffects", ui_stickyeffects_cb->isChecked());
   configini->setValue("stickypres", ui_stickypres_cb->isChecked());
+  configini->setValue("customchat", ui_customchat_cb->isChecked());
 
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
