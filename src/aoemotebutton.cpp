@@ -50,13 +50,13 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
        tmpImage->save(p_image,"png");
        set_image(p_image,p_emote_comment);
 
-    }
+    } else {
     this->setText(p_emote_comment);
     this->setStyleSheet("QPushButton { border-image: url(); }"
                         "QToolTip { background-image: url(); color: #000000; "
                         "background-color: #ffffff; border: 0px; }");
+    }
   }
-}
 
 void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
 {
