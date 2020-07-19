@@ -10,9 +10,9 @@ class chatlogpiece {
 public:
   chatlogpiece();
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
-               bool p_song);
+               bool p_song,int color);
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
-               bool p_song, QDateTime p_datetime);
+               bool p_song, int color,QDateTime p_datetime);
 
   QString get_name();
   QString get_showname();
@@ -20,7 +20,7 @@ public:
   bool is_song();
   QDateTime get_datetime();
   QString get_datetime_as_string();
-
+  int get_chat_color();
   QString get_full();
 
 private:
@@ -28,6 +28,7 @@ private:
   QString showname;
   QString message;
   QDateTime datetime;
+  int color;
   bool p_is_song;
 };
 
