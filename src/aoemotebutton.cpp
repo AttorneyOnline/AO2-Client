@@ -58,6 +58,7 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
     }
   }
 
+}
 void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
 {
 
