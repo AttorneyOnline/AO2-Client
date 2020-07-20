@@ -1379,6 +1379,46 @@ void Courtroom::list_areas()
     QString i_area = "";
     i_area.append(area_list.at(n_area));
 
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
+
+    treeItem->setBackground(1, free_brush);
+    if (ao_app->arup_enabled) {
+      // Coloring logic here.
+      if (arup_locks.at(n_area) == "LOCKED") {
+        treeItem->setBackground(1, locked_brush);
+      }
+      else {
+        if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
+          treeItem->setBackground(1, lfp_brush);
+        else if (arup_statuses.at(n_area) == "CASING")
+          treeItem->setBackground(1, casing_brush);
+        else if (arup_statuses.at(n_area) == "RECESS")
+          treeItem->setBackground(1, recess_brush);
+        else if (arup_statuses.at(n_area) == "RP")
+          treeItem->setBackground(1, rp_brush);
+        else if (arup_statuses.at(n_area) == "GAMING")
+          treeItem->setBackground(1, gaming_brush);
+      }
+    }
+    // Brush logic untied from ARUP system, can override.
+    if (i_area.startsWith("^B=")) {
+      int brush = i_area.remove(0, 3).left(1).toInt();
+      i_area.remove(0, 1);
+
+      if (brush == 1)
+        treeItem->setBackground(1, locked_brush);
+      else if (brush == 2)
+        treeItem->setBackground(1, lfp_brush);
+      else if (brush == 3)
+        treeItem->setBackground(1, casing_brush);
+      else if (brush == 4)
+        treeItem->setBackground(1, recess_brush);
+      else if (brush == 5)
+        treeItem->setBackground(1, rp_brush);
+      else if (brush == 6)
+        treeItem->setBackground(1, gaming_brush);
+    }
+
     if (ao_app->arup_enabled) {
       i_area.prepend("[" + QString::number(n_area) + "] "); // Give it the index
 
@@ -1396,32 +1436,8 @@ void Courtroom::list_areas()
       i_area.append(arup_locks.at(n_area));
     }
 
-    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
     treeItem->setText(0, area_list.at(n_area));
     treeItem->setText(1, i_area);
-
-    if (ao_app->arup_enabled) {
-      // Coloring logic here.
-      treeItem->setBackground(1, free_brush);
-      if (arup_locks.at(n_area) == "LOCKED") {
-        treeItem->setBackground(1, locked_brush);
-      }
-      else {
-        if (arup_statuses.at(n_area) == "LOOKING-FOR-PLAYERS")
-          treeItem->setBackground(1, lfp_brush);
-        else if (arup_statuses.at(n_area) == "CASING")
-          treeItem->setBackground(1, casing_brush);
-        else if (arup_statuses.at(n_area) == "RECESS")
-          treeItem->setBackground(1, recess_brush);
-        else if (arup_statuses.at(n_area) == "RP")
-          treeItem->setBackground(1, rp_brush);
-        else if (arup_statuses.at(n_area) == "GAMING")
-          treeItem->setBackground(1, gaming_brush);
-      }
-    }
-    else {
-      treeItem->setBackground(1, free_brush);
-    }
 
     ++n_listed_areas;
   }
@@ -4042,6 +4058,8 @@ void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0; // The metadata
   QString p_area = p_item->text(0);
+  if (p_area.startsWith("^B="))
+    p_area.remove(0, 4); // Remove the color brush override thing
 
   QStringList packet_contents;
   packet_contents.append(p_area);
