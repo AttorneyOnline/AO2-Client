@@ -1947,6 +1947,10 @@ void Courtroom::handle_chatmessage_2()
       else
         ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
     }
+    else
+    {
+      ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
+    }
   }
 
   ui_vp_message->hide();
