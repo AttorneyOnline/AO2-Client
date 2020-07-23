@@ -17,6 +17,7 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app,
 
 void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
 {
+
   if (file_exists(p_image)) {
     this->setText("");
     this->setStyleSheet(
@@ -28,8 +29,15 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
     if(p_image.contains("_off") || p_image.contains("_on")){
         //Since we can't detect a button, lets just generate one!
         QString tmp_p_image = p_image;
-        if(!file_exists(tmp_p_image.replace("_off","_on")))
-           tmp_p_image.replace("_on","_off");
+        //if neither buttons exist then just throw some text
+        if(!file_exists(tmp_p_image.replace("_off","_on")) && !file_exists(tmp_p_image.replace("_on","_off")))
+        {
+            this->setText(p_emote_comment);
+            this->setStyleSheet("QPushButton { border-image: url(); }"
+                                "QToolTip { background-image: url(); color: #000000; "
+                                "background-color: #ffffff; border: 0px; }");
+            return;
+        }
 
         QImage *tmpImage = new QImage(tmp_p_image);
             QPoint p1, p2;
@@ -51,14 +59,14 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
        set_image(p_image,p_emote_comment);
 
     } else {
-    this->setText(p_emote_comment);
-    this->setStyleSheet("QPushButton { border-image: url(); }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
+        this->setText(p_emote_comment);
+        this->setStyleSheet("QPushButton { border-image: url(); }"
+                            "QToolTip { background-image: url(); color: #000000; "
+                            "background-color: #ffffff; border: 0px; }");
     }
   }
-
 }
+
 void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
 {
 
