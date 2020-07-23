@@ -4413,6 +4413,8 @@ void Courtroom::on_reload_theme_clicked()
 
   enter_courtroom();
   update_character(m_cid);
+  if (music_player->is_playing)
+    ui_music_display->play("music_display");
 
   anim_state = 4;
   text_state = 3;
