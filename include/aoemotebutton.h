@@ -25,6 +25,7 @@ private:
 
   int m_id = 0;
 
+
 signals:
   void emote_clicked(int p_id);
 
