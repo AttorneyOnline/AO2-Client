@@ -23,7 +23,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
   if (channel < 0) // wtf?
     return;
   QString f_path = ao_app->get_music_path(p_song);
-
+  is_playing = true;
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE |
                        BASS_UNICODE | BASS_ASYNCFILE;
   if (loop)
@@ -117,6 +117,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
 void AOMusicPlayer::stop(int channel)
 {
+    is_playing = false;
   BASS_ChannelStop(m_stream_list[channel]);
 }
 
@@ -213,9 +214,9 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
 AOMusicPlayer::~AOMusicPlayer() {}
 
 void AOMusicPlayer::play(QString p_song, int channel, bool loop,
-                         int effect_flags) {}
+                         int effect_flags) {is_playing = true;}
 
-void AOMusicPlayer::stop(int channel) {}
+void AOMusicPlayer::stop(int channel) {is_playing = false;}
 
 void AOMusicPlayer::set_volume(int p_value, int channel) {}
 

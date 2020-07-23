@@ -27,7 +27,7 @@ public:
   // These have to be public for the stupid sync thing
   int loop_start[4] = {0, 0, 0, 0};
   int loop_end[4] = {0, 0, 0, 0};
-
+  bool is_playing = false;
 public slots:
   void play(QString p_song, int channel = 0, bool loop = false,
             int effect_flags = 0);
