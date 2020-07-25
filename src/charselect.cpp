@@ -123,14 +123,17 @@ void Courtroom::set_char_select_page()
 
 void Courtroom::char_clicked(int n_char)
 {
-  QString char_ini_path =
-      ao_app->get_character_path(char_list.at(n_char).name, "char.ini");
+  if (n_char != -1)
+  {
+    QString char_ini_path =
+        ao_app->get_character_path(char_list.at(n_char).name, "char.ini");
 
-  qDebug() << "char_ini_path" << char_ini_path;
+    qDebug() << "char_ini_path" << char_ini_path;
 
-  if (!file_exists(char_ini_path)) {
-    call_notice("Could not find " + char_ini_path);
-    return;
+    if (!file_exists(char_ini_path)) {
+      call_notice("Could not find " + char_ini_path);
+      return;
+    }
   }
 
   if (n_char != m_cid) {
@@ -145,7 +148,8 @@ void Courtroom::char_clicked(int n_char)
 
   enter_courtroom();
 
-  ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
+  if (n_char != -1)
+    ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)

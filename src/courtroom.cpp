@@ -4382,7 +4382,6 @@ void Courtroom::on_change_character_clicked()
   set_char_select();
 
   ui_char_select_background->show();
-  ui_spectator->hide();
 }
 
 void Courtroom::on_reload_theme_clicked()
@@ -4417,7 +4416,10 @@ void Courtroom::on_char_select_right_clicked()
   set_char_select_page();
 }
 
-void Courtroom::on_spectator_clicked() { update_character(-1); }
+void Courtroom::on_spectator_clicked()
+{
+  char_clicked(-1);
+}
 
 void Courtroom::on_call_mod_clicked()
 {
