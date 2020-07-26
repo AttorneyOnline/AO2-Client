@@ -1591,7 +1591,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (text_color < 0)
     f_text_color = "0";
-  else if (text_color > max_colors)
+  else if (text_color >= max_colors)
     f_text_color = "0";
   else
     f_text_color = QString::number(text_color);

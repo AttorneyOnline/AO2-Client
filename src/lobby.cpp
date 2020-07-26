@@ -378,7 +378,7 @@ void Lobby::on_about_clicked()
          "Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, "
          "Veritas, Wiso"
          "<p><b>Special thanks:</b><br>"
-         "CrazyJC and MaximumVolty (2.8 release); "
+         "CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); "
          "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
          "Rue (website); Draxirch (UI design); "
          "Lewdton and Argoneus (tsuserver); "
