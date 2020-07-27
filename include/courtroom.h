@@ -670,6 +670,7 @@ private slots:
   void music_fade_out(bool toggle);
   void music_fade_in(bool toggle);
   void music_synchronize(bool toggle);
+  void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);

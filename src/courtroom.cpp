@@ -3977,6 +3977,9 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu();
 
+  menu->addAction(QString(tr("Play Random Song")), this,
+                  SLOT(music_random()));
+  menu->addSeparator();
   menu->addAction(QString(tr("Expand All Categories")), this,
                   SLOT(music_list_expand_all()));
   menu->addAction(QString(tr("Collapse All Categories")), this,
@@ -4026,6 +4029,18 @@ void Courtroom::music_synchronize(bool toggle)
     music_flags |= SYNC_POS;
   else
     music_flags &= ~SYNC_POS;
+}
+
+void Courtroom::music_random()
+{
+  QList<QTreeWidgetItem *> clist;
+  QTreeWidgetItemIterator it(ui_music_list, QTreeWidgetItemIterator::NotHidden | QTreeWidgetItemIterator::NoChildren);
+  while (*it) {
+    clist += (*it);
+    ++it;
+  }
+  int i = qrand() % clist.length();
+  on_music_list_double_clicked(clist.at(i), 1);
 }
 
 void Courtroom::music_list_expand_all() { ui_music_list->expandAll(); }
