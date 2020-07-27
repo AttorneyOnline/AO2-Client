@@ -1719,7 +1719,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   QString f_showname;
-  if (f_char_id > 0 &&
+  if (f_char_id > -1 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
@@ -2161,7 +2161,7 @@ void Courtroom::handle_chatmessage_3()
 
   QString f_showname;
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
-  if (f_char_id > 0 &&
+  if (f_char_id > -1 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
