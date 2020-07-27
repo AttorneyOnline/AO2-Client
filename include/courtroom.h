@@ -118,7 +118,7 @@ public:
   void set_widgets();
 
   // sets font size based on theme ini files
-  void set_font(QWidget *widget, QString class_name, QString p_identifier);
+  void set_font(QWidget *widget, QString class_name, QString p_identifier, QString p_char="", QString font_name="", int f_pointsize=0);
 
   // Get the properly constructed font
   QFont get_qfont(QString font_name, int f_pointsize, bool antialias = true);
@@ -128,7 +128,7 @@ public:
                  QColor f_color = Qt::black, bool bold = false);
 
   // helper function that calls above function on the relevant widgets
-  void set_fonts();
+  void set_fonts(QString p_char="");
 
   // sets dropdown menu stylesheet
   void set_dropdown(QWidget *widget);
