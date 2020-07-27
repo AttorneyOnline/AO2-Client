@@ -2,7 +2,7 @@
 #define AOEMOTEBUTTON_H
 
 #include "aoapplication.h"
-#include "qpainter.h"
+#include <QPainter>
 #include <QDebug>
 #include <QPushButton>
 
