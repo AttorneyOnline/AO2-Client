@@ -2154,7 +2154,6 @@ void Courtroom::play_char_sfx(QString sfx_name)
 
 void Courtroom::handle_chatmessage_3()
 {
-
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
@@ -2223,8 +2222,6 @@ void Courtroom::handle_chatmessage_3()
     anim_state = 3;
   }
 
-  start_chat_ticking();
-
   QString f_message = m_chatmessage[MESSAGE];
   QStringList call_words = ao_app->get_call_words();
 
@@ -2236,6 +2233,8 @@ void Courtroom::handle_chatmessage_3()
       break;
     }
   }
+
+  start_chat_ticking();
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
