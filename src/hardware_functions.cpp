@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QtGlobal>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>

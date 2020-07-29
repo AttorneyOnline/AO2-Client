@@ -1903,8 +1903,12 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_chatbox->set_image("chatbox");
 
     QFontMetrics fm(ui_vp_showname->font());
+// Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
     int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
-
+#else
+    int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
+#endif
     QString chatbox_path = ao_app->get_theme_path("chat");
     QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
     QString customchar;
@@ -1917,7 +1921,8 @@ void Courtroom::handle_chatmessage_2()
         ui_vp_chatbox->set_chatbox(chatbox_path + "box");
     }
 
-    //This should probably be called only if any change from the last chat arrow was actually detected.
+    // This should probably be called only if any change from the last chat
+    // arrow was actually detected.
     pos_size_type design_ini_result = ao_app->get_element_dimensions(
         "chat_arrow", "courtroom_design.ini", customchar);
     if (design_ini_result.width < 0 || design_ini_result.height < 0) {
@@ -3051,11 +3056,13 @@ void Courtroom::handle_song(QStringList *p_contents)
                                     (f_song_clear.lastIndexOf("/") + 1));
   int n_char = f_contents.at(1).toInt();
 
-  //Assume the song doesn't loop unless told otherwise (due to most outdated servers handling looping through serverside)
+  // Assume the song doesn't loop unless told otherwise (due to most outdated
+  // servers handling looping through serverside)
   bool looping = false;
-  //Channel 0 is the 'master music', other channels would commonly be used for ambience
+  // Channel 0 is the 'master music', other channels would commonly be used for
+  // ambience
   int channel = 0;
-  //No effects assumed by default - vanilla functionality
+  // No effects assumed by default - vanilla functionality
   int effect_flags = 0;
 
   if (n_char < 0 || n_char >= char_list.size()) {
@@ -4340,7 +4347,12 @@ void Courtroom::on_text_color_changed(int p_color)
     if (markdown_end.isEmpty())
       markdown_end = markdown_start;
     int start = ui_ic_chat_message->selectionStart();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     int end = ui_ic_chat_message->selectionEnd() + 1;
+#else
+    int end = ui_ic_chat_message->selectedText().length() + 1;
+#endif
+
     ui_ic_chat_message->setCursorPosition(start);
     ui_ic_chat_message->insert(markdown_start);
     ui_ic_chat_message->setCursorPosition(end);
