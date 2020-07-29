@@ -1262,27 +1262,38 @@ void Courtroom::update_character(int p_cid)
     ui_prosecution_plus->hide();
   }
 
-  if (ao_app->custom_objection_enabled && // if setting is enabled
-      (file_exists(ao_app->get_image_suffix(
-           ao_app->get_character_path(current_char, "custom"))) &&
-       file_exists(ao_app->get_character_path(current_char, "custom.wav")))) {
-    ui_custom_objection->show();
+  ui_custom_objection->hide();
+  if (ao_app->custom_objection_enabled) // if setting is enabled
+  {
+    custom_obj_menu->clear();
+    if (file_exists(ao_app->get_image_suffix(
+           ao_app->get_character_path(current_char, "custom"))))
+    {
+      ui_custom_objection->show();
+      QAction *action = custom_obj_menu->addAction("Default");
+      custom_obj_menu->setDefaultAction(action);
+      objection_custom = "";
+    }
     if (dir_exists(
             ao_app->get_character_path(current_char, "custom_objections"))) {
-      custom_obj_menu->clear();
+      ui_custom_objection->show();
       QDir directory(
           ao_app->get_character_path(current_char, "custom_objections"));
-      QStringList custom_obj = directory.entryList(QStringList() << "*.gif"
+      QStringList custom_obj = directory.entryList(QStringList() << "*.png"
+                                                                 << "*.gif"
                                                                  << "*.apng"
                                                                  << "*.webp",
                                                    QDir::Files);
       for (const QString &filename : custom_obj) {
-        custom_obj_menu->addAction(filename);
+        QAction *action = custom_obj_menu->addAction(filename);
+        if (custom_obj_menu->defaultAction() == nullptr)
+        {
+          custom_obj_menu->setDefaultAction(action);
+          objection_custom = action->text();
+        }
       }
     }
   }
-  else
-    ui_custom_objection->hide();
 
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
@@ -1852,21 +1863,19 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       break;
     // case 4 is AO2 only
     case 4:
-      if (objection_custom != "") {
-        ui_vp_objection->play("custom_objections/" + objection_custom, f_char,
+      if (custom_objection != "") {
+        ui_vp_objection->play("custom_objections/" + custom_objection, f_char,
                               f_custom_theme, shout_stay_time);
         objection_player->play("custom_objections/" +
-                                   custom_objection.split('.')[0] + ".wav",
+                                   custom_objection.split('.')[0],
                                f_char, f_custom_theme);
-        objection_custom = ""; // needs to be set back to empty string after we
-                               // play it, otherwise the default custom becomes
-                               // unusable until it's reset somehow
       }
       else {
         ui_vp_objection->play("custom", f_char, f_custom_theme,
                               shout_stay_time);
-        objection_player->play("custom.wav", f_char, f_custom_theme);
+        objection_player->play("custom", f_char, f_custom_theme);
       }
+      break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
     }
@@ -4197,12 +4206,16 @@ void Courtroom::show_custom_objection_menu(const QPoint &pos)
   QPoint globalPos = ui_custom_objection->mapToGlobal(pos);
   QAction *selecteditem = custom_obj_menu->exec(globalPos);
   if (selecteditem) {
-    ui_objection->set_image("objection.png");
-    ui_take_that->set_image("takethat.png");
-    ui_hold_it->set_image("holdit.png");
-    ui_custom_objection->set_image("custom_selected.png");
-    objection_custom = selecteditem->text();
+    ui_objection->set_image("objection");
+    ui_take_that->set_image("takethat");
+    ui_hold_it->set_image("holdit");
+    ui_custom_objection->set_image("custom_selected");
+    if (selecteditem->text() == "Default")
+      objection_custom = "";
+    else
+      objection_custom = selecteditem->text();
     objection_state = 4;
+    custom_obj_menu->setDefaultAction(selecteditem);
   }
 }
 
