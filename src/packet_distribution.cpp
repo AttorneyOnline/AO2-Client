@@ -292,7 +292,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_casing_auto_logging_enabled()){
+    if (AOApplication::get_auto_logging_enabled()){
         this->log_filename = QDateTime::currentDateTime().toUTC().toString(
             "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
             "/'ddd MMMM yyyy hh.mm.ss t'.log'");

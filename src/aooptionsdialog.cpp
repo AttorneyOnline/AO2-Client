@@ -708,7 +708,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_log_lbl);
 
   ui_casing_log_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_log_cb->setChecked(ao_app->get_casing_auto_logging_enabled());
+  ui_casing_log_cb->setChecked(ao_app->get_auto_logging_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_log_cb);
 

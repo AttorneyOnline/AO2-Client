@@ -428,7 +428,7 @@ public:
   QString get_casing_can_host_cases();
 
   // Get if automatic logging is enabled
-  bool get_casing_auto_logging_enabled();
+  bool get_auto_logging_enabled();
 
   // The file name of the log file in base/logs.
   QString log_filename;
