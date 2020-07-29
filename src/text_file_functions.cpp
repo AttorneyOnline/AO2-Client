@@ -641,7 +641,7 @@ QString AOApplication::get_char_shouts(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "shouts", "Options");
   if (f_result == "")
-    return "default";
+    return current_theme; // The default option is the current theme.
   return f_result;
 }
 
