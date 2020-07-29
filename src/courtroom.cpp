@@ -1264,7 +1264,7 @@ void Courtroom::update_character(int p_cid)
 
   if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
                    // to find one
-    ui_ic_chat_name->setPlaceholderText(char_list.at(char_id).name);
+    ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
