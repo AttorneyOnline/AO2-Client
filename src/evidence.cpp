@@ -708,6 +708,7 @@ void Courtroom::evidence_switch(bool global)
     ui_evidence_save->show();
     ui_evidence_load->show();
   }
+  current_evidence_page = 0;
   set_evidence_page();
 }
 

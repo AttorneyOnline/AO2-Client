@@ -176,6 +176,21 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "FL") {
+//    encryption_needed = true;
+    yellow_text_enabled = false;
+    prezoom_enabled = false;
+    flipping_enabled = false;
+    custom_objection_enabled = false;
+    improved_loading_enabled = false;
+    desk_mod_enabled = false;
+    evidence_enabled = false;
+    cccc_ic_support_enabled = false;
+    arup_enabled = false;
+    casing_alerts_enabled = false;
+    modcall_reason_enabled = false;
+    looping_sfx_support_enabled = false;
+    additive_enabled = false;
+    effects_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))

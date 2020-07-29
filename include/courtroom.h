@@ -221,11 +221,11 @@ public:
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", QString action = "");
+  void append_ic_text(QString p_text, QString p_name = "", QString action = "", int color = 0);
 
   // prints who played the song to IC chat and plays said song(if found on local
-  // filesystem) takes in a list where the first element is the song name and the
-  // second is the char id of who played it
+  // filesystem) takes in a list where the first element is the song name and
+  // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
   void play_preanim(bool noninterrupting);
@@ -380,6 +380,7 @@ private:
   QString current_char = "";
 
   int objection_state = 0;
+  QString objection_custom = "";
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -415,7 +416,7 @@ private:
   QString effect = "";
 
   // Music effect flags we want to send to server when we play music
-  int music_flags = 0;
+  int music_flags = FADE_OUT;
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
@@ -561,6 +562,7 @@ private:
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;
+  QMenu *custom_obj_menu;
   AOButton *ui_realization;
   AOButton *ui_screenshake;
   AOButton *ui_mute;
@@ -664,6 +666,7 @@ private slots:
 
   void on_ooc_return_pressed();
 
+  void on_music_search_return_pressed();
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_music_list_context_menu_requested(const QPoint &pos);
@@ -722,6 +725,7 @@ private slots:
   void on_objection_clicked();
   void on_take_that_clicked();
   void on_custom_objection_clicked();
+  void show_custom_objection_menu(const QPoint &pos);
 
   void on_realization_clicked();
   void on_screenshake_clicked();
