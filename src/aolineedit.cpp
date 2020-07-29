@@ -11,7 +11,7 @@ void AOLineEdit::mouseDoubleClickEvent(QMouseEvent *e)
 void AOLineEdit::focusOutEvent(QFocusEvent *ev)
 {
   int start = selectionStart();
-  #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
   int len = selectionLength();
 #else
   int len = selectedText().length();
