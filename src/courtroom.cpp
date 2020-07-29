@@ -242,6 +242,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pre_non_interrupt->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
+  ui_custom_objection->setContextMenuPolicy(Qt::CustomContextMenu);
+  custom_obj_menu = new QMenu(this);
   ui_realization = new AOButton(this, ao_app);
   ui_screenshake = new AOButton(this, ao_app);
   ui_mute = new AOButton(this, ao_app);
@@ -346,6 +348,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_take_that, SIGNAL(clicked()), this, SLOT(on_take_that_clicked()));
   connect(ui_custom_objection, SIGNAL(clicked()), this,
           SLOT(on_custom_objection_clicked()));
+  connect(ui_custom_objection,
+          SIGNAL(customContextMenuRequested(const QPoint &)), this,
+          SLOT(show_custom_objection_menu(const QPoint &)));
 
   connect(ui_realization, SIGNAL(clicked()), this,
           SLOT(on_realization_clicked()));
@@ -1257,12 +1262,38 @@ void Courtroom::update_character(int p_cid)
     ui_prosecution_plus->hide();
   }
 
-  if (ao_app->custom_objection_enabled &&
-      file_exists(ao_app->get_image_suffix(
-          ao_app->get_character_path(current_char, "custom"))))
-    ui_custom_objection->show();
-  else
-    ui_custom_objection->hide();
+  ui_custom_objection->hide();
+  if (ao_app->custom_objection_enabled) // if setting is enabled
+  {
+    custom_obj_menu->clear();
+    if (file_exists(ao_app->get_image_suffix(
+           ao_app->get_character_path(current_char, "custom"))))
+    {
+      ui_custom_objection->show();
+      QAction *action = custom_obj_menu->addAction("Default");
+      custom_obj_menu->setDefaultAction(action);
+      objection_custom = "";
+    }
+    if (dir_exists(
+            ao_app->get_character_path(current_char, "custom_objections"))) {
+      ui_custom_objection->show();
+      QDir directory(
+          ao_app->get_character_path(current_char, "custom_objections"));
+      QStringList custom_obj = directory.entryList(QStringList() << "*.png"
+                                                                 << "*.gif"
+                                                                 << "*.apng"
+                                                                 << "*.webp",
+                                                   QDir::Files);
+      for (const QString &filename : custom_obj) {
+        QAction *action = custom_obj_menu->addAction(filename);
+        if (custom_obj_menu->defaultAction() == nullptr)
+        {
+          custom_obj_menu->setDefaultAction(action);
+          objection_custom = action->text();
+        }
+      }
+    }
+  }
 
   if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
                    // to find one
@@ -1584,6 +1615,11 @@ void Courtroom::on_chat_return_pressed()
   if ((objection_state == 4 && !ao_app->custom_objection_enabled) ||
       (objection_state < 0))
     f_obj_state = "0";
+  else if (objection_custom != "" && objection_state == 4) {
+    f_obj_state = QString::number(objection_state) + "&" +
+                  objection_custom; // we add the name of the objection so the
+                                    // packet is like: 4&(name of custom obj)
+  }
   else
     f_obj_state = QString::number(objection_state);
 
@@ -1770,7 +1806,15 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
         ""; // System messages don't care about repeating themselves
   else
     previous_ic_message = f_message;
-
+  bool ok;
+  int objection_mod = m_chatmessage[OBJECTION_MOD].toInt(
+      &ok, 10); // checks if its a custom obj.
+  QString custom_objection = "";
+  if (!ok && m_chatmessage[OBJECTION_MOD].contains("4&")) {
+    objection_mod = 4;
+    custom_objection = m_chatmessage[OBJECTION_MOD].split(
+        "4&")[1]; // takes the name of custom objection.
+  }
   // Stop the chat arrow from animating
   ui_vp_chat_arrow->stop();
 
@@ -1843,8 +1887,18 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       break;
     // case 4 is AO2 only
     case 4:
-      ui_vp_objection->play("custom", f_char, f_custom_theme, 724);
-      objection_player->play("custom", f_char, f_custom_theme);
+      if (custom_objection != "") {
+        ui_vp_objection->play("custom_objections/" + custom_objection, f_char,
+                              f_custom_theme, shout_stay_time);
+        objection_player->play("custom_objections/" +
+                                   custom_objection.split('.')[0],
+                               f_char, f_custom_theme);
+      }
+      else {
+        ui_vp_objection->play("custom", f_char, f_custom_theme,
+                              shout_stay_time);
+        objection_player->play("custom", f_char, f_custom_theme);
+      }
       break;
     default:
       qDebug() << "W: Logic error in objection switch statement!";
@@ -4179,6 +4233,24 @@ void Courtroom::on_custom_objection_clicked()
   ui_ic_chat_message->setFocus();
 }
 
+void Courtroom::show_custom_objection_menu(const QPoint &pos)
+{
+  QPoint globalPos = ui_custom_objection->mapToGlobal(pos);
+  QAction *selecteditem = custom_obj_menu->exec(globalPos);
+  if (selecteditem) {
+    ui_objection->set_image("objection");
+    ui_take_that->set_image("takethat");
+    ui_hold_it->set_image("holdit");
+    ui_custom_objection->set_image("custom_selected");
+    if (selecteditem->text() == "Default")
+      objection_custom = "";
+    else
+      objection_custom = selecteditem->text();
+    objection_state = 4;
+    custom_obj_menu->setDefaultAction(selecteditem);
+  }
+}
+
 void Courtroom::on_realization_clicked()
 {
   if (realization_state == 0) {
@@ -4456,6 +4528,7 @@ void Courtroom::on_reload_theme_clicked()
 
   anim_state = 4;
   text_state = 3;
+  objection_custom = "";
 
   // to update status on the background
   set_background(current_background, true);
