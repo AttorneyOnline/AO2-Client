@@ -322,6 +322,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_effects_dropdown, SIGNAL(customContextMenuRequested(QPoint)), this,
           SLOT(on_effects_context_menu_requested(QPoint)));
 
+  connect(ui_music_search, SIGNAL(returnPressed()), this,
+          SLOT(on_music_search_return_pressed()));
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this,
           SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -3549,6 +3551,13 @@ void Courtroom::on_music_search_edited(QString p_text)
         item->setHidden(false);
       }
     }
+  }
+}
+
+void Courtroom::on_music_search_return_pressed()
+{
+  if (ui_music_search->text() == "") {
+    ui_music_list->collapseAll();
   }
 }
 
