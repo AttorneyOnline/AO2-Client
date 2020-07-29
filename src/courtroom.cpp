@@ -1864,7 +1864,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
 
-  int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
