@@ -416,7 +416,7 @@ private:
   QString effect = "";
 
   // Music effect flags we want to send to server when we play music
-  int music_flags = 0;
+  int music_flags = FADE_OUT;
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;

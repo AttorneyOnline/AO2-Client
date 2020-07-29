@@ -200,6 +200,11 @@ public:
   // from the config.ini.
   bool is_stickypres_enabled();
 
+  // Returns the value of whether custom chatboxes should be a thing.
+  // from the config.ini.
+  // I am increasingly maddened by the lack of dynamic auto-generation system for settings.
+  bool is_customchat_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();

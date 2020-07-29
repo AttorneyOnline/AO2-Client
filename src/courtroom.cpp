@@ -84,7 +84,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
-  ui_vp_showname->setAlignment(Qt::AlignHCenter);
+  ui_vp_showname->setAlignment(Qt::AlignLeft);
   ui_vp_chat_arrow = new AOMovie(ui_vp_chatbox, ao_app);
   ui_vp_chat_arrow->set_play_once(false);
 
@@ -1114,7 +1114,7 @@ void Courtroom::set_background(QString p_background, bool display)
   // Populate the dropdown list with all pos that exist on this bg
   QStringList pos_list = {};
   for (QString key : default_pos.keys()) {
-    if (file_exists(ao_app->get_static_image_suffix(
+    if (file_exists(ao_app->get_image_suffix(
             ao_app->get_background_path(key)))) {
       pos_list.append(default_pos[key]);
     }
@@ -1618,7 +1618,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (text_color < 0)
     f_text_color = "0";
-  else if (text_color > max_colors)
+  else if (text_color >= max_colors)
     f_text_color = "0";
   else
     f_text_color = QString::number(text_color);
@@ -1746,7 +1746,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   QString f_showname;
-  if (f_char_id > 0 &&
+  if (f_char_id > -1 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
@@ -1918,7 +1918,7 @@ void Courtroom::handle_chatmessage_2()
   {
     ui_vp_chatbox->set_image("chatblank");
   }
-  else // Aw yeah dude do some showname resizing magic
+  else // Aw yeah dude do some showname magic
   {
     if (!ui_vp_chatbox->set_image("chat"))
       ui_vp_chatbox->set_image("chatbox");
@@ -1928,31 +1928,49 @@ void Courtroom::handle_chatmessage_2()
 
     QString chatbox_path = ao_app->get_theme_path("chat");
     QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
-    if (chatbox != "") {
+    QString customchar;
+    if (ao_app->is_customchat_enabled())
+      customchar = m_chatmessage[CHAR_NAME];
+
+    if (chatbox != "" && ao_app->is_customchat_enabled()) {
       chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
       if (!ui_vp_chatbox->set_chatbox(chatbox_path))
         ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+    }
 
-      pos_size_type design_ini_result = ao_app->get_element_dimensions(
-          "chat_arrow", "courtroom_design.ini", m_chatmessage[CHAR_NAME]);
-      if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-        qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
-        ui_vp_chat_arrow->hide();
-      }
-      else {
-        ui_vp_chat_arrow->move(design_ini_result.x, design_ini_result.y);
-        ui_vp_chat_arrow->combo_resize(design_ini_result.width,
-                                       design_ini_result.height);
-      }
+    //This should probably be called only if any change from the last chat arrow was actually detected.
+    pos_size_type design_ini_result = ao_app->get_element_dimensions(
+        "chat_arrow", "courtroom_design.ini", customchar);
+    if (design_ini_result.width < 0 || design_ini_result.height < 0) {
+      qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+      ui_vp_chat_arrow->hide();
+    }
+    else {
+      ui_vp_chat_arrow->move(design_ini_result.x, design_ini_result.y);
+      ui_vp_chat_arrow->combo_resize(design_ini_result.width,
+                                     design_ini_result.height);
     }
 
     pos_size_type default_width = ao_app->get_element_dimensions(
-        "showname", "courtroom_design.ini", m_chatmessage[CHAR_NAME]);
+        "showname", "courtroom_design.ini", customchar);
     int extra_width =
         ao_app
             ->get_design_element("showname_extra_width", "courtroom_design.ini",
-                                 m_chatmessage[CHAR_NAME])
+                                 customchar)
             .toInt();
+    QString align =
+        ao_app
+            ->get_design_element("showname_align", "courtroom_design.ini",
+                                 customchar)
+            .toLower();
+    if (align == "right")
+      ui_vp_showname->setAlignment(Qt::AlignRight);
+    else if (align == "center")
+      ui_vp_showname->setAlignment(Qt::AlignHCenter);
+    else if (align == "justify")
+      ui_vp_showname->setAlignment(Qt::AlignHCenter);
+    else
+      ui_vp_showname->setAlignment(Qt::AlignLeft);
 
     if (extra_width > 0) {
       if (fm_width > default_width.width &&
@@ -1973,6 +1991,10 @@ void Courtroom::handle_chatmessage_2()
       }
       else
         ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
+    }
+    else
+    {
+      ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
     }
   }
 
@@ -2184,7 +2206,7 @@ void Courtroom::handle_chatmessage_3()
 
   QString f_showname;
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
-  if (f_char_id > 0 &&
+  if (f_char_id > -1 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
@@ -2578,7 +2600,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action)
     }
     else {
       ui_ic_chatlog->textCursor().insertText(": ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
+      ui_ic_chatlog->textCursor().insertHtml(p_text + "<br>");
     }
 
     // If we got too many blocks in the current log, delete some from the
@@ -2737,8 +2759,13 @@ void Courtroom::chat_tick()
       ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME],
                                    m_chatmessage[EMOTE]);
     }
-    QString f_char = m_chatmessage[CHAR_NAME];
-    QString f_custom_theme = ao_app->get_chat(f_char);
+    QString f_char;
+    QString f_custom_theme;
+    if (ao_app->is_customchat_enabled())
+    {
+      f_char = m_chatmessage[CHAR_NAME];
+      f_custom_theme = ao_app->get_chat(f_char);
+    }
     ui_vp_chat_arrow->play(
         "chat_arrow", f_char,
         f_custom_theme); // Chat stopped being processed, indicate that.
@@ -3045,13 +3072,17 @@ void Courtroom::handle_song(QStringList *p_contents)
                                     (f_song_clear.lastIndexOf("/") + 1));
   int n_char = f_contents.at(1).toInt();
 
-  bool looping = true;
+  //Assume the song doesn't loop unless told otherwise (due to most outdated servers handling looping through serverside)
+  bool looping = false;
+  //Channel 0 is the 'master music', other channels would commonly be used for ambience
   int channel = 0;
+  //No effects assumed by default - vanilla functionality
   int effect_flags = 0;
+
   if (n_char < 0 || n_char >= char_list.size()) {
     int channel = 0;
-    if (p_contents->length() > 3 && p_contents->at(3) != "-1")
-      looping = false;
+    if (p_contents->length() > 3 && p_contents->at(3) == "1")
+      looping = true;
 
     if (p_contents->length() >
         4) // eyyy we want to change this song's CHANNEL huh
@@ -3077,10 +3108,8 @@ void Courtroom::handle_song(QStringList *p_contents)
         str_show = p_contents->at(2);
       }
     }
-    if (p_contents->length() > 3 && p_contents->at(3) != "-1") {
-      // I am really confused why "-1" is "loop this song" and why anything else
-      // passes as "don't loop" (if we even have this length) but alright
-      looping = false;
+    if (p_contents->length() > 3 && p_contents->at(3) == "1") {
+      looping = true;
     }
     if (p_contents->length() >
         4) // eyyy we want to change this song's CHANNEL huh
@@ -4301,7 +4330,7 @@ void Courtroom::set_text_color_dropdown()
   // Update markdown colors. TODO: make a loading function that only loads the
   // config file once instead of several times
   for (int c = 0; c < max_colors; ++c) {
-    QColor color = ao_app->get_chat_color(QString::number(c), current_char);
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), current_char);
     color_rgb_list.append(color);
     color_markdown_start_list.append(ao_app->get_chat_markdown(
         "c" + QString::number(c) + "_start", current_char));
@@ -4312,7 +4341,7 @@ void Courtroom::set_text_color_dropdown()
                                   current_char) == "1");
     color_markdown_talking_list.append(
         ao_app->get_chat_markdown("c" + QString::number(c) + "_talking",
-                                  current_char) == "1");
+                                  current_char) != "0");
 
     QString color_name = ao_app->get_chat_markdown(
         "c" + QString::number(c) + "_name", current_char);
@@ -4452,7 +4481,7 @@ void Courtroom::on_reload_theme_clicked()
   objection_custom = "";
 
   // to update status on the background
-  set_background(current_background);
+  set_background(current_background, true);
 }
 
 void Courtroom::on_back_to_lobby_clicked()
@@ -4655,11 +4684,8 @@ void Courtroom::load_bass_opus_plugin()
 #elif defined __APPLE__
 void Courtroom::load_bass_opus_plugin()
 {
-  QString libpath =
-      ao_app->get_base_path() + "../../Frameworks/libbassopus.dylib";
-  QByteArray ba = libpath.toLocal8Bit();
 #ifdef BASSAUDIO
-  BASS_PluginLoad(ba.data(), 0);
+  BASS_PluginLoad("libbassopus.dylib", 0);
 #endif
 }
 #else

@@ -370,13 +370,15 @@ void Lobby::on_about_clicked()
          "<p><b>Major development:</b><br>"
          "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
          "Crystalwarrior, Iamgoofball"
+         "<p><b>Client development:</b><br>"
+         "Cents02, in1tiate, raidensnake, windrammer"
          "<p><b>QA testing:</b><br>"
          "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
          "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
          "Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, "
          "Veritas, Wiso"
          "<p><b>Special thanks:</b><br>"
-         "CrazyJC and MaximumVolty (2.8 release); "
+         "CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); "
          "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
          "Rue (website); Draxirch (UI design); "
          "Lewdton and Argoneus (tsuserver); "
@@ -402,7 +404,7 @@ void Lobby::on_settings_clicked() { ao_app->call_settings_menu(); }
 void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0;
-  if (p_item->text(column).toInt() != last_index) {
+  if (p_item->text(column).toInt() != last_index || !public_servers_selected) {
     server_type f_server;
     int n_server = p_item->text(column).toInt();
     last_index = n_server;
