@@ -1719,7 +1719,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   QString f_showname;
-  if (f_char_id > 0 &&
+  if (f_char_id > -1 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
@@ -2154,14 +2154,12 @@ void Courtroom::play_char_sfx(QString sfx_name)
 
 void Courtroom::handle_chatmessage_3()
 {
-  start_chat_ticking();
-
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
   QString f_showname;
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
-  if (f_char_id > 0 &&
+  if (f_char_id > -1 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
@@ -2235,6 +2233,8 @@ void Courtroom::handle_chatmessage_3()
       break;
     }
   }
+
+  start_chat_ticking();
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
