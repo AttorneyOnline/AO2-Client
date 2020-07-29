@@ -39,23 +39,23 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
             return;
         }
 
-        QImage *tmpImage = new QImage(tmp_p_image);
+        QImage tmpImage = QImage(tmp_p_image);
             QPoint p1, p2;
-            p2.setY(tmpImage->height());
+            p2.setY(tmpImage.height());
 
             QLinearGradient gradient(p1, p2);
             gradient.setColorAt(0, Qt::transparent);
             gradient.setColorAt(1, QColor(0, 0, 0, 159));
 
-            QPainter p(tmpImage);
-            p.fillRect(0, 0, tmpImage->width(), tmpImage->height(), gradient);
+            QPainter p(&tmpImage);
+            p.fillRect(0, 0, tmpImage.width(), tmpImage.height(), gradient);
 
             gradient.setColorAt(0,QColor(0, 0, 0, 159));
             gradient.setColorAt(1, Qt::transparent);
-            p.fillRect(0,0, tmpImage->width(), tmpImage->height(), gradient);
+            p.fillRect(0,0, tmpImage.width(), tmpImage.height(), gradient);
 
             p.end();
-       tmpImage->save(p_image,"png");
+       tmpImage.save(p_image,"png");
        set_image(p_image,p_emote_comment);
 
     } else {
