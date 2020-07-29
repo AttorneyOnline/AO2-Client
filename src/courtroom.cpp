@@ -1,4 +1,4 @@
-﻿#include "courtroom.h"
+#include "courtroom.h"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -1264,6 +1264,9 @@ void Courtroom::update_character(int p_cid)
   else
     ui_custom_objection->hide();
 
+  if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
+                   // to find one
+    ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
@@ -1295,6 +1298,25 @@ void Courtroom::enter_courtroom()
 
   list_music();
   list_areas();
+
+  switch (
+      objection_state) // no need to reset these as it was done in set_widgets()
+  {
+  case 1:
+    ui_hold_it->set_image("holdit_selected");
+    break;
+  case 2:
+    ui_objection->set_image("objection_selected");
+    break;
+  case 3:
+    ui_take_that->set_image("takethat_selected");
+    break;
+  case 4:
+    ui_custom_objection->set_image("custom_selected");
+    break;
+  default:
+    break;
+  }
 
   music_player->set_volume(ui_music_slider->value(), 0); // set music
   // Set the ambience and other misc. music layers
@@ -3223,7 +3245,9 @@ void Courtroom::on_ooc_return_pressed()
     if (ok) {
       if (whom > -1) {
         other_charid = whom;
-        QString msg = tr("You will now pair up with %1 if they also choose your character in return.").arg(char_list.at(whom).name);
+        QString msg = tr("You will now pair up with %1 if they also choose "
+                         "your character in return.")
+                          .arg(char_list.at(whom).name);
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
@@ -3371,8 +3395,8 @@ void Courtroom::on_ooc_return_pressed()
     QString casestatus = casefile.value("status", "").value<QString>();
 
     if (!caseauth.isEmpty())
-      append_server_chatmessage(tr("CLIENT"), tr("Case made by %1.").arg(caseauth),
-                                "1");
+      append_server_chatmessage(tr("CLIENT"),
+                                tr("Case made by %1.").arg(caseauth), "1");
     if (!casedoc.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
                                               "#/doc " + casedoc + "#%"));

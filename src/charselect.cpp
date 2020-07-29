@@ -144,8 +144,6 @@ void Courtroom::char_clicked(int n_char)
     update_character(n_char);
 
   enter_courtroom();
-
-  ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
