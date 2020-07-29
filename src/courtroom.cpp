@@ -381,8 +381,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this,
           SLOT(on_music_search_edited(QString)));
-  connect(ui_music_search, SIGNAL(returnPressed()), this,
-          SLOT(on_music_search_keypr()));
 
   connect(ui_witness_testimony, SIGNAL(clicked()), this,
           SLOT(on_witness_testimony_clicked()));
@@ -3605,12 +3603,6 @@ void Courtroom::on_music_search_edited(QString p_text)
         item->setHidden(false);
       }
     }
-  }
-}
-void Courtroom::on_music_search_keypr()
-{
-  if (ui_music_search->text() == "" && !ui_music_list->isHidden()) {
-    ui_music_list->collapseAll(); // quick shortcut to collapse the whole list
   }
 }
 

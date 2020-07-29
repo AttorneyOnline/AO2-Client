@@ -666,7 +666,6 @@ private slots:
 
   void on_ooc_return_pressed();
 
-  void on_music_search_keypr();
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_music_list_context_menu_requested(const QPoint &pos);
