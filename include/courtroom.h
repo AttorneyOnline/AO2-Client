@@ -221,7 +221,7 @@ public:
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", QString action = "");
+  void append_ic_text(QString p_text, QString p_name = "", QString action = "", int color = 0);
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -666,6 +666,7 @@ private slots:
 
   void on_ooc_return_pressed();
 
+  void on_music_search_return_pressed();
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_music_list_context_menu_requested(const QPoint &pos);

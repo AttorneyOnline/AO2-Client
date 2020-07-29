@@ -324,6 +324,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_effects_dropdown, SIGNAL(customContextMenuRequested(QPoint)), this,
           SLOT(on_effects_context_menu_requested(QPoint)));
 
+  connect(ui_music_search, SIGNAL(returnPressed()), this,
+          SLOT(on_music_search_return_pressed()));
   connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this,
           SLOT(on_mute_list_clicked(QModelIndex)));
 
@@ -1829,7 +1831,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
 
   chatlogpiece *temp =
-      new chatlogpiece(f_charname, f_showname, m_chatmessage[MESSAGE], false);
+      new chatlogpiece(f_charname, f_showname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
   ic_chatlog_history.append(*temp);
   ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
@@ -1838,7 +1840,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ic_chatlog_history.removeFirst();
   }
 
-  append_ic_text(m_chatmessage[MESSAGE], f_showname);
+  append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
+
+  int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
@@ -2206,8 +2210,6 @@ void Courtroom::play_char_sfx(QString sfx_name)
 
 void Courtroom::handle_chatmessage_3()
 {
-  start_chat_ticking();
-
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
 
@@ -2287,6 +2289,8 @@ void Courtroom::handle_chatmessage_3()
       break;
     }
   }
+
+  start_chat_ticking();
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
@@ -2532,7 +2536,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
   return p_text_escaped;
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action)
+void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action, int color)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2545,7 +2549,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action)
 
   if (p_action == "")
     p_text = filter_ic_text(p_text, ao_app->is_colorlog_enabled(), -1,
-                            m_chatmessage[TEXT_COLOR].toInt());
+                            color);
 
   if (log_goes_downwards) {
     const bool is_scrolled_down =
@@ -3130,7 +3134,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     if (!mute_map.value(n_char)) {
-      chatlogpiece *temp = new chatlogpiece(str_char, str_show, f_song, true);
+      chatlogpiece *temp = new chatlogpiece(str_char, str_show, f_song, true, m_chatmessage[TEXT_COLOR].toInt());
       ic_chatlog_history.append(*temp);
       ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
@@ -3603,6 +3607,13 @@ void Courtroom::on_music_search_edited(QString p_text)
         item->setHidden(false);
       }
     }
+  }
+}
+
+void Courtroom::on_music_search_return_pressed()
+{
+  if (ui_music_search->text() == "") {
+    ui_music_list->collapseAll();
   }
 }
 
@@ -4580,14 +4591,14 @@ void Courtroom::on_showname_enable_clicked()
         append_ic_text(item.get_message(), item.get_showname(),
                        tr("has played a song"));
       else
-        append_ic_text(item.get_message(), item.get_showname());
+        append_ic_text(item.get_message(), item.get_showname(), "", item.get_chat_color());
     }
     else {
       if (item.is_song())
         append_ic_text(item.get_message(), item.get_name(),
                        tr("has played a song"));
       else
-        append_ic_text(item.get_message(), item.get_name());
+        append_ic_text(item.get_message(), item.get_name(), "", item.get_chat_color());
     }
   }
 
