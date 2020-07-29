@@ -38,7 +38,7 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
         return;
       }
 
-      QImage tmpImage = QImage(tmp_p_image);
+      QImage tmpImage(tmp_p_image);
       QPoint p1, p2;
       p2.setY(tmpImage.height());
 
