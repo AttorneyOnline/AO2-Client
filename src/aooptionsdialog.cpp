@@ -699,13 +699,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                               ui_casing_cm_cases_textbox);
   //Check whether mass logging is enabled
   row += 1;
-  ui_casing_log_lbl = new QLabel(ui_casing_widget);
-  ui_casing_log_lbl->setText(tr("Automatic Logging:"));
-  ui_casing_log_lbl->setToolTip(
+  ui_log_lbl = new QLabel(ui_casing_widget);
+  ui_log_lbl->setText(tr("Automatic Logging:"));
+  ui_log_lbl->setToolTip(
       tr("If checked, all logs will be automatically written in the "
          "/logs folder."));
 
-  ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_log_lbl);
+  ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_log_lbl);
 
   ui_casing_log_cb = new QCheckBox(ui_casing_widget);
   ui_casing_log_cb->setChecked(ao_app->get_auto_logging_enabled());

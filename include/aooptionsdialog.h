@@ -131,7 +131,7 @@ private:
   QCheckBox *ui_casing_cm_cb;
   QLabel *ui_casing_cm_cases_lbl;
   QLineEdit *ui_casing_cm_cases_textbox;
-  QLabel *ui_casing_log_lbl;
+  QLabel *ui_log_lbl;
   QCheckBox *ui_casing_log_cb;
 
   bool needs_default_audiodev();
