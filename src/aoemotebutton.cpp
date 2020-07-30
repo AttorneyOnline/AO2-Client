@@ -23,8 +23,7 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
         "\") 0 0 0 0 stretch stretch; }"
         "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
   }
-  else if (p_image.contains("_on") &&
-          file_exists(QString(p_image).replace("_on", "_off"))) {
+  else if (p_image.contains("_on")) {
     // Since we can't detect a button, lets just generate one!
     QString tmp_p_image = p_image;
     // if neither buttons exist then just throw some text
