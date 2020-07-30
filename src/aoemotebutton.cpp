@@ -27,16 +27,6 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
           file_exists(QString(p_image).replace("_on", "_off"))) {
     // Since we can't detect a button, lets just generate one!
     QString tmp_p_image = p_image;
-    // if neither buttons exist then just throw some text
-    if (!file_exists(tmp_p_image.replace("_off", "_on")) &&
-        !file_exists(tmp_p_image.replace("_on", "_off"))) {
-      this->setText(p_emote_comment);
-      this->setStyleSheet(
-          "QPushButton { border-image: url(); }"
-          "QToolTip { background-image: url(); color: #000000; "
-          "background-color: #ffffff; border: 0px; }");
-      return;
-    }
 
     QImage tmpImage(tmp_p_image);
     QPoint p1, p2;
