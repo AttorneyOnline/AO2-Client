@@ -2,7 +2,7 @@
 #define AOEMOTEBUTTON_H
 
 #include "aoapplication.h"
-
+#include <QPainter>
 #include <QDebug>
 #include <QPushButton>
 
@@ -24,6 +24,7 @@ private:
   AOApplication *ao_app;
 
   int m_id = 0;
+
 
 signals:
   void emote_clicked(int p_id);
