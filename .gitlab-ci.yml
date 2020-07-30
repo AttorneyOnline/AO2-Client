@@ -121,9 +121,7 @@ build windows i686:
 # Base folder
 .deploy_base: &deploy_base |
     mkdir base
-    mkdir base/themes
-    cp -a ../base/themes/default base/themes/
-    cp -a ../base/serverlist.txt base/serverlist.sample.txt
+    cp -a ../base/ base/
 
 # Miscellaneous files
 .deploy_misc: &deploy_misc |
