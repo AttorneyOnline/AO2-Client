@@ -2541,7 +2541,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
       p_text_escaped.insert(check_pos_escaped, f_character);
       check_pos_escaped += f_char_length;
     }
-    check_pos += 1;
+    check_pos += f_char_length;
   }
 
   if (!ic_color_stack.empty() && html) {
