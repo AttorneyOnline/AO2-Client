@@ -2326,7 +2326,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
 
   int check_pos = 0;
   int check_pos_escaped = 0;
-  bool ic_next_is_not_special = false;
+  bool parse_escape_seq = false;
   std::stack<int> ic_color_stack;
 
   // Text alignment shenanigans. Could make a dropdown for this later, too!
@@ -2375,6 +2375,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
     QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
     QString f_character;
     int f_char_length;
+    int f_char_bytes;
 
     tbf.toNextBoundary();
 
@@ -2396,18 +2397,20 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
     //      }
     //    }
 
-    if (html)
-      f_character = f_character.toHtmlEscaped();
+    f_char_bytes = f_char_length = f_character.length();
 
-    f_char_length = f_character.length();
+    if (html) {
+      f_character = f_character.toHtmlEscaped();
+      f_char_length = f_character.length();
+    }
 
     bool color_update = false;
     bool is_end = false;
     bool skip = false;
 
-    if (!ic_next_is_not_special) {
+    if (!parse_escape_seq) {
       if (f_character == "\\") {
-        ic_next_is_not_special = true;
+        parse_escape_seq = true;
         skip = true;
       }
       // Nothing related to colors here
@@ -2469,7 +2472,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
         }
         // Parse the newest color stack
         if (color_update && (target_pos <= -1 || check_pos < target_pos)) {
-          if (!ic_next_is_not_special) {
+          if (!parse_escape_seq) {
             QString appendage = "</font>";
 
             if (!ic_color_stack.empty())
@@ -2509,7 +2512,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
       if (f_character == "s" || f_character == "f") // screenshake/flash
         skip = true;
 
-      ic_next_is_not_special = false;
+      parse_escape_seq = false;
     }
 
     // Make all chars we're not supposed to see invisible
@@ -2541,7 +2544,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
       p_text_escaped.insert(check_pos_escaped, f_character);
       check_pos_escaped += f_char_length;
     }
-    check_pos += f_char_length;
+    check_pos += f_char_bytes;
   }
 
   if (!ic_color_stack.empty() && html) {
