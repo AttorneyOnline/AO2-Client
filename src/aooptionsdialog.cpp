@@ -699,6 +699,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole,
                               ui_casing_cm_cases_textbox);
+  //Check whether mass logging is enabled
+  row += 1;
+  ui_log_lbl = new QLabel(ui_casing_widget);
+  ui_log_lbl->setText(tr("Automatic Logging:"));
+  ui_log_lbl->setToolTip(
+      tr("If checked, all logs will be automatically written in the "
+         "/logs folder."));
+
+  ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_log_lbl);
+
+  ui_log_cb = new QCheckBox(ui_casing_widget);
+  ui_log_cb->setChecked(ao_app->get_auto_logging_enabled());
+
+  ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_log_cb);
 
   // When we're done, we should continue the updates!
   setUpdatesEnabled(true);
@@ -725,7 +739,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("stickyeffects", ui_stickyeffects_cb->isChecked());
   configini->setValue("stickypres", ui_stickypres_cb->isChecked());
   configini->setValue("customchat", ui_customchat_cb->isChecked());
-
+  configini->setValue("automatic_logging_enabled", ui_log_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |

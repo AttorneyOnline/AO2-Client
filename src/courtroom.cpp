@@ -1870,7 +1870,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   chatlogpiece *temp =
       new chatlogpiece(f_charname, f_showname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
   ic_chatlog_history.append(*temp);
-  ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
+  if (ao_app->get_auto_logging_enabled())
+    ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
   while (ic_chatlog_history.size() > log_maximum_blocks &&
          log_maximum_blocks > 0) {
@@ -3175,7 +3176,8 @@ void Courtroom::handle_song(QStringList *p_contents)
     if (!mute_map.value(n_char)) {
       chatlogpiece *temp = new chatlogpiece(str_char, str_show, f_song, true, m_chatmessage[TEXT_COLOR].toInt());
       ic_chatlog_history.append(*temp);
-      ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
+      if (ao_app->get_auto_logging_enabled())
+        ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
 
       while (ic_chatlog_history.size() > log_maximum_blocks &&
              log_maximum_blocks > 0) {
