@@ -937,33 +937,48 @@ void Courtroom::set_widgets()
   refresh_evidence();
 }
 
-void Courtroom::set_fonts()
+void Courtroom::set_fonts(QString p_char)
 {
-  set_font(ui_vp_showname, "", "showname");
-  set_font(ui_vp_message, "", "message");
-  set_font(ui_ic_chatlog, "", "ic_chatlog");
-  set_font(ui_ms_chatlog, "", "ms_chatlog");
-  set_font(ui_server_chatlog, "", "server_chatlog");
-  set_font(ui_music_list, "", "music_list");
-  set_font(ui_area_list, "", "area_list");
-  set_font(ui_music_name, "", "music_name");
+  set_font(ui_vp_showname, "", "showname", p_char);
+  set_font(ui_vp_message, "", "message", p_char);
+  set_font(ui_ic_chatlog, "", "ic_chatlog", p_char);
+  set_font(ui_ms_chatlog, "", "ms_chatlog", p_char);
+  set_font(ui_server_chatlog, "", "server_chatlog", p_char);
+  set_font(ui_music_list, "", "music_list", p_char);
+  set_font(ui_area_list, "", "area_list", p_char);
+  set_font(ui_music_name, "", "music_name", p_char);
 
   set_dropdowns();
 }
 
 void Courtroom::set_font(QWidget *widget, QString class_name,
-                         QString p_identifier)
+                         QString p_identifier, QString p_char,
+                         QString font_name, int f_pointsize)
 {
   QString design_file = "courtroom_fonts.ini";
-  int f_pointsize = ao_app->get_font_size(p_identifier, design_file);
-  QString font_name =
-      ao_app->get_font_name(p_identifier + "_font", design_file);
-  QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
-  bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) ==
+  if (f_pointsize <= 0)
+    f_pointsize = ao_app->get_design_element(p_identifier, design_file, p_char).toInt();
+  if (font_name == "")
+    font_name =
+      ao_app->get_design_element(p_identifier + "_font", design_file, p_char);
+  QString f_color_result = ao_app->get_design_element(p_identifier + "_color", design_file, p_char);
+  QColor f_color(0, 0, 0);
+  if (f_color_result != "")
+  {
+    QStringList color_list = f_color_result.split(",");
+
+    if (color_list.size() >= 3)
+    {
+      f_color.setRed(color_list.at(0).toInt());
+      f_color.setGreen(color_list.at(1).toInt());
+      f_color.setBlue(color_list.at(2).toInt());
+    }
+  }
+  bool bold = ao_app->get_design_element(p_identifier + "_bold", design_file, p_char) ==
               1; // is the font bold or not?
   bool antialias =
-      ao_app->get_font_size(p_identifier + "_sharp", design_file) !=
-      1; // is the font anti-aliased or not?
+      ao_app->get_design_element(p_identifier + "_sharp", design_file, p_char) !=
+      "1"; // is the font anti-aliased or not?
 
   this->set_qfont(widget, class_name,
                   get_qfont(font_name, f_pointsize, antialias), f_color, bold);
@@ -1946,6 +1961,9 @@ void Courtroom::handle_chatmessage_2()
     ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
 
+  QString customchar;
+  if (ao_app->is_customchat_enabled())
+    customchar = m_chatmessage[CHAR_NAME];
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
     ui_vp_chatbox->set_image("chatblank");
@@ -1963,10 +1981,7 @@ void Courtroom::handle_chatmessage_2()
     int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
 #endif
     QString chatbox_path = ao_app->get_theme_path("chat");
-    QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
-    QString customchar;
-    if (ao_app->is_customchat_enabled())
-      customchar = m_chatmessage[CHAR_NAME];
+    QString chatbox = ao_app->get_chat(customchar);
 
     if (chatbox != "" && ao_app->is_customchat_enabled()) {
       chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
@@ -2028,6 +2043,8 @@ void Courtroom::handle_chatmessage_2()
       }
       else
         ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
+
+      set_font(ui_vp_showname, "", "showname", customchar);
     }
     else
     {
@@ -2038,25 +2055,16 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_message->hide();
   ui_vp_chatbox->hide();
 
-  // todo: put this in its own function or update
-  QString design_file = "courtroom_fonts.ini";
-  int f_pointsize = ao_app->get_font_size("message", design_file);
-  QString font_name = ao_app->get_font_name("message_font", design_file);
-  QColor f_color = ao_app->get_color("message_color", design_file);
-  bool bold = ao_app->get_font_size("message_bold", design_file) ==
-              1; // is the font bold or not?
-  bool antialias = ao_app->get_font_size("message_sharp", design_file) !=
-                   1; // is the font anti-aliased or not?
-
+  QString font_name;
   QString chatfont = ao_app->get_chat_font(m_chatmessage[CHAR_NAME]);
   if (chatfont != "")
     font_name = chatfont;
 
+  int f_pointsize = 0;
   int chatsize = ao_app->get_chat_size(m_chatmessage[CHAR_NAME]);
-  if (chatsize != -1)
+  if (chatsize > 0)
     f_pointsize = chatsize;
-  this->set_qfont(ui_vp_message, "",
-                  get_qfont(font_name, f_pointsize, antialias), f_color, bold);
+  set_font(ui_vp_message, "", "message", customchar, font_name, f_pointsize);
 
   set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
