@@ -24,14 +24,14 @@ void AOScene::set_image(QString p_image)
     return;
   }
 
-  if (file_exists(background_path) && background_path == last_image)
-    return;
+  if (!file_exists(background_path) || background_path != last_image)
+  {
+    this->clear();
+    this->setMovie(nullptr);
 
-  this->clear();
-  this->setMovie(nullptr);
-
-  m_movie->stop();
-  m_movie->setFileName(background_path);
+    m_movie->stop();
+    m_movie->setFileName(background_path);
+  }
 
   if (m_movie->isValid() && m_movie->frameCount() > 1) {
     m_movie->jumpToNextFrame();
@@ -43,9 +43,12 @@ void AOScene::set_image(QString p_image)
 
     m_movie->setScaledSize(QSize(n_w, n_h));
     this->resize(m_movie->scaledSize());
-    this->setMovie(m_movie);
+    if (!file_exists(background_path) || background_path != last_image)
+    {
+      this->setMovie(m_movie);
+      m_movie->start();
+    }
     QLabel::move(x + (f_w - n_w) / 2, y + (f_h - n_h) / 2); // Center
-    m_movie->start();
   }
   else {
     QPixmap background(background_path);
