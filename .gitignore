@@ -20,6 +20,8 @@ debug/
 base/background
 base/characters
 base/sounds
+base/callwords.ini
+base/config.ini
 
 .qmake.stash
 
