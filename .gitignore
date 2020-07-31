@@ -17,6 +17,9 @@ bins/
 build/
 release/
 debug/
+base/background
+base/characters
+base/sounds
 
 .qmake.stash
 
