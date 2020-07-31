@@ -16,8 +16,8 @@ public:
   QWidget *m_parent;
   AOApplication *ao_app;
 
-  void set_image(QString p_image);
-  void set_image_from_path(QString p_path);
+  bool set_image(QString p_image);
+  bool set_chatbox(QString p_path);
   void set_size_and_pos(QString identifier);
 };
 

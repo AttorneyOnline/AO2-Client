@@ -9,7 +9,7 @@ base_override.h
 .DS_Store
 
 base-full/
-base/
+logs/
 bass.lib
 
 bin/
@@ -17,6 +17,11 @@ bins/
 build/
 release/
 debug/
+base/background
+base/characters
+base/sounds
+base/callwords.ini
+base/config.ini
 
 .qmake.stash
 

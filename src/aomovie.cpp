@@ -11,70 +11,52 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   m_movie = new QMovie();
 
   this->setMovie(m_movie);
+
   timer = new QTimer(this);
   timer->setTimerType(Qt::PreciseTimer);
   timer->setSingleShot(true);
+
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
   connect(timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 
 void AOMovie::set_play_once(bool p_play_once) { play_once = p_play_once; }
-void AOMovie::start_timer(int delay) { timer->start(delay); }
 
-void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme,
+void AOMovie::play(QString p_image, QString p_char, QString p_custom_theme,
                    int duration)
 {
-
   m_movie->stop();
-  // this->timer_done();
-  QString shout_path = p_gif;
-  QList<QString> pathlist;
 
-  if (ao_app->get_character_path(p_char, p_gif)
-          .contains(
-              "custom_objections")) // checks if the file is located within the
-                                    // folder of custom objections
-    pathlist << ao_app->get_character_path(
-        p_char,
-        p_gif); // get_image_suffix is unecessery as it is already given.
-  else if (p_gif == "custom")
-    pathlist << ao_app->get_image_suffix(
-        ao_app->get_character_path(p_char, p_gif));
-  else
-    pathlist << ao_app->get_image_suffix(
-        ao_app->get_character_path(p_char, p_gif + "_bubble"));
+  QString shout_path = p_image;
+  if (!file_exists(p_image)) {
+    QList<QString> pathlist;
 
-  QString misc_path = ao_app->get_base_path() + "misc/" + p_custom_theme + "/" +
-                      p_gif + "_bubble.gif";
-  QString custom_theme_path =
-      ao_app->get_custom_theme_path(p_custom_theme, p_gif + ".gif");
-  QString theme_path = ao_app->get_theme_path(p_gif + ".gif");
-  QString default_theme_path = ao_app->get_default_theme_path(p_gif + ".gif");
-  QString placeholder_path = ao_app->get_theme_path("placeholder.gif");
-  QString default_placeholder_path =
-      ao_app->get_default_theme_path("placeholder.gif");
+    pathlist = {
+        ao_app->get_image_suffix(
+            ao_app->get_character_path(p_char, p_image)), // Character folder
+        ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
+                                 p_custom_theme + "/" + p_image), // Misc path
+        ao_app->get_image_suffix(ao_app->get_custom_theme_path(
+            p_custom_theme, p_image)), // Custom theme path
+        ao_app->get_image_suffix(ao_app->get_theme_path(p_image)), // Theme path
+        ao_app->get_image_suffix(
+            ao_app->get_default_theme_path(p_image)), // Default theme path
+        ao_app->get_image_suffix(
+            ao_app->get_theme_path("placeholder")), // Placeholder path
+        ao_app->get_image_suffix(ao_app->get_default_theme_path(
+            "placeholder")), // Default placeholder path
+    };
 
-  pathlist << ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
-                                       p_custom_theme + "/" + p_gif + "_bubble")
-           << // Misc path
-      ao_app->get_image_suffix(
-          ao_app->get_custom_theme_path(p_custom_theme, p_gif))
-           << // Custom theme path
-      ao_app->get_image_suffix(ao_app->get_theme_path(p_gif)) << // Theme path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(p_gif))
-           << // Default theme path
-      ao_app->get_image_suffix(ao_app->get_theme_path("placeholder"))
-           << // Placeholder path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          "placeholder")); // Default placeholder path
-
-  for (QString path : pathlist) {
-    if (file_exists(path)) {
-      shout_path = path;
-      break;
+    for (QString path : pathlist) {
+      if (file_exists(path)) {
+        shout_path = path;
+        break;
+      }
     }
   }
+
   m_movie->setFileName(shout_path);
+
   if (m_movie->loopCount() == 0)
     play_once = true;
 
@@ -93,8 +75,8 @@ void AOMovie::stop()
 void AOMovie::frame_change(int n_frame)
 {
   // If it's a "static movie" (only one frame - png image), we can't change
-  // frames - ignore this function (use timer instead). If the frame didn't
-  // reach the last frame or the movie is continuous, don't stop the movie.
+  // frames - ignore this function (use timer instead). If the frame didn't reach
+  // the last frame or the movie is continuous, don't stop the movie.
   if (m_movie->frameCount() == 0 || n_frame < (m_movie->frameCount() - 1) ||
       !play_once)
     return;
@@ -105,6 +87,7 @@ void AOMovie::frame_change(int n_frame)
 void AOMovie::timer_done()
 {
   this->stop();
+  // signal connected to courtroom object, let it figure out what to do
   done();
 }
 

@@ -62,15 +62,12 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent,
   ui_juror_needed->setText(tr("Jurors needed"));
   ui_steno_needed = new QCheckBox(this);
   ui_steno_needed->setText(tr("Stenographer needed"));
-  ui_witness_needed = new QCheckBox(this);
-  ui_witness_needed->setText(tr("Witness needed"));
 
   ui_form_layout->setWidget(1, QFormLayout::FieldRole, ui_defense_needed);
   ui_form_layout->setWidget(2, QFormLayout::FieldRole, ui_prosecutor_needed);
   ui_form_layout->setWidget(3, QFormLayout::FieldRole, ui_judge_needed);
   ui_form_layout->setWidget(4, QFormLayout::FieldRole, ui_juror_needed);
   ui_form_layout->setWidget(5, QFormLayout::FieldRole, ui_steno_needed);
-  ui_form_layout->setWidget(6, QFormLayout::FieldRole, ui_witness_needed);
 
   setUpdatesEnabled(true);
 }
@@ -80,8 +77,7 @@ void AOCaseAnnouncerDialog::ok_pressed()
   court->announce_case(
       ui_case_title_textbox->text(), ui_defense_needed->isChecked(),
       ui_prosecutor_needed->isChecked(), ui_judge_needed->isChecked(),
-      ui_juror_needed->isChecked(), ui_steno_needed->isChecked(),
-      ui_witness_needed->isChecked());
+      ui_juror_needed->isChecked(), ui_steno_needed->isChecked());
 
   done(0);
 }

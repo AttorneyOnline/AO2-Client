@@ -5,54 +5,6 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 
-class AOCharSelectGenerationThreading : public QRunnable {
-public:
-  Courtroom *thisCourtroom;
-  int char_num;
-  AOCharButton *char_button;
-  AOCharSelectGenerationThreading(Courtroom *my_courtroom, int character_number)
-  {
-    thisCourtroom = my_courtroom;
-    char_num = character_number;
-  }
-  void run()
-  {
-    // we take the button we are supposed to mess with, and not whatever comes
-    // first
-    AOCharButton *thisCharacterButton =
-        thisCourtroom->ui_char_button_list.at(char_num);
-    thisCharacterButton->reset();
-    thisCharacterButton->hide();
-    thisCharacterButton->set_image(thisCourtroom->char_list.at(char_num).name);
-
-    thisCourtroom->connect(thisCharacterButton, SIGNAL(clicked()),
-                           thisCourtroom->char_button_mapper, SLOT(map()));
-    thisCourtroom->char_button_mapper->setMapping(thisCharacterButton,
-                                                  char_num);
-  }
-};
-
-void AOCharSelectFilter(Courtroom *thisCourtroom, int char_num)
-{
-  AOCharButton *current_char = thisCourtroom->ui_char_button_list.at(char_num);
-
-  if (!thisCourtroom->ui_char_taken->isChecked() &&
-      thisCourtroom->char_list.at(char_num).taken)
-    return;
-
-  if (!thisCourtroom->char_list.at(char_num).name.contains(
-          thisCourtroom->ui_char_search->text(), Qt::CaseInsensitive))
-    return;
-
-  // We only really need to update the fact that a character is taken
-  // for the buttons that actually appear.
-  // You'd also update the passwordedness and etc. here later.
-  current_char->reset();
-  current_char->set_taken(thisCourtroom->char_list.at(char_num).taken);
-
-  thisCourtroom->ui_char_button_list_filtered.append(current_char);
-}
-
 void Courtroom::construct_char_select()
 {
   ui_char_select_background = new AOImage(this, ao_app);
@@ -92,8 +44,6 @@ void Courtroom::construct_char_select()
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
-  connect(char_button_mapper, SIGNAL(mapped(int)), this,
-          SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this,
           SLOT(on_back_to_lobby_clicked()));
 
@@ -120,15 +70,15 @@ void Courtroom::set_char_select()
       ao_app->get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0) {
-    qDebug()
-        << "W: did not find courtroom width or height in courtroom_design.ini!";
+    qDebug() << "W: did not find char_select width or height in "
+                "courtroom_design.ini!";
     this->resize(714, 668);
   }
   else
     this->resize(f_charselect.width, f_charselect.height);
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
-  ui_char_select_background->set_image("charselect_background.png");
+  ui_char_select_background->set_image("charselect_background");
 
   filter_character_list();
 
@@ -173,28 +123,33 @@ void Courtroom::set_char_select_page()
 
 void Courtroom::char_clicked(int n_char)
 {
-  QString char_ini_path =
-      ao_app->get_character_path(char_list.at(n_char).name, "char.ini");
+  if (n_char != -1)
+  {
+    QString char_ini_path =
+        ao_app->get_character_path(char_list.at(n_char).name, "char.ini");
 
-  qDebug() << "char_ini_path" << char_ini_path;
+    qDebug() << "char_ini_path" << char_ini_path;
 
-  if (!file_exists(char_ini_path)) {
-    call_notice(tr("Could not find %1").arg(char_ini_path, 1));
-    return;
+    if (!file_exists(char_ini_path)) {
+      call_notice("Could not find " + char_ini_path);
+      return;
+    }
   }
 
-  if (n_char == m_cid) {
-    enter_courtroom(m_cid);
-  }
-  else {
+  if (n_char != m_cid) {
     ao_app->send_server_packet(
         new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(
         new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" +
                      QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
+  else
+    update_character(n_char);
 
-  ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
+  enter_courtroom();
+
+  if (n_char != -1)
+    ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
@@ -250,27 +205,40 @@ void Courtroom::character_loading_finished()
   }
 
   // First, we'll make all the character buttons in the very beginning.
-  // Since we can't trust what will happen during the multi threading process,
-  // we assign the buttons their locations in the list according to the
-  // character list.
-  for (int n = 0; n < char_list.size(); n++) {
-    AOCharButton *characterButton =
-        new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
-    ui_char_button_list.append(characterButton);
-  }
-
   // We also hide them all, so they can't be accidentally clicked.
   // Later on, we'll be revealing buttons as we need them.
   for (int n = 0; n < char_list.size(); n++) {
-    AOCharSelectGenerationThreading *char_generate =
-        new AOCharSelectGenerationThreading(this, n);
-    QThreadPool::globalInstance()->start(char_generate);
-    if (QThreadPool::globalInstance()->activeThreadCount() ==
-        QThreadPool::globalInstance()->maxThreadCount()) {
-      QThreadPool::globalInstance()->waitForDone();
+    AOCharButton *char_button =
+        new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+    char_button->reset();
+    char_button->hide();
+    char_button->set_image(char_list.at(n).name);
+    char_button->setToolTip(char_list.at(n).name);
+    ui_char_button_list.append(char_button);
+
+    connect(char_button, &AOCharButton::clicked,
+            [this, n]() { this->char_clicked(n); });
+
+    // This part here serves as a way of showing to the player that the game is
+    // still running, it is just loading the pictures of the characters.
+    if (ao_app->lobby_constructed) {
+      ao_app->generated_chars++;
+      int total_loading_size = ao_app->char_list_size * 2 +
+                               ao_app->evidence_list_size +
+                               ao_app->music_list_size;
+      int loading_value =
+          int(((ao_app->loaded_chars + ao_app->generated_chars +
+                ao_app->loaded_music + ao_app->loaded_evidence) /
+               static_cast<double>(total_loading_size)) *
+              100);
+      ao_app->w_lobby->set_loading_value(loading_value);
+      ao_app->w_lobby->set_loading_text(
+          tr("Generating chars:\n%1/%2")
+              .arg(QString::number(ao_app->generated_chars))
+              .arg(QString::number(ao_app->char_list_size)));
     }
   }
-  QThreadPool::globalInstance()->waitForDone();
+
   filter_character_list();
 }
 
@@ -278,7 +246,27 @@ void Courtroom::filter_character_list()
 {
   ui_char_button_list_filtered.clear();
   for (int i = 0; i < char_list.size(); i++) {
-    AOCharSelectFilter(this, i);
+    AOCharButton *current_char = ui_char_button_list.at(i);
+
+    // It seems passwording characters is unimplemented yet?
+    // Until then, this will stay here, I suppose.
+    // if (ui_char_passworded->isChecked() && character_is_passworded??)
+    //    continue;
+
+    if (!ui_char_taken->isChecked() && char_list.at(i).taken)
+      continue;
+
+    if (!char_list.at(i).name.contains(ui_char_search->text(),
+                                       Qt::CaseInsensitive))
+      continue;
+
+    // We only really need to update the fact that a character is taken
+    // for the buttons that actually appear.
+    // You'd also update the passwordedness and etc. here later.
+    current_char->reset();
+    current_char->set_taken(char_list.at(i).taken);
+
+    ui_char_button_list_filtered.append(current_char);
   }
 
   current_char_page = 0;
