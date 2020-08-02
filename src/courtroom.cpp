@@ -907,7 +907,6 @@ void Courtroom::set_widgets()
       tr("Change the text color of the spoken message.\n"
          "You can also select a part of your currently typed message and use "
          "the dropdown to change its color!"));
-  set_text_color_dropdown();
 
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
@@ -1236,6 +1235,8 @@ void Courtroom::update_character(int p_cid)
 
   current_char = f_char;
   current_side = ao_app->get_char_side(current_char);
+
+  set_text_color_dropdown();
 
   current_emote_page = 0;
   current_emote = 0;
