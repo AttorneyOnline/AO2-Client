@@ -907,8 +907,6 @@ void Courtroom::set_widgets()
       tr("Change the text color of the spoken message.\n"
          "You can also select a part of your currently typed message and use "
          "the dropdown to change its color!"));
-  // Not calling this here crashes the client at
-  // Courtroom::filter_ic_text if html is enabled
   set_text_color_dropdown();
 
   set_size_and_pos(ui_music_slider, "music_slider");
@@ -1992,6 +1990,14 @@ void Courtroom::handle_chatmessage_2()
       chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
       if (!ui_vp_chatbox->set_chatbox(chatbox_path))
         ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+    }
+
+    // Load the colors in case it's using a custom chatbox with custom colors.
+    // Or reload the default ones in case it's not using custom colors
+    color_rgb_list.clear();
+    for (int c = 0; c < max_colors; ++c) {
+      QColor color = ao_app->get_chat_color("c" + QString::number(c), customchar);
+      color_rgb_list.append(color);
     }
 
     // This should probably be called only if any change from the last chat
