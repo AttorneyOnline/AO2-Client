@@ -907,6 +907,7 @@ void Courtroom::set_widgets()
       tr("Change the text color of the spoken message.\n"
          "You can also select a part of your currently typed message and use "
          "the dropdown to change its color!"));
+  set_text_color_dropdown(); // Not calling this here crashes the client when entering a DRO server
 
   set_size_and_pos(ui_music_slider, "music_slider");
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
