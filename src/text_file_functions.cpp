@@ -435,7 +435,7 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 
 QString AOApplication::get_chat_markdown(QString p_identifier, QString p_chat)
 {
-  QString design_ini_path = get_base_path() + "misc/" + p_chat + "/config.ini";
+  QString design_ini_path = get_base_path() + "misc/" + get_chat(p_chat) + "/config.ini";
   QString default_path = get_base_path() + "misc/default/config.ini";
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
