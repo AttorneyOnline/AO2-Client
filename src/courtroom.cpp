@@ -636,6 +636,7 @@ void Courtroom::set_widgets()
   }
 
   ui_music_display->play("music_display");
+  ui_music_display->set_play_once(false);
 
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
