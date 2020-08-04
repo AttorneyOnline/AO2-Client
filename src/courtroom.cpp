@@ -2914,6 +2914,12 @@ void Courtroom::chat_tick()
     next_character_is_not_special = false;
   }
 
+  // Keep the speed at bay.
+  if (current_display_speed < 0)
+    current_display_speed = 0;
+  else if (current_display_speed > 6)
+    current_display_speed = 6;
+
   if ((message_display_speed[current_display_speed] <= 0 &&
        tick_pos < f_message.size() - 1) ||
       formatting_char) {
@@ -2941,12 +2947,6 @@ void Courtroom::chat_tick()
     real_tick_pos += f_char_length;
 
     ui_vp_message->ensureCursorVisible();
-
-    // Keep the speed at bay.
-    if (current_display_speed < 0)
-      current_display_speed = 0;
-    else if (current_display_speed > 6)
-      current_display_speed = 6;
 
     // Blip player and real tick pos ticker
     if (!formatting_char && (f_character != ' ' || blank_blip)) {
