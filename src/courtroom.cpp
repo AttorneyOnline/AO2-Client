@@ -2814,6 +2814,10 @@ void Courtroom::chat_tick()
     {
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
+      if (f_custom_theme.toLower() == "default")
+      {
+        f_custom_theme = ao_app->get_char_shouts(f_char);
+      }
     }
     ui_vp_chat_arrow->play(
         "chat_arrow", f_char,
