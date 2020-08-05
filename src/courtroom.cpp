@@ -1238,6 +1238,8 @@ void Courtroom::update_character(int p_cid)
   current_char = f_char;
   current_side = ao_app->get_char_side(current_char);
 
+  set_text_color_dropdown();
+
   current_emote_page = 0;
   current_emote = 0;
 
@@ -1879,10 +1881,18 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ic_chatlog_history.removeFirst();
   }
 
-  append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
-
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
+
+  // Load the colors in case it's using a custom chatbox with custom colors.
+  // Or reload the default ones in case it's not using custom colors
+  color_rgb_list.clear();
+  for (int c = 0; c < max_colors; ++c) {
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), f_char);
+    color_rgb_list.append(color);
+  }
+
+  append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
