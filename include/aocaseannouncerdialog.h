@@ -37,7 +37,6 @@ private:
   QCheckBox *ui_judge_needed;
   QCheckBox *ui_juror_needed;
   QCheckBox *ui_steno_needed;
-  QCheckBox *ui_witness_needed;
 
 public slots:
   void ok_pressed();
