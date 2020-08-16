@@ -975,7 +975,7 @@ void Courtroom::set_font(QWidget *widget, QString class_name,
     }
   }
   bool bold = ao_app->get_design_element(p_identifier + "_bold", design_file, p_char) ==
-              1; // is the font bold or not?
+              "1"; // is the font bold or not?
   bool antialias =
       ao_app->get_design_element(p_identifier + "_sharp", design_file, p_char) !=
       "1"; // is the font anti-aliased or not?
