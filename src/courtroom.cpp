@@ -70,14 +70,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_background = new AOImage(this, ao_app);
 
-  free_brush = *new QBrush(ao_app->get_color("area_free_color", "courtroom_design.ini"));
-  lfp_brush = *new QBrush(ao_app->get_color("area_lfp_color", "courtroom_design.ini"));
-  casing_brush = *new QBrush(ao_app->get_color("area_casing_color", "courtroom_design.ini"));
-  recess_brush = *new QBrush(ao_app->get_color("area_recess_color", "courtroom_design.ini"));
-  rp_brush = *new QBrush(ao_app->get_color("area_rp_color", "courtroom_design.ini"));
-  gaming_brush = *new QBrush(ao_app->get_color("area_gaming_color", "courtroom_design.ini"));
-  locked_brush = *new QBrush(ao_app->get_color("area_locked_color", "courtroom_design.ini"));
-
   ui_viewport = new QWidget(this);
   ui_vp_background = new AOScene(ui_viewport, ao_app);
   ui_vp_speedlines = new AOMovie(ui_viewport, ao_app);
@@ -941,6 +933,14 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_spectator, "spectator");
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
                               "interact with the in-character screen."));
+
+  free_brush = *new QBrush(ao_app->get_color("area_free_color", "courtroom_design.ini"));
+  lfp_brush = *new QBrush(ao_app->get_color("area_lfp_color", "courtroom_design.ini"));
+  casing_brush = *new QBrush(ao_app->get_color("area_casing_color", "courtroom_design.ini"));
+  recess_brush = *new QBrush(ao_app->get_color("area_recess_color", "courtroom_design.ini"));
+  rp_brush = *new QBrush(ao_app->get_color("area_rp_color", "courtroom_design.ini"));
+  gaming_brush = *new QBrush(ao_app->get_color("area_gaming_color", "courtroom_design.ini"));
+  locked_brush = *new QBrush(ao_app->get_color("area_locked_color", "courtroom_design.ini"));
 
   refresh_evidence();
 }
