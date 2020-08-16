@@ -303,15 +303,19 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
 QString AOApplication::get_design_element(QString p_identifier, QString p_file,
                                           QString p_char)
 {
-  QString char_ini_path =
-      get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
+  QString char_ini_path = get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
+  QString char_ini_fallback = get_base_path() + "misc/" + get_char_name(p_char) + "/" + p_file;
   QString design_ini_path = get_theme_path(p_file);
   QString default_path = get_default_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, char_ini_path);
   if (f_result == "") {
-    f_result = read_design_ini(p_identifier, design_ini_path);
-    if (f_result == "")
-      f_result = read_design_ini(p_identifier, default_path);
+    f_result = read_design_ini(p_identifier, char_ini_fallback);
+    if(f_result == ""){
+        f_result = read_design_ini(p_identifier, design_ini_path);
+        if (f_result == ""){
+          f_result = read_design_ini(p_identifier, default_path);
+        }
+    }
   }
   return f_result;
 }
