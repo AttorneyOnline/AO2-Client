@@ -1765,19 +1765,16 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   // Instead of checking for whether a message has at least chatmessage_size
   // amount of packages, we'll check if it has at least 15.
   // That was the original chatmessage_size.
-  if (p_contents->size() < 15)
+  if (p_contents->size() < MS_MINIMUM)
     return;
 
-  for (int n_string = 0; n_string < chatmessage_size; ++n_string) {
-    // m_chatmessage[n_string] = p_contents->at(n_string);
-
+  for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
     // Note that we have added stuff that vanilla clients and servers simply
     // won't send. So now, we have to check if the thing we want even exists
     // amongst the packet's content. We also have to check if the server even
     // supports CCCC's IC features, or if it's just japing us. Also, don't
     // forget! A size 15 message will have indices from 0 to 14.
-    if (n_string < p_contents->size() &&
-        (n_string < 15 || ao_app->cccc_ic_support_enabled)) {
+    if (n_string < p_contents->size() && (n_string < MS_MINIMUM || ao_app->cccc_ic_support_enabled)) {
       m_chatmessage[n_string] = p_contents->at(n_string);
     }
     else {
@@ -1786,27 +1783,26 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
+  const bool is_spectator = (f_char_id == -1);
 
-  if (f_char_id >= 0 && f_char_id >= char_list.size())
+  if (f_char_id >= char_list.size())
     return;
-
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
-  QString f_showname;
-  if (f_char_id > -1 &&
-      (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
-    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+  QString f_displayname;
+  if (!is_spectator && (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
+    f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
   else {
-    f_showname = m_chatmessage[SHOWNAME];
+    f_displayname = m_chatmessage[SHOWNAME];
   }
 
-  if (f_showname.trimmed()
-          .isEmpty()) // Pure whitespace showname, get outta here.
-    f_showname = m_chatmessage[CHAR_NAME];
+  // If chatblank is enabled, use the character's name for logs
+  if (f_displayname.trimmed().isEmpty())
+    f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
 
-  QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
+  QString f_message = f_displayname + ": " + m_chatmessage[MESSAGE] + '\n';
   // Remove undesired newline chars
   m_chatmessage[MESSAGE].remove("\n");
   chatmessage_is_empty =
@@ -1868,7 +1864,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
 
   chatlogpiece *temp =
-      new chatlogpiece(f_charname, f_showname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
+      new chatlogpiece(f_charname, f_displayname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
   ic_chatlog_history.append(*temp);
   if (ao_app->get_auto_logging_enabled())
     ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
@@ -1878,7 +1874,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ic_chatlog_history.removeFirst();
   }
 
-  append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
+  append_ic_text(m_chatmessage[MESSAGE], f_displayname, "", m_chatmessage[TEXT_COLOR].toInt());
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
