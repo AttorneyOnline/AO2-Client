@@ -109,7 +109,6 @@ public:
       if (arup_locks.size() > place)
         arup_locks[place] = value;
     }
-    list_areas();
   }
 
   void character_loading_finished();
