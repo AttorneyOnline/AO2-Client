@@ -1815,7 +1815,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
   const bool is_spectator = (f_char_id == -1);
 
-  if (f_char_id < 0 || f_char_id >= char_list.size())
+  if (f_char_id < -1 || f_char_id >= char_list.size())
     return;
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
