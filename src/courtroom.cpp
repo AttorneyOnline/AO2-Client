@@ -1762,6 +1762,36 @@ void Courtroom::on_chat_return_pressed()
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
+void Courtroom::reset_ic(){
+    ui_vp_chat_arrow->stop();
+    text_state = 0;
+    anim_state = 0;
+    ui_vp_objection->stop();
+    chat_tick_timer->stop();
+    ui_vp_evidence_display->reset();
+}
+
+void Courtroom::reset_ui(){
+    if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
+      ui_ic_chat_message->clear();
+      if (ui_additive->isChecked())
+        ui_ic_chat_message->insert(" ");
+      objection_state = 0;
+      realization_state = 0;
+      screenshake_state = 0;
+      is_presenting_evidence = false;
+      if (!ao_app->is_stickypres_enabled())
+        ui_pre->setChecked(false);
+      ui_hold_it->set_image("holdit");
+      ui_objection->set_image("objection");
+      ui_take_that->set_image("takethat");
+      ui_custom_objection->set_image("custom");
+      ui_realization->set_image("realization");
+      ui_screenshake->set_image("screenshake");
+      ui_evidence_present->set_image("present");
+    }
+}
+
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   // Instead of checking for whether a message has at least chatmessage_size
@@ -1818,32 +1848,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   // Reset IC display
-  ui_vp_chat_arrow->stop();
-  text_state = 0;
-  anim_state = 0;
-  ui_vp_objection->stop();
-  chat_tick_timer->stop();
-  ui_vp_evidence_display->reset();
+  reset_ic();
 
   // Reset UI elements after client message gets sent
-  if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
-    ui_ic_chat_message->clear();
-    if (ui_additive->isChecked())
-      ui_ic_chat_message->insert(" ");
-    objection_state = 0;
-    realization_state = 0;
-    screenshake_state = 0;
-    is_presenting_evidence = false;
-    if (!ao_app->is_stickypres_enabled())
-      ui_pre->setChecked(false);
-    ui_hold_it->set_image("holdit");
-    ui_objection->set_image("objection");
-    ui_take_that->set_image("takethat");
-    ui_custom_objection->set_image("custom");
-    ui_realization->set_image("realization");
-    ui_screenshake->set_image("screenshake");
-    ui_evidence_present->set_image("present");
-  }
+  reset_ui();
 
   // Let the server handle actually checking if they're allowed to do this.
   is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
@@ -1870,7 +1878,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     color_rgb_list.append(color);
   }
 
-  append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
+  append_ic_text(m_chatmessage[MESSAGE], f_displayname, "", m_chatmessage[TEXT_COLOR].toInt());
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {

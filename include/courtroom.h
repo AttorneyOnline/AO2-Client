@@ -648,6 +648,8 @@ private:
   void refresh_evidence();
   void set_evidence_page();
 
+  void reset_ic();
+  void reset_ui();
 public slots:
   void objection_done();
   void preanim_done();
