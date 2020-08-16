@@ -109,7 +109,6 @@ public:
       if (arup_locks.size() > place)
         arup_locks[place] = value;
     }
-    list_areas();
   }
 
   void character_loading_finished();
@@ -457,6 +456,14 @@ private:
 
   QString current_background = "default";
   QString current_side = "";
+
+  QBrush free_brush;
+  QBrush lfp_brush;
+  QBrush casing_brush;
+  QBrush recess_brush;
+  QBrush rp_brush;
+  QBrush gaming_brush;
+  QBrush locked_brush;
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;

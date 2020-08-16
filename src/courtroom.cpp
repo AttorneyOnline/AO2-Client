@@ -935,6 +935,14 @@ void Courtroom::set_widgets()
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
                               "interact with the in-character screen."));
 
+  free_brush = *new QBrush(ao_app->get_color("area_free_color", "courtroom_design.ini"));
+  lfp_brush = *new QBrush(ao_app->get_color("area_lfp_color", "courtroom_design.ini"));
+  casing_brush = *new QBrush(ao_app->get_color("area_casing_color", "courtroom_design.ini"));
+  recess_brush = *new QBrush(ao_app->get_color("area_recess_color", "courtroom_design.ini"));
+  rp_brush = *new QBrush(ao_app->get_color("area_rp_color", "courtroom_design.ini"));
+  gaming_brush = *new QBrush(ao_app->get_color("area_gaming_color", "courtroom_design.ini"));
+  locked_brush = *new QBrush(ao_app->get_color("area_locked_color", "courtroom_design.ini"));
+
   refresh_evidence();
 }
 
@@ -1436,15 +1444,6 @@ void Courtroom::list_areas()
   ui_area_list->clear();
   //  ui_music_search->setText("");
 
-  QString f_file = "courtroom_design.ini";
-
-  QBrush free_brush(ao_app->get_color("area_free_color", f_file));
-  QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
-  QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
-  QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
-  QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
-  QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
-  QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
 
   int n_listed_areas = 0;
 
