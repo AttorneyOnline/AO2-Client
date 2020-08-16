@@ -1613,7 +1613,7 @@ void Courtroom::on_chat_return_pressed()
     if (f_emote_mod == 0)
       f_emote_mod = 1;
     else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
-      f_emote_mod = 4;
+      f_emote_mod = 6;
   }
   else {
     if (f_emote_mod == 1)
@@ -1772,7 +1772,6 @@ void Courtroom::reset_ic(){
 }
 
 void Courtroom::reset_ui(){
-    if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
       ui_ic_chat_message->clear();
       if (ui_additive->isChecked())
         ui_ic_chat_message->insert(" ");
@@ -1789,7 +1788,6 @@ void Courtroom::reset_ui(){
       ui_realization->set_image("realization");
       ui_screenshake->set_image("screenshake");
       ui_evidence_present->set_image("present");
-    }
 }
 
 void Courtroom::handle_chatmessage(QStringList *p_contents)
@@ -1851,7 +1849,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   reset_ic();
 
   // Reset UI elements after client message gets sent
-  reset_ui();
+  if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
+    reset_ui();
+  }
 
   // Let the server handle actually checking if they're allowed to do this.
   is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
