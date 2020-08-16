@@ -348,8 +348,10 @@ private:
   // amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
 
-  static const int chatmessage_size = 30;
-  QString m_chatmessage[chatmessage_size];
+  // Minumum and maximum number of parameters in the MS packet
+  static const int MS_MINIMUM = 15;
+  static const int MS_MAXIMUM = 30;
+  QString m_chatmessage[MS_MAXIMUM];
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
@@ -646,6 +648,8 @@ private:
   void refresh_evidence();
   void set_evidence_page();
 
+  void reset_ic();
+  void reset_ui();
 public slots:
   void objection_done();
   void preanim_done();

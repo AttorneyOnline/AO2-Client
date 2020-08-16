@@ -1613,7 +1613,7 @@ void Courtroom::on_chat_return_pressed()
     if (f_emote_mod == 0)
       f_emote_mod = 1;
     else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
-      f_emote_mod = 4;
+      f_emote_mod = 6;
   }
   else {
     if (f_emote_mod == 1)
@@ -1762,24 +1762,49 @@ void Courtroom::on_chat_return_pressed()
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
+void Courtroom::reset_ic(){
+    ui_vp_chat_arrow->stop();
+    text_state = 0;
+    anim_state = 0;
+    ui_vp_objection->stop();
+    chat_tick_timer->stop();
+    ui_vp_evidence_display->reset();
+}
+
+void Courtroom::reset_ui(){
+      ui_ic_chat_message->clear();
+      if (ui_additive->isChecked())
+        ui_ic_chat_message->insert(" ");
+      objection_state = 0;
+      realization_state = 0;
+      screenshake_state = 0;
+      is_presenting_evidence = false;
+      if (!ao_app->is_stickypres_enabled())
+        ui_pre->setChecked(false);
+      ui_hold_it->set_image("holdit");
+      ui_objection->set_image("objection");
+      ui_take_that->set_image("takethat");
+      ui_custom_objection->set_image("custom");
+      ui_realization->set_image("realization");
+      ui_screenshake->set_image("screenshake");
+      ui_evidence_present->set_image("present");
+}
+
 void Courtroom::handle_chatmessage(QStringList *p_contents)
 {
   // Instead of checking for whether a message has at least chatmessage_size
   // amount of packages, we'll check if it has at least 15.
   // That was the original chatmessage_size.
-  if (p_contents->size() < 15)
+  if (p_contents->size() < MS_MINIMUM)
     return;
 
-  for (int n_string = 0; n_string < chatmessage_size; ++n_string) {
-    // m_chatmessage[n_string] = p_contents->at(n_string);
-
+  for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
     // Note that we have added stuff that vanilla clients and servers simply
     // won't send. So now, we have to check if the thing we want even exists
     // amongst the packet's content. We also have to check if the server even
     // supports CCCC's IC features, or if it's just japing us. Also, don't
     // forget! A size 15 message will have indices from 0 to 14.
-    if (n_string < p_contents->size() &&
-        (n_string < 15 || ao_app->cccc_ic_support_enabled)) {
+    if (n_string < p_contents->size() && (n_string < MS_MINIMUM || ao_app->cccc_ic_support_enabled)) {
       m_chatmessage[n_string] = p_contents->at(n_string);
     }
     else {
@@ -1788,89 +1813,51 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
+  const bool is_spectator = (f_char_id == -1);
 
-  if (f_char_id >= 0 && f_char_id >= char_list.size())
+  if (f_char_id < -1 || f_char_id >= char_list.size())
     return;
-
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
-  QString f_showname;
-  if (f_char_id > -1 &&
-      (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
-    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+  QString f_displayname;
+  if (!is_spectator && (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
+    // If the users is not a spectator and showname is disabled, use the character's name
+    f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
   else {
-    f_showname = m_chatmessage[SHOWNAME];
+    // Otherwise, use the showname
+    f_displayname = m_chatmessage[SHOWNAME];
   }
 
-  if (f_showname.trimmed()
-          .isEmpty()) // Pure whitespace showname, get outta here.
-    f_showname = m_chatmessage[CHAR_NAME];
+  // If chatblank is enabled, use the character's name for logs
+  if (f_displayname.trimmed().isEmpty())
+    f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
 
-  QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
-  // Remove undesired newline chars
-  m_chatmessage[MESSAGE].remove("\n");
-  chatmessage_is_empty =
-      m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
-
-  if (f_char_id >= 0 && !chatmessage_is_empty &&
-      f_message == previous_ic_message) // Not a system message
-    return;
-
-  if (f_char_id <= -1)
-    previous_ic_message =
-        ""; // System messages don't care about repeating themselves
-  else
-    previous_ic_message = f_message;
-  bool ok;
-  int objection_mod = m_chatmessage[OBJECTION_MOD].toInt(
-      &ok, 10); // checks if its a custom obj.
+  // Check if a custom objection is in use
+  int objection_mod = 0;
   QString custom_objection = "";
-  if (!ok && m_chatmessage[OBJECTION_MOD].contains("4&")) {
+  if (m_chatmessage[OBJECTION_MOD].contains("4&")) {
     objection_mod = 4;
-    custom_objection = m_chatmessage[OBJECTION_MOD].split(
-        "4&")[1]; // takes the name of custom objection.
+    custom_objection = m_chatmessage[OBJECTION_MOD].split("4&")[1]; // takes the name of custom objection.
   }
-  // Stop the chat arrow from animating
-  ui_vp_chat_arrow->stop();
+  else{
+      objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
+  }
 
-  text_state = 0;
-  anim_state = 0;
-  ui_vp_objection->stop();
-  chat_tick_timer->stop();
-  ui_vp_evidence_display->reset();
+  // Reset IC display
+  reset_ic();
 
-  // Hey, our message showed up! Cool!
-  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text().remove("\n") &&
-      m_chatmessage[CHAR_ID].toInt() == m_cid) {
-    ui_ic_chat_message->clear();
-    if (ui_additive->isChecked())
-      ui_ic_chat_message->insert(" ");
-    objection_state = 0;
-    realization_state = 0;
-    screenshake_state = 0;
-    is_presenting_evidence = false;
-    if (!ao_app->is_stickypres_enabled())
-      ui_pre->setChecked(false);
-    ui_hold_it->set_image("holdit");
-    ui_objection->set_image("objection");
-    ui_take_that->set_image("takethat");
-    ui_custom_objection->set_image("custom");
-    ui_realization->set_image("realization");
-    ui_screenshake->set_image("screenshake");
-    ui_evidence_present->set_image("present");
+  // Reset UI elements after client message gets sent
+  if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
+    reset_ui();
   }
 
   // Let the server handle actually checking if they're allowed to do this.
   is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
 
-  QString f_charname = "";
-  if (f_char_id >= 0)
-    f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
-
   chatlogpiece *temp =
-      new chatlogpiece(f_charname, f_showname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
+      new chatlogpiece(f_displayname, f_displayname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
   ic_chatlog_history.append(*temp);
   if (ao_app->get_auto_logging_enabled())
     ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
@@ -1879,7 +1866,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
          log_maximum_blocks > 0) {
     ic_chatlog_history.removeFirst();
   }
-
+  
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
@@ -1891,7 +1878,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     color_rgb_list.append(color);
   }
 
-  append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
+  append_ic_text(m_chatmessage[MESSAGE], f_displayname, "", m_chatmessage[TEXT_COLOR].toInt());
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
@@ -1913,26 +1900,17 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     // case 4 is AO2 only
     case 4:
       if (custom_objection != "") {
-        ui_vp_objection->play("custom_objections/" + custom_objection, f_char,
-                              f_custom_theme, shout_stay_time);
-        objection_player->play("custom_objections/" +
-                                   custom_objection.split('.')[0],
-                               f_char, f_custom_theme);
+        ui_vp_objection->play("custom_objections/" + custom_objection, f_char, f_custom_theme, shout_stay_time);
+        objection_player->play("custom_objections/" + custom_objection.split('.')[0], f_char, f_custom_theme);
       }
       else {
-        ui_vp_objection->play("custom", f_char, f_custom_theme,
-                              shout_stay_time);
+        ui_vp_objection->play("custom", f_char, f_custom_theme, shout_stay_time);
         objection_player->play("custom", f_char, f_custom_theme);
       }
       break;
-    default:
-      qDebug() << "W: Logic error in objection switch statement!";
+      m_chatmessage[EMOTE_MOD] = 1;
     }
     sfx_player->clear(); // Objection played! Cut all sfx.
-    int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-
-    if (emote_mod == 0)
-      m_chatmessage[EMOTE_MOD] = 1;
   }
   else
     handle_chatmessage_2();
