@@ -908,6 +908,11 @@ QString AOApplication::get_effect_sound(QString fx_name, QString p_char)
       f_result = read_design_ini(fx_name, default_path);
     }
   }
+
+  if(fx_name == "realization"){
+      f_result = get_custom_realization(p_char);
+  }
+
   return f_result;
 }
 
