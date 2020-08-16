@@ -265,8 +265,9 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
                                                     QString p_file,
                                                     QString p_char)
 {
-  QString char_ini_path =
-      get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
+  QString char_ini_path = get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
+  QString chatbox_ini = get_base_path() + "misc/chatbox/" + p_file;
+
   QString design_ini_path = get_theme_path(p_file);
   QString default_path = get_default_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, char_ini_path);
@@ -277,14 +278,15 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
   return_value.y = 0;
   return_value.width = -1;
   return_value.height = -1;
-
   if (f_result == "") {
-    f_result = read_design_ini(p_identifier, design_ini_path);
-    if (f_result == "") {
-      f_result = read_design_ini(p_identifier, default_path);
-
-      if (f_result == "")
-        return return_value;
+    f_result = read_design_ini(p_identifier, chatbox_ini);
+    if(f_result == ""){
+        f_result = read_design_ini(p_identifier, design_ini_path);
+        if (f_result == ""){
+          f_result = read_design_ini(p_identifier, default_path);
+          if (f_result == "")
+              return return_value;
+        }
     }
   }
 
