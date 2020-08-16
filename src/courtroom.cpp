@@ -636,6 +636,7 @@ void Courtroom::set_widgets()
   }
 
   ui_music_display->play("music_display");
+  ui_music_display->set_play_once(false);
 
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
@@ -934,6 +935,14 @@ void Courtroom::set_widgets()
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
                               "interact with the in-character screen."));
 
+  free_brush = *new QBrush(ao_app->get_color("area_free_color", "courtroom_design.ini"));
+  lfp_brush = *new QBrush(ao_app->get_color("area_lfp_color", "courtroom_design.ini"));
+  casing_brush = *new QBrush(ao_app->get_color("area_casing_color", "courtroom_design.ini"));
+  recess_brush = *new QBrush(ao_app->get_color("area_recess_color", "courtroom_design.ini"));
+  rp_brush = *new QBrush(ao_app->get_color("area_rp_color", "courtroom_design.ini"));
+  gaming_brush = *new QBrush(ao_app->get_color("area_gaming_color", "courtroom_design.ini"));
+  locked_brush = *new QBrush(ao_app->get_color("area_locked_color", "courtroom_design.ini"));
+
   refresh_evidence();
 }
 
@@ -975,7 +984,7 @@ void Courtroom::set_font(QWidget *widget, QString class_name,
     }
   }
   bool bold = ao_app->get_design_element(p_identifier + "_bold", design_file, p_char) ==
-              1; // is the font bold or not?
+              "1"; // is the font bold or not?
   bool antialias =
       ao_app->get_design_element(p_identifier + "_sharp", design_file, p_char) !=
       "1"; // is the font anti-aliased or not?
@@ -1237,6 +1246,8 @@ void Courtroom::update_character(int p_cid)
   current_char = f_char;
   current_side = ao_app->get_char_side(current_char);
 
+  set_text_color_dropdown();
+
   current_emote_page = 0;
   current_emote = 0;
 
@@ -1433,15 +1444,6 @@ void Courtroom::list_areas()
   ui_area_list->clear();
   //  ui_music_search->setText("");
 
-  QString f_file = "courtroom_design.ini";
-
-  QBrush free_brush(ao_app->get_color("area_free_color", f_file));
-  QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
-  QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
-  QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
-  QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
-  QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
-  QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
 
   int n_listed_areas = 0;
 
@@ -1856,11 +1858,19 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
          log_maximum_blocks > 0) {
     ic_chatlog_history.removeFirst();
   }
-
-  append_ic_text(m_chatmessage[MESSAGE], f_displayname, "", m_chatmessage[TEXT_COLOR].toInt());
-
+  
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
+
+  // Load the colors in case it's using a custom chatbox with custom colors.
+  // Or reload the default ones in case it's not using custom colors
+  color_rgb_list.clear();
+  for (int c = 0; c < max_colors; ++c) {
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), f_char);
+    color_rgb_list.append(color);
+  }
+
+  append_ic_text(m_chatmessage[MESSAGE], f_showname, "", m_chatmessage[TEXT_COLOR].toInt());
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
@@ -2884,6 +2894,12 @@ void Courtroom::chat_tick()
     next_character_is_not_special = false;
   }
 
+  // Keep the speed at bay.
+  if (current_display_speed < 0)
+    current_display_speed = 0;
+  else if (current_display_speed > 6)
+    current_display_speed = 6;
+
   if ((message_display_speed[current_display_speed] <= 0 &&
        tick_pos < f_message.size() - 1) ||
       formatting_char) {
@@ -2911,12 +2927,6 @@ void Courtroom::chat_tick()
     real_tick_pos += f_char_length;
 
     ui_vp_message->ensureCursorVisible();
-
-    // Keep the speed at bay.
-    if (current_display_speed < 0)
-      current_display_speed = 0;
-    else if (current_display_speed > 6)
-      current_display_speed = 6;
 
     // Blip player and real tick pos ticker
     if (!formatting_char && (f_character != ' ' || blank_blip)) {

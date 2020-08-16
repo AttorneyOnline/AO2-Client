@@ -676,6 +676,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_courtroom->arup_modify(arup_type, n_element - 1,
                                  f_contents.at(n_element));
       }
+      w_courtroom->list_areas();
     }
   }
   else if (header == "IL") {
