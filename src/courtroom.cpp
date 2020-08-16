@@ -1792,9 +1792,11 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   QString f_displayname;
   if (!is_spectator && (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
+    // If the users is not a spectator and showname is disabled, use the character's name
     f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
   else {
+    // Otherwise, use the showname
     f_displayname = m_chatmessage[SHOWNAME];
   }
 
@@ -1803,20 +1805,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
 
   QString f_message = f_displayname + ": " + m_chatmessage[MESSAGE] + '\n';
-  // Remove undesired newline chars
-  m_chatmessage[MESSAGE].remove("\n");
-  chatmessage_is_empty =
-      m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
 
-  if (f_char_id >= 0 && !chatmessage_is_empty &&
-      f_message == previous_ic_message) // Not a system message
-    return;
-
-  if (f_char_id <= -1)
-    previous_ic_message =
-        ""; // System messages don't care about repeating themselves
-  else
-    previous_ic_message = f_message;
   bool ok;
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt(
       &ok, 10); // checks if its a custom obj.
