@@ -1538,7 +1538,11 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
 
 void Courtroom::on_chat_return_pressed()
 {
-  if (ui_ic_chat_message->text() == "" || is_muted)
+  if (is_muted)
+    return;
+
+  // You can only blankpost w/o any input if the last character who spoke is yours
+  if (ui_ic_chat_message->text() == "" && m_chatmessage[CHAR_ID].toInt() != m_cid)
     return;
 
   if ((anim_state < 3 || text_state < 2) && objection_state == 0)
@@ -1590,7 +1594,10 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(ao_app->get_emote(current_char, current_emote));
 
-  packet_contents.append(ui_ic_chat_message->text());
+  QString text = ui_ic_chat_message->text();
+  if (text == "")
+    text = " "; // blankpost time
+  packet_contents.append(text);
 
   packet_contents.append(current_side);
 
