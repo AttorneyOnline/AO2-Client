@@ -1885,14 +1885,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
-  // Load the colors in case it's using a custom chatbox with custom colors.
-  // Or reload the default ones in case it's not using custom colors
-  color_rgb_list.clear();
-  for (int c = 0; c < max_colors; ++c) {
-    QColor color = ao_app->get_chat_color("c" + QString::number(c), f_char);
-    color_rgb_list.append(color);
-  }
-
   append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
                  m_chatmessage[TEXT_COLOR].toInt());
 
