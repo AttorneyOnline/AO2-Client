@@ -249,7 +249,6 @@ public:
   void check_connection_received();
 
   ~Courtroom();
-
 private:
   AOApplication *ao_app;
 
@@ -817,8 +816,6 @@ private slots:
   void on_casing_clicked();
 
   void ping_server();
-
-  void load_bass_opus_plugin();
 };
 
 #endif // COURTROOM_H

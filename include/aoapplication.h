@@ -433,6 +433,8 @@ public:
   // The file name of the log file in base/logs.
   QString log_filename;
 
+  void initBASS();
+  void load_bass_opus_plugin();
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 8;
