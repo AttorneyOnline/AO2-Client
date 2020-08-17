@@ -198,9 +198,11 @@ void AOApplication::initBASS()
                     nullptr);
           load_bass_opus_plugin();
           qDebug() << info.name << "was set as the default audio output device.";
-          break;
+          return;
         }
       }
+      BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+      load_bass_opus_plugin();
     }
 }
 
