@@ -1870,23 +1870,33 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_char_id >= 0)
     f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
 
-  chatlogpiece *temp =
-      new chatlogpiece(f_charname, f_displayname, m_chatmessage[MESSAGE], false,
-                       m_chatmessage[TEXT_COLOR].toInt());
-  ic_chatlog_history.append(*temp);
-  if (ao_app->get_auto_logging_enabled())
-    ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
+  if (m_chatmessage[MESSAGE] == " ") // User-created blankpost
+  {
+    m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
+  }
+  // General blankpost check
+  chatmessage_is_empty = m_chatmessage[MESSAGE] == "";
 
-  while (ic_chatlog_history.size() > log_maximum_blocks &&
-         log_maximum_blocks > 0) {
-    ic_chatlog_history.removeFirst();
+  if (!chatmessage_is_empty || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
+  {
+    chatlogpiece *temp =
+        new chatlogpiece(f_charname, f_displayname, m_chatmessage[MESSAGE], false,
+                         m_chatmessage[TEXT_COLOR].toInt());
+    ic_chatlog_history.append(*temp);
+    if (ao_app->get_auto_logging_enabled())
+      ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
+
+    while (ic_chatlog_history.size() > log_maximum_blocks &&
+           log_maximum_blocks > 0) {
+      ic_chatlog_history.removeFirst();
+    }
+
+    append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
+                   m_chatmessage[TEXT_COLOR].toInt());
   }
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
-
-  append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
-                 m_chatmessage[TEXT_COLOR].toInt());
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
@@ -2763,6 +2773,10 @@ void Courtroom::start_chat_ticking()
     this->do_flash();
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); // text meme bonanza
+  if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1") {
+    this->do_screenshake();
+  }
   if (chatmessage_is_empty) {
     // since the message is empty, it's technically done ticking
     text_state = 2;
@@ -2788,11 +2802,6 @@ void Courtroom::start_chat_ticking()
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
   blip_player->set_blips(f_gender);
-
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); // text meme bonanza
-  if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1") {
-    this->do_screenshake();
-  }
 
   // means text is currently ticking
   text_state = 1;
