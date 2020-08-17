@@ -1541,10 +1541,6 @@ void Courtroom::on_chat_return_pressed()
   if (is_muted)
     return;
 
-  // You can only blankpost w/o any input if the last character who spoke is yours
-  if (ui_ic_chat_message->text() == "" && m_chatmessage[CHAR_ID].toInt() != m_cid)
-    return;
-
   if ((anim_state < 3 || text_state < 2) && objection_state == 0)
     return;
 
@@ -1594,10 +1590,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(ao_app->get_emote(current_char, current_emote));
 
-  QString text = ui_ic_chat_message->text();
-  if (text == "")
-    text = " "; // blankpost time
-  packet_contents.append(text);
+  packet_contents.append(ui_ic_chat_message->text());
 
   packet_contents.append(current_side);
 
@@ -1877,21 +1870,18 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_char_id >= 0)
     f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
 
-  if (m_chatmessage[MESSAGE] == " ") // User-created blankpost
+  if (m_chatmessage[MESSAGE].trimmed().isEmpty()) // User-created blankpost
   {
     m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
   }
-  // General blankpost check
-  chatmessage_is_empty = m_chatmessage[MESSAGE] == "";
 
-  if (!chatmessage_is_empty || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
+  if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
   {
-    chatlogpiece *temp =
-        new chatlogpiece(f_charname, f_displayname, m_chatmessage[MESSAGE], false,
-                         m_chatmessage[TEXT_COLOR].toInt());
-    ic_chatlog_history.append(*temp);
+    chatlogpiece log_entry(f_charname, f_displayname, m_chatmessage[MESSAGE], false,
+                           m_chatmessage[TEXT_COLOR].toInt());
+    ic_chatlog_history.append(log_entry);
     if (ao_app->get_auto_logging_enabled())
-      ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
+      ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
 
     while (ic_chatlog_history.size() > log_maximum_blocks &&
            log_maximum_blocks > 0) {
@@ -2784,7 +2774,7 @@ void Courtroom::start_chat_ticking()
   if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1") {
     this->do_screenshake();
   }
-  if (chatmessage_is_empty) {
+  if (m_chatmessage[MESSAGE].isEmpty()) {
     // since the message is empty, it's technically done ticking
     text_state = 2;
     return;
