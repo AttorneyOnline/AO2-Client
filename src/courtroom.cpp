@@ -1919,8 +1919,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
                               shout_stay_time);
         objection_player->play("custom", f_char, f_custom_theme);
       }
-      break;
       m_chatmessage[EMOTE_MOD] = 1;
+      break;
     }
     sfx_player->clear(); // Objection played! Cut all sfx.
   }
