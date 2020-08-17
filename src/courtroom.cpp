@@ -2059,8 +2059,9 @@ void Courtroom::handle_chatmessage_2()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // Deal with invalid emote modifiers
-  if(emote_mod < 0 || (emote_mod > 2 && emote_mod < 5) || emote_mod > 6){
-      if(emote_mod == 4)
+  if (emote_mod != 0 && emote_mod != 1 && emote_mod != 2 \
+        && emote_mod != 5 && emote_mod != 6) {
+      if (emote_mod == 4)
           emote_mod = 6; // Addresses issue with an old bug that sent the wrong emote modifier for zoompre
       else
           emote_mod = 0;
