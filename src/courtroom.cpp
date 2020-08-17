@@ -1856,8 +1856,12 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   // Let the server handle actually checking if they're allowed to do this.
   is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
 
+  QString f_charname = "";
+  if (f_char_id >= 0)
+    f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
+
   chatlogpiece *temp =
-      new chatlogpiece(f_displayname, f_displayname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
+      new chatlogpiece(f_charname, f_displayname, m_chatmessage[MESSAGE], false, m_chatmessage[TEXT_COLOR].toInt());
   ic_chatlog_history.append(*temp);
   if (ao_app->get_auto_logging_enabled())
     ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
