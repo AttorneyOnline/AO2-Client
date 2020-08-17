@@ -315,9 +315,6 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
 
-  // Whether or not is this message additive to the previous one
-  bool is_additive = false;
-
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
 

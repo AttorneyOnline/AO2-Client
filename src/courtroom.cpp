@@ -1863,9 +1863,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     reset_ui();
   }
 
-  // Let the server handle actually checking if they're allowed to do this.
-  is_additive = m_chatmessage[ADDITIVE].toInt() == 1;
-
   QString f_charname = "";
   if (f_char_id >= 0)
     f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
@@ -2777,13 +2774,18 @@ void Courtroom::start_chat_ticking()
   if (m_chatmessage[MESSAGE].isEmpty()) {
     // since the message is empty, it's technically done ticking
     text_state = 2;
+    if (m_chatmessage[ADDITIVE] == "1") {
+      // Cool behavior
+      ui_vp_chatbox->show();
+      ui_vp_message->show();
+    }
     return;
   }
 
   ui_vp_chatbox->show();
   ui_vp_message->show();
 
-  if (!is_additive) {
+  if (m_chatmessage[ADDITIVE] != "1") {
     ui_vp_message->clear();
     real_tick_pos = 0;
     additive_previous = "";
