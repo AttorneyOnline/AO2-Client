@@ -176,7 +176,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "FL") {
-//    encryption_needed = true;
+    //    encryption_needed = true;
     yellow_text_enabled = false;
     prezoom_enabled = false;
     flipping_enabled = false;
@@ -292,14 +292,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_auto_logging_enabled()){
-        this->log_filename = QDateTime::currentDateTime().toUTC().toString(
-            "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
-            "/'ddd MMMM yyyy hh.mm.ss t'.log'");
-        this->write_to_file("Joined server " + server_name + " on address " +
-                                server_address + " on " +
-                                QDateTime::currentDateTime().toUTC().toString(),
-                            log_filename, true);
+    if (AOApplication::get_auto_logging_enabled()) {
+      this->log_filename = QDateTime::currentDateTime().toUTC().toString(
+          "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
+          "/'ddd MMMM yyyy hh.mm.ss t'.log'");
+      this->write_to_file("Joined server " + server_name + " on address " +
+                              server_address + " on " +
+                              QDateTime::currentDateTime().toUTC().toString(),
+                          log_filename, true);
     }
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
@@ -335,8 +335,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       ++loaded_chars;
 
       w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
-                                .arg(QString::number(loaded_chars))
-                                .arg(QString::number(char_list_size)));
+                                    .arg(QString::number(loaded_chars))
+                                    .arg(QString::number(char_list_size)));
 
       w_courtroom->append_char(f_char);
 

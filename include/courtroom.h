@@ -117,7 +117,9 @@ public:
   void set_widgets();
 
   // sets font size based on theme ini files
-  void set_font(QWidget *widget, QString class_name, QString p_identifier, QString p_char="", QString font_name="", int f_pointsize=0);
+  void set_font(QWidget *widget, QString class_name, QString p_identifier,
+                QString p_char = "", QString font_name = "",
+                int f_pointsize = 0);
 
   // Get the properly constructed font
   QFont get_qfont(QString font_name, int f_pointsize, bool antialias = true);
@@ -127,7 +129,7 @@ public:
                  QColor f_color = Qt::black, bool bold = false);
 
   // helper function that calls above function on the relevant widgets
-  void set_fonts(QString p_char="");
+  void set_fonts(QString p_char = "");
 
   // sets dropdown menu stylesheet
   void set_dropdown(QWidget *widget);
@@ -220,7 +222,8 @@ public:
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", QString action = "", int color = 0);
+  void append_ic_text(QString p_text, QString p_name = "", QString action = "",
+                      int color = 0);
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and

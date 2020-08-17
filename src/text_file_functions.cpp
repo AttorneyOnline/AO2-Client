@@ -435,7 +435,8 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 
 QString AOApplication::get_chat_markdown(QString p_identifier, QString p_chat)
 {
-  QString design_ini_path = get_base_path() + "misc/" + get_chat(p_chat) + "/config.ini";
+  QString design_ini_path =
+      get_base_path() + "misc/" + get_chat(p_chat) + "/config.ini";
   QString default_path = get_base_path() + "misc/default/config.ini";
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
@@ -449,7 +450,8 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 {
   QColor return_color(255, 255, 255);
 
-  QString design_ini_path = get_base_path() + "misc/" + get_chat(p_chat) + "/config.ini";
+  QString design_ini_path =
+      get_base_path() + "misc/" + get_chat(p_chat) + "/config.ini";
   QString default_path = get_base_path() + "misc/default/config.ini";
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
@@ -909,8 +911,8 @@ QString AOApplication::get_effect_sound(QString fx_name, QString p_char)
     }
   }
 
-  if(fx_name == "realization"){
-      f_result = get_custom_realization(p_char);
+  if (fx_name == "realization") {
+    f_result = get_custom_realization(p_char);
   }
 
   return f_result;
@@ -1056,7 +1058,7 @@ QString AOApplication::get_casing_can_host_cases()
 }
 bool AOApplication::get_auto_logging_enabled()
 {
-    QString result =
-        configini->value("automatic_logging_enabled", "true").value<QString>();
-    return result.startsWith("true");
+  QString result =
+      configini->value("automatic_logging_enabled", "true").value<QString>();
+  return result.startsWith("true");
 }
