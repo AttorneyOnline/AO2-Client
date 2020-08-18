@@ -229,14 +229,14 @@ void AOApplication::load_bass_opus_plugin()
 #endif
 }
 #elif (defined(LINUX) || defined(__linux__))
-void Courtroom::load_bass_opus_plugin()
+void AOApplication::load_bass_opus_plugin()
 {
 #ifdef BASSAUDIO
   BASS_PluginLoad("libbassopus.so", 0);
 #endif
 }
 #elif defined __APPLE__
-void Courtroom::load_bass_opus_plugin()
+void AOApplication::load_bass_opus_plugin()
 {
 #ifdef BASSAUDIO
   BASS_PluginLoad("libbassopus.dylib", 0);
