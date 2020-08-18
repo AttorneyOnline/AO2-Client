@@ -109,7 +109,6 @@ public:
       if (arup_locks.size() > place)
         arup_locks[place] = value;
     }
-    list_areas();
   }
 
   void character_loading_finished();
@@ -118,7 +117,9 @@ public:
   void set_widgets();
 
   // sets font size based on theme ini files
-  void set_font(QWidget *widget, QString class_name, QString p_identifier, QString p_char="", QString font_name="", int f_pointsize=0);
+  void set_font(QWidget *widget, QString class_name, QString p_identifier,
+                QString p_char = "", QString font_name = "",
+                int f_pointsize = 0);
 
   // Get the properly constructed font
   QFont get_qfont(QString font_name, int f_pointsize, bool antialias = true);
@@ -128,7 +129,7 @@ public:
                  QColor f_color = Qt::black, bool bold = false);
 
   // helper function that calls above function on the relevant widgets
-  void set_fonts(QString p_char="");
+  void set_fonts(QString p_char = "");
 
   // sets dropdown menu stylesheet
   void set_dropdown(QWidget *widget);
@@ -221,7 +222,8 @@ public:
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = "", QString action = "", int color = 0);
+  void append_ic_text(QString p_text, QString p_name = "", QString action = "",
+                      int color = 0);
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -313,9 +315,6 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
 
-  // Whether or not is this message additive to the previous one
-  bool is_additive = false;
-
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
 
@@ -349,9 +348,10 @@ private:
   // amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
 
-  static const int chatmessage_size = 30;
-  QString m_chatmessage[chatmessage_size];
-  bool chatmessage_is_empty = false;
+  // Minumum and maximum number of parameters in the MS packet
+  static const int MS_MINIMUM = 15;
+  static const int MS_MAXIMUM = 30;
+  QString m_chatmessage[MS_MAXIMUM];
 
   QString previous_ic_message = "";
   QString additive_previous = "";
@@ -457,6 +457,14 @@ private:
 
   QString current_background = "default";
   QString current_side = "";
+
+  QBrush free_brush;
+  QBrush lfp_brush;
+  QBrush casing_brush;
+  QBrush recess_brush;
+  QBrush rp_brush;
+  QBrush gaming_brush;
+  QBrush locked_brush;
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
@@ -639,6 +647,8 @@ private:
   void refresh_evidence();
   void set_evidence_page();
 
+  void reset_ic();
+  void reset_ui();
 public slots:
   void objection_done();
   void preanim_done();
