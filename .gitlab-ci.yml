@@ -15,7 +15,7 @@ before_script:
   - echo Current working directory is $(pwd)
 
 build linux x86_64:
-  image: ubuntu
+  image: ubuntu:18.04
   stage: build
   tags:
     - docker
