@@ -185,7 +185,6 @@ void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
 {
   doBASSreset();
 }
-#endif
 
 void AOApplication::doBASSreset()
 {
@@ -221,7 +220,7 @@ void AOApplication::initBASS()
     load_bass_opus_plugin();
   }
 }
-
+#endif
 #if (defined(_WIN32) || defined(_WIN64))
 void AOApplication::load_bass_opus_plugin()
 {
