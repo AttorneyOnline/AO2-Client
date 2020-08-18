@@ -109,6 +109,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   log_maximum_blocks = ao_app->get_max_log_size();
   log_goes_downwards = ao_app->get_log_goes_downwards();
+  log_colors = ao_app->is_colorlog_enabled();
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -583,9 +584,10 @@ void Courtroom::set_widgets()
 
   log_maximum_blocks = ao_app->get_max_log_size();
 
-  if (log_goes_downwards != ao_app->get_log_goes_downwards())
+  if (log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled())
     ui_ic_chatlog->clear();
   log_goes_downwards = ao_app->get_log_goes_downwards();
+  log_colors = ao_app->is_colorlog_enabled();
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
@@ -2626,7 +2628,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     // Format the action in normal
     ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result according to html
-    ui_ic_chatlog->textCursor().insertHtml(filter_ic_text(p_text, ao_app->is_colorlog_enabled(), -1, color));
+    if (log_colors)
+      ui_ic_chatlog->textCursor().insertHtml(filter_ic_text(p_text, true, -1, color));
+    else
+      ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false), normal);
   }
 
   // Only append with newline if log goes upwards

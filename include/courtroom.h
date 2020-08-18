@@ -320,6 +320,9 @@ private:
   // True, if the log should go downwards.
   bool log_goes_downwards = false;
 
+  // True, if log should display colors.
+  bool log_colors = true;
+
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
 
