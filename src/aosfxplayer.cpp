@@ -1,7 +1,6 @@
 #include "aosfxplayer.h"
 #include "file_functions.h"
 
-
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
@@ -70,14 +69,14 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
 
   BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
   int f_bass_error = BASS_ErrorGetCode();
-  if(f_bass_error == BASS_ERROR_DEVICE)
-  {
-      ao_app->doBASSreset();
-      BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
+  if (f_bass_error == BASS_ERROR_DEVICE) {
+    ao_app->doBASSreset();
+    BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
   }
 
   BASS_ChannelPlay(m_stream_list[m_channel], false);
-  BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
+  BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_DEV_FAIL, 0,
+                      ao_app->BASSreset, 0);
 }
 
 void AOSfxPlayer::stop(int channel)
@@ -206,7 +205,9 @@ void AOSfxPlayer::clear() {}
 void AOSfxPlayer::loop_clear() {}
 
 void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
-                       int channel) {}
+                       int channel)
+{
+}
 
 void AOSfxPlayer::stop(int channel) {}
 

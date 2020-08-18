@@ -249,6 +249,7 @@ public:
   void check_connection_received();
 
   ~Courtroom();
+
 private:
   AOApplication *ao_app;
 

@@ -209,7 +209,8 @@ public:
 
   // Returns the value of whether custom chatboxes should be a thing.
   // from the config.ini.
-  // I am increasingly maddened by the lack of dynamic auto-generation system for settings.
+  // I am increasingly maddened by the lack of dynamic auto-generation system
+  // for settings.
   bool is_customchat_enabled();
 
   // Returns the value of the maximum amount of lines the IC chatlog
@@ -442,8 +443,10 @@ public:
 
   void initBASS();
   static void load_bass_opus_plugin();
-  static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data, void *user);
+  static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
+                                 void *user);
   static void doBASSreset();
+
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 8;
