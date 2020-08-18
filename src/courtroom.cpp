@@ -112,6 +112,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_colors = ao_app->is_colorlog_enabled();
   log_newline = ao_app->get_log_newline();
   log_margin = ao_app->get_log_margin();
+  log_timestamp = ao_app->get_log_timestamp();
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -586,12 +587,13 @@ void Courtroom::set_widgets()
 
   log_maximum_blocks = ao_app->get_max_log_size();
 
-  if (log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled() || log_newline != ao_app->get_log_newline() || log_margin != ao_app->get_log_margin())
+  if (log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled() || log_newline != ao_app->get_log_newline() || log_margin != ao_app->get_log_margin() || log_timestamp != ao_app->get_log_timestamp())
     ui_ic_chatlog->clear();
   log_goes_downwards = ao_app->get_log_goes_downwards();
   log_colors = ao_app->is_colorlog_enabled();
   log_newline = ao_app->get_log_newline();
   log_margin = ao_app->get_log_margin();
+  log_timestamp = ao_app->get_log_timestamp();
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
@@ -2620,6 +2622,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   if (log_goes_downwards && need_newline) {
     ui_ic_chatlog->textCursor().insertBlock(format);
   }
+
+  // Timestamp if we're doing that meme
+  if (log_timestamp)
+    ui_ic_chatlog->textCursor().insertText("[" + QDateTime::currentDateTime().toUTC().toString("h:mm:ss AP") + "] ", normal);
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);

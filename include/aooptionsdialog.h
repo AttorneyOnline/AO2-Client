@@ -50,6 +50,8 @@ private:
   QCheckBox *ui_log_newline_cb;
   QLabel *ui_log_margin_lbl;
   QSpinBox *ui_log_margin_spinbox;
+  QLabel *ui_log_timestamp_lbl;
+  QCheckBox *ui_log_timestamp_cb;
   QFrame *ui_log_names_divider;
   QLineEdit *ui_username_textbox;
   QLabel *ui_username_lbl;

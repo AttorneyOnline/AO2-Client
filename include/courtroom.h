@@ -318,7 +318,7 @@ private:
   int log_maximum_blocks = 0;
 
   // True, if the log should go downwards.
-  bool log_goes_downwards = false;
+  bool log_goes_downwards = true;
 
   // True, if log should display colors.
   bool log_colors = true;
@@ -328,6 +328,9 @@ private:
 
   // Margin in pixels between log entries for the IC log.
   int log_margin = 0;
+
+  // True, if the log should have a timestamp.
+  bool log_timestamp = false;
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;

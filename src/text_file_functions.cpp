@@ -66,6 +66,13 @@ int AOApplication::get_log_margin()
   return result;
 }
 
+bool AOApplication::get_log_timestamp()
+{
+  QString result =
+      configini->value("log_timestamp", "false").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::get_showname_enabled_by_default()
 {
   QString result =

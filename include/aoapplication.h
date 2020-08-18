@@ -219,6 +219,9 @@ public:
   // Get spacing between IC log entries.
   int get_log_margin();
 
+  // Returns whether the log should have a timestamp.
+  bool get_log_timestamp();
+
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
 
