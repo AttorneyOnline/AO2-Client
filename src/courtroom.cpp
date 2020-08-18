@@ -2291,13 +2291,25 @@ void Courtroom::handle_chatmessage_3()
   if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
     // shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
-    QString f_name = local_evidence_list.at(f_evi_id - 1).name;
+    QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     // def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(f_side == "def" || f_side == "hlp" ||
                           f_side == "jud" || f_side == "jur");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
                                           ui_sfx_slider->value());
-    append_ic_text(f_name, f_showname, tr("has presented evidence"));
+
+    chatlogpiece log_entry(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_evi_name, tr("has presented evidence"),
+                           m_chatmessage[TEXT_COLOR].toInt());
+    ic_chatlog_history.append(log_entry);
+    if (ao_app->get_auto_logging_enabled())
+      ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
+
+    while (ic_chatlog_history.size() > log_maximum_blocks &&
+           log_maximum_blocks > 0) {
+      ic_chatlog_history.removeFirst();
+    }
+
+    append_ic_text(f_evi_name, f_showname, tr("has presented evidence"));
   }
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
@@ -2626,7 +2638,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Timestamp if we're doing that meme
   if (log_timestamp)
-    ui_ic_chatlog->textCursor().insertText("[" + QDateTime::currentDateTime().toUTC().toString("h:mm:ss AP") + "] ", normal);
+    ui_ic_chatlog->textCursor().insertText("[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ", normal);
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
@@ -3189,11 +3201,11 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     if (!mute_map.value(n_char)) {
-      chatlogpiece *temp = new chatlogpiece(str_char, str_show, f_song, tr("has played a song"),
-                                            m_chatmessage[TEXT_COLOR].toInt());
-      ic_chatlog_history.append(*temp);
+      chatlogpiece log_entry(str_char, str_show, f_song, tr("has played a song"),
+                             m_chatmessage[TEXT_COLOR].toInt());
+      ic_chatlog_history.append(log_entry);
       if (ao_app->get_auto_logging_enabled())
-        ao_app->append_to_file(temp->get_full(), ao_app->log_filename, true);
+        ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
 
       while (ic_chatlog_history.size() > log_maximum_blocks &&
              log_maximum_blocks > 0) {
