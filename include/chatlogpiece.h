@@ -10,14 +10,14 @@ class chatlogpiece {
 public:
   chatlogpiece();
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
-               bool p_song,int color);
+               QString p_action,int color);
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
-               bool p_song, int color, QDateTime p_datetime);
+               QString p_action, int color, QDateTime p_datetime);
 
   QString get_name();
   QString get_showname();
   QString get_message();
-  bool is_song();
+  QString get_action();
   QDateTime get_datetime();
   QString get_datetime_as_string();
   int get_chat_color();
@@ -27,9 +27,9 @@ private:
   QString name;
   QString showname;
   QString message;
+  QString action;
   QDateTime datetime;
   int color;
-  bool p_is_song;
 };
 
 #endif // CHATLOGPIECE_H

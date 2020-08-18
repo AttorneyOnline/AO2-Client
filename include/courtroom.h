@@ -660,6 +660,8 @@ private:
 
   void reset_ic();
   void reset_ui();
+
+  void regenerate_ic_chatlog();
 public slots:
   void objection_done();
   void preanim_done();

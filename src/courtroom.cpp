@@ -587,13 +587,14 @@ void Courtroom::set_widgets()
 
   log_maximum_blocks = ao_app->get_max_log_size();
 
-  if (log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled() || log_newline != ao_app->get_log_newline() || log_margin != ao_app->get_log_margin() || log_timestamp != ao_app->get_log_timestamp())
-    ui_ic_chatlog->clear();
+  bool regenerate = log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled() || log_newline != ao_app->get_log_newline() || log_margin != ao_app->get_log_margin() || log_timestamp != ao_app->get_log_timestamp();
   log_goes_downwards = ao_app->get_log_goes_downwards();
   log_colors = ao_app->is_colorlog_enabled();
   log_newline = ao_app->get_log_newline();
   log_margin = ao_app->get_log_margin();
   log_timestamp = ao_app->get_log_timestamp();
+  if (regenerate)
+    regenerate_ic_chatlog();
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
@@ -1889,7 +1890,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
   {
-    chatlogpiece log_entry(f_charname, f_displayname, m_chatmessage[MESSAGE], false,
+    chatlogpiece log_entry(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
                            m_chatmessage[TEXT_COLOR].toInt());
     ic_chatlog_history.append(log_entry);
     if (ao_app->get_auto_logging_enabled())
@@ -2296,7 +2297,7 @@ void Courtroom::handle_chatmessage_3()
                           f_side == "jud" || f_side == "jur");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
                                           ui_sfx_slider->value());
-    append_ic_text(f_name, f_showname, "has presented evidence");
+    append_ic_text(f_name, f_showname, tr("has presented evidence"));
   }
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
@@ -3188,7 +3189,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     if (!mute_map.value(n_char)) {
-      chatlogpiece *temp = new chatlogpiece(str_char, str_show, f_song, true,
+      chatlogpiece *temp = new chatlogpiece(str_char, str_show, f_song, tr("has played a song"),
                                             m_chatmessage[TEXT_COLOR].toInt());
       ic_chatlog_history.append(*temp);
       if (ao_app->get_auto_logging_enabled())
@@ -4659,28 +4660,17 @@ void Courtroom::on_guard_clicked() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_showname_enable_clicked()
 {
-  ui_ic_chatlog->clear();
-
-  foreach (chatlogpiece item, ic_chatlog_history) {
-    if (ui_showname_enable->isChecked()) {
-      if (item.is_song())
-        append_ic_text(item.get_message(), item.get_showname(),
-                       tr("has played a song"));
-      else
-        append_ic_text(item.get_message(), item.get_showname(), "",
-                       item.get_chat_color());
-    }
-    else {
-      if (item.is_song())
-        append_ic_text(item.get_message(), item.get_name(),
-                       tr("has played a song"));
-      else
-        append_ic_text(item.get_message(), item.get_name(), "",
-                       item.get_chat_color());
-    }
-  }
-
+  regenerate_ic_chatlog();
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::regenerate_ic_chatlog()
+{
+  ui_ic_chatlog->clear();
+  foreach (chatlogpiece item, ic_chatlog_history) {
+    append_ic_text(item.get_message(), ui_showname_enable->isChecked() ? item.get_showname() : item.get_name(),
+                   item.get_action(), item.get_chat_color());
+  }
 }
 
 void Courtroom::on_evidence_button_clicked()
