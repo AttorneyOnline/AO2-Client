@@ -262,7 +262,6 @@ private:
   int m_viewport_width = 256;
   int m_viewport_height = 192;
 
-  bool first_message_sent = false;
   int maximumMessages = 0;
 
   QParallelAnimationGroup *screenshake_animation_group =

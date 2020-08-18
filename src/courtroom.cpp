@@ -581,8 +581,15 @@ void Courtroom::set_widgets()
   ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
+  log_maximum_blocks = ao_app->get_max_log_size();
+
+  if (log_goes_downwards != ao_app->get_log_goes_downwards())
+    ui_ic_chatlog->clear();
+  log_goes_downwards = ao_app->get_log_goes_downwards();
+
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
+  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ Log goes down ▼" : "▲ Log goes up ▲");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
   ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
@@ -2592,96 +2599,62 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   italics.setFontItalic(true);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
+  const bool need_newline = !ui_ic_chatlog->document()->isEmpty();
+  const int scrollbar_target_value = log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : ui_ic_chatlog->verticalScrollBar()->minimum();
 
-  if (p_action == "")
-    p_text = filter_ic_text(p_text, ao_app->is_colorlog_enabled(), -1, color);
+  ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
 
-  if (log_goes_downwards) {
-    const bool is_scrolled_down =
-        old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
+  // Only prepend with newline if log goes downwards
+  if (log_goes_downwards && need_newline) {
+    ui_ic_chatlog->textCursor().insertBlock();
+  }
 
-    ui_ic_chatlog->moveCursor(QTextCursor::End);
-
-    if (!first_message_sent) {
-      ui_ic_chatlog->textCursor().insertText(p_name, bold);
-      first_message_sent = true;
-    }
-    else {
-      ui_ic_chatlog->textCursor().insertText('\n' + p_name, bold);
-    }
-
-    if (p_action != "") {
-      ui_ic_chatlog->textCursor().insertText(" " + p_action + ": ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
-    }
-    else {
-      ui_ic_chatlog->textCursor().insertText(": ", normal);
-      ui_ic_chatlog->textCursor().insertHtml(p_text);
-    }
-
-    // If we got too many blocks in the current log, delete some from the top.
-    while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
-           log_maximum_blocks > 0) {
-      ui_ic_chatlog->moveCursor(QTextCursor::Start);
-      ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-      ui_ic_chatlog->textCursor().removeSelectedText();
-      ui_ic_chatlog->textCursor().deleteChar();
-    }
-
-    if (old_cursor.hasSelection() || !is_scrolled_down) {
-      // The user has selected text or scrolled away from the bottom: maintain
-      // position.
-      ui_ic_chatlog->setTextCursor(old_cursor);
-      ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-    }
-    else {
-      // The user hasn't selected any text and the scrollbar is at the bottom:
-      // scroll to the bottom.
-      ui_ic_chatlog->moveCursor(QTextCursor::End);
-      ui_ic_chatlog->verticalScrollBar()->setValue(
-          ui_ic_chatlog->verticalScrollBar()->maximum());
-    }
+  // Format the name of the actor
+  ui_ic_chatlog->textCursor().insertText(p_name, bold);
+  // If action not blank:
+  if (p_action != "") {
+    // Format the action in normal
+    ui_ic_chatlog->textCursor().insertText(" " + p_action + ": ", normal);
+    // Format the result in italics
+    ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
   }
   else {
-    const bool is_scrolled_up =
-        old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->minimum();
+    // Format the action in normal
+    ui_ic_chatlog->textCursor().insertText(": ", normal);
+    // Format the result according to html
+    ui_ic_chatlog->textCursor().insertHtml(filter_ic_text(p_text, ao_app->is_colorlog_enabled(), -1, color));
+  }
 
-    ui_ic_chatlog->moveCursor(QTextCursor::Start);
+  // Only append with newline if log goes upwards
+  if (!log_goes_downwards && need_newline) {
+    ui_ic_chatlog->textCursor().insertBlock();
+  }
 
-    ui_ic_chatlog->textCursor().insertText(p_name, bold);
-
-    if (p_action != "") {
-      ui_ic_chatlog->textCursor().insertText(" " + p_action + ": ", normal);
-      ui_ic_chatlog->textCursor().insertText(p_text + "." + '\n', italics);
-    }
-    else {
-      ui_ic_chatlog->textCursor().insertText(": ", normal);
-      ui_ic_chatlog->textCursor().insertHtml(p_text + "<br>");
-    }
-
-    // If we got too many blocks in the current log, delete some from the
-    // bottom.
-    while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
-           log_maximum_blocks > 0) {
-      ui_ic_chatlog->moveCursor(QTextCursor::End);
-      ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-      ui_ic_chatlog->textCursor().removeSelectedText();
+  // If we got too many blocks in the current log, delete some.
+  while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
+         log_maximum_blocks > 0) {
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::Start : QTextCursor::End);
+    ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
+    ui_ic_chatlog->textCursor().removeSelectedText();
+    if (log_goes_downwards)
+      ui_ic_chatlog->textCursor().deleteChar();
+    else
       ui_ic_chatlog->textCursor().deletePreviousChar();
-    }
+  }
 
-    if (old_cursor.hasSelection() || !is_scrolled_up) {
-      // The user has selected text or scrolled away from the top: maintain
-      // position.
-      ui_ic_chatlog->setTextCursor(old_cursor);
-      ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
-    }
-    else {
-      // The user hasn't selected any text and the scrollbar is at the top:
-      // scroll to the top.
-      ui_ic_chatlog->moveCursor(QTextCursor::Start);
-      ui_ic_chatlog->verticalScrollBar()->setValue(
-          ui_ic_chatlog->verticalScrollBar()->minimum());
-    }
+  // Finally, scroll the scrollbar to the correct position.
+  if (old_cursor.hasSelection() || old_scrollbar_value != scrollbar_target_value) {
+    // The user has selected text or scrolled away from the bottom: maintain
+    // position.
+    ui_ic_chatlog->setTextCursor(old_cursor);
+    ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
+  }
+  else {
+    // The user hasn't selected any text and the scrollbar is at the bottom:
+    // scroll to the bottom.
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
+    ui_ic_chatlog->verticalScrollBar()->setValue(
+        ui_ic_chatlog->verticalScrollBar()->maximum());
   }
 }
 
@@ -4652,7 +4625,6 @@ void Courtroom::on_guard_clicked() { ui_ic_chat_message->setFocus(); }
 void Courtroom::on_showname_enable_clicked()
 {
   ui_ic_chatlog->clear();
-  first_message_sent = false;
 
   foreach (chatlogpiece item, ic_chatlog_history) {
     if (ui_showname_enable->isChecked()) {
