@@ -443,8 +443,10 @@ public:
 
   void initBASS();
   static void load_bass_opus_plugin();
+#ifdef BASSAUDIO
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
+#endif
   static void doBASSreset();
 
 private:

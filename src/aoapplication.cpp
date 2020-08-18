@@ -178,12 +178,14 @@ void AOApplication::call_announce_menu(Courtroom *court)
   announcer.exec();
 }
 
+#ifdef BASSAUDIO
 // Callback for when BASS device is lost
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
                                        DWORD data, void *user)
 {
   doBASSreset();
 }
+#endif
 
 void AOApplication::doBASSreset()
 {
