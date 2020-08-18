@@ -68,9 +68,16 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
 
   set_volume_internal(m_volume);
 
-  if (ao_app->get_audio_output_device() != "default")
-    BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
+  BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
+  int f_bass_error = BASS_ErrorGetCode();
+  if(f_bass_error == BASS_ERROR_DEVICE)
+  {
+      ao_app->doBASSreset();
+      BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
+  }
+
   BASS_ChannelPlay(m_stream_list[m_channel], false);
+  BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
 }
 
 void AOSfxPlayer::stop(int channel)

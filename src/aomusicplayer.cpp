@@ -111,6 +111,8 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
   else
     this->set_volume(m_volume[channel], channel);
 
+  BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
+
   this->set_looping(loop, channel); // Have to do this here due to any
                            // crossfading-related changes, etc.
 }

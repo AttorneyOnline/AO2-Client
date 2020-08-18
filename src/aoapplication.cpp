@@ -178,6 +178,17 @@ void AOApplication::call_announce_menu(Courtroom *court)
   announcer.exec();
 }
 
+// Callback for when BASS device is lost
+void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel, DWORD data, void *user){
+    doBASSreset();
+}
+
+void AOApplication::doBASSreset(){
+    BASS_Free();
+    BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+    load_bass_opus_plugin();
+}
+
 void AOApplication::initBASS()
 {
     BASS_Free();

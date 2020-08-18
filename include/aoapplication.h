@@ -5,6 +5,13 @@
 #include "datatypes.h"
 #include "discord_rich_presence.h"
 
+#if defined(BASSAUDIO)
+#include "bass.h"
+#include "bassopus.h"
+#elif defined(QTAUDIO)
+#include <QMediaPlayer>
+#endif
+
 #include <QApplication>
 #include <QFile>
 #include <QSettings>
@@ -434,7 +441,9 @@ public:
   QString log_filename;
 
   void initBASS();
-  void load_bass_opus_plugin();
+  static void load_bass_opus_plugin();
+  static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data, void *user);
+  static void doBASSreset();
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 8;
