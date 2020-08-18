@@ -213,6 +213,12 @@ public:
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();
 
+  // Returns whether the log should separate name from text via newline or :
+  bool get_log_newline();
+
+  // Get spacing between IC log entries.
+  int get_log_margin();
+
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
 

@@ -46,6 +46,10 @@ private:
   QCheckBox *ui_downwards_cb;
   QLabel *ui_length_lbl;
   QSpinBox *ui_length_spinbox;
+  QLabel *ui_log_newline_lbl;
+  QCheckBox *ui_log_newline_cb;
+  QLabel *ui_log_margin_lbl;
+  QSpinBox *ui_log_margin_spinbox;
   QFrame *ui_log_names_divider;
   QLineEdit *ui_username_textbox;
   QLabel *ui_username_lbl;

@@ -53,6 +53,19 @@ bool AOApplication::get_log_goes_downwards()
   return result.startsWith("true");
 }
 
+bool AOApplication::get_log_newline()
+{
+  QString result =
+      configini->value("log_newline", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+int AOApplication::get_log_margin()
+{
+  int result = configini->value("log_margin", 0).toInt();
+  return result;
+}
+
 bool AOApplication::get_showname_enabled_by_default()
 {
   QString result =

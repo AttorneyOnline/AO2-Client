@@ -110,6 +110,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_maximum_blocks = ao_app->get_max_log_size();
   log_goes_downwards = ao_app->get_log_goes_downwards();
   log_colors = ao_app->is_colorlog_enabled();
+  log_newline = ao_app->get_log_newline();
+  log_margin = ao_app->get_log_margin();
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -584,10 +586,12 @@ void Courtroom::set_widgets()
 
   log_maximum_blocks = ao_app->get_max_log_size();
 
-  if (log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled())
+  if (log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled() || log_newline != ao_app->get_log_newline() || log_margin != ao_app->get_log_margin())
     ui_ic_chatlog->clear();
   log_goes_downwards = ao_app->get_log_goes_downwards();
   log_colors = ao_app->is_colorlog_enabled();
+  log_newline = ao_app->get_log_newline();
+  log_margin = ao_app->get_log_margin();
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
@@ -2600,9 +2604,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   QTextCharFormat bold;
   QTextCharFormat normal;
   QTextCharFormat italics;
+  QTextBlockFormat format;
   bold.setFontWeight(QFont::Bold);
   normal.setFontWeight(QFont::Normal);
   italics.setFontItalic(true);
+  format.setTopMargin(log_margin);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
   const bool need_newline = !ui_ic_chatlog->document()->isEmpty();
@@ -2612,7 +2618,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Only prepend with newline if log goes downwards
   if (log_goes_downwards && need_newline) {
-    ui_ic_chatlog->textCursor().insertBlock();
+    ui_ic_chatlog->textCursor().insertBlock(format);
   }
 
   // Format the name of the actor
@@ -2620,13 +2626,23 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // If action not blank:
   if (p_action != "") {
     // Format the action in normal
-    ui_ic_chatlog->textCursor().insertText(" " + p_action + ": ", normal);
+    ui_ic_chatlog->textCursor().insertText(" " + p_action, normal);
+    if (log_newline)
+      // For some reason, we're forced to use <br> instead of the more sensible \n.
+      // Why? Because \n is treated as a new Block instead of a soft newline within a paragraph!
+      ui_ic_chatlog->textCursor().insertHtml("<br>");
+    else
+      ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result in italics
     ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
   }
   else {
-    // Format the action in normal
-    ui_ic_chatlog->textCursor().insertText(": ", normal);
+    if (log_newline)
+      // For some reason, we're forced to use <br> instead of the more sensible \n.
+      // Why? Because \n is treated as a new Block instead of a soft newline within a paragraph!
+      ui_ic_chatlog->textCursor().insertHtml("<br>");
+    else
+      ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result according to html
     if (log_colors)
       ui_ic_chatlog->textCursor().insertHtml(filter_ic_text(p_text, true, -1, color));
@@ -2636,7 +2652,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Only append with newline if log goes upwards
   if (!log_goes_downwards && need_newline) {
-    ui_ic_chatlog->textCursor().insertBlock();
+    ui_ic_chatlog->textCursor().insertBlock(format);
   }
 
   // If we got too many blocks in the current log, delete some.

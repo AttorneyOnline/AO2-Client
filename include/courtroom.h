@@ -323,6 +323,12 @@ private:
   // True, if log should display colors.
   bool log_colors = true;
 
+  // True, if the log should display the message like name<br>text instead of name: text
+  bool log_newline = false;
+
+  // Margin in pixels between log entries for the IC log.
+  int log_margin = 0;
+
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
 
