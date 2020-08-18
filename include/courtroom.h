@@ -218,6 +218,8 @@ public:
   QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1,
                          int default_color = 0);
 
+  void log_ic_text(QString p_name, QString p_showname, QString p_message, QString p_action="", int p_color=0);
+
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected

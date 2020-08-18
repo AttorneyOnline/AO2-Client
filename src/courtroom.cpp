@@ -1890,17 +1890,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
   {
-    chatlogpiece log_entry(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
+    log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
                            m_chatmessage[TEXT_COLOR].toInt());
-    ic_chatlog_history.append(log_entry);
-    if (ao_app->get_auto_logging_enabled())
-      ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
-
-    while (ic_chatlog_history.size() > log_maximum_blocks &&
-           log_maximum_blocks > 0) {
-      ic_chatlog_history.removeFirst();
-    }
-
     append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
                    m_chatmessage[TEXT_COLOR].toInt());
   }
@@ -2298,17 +2289,8 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
                                           ui_sfx_slider->value());
 
-    chatlogpiece log_entry(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_evi_name, tr("has presented evidence"),
+    log_ic_text(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_evi_name, tr("has presented evidence"),
                            m_chatmessage[TEXT_COLOR].toInt());
-    ic_chatlog_history.append(log_entry);
-    if (ao_app->get_auto_logging_enabled())
-      ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
-
-    while (ic_chatlog_history.size() > log_maximum_blocks &&
-           log_maximum_blocks > 0) {
-      ic_chatlog_history.removeFirst();
-    }
-
     append_ic_text(f_evi_name, f_showname, tr("has presented evidence"));
   }
 
@@ -2611,6 +2593,21 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
   }
 
   return p_text_escaped;
+}
+
+void Courtroom::log_ic_text(QString p_name, QString p_showname,
+                       QString p_message, QString p_action, int p_color)
+{
+  chatlogpiece log_entry(p_name, p_showname, p_message, p_action,
+                         p_color);
+  ic_chatlog_history.append(log_entry);
+  if (ao_app->get_auto_logging_enabled())
+    ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
+
+  while (ic_chatlog_history.size() > log_maximum_blocks &&
+         log_maximum_blocks > 0) {
+    ic_chatlog_history.removeFirst();
+  }
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
@@ -3201,17 +3198,8 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     if (!mute_map.value(n_char)) {
-      chatlogpiece log_entry(str_char, str_show, f_song, tr("has played a song"),
+      log_ic_text(str_char, str_show, f_song, tr("has played a song"),
                              m_chatmessage[TEXT_COLOR].toInt());
-      ic_chatlog_history.append(log_entry);
-      if (ao_app->get_auto_logging_enabled())
-        ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
-
-      while (ic_chatlog_history.size() > log_maximum_blocks &&
-             log_maximum_blocks > 0) {
-        ic_chatlog_history.removeFirst();
-      }
-
       append_ic_text(f_song_clear, str_show, tr("has played a song"));
 
       music_player->play(f_song, channel, looping, effect_flags);
