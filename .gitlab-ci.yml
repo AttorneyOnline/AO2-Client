@@ -130,7 +130,6 @@ build windows i686:
 
 # Base folder
 .deploy_base: &deploy_base |
-    mkdir base
     cp -a ../base/ base/
     rm -rf base/themes/_Unadapted/
     rm base/themes/.gitattributes base/themes/.git
