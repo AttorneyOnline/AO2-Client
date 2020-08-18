@@ -314,9 +314,6 @@ private:
   bool rainbow_appended = false;
   bool blank_blip = false;
 
-  // Whether or not is this message additive to the previous one
-  bool is_additive = false;
-
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
 
@@ -354,7 +351,6 @@ private:
   static const int MS_MINIMUM = 15;
   static const int MS_MAXIMUM = 30;
   QString m_chatmessage[MS_MAXIMUM];
-  bool chatmessage_is_empty = false;
 
   QString previous_ic_message = "";
   QString additive_previous = "";
