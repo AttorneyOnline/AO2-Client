@@ -770,6 +770,9 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
 
+#ifdef BASSAUDIO
+  ao_app->initBASS();
+#endif
   callwordsini->close();
   done(0);
 }

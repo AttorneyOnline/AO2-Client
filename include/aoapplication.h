@@ -5,6 +5,13 @@
 #include "datatypes.h"
 #include "discord_rich_presence.h"
 
+#if defined(BASSAUDIO)
+#include "bass.h"
+#include "bassopus.h"
+#elif defined(QTAUDIO)
+#include <QMediaPlayer>
+#endif
+
 #include <QApplication>
 #include <QFile>
 #include <QSettings>
@@ -202,7 +209,8 @@ public:
 
   // Returns the value of whether custom chatboxes should be a thing.
   // from the config.ini.
-  // I am increasingly maddened by the lack of dynamic auto-generation system for settings.
+  // I am increasingly maddened by the lack of dynamic auto-generation system
+  // for settings.
   bool is_customchat_enabled();
 
   // Returns the value of the maximum amount of lines the IC chatlog
@@ -432,6 +440,14 @@ public:
 
   // The file name of the log file in base/logs.
   QString log_filename;
+
+  void initBASS();
+  static void load_bass_opus_plugin();
+#ifdef BASSAUDIO
+  static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
+                                 void *user);
+#endif
+  static void doBASSreset();
 
 private:
   const int RELEASE = 2;

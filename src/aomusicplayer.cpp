@@ -1,6 +1,5 @@
 #include "aomusicplayer.h"
 
-
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
@@ -111,8 +110,11 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
   else
     this->set_volume(m_volume[channel], channel);
 
+  BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_DEV_FAIL, 0,
+                      ao_app->BASSreset, 0);
+
   this->set_looping(loop, channel); // Have to do this here due to any
-                           // crossfading-related changes, etc.
+                                    // crossfading-related changes, etc.
 }
 
 void AOMusicPlayer::stop(int channel)
@@ -164,20 +166,23 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
     }
     if (loop_start[channel] > 0) {
       if (loop_end[channel] == 0)
-        loop_end[channel] = BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE);
-      if (loop_end[channel] > 0) // Don't loop zero length songs even if we're asked to
+        loop_end[channel] =
+            BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE);
+      if (loop_end[channel] >
+          0) // Don't loop zero length songs even if we're asked to
         loop_sync[channel] = BASS_ChannelSetSync(
-            m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME, loop_end[channel],
-            loopProc, &loop_start[channel]);
+            m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
+            loop_end[channel], loopProc, &loop_start[channel]);
     }
   }
 }
 #elif defined(QTAUDIO)
 
-AOMusicPlayer::~AOMusicPlayer() {
-    for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
-      m_stream_list[n_stream].stop();
-    }
+AOMusicPlayer::~AOMusicPlayer()
+{
+  for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
+    m_stream_list[n_stream].stop();
+  }
 }
 
 void AOMusicPlayer::play(QString p_song, int channel, bool loop,
@@ -197,10 +202,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
   m_stream_list[channel].play();
 }
 
-void AOMusicPlayer::stop(int channel)
-{
-  m_stream_list[channel].stop();
-}
+void AOMusicPlayer::stop(int channel) { m_stream_list[channel].stop(); }
 
 void AOMusicPlayer::set_volume(int p_value, int channel)
 {
@@ -213,7 +215,9 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
 AOMusicPlayer::~AOMusicPlayer() {}
 
 void AOMusicPlayer::play(QString p_song, int channel, bool loop,
-                         int effect_flags) {}
+                         int effect_flags)
+{
+}
 
 void AOMusicPlayer::stop(int channel) {}
 
