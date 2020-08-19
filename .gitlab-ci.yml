@@ -34,15 +34,15 @@ build linux x86_64:
     - clang --version
 
     # Extract BASS
-    #- mkdir bass
-    #- cd bass
-    #- curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
-    #- unzip bass.zip
-    #- cp x64/libbass.so ../lib
-    #- curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
-    #- unzip bassopus.zip
-    #- cp x64/libbassopus.so ../lib
-    #- cd ..
+    - mkdir bass
+    - cd bass
+    - curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
+    - unzip bass.zip
+    - cp x64/libbass.so ../lib
+    - curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+    - unzip bassopus.zip
+    - cp x64/libbassopus.so ../lib
+    - cd ..
 
     # Extract Discord RPC
     - mkdir discord-rpc
@@ -61,7 +61,7 @@ build linux x86_64:
     - cd ..
 
     # Build
-    - qmake -spec linux-clang "DEFINES += DISCORD QTAUDIO"
+    - qmake -spec linux-clang "DEFINES += DISCORD"
     - make -j4
 
     # Post-processing
@@ -109,7 +109,7 @@ build windows i686:
     - ls lib
 
     # Build
-    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += DISCORD BASSAUDIO"
+    - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += DISCORD"
     - make -j4
 
     # Post-processing
