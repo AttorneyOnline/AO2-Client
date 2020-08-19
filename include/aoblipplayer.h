@@ -1,12 +1,8 @@
 #ifndef AOBLIPPLAYER_H
 #define AOBLIPPLAYER_H
 
-#if defined(BASSAUDIO)
 #include "bass.h"
 #include "bassopus.h"
-#elif defined(QTAUDIO)
-#include <QSoundEffect>
-#endif
 
 #include "aoapplication.h"
 
@@ -35,11 +31,7 @@ private:
 
   void set_volume_internal(qreal p_volume);
 
-#if defined(BASSAUDIO)
   HSTREAM m_stream_list[5];
-#elif defined(QTAUDIO)
-  QSoundEffect m_blips;
-#endif
 };
 
 #endif // AOBLIPPLAYER_H

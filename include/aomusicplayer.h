@@ -2,12 +2,8 @@
 #define AOMUSICPLAYER_H
 #include "file_functions.h"
 
-#if defined(BASSAUDIO)
 #include "bass.h"
 #include "bassopus.h"
-#elif defined(QTAUDIO)
-#include <QMediaPlayer>
-#endif
 
 #include "aoapplication.h"
 
@@ -44,12 +40,8 @@ private:
   // Channel 1 = ambience
   // Channel 2 = extra
   // Channel 3 = extra
-  #if defined(BASSAUDIO)
   HSTREAM m_stream_list[4];
   HSYNC loop_sync[4];
-  #elif defined(QTAUDIO)
-  QMediaPlayer m_stream_list[4];
-  #endif
 };
 
 #endif // AOMUSICPLAYER_H

@@ -402,7 +402,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
     ui_audio_device_combobox->addItem("default"); //TODO translate this without breaking the default audio device
   }
-#ifdef BASSAUDIO
   BASS_DEVICEINFO info;
   for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
     ui_audio_device_combobox->addItem(info.name);
@@ -410,15 +409,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       ui_audio_device_combobox->setCurrentIndex(
           ui_audio_device_combobox->count() - 1);
   }
-#elif defined QTAUDIO
-  foreach (const QAudioDeviceInfo &deviceInfo,
-           QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-    ui_audio_device_combobox->addItem(deviceInfo.deviceName());
-    if (p_ao_app->get_audio_output_device() == deviceInfo.deviceName())
-      ui_audio_device_combobox->setCurrentIndex(
-          ui_audio_device_combobox->count() - 1);
-  }
-#endif
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole,
                              ui_audio_device_combobox);
 
@@ -770,9 +760,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
 
-#ifdef BASSAUDIO
   ao_app->initBASS();
-#endif
   callwordsini->close();
   done(0);
 }

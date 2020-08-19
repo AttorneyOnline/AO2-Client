@@ -3,22 +3,7 @@
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
-#ifdef BASSAUDIO
   ao_app->initBASS();
-#elif defined QTAUDIO
-
-  if (ao_app->get_audio_output_device() != "default") {
-    foreach (const QAudioDeviceInfo &deviceInfo,
-             QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-      if (ao_app->get_audio_output_device() == deviceInfo.deviceName()) {
-        ao_app->QtAudioDevice = deviceInfo;
-        qDebug() << deviceInfo.deviceName()
-                 << "was set as the default audio output device.";
-        break;
-      }
-    }
-  }
-#endif
 
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
 

@@ -178,7 +178,6 @@ void AOApplication::call_announce_menu(Courtroom *court)
   announcer.exec();
 }
 
-#ifdef BASSAUDIO
 // Callback for when BASS device is lost
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
                                        DWORD data, void *user)
@@ -220,28 +219,22 @@ void AOApplication::initBASS()
     load_bass_opus_plugin();
   }
 }
-#endif
+
 #if (defined(_WIN32) || defined(_WIN64))
 void AOApplication::load_bass_opus_plugin()
 {
-#ifdef BASSAUDIO
   BASS_PluginLoad("bassopus.dll", 0);
-#endif
 }
 #elif (defined(LINUX) || defined(__linux__))
 void AOApplication::load_bass_opus_plugin()
 {
-#ifdef BASSAUDIO
   BASS_PluginLoad("libbassopus.so", 0);
-#endif
 }
 #elif defined __APPLE__
 void AOApplication::load_bass_opus_plugin()
 {
-#ifdef BASSAUDIO
   BASS_PluginLoad("libbassopus.dylib", 0);
-#endif
 }
 #else
-#error This operating system is unsupported for bass plugins.
+#error This operating system is unsupported for BASS plugins.
 #endif

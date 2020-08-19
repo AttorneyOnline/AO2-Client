@@ -5,12 +5,8 @@
 #include "datatypes.h"
 #include "discord_rich_presence.h"
 
-#if defined(BASSAUDIO)
 #include "bass.h"
 #include "bassopus.h"
-#elif defined(QTAUDIO)
-#include <QMediaPlayer>
-#endif
 
 #include <QApplication>
 #include <QFile>
@@ -30,9 +26,6 @@
 #include <QScreen>
 #include <QStringList>
 #include <QTextStream>
-#ifdef QTAUDIO
-#include <QAudioDeviceInfo>
-#endif
 
 class NetworkManager;
 class Lobby;
@@ -226,9 +219,6 @@ public:
 
   // Returns the audio device used for the client.
   QString get_audio_output_device();
-#ifdef QTAUDIO
-  QAudioDeviceInfo QtAudioDevice;
-#endif
 
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();
@@ -443,10 +433,8 @@ public:
 
   void initBASS();
   static void load_bass_opus_plugin();
-#ifdef BASSAUDIO
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
-#endif
   static void doBASSreset();
 
 private:

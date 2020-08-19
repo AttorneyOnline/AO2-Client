@@ -1,12 +1,8 @@
 #ifndef AOSFXPLAYER_H
 #define AOSFXPLAYER_H
 
-#if defined(BASSAUDIO)
 #include "bass.h"
 #include "bassopus.h"
-#elif defined(QTAUDIO)
-#include <QSoundEffect>
-#endif
 
 #include "aoapplication.h"
 
@@ -37,11 +33,7 @@ private:
 
   const int m_channelmax = 5;
 
-#if defined(BASSAUDIO)
   HSTREAM m_stream_list[5];
-#elif defined(QTAUDIO)
-  QSoundEffect m_stream_list[5];
-#endif
 };
 
 #endif // AOSFXPLAYER_H
