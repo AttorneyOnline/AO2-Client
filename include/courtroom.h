@@ -218,6 +218,8 @@ public:
   QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1,
                          int default_color = 0);
 
+  void log_ic_text(QString p_name, QString p_showname, QString p_message, QString p_action="", int p_color=0);
+
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
@@ -262,7 +264,6 @@ private:
   int m_viewport_width = 256;
   int m_viewport_height = 192;
 
-  bool first_message_sent = false;
   int maximumMessages = 0;
 
   QParallelAnimationGroup *screenshake_animation_group =
@@ -319,7 +320,19 @@ private:
   int log_maximum_blocks = 0;
 
   // True, if the log should go downwards.
-  bool log_goes_downwards = false;
+  bool log_goes_downwards = true;
+
+  // True, if log should display colors.
+  bool log_colors = true;
+
+  // True, if the log should display the message like name<br>text instead of name: text
+  bool log_newline = false;
+
+  // Margin in pixels between log entries for the IC log.
+  int log_margin = 0;
+
+  // True, if the log should have a timestamp.
+  bool log_timestamp = false;
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
@@ -649,6 +662,8 @@ private:
 
   void reset_ic();
   void reset_ui();
+
+  void regenerate_ic_chatlog();
 public slots:
   void objection_done();
   void preanim_done();
