@@ -3,42 +3,7 @@
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
-#ifdef BASSAUDIO
-  // Change the default audio output device to be the one the user has given
-  // in his config.ini file for now.
-  unsigned int a = 0;
-  BASS_DEVICEINFO info;
-
-  if (ao_app->get_audio_output_device() == "default") {
-    BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-    load_bass_opus_plugin();
-  }
-  else {
-    for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-      if (ao_app->get_audio_output_device() == info.name) {
-        BASS_SetDevice(a);
-        BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
-                  nullptr);
-        load_bass_opus_plugin();
-        qDebug() << info.name << "was set as the default audio output device.";
-        break;
-      }
-    }
-  }
-#elif defined QTAUDIO
-
-  if (ao_app->get_audio_output_device() != "default") {
-    foreach (const QAudioDeviceInfo &deviceInfo,
-             QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-      if (ao_app->get_audio_output_device() == deviceInfo.deviceName()) {
-        ao_app->QtAudioDevice = deviceInfo;
-        qDebug() << deviceInfo.deviceName()
-                 << "was set as the default audio output device.";
-        break;
-      }
-    }
-  }
-#endif
+  ao_app->initBASS();
 
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
 
@@ -4750,28 +4715,3 @@ Courtroom::~Courtroom()
   delete objection_player;
   delete blip_player;
 }
-
-#if (defined(_WIN32) || defined(_WIN64))
-void Courtroom::load_bass_opus_plugin()
-{
-#ifdef BASSAUDIO
-  BASS_PluginLoad("bassopus.dll", 0);
-#endif
-}
-#elif (defined(LINUX) || defined(__linux__))
-void Courtroom::load_bass_opus_plugin()
-{
-#ifdef BASSAUDIO
-  BASS_PluginLoad("libbassopus.so", 0);
-#endif
-}
-#elif defined __APPLE__
-void Courtroom::load_bass_opus_plugin()
-{
-#ifdef BASSAUDIO
-  BASS_PluginLoad("libbassopus.dylib", 0);
-#endif
-}
-#else
-#error This operating system is unsupported for bass plugins.
-#endif

@@ -828,8 +828,6 @@ private slots:
   void on_casing_clicked();
 
   void ping_server();
-
-  void load_bass_opus_plugin();
 };
 
 #endif // COURTROOM_H
