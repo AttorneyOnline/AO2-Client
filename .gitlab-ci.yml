@@ -5,8 +5,6 @@ stages:
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - lib/
 
 variables:
   DEBIAN_FRONTEND: noninteractive
@@ -15,7 +13,7 @@ before_script:
   - echo Current working directory is $(pwd)
 
 build linux x86_64:
-  image: ubuntu
+  image: ubuntu:18.04
   stage: build
   tags:
     - docker
@@ -53,11 +51,21 @@ build linux x86_64:
     - cd ..
 
     # Extract QtApng
-    - mkdir qtapng
-    - cd qtapng
-    - curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.0-5/build_gcc_64_5.12.0.tar.xz -o apng.tar.xz
-    - tar -xvf apng.tar.xz
-    - cp gcc_64/plugins/imageformats/libqapng.so ../lib
+    #- mkdir qtapng
+    #- cd qtapng
+    #- curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.0-5/build_gcc_64_5.12.0.tar.xz -o apng.tar.xz
+    #- tar -xvf apng.tar.xz
+    #- cp gcc_64/plugins/imageformats/libqapng.so ../lib
+    #- cd ..
+
+    # Build QtApng
+    - git clone https://github.com/Skycoder42/QtApng
+    - cd QtApng
+    - qmake -spec linux-clang
+    # Don't make examples - they're not compatible with Qt 5.9
+    - make -j4 sub-src
+    #- make sub-src-install_subtargets
+    - cp plugins/imageformats/libqapng.so ../lib
     - cd ..
 
     # Build
@@ -68,6 +76,7 @@ build linux x86_64:
     - upx --lzma -9 --force bin/Attorney_Online
   artifacts:
     paths:
+      - lib/
       - bin/
 
 build windows i686:
@@ -116,12 +125,14 @@ build windows i686:
     - upx --lzma -9 --force bin/Attorney_Online.exe
   artifacts:
     paths:
+      - lib/
       - bin/
 
 # Base folder
 .deploy_base: &deploy_base |
-    mkdir base
     cp -a ../base/ base/
+    rm -rf base/themes/_Unadapted/
+    rm base/themes/.gitattributes base/themes/.git
 
 # Miscellaneous files
 .deploy_misc: &deploy_misc |
