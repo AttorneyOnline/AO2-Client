@@ -22,6 +22,7 @@ base/characters
 base/sounds
 base/callwords.ini
 base/config.ini
+base/serverlist.txt
 
 .qmake.stash
 
