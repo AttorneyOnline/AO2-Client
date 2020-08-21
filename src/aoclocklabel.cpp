@@ -7,28 +7,43 @@ void AOClockLabel::start()
   this->resume();
 }
 
-void AOClockLabel::start(QTime p_time)
+void AOClockLabel::start(int msecs)
 {
   QTime time = QTime::currentTime();
-  if (p_time > time)
+  if (msecs > time.msec())
   {
-    target_time = p_time;
-    starting_time = time;
+    target_time = time.addMSecs(msecs);
     timer.start(100, this);
   }
 }
 
-void AOClockLabel::pause() {}
+void AOClockLabel::pause()
+{
+  timer.stop();
+}
 
-void AOClockLabel::resume() {}
+void AOClockLabel::resume()
+{
+  timer.start(100, this);
+}
 
-void AOClockLabel::stop() {}
+void AOClockLabel::stop()
+{
+  this->setText("00:00:00.000");
+  timer.stop();
+}
 
 void AOClockLabel::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == timer.timerId()) {
-        QTime elapsed = QTime(0,0).addSecs(starting_time.secsTo(starting_time));
-        this->setText(elapsed.toString("hh:mm:ss.zzz"));
+        if (QTime::currentTime() >= target_time)
+        {
+          this->stop();
+          return;
+        }
+        QTime timeleft = QTime(0,0).addMSecs(QTime::currentTime().msecsTo(target_time));
+        QString timestring = timeleft.toString("hh:mm:ss.zzz");
+        this->setText(timestring);
     } else {
         QWidget::timerEvent(event);
     }

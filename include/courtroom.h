@@ -6,6 +6,7 @@
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aocharmovie.h"
+#include "aoclocklabel.h"
 #include "aoemotebutton.h"
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
@@ -516,6 +517,8 @@ private:
 
   ScrollText *ui_music_name;
   AOMovie *ui_music_display;
+
+  AOClockLabel *ui_clock;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;

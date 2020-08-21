@@ -112,6 +112,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_name->setText(tr("None"));
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
 
+  ui_clock = new AOClockLabel(this);
+  ui_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
+
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
@@ -619,6 +622,9 @@ void Courtroom::set_widgets()
   ui_music_display->play("music_display");
   ui_music_display->set_play_once(false);
 
+  set_size_and_pos(ui_clock, "clock");
+  ui_clock->start(30000);
+
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
     set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
@@ -943,6 +949,7 @@ void Courtroom::set_fonts(QString p_char)
   set_font(ui_music_list, "", "music_list", p_char);
   set_font(ui_area_list, "", "area_list", p_char);
   set_font(ui_music_name, "", "music_name", p_char);
+  set_font(ui_clock, "", "clock", p_char);
 
   set_dropdowns();
 }

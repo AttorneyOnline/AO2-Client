@@ -5,6 +5,7 @@
 #include <QBasicTimer>
 #include <QTimerEvent>
 #include <QTime>
+#include <QDebug>
 
 class AOClockLabel : public QLabel {
   Q_OBJECT
@@ -12,7 +13,7 @@ class AOClockLabel : public QLabel {
 public:
   AOClockLabel(QWidget *parent);
   void start();
-  void start(QTime p_time);
+  void start(int msecs);
   void pause();
   void resume();
   void stop();
@@ -22,7 +23,6 @@ protected:
 
 private:
     QBasicTimer timer;
-    QTime starting_time;
     QTime target_time;
 };
 
