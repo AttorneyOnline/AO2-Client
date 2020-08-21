@@ -2,7 +2,6 @@
 
 #include "courtroom.h"
 #include "debug_functions.h"
-#include "encryption_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
