@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.8.4.0
+VERSION = 2.8.5.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -22,34 +22,14 @@ contains(DEFINES, DISCORD) {
   LIBS += -ldiscord-rpc
 }
 
-# Uncomment to enable the BASS audio engine
-# (Recommended for Windows)
-# DEFINES += BASSAUDIO
-
-contains(DEFINES, BASSAUDIO) {
-  LIBS += -lbass
-  LIBS += -lbassopus
-}
-
-# Uncomment to enable the Qt audio engine
-# (Recommended for non-Windows platforms)
-# DEFINES += QTAUDIO
-
-contains(DEFINES, QTAUDIO) {
-  QT += multimedia
-}
-
-AUDIO_DEFINES = $$find(DEFINES, BASSAUDIO) $$find(DEFINES, QTAUDIO)
-count(AUDIO_DEFINES, 0) {
-  warning("No audio system selected. Your build will not have audio.")
-}
-
-count(AUDIO_DEFINES, 2) {
-  error("More than one audio system selected.")
-}
+# As of 2.8.5, BASS and BASSOPUS are required for all platforms. Qt Multimedia
+# is no longer an option due to outdated code and lack of versatility.
+# Download at un4seen.com and place the DLLs in the "lib" and "bin" folders.
+DEFINES += BASSAUDIO
+LIBS += -lbass
+LIBS += -lbassopus
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
-
 
 CONFIG += c++14
 

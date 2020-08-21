@@ -3,6 +3,11 @@ FROM oldmud0/mxe-qt:5.13.0-win32-static-posix
 
 ENV TARGET_SPEC i686-w64-mingw32.static.posix
 
+# Build libarchive statically
+WORKDIR /opt/mxe
+RUN make -j4 MXE_TARGETS=${TARGET_SPEC} libarchive bzip2 xz lz4 zstd nettle expat libxml2
+WORKDIR /
+
 # Build Discord RPC statically
 RUN git clone https://github.com/discordapp/discord-rpc
 WORKDIR discord-rpc/build

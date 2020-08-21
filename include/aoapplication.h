@@ -5,6 +5,9 @@
 #include "datatypes.h"
 #include "discord_rich_presence.h"
 
+#include "bass.h"
+#include "bassopus.h"
+
 #include <QApplication>
 #include <QFile>
 #include <QSettings>
@@ -23,9 +26,6 @@
 #include <QScreen>
 #include <QStringList>
 #include <QTextStream>
-#ifdef QTAUDIO
-#include <QAudioDeviceInfo>
-#endif
 
 class NetworkManager;
 class Lobby;
@@ -202,7 +202,8 @@ public:
 
   // Returns the value of whether custom chatboxes should be a thing.
   // from the config.ini.
-  // I am increasingly maddened by the lack of dynamic auto-generation system for settings.
+  // I am increasingly maddened by the lack of dynamic auto-generation system
+  // for settings.
   bool is_customchat_enabled();
 
   // Returns the value of the maximum amount of lines the IC chatlog
@@ -213,14 +214,20 @@ public:
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();
 
+  // Returns whether the log should separate name from text via newline or :
+  bool get_log_newline();
+
+  // Get spacing between IC log entries.
+  int get_log_margin();
+
+  // Returns whether the log should have a timestamp.
+  bool get_log_timestamp();
+
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
 
   // Returns the audio device used for the client.
   QString get_audio_output_device();
-#ifdef QTAUDIO
-  QAudioDeviceInfo QtAudioDevice;
-#endif
 
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();
@@ -433,10 +440,16 @@ public:
   // The file name of the log file in base/logs.
   QString log_filename;
 
+  void initBASS();
+  static void load_bass_opus_plugin();
+  static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
+                                 void *user);
+  static void doBASSreset();
+
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 8;
-  const int MINOR_VERSION = 4;
+  const int MINOR_VERSION = 5;
 
   QString current_theme = "default";
 

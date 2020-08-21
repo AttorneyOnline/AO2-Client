@@ -5,6 +5,8 @@
 #include "debug_functions.h"
 #include "networkmanager.h"
 
+#include <QImageReader>
+
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
@@ -353,13 +355,7 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-#ifdef BASSAUDIO
-  const QString audio = "BASS";
-#elif defined(QTAUDIO)
-  const QString audio = "Qt Multimedia";
-#else
-  const QString audio = "null";
-#endif
+  const bool hasApng = QImageReader::supportedImageFormats().contains("APNG");
 
   QString msg =
       tr("<h2>Attorney Online %1</h2>"
@@ -389,11 +385,12 @@ void Lobby::on_about_clicked()
          "is copyright (c) 2016-2020 Attorney Online developers. Open-source "
          "licenses apply. All other assets are the property of their "
          "respective owners."
-         "<p>Running on Qt version %2 with the %3 audio engine."
+         "<p>Running on Qt version %2 with the BASS audio engine.<br>"
+         "APNG plugin loaded: %3"
          "<p>Built on %4")
       .arg(ao_app->get_version_string())
       .arg(QLatin1String(QT_VERSION_STR))
-      .arg(audio)
+      .arg(hasApng ? tr("Yes") : tr("No"))
       .arg(QLatin1String(__DATE__));
   QMessageBox::about(this, tr("About"), msg);
 }

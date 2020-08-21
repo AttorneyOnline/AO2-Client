@@ -177,3 +177,64 @@ void AOApplication::call_announce_menu(Courtroom *court)
   AOCaseAnnouncerDialog announcer(nullptr, this, court);
   announcer.exec();
 }
+
+// Callback for when BASS device is lost
+void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
+                                       DWORD data, void *user)
+{
+  doBASSreset();
+}
+
+void AOApplication::doBASSreset()
+{
+  BASS_Free();
+  BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+  load_bass_opus_plugin();
+}
+
+void AOApplication::initBASS()
+{
+  BASS_Free();
+  // Change the default audio output device to be the one the user has given
+  // in his config.ini file for now.
+  unsigned int a = 0;
+  BASS_DEVICEINFO info;
+
+  if (get_audio_output_device() == "default") {
+    BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+    load_bass_opus_plugin();
+  }
+  else {
+    for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
+      if (get_audio_output_device() == info.name) {
+        BASS_SetDevice(a);
+        BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
+                  nullptr);
+        load_bass_opus_plugin();
+        qDebug() << info.name << "was set as the default audio output device.";
+        return;
+      }
+    }
+    BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+    load_bass_opus_plugin();
+  }
+}
+
+#if (defined(_WIN32) || defined(_WIN64))
+void AOApplication::load_bass_opus_plugin()
+{
+  BASS_PluginLoad("bassopus.dll", 0);
+}
+#elif (defined(LINUX) || defined(__linux__))
+void AOApplication::load_bass_opus_plugin()
+{
+  BASS_PluginLoad("libbassopus.so", 0);
+}
+#elif defined __APPLE__
+void AOApplication::load_bass_opus_plugin()
+{
+  BASS_PluginLoad("libbassopus.dylib", 0);
+}
+#else
+#error This operating system is unsupported for BASS plugins.
+#endif

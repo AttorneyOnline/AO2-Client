@@ -121,6 +121,49 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_length_spinbox);
 
   row += 1;
+  ui_log_newline_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_newline_lbl->setText(tr("Log newline:"));
+  ui_log_newline_lbl->setToolTip(
+      tr("If ticked, new messages will appear separated, "
+         "with the message coming on the next line after the name. "
+         "When unticked, it displays it as 'name: message'."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_newline_lbl);
+
+  ui_log_newline_cb = new QCheckBox(ui_form_layout_widget);
+  ui_log_newline_cb->setChecked(p_ao_app->get_log_newline());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_newline_cb);
+
+  row += 1;
+  ui_log_margin_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_margin_lbl->setText(tr("Log margin:"));
+  ui_log_margin_lbl->setToolTip(tr(
+      "The distance in pixels between each entry in the IC log. "
+      "Default: 0."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_margin_lbl);
+
+  ui_log_margin_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_log_margin_spinbox->setMaximum(1000);
+  ui_log_margin_spinbox->setValue(p_ao_app->get_log_margin());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_margin_spinbox);
+
+  row += 1;
+  ui_log_timestamp_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_timestamp_lbl->setText(tr("Log timestamp:"));
+  ui_log_timestamp_lbl->setToolTip(
+      tr("If ticked, log will contain a timestamp in UTC before the name."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_lbl);
+
+  ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
+  ui_log_timestamp_cb->setChecked(p_ao_app->get_log_timestamp());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
+
+  row += 1;
   ui_log_names_divider = new QFrame(ui_form_layout_widget);
   ui_log_names_divider->setFrameShape(QFrame::HLine);
   ui_log_names_divider->setFrameShadow(QFrame::Sunken);
@@ -402,7 +445,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
     ui_audio_device_combobox->addItem("default"); //TODO translate this without breaking the default audio device
   }
-#ifdef BASSAUDIO
   BASS_DEVICEINFO info;
   for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
     ui_audio_device_combobox->addItem(info.name);
@@ -410,15 +452,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       ui_audio_device_combobox->setCurrentIndex(
           ui_audio_device_combobox->count() - 1);
   }
-#elif defined QTAUDIO
-  foreach (const QAudioDeviceInfo &deviceInfo,
-           QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-    ui_audio_device_combobox->addItem(deviceInfo.deviceName());
-    if (p_ao_app->get_audio_output_device() == deviceInfo.deviceName())
-      ui_audio_device_combobox->setCurrentIndex(
-          ui_audio_device_combobox->count() - 1);
-  }
-#endif
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole,
                              ui_audio_device_combobox);
 
@@ -726,6 +759,9 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("theme", ui_theme_combobox->currentText());
   configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
   configini->setValue("log_maximum", ui_length_spinbox->value());
+  configini->setValue("log_newline", ui_log_newline_cb->isChecked());
+  configini->setValue("log_margin", ui_log_margin_spinbox->value());
+  configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
   configini->setValue("master", ui_ms_textbox->text());
@@ -770,6 +806,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
 
+  ao_app->initBASS();
   callwordsini->close();
   done(0);
 }

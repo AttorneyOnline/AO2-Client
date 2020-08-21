@@ -101,9 +101,7 @@ const specialActions = changesFile ?
     // higher-level directories will succeed.
     .concat(Array.from(dirsDeleted.values())
         .sort((a, b) => b.split("/").length - a.split("/").length)
-        .map(dir => {
-            return { action: "deleteDir", target: dir };
-        }))
+        .map(dir => ({ action: "deleteDir", target: dir })))
     : [];
 
 const urlBase = "https://s3.wasabisys.com/ao-downloads/";
