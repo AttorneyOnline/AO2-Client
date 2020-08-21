@@ -63,9 +63,6 @@ public:
 
   /////////////////server metadata//////////////////
 
-  unsigned int s_decryptor = 5;
-  bool encryption_needed = true;
-
   bool yellow_text_enabled = false;
   bool prezoom_enabled = false;
   bool flipping_enabled = false;

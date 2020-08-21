@@ -120,11 +120,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() == 0)
       goto end;
 
-    // you may ask where 322 comes from. that would be a good question.
-    s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
-
     // default(legacy) values
-    encryption_needed = true;
     yellow_text_enabled = false;
     prezoom_enabled = false;
     flipping_enabled = false;
@@ -139,10 +135,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     looping_sfx_support_enabled = false;
     additive_enabled = false;
     effects_enabled = false;
-
-    // workaround for tsuserver4
-    if (f_contents.at(0) == "NOENCRYPT")
-      encryption_needed = false;
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -201,8 +193,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       custom_objection_enabled = true;
     if (f_packet.contains("fastloading", Qt::CaseInsensitive))
       improved_loading_enabled = true;
-    if (f_packet.contains("noencryption", Qt::CaseInsensitive))
-      encryption_needed = false;
     if (f_packet.contains("deskmod", Qt::CaseInsensitive))
       desk_mod_enabled = true;
     if (f_packet.contains("evidence", Qt::CaseInsensitive))
@@ -750,19 +740,9 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
 
   QString f_packet = p_packet->to_string();
 
-  if (encryption_needed) {
-#ifdef DEBUG_NETWORK
-    qDebug() << "S(e):" << f_packet;
-#endif
-
-    p_packet->encrypt_header(s_decryptor);
-    f_packet = p_packet->to_string();
-  }
-  else {
 #ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
 #endif
-  }
 
   net_manager->ship_server_packet(f_packet);
 
