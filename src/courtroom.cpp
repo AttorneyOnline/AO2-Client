@@ -2660,7 +2660,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     // scroll to the bottom.
     ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
     ui_ic_chatlog->verticalScrollBar()->setValue(
-        ui_ic_chatlog->verticalScrollBar()->maximum());
+        log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum()
+                           : 0);
   }
 }
 
