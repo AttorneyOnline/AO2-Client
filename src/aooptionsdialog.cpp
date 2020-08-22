@@ -756,6 +756,9 @@ void AOOptionsDialog::save_pressed()
   // Save everything into the config.ini.
   QSettings *configini = ao_app->configini;
 
+  const bool audioChanged = ui_audio_device_combobox->currentText() !=
+      ao_app->get_audio_output_device();
+
   configini->setValue("theme", ui_theme_combobox->currentText());
   configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
   configini->setValue("log_maximum", ui_length_spinbox->value());
@@ -806,7 +809,9 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
 
-  ao_app->initBASS();
+  if (audioChanged)
+    ao_app->initBASS();
+
   callwordsini->close();
   done(0);
 }
