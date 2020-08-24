@@ -35,8 +35,8 @@ void AOCharMovie::load_image(QString p_char, QString p_emote,
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_char, emote_prefix + "/" +
                       p_emote)), // Path check if it's categorized into a folder
-      ao_app->get_character_path(
-          p_char, p_emote + ".png"), // Non-animated path if emote_prefix fails
+      ao_app->get_image_suffix(ao_app->get_character_path(
+          p_char, p_emote)), // Just use the non-prefixed image, animated or not
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Theme placeholder path
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
