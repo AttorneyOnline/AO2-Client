@@ -61,6 +61,9 @@ public:
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
 
+  qint64 last_ping;
+  QString window_title;
+
   /////////////////server metadata//////////////////
 
   unsigned int s_decryptor = 5;

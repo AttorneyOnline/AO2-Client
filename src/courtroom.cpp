@@ -8,7 +8,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
 
   keepalive_timer = new QTimer(this);
-  keepalive_timer->start(60000);
+  keepalive_timer->start(1000);
 
   chat_tick_timer = new QTimer(this);
 
@@ -623,7 +623,6 @@ void Courtroom::set_widgets()
   ui_music_display->set_play_once(false);
 
   set_size_and_pos(ui_clock, "clock");
-  ui_clock->start(30000);
 
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
@@ -4672,6 +4671,7 @@ void Courtroom::on_switch_area_music_clicked()
 
 void Courtroom::ping_server()
 {
+  ping_timer.start();
   ao_app->send_server_packet(
       new AOPacket("CH#" + QString::number(m_cid) + "#%"));
 }

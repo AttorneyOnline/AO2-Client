@@ -116,7 +116,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     qDebug() << "R:" << f_packet;
 #endif
 
-  if (header == "decryptor") {
+  if (header == "CHECK") {
+    if (courtroom_constructed) {
+      last_ping = w_courtroom->get_ping();
+      w_courtroom->set_window_title(window_title + " [ping:" + QString::number(last_ping) + "]");
+    }
+  }
+  else if (header == "decryptor") {
     if (f_contents.size() == 0)
       goto end;
 
@@ -250,7 +256,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = tr("Attorney Online 2");
+    window_title = tr("Attorney Online 2");
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";

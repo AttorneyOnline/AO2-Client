@@ -57,7 +57,7 @@
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
-//#include <QRandomGenerator>
+#include <QElapsedTimer>
 
 #include <stack>
 
@@ -251,6 +251,8 @@ public:
 
   void check_connection_received();
 
+  qint64 get_ping() { return ping_timer.elapsed(); }
+
   ~Courtroom();
 
 private:
@@ -299,11 +301,15 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
-  // triggers ping_server() every 60 seconds
+  // triggers ping_server() every 1 second
   QTimer *keepalive_timer;
 
   // determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
+
+  // count up timer to check how long it took for us to get a response from ping_server()
+  QElapsedTimer ping_timer;
+
   // int chat_tick_interval = 60;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
