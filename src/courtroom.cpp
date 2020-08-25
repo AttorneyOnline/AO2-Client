@@ -4715,6 +4715,16 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
   }
 }
 
+void Courtroom::start_clock(qint64 msecs)
+{
+  ui_clock->start(static_cast<int>(msecs));
+}
+
+void Courtroom::stop_clock()
+{
+  ui_clock->stop();
+}
+
 Courtroom::~Courtroom()
 {
   delete music_player;

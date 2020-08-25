@@ -251,6 +251,10 @@ public:
 
   void check_connection_received();
 
+  void start_clock(qint64 msecs);
+
+  void stop_clock();
+
   qint64 get_ping() { return ping_timer.elapsed(); }
 
   ~Courtroom();
