@@ -729,12 +729,25 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                f_contents.at(5) == "1");
   }
   else if (header == "TI") { // Timer packet
-    if (courtroom_constructed && f_contents.size() >= 1) {
+    if (courtroom_constructed && f_contents.size() > 0) {
       qint64 resolution = f_contents.at(0).toInt();
+      //Type 0 = start/stop timer
+      //Type 1 = pause timer
+      int type = 0;
+      if (f_contents.size() > 1)
+        type = f_contents.at(1).toInt();
       qDebug() << "timer" << resolution << last_ping << resolution - last_ping;
       resolution = resolution - last_ping;
       if (resolution > 0)
-        w_courtroom->start_clock(resolution);
+      {
+        if (type == 1)
+        {
+          w_courtroom->pause_clock();
+          w_courtroom->set_clock(resolution);
+        }
+        else
+          w_courtroom->start_clock(resolution);
+      }
       else
         w_courtroom->stop_clock();
     }

@@ -251,7 +251,10 @@ public:
 
   void check_connection_received();
 
+  void start_clock();
   void start_clock(qint64 msecs);
+
+  void set_clock(qint64 msecs);
 
   void stop_clock();
 

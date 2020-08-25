@@ -4715,9 +4715,24 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
   }
 }
 
+void Courtroom::start_clock()
+{
+  ui_clock->start();
+}
+
 void Courtroom::start_clock(qint64 msecs)
 {
   ui_clock->start(static_cast<int>(msecs));
+}
+
+void Courtroom::set_clock(qint64 msecs)
+{
+  ui_clock->set(static_cast<int>(msecs), true);
+}
+
+void Courtroom::pause_clock()
+{
+  ui_clock->pause();
 }
 
 void Courtroom::stop_clock()
