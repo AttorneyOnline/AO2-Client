@@ -116,13 +116,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     qDebug() << "R:" << f_packet;
 #endif
 
-  if (header == "CHECK") {
-    if (courtroom_constructed) {
-      last_ping = w_courtroom->get_ping();
-      w_courtroom->set_window_title(window_title + " [ping:" + QString::number(last_ping) + "]");
-    }
-  }
-  else if (header == "decryptor") {
+  if (header == "decryptor") {
     if (f_contents.size() == 0)
       goto end;
 
@@ -750,6 +744,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
       else
         w_courtroom->stop_clock();
+    }
+  }
+  else if (header == "CHECK") {
+    if (courtroom_constructed) {
+      last_ping = w_courtroom->get_ping();
+      w_courtroom->set_window_title(window_title + " [ping:" + QString::number(last_ping) + "]");
     }
   }
 
