@@ -35,6 +35,11 @@ void AOClockLabel::set(int msecs, bool update_text)
   }
 }
 
+void AOClockLabel::pause()
+{
+  timer.stop();
+}
+
 void AOClockLabel::stop()
 {
   this->setText("00:00:00.000");

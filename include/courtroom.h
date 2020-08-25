@@ -253,9 +253,8 @@ public:
 
   void start_clock();
   void start_clock(qint64 msecs);
-
   void set_clock(qint64 msecs);
-
+  void pause_clock();
   void stop_clock();
 
   qint64 get_ping() { return ping_timer.elapsed(); }
