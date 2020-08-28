@@ -7,6 +7,7 @@ AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
   m_parent = parent;
   ao_app = p_ao_app;
   m_movie = new QMovie(this);
+  m_movie->setCacheMode(QMovie::CacheAll);
   last_image = "";
 }
 
