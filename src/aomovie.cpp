@@ -9,6 +9,7 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   ao_app = p_ao_app;
 
   m_movie = new QMovie();
+  m_movie->setCacheMode(QMovie::CacheAll);
 
   this->setMovie(m_movie);
 
