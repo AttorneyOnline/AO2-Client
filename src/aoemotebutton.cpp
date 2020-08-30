@@ -27,6 +27,7 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
   }
   else if (p_image.contains("_on") && file_exists(tmp_p_image.replace("_on", "_off"))) {
     QImage tmpImage(tmp_p_image);
+    tmpImage = tmpImage.convertToFormat(QImage::Format_ARGB32);
     QPoint p1, p2;
     p2.setY(tmpImage.height());
 
