@@ -1417,10 +1417,10 @@ void Courtroom::list_music()
   }
 
   ui_music_list->collapseAll();
-  ui_music_list->expandAll(); // Needs to somehow remember which categories were
-                              // expanded/collapsed if the music list didn't
-                              // change since last time
   if (ui_music_search->text() != "") {
+      ui_music_list->expandAll(); // Needs to somehow remember which categories were
+                                  // expanded/collapsed if the music list didn't
+                                  // change since last time
     on_music_search_edited(ui_music_search->text());
   }
 }
@@ -3592,6 +3592,7 @@ void Courtroom::on_ooc_toggle_clicked()
 // Todo: multithread this due to some servers having large as hell music list
 void Courtroom::on_music_search_edited(QString p_text)
 {
+    ui_music_list->expandAll();
   // Iterate through all QTreeWidgetItem items
   if (!ui_music_list->isHidden()) {
     QTreeWidgetItemIterator it(ui_music_list);
