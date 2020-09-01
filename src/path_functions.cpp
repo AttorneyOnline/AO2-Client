@@ -22,14 +22,8 @@ QString AOApplication::get_base_path()
 {
   QString base_path = "";
 #ifdef ANDROID
-  QString sdcard_storage = getenv("SECONDARY_STORAGE");
-  if (dir_exists(sdcard_storage + "/AO2/")) {
-    base_path = sdcard_storage + "/AO2/";
-  }
-  else {
-    QString external_storage = getenv("EXTERNAL_STORAGE");
-    base_path = external_storage + "/AO2/";
-  }
+    base_path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/AO2/base/";
+qDebug() << base_path << "1";
 #elif defined(__APPLE__)
   base_path = applicationDirPath() + "/../../../base/";
 #else
