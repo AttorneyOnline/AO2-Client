@@ -1,6 +1,6 @@
 QT += core gui widgets network
 
-TARGET = Attorney_Online
+TARGET = dtclient
 TEMPLATE = app
 
 VERSION = 2.8.5.0
