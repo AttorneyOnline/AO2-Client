@@ -1785,6 +1785,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (p_contents->size() < MS_MINIMUM)
     return;
 
+  int prev_char_id = m_chatmessage[CHAR_ID].toInt();
   for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
     // Note that we have added stuff that vanilla clients and servers simply
     // won't send. So now, we have to check if the thing we want even exists
@@ -1853,7 +1854,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
   }
 
-  if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
+  if (prev_char_id != f_char_id || !m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
   {
     log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
                            m_chatmessage[TEXT_COLOR].toInt());
