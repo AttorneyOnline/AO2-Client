@@ -3146,7 +3146,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     music_player->play(f_song, channel, looping, effect_flags);
     if (channel == 0)
       ui_music_name->setText(f_song_clear);
-    if (f_song == "STOPSONG")
+    if (f_song == "")
       ui_music_name->setText("None");
   }
   else {
@@ -3173,7 +3173,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     if (!mute_map.value(n_char)) {
-      if (f_song == "STOPSONG") {
+      if (f_song == "") {
         log_ic_text(str_char, str_show, "", tr("has stopped the music"), 
                             m_chatmessage[TEXT_COLOR].toInt());
         append_ic_text("", str_show, tr("has stopped the music"));
@@ -3186,7 +3186,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       music_player->play(f_song, channel, looping, effect_flags);
       if (channel == 0)
         ui_music_name->setText(f_song_clear);
-      if (f_song == "STOPSONG")
+      if (f_song == "")
         ui_music_name->setText("None");
     }
   }
@@ -4179,10 +4179,10 @@ void Courtroom::music_list_collapse_all()
 }
 
 void Courtroom::music_stop() { //send a fake music packet with a nonexistent song
-  if (is_muted)                //this requires a special exception for "STOPSONG" in
+  if (is_muted)                //this requires a special exception for "" in
     return;                    //tsuserver3, as it will otherwise reject songs not on
   QStringList packet_contents; //its music list
-  packet_contents.append("STOPSONG"); // this is our fake song, playing it triggers special code
+  packet_contents.append(""); // this is our fake song, playing it triggers special code
   packet_contents.append(QString::number(m_cid));
   if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
       ao_app->effects_enabled)
