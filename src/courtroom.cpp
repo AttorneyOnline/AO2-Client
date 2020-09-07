@@ -1525,6 +1525,8 @@ void Courtroom::on_chat_return_pressed()
   if ((anim_state < 3 || text_state < 2) && objection_state == 0)
     return;
 
+  ui_ic_chat_message->blockSignals(true);
+  QTimer::singleShot(600, this, SLOT(ratelimit_ic()));
   // MS#
   // deskmod#
   // pre-emote#
@@ -4707,6 +4709,10 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
 
     ao_app->send_server_packet(new AOPacket("CASEA", f_packet));
   }
+}
+
+void Courtroom::ratelimit_ic() {
+  ui_ic_chat_message->blockSignals(false);
 }
 
 Courtroom::~Courtroom()

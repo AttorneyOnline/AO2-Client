@@ -828,6 +828,7 @@ private slots:
   void on_casing_clicked();
 
   void ping_server();
+  void ratelimit_ic();
 };
 
 #endif // COURTROOM_H
