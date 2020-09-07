@@ -22,7 +22,7 @@ Case Café additions copyright (c) 2018 Cerapter
 
 Killing Fever Online additions copyright (c) 2019 Crystalwarrior
 
-Dreamy Theatre additions (c) 2020 Cents02 and raidensnake
+Dreamy Theatre additions (c) 2020 Cents02, raidensnake and initiate
 
 ### Qt
 
