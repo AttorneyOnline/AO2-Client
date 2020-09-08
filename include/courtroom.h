@@ -5,13 +5,11 @@
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
-#include "aocharmovie.h"
 #include "aoemotebutton.h"
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
 #include "aolineedit.h"
-#include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
@@ -218,7 +216,8 @@ public:
   QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1,
                          int default_color = 0);
 
-  void log_ic_text(QString p_name, QString p_showname, QString p_message, QString p_action="", int p_color=0);
+  void log_ic_text(QString p_name, QString p_showname, QString p_message,
+                   QString p_action = "", int p_color = 0);
 
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
@@ -325,7 +324,8 @@ private:
   // True, if log should display colors.
   bool log_colors = true;
 
-  // True, if the log should display the message like name<br>text instead of name: text
+  // True, if the log should display the message like name<br>text instead of
+  // name: text
   bool log_newline = false;
 
   // Margin in pixels between log entries for the IC log.
@@ -490,20 +490,20 @@ private:
 
   QWidget *ui_viewport;
   AOScene *ui_vp_background;
-  AOMovie *ui_vp_speedlines;
-  AOCharMovie *ui_vp_player_char;
-  AOCharMovie *ui_vp_sideplayer_char;
+  AOScene *ui_vp_speedlines;
+  AOScene *ui_vp_player_char;
+  AOScene *ui_vp_sideplayer_char;
   AOScene *ui_vp_desk;
   AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
-  AOMovie *ui_vp_chat_arrow;
+  AOScene *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOMovie *ui_vp_effect;
-  AOMovie *ui_vp_testimony;
-  AOMovie *ui_vp_wtce;
-  AOMovie *ui_vp_objection;
+  AOScene *ui_vp_effect;
+  AOScene *ui_vp_testimony;
+  AOScene *ui_vp_wtce;
+  AOScene *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -515,7 +515,7 @@ private:
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
-  AOMovie *ui_music_display;
+  AOScene *ui_music_display;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
@@ -666,6 +666,7 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
+  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
