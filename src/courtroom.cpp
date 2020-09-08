@@ -2605,7 +2605,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
   // Special case for stopping the music
-  if (p_action == "has stopped the music") {
+  if (p_action == tr("has stopped the music")) {
     ui_ic_chatlog->textCursor().insertText(" " + p_action, normal);
     if (log_newline)
       ui_ic_chatlog->textCursor().insertHtml("<br>");
