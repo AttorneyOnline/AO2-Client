@@ -1,144 +1,127 @@
-#include "aoscene.h"
+#include "aolayer.h"
 
 #include "aoapplication.h"
 #include "file_functions.h"
 #include "misc_functions.h"
 
-AOScene::AOScene(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
-  preanim_timer = new QTimer(this);
-  preanim_timer->setSingleShot(true);
-  shout_timer = new QTimer(this);
-  shout_timer->setTimerType(Qt::PreciseTimer);
-  shout_timer->setSingleShot(true);
-  connect(shout_timer, SIGNAL(timeout()), this, SLOT(shout_timer_done()));
 
-  effect_timer = new QTimer(this);
-  effect_timer->setTimerType(Qt::PreciseTimer);
-  effect_timer->setSingleShot(true);
-  connect(effect_timer, SIGNAL(timeout()), this, SLOT(effect_timer_done()));
+  shfx_timer = new QTimer(this);
+  shfx_timer->setTimerType(Qt::PreciseTimer);
+  shfx_timer->setSingleShot(true);
+  connect(shfx_timer, SIGNAL(timeout()), this, SLOT(shfx_timer_done()));
 
   ticker = new QTimer(this);
   ticker->setTimerType(Qt::PreciseTimer);
   ticker->setSingleShot(false);
   connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 
-  //  connect(m_movie, SIGNAL(frameChanged(int)), this,
-  //  SLOT(frame_change(int)));
+  preanim_timer = new QTimer(this);
+  preanim_timer->setSingleShot(true);
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
 }
 
-void AOScene::load_image(image_type p_type, QStringList p_params)
+void AOLayer::load_image(LayerProperties p_props)
 {
-// p_params
-// backgrounds:
-// .at(0) bg name
-// foregrounds:
-// .at(0) image name
-// .at(1) misc name
-// characters:
-// .at(0) char name
-// .at(1) emote name
-// .at(2) emote prefix
-// interjections:
-// .at(0) image name
-// .at(1) char name
-// .at(2) misc name
-// .at(3) delay
-// interface:
-// .at(0) element name
-// .at(1) misc name
 #ifdef DEBUG_MOVIE
   actual_time.restart();
 #endif
   QList<QString> pathlist;
   is_effect = false;
-  int duration = 0;
-  switch (p_type) {
-  case image_type::background:
-    pathlist = {
-        ao_app->get_image_suffix(ao_app->get_background_path(p_params.at(0))),
-        ao_app->get_image_suffix(
-            ao_app->get_default_background_path(p_params.at(0)))};
+  int duration = p_props.max_duration;
+  switch (p_props.type) {
+  case LayerType::background: {
+    pathlist = {ao_app->get_image_suffix(ao_app->get_background_path(
+                    p_props.filename)), // check current bg
+                ao_app->get_image_suffix(ao_app->get_default_background_path(
+                    p_props.filename))}; // then check "default"
     break;
-  case image_type::foreground:
+  }
+  case LayerType::foreground: {
     pathlist = {
-        ao_app->get_image_suffix(
-            ao_app->get_misc_path(p_params.at(1), p_params.at(0))),
-        ao_app->get_image_suffix(ao_app->get_theme_path(p_params.at(0))),
-        ao_app->get_image_suffix(
-            ao_app->get_default_theme_path(p_params.at(0)))};
-    break;
-  case image_type::character:
-    pathlist = {
-        ao_app->get_image_suffix(ao_app->get_character_path(
-            p_params.at(0), p_params.at(2) + p_params.at(1))), // Default path
-        ao_app->get_image_suffix(ao_app->get_character_path(
-            p_params.at(0),
-            p_params.at(2) + "/" +
-                p_params.at(
-                    1))), // Path check if it's categorized into a folder
-        ao_app->get_image_suffix(ao_app->get_character_path(
-            p_params.at(0),
-            p_params.at(
-                1))), // Just use the non-prefixed image, animated or not
-        ao_app->get_image_suffix(
-            ao_app->get_theme_path("placeholder")), // Theme placeholder path
+        ao_app->get_image_suffix(ao_app->get_misc_path(
+            p_props.miscname, p_props.filename)), // check our misc folder first
+        ao_app->get_image_suffix(ao_app->get_theme_path(
+            p_props.filename)), // then check the user's theme
         ao_app->get_image_suffix(ao_app->get_default_theme_path(
-            "placeholder"))}; // Default theme placeholder path
-    m_char = p_params.at(0);
-    m_emote = p_params.at(2) + p_params.at(1);
+            p_props.filename))}; // and finally check the default theme
     break;
-  case image_type::interjection:
-    duration = p_params.at(3).toInt();
+  }
+  case LayerType::character: {
+    QString prefix = "";
+    QString emote = p_props.filename;
+    if ((p_props.filename.left(3) == "(a)") ||
+        (p_props.filename.left(3) == "(b)")) {
+      prefix = p_props.filename.left(3);
+      emote = p_props.filename.mid(3, -1);
+    }
+    qDebug() << "[AOLayer] emote loaded: prefix " << prefix << " filename "
+             << emote;
+    pathlist = {ao_app->get_image_suffix(ao_app->get_character_path(
+                    p_props.charname, prefix + emote)), // Default path
+                ao_app->get_image_suffix(ao_app->get_character_path(
+                    p_props.charname,
+                    prefix + "/" + emote)), // Path check if it's categorized
+                                            // into a folder
+                ao_app->get_image_suffix(ao_app->get_character_path(
+                    p_props.charname,
+                    emote)), // Just use the non-prefixed image, animated or not
+                ao_app->get_image_suffix(ao_app->get_theme_path(
+                    "placeholder")), // Theme placeholder path
+                ao_app->get_image_suffix(ao_app->get_default_theme_path(
+                    "placeholder"))}; // Default theme placeholder path
+    m_char = p_props.charname;
+    m_emote = p_props.filename;
+    if (duration > 0)
+      preanim_timer->start(duration * tick_ms);
+    break;
+  }
+  case LayerType::interjection: {
     play_once = true;
     pathlist = {
         ao_app->get_image_suffix(ao_app->get_character_path(
-            p_params.at(1), p_params.at(0))), // Character folder
-        ao_app->get_image_suffix(
-            ao_app->get_misc_path(p_params.at(2), p_params.at(0))), // Misc path
-        ao_app->get_image_suffix(
-            ao_app->get_theme_path(p_params.at(0))), // Theme path
-        ao_app->get_image_suffix(ao_app->get_default_theme_path(
-            p_params.at(0))), // Default theme path
-        ao_app->get_image_suffix(
-            ao_app->get_theme_path("placeholder")), // Placeholder path
-        ao_app->get_image_suffix(ao_app->get_default_theme_path(
-            "placeholder")), // Default placeholder path
-    };
-    break;
-  case image_type::effect:
-    effect_duration = p_params.at(3).toInt();
-    is_effect = true;
-    pathlist = {
-        ao_app->get_image_suffix(ao_app->get_character_path(
-            p_params.at(1), "effects/" + p_params.at(0))), // Character folder
+            p_props.charname, p_props.filename)), // Character folder
         ao_app->get_image_suffix(ao_app->get_misc_path(
-            p_params.at(2), "effects/" + p_params.at(0))), // Misc path
+            p_props.miscname, p_props.filename)), // Misc path
         ao_app->get_image_suffix(
-            ao_app->get_theme_path("effects/" + p_params.at(0))), // Theme path
+            ao_app->get_theme_path(p_props.filename)), // Theme path
         ao_app->get_image_suffix(ao_app->get_default_theme_path(
-            "effects/" + p_params.at(0))), // Default theme path
+            p_props.filename)), // Default theme path
         ao_app->get_image_suffix(
             ao_app->get_theme_path("placeholder")), // Placeholder path
         ao_app->get_image_suffix(ao_app->get_default_theme_path(
             "placeholder")), // Default placeholder path
     };
     break;
-  case image_type::fuck_interface:
-    pathlist = {
-        ao_app->get_image_suffix(
-            ao_app->get_misc_path(p_params.at(1), p_params.at(0))),
-        ao_app->get_image_suffix(ao_app->get_theme_path(p_params.at(0))),
-        ao_app->get_image_suffix(
-            ao_app->get_default_theme_path(p_params.at(0)))};
+  }
+  case LayerType::effect: {
+    is_effect = true;
+    pathlist = {p_props.filename}; // this is handled in text_file_functions
     break;
+  }
+  case LayerType::ui: {
+    pathlist = {
+        ao_app->get_image_suffix(ao_app->get_misc_path(
+            p_props.miscname, p_props.filename)), // check our misc folder first
+        ao_app->get_image_suffix(ao_app->get_theme_path(
+            p_props.filename)), // then check the user's theme
+        ao_app->get_image_suffix(ao_app->get_default_theme_path(
+            p_props.filename))}; // and finally check the default theme
+    break;
+  }
   }
   QString image_path;
   for (QString path : pathlist) {
+#ifdef DEBUG_MOVIE
+    qDebug() << "checking path " << path;
+#endif
     if (file_exists(path)) {
       image_path = path;
+#ifdef DEBUG_MOVIE
+      qDebug() << "found path " << path;
+#endif
       break;
     }
   }
@@ -146,6 +129,7 @@ void AOScene::load_image(image_type p_type, QStringList p_params)
   this->clear();
   ticker->stop();
   preanim_timer->stop();
+  shfx_timer->stop();
   movie_frames.clear();
   movie_delays.clear();
   movie_effects.clear();
@@ -156,8 +140,6 @@ void AOScene::load_image(image_type p_type, QStringList p_params)
   m_reader->setFileName(image_path);
   if (m_reader->loopCount() == 0)
     play_once = true;
-  else
-    play_once = false;
   QPixmap f_pixmap = this->get_pixmap(m_reader->read());
   int f_delay = m_reader->nextImageDelay();
 
@@ -170,16 +152,20 @@ void AOScene::load_image(image_type p_type, QStringList p_params)
     movie_frames.append(f_pixmap);
     movie_delays.append(f_delay);
   }
-
+  else if (max_frames <= 1) {
+    duration = p_props.static_duration;
+    play_once = false; // we don't want to call movie_ticker on a static image
+#ifdef DEBUG_MOVIE
+    qDebug() << "max_frames is <= 1, using static duration";
+#endif
+  }
   if (network_strings.size() > 0) // our FX overwritten by networked ones
     this->load_network_effects();
   else // Use default ini FX
     this->load_effects();
 
   if (duration > 0)
-    shout_timer->start(duration);
-  if (effect_duration > 0)
-    effect_timer->start(effect_duration);
+    shfx_timer->start(duration);
   play();
 #ifdef DEBUG_MOVIE
   qDebug() << max_frames << "Setting image to " << image_path
@@ -189,9 +175,9 @@ void AOScene::load_image(image_type p_type, QStringList p_params)
 #endif
 }
 
-void AOScene::set_play_once(bool p_play_once) { play_once = p_play_once; }
+void AOLayer::set_play_once(bool p_play_once) { play_once = p_play_once; }
 
-void AOScene::load_effects()
+void AOLayer::load_effects()
 {
   movie_effects.clear();
   movie_effects.resize(max_frames);
@@ -213,7 +199,7 @@ void AOScene::load_effects()
   }
 }
 
-void AOScene::load_network_effects()
+void AOLayer::load_network_effects()
 {
   movie_effects.clear();
   movie_effects.resize(max_frames);
@@ -260,50 +246,20 @@ void AOScene::load_network_effects()
   }
 }
 
-void AOScene::play()
+void AOLayer::play()
 {
   play_frame_effect(frame);
   if (max_frames <= 1) {
     if (play_once)
-      ticker->start(60);
+      ticker->start(tick_ms);
+    else
+      this->freeze();
   }
   else
     ticker->start(this->get_frame_delay(movie_delays[frame]));
 }
 
-void AOScene::play_pre(QString p_char, QString p_emote, int duration)
-{
-  QList<QString> params = {p_char, p_emote, ""};
-  load_image(image_type::character, params);
-  // As much as I'd like to screw around with [Time] durations modifying the
-  // animation speed, I don't think I can reliably do that, not without looping
-  // through all frames in the image at least - which causes lag. So for now it
-  // simply ends the preanimation early instead.
-  play_once = true;
-  if (duration >
-      0) // It's -1 if there's no definition in [Time] for it. In which case, it
-         // will let the animation run out in full. Duration 0 does the same.
-    preanim_timer->start(duration *
-                         time_mod); // This timer will not fire if the animation
-                                    // finishes earlier than that
-  play();
-}
-
-void AOScene::play_talking(QString p_char, QString p_emote)
-{
-  play_once = false;
-  QList<QString> params = {p_char, p_emote, "(b)"};
-  load_image(image_type::character, params);
-}
-
-void AOScene::play_idle(QString p_char, QString p_emote)
-{
-  play_once = false;
-  QList<QString> params = {p_char, p_emote, "(a)"};
-  load_image(image_type::character, params);
-}
-
-void AOScene::play_frame_effect(int frame)
+void AOLayer::play_frame_effect(int frame)
 {
   if (frame < max_frames) {
     foreach (QString effect, movie_effects[frame]) {
@@ -332,17 +288,25 @@ void AOScene::play_frame_effect(int frame)
   }
 }
 
-void AOScene::stop()
+void AOLayer::stop()
 {
   // for all intents and purposes, stopping is the same as hiding. at no point
   // do we want a frozen gif to display
   ticker->stop();
   preanim_timer->stop();
-  shout_timer->stop();
+  shfx_timer->stop();
   this->hide();
 }
 
-QPixmap AOScene::get_pixmap(QImage image)
+void AOLayer::freeze()
+{
+  // aT nO pOiNt Do We WaNt A fRoZeN gIf To DiSpLaY
+  ticker->stop();
+  preanim_timer->stop();
+  shfx_timer->stop();
+}
+
+QPixmap AOLayer::get_pixmap(QImage image)
 {
   QPixmap f_pixmap;
   if (m_flipped)
@@ -362,7 +326,7 @@ QPixmap AOScene::get_pixmap(QImage image)
   return f_pixmap;
 }
 
-void AOScene::set_frame(QPixmap f_pixmap)
+void AOLayer::set_frame(QPixmap f_pixmap)
 {
   this->setPixmap(f_pixmap);
   QLabel::move(
@@ -371,7 +335,7 @@ void AOScene::set_frame(QPixmap f_pixmap)
                                       // at the bottom vertically
 }
 
-void AOScene::combo_resize(int w, int h)
+void AOLayer::combo_resize(int w, int h)
 {
   QSize f_size(w, h);
   f_w = w;
@@ -379,23 +343,24 @@ void AOScene::combo_resize(int w, int h)
   this->resize(f_size);
 }
 
-int AOScene::get_frame_delay(int delay)
+int AOLayer::get_frame_delay(int delay)
 {
   return static_cast<int>(double(delay) * double(speed / 100));
 }
 
-void AOScene::move(int ax, int ay)
+void AOLayer::move(int ax, int ay)
 {
   x = ax;
   y = ay;
   QLabel::move(x, y);
 }
 
-void AOScene::movie_ticker()
+void AOLayer::movie_ticker()
 {
   ++frame;
-  if (frame >= max_frames) {
+  if ((frame >= max_frames) && (max_frames > 1)) {
     if (play_once) {
+      this->stop();
       preanim_done();
       return;
     }
@@ -421,22 +386,19 @@ void AOScene::movie_ticker()
   ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
 }
 
-void AOScene::preanim_done()
+void AOLayer::preanim_done()
 {
   ticker->stop();
   preanim_timer->stop();
   done();
 }
 
-void AOScene::shout_timer_done()
+void AOLayer::shfx_timer_done()
 {
   this->stop();
+#ifdef DEBUG_MOVIE
+  qDebug() << "shfx timer signaled done";
+#endif
   // signal connected to courtroom object, let it figure out what to do
-  done();
-}
-
-void AOScene::effect_timer_done()
-{
-  this->stop();
   done();
 }

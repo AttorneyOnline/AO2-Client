@@ -36,21 +36,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_background = new AOImage(this, ao_app);
 
   ui_viewport = new QWidget(this);
-  ui_vp_background = new AOScene(ui_viewport, ao_app);
-  ui_vp_speedlines = new AOScene(ui_viewport, ao_app);
+  ui_vp_background = new AOLayer(ui_viewport, ao_app);
+  ui_vp_speedlines = new AOLayer(ui_viewport, ao_app);
   ui_vp_speedlines->set_play_once(false);
-  ui_vp_player_char = new AOScene(ui_viewport, ao_app);
-  ui_vp_sideplayer_char = new AOScene(ui_viewport, ao_app);
+  ui_vp_player_char = new AOLayer(ui_viewport, ao_app);
+  ui_vp_sideplayer_char = new AOLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char->hide();
-  ui_vp_desk = new AOScene(ui_viewport, ao_app);
-  ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
+  ui_vp_desk = new AOLayer(ui_viewport, ao_app);
+  ui_vp_legacy_desk = new AOLayer(ui_viewport, ao_app);
 
   ui_vp_evidence_display = new AOEvidenceDisplay(ui_viewport, ao_app);
 
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_showname->setAlignment(Qt::AlignLeft);
-  ui_vp_chat_arrow = new AOScene(ui_vp_chatbox, ao_app);
+  ui_vp_chat_arrow = new AOLayer(ui_vp_chatbox, ao_app);
   ui_vp_chat_arrow->set_play_once(false);
 
   ui_vp_message = new QTextEdit(this);
@@ -59,14 +59,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
-  ui_vp_testimony = new AOScene(this, ao_app);
+  ui_vp_testimony = new AOLayer(this, ao_app);
   ui_vp_testimony->set_play_once(false);
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_effect = new AOScene(this, ao_app);
+  ui_vp_effect = new AOLayer(this, ao_app);
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_wtce = new AOScene(this, ao_app);
+  ui_vp_wtce = new AOLayer(this, ao_app);
+  ui_vp_wtce->set_play_once(true);
   ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_objection = new AOScene(this, ao_app);
+  ui_vp_objection = new AOLayer(this, ao_app);
+  ui_vp_objection->set_play_once(true);
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_ic_chatlog = new QTextEdit(this);
@@ -104,7 +106,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
 
-  ui_music_display = new AOScene(this, ao_app);
+  ui_music_display = new AOLayer(this, ao_app);
   ui_music_display->set_play_once(false);
   ui_music_display->setAttribute(Qt::WA_TransparentForMouseEvents);
 
@@ -260,6 +262,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_effect, SIGNAL(done()), this, SLOT(effect_done()));
+  connect(ui_vp_wtce, SIGNAL(done()), this, SLOT(effect_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
   connect(ui_vp_player_char, SIGNAL(shake()), this, SLOT(do_screenshake()));
   connect(ui_vp_player_char, SIGNAL(flash()), this, SLOT(do_flash()));
@@ -621,10 +624,16 @@ void Courtroom::set_widgets()
     ui_music_display->combo_resize(design_ini_result.width,
                                    design_ini_result.height);
   }
-  QList<QString> params_list = {"music_display", ""};
-  ui_music_display->load_image(AOScene::image_type::fuck_interface,
-                               params_list);
+  AOLayer::LayerProperties mus_disp_props{
+      .type = AOLayer::LayerType::ui,
+      .filename = "music_display",
+      .charname = "",
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
   ui_music_display->set_play_once(false);
+  ui_music_display->load_image(mus_disp_props);
 
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
@@ -1868,45 +1877,52 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
                    m_chatmessage[TEXT_COLOR].toInt());
   }
 
-  QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_custom_theme = ao_app->get_char_shouts(f_char);
-
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
-    QList<QString> params_list = {f_char, f_custom_theme, "724"};
+    AOLayer::LayerProperties interj_props{
+        .type = AOLayer::LayerType::interjection,
+        .filename = "",
+        .charname = m_chatmessage[CHAR_NAME],
+        .miscname = ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]),
+        .static_duration = shout_static_time,
+        .max_duration = shout_max_time,
+    };
     switch (objection_mod) {
     case 1:
-      params_list.prepend("holdit_bubble");
-      objection_player->play("holdit", f_char, f_custom_theme);
+      interj_props.filename = "holdit_bubble";
+      objection_player->play("holdit", interj_props.charname,
+                             interj_props.miscname);
       break;
     case 2:
-      params_list.prepend("objection_bubble");
-      objection_player->play("objection", f_char, f_custom_theme);
+      interj_props.filename = "objection_bubble";
+      objection_player->play("objection", interj_props.charname,
+                             interj_props.miscname);
       if (ao_app->objection_stop_music())
         music_player->stop();
       break;
     case 3:
-      params_list.prepend("takethat_bubble");
-      objection_player->play("takethat", f_char, f_custom_theme);
+      interj_props.filename = "takethat_bubble";
+      objection_player->play("takethat", interj_props.charname,
+                             interj_props.miscname);
       break;
     // case 4 is AO2 only
     case 4:
-      params_list.clear();
-      params_list = {f_char, f_custom_theme, QString::number(shout_stay_time)};
       if (custom_objection != "") {
-        params_list.prepend("custom_objections/" + custom_objection);
+        interj_props.filename = "custom_objections/" + custom_objection;
         objection_player->play("custom_objections/" +
                                    custom_objection.split('.')[0],
-                               f_char, f_custom_theme);
+                               interj_props.charname, interj_props.miscname);
       }
       else {
-        params_list.prepend("custom");
-        objection_player->play("custom", f_char, f_custom_theme);
+        interj_props.filename = "custom";
+        objection_player->play("custom", interj_props.charname,
+                               interj_props.miscname);
       }
       break;
       m_chatmessage[EMOTE_MOD] = 1;
     }
-    ui_vp_objection->load_image(AOScene::image_type::interjection, params_list);
+    ui_vp_objection->set_play_once(true);
+    ui_vp_objection->load_image(interj_props);
     sfx_player->clear(); // Objection played! Cut all sfx.
   }
   else
@@ -1915,16 +1931,29 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
 void Courtroom::objection_done() { handle_chatmessage_2(); }
 
-void Courtroom::effect_done() { ui_vp_effect->stop(); }
+void Courtroom::effect_done()
+{
+  ui_vp_effect->stop();
+  ui_vp_wtce->stop();
+}
 
 void Courtroom::handle_chatmessage_2()
 {
+  ui_vp_objection->stop();
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
   ui_vp_effect->stop();
-  ui_vp_objection->stop();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
+
+  AOLayer::LayerProperties sidechar_props{
+      .type = AOLayer::LayerType::character,
+      .filename = "",
+      .charname = m_chatmessage[OTHER_NAME],
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
 
   if (!m_chatmessage[FRAME_SFX].isEmpty() &&
       ao_app->is_frame_network_enabled()) {
@@ -2115,8 +2144,8 @@ void Courtroom::handle_chatmessage_2()
           ui_vp_sideplayer_char->set_flipped(true);
         else
           ui_vp_sideplayer_char->set_flipped(false);
-        ui_vp_sideplayer_char->play_idle(m_chatmessage[OTHER_NAME],
-                                         m_chatmessage[OTHER_EMOTE]);
+        sidechar_props.filename = "(a)" + m_chatmessage[OTHER_EMOTE];
+        ui_vp_sideplayer_char->load_image(sidechar_props);
       }
       else {
         // If the server understands other characters, but there
@@ -2204,8 +2233,15 @@ void Courtroom::do_flash()
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
-  QList<QString> params_list = {"realization", f_char, f_custom_theme, "60"};
-  ui_vp_effect->load_image(AOScene::image_type::effect, params_list);
+  AOLayer::LayerProperties flash_props{
+      .type = AOLayer::LayerType::effect,
+      .filename = ao_app->get_effect("realization", f_char, f_custom_theme),
+      .charname = m_chatmessage[CHAR_NAME],
+      .miscname = ao_app->get_char_shouts(f_char),
+      .static_duration = 60,
+      .max_duration = 60,
+  };
+  ui_vp_effect->load_image(flash_props);
 }
 
 void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
@@ -2226,11 +2262,15 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
-  QList<QString> params_list = {fx_name, p_char, p_folder, "0"};
-  ui_vp_effect->load_image(
-      AOScene::image_type::effect,
-      params_list); // It will set_play_once to true if the filepath
-                    // provided is not designed to loop more than once
+  AOLayer::LayerProperties fx_props{
+      .type = AOLayer::LayerType::effect,
+      .filename = effect,
+      .charname = p_char,
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
+  ui_vp_effect->load_image(fx_props);
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
@@ -2290,36 +2330,45 @@ void Courtroom::handle_chatmessage_3()
 
     QString f_char = m_chatmessage[CHAR_NAME];
     QString f_custom_theme = ao_app->get_char_shouts(f_char);
-    QList<QString> params_list;
-    if (side == "pro" || side == "hlp" || side == "wit") {
-      params_list = {"prosecution_speedlines", f_custom_theme};
-      ui_vp_speedlines->load_image(AOScene::image_type::foreground,
-                                   params_list);
-    }
-    else {
-      params_list = {"defense_speedlines", f_custom_theme};
-      ui_vp_speedlines->load_image(AOScene::image_type::foreground,
-                                   params_list);
-    }
+    AOLayer::LayerProperties zoom_props{
+        .type = AOLayer::LayerType::foreground,
+        .filename = "",
+        .charname = m_chatmessage[CHAR_NAME],
+        .miscname = ao_app->get_char_shouts(f_char),
+        .static_duration = 0,
+        .max_duration = 0,
+    };
+    if (side == "pro" || side == "hlp" || side == "wit")
+      zoom_props.filename = "prosecution_speedlines";
+    else
+      zoom_props.filename = "defense_speedlines";
+    ui_vp_speedlines->load_image(zoom_props);
   }
 
   // If this color is talking
   color_is_talking =
       color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
-
+  AOLayer::LayerProperties char_props{
+      .type = AOLayer::LayerType::character,
+      .filename = "",
+      .charname = m_chatmessage[CHAR_NAME],
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
   if (color_is_talking && text_state == 1 &&
       anim_state < 2) // Set it to talking as we're not on that already
   {
     ui_vp_player_char->stop();
-    ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME],
-                                    m_chatmessage[EMOTE]);
+    char_props.filename = "(b)" + m_chatmessage[EMOTE];
+    ui_vp_player_char->load_image(char_props);
     anim_state = 2;
   }
   else if (anim_state < 3) // Set it to idle as we're not on that already
   {
     ui_vp_player_char->stop();
-    ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME],
-                                 m_chatmessage[EMOTE]);
+    char_props.filename = "(a)" + m_chatmessage[EMOTE];
+    ui_vp_player_char->load_image(char_props);
     anim_state = 3;
   }
 
@@ -2701,25 +2750,36 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
 void Courtroom::play_preanim(bool noninterrupting)
 {
-  QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_preanim = m_chatmessage[PRE_EMOTE];
+
+  AOLayer::LayerProperties char_props{
+      .type = AOLayer::LayerType::character,
+      .filename = m_chatmessage[PRE_EMOTE],
+      .charname = m_chatmessage[CHAR_NAME],
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
 
   // all time values in char.inis are multiplied by a constant(time_mod) to get
   // the actual time
-  int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
-  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
+  int ao2_duration = ao_app->get_ao2_preanim_duration(char_props.charname,
+                                                      char_props.filename);
+  int text_delay =
+      ao_app->get_text_delay(char_props.charname, char_props.filename) *
+      time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
 
   int preanim_duration;
 
   if (ao2_duration < 0)
-    preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
+    preanim_duration =
+        ao_app->get_preanim_duration(char_props.charname, char_props.filename);
   else
     preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
-  QString anim_to_find =
-      ao_app->get_image_suffix(ao_app->get_character_path(f_char, f_preanim));
+  QString anim_to_find = ao_app->get_image_suffix(
+      ao_app->get_character_path(char_props.charname, char_props.filename));
   if (!file_exists(anim_to_find)) {
     if (noninterrupting)
       anim_state = 4;
@@ -2729,8 +2789,9 @@ void Courtroom::play_preanim(bool noninterrupting)
     qDebug() << "could not find " + anim_to_find;
     return;
   }
-
-  ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
+  char_props.static_duration = preanim_duration;
+  ui_vp_player_char->set_play_once(true);
+  ui_vp_player_char->load_image(char_props);
 
   if (noninterrupting)
     anim_state = 4;
@@ -2825,13 +2886,21 @@ void Courtroom::chat_tick()
 
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
+  AOLayer::LayerProperties char_props{
+      .type = AOLayer::LayerType::character,
+      .filename = "",
+      .charname = m_chatmessage[CHAR_NAME],
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
 
   if (tick_pos >= f_message.size()) {
     text_state = 2;
     if (anim_state < 3) {
       anim_state = 3;
-      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME],
-                                   m_chatmessage[EMOTE]);
+      char_props.filename = "(a)" + m_chatmessage[EMOTE];
+      ui_vp_player_char->load_image(char_props);
     }
     QString f_char;
     QString f_custom_theme;
@@ -2839,10 +2908,16 @@ void Courtroom::chat_tick()
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
     }
-    QList<QString> params_list = {"chat_arrow", f_custom_theme};
+    AOLayer::LayerProperties arrow_props{
+        .type = AOLayer::LayerType::ui,
+        .filename = "chat_arrow",
+        .charname = f_char,
+        .miscname = f_custom_theme,
+        .static_duration = 0,
+        .max_duration = 0,
+    };
     ui_vp_chat_arrow->load_image(
-        AOScene::image_type::fuck_interface,
-        params_list); // Chat stopped being processed, indicate that.
+        arrow_props); // Chat stopped being processed, indicate that.
     additive_previous =
         additive_previous +
         filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
@@ -2993,16 +3068,16 @@ void Courtroom::chat_tick()
                // to avoid interrupting a non-interrupted preanim)
     {
       ui_vp_player_char->stop();
-      ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME],
-                                      m_chatmessage[EMOTE]);
+      char_props.filename = "(b)" + m_chatmessage[EMOTE];
+      ui_vp_player_char->load_image(char_props);
       anim_state = 2;
     }
     else if (!color_is_talking && anim_state < 3 &&
              anim_state != 3) // Set it to idle as we're not on that already
     {
       ui_vp_player_char->stop();
-      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME],
-                                   m_chatmessage[EMOTE]);
+      char_props.filename = "(a)" + m_chatmessage[EMOTE];
+      ui_vp_player_char->load_image(char_props);
       anim_state = 3;
     }
     // Continue ticking
@@ -3079,11 +3154,24 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
     f_background = f_side;
     f_desk_image = f_side + "_overlay";
   }
-  QList<QString> params_list = {f_background};
-  ui_vp_background->load_image(AOScene::image_type::background, params_list);
-  params_list.clear();
-  params_list = {f_desk_image};
-  ui_vp_desk->load_image(AOScene::image_type::background, params_list);
+  AOLayer::LayerProperties bg_props{
+      .type = AOLayer::LayerType::background,
+      .filename = f_background,
+      .charname = "",
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
+  AOLayer::LayerProperties desk_props{
+      .type = AOLayer::LayerType::background,
+      .filename = f_desk_image,
+      .charname = "",
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
+  ui_vp_background->load_image(bg_props);
+  ui_vp_desk->load_image(desk_props);
 
   if (f_desk_mod == "0" ||
       (f_desk_mod != "1" &&
@@ -3212,36 +3300,50 @@ void Courtroom::handle_song(QStringList *p_contents)
 void Courtroom::handle_wtce(QString p_wtce, int variant)
 {
   QString sfx_file = "courtroom_sounds.ini";
-  QList<QString> params_list = {"", "", "1500"};
-  QList<QString> testim_list = {"testimony"};
+  AOLayer::LayerProperties splash_props{
+      .type = AOLayer::LayerType::ui,
+      .filename = "",
+      .charname = "",
+      .miscname = "",
+      .static_duration = wtce_static_time,
+      .max_duration = wtce_max_time,
+  };
+  AOLayer::LayerProperties testim_props{
+      .type = AOLayer::LayerType::ui,
+      .filename = "testimony",
+      .charname = "",
+      .miscname = "",
+      .static_duration = 0,
+      .max_duration = 0,
+  };
   // witness testimony
   if (p_wtce == "testimony1") {
     sfx_player->play(ao_app->get_sfx("witness_testimony"));
-    params_list.prepend("witnesstestimony");
-    ui_vp_testimony->load_image(AOScene::image_type::fuck_interface,
-                                testim_list);
+    splash_props.filename = "witnesstestimony";
+    ui_vp_testimony->load_image(testim_props);
   }
   // cross examination
   else if (p_wtce == "testimony2") {
     sfx_player->play(ao_app->get_sfx("cross_examination"));
-    params_list.prepend("crossexamination");
+    splash_props.filename = "crossexamination";
     ui_vp_testimony->stop();
   }
   else if (p_wtce == "judgeruling") {
-    params_list.clear();
-    params_list = {"", "", "3000"};
+    splash_props.static_duration = verdict_static_time;
+    splash_props.max_duration = verdict_max_time;
     if (variant == 0) {
       sfx_player->play(ao_app->get_sfx("not_guilty"));
-      params_list.prepend("notguilty");
+      splash_props.filename = "notguilty";
       ui_vp_testimony->stop();
     }
     else if (variant == 1) {
       sfx_player->play(ao_app->get_sfx("guilty"));
-      params_list.prepend("guilty");
+      splash_props.filename = "guilty";
       ui_vp_testimony->stop();
     }
   }
-  ui_vp_wtce->load_image(AOScene::image_type::interjection, params_list);
+  ui_vp_wtce->set_play_once(true);
+  ui_vp_wtce->load_image(splash_props);
 }
 
 void Courtroom::set_hp_bar(int p_bar, int p_state)

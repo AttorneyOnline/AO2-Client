@@ -9,11 +9,11 @@
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
+#include "aolayer.h"
 #include "aolineedit.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
-#include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
 #include "aotextedit.h"
@@ -344,16 +344,21 @@ private:
   const int time_mod = 40;
 
   // the amount of time non-animated objection/hold it/takethat images stay
-  // onscreen for in ms
-  const int shout_stay_time = 724;
+  // onscreen for in ms, and the maximum amount of time any interjections are
+  // allowed to play
+  const int shout_static_time = 724;
+  const int shout_max_time = 1500;
 
   // the amount of time non-animated guilty/not guilty images stay onscreen for
-  // in ms
-  const int verdict_stay_time = 3000;
+  // in ms, and the maximum amount of time g/ng images are allowed to play
+  const int verdict_static_time = 3000;
+  const int verdict_max_time = 4000;
 
   // the amount of time non-animated witness testimony/cross-examination images
-  // stay onscreen for in ms
-  const int wtce_stay_time = 1500;
+  // stay onscreen for in ms, and the maximum time any wt/ce image is allowed to
+  // play
+  const int wtce_static_time = 1500;
+  const int wtce_max_time = 4000;
 
   // characters we consider punctuation
   const QString punctuation_chars = ".,?!:;";
@@ -489,21 +494,21 @@ private:
   AOImage *ui_background;
 
   QWidget *ui_viewport;
-  AOScene *ui_vp_background;
-  AOScene *ui_vp_speedlines;
-  AOScene *ui_vp_player_char;
-  AOScene *ui_vp_sideplayer_char;
-  AOScene *ui_vp_desk;
-  AOScene *ui_vp_legacy_desk;
+  AOLayer *ui_vp_background;
+  AOLayer *ui_vp_speedlines;
+  AOLayer *ui_vp_player_char;
+  AOLayer *ui_vp_sideplayer_char;
+  AOLayer *ui_vp_desk;
+  AOLayer *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
-  AOScene *ui_vp_chat_arrow;
+  AOLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOScene *ui_vp_effect;
-  AOScene *ui_vp_testimony;
-  AOScene *ui_vp_wtce;
-  AOScene *ui_vp_objection;
+  AOLayer *ui_vp_effect;
+  AOLayer *ui_vp_testimony;
+  AOLayer *ui_vp_wtce;
+  AOLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -515,7 +520,7 @@ private:
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
-  AOScene *ui_music_display;
+  AOLayer *ui_music_display;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;

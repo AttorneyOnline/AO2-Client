@@ -11,7 +11,7 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
   evidence_icon = new QLabel(this);
   sfx_player = new AOSfxPlayer(this, ao_app);
 
-  evidence_movie = new AOScene(this, ao_app);
+  evidence_movie = new AOLayer(this, ao_app);
 
   connect(evidence_movie, SIGNAL(done()), this, SLOT(show_done()));
 }
@@ -47,8 +47,16 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
   evidence_icon->resize(f_pixmap.size());
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
 
-  QList<QString> param_list = {gif_name};
-  evidence_movie->load_image(AOScene::image_type::fuck_interface, param_list);
+  AOLayer::LayerProperties evi_props{
+      .type = AOLayer::LayerType::ui,
+      .filename = "gif_name",
+      .charname = "",
+      .miscname = "",
+      .static_duration = 320,
+      .max_duration = 1000,
+  };
+  evidence_movie->set_play_once(true);
+  evidence_movie->load_image(evi_props);
   sfx_player->play(ao_app->get_sfx("evidence_present"));
 }
 

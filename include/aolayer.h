@@ -1,5 +1,5 @@
-#ifndef AOSCENE_H
-#define AOSCENE_H
+#ifndef AOLAYER_H
+#define AOLAYER_H
 
 #include <QDebug>
 #include <QElapsedTimer>
@@ -9,26 +9,38 @@
 
 class AOApplication;
 
-class AOScene : public QLabel {
+class AOLayer : public QLabel {
   Q_OBJECT
 
 public:
-  enum class image_type {
-    background,     // the background of the scene
-    foreground,     // for effects meant to appear under the character i.e.
-                    // speedlines
-    character,      // for characters
-    interjection,   // for shouts, e.g. Objection!
-    effect,         // effects, like flashes
-    fuck_interface, // for animated UI elements, i.e. chat_arrow
+  AOLayer(QWidget *p_parent, AOApplication *p_ao_app);
+
+  enum class LayerType {
+    background,   // the background of the scene
+    foreground,   // for effects meant to appear under the character i.e.
+                  // speedlines
+    character,    // for characters
+    interjection, // for shouts, e.g. Objection!
+    effect,       // effects, like flashes
+    ui,           // for animated UI elements, i.e. chat_arrow
   };
-  AOScene(QWidget *p_parent, AOApplication *p_ao_app);
+
+  struct LayerProperties {
+    LayerType type;   // Type of layer, explained above
+    QString filename; // file name without extension, i.e. "witnesstestimony"
+    QString charname; // name of the character folder to search, if applicable
+    QString miscname; // name of the misc folder to search, if applicable
+    int static_duration; // time in ms for static images to be displayed, if
+                         // applicable
+    int max_duration; // maximum duration in ms, image will be culled if it is
+                      // exceeded. set this to 0 for infinite duration
+  };
 
   // Play a hat.gif - style preanimation
   void play_pre(QString p_char, QString p_emote, int duration);
 
   // Set the movie's image to provided paths, preparing for playback.
-  void load_image(image_type p_type, QStringList p_params);
+  void load_image(LayerProperties p_props);
 
   void set_play_once(bool p_play_once);
 
@@ -57,10 +69,8 @@ public:
   // Return the frame delay adjusted for speed
   int get_frame_delay(int delay);
 
+  // networked frame fx nonsense
   QStringList network_strings;
-
-  QString m_char;
-  QString m_emote;
 
 private:
   AOApplication *ao_app;
@@ -74,17 +84,19 @@ private:
   QVector<QVector<QString>> movie_effects;
 
   QTimer *preanim_timer;
-  QTimer *shout_timer;
-  QTimer *effect_timer;
+  QTimer *shfx_timer;
   QTimer *ticker;
   QString last_path;
   QImageReader *m_reader = new QImageReader();
 
   QElapsedTimer actual_time;
 
+  QString m_char;
+  QString m_emote;
+
   // Usually used to turn seconds into milliseconds such as for [Time] tag in
   // char.ini
-  const int time_mod = 60;
+  const int tick_ms = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's
   // width.
@@ -101,14 +113,16 @@ private:
   int speed = 100;
 
   bool m_flipped = false;
-  bool play_once = true;
+  bool play_once = false;
   bool is_effect = false;
 
   int duration = 0;
-  int effect_duration = 0;
 
   // Start playback of the movie (if animated).
   void play();
+
+  // Freeze the movie at the current frame.
+  void freeze();
 
   // Play a frame-specific effect, if there's any defined for that specific
   // frame.
@@ -136,9 +150,8 @@ signals:
 
 private slots:
   void preanim_done();
-  void shout_timer_done();
-  void effect_timer_done();
+  void shfx_timer_done();
   void movie_ticker();
 };
 
-#endif // AOSCENE_H
+#endif // AOLAYER_H

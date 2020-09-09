@@ -2,7 +2,7 @@
 #define AOEVIDENCEDISPLAY_H
 
 #include "aoapplication.h"
-#include "aoscene.h"
+#include "aolayer.h"
 #include "aosfxplayer.h"
 
 #include <QDebug>
@@ -21,7 +21,7 @@ public:
 
 private:
   AOApplication *ao_app;
-  AOScene *evidence_movie;
+  AOLayer *evidence_movie;
   QLabel *evidence_icon;
   AOSfxPlayer *sfx_player;
 
