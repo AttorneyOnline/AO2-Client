@@ -275,7 +275,7 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
+  int message_display_speed[7] = {5, 10, 25, 40, 50, 70, 90};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
