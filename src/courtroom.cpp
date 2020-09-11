@@ -4093,7 +4093,6 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
   if (ao_app->effects_enabled)
     packet_contents.append(QString::number(music_flags));
   ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
-  qDebug() << packet_contents;
 }
 
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
@@ -4190,7 +4189,6 @@ void Courtroom::music_stop() { //send a fake music packet with a nonexistent son
   if (ao_app->effects_enabled)
     packet_contents.append(QString::number(music_flags));
   ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
-  qDebug() << packet_contents;
 }
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
