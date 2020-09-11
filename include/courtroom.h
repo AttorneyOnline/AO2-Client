@@ -311,7 +311,7 @@ private:
   int real_tick_pos = 0;
   // used to determine how often blips sound
   int blip_ticker = 0;
-  int blip_rate = 1;
+  int blip_rate = 2;
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;

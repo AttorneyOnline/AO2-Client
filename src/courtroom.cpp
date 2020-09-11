@@ -2938,11 +2938,23 @@ void Courtroom::chat_tick()
 
     ui_vp_message->ensureCursorVisible();
 
-    // Blip player and real tick pos ticker
-    if (!formatting_char && (f_character != ' ' || blank_blip)) {
-      if (blip_ticker % blip_rate == 0) {
+    // We blip every "blip rate" letters.
+    // Here's an example with blank_blip being false and blip_rate being 2:
+    // I am you
+    // ! !  ! !
+    // where ! is the blip sound
+    if (blip_ticker % blip_rate == 0) {
+      // ignoring white space unless blank_blip is enabled.
+      if (!formatting_char && (f_character != ' ' || blank_blip)) {
         blip_player->blip_tick();
+        ++blip_ticker;
       }
+    }
+    else
+    {
+      // Don't fully ignore whitespace still, keep ticking until
+      // we reached the need to play a blip sound - we also just
+      // need to wait for a letter to play it on.
       ++blip_ticker;
     }
 
