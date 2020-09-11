@@ -2943,7 +2943,17 @@ void Courtroom::chat_tick()
     // I am you
     // ! !  ! !
     // where ! is the blip sound
-    if (blip_ticker % blip_rate == 0) {
+    int b_rate = blip_rate;
+    // Earrape prevention without using timers, this method is more consistent.
+    if (msg_delay != 0 && msg_delay <= 25) {
+      // The default blip speed is 40ms, and if current msg_delay is 25ms,
+      // the formula will result in the blip rate of:
+      // 40/25 = 1.6 = 2
+      // And if it's faster than that:
+      // 40/10 = 4
+      b_rate = qMax(b_rate, qRound(static_cast<float>(message_display_speed[3])/msg_delay));
+    }
+    if (blip_ticker % b_rate == 0) {
       // ignoring white space unless blank_blip is enabled.
       if (!formatting_char && (f_character != ' ' || blank_blip)) {
         blip_player->blip_tick();
@@ -2958,9 +2968,10 @@ void Courtroom::chat_tick()
       ++blip_ticker;
     }
 
-    // Punctuation delayer
-    if (punctuation_chars.contains(f_character)) {
-      msg_delay *= punctuation_modifier;
+    // Punctuation delayer, only kicks in on speed ticks less than }}
+    if (current_display_speed > 1 && punctuation_chars.contains(f_character)) {
+      // Making the user have to wait any longer than 150ms per letter is downright unreasonable
+      msg_delay = qMin(150, msg_delay * punctuation_modifier);
     }
 
     // If this color is talking

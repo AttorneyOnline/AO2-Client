@@ -22,12 +22,9 @@ public:
   int m_cycle = 0;
 
 private:
-  const int max_blip_ms = 60;
-
   QWidget *m_parent;
   AOApplication *ao_app;
   qreal m_volume;
-  QElapsedTimer delay;
 
   void set_volume_internal(qreal p_volume);
 
