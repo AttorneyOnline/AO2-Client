@@ -552,7 +552,11 @@ void Courtroom::set_widgets()
 
   log_maximum_blocks = ao_app->get_max_log_size();
 
-  bool regenerate = log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled() || log_newline != ao_app->get_log_newline() || log_margin != ao_app->get_log_margin() || log_timestamp != ao_app->get_log_timestamp();
+  bool regenerate = log_goes_downwards != ao_app->get_log_goes_downwards() ||
+                    log_colors != ao_app->is_colorlog_enabled() ||
+                    log_newline != ao_app->get_log_newline() ||
+                    log_margin != ao_app->get_log_margin() ||
+                    log_timestamp != ao_app->get_log_timestamp();
   log_goes_downwards = ao_app->get_log_goes_downwards();
   log_colors = ao_app->is_colorlog_enabled();
   log_newline = ao_app->get_log_newline();
@@ -563,7 +567,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
-  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ Log goes down ▼" : "▲ Log goes up ▲");
+  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ Log goes down ▼"
+                                                       : "▲ Log goes up ▲");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
   ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
@@ -704,6 +709,8 @@ void Courtroom::set_widgets()
       tr("Remove the currently selected iniswap from the list and return to "
          "the original character folder."));
   ui_sfx_remove->hide();
+
+  set_iniswap_dropdown();
 
   set_size_and_pos(ui_effects_dropdown, "effects_dropdown");
   ui_effects_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
@@ -1857,10 +1864,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
   }
 
-  if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
-  {
+  if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() ||
+      ic_chatlog_history.last().get_message() != "") {
     log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
-                           m_chatmessage[TEXT_COLOR].toInt());
+                m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
                    m_chatmessage[TEXT_COLOR].toInt());
   }
@@ -2258,8 +2265,9 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
                                           ui_sfx_slider->value());
 
-    log_ic_text(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_evi_name, tr("has presented evidence"),
-                           m_chatmessage[TEXT_COLOR].toInt());
+    log_ic_text(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_evi_name,
+                tr("has presented evidence"),
+                m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(f_evi_name, f_showname, tr("has presented evidence"));
   }
 
@@ -2565,10 +2573,9 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
 }
 
 void Courtroom::log_ic_text(QString p_name, QString p_showname,
-                       QString p_message, QString p_action, int p_color)
+                            QString p_message, QString p_action, int p_color)
 {
-  chatlogpiece log_entry(p_name, p_showname, p_message, p_action,
-                         p_color);
+  chatlogpiece log_entry(p_name, p_showname, p_message, p_action, p_color);
   ic_chatlog_history.append(log_entry);
   if (ao_app->get_auto_logging_enabled())
     ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
@@ -2593,9 +2600,12 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
   const bool need_newline = !ui_ic_chatlog->document()->isEmpty();
-  const int scrollbar_target_value = log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : ui_ic_chatlog->verticalScrollBar()->minimum();
+  const int scrollbar_target_value =
+      log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum()
+                         : ui_ic_chatlog->verticalScrollBar()->minimum();
 
-  ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
+  ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
+                                               : QTextCursor::Start);
 
   // Only prepend with newline if log goes downwards
   if (log_goes_downwards && need_newline) {
@@ -2604,7 +2614,9 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Timestamp if we're doing that meme
   if (log_timestamp)
-    ui_ic_chatlog->textCursor().insertText("[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ", normal);
+    ui_ic_chatlog->textCursor().insertText(
+        "[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ",
+        normal);
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
@@ -2613,8 +2625,9 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     // Format the action in normal
     ui_ic_chatlog->textCursor().insertText(" " + p_action, normal);
     if (log_newline)
-      // For some reason, we're forced to use <br> instead of the more sensible \n.
-      // Why? Because \n is treated as a new Block instead of a soft newline within a paragraph!
+      // For some reason, we're forced to use <br> instead of the more sensible
+      // \n. Why? Because \n is treated as a new Block instead of a soft newline
+      // within a paragraph!
       ui_ic_chatlog->textCursor().insertHtml("<br>");
     else
       ui_ic_chatlog->textCursor().insertText(": ", normal);
@@ -2623,16 +2636,19 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
   else {
     if (log_newline)
-      // For some reason, we're forced to use <br> instead of the more sensible \n.
-      // Why? Because \n is treated as a new Block instead of a soft newline within a paragraph!
+      // For some reason, we're forced to use <br> instead of the more sensible
+      // \n. Why? Because \n is treated as a new Block instead of a soft newline
+      // within a paragraph!
       ui_ic_chatlog->textCursor().insertHtml("<br>");
     else
       ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result according to html
     if (log_colors)
-      ui_ic_chatlog->textCursor().insertHtml(filter_ic_text(p_text, true, -1, color));
+      ui_ic_chatlog->textCursor().insertHtml(
+          filter_ic_text(p_text, true, -1, color));
     else
-      ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false), normal);
+      ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false),
+                                             normal);
   }
 
   // Only append with newline if log goes upwards
@@ -2643,7 +2659,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // If we got too many blocks in the current log, delete some.
   while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
          log_maximum_blocks > 0) {
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::Start : QTextCursor::End);
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::Start
+                                                 : QTextCursor::End);
     ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
     ui_ic_chatlog->textCursor().removeSelectedText();
     if (log_goes_downwards)
@@ -2653,7 +2670,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 
   // Finally, scroll the scrollbar to the correct position.
-  if (old_cursor.hasSelection() || old_scrollbar_value != scrollbar_target_value) {
+  if (old_cursor.hasSelection() ||
+      old_scrollbar_value != scrollbar_target_value) {
     // The user has selected text or scrolled away from the bottom: maintain
     // position.
     ui_ic_chatlog->setTextCursor(old_cursor);
@@ -2662,10 +2680,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   else {
     // The user hasn't selected any text and the scrollbar is at the bottom:
     // scroll to the bottom.
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
+                                                 : QTextCursor::Start);
     ui_ic_chatlog->verticalScrollBar()->setValue(
-        log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum()
-                           : 0);
+        log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : 0);
   }
 }
 
@@ -3169,7 +3187,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char)) {
       log_ic_text(str_char, str_show, f_song, tr("has played a song"),
-                             m_chatmessage[TEXT_COLOR].toInt());
+                  m_chatmessage[TEXT_COLOR].toInt());
       append_ic_text(f_song_clear, str_show, tr("has played a song"));
 
       music_player->play(f_song, channel, looping, effect_flags);
@@ -4638,7 +4656,9 @@ void Courtroom::regenerate_ic_chatlog()
 {
   ui_ic_chatlog->clear();
   foreach (chatlogpiece item, ic_chatlog_history) {
-    append_ic_text(item.get_message(), ui_showname_enable->isChecked() ? item.get_showname() : item.get_name(),
+    append_ic_text(item.get_message(),
+                   ui_showname_enable->isChecked() ? item.get_showname()
+                                                   : item.get_name(),
                    item.get_action(), item.get_chat_color());
   }
 }
