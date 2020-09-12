@@ -4111,7 +4111,6 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu();
   menu->addAction(QString(tr("Stop Current Song")), this, SLOT(music_stop()));
-  menu->addSeparator();
   menu->addAction(QString(tr("Play Random Song")), this, SLOT(music_random()));
   menu->addSeparator();
   menu->addAction(QString(tr("Expand All Categories")), this,
