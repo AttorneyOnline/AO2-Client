@@ -1525,6 +1525,10 @@ void Courtroom::on_chat_return_pressed()
   if ((anim_state < 3 || text_state < 2) && objection_state == 0)
     return;
 
+  ui_ic_chat_message->blockSignals(true);
+  QTimer::singleShot(600, this, [=] {
+    ui_ic_chat_message->blockSignals(false);
+  });
   // MS#
   // deskmod#
   // pre-emote#
