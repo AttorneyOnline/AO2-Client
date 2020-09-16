@@ -87,7 +87,7 @@ private:
   QTimer *shfx_timer;
   QTimer *ticker;
   QString last_path;
-  QImageReader *m_reader;
+  QImageReader m_reader;
 
   QElapsedTimer actual_time;
 

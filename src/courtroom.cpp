@@ -2145,6 +2145,7 @@ void Courtroom::handle_chatmessage_2()
         else
           ui_vp_sideplayer_char->set_flipped(false);
         sidechar_props.filename = "(a)" + m_chatmessage[OTHER_EMOTE];
+        ui_vp_sideplayer_char->set_play_once(false);
         ui_vp_sideplayer_char->load_image(sidechar_props);
       }
       else {
@@ -2360,13 +2361,16 @@ void Courtroom::handle_chatmessage_3()
       anim_state < 2) // Set it to talking as we're not on that already
   {
     ui_vp_player_char->stop();
+    ui_vp_player_char->set_play_once(false);
     char_props.filename = "(b)" + m_chatmessage[EMOTE];
     ui_vp_player_char->load_image(char_props);
     anim_state = 2;
   }
-  else if (anim_state < 3) // Set it to idle as we're not on that already
+  else if (anim_state < 3 &&
+           anim_state != 3) // Set it to idle as we're not on that already
   {
     ui_vp_player_char->stop();
+    ui_vp_player_char->set_play_once(false);
     char_props.filename = "(a)" + m_chatmessage[EMOTE];
     ui_vp_player_char->load_image(char_props);
     anim_state = 3;
@@ -2808,6 +2812,7 @@ void Courtroom::play_preanim(bool noninterrupting)
 void Courtroom::preanim_done()
 {
   anim_state = 1;
+  qDebug() << "preanim over, anim_state set to 1";
   handle_chatmessage_3();
 }
 
@@ -2899,6 +2904,7 @@ void Courtroom::chat_tick()
     text_state = 2;
     if (anim_state < 3) {
       anim_state = 3;
+      ui_vp_player_char->set_play_once(false);
       char_props.filename = "(a)" + m_chatmessage[EMOTE];
       ui_vp_player_char->load_image(char_props);
     }
@@ -3068,6 +3074,7 @@ void Courtroom::chat_tick()
                // to avoid interrupting a non-interrupted preanim)
     {
       ui_vp_player_char->stop();
+      ui_vp_player_char->set_play_once(false);
       char_props.filename = "(b)" + m_chatmessage[EMOTE];
       ui_vp_player_char->load_image(char_props);
       anim_state = 2;
@@ -3076,6 +3083,7 @@ void Courtroom::chat_tick()
              anim_state != 3) // Set it to idle as we're not on that already
     {
       ui_vp_player_char->stop();
+      ui_vp_player_char->set_play_once(false);
       char_props.filename = "(a)" + m_chatmessage[EMOTE];
       ui_vp_player_char->load_image(char_props);
       anim_state = 3;

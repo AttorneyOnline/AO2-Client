@@ -21,8 +21,6 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
-
-  m_reader = new QImageReader();
 }
 
 void AOLayer::load_image(LayerProperties p_props)
@@ -59,6 +57,8 @@ void AOLayer::load_image(LayerProperties p_props)
       prefix = p_props.filename.left(3);
       emote = p_props.filename.mid(3, -1);
     }
+    else if (duration > 0)
+      preanim_timer->start(duration * tick_ms);
     qDebug() << "[AOLayer] emote loaded: prefix " << prefix << " filename "
              << emote;
     pathlist = {ao_app->get_image_suffix(ao_app->get_character_path(
@@ -76,8 +76,6 @@ void AOLayer::load_image(LayerProperties p_props)
                     "placeholder"))}; // Default theme placeholder path
     m_char = p_props.charname;
     m_emote = p_props.filename;
-    if (duration > 0)
-      preanim_timer->start(duration * tick_ms);
     break;
   }
   case LayerType::interjection: {
@@ -139,14 +137,14 @@ void AOLayer::load_image(LayerProperties p_props)
   if (!file_exists(image_path))
     return;
 
-  m_reader->setFileName(image_path);
-  if (m_reader->loopCount() == 0)
+  m_reader.setFileName(image_path);
+  if (m_reader.loopCount() == 0)
     play_once = true;
-  QPixmap f_pixmap = this->get_pixmap(m_reader->read());
-  int f_delay = m_reader->nextImageDelay();
+  QPixmap f_pixmap = this->get_pixmap(m_reader.read());
+  int f_delay = m_reader.nextImageDelay();
 
   frame = 0;
-  max_frames = m_reader->imageCount();
+  max_frames = m_reader.imageCount();
 
   this->set_frame(f_pixmap);
   this->show();
@@ -166,7 +164,7 @@ void AOLayer::load_image(LayerProperties p_props)
   else // Use default ini FX
     this->load_effects();
 
-  if (duration > 0)
+  if (duration > 0 && p_props.type != LayerType::character)
     shfx_timer->start(duration);
   play();
 #ifdef DEBUG_MOVIE
@@ -371,11 +369,11 @@ void AOLayer::movie_ticker()
   }
   //  qint64 difference = elapsed - movie_delays[frame];
   if (frame >= movie_frames.size()) {
-    m_reader->jumpToImage(frame);
+    m_reader.jumpToImage(frame);
     movie_frames.resize(frame + 1);
-    movie_frames[frame] = this->get_pixmap(m_reader->read());
+    movie_frames[frame] = this->get_pixmap(m_reader.read());
     movie_delays.resize(frame + 1);
-    movie_delays[frame] = m_reader->nextImageDelay();
+    movie_delays[frame] = m_reader.nextImageDelay();
   }
 
 #ifdef DEBUG_MOVIE
