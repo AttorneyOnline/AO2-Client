@@ -21,6 +21,8 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
+
+  m_reader = new QImageReader();
 }
 
 void AOLayer::load_image(LayerProperties p_props)
