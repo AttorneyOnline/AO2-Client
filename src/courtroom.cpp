@@ -1764,6 +1764,7 @@ void Courtroom::reset_ic()
   ui_vp_chat_arrow->stop();
   text_state = 0;
   anim_state = 0;
+  evidence_presented = false;
   ui_vp_objection->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
@@ -2256,7 +2257,8 @@ void Courtroom::handle_chatmessage_3()
           .isEmpty()) // Pure whitespace showname, get outta here.
     f_showname = m_chatmessage[CHAR_NAME];
 
-  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size() &&
+      !evidence_presented) {
     // shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
@@ -2270,6 +2272,8 @@ void Courtroom::handle_chatmessage_3()
                 tr("has presented evidence"),
                 m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(f_evi_name, f_showname, tr("has presented evidence"));
+    evidence_presented = true; // we're done presenting evidence, and we
+                               // don't want to do it twice
   }
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
