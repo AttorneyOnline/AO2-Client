@@ -5,17 +5,15 @@
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
-#include "aocharmovie.h"
 #include "aoemotebutton.h"
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
+#include "aolayer.h"
 #include "aolineedit.h"
-#include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
-#include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
 #include "aotextedit.h"
@@ -218,7 +216,8 @@ public:
   QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1,
                          int default_color = 0);
 
-  void log_ic_text(QString p_name, QString p_showname, QString p_message, QString p_action="", int p_color=0);
+  void log_ic_text(QString p_name, QString p_showname, QString p_message,
+                   QString p_action = "", int p_color = 0);
 
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
@@ -325,7 +324,8 @@ private:
   // True, if log should display colors.
   bool log_colors = true;
 
-  // True, if the log should display the message like name<br>text instead of name: text
+  // True, if the log should display the message like name<br>text instead of
+  // name: text
   bool log_newline = false;
 
   // Margin in pixels between log entries for the IC log.
@@ -344,16 +344,21 @@ private:
   const int time_mod = 40;
 
   // the amount of time non-animated objection/hold it/takethat images stay
-  // onscreen for in ms
-  const int shout_stay_time = 724;
+  // onscreen for in ms, and the maximum amount of time any interjections are
+  // allowed to play
+  const int shout_static_time = 724;
+  const int shout_max_time = 1500;
 
   // the amount of time non-animated guilty/not guilty images stay onscreen for
-  // in ms
-  const int verdict_stay_time = 3000;
+  // in ms, and the maximum amount of time g/ng images are allowed to play
+  const int verdict_static_time = 3000;
+  const int verdict_max_time = 4000;
 
   // the amount of time non-animated witness testimony/cross-examination images
-  // stay onscreen for in ms
-  const int wtce_stay_time = 1500;
+  // stay onscreen for in ms, and the maximum time any wt/ce image is allowed to
+  // play
+  const int wtce_static_time = 1500;
+  const int wtce_max_time = 4000;
 
   // characters we consider punctuation
   const QString punctuation_chars = ".,?!:;";
@@ -424,7 +429,11 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+
+  // have we already presented evidence for this message?
+  bool evidence_presented = false;
 
   QString effect = "";
 
@@ -489,21 +498,21 @@ private:
   AOImage *ui_background;
 
   QWidget *ui_viewport;
-  AOScene *ui_vp_background;
-  AOMovie *ui_vp_speedlines;
-  AOCharMovie *ui_vp_player_char;
-  AOCharMovie *ui_vp_sideplayer_char;
-  AOScene *ui_vp_desk;
-  AOScene *ui_vp_legacy_desk;
+  AOLayer *ui_vp_background;
+  AOLayer *ui_vp_speedlines;
+  AOLayer *ui_vp_player_char;
+  AOLayer *ui_vp_sideplayer_char;
+  AOLayer *ui_vp_desk;
+  AOLayer *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
-  AOMovie *ui_vp_chat_arrow;
+  AOLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOMovie *ui_vp_effect;
-  AOMovie *ui_vp_testimony;
-  AOMovie *ui_vp_wtce;
-  AOMovie *ui_vp_objection;
+  AOLayer *ui_vp_effect;
+  AOLayer *ui_vp_testimony;
+  AOLayer *ui_vp_wtce;
+  AOLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -515,7 +524,7 @@ private:
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
-  AOMovie *ui_music_display;
+  AOLayer *ui_music_display;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
@@ -666,6 +675,7 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
+  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
