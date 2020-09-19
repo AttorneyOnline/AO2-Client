@@ -49,7 +49,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
   AOLayer::LayerProperties evi_props{
       .type = AOLayer::LayerType::ui,
-      .filename = "gif_name",
+      .filename = gif_name,
       .charname = "",
       .miscname = "",
       .static_duration = 320,
