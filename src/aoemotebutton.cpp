@@ -52,6 +52,8 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
        set_image(p_image,p_emote_comment);
 
     }
+    else
+      set_image("placeholder",p_emote_comment);
     this->setText(p_emote_comment);
     this->setStyleSheet("QPushButton { border-image: url(); }"
                         "QToolTip { background-image: url(); color: #000000; "
