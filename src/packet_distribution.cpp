@@ -228,6 +228,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_lobby->set_player_count(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
+
+    if (w_lobby->doubleclicked)
+        send_server_packet(new AOPacket("askchaa#%"));
   }
   else if (header == "SI") {
     if (f_contents.size() != 3)
