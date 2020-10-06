@@ -691,6 +691,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && f_contents.size() > 0)
       w_courtroom->set_mute(false, f_contents.at(0).toInt());
   }
+  else if (header == "BB") {
+    if (courtroom_constructed && f_contents.size() >= 1) {
+      call_notice(f_contents.at(0));
+    }
+  }
   else if (header == "KK") {
     if (courtroom_constructed && f_contents.size() >= 1) {
       call_notice(tr("You have been kicked from the server.\nReason: %1")
