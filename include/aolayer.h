@@ -21,8 +21,8 @@ public:
   int max_duration;    // maximum duration in ms, image will be culled if it is
                        // exceeded. set this to 0 for infinite duration
   bool play_once = false;  // Whether to loop this animation or not
-  bool cull_image = false; // if we're done playing this animation, should we
-                           // hide it? overridden by above durations
+  bool cull_image = true; // if we're done playing this animation, should we
+                           // hide it? also controls durational culling
 
   // used for effect loading because otherwise I'd have to rewrite most of the
   // effect code to support literally every subclass of AOLayer
@@ -33,6 +33,9 @@ public:
   void start_playback(QString p_image);
 
   void set_play_once(bool p_play_once);
+  void set_cull_image(bool p_cull_image);
+  void set_static_duration(int p_static_duration);
+  void set_max_duration(int p_max_duration);
 
   // Stop the movie, clearing the image
   void stop();

@@ -1863,8 +1863,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
-    ui_vp_objection->static_duration = shout_static_time;
-    ui_vp_objection->max_duration = shout_max_time;
+    ui_vp_objection->set_static_duration(shout_static_time);
+    ui_vp_objection->set_max_duration(shout_max_time);
     QString filename;
     switch (objection_mod) {
     case 1:
@@ -2207,8 +2207,8 @@ void Courtroom::do_flash()
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
-  ui_vp_effect->static_duration = 60;
-  ui_vp_effect->max_duration = 60;
+  ui_vp_effect->set_static_duration(60);
+  ui_vp_effect->set_max_duration(60);
   ui_vp_effect->load_image(
       ao_app->get_effect("realization", f_char, f_custom_theme), false);
 }
@@ -2231,9 +2231,9 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
-  ui_vp_effect->static_duration = 0;
-  ui_vp_effect->max_duration = 0;
-  ui_vp_effect->load_image(effect, "");
+  ui_vp_effect->set_static_duration(0);
+  ui_vp_effect->set_max_duration(0);
+  ui_vp_effect->load_image(effect, false);
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
@@ -2249,7 +2249,7 @@ void Courtroom::handle_chatmessage_3()
 {
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   QString f_side = m_chatmessage[SIDE];
-  ui_vp_player_char->static_duration = 0;
+  ui_vp_player_char->set_static_duration(0);
   QString f_showname;
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
   if (f_char_id > -1 &&
@@ -2727,7 +2727,7 @@ void Courtroom::play_preanim(bool noninterrupting)
     qDebug() << "could not find " + anim_to_find;
     return;
   }
-  ui_vp_player_char->static_duration = preanim_duration;
+  ui_vp_player_char->set_static_duration(preanim_duration);
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration);
 
@@ -2825,7 +2825,7 @@ void Courtroom::chat_tick()
 
   // Due to our new text speed system, we always need to stop the timer now.
   chat_tick_timer->stop();
-  ui_vp_player_char->static_duration = 0;
+  ui_vp_player_char->set_static_duration(0);
   QString filename;
 
   if (tick_pos >= f_message.size()) {
@@ -2833,7 +2833,7 @@ void Courtroom::chat_tick()
     if (anim_state < 3) {
       anim_state = 3;
       ui_vp_player_char->set_play_once(false);
-      filename = "(a)" + m_chatmessage[EMOTE];
+      filename = "(c)" + m_chatmessage[EMOTE]; // we'll jump to the (a) if this doesn't exist
       ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0);
     }
     QString f_char;
@@ -3214,8 +3214,8 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
 {
   QString sfx_file = "courtroom_sounds.ini";
   QString filename;
-  ui_vp_wtce->static_duration = wtce_static_time;
-  ui_vp_wtce->max_duration = wtce_max_time;
+  ui_vp_wtce->set_static_duration(wtce_static_time);
+  ui_vp_wtce->set_max_duration(wtce_max_time);
   // witness testimony
   if (p_wtce == "testimony1") {
     sfx_player->play(ao_app->get_sfx("witness_testimony"));
@@ -3229,8 +3229,8 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     ui_vp_testimony->stop();
   }
   else if (p_wtce == "judgeruling") {
-    ui_vp_wtce->static_duration = verdict_static_time;
-    ui_vp_wtce->max_duration = verdict_max_time;
+    ui_vp_wtce->set_static_duration(verdict_static_time);
+    ui_vp_wtce->set_max_duration(verdict_max_time);
     if (variant == 0) {
       sfx_player->play(ao_app->get_sfx("not_guilty"));
       filename = "notguilty";

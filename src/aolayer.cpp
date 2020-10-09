@@ -54,9 +54,7 @@ void AOLayer::start_playback(QString p_image)
   actual_time.restart();
 #endif
   this->clear();
-  ticker->stop();
-  preanim_timer->stop();
-  shfx_timer->stop();
+  freeze();
   movie_frames.clear();
   movie_delays.clear();
   movie_effects.clear();
@@ -112,7 +110,7 @@ void AOLayer::start_playback(QString p_image)
     qDebug() << "max_frames is <= 1, using static duration";
 #endif
   }
-  if (duration > 0)
+  if (duration > 0 && cull_image == true)
     shfx_timer->start(duration);
   play();
 #ifdef DEBUG_MOVIE
@@ -153,6 +151,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
                            int p_duration)
 {
   duration = p_duration;
+  cull_image = false;
   force_continuous = false;
   if ((p_charname == last_char) && (p_filename == last_emote) &&
       (!is_preanim) && (!was_preanim)) {
@@ -176,7 +175,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
     prefix = p_filename.left(3);
     current_emote = p_filename.mid(3, -1);
   }
-  else if (duration > 0) {
+  else if ((duration > 0) || (p_filename.left(3) == "(c)")) {
     if (p_filename.left(3) == "(c)") {
       prefix = "(c)";
       current_emote = p_filename.mid(3, -1);
@@ -272,7 +271,24 @@ QString AOLayer::find_image(QList<QString> p_list)
   return image_path;
 }
 
+void AOLayer::play()
+{
+  play_frame_effect(frame);
+  if (max_frames <= 1) {
+    if (play_once)
+      ticker->start(tick_ms);
+    else
+      this->freeze();
+  }
+  else
+    ticker->start(this->get_frame_delay(movie_delays[frame]));
+}
+
+
 void AOLayer::set_play_once(bool p_play_once) { play_once = p_play_once; }
+void AOLayer::set_cull_image(bool p_cull_image) { cull_image = p_cull_image; }
+void AOLayer::set_static_duration(int p_static_duration) {static_duration = p_static_duration;}
+void AOLayer::set_max_duration(int p_max_duration) {max_duration = p_max_duration;}
 
 void AOLayer::load_effects()
 {
@@ -312,7 +328,7 @@ void AOLayer::load_network_effects()
   for (int i = 0; i < effects_size; ++i) {
     QString netstring = network_strings.at(i);
     QStringList emote_splits = netstring.split("^");
-    foreach (QString emote, emote_splits) {
+    for (const QString &emote : emote_splits) {
       QStringList parsed = emote.split("|");
       if (parsed.size() <= 0 || parsed.at(0) != m_emote)
         continue;
@@ -322,7 +338,7 @@ void AOLayer::load_network_effects()
             1) // We might still be hanging at the emote itself (entry 0).
           continue;
         int f_frame = frame_split.at(0).toInt();
-        if (f_frame >= max_frames) {
+        if (f_frame >= max_frames || f_frame < 0) {
           qDebug() << "Warning: out of bounds" << effects_list[i] << "frame"
                    << f_frame << "out of" << max_frames << "for" << m_emote;
           continue;
@@ -340,19 +356,6 @@ void AOLayer::load_network_effects()
       }
     }
   }
-}
-
-void AOLayer::play()
-{
-  play_frame_effect(frame);
-  if (max_frames <= 1) {
-    if (play_once)
-      ticker->start(tick_ms);
-    else
-      this->freeze();
-  }
-  else
-    ticker->start(this->get_frame_delay(movie_delays[frame]));
 }
 
 void AOLayer::play_frame_effect(int frame)
@@ -458,7 +461,10 @@ void AOLayer::movie_ticker()
   ++frame;
   if ((frame >= max_frames) && (max_frames > 1)) {
     if (play_once) {
-      this->stop();
+      if (cull_image)
+        this->stop();
+      else
+        this->freeze();
       preanim_done();
       return;
     }
