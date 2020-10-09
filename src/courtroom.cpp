@@ -3162,7 +3162,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
         ui_music_name->setText(f_song_clear);
       else
-        ui_music_name->setText("[MISSING] " + f_song_clear);
+        ui_music_name->setText(tr("[MISSING] ") + f_song_clear);
     }
   }
   else {
@@ -3198,7 +3198,7 @@ void Courtroom::handle_song(QStringList *p_contents)
         if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
           ui_music_name->setText(f_song_clear);
         else
-          ui_music_name->setText("[MISSING] " + f_song_clear);
+          ui_music_name->setText(tr("[MISSING] ") + f_song_clear);
       }
     }
   }
