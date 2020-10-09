@@ -244,10 +244,12 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
   QList<QString> pathlist = {
+      ao_app->get_image_suffix(ao_app->get_theme_path() + "misc/" + ao_app->get_misc_path(
+          p_miscname, p_filename)), // first check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
-          p_miscname, p_filename)), // check our misc folder first
+          p_miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(
-          ao_app->get_theme_path(p_filename)), // then check the user's theme
+          ao_app->get_theme_path(p_filename)), // then check the user's theme for a default image
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
           p_filename))}; // and finally check the default theme
   start_playback(find_image(pathlist));
