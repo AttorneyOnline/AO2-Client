@@ -431,6 +431,7 @@ private:
 
   // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+  bool c_played = false; // whether we've played a (c)-style postanimation yet
 
   // have we already presented evidence for this message?
   bool evidence_presented = false;
