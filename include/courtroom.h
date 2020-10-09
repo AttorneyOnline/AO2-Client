@@ -494,21 +494,20 @@ private:
   AOImage *ui_background;
 
   QWidget *ui_viewport;
-  AOLayer *ui_vp_background;
-  AOLayer *ui_vp_speedlines;
-  AOLayer *ui_vp_player_char;
-  AOLayer *ui_vp_sideplayer_char;
-  AOLayer *ui_vp_desk;
-  AOLayer *ui_vp_legacy_desk;
+  BackgroundLayer *ui_vp_background;
+  ForegroundLayer *ui_vp_speedlines;
+  CharLayer *ui_vp_player_char;
+  CharLayer *ui_vp_sideplayer_char;
+  BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
-  AOLayer *ui_vp_chat_arrow;
+  InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOLayer *ui_vp_effect;
-  AOLayer *ui_vp_testimony;
-  AOLayer *ui_vp_wtce;
-  AOLayer *ui_vp_objection;
+  EffectLayer *ui_vp_effect;
+  InterfaceLayer *ui_vp_testimony;
+  InterfaceLayer *ui_vp_wtce;
+  InterjectionLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -520,7 +519,7 @@ private:
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
-  AOLayer *ui_music_display;
+  InterfaceLayer *ui_music_display;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;

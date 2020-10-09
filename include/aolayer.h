@@ -15,40 +15,24 @@ class AOLayer : public QLabel {
 public:
   AOLayer(QWidget *p_parent, AOApplication *p_ao_app);
 
-  enum class LayerType {
-    background,   // the background of the scene
-    foreground,   // for effects meant to appear under the character i.e.
-                  // speedlines
-    character,    // for characters
-    interjection, // for shouts, e.g. Objection!
-    effect,       // effects, like flashes
-    ui,           // for animated UI elements, i.e. chat_arrow
-  };
+  QString filename;    // file name without extension, i.e. "witnesstestimony"
+  int static_duration; // time in ms for static images to be displayed, if
+                       // applicable. set to 0 for infinite
+  int max_duration;    // maximum duration in ms, image will be culled if it is
+                       // exceeded. set this to 0 for infinite duration
+  bool play_once = false;  // Whether to loop this animation or not
+  bool cull_image = false; // if we're done playing this animation, should we
+                           // hide it? overridden by above durations
 
-  struct LayerProperties {
-    LayerType type;   // Type of layer, explained above
-    QString filename; // file name without extension, i.e. "witnesstestimony"
-    QString charname; // name of the character folder to search, if applicable
-    QString miscname; // name of the misc folder to search, if applicable
-    int static_duration; // time in ms for static images to be displayed, if
-                         // applicable
-    int max_duration; // maximum duration in ms, image will be culled if it is
-                      // exceeded. set this to 0 for infinite duration
-  };
-
-  // Play a hat.gif - style preanimation
-  void play_pre(QString p_char, QString p_emote, int duration);
+  // used for effect loading because otherwise I'd have to rewrite most of the
+  // effect code to support literally every subclass of AOLayer
+  QString m_char = "";
+  QString m_emote = "";
 
   // Set the movie's image to provided paths, preparing for playback.
-  void load_image(LayerProperties p_props);
+  void start_playback(QString p_image);
 
   void set_play_once(bool p_play_once);
-
-  // Play a (b)normal.gif - style animation (talking)
-  void play_talking(QString p_char, QString p_emote);
-
-  // Play an (a)normal.gif - style animation (not talking)
-  void play_idle(QString p_char, QString p_emote);
 
   // Stop the movie, clearing the image
   void stop();
@@ -72,9 +56,8 @@ public:
   // networked frame fx nonsense
   QStringList network_strings;
 
-private:
+protected:
   AOApplication *ao_app;
-
   QVector<QPixmap> movie_frames;
   QVector<int> movie_delays;
 
@@ -91,9 +74,6 @@ private:
 
   QElapsedTimer actual_time;
 
-  QString m_char;
-  QString m_emote;
-
   // Usually used to turn seconds into milliseconds such as for [Time] tag in
   // char.ini
   const int tick_ms = 60;
@@ -109,24 +89,29 @@ private:
 
   int frame = 0;
   int max_frames = 0;
+  int last_max_frames = 0;
 
   int speed = 100;
 
   bool m_flipped = false;
-  bool play_once = false;
-  bool is_effect = false;
+  // Are we loading this from the same frame we left off on? TODO: actually make
+  // this work
+  bool continuous = false;
+  // Whether or not to forcibly bypass the simple check done by start_playback
+  // and use the existent value of continuous instead
+  bool force_continuous = false;
 
   int duration = 0;
+
+  // iterate through a list of paths and return the first entry that exists. if
+  // none exist, return NULL (safe because we check again for existence later)
+  QString find_image(QList<QString> p_list);
 
   // Start playback of the movie (if animated).
   void play();
 
   // Freeze the movie at the current frame.
   void freeze();
-
-  // Play a frame-specific effect, if there's any defined for that specific
-  // frame.
-  void play_frame_effect(int frame);
 
   // Retreive a pixmap adjused for mirroring/aspect ratio shenanigans from a
   // provided QImage
@@ -142,6 +127,10 @@ private:
   // this is only initialized if network_strings has size more than 0.
   void load_network_effects();
 
+  // Play a frame-specific effect, if there's any defined for that specific
+  // frame.
+  void play_frame_effect(int frame);
+
 signals:
   void done();
   void shake();
@@ -154,4 +143,59 @@ private slots:
   void movie_ticker();
 };
 
+class BackgroundLayer : public AOLayer {
+  Q_OBJECT
+public:
+  BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  void load_image(QString p_filename);
+};
+
+class ForegroundLayer : public AOLayer {
+  Q_OBJECT
+public:
+  ForegroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  QString miscname; //'misc' folder to search. we get this from the caller
+  void load_image(QString p_filename, QString p_miscname);
+};
+
+class CharLayer : public AOLayer {
+  Q_OBJECT
+public:
+  CharLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  QString charname = "";      // name of the character folder to search
+  QString current_emote = ""; // name of the emote we're using
+  bool is_preanim;     // equivalent to the old play_once, if true we don't want
+                       // to loop this
+  QString prefix = ""; // prefix, left blank if it's a preanim
+
+  void load_image(QString p_filename, QString p_charname, int p_duration);
+  void play();
+
+private:
+  QString last_char;        // name of the last character we used
+  QString last_emote;       // name of the last animation we used
+  QString last_prefix;      // prefix of the last animation we played
+  bool was_preanim = false; // whether is_preanim was true last time
+};
+
+class InterjectionLayer : public AOLayer {
+  Q_OBJECT
+public:
+  InterjectionLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  void load_image(QString p_filename, QString p_charname, QString p_miscname);
+};
+
+class EffectLayer : public AOLayer {
+  Q_OBJECT
+public:
+  EffectLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  void load_image(QString p_filename, bool p_looping);
+};
+
+class InterfaceLayer : public AOLayer {
+  Q_OBJECT
+public:
+  InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  void load_image(QString p_filename, QString p_miscname);
+};
 #endif // AOLAYER_H

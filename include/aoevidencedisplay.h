@@ -21,7 +21,7 @@ public:
 
 private:
   AOApplication *ao_app;
-  AOLayer *evidence_movie;
+  InterfaceLayer *evidence_movie;
   QLabel *evidence_icon;
   AOSfxPlayer *sfx_player;
 
