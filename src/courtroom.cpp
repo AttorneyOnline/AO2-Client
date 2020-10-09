@@ -1975,11 +1975,12 @@ void Courtroom::handle_chatmessage_2()
     QString chatbox = ao_app->get_chat(customchar);
 
     if (chatbox != "" && ao_app->is_customchat_enabled()) {
-        chatbox_path = ao_app->get_theme_path() + "misc/" + chatbox + "/chat";
+      chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chat");
+      if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+        chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
         if (!ui_vp_chatbox->set_chatbox(chatbox_path))
-          chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-          if (!ui_vp_chatbox->set_chatbox(chatbox_path))
-            ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+          ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+      }
     }
 
     // This should probably be called only if any change from the last chat
@@ -2816,6 +2817,8 @@ void Courtroom::start_chat_ticking()
 
   // means text is currently ticking
   text_state = 1;
+
+  c_played = false;
 }
 
 void Courtroom::chat_tick()
@@ -2833,9 +2836,22 @@ void Courtroom::chat_tick()
   if (tick_pos >= f_message.size()) {
     text_state = 2;
     if (anim_state < 3) {
-      anim_state = 3;
-      ui_vp_player_char->set_play_once(false);
-      filename = "(c)" + m_chatmessage[EMOTE]; // we'll jump to the (a) if this doesn't exist
+      if ((file_exists(ui_vp_player_char->find_image(
+              {ao_app->get_image_suffix(ao_app->get_character_path(
+                   m_chatmessage[CHAR_NAME], "(c)" + m_chatmessage[EMOTE])),
+               ao_app->get_image_suffix(ao_app->get_character_path(
+                   m_chatmessage[CHAR_NAME], "(c)/" + m_chatmessage[EMOTE]))}))) &&
+          (!c_played)) { // this is disgusting and I don't care
+        anim_state = 5;
+        ui_vp_player_char->set_play_once(true);
+        filename = "(c)" + m_chatmessage[EMOTE];
+        c_played = true;
+      }
+      else {
+        anim_state = 3;
+        ui_vp_player_char->set_play_once(false);
+        filename = "(a)" + m_chatmessage[EMOTE];
+      }
       ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0);
     }
     QString f_char;

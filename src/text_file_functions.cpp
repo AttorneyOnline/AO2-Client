@@ -285,7 +285,7 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
                                                     QString p_file,
                                                     QString p_char)
 {
-  QString design_char_ini_path = get_theme_path() + "misc/" + get_chat(p_char) + "/" + p_file;
+  QString design_char_ini_path = get_theme_path("misc/" + get_chat(p_char) + "/" + p_file);
   QString char_ini_path =
       get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
   QString design_ini_path = get_theme_path(p_file);

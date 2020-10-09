@@ -56,6 +56,10 @@ public:
   // Return the frame delay adjusted for speed
   int get_frame_delay(int delay);
 
+ // iterate through a list of paths and return the first entry that exists. if
+  // none exist, return NULL (safe because we check again for existence later)
+  QString find_image(QList<QString> p_list);
+
   // networked frame fx nonsense
   QStringList network_strings;
 
@@ -105,10 +109,6 @@ protected:
   bool force_continuous = false;
 
   int duration = 0;
-
-  // iterate through a list of paths and return the first entry that exists. if
-  // none exist, return NULL (safe because we check again for existence later)
-  QString find_image(QList<QString> p_list);
 
   // Start playback of the movie (if animated).
   void play();

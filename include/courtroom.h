@@ -430,6 +430,7 @@ private:
   QStringList pos_dropdown_list;
 
   bool is_presenting_evidence = false;
+  bool c_played = false; // whether we've played a (c)-style postanimation yet
 
   QString effect = "";
 
