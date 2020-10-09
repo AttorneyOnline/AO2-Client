@@ -1975,9 +1975,11 @@ void Courtroom::handle_chatmessage_2()
     QString chatbox = ao_app->get_chat(customchar);
 
     if (chatbox != "" && ao_app->is_customchat_enabled()) {
-      chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-      if (!ui_vp_chatbox->set_chatbox(chatbox_path))
-        ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+        chatbox_path = ao_app->get_theme_path() + "misc/" + chatbox + "/chat";
+        if (!ui_vp_chatbox->set_chatbox(chatbox_path))
+          chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
+          if (!ui_vp_chatbox->set_chatbox(chatbox_path))
+            ui_vp_chatbox->set_chatbox(chatbox_path + "box");
     }
 
     // This should probably be called only if any change from the last chat
