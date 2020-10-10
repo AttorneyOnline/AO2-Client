@@ -25,7 +25,10 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
         "\") 0 0 0 0 stretch stretch; }"
         "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
   }
-  else if (p_image.contains("_on") && file_exists(tmp_p_image.replace("_on", "_off"))) {
+  else if ((p_image.contains("_on") &&
+            file_exists(tmp_p_image.replace("_on", "_off"))) ||
+           (p_image.contains("_off") &&
+            file_exists(tmp_p_image.replace("_off", "_on")))) {
     QImage tmpImage(tmp_p_image);
     tmpImage = tmpImage.convertToFormat(QImage::Format_ARGB32);
     QPoint p1, p2;
