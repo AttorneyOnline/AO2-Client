@@ -223,7 +223,7 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   while (!in.atEnd()) {
     QString line = in.readLine();
     server_type f_server;
-    QStringList line_contents = line.split(":");
+    QStringList line_contents = line.split(",");
 
     if (line_contents.size() < 3)
       continue;

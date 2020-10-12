@@ -3,6 +3,7 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "lobby.h"
+#include <QHostAddress>
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
@@ -57,8 +58,8 @@ void NetworkManager::connect_to_server(server_type p_server)
 {
   server_socket->close();
   server_socket->abort();
-
-  server_socket->connectToHost(p_server.ip, p_server.port);
+  QHostAddress addr(p_server.ip);
+  server_socket->connectToHost(addr, p_server.port);
 }
 
 void NetworkManager::ship_ms_packet(QString p_packet)
