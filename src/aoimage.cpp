@@ -2,6 +2,8 @@
 
 #include "aoimage.h"
 
+#include <QBitmap>
+
 AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
   m_parent = parent;
@@ -29,7 +31,8 @@ bool AOImage::set_image(QString p_image)
   }
 
   QPixmap f_pixmap(final_image_path);
-  f_pixmap = f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio);
+  f_pixmap =
+      f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio);
   this->setPixmap(f_pixmap);
   this->setMask(f_pixmap.mask());
   return true;
@@ -45,7 +48,8 @@ bool AOImage::set_chatbox(QString p_path)
 
   QPixmap f_pixmap(p_path);
 
-  f_pixmap = f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio);
+  f_pixmap =
+      f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio);
   this->setPixmap(f_pixmap);
   this->setMask(f_pixmap.mask());
   return true;
