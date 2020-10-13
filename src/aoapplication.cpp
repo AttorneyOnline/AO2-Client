@@ -118,7 +118,7 @@ void AOApplication::add_favorite_server(int p_server)
 
   QString str_port = QString::number(fav_server.port);
 
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
+  QString server_line = fav_server.ip + "," + str_port + "," + fav_server.name;
 
   write_to_serverlist_txt(server_line);
 }
