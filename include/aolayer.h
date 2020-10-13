@@ -116,7 +116,7 @@ signals:
 protected slots:
   void preanim_done();
   void shfx_timer_done();
-  void movie_ticker();
+  virtual void movie_ticker();
 };
 
 class BackgroundLayer : public AOLayer {

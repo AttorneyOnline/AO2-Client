@@ -17,6 +17,7 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   ticker = new QTimer(this);
   ticker->setTimerType(Qt::PreciseTimer);
   ticker->setSingleShot(false);
+  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
   // we can't connect the timer to the ticker function yet because we have to
   // let CharLayer connect to its own ticker function and if we do both the
   // ticker will fire twice which breaks things. instead we have to let each
@@ -31,32 +32,26 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 }
 ForegroundLayer::ForegroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 }
 CharLayer::CharLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 }
 EffectLayer::EffectLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 }
 InterjectionLayer::InterjectionLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 }
 InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
 }
 
 QString AOLayer::find_image(QList<QString> p_list)
