@@ -140,6 +140,9 @@ public:
   // reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
+  // reads theme and char inis and sets size and pos based on the identifier
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_char);
+
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
 

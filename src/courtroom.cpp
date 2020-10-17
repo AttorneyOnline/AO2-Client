@@ -621,12 +621,12 @@ void Courtroom::set_widgets()
 
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
+  //  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
     set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
   }
   else {
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-    set_size_and_pos(ui_vp_chatbox, "chatbox");
+  //  set_size_and_pos(ui_vp_chatbox, "chatbox");
     set_size_and_pos(ui_ic_chat_name, "ic_chat_name");
   }
 
@@ -1052,6 +1052,23 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   }
 }
 
+void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_char)
+{
+  QString filename = "courtroom_design.ini";
+
+  pos_size_type design_ini_result =
+      ao_app->get_element_dimensions(p_identifier, filename, p_char);
+
+  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
+    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
+    p_widget->hide();
+  }
+  else {
+    p_widget->move(design_ini_result.x, design_ini_result.y);
+    p_widget->resize(design_ini_result.width, design_ini_result.height);
+  }
+}
+
 void Courtroom::set_taken(int n_char, bool p_taken)
 {
   if (n_char >= char_list.size()) {
@@ -1140,11 +1157,11 @@ void Courtroom::set_background(QString p_background, bool display)
   is_ao2_bg = true;
 
   if (is_ao2_bg) {
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
+    //set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   }
   else {
-    set_size_and_pos(ui_vp_chatbox, "chatbox");
+    //set_size_and_pos(ui_vp_chatbox, "chatbox");
     set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
   }
 
@@ -1305,6 +1322,12 @@ void Courtroom::update_character(int p_cid)
         }
       }
     }
+  }
+  if (is_ao2_bg) {
+    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", f_char);
+  }
+  else {
+    set_size_and_pos(ui_vp_chatbox, "chatbox", f_char);
   }
 
   if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
@@ -1996,6 +2019,17 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_chat_arrow->combo_resize(design_ini_result.width,
                                      design_ini_result.height);
     }
+    if (is_ao2_bg) {
+      set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", m_chatmessage[CHAR_NAME]);
+    }
+    else {
+      set_size_and_pos(ui_vp_chatbox, "chatbox", m_chatmessage[CHAR_NAME]);
+    }
+    set_size_and_pos(ui_vp_showname, "showname", m_chatmessage[CHAR_NAME]);
+    set_size_and_pos(ui_vp_message, "message", m_chatmessage[CHAR_NAME]);
+    ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
+                      ui_vp_message->y() + ui_vp_chatbox->y());
+    ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
     pos_size_type default_width = ao_app->get_element_dimensions(
         "showname", "courtroom_design.ini", customchar);

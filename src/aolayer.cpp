@@ -236,9 +236,7 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + ao_app->get_misc_path(
-                        p_miscname,
-                        p_filename))), // first check our theme's misc directory
+          "misc/" + p_miscname + "/" + p_filename)), // first check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
           p_miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(ao_app->get_theme_path(
