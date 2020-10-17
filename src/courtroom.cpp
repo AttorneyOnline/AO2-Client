@@ -2799,6 +2799,8 @@ void Courtroom::start_chat_ticking()
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
 
+  gen_char_rgb_list(m_chatmessage[CHAR_NAME]);
+
   blip_player->set_blips(f_gender);
 
   // means text is currently ticking
@@ -2833,7 +2835,7 @@ void Courtroom::chat_tick()
         f_custom_theme); // Chat stopped being processed, indicate that.
     QString f_message_filtered = filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     for (int c = 0; c < max_colors; ++c) {
-      f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), color_rgb_list.at(c).name(QColor::HexRgb));
+      f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
     }
     ui_vp_message->setHtml(additive_previous + f_message_filtered);
     real_tick_pos = ui_vp_message->toPlainText().size();
@@ -2950,7 +2952,7 @@ void Courtroom::chat_tick()
     // Do the colors, gradual showing, etc. in here
     QString f_message_filtered = filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt());
     for (int c = 0; c < max_colors; ++c) {
-      f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), color_rgb_list.at(c).name(QColor::HexRgb));
+      f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
     }
     ui_vp_message->setHtml(additive_previous + f_message_filtered);
 
@@ -4444,6 +4446,14 @@ void Courtroom::set_text_color_dropdown()
   for (int c = 0; c < max_colors; ++c) {
     QColor color = ao_app->get_chat_color("c" + QString::number(c), "default");
     default_color_rgb_list.append(color);
+  }
+}
+
+void Courtroom::gen_char_rgb_list(QString p_char) {
+  char_color_rgb_list.clear();
+  for (int c = 0; c < max_colors; ++c) {
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), p_char);
+    char_color_rgb_list.append(color);
   }
 }
 
