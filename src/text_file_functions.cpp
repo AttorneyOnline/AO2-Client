@@ -636,6 +636,8 @@ QString AOApplication::get_gender(QString p_char)
 
 QString AOApplication::get_chat(QString p_char)
 {
+  if (p_char == "default")
+    return "default";
   QString f_result = read_char_ini(p_char, "chat", "Options");
 
   // handling the correct order of chat is a bit complicated, we let the caller

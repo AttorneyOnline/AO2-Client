@@ -408,6 +408,9 @@ private:
   // List of associated RGB colors for this color index
   QVector<QColor> color_rgb_list;
 
+  // Same as above but populated from misc/default's config
+  QVector<QColor> default_color_rgb_list;
+
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
 
