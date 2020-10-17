@@ -55,8 +55,7 @@ bool AOApplication::get_log_goes_downwards()
 
 bool AOApplication::get_log_newline()
 {
-  QString result =
-      configini->value("log_newline", "false").value<QString>();
+  QString result = configini->value("log_newline", "false").value<QString>();
   return result.startsWith("true");
 }
 
@@ -68,8 +67,7 @@ int AOApplication::get_log_margin()
 
 bool AOApplication::get_log_timestamp()
 {
-  QString result =
-      configini->value("log_timestamp", "false").value<QString>();
+  QString result = configini->value("log_timestamp", "false").value<QString>();
   return result.startsWith("true");
 }
 
@@ -285,31 +283,12 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
                                                     QString p_file,
                                                     QString p_char)
 {
-  QString design_char_ini_path = get_theme_path("misc/" + get_chat(p_char) + "/" + p_file);
-  QString char_ini_path =
-      get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
-  QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_default_theme_path(p_file);
-  QString f_result = read_design_ini(p_identifier, design_char_ini_path);
-
   pos_size_type return_value;
-
   return_value.x = 0;
   return_value.y = 0;
   return_value.width = -1;
   return_value.height = -1;
-  if (f_result == ""){
-    f_result = read_design_ini(p_identifier, char_ini_path);
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, design_ini_path);
-    if (f_result == "") {
-      f_result = read_design_ini(p_identifier, default_path);
-
-      if (f_result == "")
-        return return_value;
-    }
-  }
-  }
+  QString f_result = get_design_element(p_identifier, p_file, p_char);
 
   QStringList sub_line_elements = f_result.split(",");
 
@@ -326,17 +305,16 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
 QString AOApplication::get_design_element(QString p_identifier, QString p_file,
                                           QString p_char)
 {
-  QString char_ini_path =
-      get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file;
-  QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_default_theme_path(p_file);
-  QString f_result = read_design_ini(p_identifier, char_ini_path);
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, design_ini_path);
-    if (f_result == "")
-      f_result = read_design_ini(p_identifier, default_path);
+  QStringList paths{get_theme_path("misc/" + get_chat(p_char) + "/" +
+                                   p_file), // user theme overrides base/misc
+                    get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file,
+                    get_theme_path(p_file), get_default_theme_path(p_file)};
+  for (const QString &path : paths) {
+    QString value = read_design_ini(p_identifier, path);
+    if (!value.isEmpty())
+      return value;
   }
-  return f_result;
+  return "";
 }
 QString AOApplication::get_font_name(QString p_identifier, QString p_file)
 {
@@ -458,32 +436,41 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 
 QString AOApplication::get_chat_markdown(QString p_identifier, QString p_chat)
 {
-  QString design_ini_path =
-      get_base_path() + "misc/" + get_chat(p_chat) + "/config.ini";
-  QString default_path = get_base_path() + "misc/default/config.ini";
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QStringList paths{get_theme_path("misc/" + get_chat(p_chat) + "/config.ini"),
+                    get_base_path() + "misc/" + get_chat(p_chat) +
+                        "/config.ini",
+                    get_base_path() + "misc/default/config.ini",
+                    get_theme_path("misc/default/config.ini")};
 
-  if (f_result == "")
-    f_result = read_design_ini(p_identifier, default_path);
+  for (const QString &path : paths) {
+    QString value = read_design_ini(p_identifier, path);
+    if (!value.isEmpty()) {
+      return value.toLatin1();
+    }
+  }
 
-  return f_result.toLatin1();
+  return "";
 }
 
 QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 {
   QColor return_color(255, 255, 255);
+  QStringList paths{get_theme_path("misc/" + get_chat(p_chat) + "/config.ini"),
+                    get_base_path() + "misc/" + get_chat(p_chat) +
+                        "/config.ini",
+                    get_base_path() + "misc/default/config.ini",
+                    get_theme_path("misc/default/config.ini")};
 
-  QString design_ini_path =
-      get_base_path() + "misc/" + get_chat(p_chat) + "/config.ini";
-  QString default_path = get_base_path() + "misc/default/config.ini";
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
-
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, default_path);
-
-    if (f_result == "")
-      return return_color;
+  QString f_result;
+  for (const QString &path : paths) {
+    QString value = read_design_ini(p_identifier, path);
+    if (!value.isEmpty()){
+      f_result = value;
+      break;
+    }
   }
+  if (f_result == "")
+    return return_color;
 
   QStringList color_list = f_result.split(",");
 

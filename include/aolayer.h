@@ -20,14 +20,9 @@ public:
                        // applicable. set to 0 for infinite
   int max_duration;    // maximum duration in ms, image will be culled if it is
                        // exceeded. set this to 0 for infinite duration
-  bool play_once = false;  // Whether to loop this animation or not
+  bool play_once = false; // Whether to loop this animation or not
   bool cull_image = true; // if we're done playing this animation, should we
-                           // hide it? also controls durational culling
-
-  // used for effect loading because otherwise I'd have to rewrite most of the
-  // effect code to support literally every subclass of AOLayer
-  QString m_char = "";
-  QString m_emote = "";
+                          // hide it? also controls durational culling
 
   // Set the movie's image to provided paths, preparing for playback.
   void start_playback(QString p_image);
@@ -56,22 +51,14 @@ public:
   // Return the frame delay adjusted for speed
   int get_frame_delay(int delay);
 
- // iterate through a list of paths and return the first entry that exists. if
+  // iterate through a list of paths and return the first entry that exists. if
   // none exist, return NULL (safe because we check again for existence later)
   QString find_image(QList<QString> p_list);
-
-  // networked frame fx nonsense
-  QStringList network_strings;
 
 protected:
   AOApplication *ao_app;
   QVector<QPixmap> movie_frames;
   QVector<int> movie_delays;
-
-  // Effects such as sfx, screenshakes and realization flashes are stored in
-  // here. QString entry format: "sfx^[sfx_name]", "shake", "flash". The program
-  // uses the QVector index as reference.
-  QVector<QVector<QString>> movie_effects;
 
   QTimer *preanim_timer;
   QTimer *shfx_timer;
@@ -123,27 +110,13 @@ protected:
   // Set the movie's frame to provided pixmap
   void set_frame(QPixmap f_pixmap);
 
-  // Initialize the frame-specific effects from the char.ini
-  void load_effects();
-
-  // Initialize the frame-specific effects from the provided network_strings,
-  // this is only initialized if network_strings has size more than 0.
-  void load_network_effects();
-
-  // Play a frame-specific effect, if there's any defined for that specific
-  // frame.
-  void play_frame_effect(int frame);
-
 signals:
   void done();
-  void shake();
-  void flash();
-  void play_sfx(QString sfx);
 
-private slots:
+protected slots:
   void preanim_done();
   void shfx_timer_done();
-  void movie_ticker();
+  virtual void movie_ticker();
 };
 
 class BackgroundLayer : public AOLayer {
@@ -172,13 +145,47 @@ public:
   QString prefix = ""; // prefix, left blank if it's a preanim
 
   void load_image(QString p_filename, QString p_charname, int p_duration);
-  void play();
+  void play(); // overloaded so we can play effects
+
+  // networked frame fx string
+  QStringList network_strings;
 
 private:
   QString last_char;        // name of the last character we used
   QString last_emote;       // name of the last animation we used
   QString last_prefix;      // prefix of the last animation we played
   bool was_preanim = false; // whether is_preanim was true last time
+
+  // Effects such as sfx, screenshakes and realization flashes are stored in
+  // here. QString entry format: "sfx^[sfx_name]", "shake", "flash". The program
+  // uses the QVector index as reference.
+  QVector<QVector<QString>> movie_effects;
+
+  // used for effect loading
+  QString m_char = "";
+  QString m_emote = "";
+
+  // overloaded for effects reasons
+  void start_playback(QString p_image);
+
+  // Initialize the frame-specific effects from the char.ini
+  void load_effects();
+
+  // Initialize the frame-specific effects from the provided network_strings,
+  // this is only initialized if network_strings has size more than 0.
+  void load_network_effects();
+
+  // Play a frame-specific effect, if there's any defined for that specific
+  // frame.
+  void play_frame_effect(int p_frame);
+
+private slots:
+  void movie_ticker(); // overloaded so we can play effects
+
+signals:
+  void shake();
+  void flash();
+  void play_sfx(QString sfx);
 };
 
 class InterjectionLayer : public AOLayer {
