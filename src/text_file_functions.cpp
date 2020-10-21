@@ -434,7 +434,7 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
   return f_text;
 }
 
-QString AOApplication::get_chat_markdown(QString p_identifier, QString p_chat)
+QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
 {
   QStringList paths{get_theme_path("misc/" + get_chat(p_chat) + "/config.ini"),
                     get_base_path() + "misc/" + get_chat(p_chat) +
@@ -455,20 +455,7 @@ QString AOApplication::get_chat_markdown(QString p_identifier, QString p_chat)
 QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 {
   QColor return_color(255, 255, 255);
-  QStringList paths{get_theme_path("misc/" + get_chat(p_chat) + "/config.ini"),
-                    get_base_path() + "misc/" + get_chat(p_chat) +
-                        "/config.ini",
-                    get_base_path() + "misc/default/config.ini",
-                    get_theme_path("misc/default/config.ini")};
-
-  QString f_result;
-  for (const QString &path : paths) {
-    QString value = read_design_ini(p_identifier, path);
-    if (!value.isEmpty()){
-      f_result = value;
-      break;
-    }
-  }
+  QString f_result = get_chat_markup(p_identifier, p_chat);
   if (f_result == "")
     return return_color;
 

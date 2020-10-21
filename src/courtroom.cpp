@@ -4484,18 +4484,18 @@ void Courtroom::set_text_color_dropdown()
     QColor color =
         ao_app->get_chat_color("c" + QString::number(c), current_char);
     color_rgb_list.append(color);
-    color_markdown_start_list.append(ao_app->get_chat_markdown(
+    color_markdown_start_list.append(ao_app->get_chat_markup(
         "c" + QString::number(c) + "_start", current_char));
-    color_markdown_end_list.append(ao_app->get_chat_markdown(
+    color_markdown_end_list.append(ao_app->get_chat_markup(
         "c" + QString::number(c) + "_end", current_char));
     color_markdown_remove_list.append(
-        ao_app->get_chat_markdown("c" + QString::number(c) + "_remove",
+        ao_app->get_chat_markup("c" + QString::number(c) + "_remove",
                                   current_char) == "1");
     color_markdown_talking_list.append(
-        ao_app->get_chat_markdown("c" + QString::number(c) + "_talking",
+        ao_app->get_chat_markup("c" + QString::number(c) + "_talking",
                                   current_char) != "0");
 
-    QString color_name = ao_app->get_chat_markdown(
+    QString color_name = ao_app->get_chat_markup(
         "c" + QString::number(c) + "_name", current_char);
     if (color_name.isEmpty()) // Not defined
     {

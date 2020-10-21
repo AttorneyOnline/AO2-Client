@@ -285,6 +285,7 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
+  // FIXME: this causes a hitch, find a more performant alternative
   if (continuous) {
     for (int i = frame; i--;) {
       if (i <= -1)
