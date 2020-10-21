@@ -27,6 +27,8 @@
 #include <QStringList>
 #include <QTextStream>
 
+#include <QElapsedTimer>
+
 class NetworkManager;
 class Lobby;
 class Courtroom;
@@ -445,6 +447,8 @@ public:
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
   static void doBASSreset();
+
+  QElapsedTimer demo_timer;
 
 private:
   const int RELEASE = 2;
