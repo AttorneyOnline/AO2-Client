@@ -132,6 +132,7 @@ void BackgroundLayer::load_image(QString p_filename)
 void ForegroundLayer::load_image(QString p_filename, QString p_miscname)
 {
   play_once = false;
+  cull_image = false;
   qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
