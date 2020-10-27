@@ -2837,7 +2837,7 @@ void Courtroom::chat_tick()
     for (int c = 0; c < max_colors; ++c) {
       f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
     }
-    ui_vp_message->setHtml(additive_previous + f_message_filtered);
+    additive_previous = additive_previous + f_message_filtered;
     real_tick_pos = ui_vp_message->toPlainText().size();
     return;
   }
