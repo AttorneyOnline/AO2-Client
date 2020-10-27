@@ -133,8 +133,10 @@ void ForegroundLayer::load_image(QString p_filename, QString p_miscname)
   play_once = false;
   qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
   QList<QString> pathlist = {
+      ao_app->get_image_suffix(ao_app->get_theme_path(
+          "misc/" + p_miscname + "/" + p_filename)), // first check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
-          p_miscname, p_filename)), // check our misc folder first
+          p_miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(
           ao_app->get_theme_path(p_filename)), // then check the user's theme
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
@@ -148,7 +150,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   duration = p_duration;
   cull_image = false;
   force_continuous = false;
-  if ((p_charname == last_char) && (p_filename == last_emote) &&
+  if ((p_charname == last_char) && ((p_filename == last_emote) || (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&
       (!is_preanim) && (!was_preanim)) {
     continuous = true;
     force_continuous = true;
@@ -207,6 +209,8 @@ void InterjectionLayer::load_image(QString p_filename, QString p_charname,
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname, p_filename)), // Character folder
+      ao_app->get_image_suffix(ao_app->get_theme_path(
+          "misc/" + p_miscname + "/" + p_filename)), // Theme misc path
       ao_app->get_image_suffix(
           ao_app->get_misc_path(p_miscname, p_filename)), // Misc path
       ao_app->get_image_suffix(
@@ -285,6 +289,7 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
+  // FIXME: this causes a hitch, find a more performant alternative
   if (continuous) {
     for (int i = frame; i--;) {
       if (i <= -1)

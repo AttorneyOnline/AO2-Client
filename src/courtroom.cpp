@@ -1998,7 +1998,41 @@ void Courtroom::handle_chatmessage_2()
     customchar = m_chatmessage[CHAR_NAME];
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
-    ui_vp_chatbox->set_image("chatblank");
+    QString chatbox = ao_app->get_chat(customchar);
+    QString chatbox_path = ao_app->get_theme_path("chatblank");
+    if (chatbox != "") {
+      chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chatblank");
+      if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+        chatbox_path =
+            ao_app->get_base_path() + "misc/" + chatbox + "/chatblank";
+        if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+          chatbox_path = ao_app->get_theme_path("chat");
+          if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+            chatbox_path = ao_app->get_theme_path("chatbox");
+            if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+              chatbox_path = ao_app->get_default_theme_path("chat");
+              if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+                chatbox_path = ao_app->get_default_theme_path("chatbox");
+                ui_vp_chatbox->set_chatbox(chatbox_path);
+              }
+            }
+          }
+        }
+      }
+    }
+    else if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+      chatbox_path = ao_app->get_theme_path("chat");
+      if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+        chatbox_path = ao_app->get_theme_path("chatbox");
+        if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+          chatbox_path = ao_app->get_default_theme_path("chat");
+          if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+            chatbox_path = ao_app->get_default_theme_path("chatbox");
+            ui_vp_chatbox->set_chatbox(chatbox_path);
+          }
+        }
+      }
+    }
   }
   else // Aw yeah dude do some showname magic
   {
@@ -4501,18 +4535,18 @@ void Courtroom::set_text_color_dropdown()
     QColor color =
         ao_app->get_chat_color("c" + QString::number(c), current_char);
     color_rgb_list.append(color);
-    color_markdown_start_list.append(ao_app->get_chat_markdown(
+    color_markdown_start_list.append(ao_app->get_chat_markup(
         "c" + QString::number(c) + "_start", current_char));
-    color_markdown_end_list.append(ao_app->get_chat_markdown(
+    color_markdown_end_list.append(ao_app->get_chat_markup(
         "c" + QString::number(c) + "_end", current_char));
     color_markdown_remove_list.append(
-        ao_app->get_chat_markdown("c" + QString::number(c) + "_remove",
-                                  current_char) == "1");
+        ao_app->get_chat_markup("c" + QString::number(c) + "_remove",
+                                current_char) == "1");
     color_markdown_talking_list.append(
-        ao_app->get_chat_markdown("c" + QString::number(c) + "_talking",
-                                  current_char) != "0");
+        ao_app->get_chat_markup("c" + QString::number(c) + "_talking",
+                                current_char) != "0");
 
-    QString color_name = ao_app->get_chat_markdown(
+    QString color_name = ao_app->get_chat_markup(
         "c" + QString::number(c) + "_name", current_char);
     if (color_name.isEmpty()) // Not defined
     {
