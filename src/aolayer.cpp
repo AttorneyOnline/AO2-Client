@@ -119,6 +119,7 @@ void AOLayer::move(int ax, int ay)
 void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
+  cull_image = false;
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(
