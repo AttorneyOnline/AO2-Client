@@ -132,6 +132,7 @@ void BackgroundLayer::load_image(QString p_filename)
 void ForegroundLayer::load_image(QString p_filename, QString p_miscname)
 {
   play_once = false;
+  cull_image = false;
   qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
@@ -290,7 +291,12 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
-  // FIXME: this causes a hitch, find a more performant alternative
+  // CANTFIX: this causes a slight hitch
+  // The correct way of doing this would be to use QImageReader::jumpToImage() and 
+  // populate missing data in the movie ticker when it's needed. This is unforunately
+  // completely impossible, because QImageReader::jumpToImage() is not implemented
+  // in any image format AO2 is equipped to use. Instead, the default behavior is used - 
+  // that is, absolutely nothing.
   if (continuous) {
     for (int i = frame; i--;) {
       if (i <= -1)
@@ -498,7 +504,6 @@ void AOLayer::movie_ticker()
   }
   //  qint64 difference = elapsed - movie_delays[frame];
   if (frame >= movie_frames.size()) {
-    m_reader.jumpToImage(frame);
     movie_frames.resize(frame + 1);
     movie_frames[frame] = this->get_pixmap(m_reader.read());
     movie_delays.resize(frame + 1);
