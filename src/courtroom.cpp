@@ -3276,8 +3276,12 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     music_player->play(f_song, channel, looping, effect_flags);
-    if (channel == 0)
-      ui_music_name->setText(f_song_clear);
+    if (channel == 0) {
+      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+        ui_music_name->setText(f_song_clear);
+      else
+        ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+    }
   }
   else {
     QString str_char = char_list.at(n_char).name;
@@ -3308,8 +3312,12 @@ void Courtroom::handle_song(QStringList *p_contents)
       append_ic_text(f_song_clear, str_show, tr("has played a song"));
 
       music_player->play(f_song, channel, looping, effect_flags);
-      if (channel == 0)
-        ui_music_name->setText(f_song_clear);
+      if (channel == 0) {
+        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+          ui_music_name->setText(f_song_clear);
+        else
+          ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+      }
     }
   }
 }
