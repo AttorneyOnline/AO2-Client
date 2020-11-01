@@ -424,7 +424,11 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+
+  // have we already presented evidence for this message?
+  bool evidence_presented = false;
 
   QString effect = "";
 

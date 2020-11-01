@@ -37,11 +37,16 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
 
   QString misc_path = "";
   QString char_path = "";
+  QString theme_path = "";
   QString sound_path = ao_app->get_sfx_suffix(ao_app->get_sounds_path(p_sfx));
 
-  if (shout != "")
+  if (shout != "") {
     misc_path = ao_app->get_sfx_suffix(ao_app->get_base_path() + "misc/" +
                                        shout + "/" + p_sfx);
+    theme_path = ao_app->get_sfx_suffix(ao_app->get_theme_path(p_sfx));
+    if (!file_exists(theme_path))
+      theme_path = ao_app->get_sfx_suffix(ao_app->get_default_theme_path(p_sfx));
+  }
   if (p_char != "")
     char_path =
         ao_app->get_sfx_suffix(ao_app->get_character_path(p_char, p_sfx));
@@ -52,6 +57,8 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
     f_path = char_path;
   else if (file_exists(misc_path))
     f_path = misc_path;
+  else if (shout != "" && file_exists(theme_path)) //only check here for shouts
+    f_path = theme_path;
   else
     f_path = sound_path;
 
