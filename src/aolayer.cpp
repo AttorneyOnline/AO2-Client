@@ -129,16 +129,18 @@ void BackgroundLayer::load_image(QString p_filename)
   start_playback(find_image(pathlist));
 }
 
-void ForegroundLayer::load_image(QString p_filename, QString p_miscname)
+void ForegroundLayer::load_image(QString p_filename, QString p_charname)
 {
   play_once = false;
   cull_image = false;
+  miscname = ao_app->get_char_shouts(p_charname);
   qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
   QList<QString> pathlist = {
+      ao_app->get_image_suffix(ao_app->get_character_path(p_charname, p_filename)), // first check the character folder
       ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + p_miscname + "/" + p_filename)), // first check our theme's misc directory
+          "misc/" + miscname + "/" + p_filename)), // first check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
-          p_miscname, p_filename)), // then check our global misc folder
+          miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(
           ao_app->get_theme_path(p_filename)), // then check the user's theme
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
