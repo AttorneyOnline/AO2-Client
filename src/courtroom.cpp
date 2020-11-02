@@ -2798,8 +2798,11 @@ void Courtroom::start_chat_ticking()
   chat_tick_timer->start(0); // Display the first char right away
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
-
-  gen_char_rgb_list(m_chatmessage[CHAR_NAME]);
+  
+  last_misc = current_misc;
+  current_misc = ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]);
+  if (last_misc != current_misc)
+    gen_char_rgb_list(m_chatmessage[CHAR_NAME]);
 
   blip_player->set_blips(f_gender);
 
