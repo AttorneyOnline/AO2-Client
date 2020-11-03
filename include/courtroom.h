@@ -282,8 +282,11 @@ private:
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
 
-  // The offset this user has given if they want to appear alongside someone.
+  // The horizontal offset this user has given if they want to appear alongside someone.
   int char_offset = 0;
+
+  // The vertical offset this user has given.
+  int char_vert_offset = 0;
 
   // 0 = in front, 1 = behind
   int pair_order = 0;
@@ -539,6 +542,7 @@ private:
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
+  QSpinBox *ui_pair_vert_offset_spinbox;
 
   QComboBox *ui_pair_order_dropdown;
 
@@ -794,6 +798,7 @@ private slots:
 
   void on_log_limit_changed(int value);
   void on_pair_offset_changed(int value);
+  void on_pair_vert_offset_changed(int value);
 
   void on_ooc_toggle_clicked();
 
