@@ -7,6 +7,8 @@
 
 void Courtroom::construct_char_select()
 {
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+
   ui_char_select_background = new AOImage(this, ao_app);
 
   ui_char_buttons = new QWidget(ui_char_select_background);
