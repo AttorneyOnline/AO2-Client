@@ -3,6 +3,9 @@
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
+
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+
   ao_app->initBASS();
 
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
