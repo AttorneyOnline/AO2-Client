@@ -2398,8 +2398,7 @@ void Courtroom::handle_chatmessage_3()
       filename = "prosecution_speedlines";
     else
       filename = "defense_speedlines";
-    ui_vp_speedlines->load_image(
-        filename, ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+    ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME]);
   }
 
   // If this color is talking

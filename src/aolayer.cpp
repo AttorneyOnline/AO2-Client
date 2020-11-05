@@ -129,16 +129,18 @@ void BackgroundLayer::load_image(QString p_filename)
   start_playback(find_image(pathlist));
 }
 
-void ForegroundLayer::load_image(QString p_filename, QString p_miscname)
+void ForegroundLayer::load_image(QString p_filename, QString p_charname)
 {
   play_once = false;
   cull_image = false;
+  miscname = ao_app->get_char_shouts(p_charname);
   qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
   QList<QString> pathlist = {
+      ao_app->get_image_suffix(ao_app->get_character_path(p_charname, p_filename)), // first check the character folder
       ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + p_miscname + "/" + p_filename)), // first check our theme's misc directory
+          "misc/" + miscname + "/" + p_filename)), // first check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
-          p_miscname, p_filename)), // then check our global misc folder
+          miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(
           ao_app->get_theme_path(p_filename)), // then check the user's theme
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
@@ -184,16 +186,16 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
     preanim_timer->start(duration * tick_ms);
   }
   qDebug() << "[CharLayer] anim loaded: prefix " << prefix << " filename "
-           << current_emote << " continuous: " << continuous;
+           << current_emote << " from character: " << p_charname << " continuous: " << continuous;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
-          charname, prefix + current_emote)), // Default path
+          p_charname, prefix + current_emote)), // Default path
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname,
           prefix + "/" + current_emote)), // Path check if it's categorized
                                           // into a folder
       ao_app->get_image_suffix(ao_app->get_character_path(
-          charname,
+          p_charname,
           current_emote)), // Just use the non-prefixed image, animated or not
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Theme placeholder path
