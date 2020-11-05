@@ -13,6 +13,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   this->setWindowTitle(tr("Attorney Online 2"));
   this->setWindowIcon(QIcon(":/logo.png"));
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
