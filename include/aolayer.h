@@ -138,7 +138,6 @@ class CharLayer : public AOLayer {
   Q_OBJECT
 public:
   CharLayer(QWidget *p_parent, AOApplication *p_ao_app);
-  QString charname = "";      // name of the character folder to search
   QString current_emote = ""; // name of the emote we're using
   bool is_preanim;     // equivalent to the old play_once, if true we don't want
                        // to loop this

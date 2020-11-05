@@ -186,16 +186,16 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
     preanim_timer->start(duration * tick_ms);
   }
   qDebug() << "[CharLayer] anim loaded: prefix " << prefix << " filename "
-           << current_emote << " continuous: " << continuous;
+           << current_emote << " from character: " << p_charname << " continuous: " << continuous;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
-          charname, prefix + current_emote)), // Default path
+          p_charname, prefix + current_emote)), // Default path
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname,
           prefix + "/" + current_emote)), // Path check if it's categorized
                                           // into a folder
       ao_app->get_image_suffix(ao_app->get_character_path(
-          charname,
+          p_charname,
           current_emote)), // Just use the non-prefixed image, animated or not
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Theme placeholder path
