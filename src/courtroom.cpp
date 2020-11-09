@@ -2623,8 +2623,12 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
+  // Special case for stopping the music
+  if (p_action == tr("has stopped the music")) {
+    ui_ic_chatlog->textCursor().insertText(" " + p_action + ".", normal);
+  }
   // If action not blank:
-  if (p_action != "") {
+  else if (p_action != "") {
     // Format the action in normal
     ui_ic_chatlog->textCursor().insertText(" " + p_action, normal);
     if (log_newline)
@@ -3160,9 +3164,10 @@ void Courtroom::handle_song(QStringList *p_contents)
     {
       effect_flags = p_contents->at(5).toInt();
     }
-
     music_player->play(f_song, channel, looping, effect_flags);
-    if (channel == 0) {
+    if (f_song == "~stop.mp3")
+      ui_music_name->setText(tr("None"));
+    else if (channel == 0) {
       if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
         ui_music_name->setText(f_song_clear);
       else
@@ -3171,7 +3176,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
   else {
     QString str_char = char_list.at(n_char).name;
-    QString str_show = char_list.at(n_char).name;
+    QString str_show = ao_app->get_showname(str_char);
 
     if (p_contents->length() > 2) {
       if (p_contents->at(2) != "") {
@@ -3193,12 +3198,20 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     if (!mute_map.value(n_char)) {
-      log_ic_text(str_char, str_show, f_song, tr("has played a song"),
-                  m_chatmessage[TEXT_COLOR].toInt());
-      append_ic_text(f_song_clear, str_show, tr("has played a song"));
-
+      if (f_song == "~stop.mp3") {
+        log_ic_text(str_char, str_show, "", tr("has stopped the music"),
+                    m_chatmessage[TEXT_COLOR].toInt());
+        append_ic_text("", str_show, tr("has stopped the music"));
+      }
+      else {
+        log_ic_text(str_char, str_show, f_song, tr("has played a song"),
+                    m_chatmessage[TEXT_COLOR].toInt());
+        append_ic_text(f_song_clear, str_show, tr("has played a song"));
+      }
       music_player->play(f_song, channel, looping, effect_flags);
-      if (channel == 0) {
+      if (f_song == "~stop.mp3")
+        ui_music_name->setText(tr("None"));
+      else if (channel == 0) {
         if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
           ui_music_name->setText(f_song_clear);
         else
@@ -3918,7 +3931,7 @@ void Courtroom::set_effects_dropdown()
     return;
   }
 
-  effectslist.prepend("None");
+  effectslist.prepend(tr("None"));
 
   ui_effects_dropdown->show();
   ui_effects_dropdown->addItems(effectslist);
@@ -4096,10 +4109,10 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 {
   if (is_muted)
     return;
-
+  if (p_item->parent() == nullptr) // i.e. we've clicked a category
+    return;
   column = 1; // Column 1 is always the metadata (which we want)
   QString p_song = p_item->text(column);
-
   QStringList packet_contents;
   packet_contents.append(p_song);
   packet_contents.append(QString::number(m_cid));
@@ -4114,7 +4127,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu();
-
+  menu->addAction(QString(tr("Stop Current Song")), this, SLOT(music_stop()));
   menu->addAction(QString(tr("Play Random Song")), this, SLOT(music_random()));
   menu->addSeparator();
   menu->addAction(QString(tr("Expand All Categories")), this,
@@ -4190,6 +4203,22 @@ void Courtroom::music_list_collapse_all()
   if (current->parent() != nullptr)
     current = current->parent();
   ui_music_list->setCurrentItem(current);
+}
+
+void Courtroom::music_stop()
+{               // send a fake music packet with a nonexistent song
+  if (is_muted) // this requires a special exception for "~stop.mp3" in
+    return;     // tsuserver3, as it will otherwise reject songs not on
+  QStringList packet_contents; // its music list
+  packet_contents.append(
+      "~stop.mp3"); // this is our fake song, playing it triggers special code
+  packet_contents.append(QString::number(m_cid));
+  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
+      ao_app->effects_enabled)
+    packet_contents.append(ui_ic_chat_name->text());
+  if (ao_app->effects_enabled)
+    packet_contents.append(QString::number(music_flags));
+  ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
