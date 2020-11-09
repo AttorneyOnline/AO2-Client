@@ -3383,9 +3383,8 @@ void Courtroom::on_ooc_return_pressed()
     if (ok) {
       if (off >= -100 && off <= 100) {
         char_offset = off;
-        QString msg = tr("You have set your offset to ");
-        msg.append(QString::number(off));
-        msg.append("%.");
+        QString msg = tr("You have set your offset to %1%%.")
+          .arg(QString::number(off));
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
@@ -3408,9 +3407,8 @@ void Courtroom::on_ooc_return_pressed()
     if (ok) {
       if (off >= -100 && off <= 100) {
         char_vert_offset = off;
-        QString msg = tr("You have set your vertical offset to ");
-        msg.append(QString::number(off));
-        msg.append("%.");
+        QString msg = tr("You have set your vertical offset to %1%%.")
+          .arg(QString::number(off));
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
