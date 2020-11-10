@@ -46,6 +46,7 @@ public:
   void set_loading_value(int p_value);
 
   bool public_servers_selected = true;
+  bool doubleclicked = false;
 
   ~Lobby();
 

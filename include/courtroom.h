@@ -432,8 +432,12 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
   bool c_played = false; // whether we've played a (c)-style postanimation yet
+
+  // have we already presented evidence for this message?
+  bool evidence_presented = false;
 
   QString effect = "";
 
@@ -710,6 +714,7 @@ private slots:
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
+  void music_stop();
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
