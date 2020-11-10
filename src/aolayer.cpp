@@ -229,7 +229,10 @@ void InterjectionLayer::load_image(QString p_filename, QString p_charname,
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
           "placeholder")), // Default placeholder path
   };
-  start_playback(find_image(pathlist));
+  QString final_image = find_image(pathlist);
+  if (final_image == ao_app->get_theme_path("custom.png") || final_image == ao_app->get_default_theme_path("custom.png")) // stupid exception because themes are stupid
+    final_image = find_image({ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")), ao_app->get_image_suffix(ao_app->get_default_theme_path("placeholder"))});
+  start_playback(final_image);
 }
 
 void EffectLayer::load_image(QString p_filename, bool p_looping)
