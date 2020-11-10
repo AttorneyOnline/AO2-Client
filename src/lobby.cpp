@@ -13,6 +13,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   this->setWindowTitle(tr("Attorney Online 2"));
   this->setWindowIcon(QIcon(":/logo.png"));
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -97,10 +98,10 @@ void Lobby::set_widgets()
            "Did you download all resources correctly from tiny.cc/getao, "
            "including the large 'base' folder?"));
 
-    this->resize(517, 666);
+    this->setFixedSize(517, 666);
   }
   else {
-    this->resize(f_lobby.width, f_lobby.height);
+    this->setFixedSize(f_lobby.width, f_lobby.height);
   }
 
   set_size_and_pos(ui_background, "lobby");

@@ -7,6 +7,8 @@
 
 void Courtroom::construct_char_select()
 {
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+
   ui_char_select_background = new AOImage(this, ao_app);
 
   ui_char_buttons = new QWidget(ui_char_select_background);
@@ -72,10 +74,10 @@ void Courtroom::set_char_select()
   if (f_charselect.width < 0 || f_charselect.height < 0) {
     qDebug() << "W: did not find char_select width or height in "
                 "courtroom_design.ini!";
-    this->resize(714, 668);
+    this->setFixedSize(714, 668);
   }
   else
-    this->resize(f_charselect.width, f_charselect.height);
+    this->setFixedSize(f_charselect.width, f_charselect.height);
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
   ui_char_select_background->set_image("charselect_background");
