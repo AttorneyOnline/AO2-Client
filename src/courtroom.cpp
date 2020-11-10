@@ -43,7 +43,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_sideplayer_char->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
 
-  ui_vp_effect = new EffectLayer(this, ao_app);
+  ui_vp_effect = new EffectLayer(ui_viewport, ao_app);
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_vp_evidence_display = new AOEvidenceDisplay(ui_viewport, ao_app);
@@ -60,13 +60,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
-  ui_vp_testimony = new InterfaceLayer(this, ao_app);
+  ui_vp_testimony = new InterfaceLayer(ui_viewport, ao_app);
   ui_vp_testimony->set_play_once(false);
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_wtce = new InterfaceLayer(this, ao_app);
+  ui_vp_wtce = new InterfaceLayer(ui_viewport, ao_app);
   ui_vp_wtce->set_play_once(true);
   ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_objection = new InterjectionLayer(this, ao_app);
+  ui_vp_objection = new InterjectionLayer(ui_viewport, ao_app);
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_ic_chatlog = new QTextEdit(this);
@@ -535,16 +535,16 @@ void Courtroom::set_widgets()
                                    design_ini_result.height);
   }
 
-  ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
+  //ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
+  //ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
+  //ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
+  //ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   log_maximum_blocks = ao_app->get_max_log_size();

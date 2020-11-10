@@ -75,7 +75,6 @@ QPixmap AOLayer::get_pixmap(QImage image)
   else
     f_pixmap = QPixmap::fromImage(image);
   //    auto aspect_ratio = Qt::KeepAspectRatio;
-  auto transform_mode = Qt::FastTransformation;
   if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
     transform_mode = Qt::SmoothTransformation;
   if ((f_pixmap.height() == 1) && (f_pixmap.width() == 1))
@@ -120,6 +119,8 @@ void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
   cull_image = false;
+  if (ao_app->read_design_ini("scaling", ao_app->get_background_path("design.ini")) == "smooth")
+    transform_mode = Qt::SmoothTransformation;
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(
@@ -154,6 +155,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   duration = p_duration;
   cull_image = false;
   force_continuous = false;
+  transform_mode = ao_app->get_char_scaling(p_charname);
   if ((p_charname == last_char) && ((p_filename == last_emote) || (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&
       (!is_preanim) && (!was_preanim)) {
     continuous = true;
@@ -210,6 +212,7 @@ void InterjectionLayer::load_image(QString p_filename, QString p_charname,
   continuous = false;
   force_continuous = true;
   play_once = true;
+  transform_mode = ao_app->get_misc_scaling(p_miscname);
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname, p_filename)), // Character folder
@@ -242,6 +245,7 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
+  transform_mode = ao_app->get_misc_scaling(p_miscname);
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
           "misc/" + p_miscname + "/" + p_filename)), // first check our theme's misc directory
@@ -276,6 +280,12 @@ void AOLayer::start_playback(QString p_image)
 
   if (!file_exists(p_image))
     return;
+
+  QString scaling_override = ao_app->read_design_ini("scaling", p_image + ".ini");
+  if (scaling_override == "smooth")
+    transform_mode = Qt::SmoothTransformation;
+  else if (scaling_override == "fast")
+    transform_mode = Qt::FastTransformation;
 
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)

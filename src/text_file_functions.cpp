@@ -611,6 +611,27 @@ QString AOApplication::get_gender(QString p_char)
   return f_result;
 }
 
+Qt::TransformationMode AOApplication::get_char_scaling(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "scaling", "Options");
+
+  if (f_result == "smooth")
+    return Qt::SmoothTransformation;
+  return Qt::FastTransformation;
+}
+
+Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
+{
+  if (p_miscname != "") {
+    QString misc_transform_mode = read_design_ini("scaling", get_theme_path("misc/" + p_miscname + "/config.ini"));
+    if (misc_transform_mode == "")
+      misc_transform_mode = read_design_ini("scaling", get_misc_path(p_miscname, "config.ini"));
+    if (misc_transform_mode == "smooth")
+      return Qt::SmoothTransformation;
+  }
+  return Qt::FastTransformation;
+}
+
 QString AOApplication::get_chat(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "chat", "Options");

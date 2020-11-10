@@ -407,6 +407,12 @@ public:
   // Returns p_char's gender
   QString get_gender(QString p_char);
 
+  // Returns the scaling type for p_char
+  Qt::TransformationMode get_char_scaling(QString p_char);
+
+  // Returns the scaling type for p_miscname
+  Qt::TransformationMode get_misc_scaling(QString p_miscname);
+
   // ======
   // These are all casing-related settings.
   // ======
