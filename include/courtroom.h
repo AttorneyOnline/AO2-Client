@@ -277,7 +277,7 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
+  int message_display_speed[7] = {5, 10, 25, 40, 50, 70, 90};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
@@ -316,7 +316,7 @@ private:
   int real_tick_pos = 0;
   // used to determine how often blips sound
   int blip_ticker = 0;
-  int blip_rate = 1;
+  int blip_rate = 2;
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
