@@ -63,14 +63,10 @@ public:
 
   /////////////////server metadata//////////////////
 
-  unsigned int s_decryptor = 5;
-  bool encryption_needed = true;
-
   bool yellow_text_enabled = false;
   bool prezoom_enabled = false;
   bool flipping_enabled = false;
   bool custom_objection_enabled = false;
-  bool improved_loading_enabled = false;
   bool desk_mod_enabled = false;
   bool evidence_enabled = false;
   bool cccc_ic_support_enabled = false;

@@ -242,7 +242,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_list = new QListWidget(this);
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100, 100);
-  ui_pair_offset_spinbox->setSuffix(tr("% offset"));
+  ui_pair_offset_spinbox->setSuffix(tr("% x offset"));
+  ui_pair_vert_offset_spinbox = new QSpinBox(this);
+  ui_pair_vert_offset_spinbox->setRange(-100, 100);
+  ui_pair_vert_offset_spinbox->setSuffix(tr("% y offset"));
 
   ui_pair_order_dropdown = new QComboBox(this);
   ui_pair_order_dropdown->addItem(tr("To front"));
@@ -386,6 +389,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           SLOT(on_pair_list_clicked(QModelIndex)));
   connect(ui_pair_offset_spinbox, SIGNAL(valueChanged(int)), this,
           SLOT(on_pair_offset_changed(int)));
+  connect(ui_pair_vert_offset_spinbox, SIGNAL(valueChanged(int)), this,
+          SLOT(on_pair_vert_offset_changed(int)));
   connect(ui_pair_order_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_pair_order_dropdown_changed(int)));
 
@@ -552,7 +557,11 @@ void Courtroom::set_widgets()
 
   log_maximum_blocks = ao_app->get_max_log_size();
 
-  bool regenerate = log_goes_downwards != ao_app->get_log_goes_downwards() || log_colors != ao_app->is_colorlog_enabled() || log_newline != ao_app->get_log_newline() || log_margin != ao_app->get_log_margin() || log_timestamp != ao_app->get_log_timestamp();
+  bool regenerate = log_goes_downwards != ao_app->get_log_goes_downwards() ||
+                    log_colors != ao_app->is_colorlog_enabled() ||
+                    log_newline != ao_app->get_log_newline() ||
+                    log_margin != ao_app->get_log_margin() ||
+                    log_timestamp != ao_app->get_log_timestamp();
   log_goes_downwards = ao_app->get_log_goes_downwards();
   log_colors = ao_app->is_colorlog_enabled();
   log_newline = ao_app->get_log_newline();
@@ -563,7 +572,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
-  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ Log goes down ▼" : "▲ Log goes up ▲");
+  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ Log goes down ▼"
+                                                       : "▲ Log goes up ▲");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
   ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
@@ -581,12 +591,18 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pair_offset_spinbox, "pair_offset_spinbox");
   ui_pair_offset_spinbox->hide();
   ui_pair_offset_spinbox->setToolTip(
-      tr("Change the percentage offset of your character's position from the "
+      tr("Change the horizontal percentage offset of your character's position from the "
+         "center of the screen."));
+  
+  set_size_and_pos(ui_pair_vert_offset_spinbox, "pair_vert_offset_spinbox");
+  ui_pair_vert_offset_spinbox->hide();
+  ui_pair_vert_offset_spinbox->setToolTip(
+      tr("Change the vertical percentage offset of your character's position from the "
          "center of the screen."));
 
   ui_pair_order_dropdown->hide();
   set_size_and_pos(ui_pair_order_dropdown, "pair_order_dropdown");
-  ui_pair_offset_spinbox->setToolTip(
+  ui_pair_order_dropdown->setToolTip(
       tr("Change the order of appearance for your character."));
 
   set_size_and_pos(ui_pair_button, "pair_button");
@@ -704,6 +720,8 @@ void Courtroom::set_widgets()
       tr("Remove the currently selected iniswap from the list and return to "
          "the original character folder."));
   ui_sfx_remove->hide();
+
+  set_iniswap_dropdown();
 
   set_size_and_pos(ui_effects_dropdown, "effects_dropdown");
   ui_effects_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
@@ -1525,6 +1543,9 @@ void Courtroom::on_chat_return_pressed()
   if ((anim_state < 3 || text_state < 2) && objection_state == 0)
     return;
 
+  ui_ic_chat_message->blockSignals(true);
+  QTimer::singleShot(600, this,
+                     [=] { ui_ic_chat_message->blockSignals(false); });
   // MS#
   // deskmod#
   // pre-emote#
@@ -1586,13 +1607,11 @@ void Courtroom::on_chat_return_pressed()
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
   // needed or else legacy won't understand what we're saying
-  if (objection_state > 0) {
-    if (ui_pre->isChecked()) {
-      if (f_emote_mod == 4 || f_emote_mod == 5)
-        f_emote_mod = 6;
-      else
-        f_emote_mod = 2;
-    }
+  if (objection_state > 0 && ui_pre->isChecked()) {
+    if (f_emote_mod == 4 || f_emote_mod == 5)
+      f_emote_mod = 6;
+    else
+      f_emote_mod = 2;
   }
   else if (ui_pre->isChecked() && !ui_pre_non_interrupt->isChecked()) {
     if (f_emote_mod == 0)
@@ -1684,7 +1703,7 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    packet_contents.append(QString::number(char_offset));
+    packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked()) {
@@ -1752,6 +1771,7 @@ void Courtroom::reset_ic()
   ui_vp_chat_arrow->stop();
   text_state = 0;
   anim_state = 0;
+  evidence_presented = false;
   ui_vp_objection->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
@@ -1854,10 +1874,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
   }
 
-  if (prev_char_id != f_char_id || !m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "")
-  {
+  if (prev_char_id != f_char_id || !m_chatmessage[MESSAGE].isEmpty() ||
+      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
     log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
-                           m_chatmessage[TEXT_COLOR].toInt());
+                m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
                    m_chatmessage[TEXT_COLOR].toInt());
   }
@@ -2075,10 +2095,19 @@ void Courtroom::handle_chatmessage_2()
       if (got_other_charid > -1) {
         // If there is, show them!
         ui_vp_sideplayer_char->show();
-
-        int other_offset = m_chatmessage[OTHER_OFFSET].toInt();
+        QStringList other_offsets = m_chatmessage[OTHER_OFFSET].split("&");
+        int other_offset;
+        int other_offset_v;
+        if (other_offsets.length() <= 1) {
+          other_offset = m_chatmessage[OTHER_OFFSET].toInt();
+          other_offset_v = 0;
+        }
+        else {
+          other_offset = other_offsets[0].toInt();
+          other_offset_v = other_offsets[1].toInt();
+        }
         ui_vp_sideplayer_char->move(ui_viewport->width() * other_offset / 100,
-                                    0);
+                                    ui_viewport->height() * other_offset_v / 100);
 
         QStringList args = m_chatmessage[OTHER_CHARID].split("^");
         if (args.size() >
@@ -2117,12 +2146,14 @@ void Courtroom::handle_chatmessage_2()
   }
   // Set ourselves according to SELF_OFFSET
 
-  bool ok;
-  int self_offset = m_chatmessage[SELF_OFFSET].toInt(&ok);
-  if (ok)
-    ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, 0);
-  else
-    ui_vp_player_char->move(0, 0);
+  QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
+  int self_offset = self_offsets[0].toInt();
+  int self_offset_v;
+  if (self_offsets.length() <= 1)
+    self_offset_v = 0;
+  else 
+    self_offset_v = self_offsets[1].toInt();
+  ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 
   switch (emote_mod) {
   case 1:
@@ -2245,7 +2276,8 @@ void Courtroom::handle_chatmessage_3()
           .isEmpty()) // Pure whitespace showname, get outta here.
     f_showname = m_chatmessage[CHAR_NAME];
 
-  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size() &&
+      !evidence_presented) {
     // shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
@@ -2255,9 +2287,12 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
                                           ui_sfx_slider->value());
 
-    log_ic_text(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_evi_name, tr("has presented evidence"),
-                           m_chatmessage[TEXT_COLOR].toInt());
+    log_ic_text(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_evi_name,
+                tr("has presented evidence"),
+                m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(f_evi_name, f_showname, tr("has presented evidence"));
+    evidence_presented = true; // we're done presenting evidence, and we
+                               // don't want to do it twice
   }
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
@@ -2562,10 +2597,9 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
 }
 
 void Courtroom::log_ic_text(QString p_name, QString p_showname,
-                       QString p_message, QString p_action, int p_color)
+                            QString p_message, QString p_action, int p_color)
 {
-  chatlogpiece log_entry(p_name, p_showname, p_message, p_action,
-                         p_color);
+  chatlogpiece log_entry(p_name, p_showname, p_message, p_action, p_color);
   ic_chatlog_history.append(log_entry);
   if (ao_app->get_auto_logging_enabled())
     ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
@@ -2590,9 +2624,12 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
   const bool need_newline = !ui_ic_chatlog->document()->isEmpty();
-  const int scrollbar_target_value = log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : ui_ic_chatlog->verticalScrollBar()->minimum();
+  const int scrollbar_target_value =
+      log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum()
+                         : ui_ic_chatlog->verticalScrollBar()->minimum();
 
-  ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
+  ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
+                                               : QTextCursor::Start);
 
   // Only prepend with newline if log goes downwards
   if (log_goes_downwards && need_newline) {
@@ -2601,17 +2638,24 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Timestamp if we're doing that meme
   if (log_timestamp)
-    ui_ic_chatlog->textCursor().insertText("[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ", normal);
+    ui_ic_chatlog->textCursor().insertText(
+        "[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ",
+        normal);
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
+  // Special case for stopping the music
+  if (p_action == tr("has stopped the music")) {
+    ui_ic_chatlog->textCursor().insertText(" " + p_action + ".", normal);
+  }
   // If action not blank:
-  if (p_action != "") {
+  else if (p_action != "") {
     // Format the action in normal
     ui_ic_chatlog->textCursor().insertText(" " + p_action, normal);
     if (log_newline)
-      // For some reason, we're forced to use <br> instead of the more sensible \n.
-      // Why? Because \n is treated as a new Block instead of a soft newline within a paragraph!
+      // For some reason, we're forced to use <br> instead of the more sensible
+      // \n. Why? Because \n is treated as a new Block instead of a soft newline
+      // within a paragraph!
       ui_ic_chatlog->textCursor().insertHtml("<br>");
     else
       ui_ic_chatlog->textCursor().insertText(": ", normal);
@@ -2620,16 +2664,19 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
   else {
     if (log_newline)
-      // For some reason, we're forced to use <br> instead of the more sensible \n.
-      // Why? Because \n is treated as a new Block instead of a soft newline within a paragraph!
+      // For some reason, we're forced to use <br> instead of the more sensible
+      // \n. Why? Because \n is treated as a new Block instead of a soft newline
+      // within a paragraph!
       ui_ic_chatlog->textCursor().insertHtml("<br>");
     else
       ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result according to html
     if (log_colors)
-      ui_ic_chatlog->textCursor().insertHtml(filter_ic_text(p_text, true, -1, color));
+      ui_ic_chatlog->textCursor().insertHtml(
+          filter_ic_text(p_text, true, -1, color));
     else
-      ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false), normal);
+      ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false),
+                                             normal);
   }
 
   // Only append with newline if log goes upwards
@@ -2640,7 +2687,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // If we got too many blocks in the current log, delete some.
   while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
          log_maximum_blocks > 0) {
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::Start : QTextCursor::End);
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::Start
+                                                 : QTextCursor::End);
     ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
     ui_ic_chatlog->textCursor().removeSelectedText();
     if (log_goes_downwards)
@@ -2650,7 +2698,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 
   // Finally, scroll the scrollbar to the correct position.
-  if (old_cursor.hasSelection() || old_scrollbar_value != scrollbar_target_value) {
+  if (old_cursor.hasSelection() ||
+      old_scrollbar_value != scrollbar_target_value) {
     // The user has selected text or scrolled away from the bottom: maintain
     // position.
     ui_ic_chatlog->setTextCursor(old_cursor);
@@ -2659,10 +2708,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   else {
     // The user hasn't selected any text and the scrollbar is at the bottom:
     // scroll to the bottom.
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
+                                                 : QTextCursor::Start);
     ui_ic_chatlog->verticalScrollBar()->setValue(
-        log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum()
-                           : 0);
+        log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : 0);
   }
 }
 
@@ -3136,14 +3185,19 @@ void Courtroom::handle_song(QStringList *p_contents)
     {
       effect_flags = p_contents->at(5).toInt();
     }
-
     music_player->play(f_song, channel, looping, effect_flags);
-    if (channel == 0)
-      ui_music_name->setText(f_song_clear);
+    if (f_song == "~stop.mp3")
+      ui_music_name->setText(tr("None"));
+    else if (channel == 0) {
+      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+        ui_music_name->setText(f_song_clear);
+      else
+        ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+    }
   }
   else {
     QString str_char = char_list.at(n_char).name;
-    QString str_show = char_list.at(n_char).name;
+    QString str_show = ao_app->get_showname(str_char);
 
     if (p_contents->length() > 2) {
       if (p_contents->at(2) != "") {
@@ -3165,13 +3219,25 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
 
     if (!mute_map.value(n_char)) {
-      log_ic_text(str_char, str_show, f_song, tr("has played a song"),
-                             m_chatmessage[TEXT_COLOR].toInt());
-      append_ic_text(f_song_clear, str_show, tr("has played a song"));
-
+      if (f_song == "~stop.mp3") {
+        log_ic_text(str_char, str_show, "", tr("has stopped the music"),
+                    m_chatmessage[TEXT_COLOR].toInt());
+        append_ic_text("", str_show, tr("has stopped the music"));
+      }
+      else {
+        log_ic_text(str_char, str_show, f_song, tr("has played a song"),
+                    m_chatmessage[TEXT_COLOR].toInt());
+        append_ic_text(f_song_clear, str_show, tr("has played a song"));
+      }
       music_player->play(f_song, channel, looping, effect_flags);
-      if (channel == 0)
-        ui_music_name->setText(f_song_clear);
+      if (f_song == "~stop.mp3")
+        ui_music_name->setText(tr("None"));
+      else if (channel == 0) {
+        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+          ui_music_name->setText(f_song_clear);
+        else
+          ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+      }
     }
   }
 }
@@ -3329,9 +3395,8 @@ void Courtroom::on_ooc_return_pressed()
     if (ok) {
       if (off >= -100 && off <= 100) {
         char_offset = off;
-        QString msg = tr("You have set your offset to ");
-        msg.append(QString::number(off));
-        msg.append("%.");
+        QString msg = tr("You have set your offset to %1%%.")
+          .arg(QString::number(off));
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
@@ -3342,6 +3407,30 @@ void Courtroom::on_ooc_return_pressed()
     else {
       append_server_chatmessage("CLIENT",
                                 tr("That offset does not look like one."), "1");
+    }
+    return;
+  }
+  else if (ooc_message.startsWith("/voffset")) {
+    ui_ooc_chat_message->clear();
+    ooc_message.remove(0, 8);
+
+    bool ok;
+    int off = ooc_message.toInt(&ok);
+    if (ok) {
+      if (off >= -100 && off <= 100) {
+        char_vert_offset = off;
+        QString msg = tr("You have set your vertical offset to %1%%.")
+          .arg(QString::number(off));
+        append_server_chatmessage("CLIENT", msg, "1");
+      }
+      else {
+        append_server_chatmessage(
+            "CLIENT", tr("Your vertical offset must be between -100% and 100%!"), "1");
+      }
+    }
+    else {
+      append_server_chatmessage("CLIENT",
+                                tr("That vertical offset does not look like one."), "1");
     }
     return;
   }
@@ -3886,7 +3975,7 @@ void Courtroom::set_effects_dropdown()
     return;
   }
 
-  effectslist.prepend("None");
+  effectslist.prepend(tr("None"));
 
   ui_effects_dropdown->show();
   ui_effects_dropdown->addItems(effectslist);
@@ -4064,10 +4153,10 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 {
   if (is_muted)
     return;
-
+  if (p_item->parent() == nullptr) // i.e. we've clicked a category
+    return;
   column = 1; // Column 1 is always the metadata (which we want)
   QString p_song = p_item->text(column);
-
   QStringList packet_contents;
   packet_contents.append(p_song);
   packet_contents.append(QString::number(m_cid));
@@ -4082,7 +4171,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu();
-
+  menu->addAction(QString(tr("Stop Current Song")), this, SLOT(music_stop()));
   menu->addAction(QString(tr("Play Random Song")), this, SLOT(music_random()));
   menu->addSeparator();
   menu->addAction(QString(tr("Expand All Categories")), this,
@@ -4158,6 +4247,22 @@ void Courtroom::music_list_collapse_all()
   if (current->parent() != nullptr)
     current = current->parent();
   ui_music_list->setCurrentItem(current);
+}
+
+void Courtroom::music_stop()
+{               // send a fake music packet with a nonexistent song
+  if (is_muted) // this requires a special exception for "~stop.mp3" in
+    return;     // tsuserver3, as it will otherwise reject songs not on
+  QStringList packet_contents; // its music list
+  packet_contents.append(
+      "~stop.mp3"); // this is our fake song, playing it triggers special code
+  packet_contents.append(QString::number(m_cid));
+  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
+      ao_app->effects_enabled)
+    packet_contents.append(ui_ic_chat_name->text());
+  if (ao_app->effects_enabled)
+    packet_contents.append(QString::number(music_flags));
+  ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
@@ -4301,6 +4406,7 @@ void Courtroom::on_mute_clicked()
     ui_mute_list->show();
     ui_pair_list->hide();
     ui_pair_offset_spinbox->hide();
+    ui_pair_vert_offset_spinbox->hide();
     ui_pair_order_dropdown->hide();
     ui_pair_button->set_image("pair_button");
     ui_mute->set_image("mute_pressed");
@@ -4316,6 +4422,7 @@ void Courtroom::on_pair_clicked()
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
+    ui_pair_vert_offset_spinbox->show();
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
     ui_mute->set_image("mute");
@@ -4324,6 +4431,7 @@ void Courtroom::on_pair_clicked()
   else {
     ui_pair_list->hide();
     ui_pair_offset_spinbox->hide();
+    ui_pair_vert_offset_spinbox->hide();
     ui_pair_order_dropdown->hide();
     ui_pair_button->set_image("pair_button");
   }
@@ -4480,6 +4588,8 @@ void Courtroom::on_log_limit_changed(int value) { log_maximum_blocks = value; }
 
 void Courtroom::on_pair_offset_changed(int value) { char_offset = value; }
 
+void Courtroom::on_pair_vert_offset_changed(int value) { char_vert_offset = value; }
+
 void Courtroom::on_witness_testimony_clicked()
 {
   if (is_muted)
@@ -4635,7 +4745,9 @@ void Courtroom::regenerate_ic_chatlog()
 {
   ui_ic_chatlog->clear();
   foreach (chatlogpiece item, ic_chatlog_history) {
-    append_ic_text(item.get_message(), ui_showname_enable->isChecked() ? item.get_showname() : item.get_name(),
+    append_ic_text(item.get_message(),
+                   ui_showname_enable->isChecked() ? item.get_showname()
+                                                   : item.get_name(),
                    item.get_action(), item.get_chat_color());
   }
 }

@@ -280,8 +280,11 @@ private:
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
 
-  // The offset this user has given if they want to appear alongside someone.
+  // The horizontal offset this user has given if they want to appear alongside someone.
   int char_offset = 0;
+
+  // The vertical offset this user has given.
+  int char_vert_offset = 0;
 
   // 0 = in front, 1 = behind
   int pair_order = 0;
@@ -424,7 +427,11 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+
+  // have we already presented evidence for this message?
+  bool evidence_presented = false;
 
   QString effect = "";
 
@@ -520,6 +527,7 @@ private:
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
+  QSpinBox *ui_pair_vert_offset_spinbox;
 
   QComboBox *ui_pair_order_dropdown;
 
@@ -701,6 +709,7 @@ private slots:
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
+  void music_stop();
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
@@ -774,6 +783,7 @@ private slots:
 
   void on_log_limit_changed(int value);
   void on_pair_offset_changed(int value);
+  void on_pair_vert_offset_changed(int value);
 
   void on_ooc_toggle_clicked();
 
