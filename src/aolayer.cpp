@@ -519,8 +519,10 @@ void AOLayer::movie_ticker()
   }
   //  qint64 difference = elapsed - movie_delays[frame];
   if (frame >= movie_frames.size()) {
-    movie_frames.append(this->get_pixmap(m_reader.read()));
-    movie_delays.append(m_reader.nextImageDelay());
+    movie_frames.resize(frame + 1);
+    movie_frames[frame] = this->get_pixmap(m_reader.read());
+    movie_delays.resize(frame + 1);
+    movie_delays[frame] = m_reader.nextImageDelay();
   }
 
 #ifdef DEBUG_MOVIE
