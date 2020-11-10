@@ -242,7 +242,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_list = new QListWidget(this);
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100, 100);
-  ui_pair_offset_spinbox->setSuffix(tr("% offset"));
+  ui_pair_offset_spinbox->setSuffix(tr("% x offset"));
+  ui_pair_vert_offset_spinbox = new QSpinBox(this);
+  ui_pair_vert_offset_spinbox->setRange(-100, 100);
+  ui_pair_vert_offset_spinbox->setSuffix(tr("% y offset"));
 
   ui_pair_order_dropdown = new QComboBox(this);
   ui_pair_order_dropdown->addItem(tr("To front"));
@@ -386,6 +389,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           SLOT(on_pair_list_clicked(QModelIndex)));
   connect(ui_pair_offset_spinbox, SIGNAL(valueChanged(int)), this,
           SLOT(on_pair_offset_changed(int)));
+  connect(ui_pair_vert_offset_spinbox, SIGNAL(valueChanged(int)), this,
+          SLOT(on_pair_vert_offset_changed(int)));
   connect(ui_pair_order_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_pair_order_dropdown_changed(int)));
 
@@ -586,12 +591,18 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pair_offset_spinbox, "pair_offset_spinbox");
   ui_pair_offset_spinbox->hide();
   ui_pair_offset_spinbox->setToolTip(
-      tr("Change the percentage offset of your character's position from the "
+      tr("Change the horizontal percentage offset of your character's position from the "
+         "center of the screen."));
+  
+  set_size_and_pos(ui_pair_vert_offset_spinbox, "pair_vert_offset_spinbox");
+  ui_pair_vert_offset_spinbox->hide();
+  ui_pair_vert_offset_spinbox->setToolTip(
+      tr("Change the vertical percentage offset of your character's position from the "
          "center of the screen."));
 
   ui_pair_order_dropdown->hide();
   set_size_and_pos(ui_pair_order_dropdown, "pair_order_dropdown");
-  ui_pair_offset_spinbox->setToolTip(
+  ui_pair_order_dropdown->setToolTip(
       tr("Change the order of appearance for your character."));
 
   set_size_and_pos(ui_pair_button, "pair_button");
@@ -1692,7 +1703,7 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    packet_contents.append(QString::number(char_offset));
+    packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked()) {
@@ -2083,10 +2094,19 @@ void Courtroom::handle_chatmessage_2()
       if (got_other_charid > -1) {
         // If there is, show them!
         ui_vp_sideplayer_char->show();
-
-        int other_offset = m_chatmessage[OTHER_OFFSET].toInt();
+        QStringList other_offsets = m_chatmessage[OTHER_OFFSET].split("&");
+        int other_offset;
+        int other_offset_v;
+        if (other_offsets.length() <= 1) {
+          other_offset = m_chatmessage[OTHER_OFFSET].toInt();
+          other_offset_v = 0;
+        }
+        else {
+          other_offset = other_offsets[0].toInt();
+          other_offset_v = other_offsets[1].toInt();
+        }
         ui_vp_sideplayer_char->move(ui_viewport->width() * other_offset / 100,
-                                    0);
+                                    ui_viewport->height() * other_offset_v / 100);
 
         QStringList args = m_chatmessage[OTHER_CHARID].split("^");
         if (args.size() >
@@ -2125,12 +2145,14 @@ void Courtroom::handle_chatmessage_2()
   }
   // Set ourselves according to SELF_OFFSET
 
-  bool ok;
-  int self_offset = m_chatmessage[SELF_OFFSET].toInt(&ok);
-  if (ok)
-    ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, 0);
-  else
-    ui_vp_player_char->move(0, 0);
+  QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
+  int self_offset = self_offsets[0].toInt();
+  int self_offset_v;
+  if (self_offsets.length() <= 1)
+    self_offset_v = 0;
+  else 
+    self_offset_v = self_offsets[1].toInt();
+  ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 
   switch (emote_mod) {
   case 1:
@@ -3372,9 +3394,8 @@ void Courtroom::on_ooc_return_pressed()
     if (ok) {
       if (off >= -100 && off <= 100) {
         char_offset = off;
-        QString msg = tr("You have set your offset to ");
-        msg.append(QString::number(off));
-        msg.append("%.");
+        QString msg = tr("You have set your offset to %1%%.")
+          .arg(QString::number(off));
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
@@ -3385,6 +3406,30 @@ void Courtroom::on_ooc_return_pressed()
     else {
       append_server_chatmessage("CLIENT",
                                 tr("That offset does not look like one."), "1");
+    }
+    return;
+  }
+  else if (ooc_message.startsWith("/voffset")) {
+    ui_ooc_chat_message->clear();
+    ooc_message.remove(0, 8);
+
+    bool ok;
+    int off = ooc_message.toInt(&ok);
+    if (ok) {
+      if (off >= -100 && off <= 100) {
+        char_vert_offset = off;
+        QString msg = tr("You have set your vertical offset to %1%%.")
+          .arg(QString::number(off));
+        append_server_chatmessage("CLIENT", msg, "1");
+      }
+      else {
+        append_server_chatmessage(
+            "CLIENT", tr("Your vertical offset must be between -100% and 100%!"), "1");
+      }
+    }
+    else {
+      append_server_chatmessage("CLIENT",
+                                tr("That vertical offset does not look like one."), "1");
     }
     return;
   }
@@ -4360,6 +4405,7 @@ void Courtroom::on_mute_clicked()
     ui_mute_list->show();
     ui_pair_list->hide();
     ui_pair_offset_spinbox->hide();
+    ui_pair_vert_offset_spinbox->hide();
     ui_pair_order_dropdown->hide();
     ui_pair_button->set_image("pair_button");
     ui_mute->set_image("mute_pressed");
@@ -4375,6 +4421,7 @@ void Courtroom::on_pair_clicked()
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
+    ui_pair_vert_offset_spinbox->show();
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
     ui_mute->set_image("mute");
@@ -4383,6 +4430,7 @@ void Courtroom::on_pair_clicked()
   else {
     ui_pair_list->hide();
     ui_pair_offset_spinbox->hide();
+    ui_pair_vert_offset_spinbox->hide();
     ui_pair_order_dropdown->hide();
     ui_pair_button->set_image("pair_button");
   }
@@ -4538,6 +4586,8 @@ void Courtroom::on_blip_slider_moved(int p_value)
 void Courtroom::on_log_limit_changed(int value) { log_maximum_blocks = value; }
 
 void Courtroom::on_pair_offset_changed(int value) { char_offset = value; }
+
+void Courtroom::on_pair_vert_offset_changed(int value) { char_vert_offset = value; }
 
 void Courtroom::on_witness_testimony_clicked()
 {
