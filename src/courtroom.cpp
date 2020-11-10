@@ -3,6 +3,9 @@
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
+
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+
   ao_app->initBASS();
 
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
@@ -451,13 +454,13 @@ void Courtroom::set_widgets()
   if (f_courtroom.width < 0 || f_courtroom.height < 0) {
     qDebug() << "W: did not find courtroom width or height in " << filename;
 
-    this->resize(714, 668);
+    this->setFixedSize(714, 668);
   }
   else {
     m_courtroom_width = f_courtroom.width;
     m_courtroom_height = f_courtroom.height;
 
-    this->resize(f_courtroom.width, f_courtroom.height);
+    this->setFixedSize(f_courtroom.width, f_courtroom.height);
   }
 
   set_fonts();
