@@ -3,6 +3,7 @@
 
 #include "aopacket.h"
 #include "datatypes.h"
+#include "demoserver.h"
 #include "discord_rich_presence.h"
 
 #include "bass.h"
@@ -449,6 +450,7 @@ public:
   static void doBASSreset();
 
   QElapsedTimer demo_timer;
+  DemoServer* demo_server;
 
 private:
   const int RELEASE = 2;

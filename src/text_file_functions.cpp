@@ -236,6 +236,13 @@ QVector<server_type> AOApplication::read_serverlist_txt()
     f_server_list.append(f_server);
   }
 
+  server_type demo_server;
+  demo_server.ip = "127.0.0.1";
+  demo_server.port = 99999;
+  demo_server.name = "Demo playback";
+  demo_server.desc = "Play back demos you have previously recorded";
+  f_server_list.append(demo_server);
+
   return f_server_list;
 }
 

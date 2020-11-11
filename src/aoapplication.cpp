@@ -45,6 +45,8 @@ void AOApplication::construct_lobby()
   if (is_discord_enabled())
     discord->state_lobby();
 
+  demo_server = new DemoServer();
+
   w_lobby->show();
 }
 
@@ -55,6 +57,7 @@ void AOApplication::destruct_lobby()
     return;
   }
 
+  demo_server->deleteLater();
   delete w_lobby;
   w_lobby = nullptr;
   lobby_constructed = false;
