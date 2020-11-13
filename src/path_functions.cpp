@@ -94,6 +94,12 @@ QString AOApplication::get_sounds_path(QString p_file)
 QString AOApplication::get_music_path(QString p_song)
 {
   QString path = get_base_path() + "sounds/music/" + p_song;
+  
+  if (p_song.startsWith("http")) {
+      //it's an URL
+      return p_song;
+  }
+  
 #ifndef CASE_SENSITIVE_FILESYSTEM
   return path;
 #else
