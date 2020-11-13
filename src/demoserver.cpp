@@ -37,6 +37,12 @@ void DemoServer::accept_connection()
     connect(client_sock, &QAbstractSocket::disconnected, this, &DemoServer::client_disconnect);
     connect(client_sock, &QAbstractSocket::readyRead, this, &DemoServer::recv_data);
     client_sock->write("decryptor#NOENCRYPT#%");
+    load_demo("");
+    // Demo starts with a newline for some reason
+    demo_data.dequeue();
+    sc_packet = demo_data.dequeue();
+    AOPacket sc(sc_packet);
+    num_chars = sc.get_contents().length();
 }
 
 void DemoServer::recv_data()
@@ -62,7 +68,7 @@ void DemoServer::recv_data()
         in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
     for (QString packet : packet_list) {
-        AOPacket ao_packet = AOPacket(packet);
+        AOPacket ao_packet(packet);
         handle_packet(ao_packet);
     }
 }
@@ -98,11 +104,12 @@ void DemoServer::handle_packet(AOPacket packet)
         client_sock->write("#%");
     }
     else if (header == "askchaa") {
-        client_sock->write("SI#1#0#1#%");
+        client_sock->write("SI#");
+        client_sock->write(QString::number(num_chars).toUtf8());
+        client_sock->write("#0#1#%");
     }
     else if (header == "RC") {
-        // Maybe make this load a char from the characters folder
-        client_sock->write("SC#Phoenix#%");
+        client_sock->write(sc_packet.toUtf8());
     }
     else if (header == "RM") {
         // Empty music list crashes AO2 lol
@@ -116,11 +123,11 @@ void DemoServer::handle_packet(AOPacket packet)
     }
     else if (header == "CT") {
         if (contents[1].startsWith("/play"))
-            begin_demo("placeholder lmfao");
+            playback();
     }
 }
 
-void DemoServer::begin_demo(QString filename)
+void DemoServer::load_demo(QString filename)
 {
     // I have no fucking clue how AO path shit works
     QFile demo_file("C:\\Users\\Marisa\\Documents\\AO2-Client\\bin\\base\\test.demo");
@@ -135,7 +142,7 @@ void DemoServer::begin_demo(QString filename)
         line = demo_stream.readLine();
     }
 
-    playback();
+    //playback();
 }
 
 void DemoServer::playback()

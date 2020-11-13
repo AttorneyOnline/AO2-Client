@@ -21,7 +21,7 @@ public:
 
 private:
     void handle_packet(AOPacket packet);
-    void begin_demo(QString filename);
+    void load_demo(QString filename);
 
     QTcpServer* tcp_server;
     QTcpSocket* client_sock = nullptr;
@@ -29,6 +29,8 @@ private:
     bool partial_packet = false;
     QString temp_packet = "";
     QQueue<QString> demo_data;
+    QString sc_packet;
+    int num_chars;
 
 private slots:
     void accept_connection();

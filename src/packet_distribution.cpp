@@ -508,6 +508,15 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     send_server_packet(new AOPacket("RM#%"));
+    if (get_auto_logging_enabled())
+    {
+      QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
+      append_to_file(p_packet->to_string(), path, true);
+      if (!demo_timer.isValid())
+        demo_timer.start();
+      else
+        append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
+    }
   }
   else if (header == "SM") {
     if (!courtroom_constructed)
