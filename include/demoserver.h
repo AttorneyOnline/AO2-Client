@@ -5,8 +5,10 @@
 
 #include <QDebug>
 #include <QObject>
+#include <QQueue>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QTimer>
 
 class DemoServer : public QObject
 {
@@ -19,17 +21,20 @@ public:
 
 private:
     void handle_packet(AOPacket packet);
+    void begin_demo(QString filename);
 
     QTcpServer* tcp_server;
     QTcpSocket* client_sock = nullptr;
     bool client_connected = false;
     bool partial_packet = false;
     QString temp_packet = "";
+    QQueue<QString> demo_data;
 
 private slots:
     void accept_connection();
     void recv_data();
     void client_disconnect();
+    void playback();
 
 public slots:
     void start_server();

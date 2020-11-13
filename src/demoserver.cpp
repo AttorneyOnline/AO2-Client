@@ -71,6 +71,14 @@ void DemoServer::handle_packet(AOPacket packet)
 {
     packet.net_decode();
 
+    // This code is literally a barebones AO server
+    // It is wise to do it this way, because I can
+    // avoid touching any of this disgusting shit
+    // related to hardcoding this stuff in.
+
+    // Also, at some point, I will make akashit
+    // into a shared library.
+
     QString header = packet.get_header();
     QStringList contents = packet.get_contents();
 
@@ -88,6 +96,59 @@ void DemoServer::handle_packet(AOPacket packet)
         client_sock->write("FL#");
         client_sock->write(feature_list.join('#').toUtf8());
         client_sock->write("#%");
+    }
+    else if (header == "askchaa") {
+        client_sock->write("SI#1#0#1#%");
+    }
+    else if (header == "RC") {
+        // Maybe make this load a char from the characters folder
+        client_sock->write("SC#Phoenix#%");
+    }
+    else if (header == "RM") {
+        // Empty music list crashes AO2 lol
+        client_sock->write("SM#~stop.mp3#%");
+    }
+    else if (header == "RD") {
+        client_sock->write("DONE#%");
+    }
+    else if (header == "CC") {
+        client_sock->write("PV#0#CID#0#%");
+    }
+    else if (header == "CT") {
+        if (contents[1].startsWith("/play"))
+            begin_demo("placeholder lmfao");
+    }
+}
+
+void DemoServer::begin_demo(QString filename)
+{
+    // I have no fucking clue how AO path shit works
+    QFile demo_file("C:\\Users\\Marisa\\Documents\\AO2-Client\\bin\\base\\test.demo");
+    demo_file.open(QIODevice::ReadOnly);
+    if (!demo_file.isOpen())
+        return;
+
+    QTextStream demo_stream(&demo_file);
+    QString line = demo_stream.readLine();
+    while (!line.isNull()) {
+        demo_data.enqueue(line);
+        line = demo_stream.readLine();
+    }
+
+    playback();
+}
+
+void DemoServer::playback()
+{
+    QString current_packet = demo_data.dequeue();
+    while (!current_packet.startsWith("wait") && !demo_data.isEmpty()) {
+        client_sock->write(current_packet.toUtf8());
+        current_packet = demo_data.dequeue();
+    }
+    if (!demo_data.isEmpty()) {
+        AOPacket wait_packet = AOPacket(current_packet);
+        int duration = wait_packet.get_contents().at(0).toInt();
+        QTimer::singleShot(duration, this, &DemoServer::playback);
     }
 }
 

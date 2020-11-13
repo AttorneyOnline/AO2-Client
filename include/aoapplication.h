@@ -450,7 +450,7 @@ public:
   static void doBASSreset();
 
   QElapsedTimer demo_timer;
-  DemoServer* demo_server;
+  DemoServer* demo_server = nullptr;
 
 private:
   const int RELEASE = 2;
