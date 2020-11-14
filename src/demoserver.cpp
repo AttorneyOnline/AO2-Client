@@ -37,7 +37,12 @@ void DemoServer::accept_connection()
     connect(client_sock, &QAbstractSocket::disconnected, this, &DemoServer::client_disconnect);
     connect(client_sock, &QAbstractSocket::readyRead, this, &DemoServer::recv_data);
     client_sock->write("decryptor#NOENCRYPT#%");
-    load_demo("");
+
+    QString p_path = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
+    if (p_path.isEmpty())
+      return;
+
+    load_demo(p_path);
     // Demo starts with a newline for some reason
     demo_data.dequeue();
     sc_packet = demo_data.dequeue();
@@ -129,8 +134,7 @@ void DemoServer::handle_packet(AOPacket packet)
 
 void DemoServer::load_demo(QString filename)
 {
-    // I have no fucking clue how AO path shit works
-    QFile demo_file("C:\\Users\\Marisa\\Documents\\AO2-Client\\bin\\base\\test.demo");
+    QFile demo_file(filename);
     demo_file.open(QIODevice::ReadOnly);
     if (!demo_file.isOpen())
         return;
