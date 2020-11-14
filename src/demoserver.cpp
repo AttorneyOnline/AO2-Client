@@ -147,8 +147,8 @@ void DemoServer::load_demo(QString filename)
     demo_file.open(QIODevice::ReadOnly);
     if (!demo_file.isOpen())
         return;
+    demo_data.clear();
     p_path = filename;
-
     QTextStream demo_stream(&demo_file);
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
