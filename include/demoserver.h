@@ -32,6 +32,8 @@ private:
     QQueue<QString> demo_data;
     QString sc_packet;
     int num_chars;
+    QString p_path;
+    QTimer *timer;
 
 private slots:
     void accept_connection();

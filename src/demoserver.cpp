@@ -3,8 +3,13 @@
 
 DemoServer::DemoServer(QObject *parent) : QObject(parent)
 {
+    timer = new QTimer(this);
+    timer->setTimerType(Qt::PreciseTimer);
+    timer->setSingleShot(true);
+
     tcp_server = new QTcpServer(this);
     connect(tcp_server, &QTcpServer::newConnection, this, &DemoServer::accept_connection);
+    connect(timer, &QTimer::timeout, this, &DemoServer::playback);
 }
 
 void DemoServer::start_server()
@@ -25,6 +30,17 @@ void DemoServer::start_server()
 
 void DemoServer::accept_connection()
 {
+    QString path = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
+    if (path.isEmpty())
+      return;
+    load_demo(path);
+    if (demo_data.isEmpty())
+      return;
+
+    sc_packet = demo_data.dequeue();
+    AOPacket sc(sc_packet);
+    num_chars = sc.get_contents().length();
+
     if (client_sock) {
         // Client is already connected...
         qDebug() << "Multiple connections to demo server disallowed.";
@@ -37,17 +53,6 @@ void DemoServer::accept_connection()
     connect(client_sock, &QAbstractSocket::disconnected, this, &DemoServer::client_disconnect);
     connect(client_sock, &QAbstractSocket::readyRead, this, &DemoServer::recv_data);
     client_sock->write("decryptor#NOENCRYPT#%");
-
-    QString p_path = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
-    if (p_path.isEmpty())
-      return;
-
-    load_demo(p_path);
-    // Demo starts with a newline for some reason
-    demo_data.dequeue();
-    sc_packet = demo_data.dequeue();
-    AOPacket sc(sc_packet);
-    num_chars = sc.get_contents().length();
 }
 
 void DemoServer::recv_data()
@@ -127,8 +132,12 @@ void DemoServer::handle_packet(AOPacket packet)
         client_sock->write("PV#0#CID#0#%");
     }
     else if (header == "CT") {
-        if (contents[1].startsWith("/play"))
+        if (contents[1] == ">")
+        {
+            if (demo_data.isEmpty() && p_path != "")
+              load_demo(p_path);
             playback();
+        }
     }
 }
 
@@ -138,6 +147,7 @@ void DemoServer::load_demo(QString filename)
     demo_file.open(QIODevice::ReadOnly);
     if (!demo_file.isOpen())
         return;
+    p_path = filename;
 
     QTextStream demo_stream(&demo_file);
     QString line = demo_stream.readLine();
@@ -145,12 +155,13 @@ void DemoServer::load_demo(QString filename)
         demo_data.enqueue(line);
         line = demo_stream.readLine();
     }
-
-    //playback();
 }
 
 void DemoServer::playback()
 {
+    if (demo_data.isEmpty())
+      return;
+
     QString current_packet = demo_data.dequeue();
     while (!current_packet.startsWith("wait") && !demo_data.isEmpty()) {
         client_sock->write(current_packet.toUtf8());
@@ -159,7 +170,7 @@ void DemoServer::playback()
     if (!demo_data.isEmpty()) {
         AOPacket wait_packet = AOPacket(current_packet);
         int duration = wait_packet.get_contents().at(0).toInt();
-        QTimer::singleShot(duration, this, &DemoServer::playback);
+        timer->start(duration);
     }
 }
 
