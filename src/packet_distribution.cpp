@@ -173,7 +173,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       else
         w_courtroom->append_server_chatmessage(f_contents.at(0),
                                                f_contents.at(1), "0");
-      if (get_auto_logging_enabled())
+      if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         append_to_file(p_packet->to_string(), path, true);
@@ -301,7 +301,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_auto_logging_enabled()) {
+    if (AOApplication::get_auto_logging_enabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'ddd MMMM yyyy hh.mm.ss t'.log'");
@@ -508,7 +508,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     send_server_packet(new AOPacket("RM#%"));
-    if (get_auto_logging_enabled())
+    if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
     {
       QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
       append_to_file(p_packet->to_string(), path, true);
@@ -616,7 +616,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           2) // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
       w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
-      if (get_auto_logging_enabled())
+      if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         append_to_file(p_packet->to_string(), path, true);
@@ -634,7 +634,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed) // We were sent a "set position" packet
     {
       w_courtroom->set_side(f_contents.at(0));
-      if (get_auto_logging_enabled())
+      if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         append_to_file(p_packet->to_string(), path, true);
@@ -664,7 +664,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->handle_chatmessage(&p_packet->get_contents());
-      if (get_auto_logging_enabled())
+      if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         append_to_file(p_packet->to_string(), path, true);
@@ -679,7 +679,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->handle_song(&p_packet->get_contents());
-      if (get_auto_logging_enabled())
+      if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         append_to_file(p_packet->to_string(), path, true);
@@ -698,7 +698,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           w_courtroom->handle_wtce(f_contents.at(0), 0);
         else if (f_contents.size() == 2) {
           w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
-        if (get_auto_logging_enabled())
+        if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
         {
           QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
           append_to_file(p_packet->to_string(), path, true);
@@ -715,7 +715,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     {
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
-      if (get_auto_logging_enabled())
+      if (get_auto_logging_enabled() && !log_filename.contains("/Demo playback/"))
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         append_to_file(p_packet->to_string(), path, true);
