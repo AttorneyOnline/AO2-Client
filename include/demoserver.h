@@ -19,6 +19,8 @@ public:
 
     bool server_started = false;
     int port = 27088;
+    int max_wait = -1;
+    int min_wait = -1;
 
 private:
     void handle_packet(AOPacket packet);

@@ -3292,9 +3292,6 @@ void Courtroom::on_ooc_return_pressed()
 {
   QString ooc_message = ui_ooc_chat_message->text();
 
-  if (ooc_message == "" || ui_ooc_chat_name->text() == "")
-    return;
-
   if (ooc_message.startsWith("/pos")) {
     if (ooc_message == "/pos jud") {
       toggle_judge_buttons(true);

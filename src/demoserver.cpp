@@ -132,8 +132,7 @@ void DemoServer::handle_packet(AOPacket packet)
         client_sock->write(sc_packet.toUtf8());
     }
     else if (header == "RM") {
-        // Empty music list crashes AO2 lol
-        client_sock->write("SM#~stop.mp3#%");
+        client_sock->write("SM##%");
     }
     else if (header == "RD") {
         client_sock->write("DONE#%");
@@ -142,11 +141,82 @@ void DemoServer::handle_packet(AOPacket packet)
         client_sock->write("PV#0#CID#0#%");
     }
     else if (header == "CT") {
-        if (contents[1] == ">")
+        if (contents[1].startsWith("/play") || contents[1] == ">")
         {
+          if (timer->interval() != 0 && !timer->isActive())
+          {
+            timer->start();
+            client_sock->write("CT#DEMO#Resuming playback.#%");
+          }
+          else
+          {
             if (demo_data.isEmpty() && p_path != "")
               load_demo(p_path);
             playback();
+          }
+        }
+        else if (contents[1].startsWith("/pause") || contents[1] == "|")
+        {
+          int timeleft = timer->remainingTime();
+          timer->stop();
+          timer->setInterval(timeleft);
+          client_sock->write("CT#DEMO#Pausing playback.#%");
+        }
+        else if (contents[1].startsWith("/max_wait"))
+        {
+          QStringList args = contents[1].split(" ");
+          if (args.size() > 1)
+          {
+            bool ok;
+            int p_max_wait = args.at(1).toInt(&ok);
+            if (ok)
+            {
+              if (p_max_wait < 0)
+                p_max_wait = -1;
+              max_wait = p_max_wait;
+              client_sock->write("CT#DEMO#Setting max_wait to ");
+              client_sock->write(QString::number(max_wait).toUtf8());
+              client_sock->write(" milliseconds.#%");
+            }
+            else
+            {
+              client_sock->write("CT#DEMO#Not a valid integer!#%");
+            }
+          }
+          else
+          {
+            client_sock->write("CT#DEMO#Current max_wait is ");
+            client_sock->write(QString::number(max_wait).toUtf8());
+            client_sock->write(" milliseconds.#%");
+          }
+        }
+        else if (contents[1].startsWith("/min_wait"))
+        {
+          QStringList args = contents[1].split(" ");
+          if (args.size() > 1)
+          {
+            bool ok;
+            int p_min_wait = args.at(1).toInt(&ok);
+            if (ok)
+            {
+              if (p_min_wait < 0)
+                p_min_wait = -1;
+              min_wait = p_min_wait;
+              client_sock->write("CT#DEMO#Setting min_wait to ");
+              client_sock->write(QString::number(min_wait).toUtf8());
+              client_sock->write(" milliseconds.#%");
+            }
+            else
+            {
+              client_sock->write("CT#DEMO#Not a valid integer!#%");
+            }
+          }
+          else
+          {
+            client_sock->write("CT#DEMO#Current min_wait is ");
+            client_sock->write(QString::number(min_wait).toUtf8());
+            client_sock->write(" milliseconds.#%");
+          }
         }
     }
 }
@@ -183,7 +253,16 @@ void DemoServer::playback()
     if (!demo_data.isEmpty()) {
         AOPacket wait_packet = AOPacket(current_packet);
         int duration = wait_packet.get_contents().at(0).toInt();
+        if (max_wait != -1 && duration > max_wait)
+          duration = max_wait;
+        if (min_wait != -1 && duration < min_wait)
+          duration = min_wait;
         timer->start(duration);
+    }
+    else
+    {
+      client_sock->write("CT#DEMO#Reached the end of the demo file. Send /play or > in OOC to restart.#%");
+      timer->setInterval(0);
     }
 }
 
