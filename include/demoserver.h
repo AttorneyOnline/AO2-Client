@@ -33,7 +33,7 @@ private:
     QString temp_packet = "";
     QQueue<QString> demo_data;
     QString sc_packet;
-    int num_chars;
+    int num_chars = 0;
     QString p_path;
     QTimer *timer;
 

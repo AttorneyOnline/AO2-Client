@@ -47,9 +47,17 @@ void DemoServer::accept_connection()
       return;
     }
 
-    sc_packet = demo_data.dequeue();
-    AOPacket sc(sc_packet);
-    num_chars = sc.get_contents().length();
+    if (demo_data.head().startsWith("SC#"))
+    {
+      sc_packet = demo_data.dequeue();
+      AOPacket sc(sc_packet);
+      num_chars = sc.get_contents().length();
+    }
+    else
+    {
+      sc_packet = "SC#%";
+      num_chars = 0;
+    }
 
     if (client_sock) {
         // Client is already connected...
@@ -141,12 +149,20 @@ void DemoServer::handle_packet(AOPacket packet)
         client_sock->write("PV#0#CID#-1#%");
     }
     else if (header == "CT") {
-        if (contents[1].startsWith("/play") || contents[1] == ">")
+        if (contents[1].startsWith("/load"))
+        {
+          QString path = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
+          if (path.isEmpty())
+            return;
+          load_demo(path);
+          client_sock->write("CT#DEMO#Demo file loaded. Send /play or > in OOC to begin playback.#1#%");
+        }
+        else if (contents[1].startsWith("/play") || contents[1] == ">")
         {
           if (timer->interval() != 0 && !timer->isActive())
           {
             timer->start();
-            client_sock->write("CT#DEMO#Resuming playback.#%");
+            client_sock->write("CT#DEMO#Resuming playback.#1#%");
           }
           else
           {
@@ -160,7 +176,7 @@ void DemoServer::handle_packet(AOPacket packet)
           int timeleft = timer->remainingTime();
           timer->stop();
           timer->setInterval(timeleft);
-          client_sock->write("CT#DEMO#Pausing playback.#%");
+          client_sock->write("CT#DEMO#Pausing playback.#1#%");
         }
         else if (contents[1].startsWith("/max_wait"))
         {
@@ -176,18 +192,18 @@ void DemoServer::handle_packet(AOPacket packet)
               max_wait = p_max_wait;
               client_sock->write("CT#DEMO#Setting max_wait to ");
               client_sock->write(QString::number(max_wait).toUtf8());
-              client_sock->write(" milliseconds.#%");
+              client_sock->write(" milliseconds.#1#%");
             }
             else
             {
-              client_sock->write("CT#DEMO#Not a valid integer!#%");
+              client_sock->write("CT#DEMO#Not a valid integer!#1#%");
             }
           }
           else
           {
             client_sock->write("CT#DEMO#Current max_wait is ");
             client_sock->write(QString::number(max_wait).toUtf8());
-            client_sock->write(" milliseconds.#%");
+            client_sock->write(" milliseconds.#1#%");
           }
         }
         else if (contents[1].startsWith("/min_wait"))
@@ -204,18 +220,18 @@ void DemoServer::handle_packet(AOPacket packet)
               min_wait = p_min_wait;
               client_sock->write("CT#DEMO#Setting min_wait to ");
               client_sock->write(QString::number(min_wait).toUtf8());
-              client_sock->write(" milliseconds.#%");
+              client_sock->write(" milliseconds.#1#%");
             }
             else
             {
-              client_sock->write("CT#DEMO#Not a valid integer!#%");
+              client_sock->write("CT#DEMO#Not a valid integer!#1#%");
             }
           }
           else
           {
             client_sock->write("CT#DEMO#Current min_wait is ");
             client_sock->write(QString::number(min_wait).toUtf8());
-            client_sock->write(" milliseconds.#%");
+            client_sock->write(" milliseconds.#1#%");
           }
         }
     }
@@ -261,7 +277,7 @@ void DemoServer::playback()
     }
     else
     {
-      client_sock->write("CT#DEMO#Reached the end of the demo file. Send /play or > in OOC to restart.#%");
+      client_sock->write("CT#DEMO#Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.#1#%");
       timer->setInterval(0);
     }
 }
