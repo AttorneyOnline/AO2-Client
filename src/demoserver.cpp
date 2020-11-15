@@ -132,13 +132,13 @@ void DemoServer::handle_packet(AOPacket packet)
         client_sock->write(sc_packet.toUtf8());
     }
     else if (header == "RM") {
-        client_sock->write("SM##%");
+        client_sock->write("SM#%");
     }
     else if (header == "RD") {
         client_sock->write("DONE#%");
     }
     else if (header == "CC") {
-        client_sock->write("PV#0#CID#0#%");
+        client_sock->write("PV#0#CID#-1#%");
     }
     else if (header == "CT") {
         if (contents[1].startsWith("/play") || contents[1] == ">")
