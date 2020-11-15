@@ -269,7 +269,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        qDebug() << server_address;
         window_title += ": " + server_name;
       }
     }
@@ -279,7 +278,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        qDebug() << server_address;
         window_title += ": " + server_name;
       }
     }
@@ -318,7 +316,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                             hash.result().toBase64().toStdString());
   }
   else if (header == "CI") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
     for (int n_element = 0; n_element < f_contents.size(); n_element += 2) {
@@ -367,7 +365,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "EI") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
     // +1 because evidence starts at 1 rather than 0 for whatever reason
@@ -408,7 +406,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
   }
   else if (header == "EM") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
     bool musics_time = false;
@@ -476,7 +474,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
 
   else if (header == "SC") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
@@ -519,7 +517,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "SM") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
     bool musics_time = false;

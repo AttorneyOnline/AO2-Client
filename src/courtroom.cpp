@@ -1214,8 +1214,6 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   ui_pos_dropdown->addItems(pos_dropdown_list);
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
-
-  qDebug() << pos_dropdown_list;
 }
 
 void Courtroom::update_character(int p_cid)
@@ -1258,7 +1256,6 @@ void Courtroom::update_character(int p_cid)
   set_sfx_dropdown();
   set_effects_dropdown();
 
-  qDebug() << "update_character called";
   if (newchar) // Avoid infinite loop of death and suffering
     set_iniswap_dropdown();
 
@@ -2714,7 +2711,7 @@ void Courtroom::play_preanim(bool noninterrupting)
     else
       anim_state = 1;
     preanim_done();
-    qDebug() << "could not find " + anim_to_find;
+    qDebug() << "W: could not find " + anim_to_find;
     return;
   }
 
@@ -4189,7 +4186,6 @@ void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
   QStringList packet_contents;
   packet_contents.append(p_area);
   packet_contents.append(QString::number(m_cid));
-  qDebug() << packet_contents;
   ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 
