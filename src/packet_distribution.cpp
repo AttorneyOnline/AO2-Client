@@ -246,7 +246,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     evidence_list_size = f_contents.at(1).toInt();
     music_list_size = f_contents.at(2).toInt();
 
-    if (char_list_size < 1 || evidence_list_size < 0 || music_list_size < 0)
+    if (char_list_size < 0 || evidence_list_size < 0 || music_list_size < 0)
       goto end;
 
     loaded_chars = 0;
