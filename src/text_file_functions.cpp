@@ -165,7 +165,7 @@ bool AOApplication::write_to_file(QString p_text, QString p_file, bool make_dir)
 bool AOApplication::append_to_file(QString p_text, QString p_file,
                                    bool make_dir)
 {
-  if(!QFileInfo(p_file).exists()) //Don't create a newline if file didn't exist before now
+  if(!file_exists(p_file)) //Don't create a newline if file didn't exist before now
   {
     return write_to_file(p_text, p_file, make_dir);
   }
