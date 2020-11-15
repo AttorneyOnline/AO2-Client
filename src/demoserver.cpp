@@ -162,6 +162,9 @@ void DemoServer::load_demo(QString filename)
     QTextStream demo_stream(&demo_file);
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
+        if (!line.endsWith("%")) {
+          line += "\n";
+        }
         demo_data.enqueue(line);
         line = demo_stream.readLine();
     }
