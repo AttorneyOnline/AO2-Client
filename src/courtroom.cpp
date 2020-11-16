@@ -1826,7 +1826,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
-  QString f_displayname;
+  QString f_displayname = m_chatmessage[SHOWNAME];
   if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked()) {
     f_displayname = ao_app->get_showname(f_char_name);
   }
@@ -1855,10 +1855,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     reset_ui();
   }
 
-  QString f_charname = "";
-  if (f_char_id >= 0)
-    f_charname = ao_app->get_showname(f_char_name);
-
   if (m_chatmessage[MESSAGE].trimmed().isEmpty()) // User-created blankpost
   {
     m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
@@ -1866,7 +1862,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() ||
       ic_chatlog_history.last().get_message() != "") {
-    log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
+    log_ic_text(f_char_name, f_displayname, m_chatmessage[MESSAGE], "",
                 m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
                    m_chatmessage[TEXT_COLOR].toInt());
