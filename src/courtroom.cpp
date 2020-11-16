@@ -720,8 +720,7 @@ void Courtroom::set_widgets()
   ui_sfx_remove->setText("X");
   ui_sfx_remove->set_image("evidencex");
   ui_sfx_remove->setToolTip(
-      tr("Remove the currently selected iniswap from the list and return to "
-         "the original character folder."));
+      tr("Remove the currently selected sound effect."));
   ui_sfx_remove->hide();
 
   set_iniswap_dropdown();
