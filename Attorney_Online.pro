@@ -35,6 +35,7 @@ LIBS += -lbassopus
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
 CONFIG += c++14
+QMAKE_CXXFLAGS += -fpermissive
 
 RESOURCES += resources.qrc
 
