@@ -101,15 +101,19 @@ QString AOApplication::get_evidence_path(QString p_file)
 
 QString AOApplication::get_case_sensitive_path(QString p_file)
 {
+  QFileInfo file(p_file);
+  QString file_basename = file.fileName();
+
+  // no path traversal above base folder
+  if (!(file.absolutePath().startsWith(get_base_path())))
+      return get_base_path() + file_basename;
+
   #ifdef CASE_SENSITIVE_FILESYSTEM
   // first, check to see if it's actually there (also serves as base case for
   // recursion)
   if (exists(p_file))
     return p_file;
 
-  QFileInfo file(p_file);
-
-  QString file_basename = file.fileName();
   QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
 
   // second, does it exist in the new parent dir?
