@@ -148,8 +148,6 @@ void Courtroom::char_clicked(int n_char)
   else
     update_character(n_char);
 
-  enter_courtroom();
-
   if (n_char != -1)
     ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }
