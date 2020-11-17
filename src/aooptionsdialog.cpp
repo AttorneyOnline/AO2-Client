@@ -3,7 +3,7 @@
 #include "bass.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
-    : QDialog(parent)
+    : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
 {
   ao_app = p_ao_app;
 
