@@ -262,17 +262,23 @@ void DemoServer::playback()
       return;
 
     QString current_packet = demo_data.dequeue();
+    // We reset the elapsed time with this packet
+    if (current_packet.startsWith("MS#"))
+      elapsed_time = 0;
+
     while (!current_packet.startsWith("wait") && !demo_data.isEmpty()) {
         client_sock->write(current_packet.toUtf8());
         current_packet = demo_data.dequeue();
     }
     if (!demo_data.isEmpty()) {
         AOPacket wait_packet = AOPacket(current_packet);
+
         int duration = wait_packet.get_contents().at(0).toInt();
-        if (max_wait != -1 && duration > max_wait)
-          duration = max_wait;
+        if (max_wait != -1 && duration + elapsed_time > max_wait)
+          duration = qMax(0, max_wait - elapsed_time);
         if (min_wait != -1 && duration < min_wait)
           duration = min_wait;
+        elapsed_time += duration;
         timer->start(duration);
     }
     else

@@ -36,6 +36,7 @@ private:
     int num_chars = 0;
     QString p_path;
     QTimer *timer;
+    int elapsed_time = 0;
 
 private slots:
     void accept_connection();
