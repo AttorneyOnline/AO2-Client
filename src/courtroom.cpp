@@ -2037,7 +2037,7 @@ void Courtroom::handle_chatmessage_2()
   {
     if (!ui_vp_chatbox->set_image("chat"))
       ui_vp_chatbox->set_image("chatbox");
-
+    set_font(ui_vp_showname, "", "showname", customchar);
     QFontMetrics fm(ui_vp_showname->font());
 // Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
 #if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
@@ -2110,8 +2110,6 @@ void Courtroom::handle_chatmessage_2()
       }
       else
         ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
-
-      set_font(ui_vp_showname, "", "showname", customchar);
     }
     else {
       ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
