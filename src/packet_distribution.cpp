@@ -460,6 +460,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 3)
       goto end;
 
+    w_courtroom->enter_courtroom();
+
     if (courtroom_constructed)
       w_courtroom->update_character(f_contents.at(2).toInt());
   }
