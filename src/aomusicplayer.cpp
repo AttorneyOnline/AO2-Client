@@ -33,9 +33,9 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
     newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
 
   if (f_path.startsWith("http"))
-    newstream = BASS_StreamCreateURL(f_path.utf16(), 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE, NULL, NULL);
+    newstream = BASS_StreamCreateURL(f_path.toStdWString().c_str(), 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE, NULL, NULL);
   else
-    newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags); 
+    newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
