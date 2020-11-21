@@ -148,6 +148,10 @@ void Courtroom::char_clicked(int n_char)
   else
     update_character(n_char);
 
+  // have to call these to make sure sfx and blips don't get accidentally muted forever when we change characters
+  sfx_player->set_volume(ui_sfx_slider->value());
+  blip_player->set_volume(ui_blip_slider->value());
+
   if (n_char != -1)
     ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }
