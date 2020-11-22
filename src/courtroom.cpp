@@ -2194,7 +2194,7 @@ void Courtroom::handle_chatmessage_2()
           ui_vp_sideplayer_char->set_flipped(false);
         QString filename = "(a)" + m_chatmessage[OTHER_EMOTE];
         ui_vp_sideplayer_char->load_image(filename, m_chatmessage[OTHER_NAME],
-                                          0);
+                                          0, false);
       }
       else {
         // If the server understands other characters, but there
@@ -2386,7 +2386,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(b)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0);
+    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     anim_state = 2;
   }
   else if (anim_state < 3 &&
@@ -2395,7 +2395,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(a)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0);
+    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     anim_state = 3;
   }
 
@@ -2810,7 +2810,7 @@ void Courtroom::play_preanim(bool noninterrupting)
   }
   ui_vp_player_char->set_static_duration(preanim_duration);
   ui_vp_player_char->set_play_once(true);
-  ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration);
+  ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
 
   if (noninterrupting)
     anim_state = 4;
@@ -2931,7 +2931,7 @@ void Courtroom::chat_tick()
         ui_vp_player_char->set_play_once(false);
         filename = "(a)" + m_chatmessage[EMOTE];
       }
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0);
+      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     }
     QString f_char;
     QString f_custom_theme;
@@ -3094,7 +3094,7 @@ void Courtroom::chat_tick()
       ui_vp_player_char->stop();
       ui_vp_player_char->set_play_once(false);
       filename = "(b)" + m_chatmessage[EMOTE];
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0);
+      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
       anim_state = 2;
     }
     else if (!color_is_talking && anim_state < 3 &&
@@ -3103,7 +3103,7 @@ void Courtroom::chat_tick()
       ui_vp_player_char->stop();
       ui_vp_player_char->set_play_once(false);
       filename = "(a)" + m_chatmessage[EMOTE];
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0);
+      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
       anim_state = 3;
     }
     // Continue ticking

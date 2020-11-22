@@ -119,7 +119,8 @@ void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
   cull_image = false;
-  if (ao_app->read_design_ini("scaling", ao_app->get_background_path("design.ini")) == "smooth")
+  if (ao_app->read_design_ini(
+          "scaling", ao_app->get_background_path("design.ini")) == "smooth")
     transform_mode = Qt::SmoothTransformation;
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
   QList<QString> pathlist = {
@@ -137,9 +138,11 @@ void ForegroundLayer::load_image(QString p_filename, QString p_charname)
   miscname = ao_app->get_char_shouts(p_charname);
   qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
   QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(p_charname, p_filename)), // first check the character folder
+      ao_app->get_image_suffix(ao_app->get_character_path(
+          p_charname, p_filename)), // first check the character folder
       ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + miscname + "/" + p_filename)), // first check our theme's misc directory
+          "misc/" + miscname + "/" +
+          p_filename)), // first check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
           miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(
@@ -150,13 +153,15 @@ void ForegroundLayer::load_image(QString p_filename, QString p_charname)
 }
 
 void CharLayer::load_image(QString p_filename, QString p_charname,
-                           int p_duration)
+                           int p_duration, bool p_is_preanim)
 {
   duration = p_duration;
   cull_image = false;
   force_continuous = false;
   transform_mode = ao_app->get_char_scaling(p_charname);
-  if ((p_charname == last_char) && ((p_filename == last_emote) || (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&
+  if ((p_charname == last_char) &&
+      ((p_filename == last_emote) ||
+       (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&
       (!is_preanim) && (!was_preanim)) {
     continuous = true;
     force_continuous = true;
@@ -173,7 +178,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   last_char = p_charname;
   last_emote = current_emote;
   last_prefix = prefix;
-  is_preanim = false;
+  is_preanim = p_is_preanim;
   if ((p_filename.left(3) == "(a)") || (p_filename.left(3) == "(b)")) {
     prefix = p_filename.left(3);
     current_emote = p_filename.mid(3, -1);
@@ -188,7 +193,8 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
     preanim_timer->start(duration * tick_ms);
   }
   qDebug() << "[CharLayer] anim loaded: prefix " << prefix << " filename "
-           << current_emote << " from character: " << p_charname << " continuous: " << continuous;
+           << current_emote << " from character: " << p_charname
+           << " continuous: " << continuous;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname, prefix + current_emote)), // Default path
@@ -230,8 +236,14 @@ void InterjectionLayer::load_image(QString p_filename, QString p_charname,
           "placeholder")), // Default placeholder path
   };
   QString final_image = find_image(pathlist);
-  if (final_image == ao_app->get_theme_path("custom.png") || final_image == ao_app->get_default_theme_path("custom.png")) // stupid exception because themes are stupid
-    final_image = find_image({ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")), ao_app->get_image_suffix(ao_app->get_default_theme_path("placeholder"))});
+  if (final_image == ao_app->get_theme_path("custom.png") ||
+      final_image ==
+          ao_app->get_default_theme_path(
+              "custom.png")) // stupid exception because themes are stupid
+    final_image = find_image(
+        {ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")),
+         ao_app->get_image_suffix(
+             ao_app->get_default_theme_path("placeholder"))});
   start_playback(final_image);
 }
 
@@ -251,7 +263,8 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + p_miscname + "/" + p_filename)), // first check our theme's misc directory
+          "misc/" + p_miscname + "/" +
+          p_filename)), // first check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
           p_miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(ao_app->get_theme_path(
@@ -284,7 +297,8 @@ void AOLayer::start_playback(QString p_image)
   if (!file_exists(p_image))
     return;
 
-  QString scaling_override = ao_app->read_design_ini("scaling", p_image + ".ini");
+  QString scaling_override =
+      ao_app->read_design_ini("scaling", p_image + ".ini");
   if (scaling_override == "smooth")
     transform_mode = Qt::SmoothTransformation;
   else if (scaling_override == "fast")
@@ -307,11 +321,11 @@ void AOLayer::start_playback(QString p_image)
     continuous = false;
   }
   // CANTFIX: this causes a slight hitch
-  // The correct way of doing this would be to use QImageReader::jumpToImage() and 
-  // populate missing data in the movie ticker when it's needed. This is unforunately
-  // completely impossible, because QImageReader::jumpToImage() is not implemented
-  // in any image format AO2 is equipped to use. Instead, the default behavior is used - 
-  // that is, absolutely nothing.
+  // The correct way of doing this would be to use QImageReader::jumpToImage()
+  // and populate missing data in the movie ticker when it's needed. This is
+  // unforunately completely impossible, because QImageReader::jumpToImage() is
+  // not implemented in any image format AO2 is equipped to use. Instead, the
+  // default behavior is used - that is, absolutely nothing.
   if (continuous) {
     for (int i = frame; i--;) {
       if (i <= -1)
@@ -372,14 +386,8 @@ void AOLayer::play()
 
 void AOLayer::set_play_once(bool p_play_once) { play_once = p_play_once; }
 void AOLayer::set_cull_image(bool p_cull_image) { cull_image = p_cull_image; }
-void AOLayer::set_static_duration(int p_static_duration)
-{
-  static_duration = p_static_duration;
-}
-void AOLayer::set_max_duration(int p_max_duration)
-{
-  max_duration = p_max_duration;
-}
+void AOLayer::set_static_duration(int p_static_duration) { static_duration = p_static_duration; }
+void AOLayer::set_max_duration(int p_max_duration) { max_duration = p_max_duration; }
 
 void CharLayer::load_effects()
 {
@@ -530,6 +538,14 @@ void AOLayer::movie_ticker()
 
   this->set_frame(movie_frames[frame]);
   ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
+}
+
+void CharLayer::preanim_done()
+{
+  if (is_preanim)
+    AOLayer::preanim_done();
+  else
+    return;
 }
 
 void AOLayer::preanim_done()

@@ -115,7 +115,7 @@ signals:
   void done();
 
 protected slots:
-  void preanim_done();
+  virtual void preanim_done();
   void shfx_timer_done();
   virtual void movie_ticker();
 };
@@ -144,7 +144,7 @@ public:
                        // to loop this
   QString prefix = ""; // prefix, left blank if it's a preanim
 
-  void load_image(QString p_filename, QString p_charname, int p_duration);
+  void load_image(QString p_filename, QString p_charname, int p_duration, bool p_is_preanim);
   void play(); // overloaded so we can play effects
 
   // networked frame fx string
@@ -180,6 +180,7 @@ private:
   void play_frame_effect(int p_frame);
 
 private slots:
+  void preanim_done(); // overloaded so we don't accidentally cull characters
   void movie_ticker(); // overloaded so we can play effects
 
 signals:
