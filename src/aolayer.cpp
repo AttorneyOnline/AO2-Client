@@ -93,6 +93,7 @@ void AOLayer::set_frame(QPixmap f_pixmap)
       x + (f_w - f_pixmap.width()) / 2,
       y + (f_h - f_pixmap.height())); // Always center horizontally, always put
                                       // at the bottom vertically
+  this->setMask(QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w, f_h)); // make sure we don't escape the area we've been given
 }
 
 void AOLayer::combo_resize(int w, int h)

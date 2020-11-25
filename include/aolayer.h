@@ -6,6 +6,7 @@
 #include <QImageReader>
 #include <QLabel>
 #include <QTimer>
+#include <QBitmap>
 
 class AOApplication;
 

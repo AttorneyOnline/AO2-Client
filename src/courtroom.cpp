@@ -43,7 +43,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_sideplayer_char->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
 
-  ui_vp_effect = new EffectLayer(ui_viewport, ao_app);
+  ui_vp_effect = new EffectLayer(this, ao_app);
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_vp_evidence_display = new AOEvidenceDisplay(ui_viewport, ao_app);
@@ -60,13 +60,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
-  ui_vp_testimony = new InterfaceLayer(ui_viewport, ao_app);
+  ui_vp_testimony = new InterfaceLayer(this, ao_app);
   ui_vp_testimony->set_play_once(false);
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_wtce = new InterfaceLayer(ui_viewport, ao_app);
+  ui_vp_wtce = new InterfaceLayer(this, ao_app);
   ui_vp_wtce->set_play_once(true);
   ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_objection = new InterjectionLayer(ui_viewport, ao_app);
+  ui_vp_objection = new InterjectionLayer(this, ao_app);
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_ic_chatlog = new QTextEdit(this);
@@ -535,16 +535,20 @@ void Courtroom::set_widgets()
                                    design_ini_result.height);
   }
 
-  //ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
+  // layering shenanigans with ui_vp_chatbox prevent us from doing the sensible
+  // thing, which is to parent these to ui_viewport. instead, AOLayer handles
+  // masking so we don't overlap parts of the UI, and they become free floating
+  // widgets.
+  ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  //ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  //ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  //ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   log_maximum_blocks = ao_app->get_max_log_size();
@@ -2931,7 +2935,8 @@ void Courtroom::chat_tick()
         ui_vp_player_char->set_play_once(false);
         filename = "(a)" + m_chatmessage[EMOTE];
       }
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
+                                    false);
     }
     QString f_char;
     QString f_custom_theme;
@@ -3094,7 +3099,8 @@ void Courtroom::chat_tick()
       ui_vp_player_char->stop();
       ui_vp_player_char->set_play_once(false);
       filename = "(b)" + m_chatmessage[EMOTE];
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
+                                    false);
       anim_state = 2;
     }
     else if (!color_is_talking && anim_state < 3 &&
@@ -3103,7 +3109,8 @@ void Courtroom::chat_tick()
       ui_vp_player_char->stop();
       ui_vp_player_char->set_play_once(false);
       filename = "(a)" + m_chatmessage[EMOTE];
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
+                                    false);
       anim_state = 3;
     }
     // Continue ticking
