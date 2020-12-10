@@ -3784,7 +3784,9 @@ void Courtroom::set_iniswap_dropdown()
     return;
   }
   QStringList iniswaps = ao_app->get_list_file(
+      ao_app->get_character_path(char_list.at(m_cid).name, "default-iniswaps.ini")) + ao_app->get_list_file(
       ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+  iniswaps.removeDuplicates();
   iniswaps.prepend(char_list.at(m_cid).name);
   if (iniswaps.size() <= 0) {
     ui_iniswap_dropdown->hide();
