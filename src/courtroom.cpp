@@ -4,7 +4,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) &
+                       ~Qt::WindowMaximizeButtonHint);
 
   ao_app->initBASS();
 
@@ -594,13 +595,15 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pair_offset_spinbox, "pair_offset_spinbox");
   ui_pair_offset_spinbox->hide();
   ui_pair_offset_spinbox->setToolTip(
-      tr("Change the horizontal percentage offset of your character's position from the "
+      tr("Change the horizontal percentage offset of your character's position "
+         "from the "
          "center of the screen."));
-  
+
   set_size_and_pos(ui_pair_vert_offset_spinbox, "pair_vert_offset_spinbox");
   ui_pair_vert_offset_spinbox->hide();
   ui_pair_vert_offset_spinbox->setToolTip(
-      tr("Change the vertical percentage offset of your character's position from the "
+      tr("Change the vertical percentage offset of your character's position "
+         "from the "
          "center of the screen."));
 
   ui_pair_order_dropdown->hide();
@@ -719,8 +722,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_sfx_remove, "sfx_remove");
   ui_sfx_remove->setText("X");
   ui_sfx_remove->set_image("evidencex");
-  ui_sfx_remove->setToolTip(
-      tr("Remove the currently selected sound effect."));
+  ui_sfx_remove->setToolTip(tr("Remove the currently selected sound effect."));
   ui_sfx_remove->hide();
 
   set_iniswap_dropdown();
@@ -1146,14 +1148,18 @@ void Courtroom::set_background(QString p_background, bool display)
   // Populate the dropdown list with all pos that exist on this bg
   QStringList pos_list = {};
   for (QString key : default_pos.keys()) {
-    if (file_exists(
-            ao_app->get_image_suffix(ao_app->get_background_path(key)))) {
+    if (file_exists(ao_app->get_image_suffix(
+            ao_app->get_background_path(default_pos[key]))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
+        file_exists(
+            ao_app->get_image_suffix(ao_app->get_background_path(key)))) { // if we have pre-2.8-style positions, e.g. defenseempty.png
       pos_list.append(default_pos[key]);
     }
   }
-
-  // TODO: search through extra/custom pos and add them to the pos dropdown as
-  // well
+  for (QString pos : ao_app->read_design_ini("positions", ao_app->get_background_path("design.ini")).split(",")) {
+    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos)))) {
+      pos_list.append(pos);
+    }
+  }
 
   set_pos_dropdown(pos_list);
 
@@ -1705,7 +1711,8 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+    packet_contents.append(QString::number(char_offset) + "&" +
+                           QString::number(char_vert_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked()) {
@@ -2108,7 +2115,8 @@ void Courtroom::handle_chatmessage_2()
           other_offset_v = other_offsets[1].toInt();
         }
         ui_vp_sideplayer_char->move(ui_viewport->width() * other_offset / 100,
-                                    ui_viewport->height() * other_offset_v / 100);
+                                    ui_viewport->height() * other_offset_v /
+                                        100);
 
         QStringList args = m_chatmessage[OTHER_CHARID].split("^");
         if (args.size() >
@@ -2152,9 +2160,10 @@ void Courtroom::handle_chatmessage_2()
   int self_offset_v;
   if (self_offsets.length() <= 1)
     self_offset_v = 0;
-  else 
+  else
     self_offset_v = self_offsets[1].toInt();
-  ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+  ui_vp_player_char->move(ui_viewport->width() * self_offset / 100,
+                          ui_viewport->height() * self_offset_v / 100);
 
   switch (emote_mod) {
   case 1:
@@ -3002,7 +3011,9 @@ void Courtroom::chat_tick()
       // 40/25 = 1.6 = 2
       // And if it's faster than that:
       // 40/10 = 4
-      b_rate = qMax(b_rate, qRound(static_cast<float>(message_display_speed[3])/msg_delay));
+      b_rate =
+          qMax(b_rate, qRound(static_cast<float>(message_display_speed[3]) /
+                              msg_delay));
     }
     if (blip_ticker % b_rate == 0) {
       // ignoring white space unless blank_blip is enabled.
@@ -3011,8 +3022,7 @@ void Courtroom::chat_tick()
         ++blip_ticker;
       }
     }
-    else
-    {
+    else {
       // Don't fully ignore whitespace still, keep ticking until
       // we reached the need to play a blip sound - we also just
       // need to wait for a letter to play it on.
@@ -3021,7 +3031,8 @@ void Courtroom::chat_tick()
 
     // Punctuation delayer, only kicks in on speed ticks less than }}
     if (current_display_speed > 1 && punctuation_chars.contains(f_character)) {
-      // Making the user have to wait any longer than 150ms per letter is downright unreasonable
+      // Making the user have to wait any longer than 150ms per letter is
+      // downright unreasonable
       msg_delay = qMin(150, msg_delay * punctuation_modifier);
     }
 
@@ -3419,8 +3430,8 @@ void Courtroom::on_ooc_return_pressed()
     if (ok) {
       if (off >= -100 && off <= 100) {
         char_offset = off;
-        QString msg = tr("You have set your offset to %1%%.")
-          .arg(QString::number(off));
+        QString msg =
+            tr("You have set your offset to %1%%.").arg(QString::number(off));
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
@@ -3444,17 +3455,18 @@ void Courtroom::on_ooc_return_pressed()
       if (off >= -100 && off <= 100) {
         char_vert_offset = off;
         QString msg = tr("You have set your vertical offset to %1%%.")
-          .arg(QString::number(off));
+                          .arg(QString::number(off));
         append_server_chatmessage("CLIENT", msg, "1");
       }
       else {
         append_server_chatmessage(
-            "CLIENT", tr("Your vertical offset must be between -100% and 100%!"), "1");
+            "CLIENT",
+            tr("Your vertical offset must be between -100% and 100%!"), "1");
       }
     }
     else {
-      append_server_chatmessage("CLIENT",
-                                tr("That vertical offset does not look like one."), "1");
+      append_server_chatmessage(
+          "CLIENT", tr("That vertical offset does not look like one."), "1");
     }
     return;
   }
@@ -4612,7 +4624,10 @@ void Courtroom::on_log_limit_changed(int value) { log_maximum_blocks = value; }
 
 void Courtroom::on_pair_offset_changed(int value) { char_offset = value; }
 
-void Courtroom::on_pair_vert_offset_changed(int value) { char_vert_offset = value; }
+void Courtroom::on_pair_vert_offset_changed(int value)
+{
+  char_vert_offset = value;
+}
 
 void Courtroom::on_witness_testimony_clicked()
 {
