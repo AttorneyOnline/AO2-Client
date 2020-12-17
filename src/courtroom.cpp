@@ -2063,7 +2063,18 @@ void Courtroom::handle_chatmessage_2()
     f_pointsize = chatsize;
   set_font(ui_vp_message, "", "message", customchar, font_name, f_pointsize);
 
-  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+  switch (m_chatmessage[DESK_MOD].toInt()){
+    case 2:
+      set_scene("0", m_chatmessage[SIDE]);
+      break;
+    case 3:
+      set_scene("1", m_chatmessage[SIDE]);
+      break;
+    default:
+      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+      break;
+  }
+    
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // Deal with invalid emote modifiers
@@ -2299,6 +2310,11 @@ void Courtroom::handle_chatmessage_3()
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
   QString side = m_chatmessage[SIDE];
+
+  if (m_chatmessage[DESK_MOD] == "2")
+    set_scene("1", m_chatmessage[SIDE]);
+  else if (m_chatmessage[DESK_MOD] == "3")
+    set_scene("0", m_chatmessage[SIDE]);
 
   if (emote_mod == 5 || emote_mod == 6) {
     ui_vp_desk->hide();
