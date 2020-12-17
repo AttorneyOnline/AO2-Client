@@ -697,7 +697,7 @@ void Courtroom::set_widgets()
       tr("Set an 'iniswap', or an alternative character folder to refer to "
          "from your current character.\n"
          "Edit by typing and pressing Enter, [X] to remove. This saves to your "
-         "base/characters/<charname>/iniswaps.ini"));
+         "base/iniswaps.ini"));
 
   set_size_and_pos(ui_iniswap_remove, "iniswap_remove");
   ui_iniswap_remove->setText("X");
@@ -3784,8 +3784,7 @@ void Courtroom::set_iniswap_dropdown()
     return;
   }
   QStringList iniswaps = ao_app->get_list_file(
-      ao_app->get_character_path(char_list.at(m_cid).name, "default-iniswaps.ini")) + ao_app->get_list_file(
-      ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+      ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) + ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
   iniswaps.removeDuplicates();
   iniswaps.prepend(char_list.at(m_cid).name);
   if (iniswaps.size() <= 0) {
@@ -3816,14 +3815,15 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   ao_app->set_char_ini(char_list.at(m_cid).name, iniswap, "name", "Options");
 
   QStringList swaplist;
+  QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
   for (int i = 0; i < ui_iniswap_dropdown->count(); ++i) {
     QString entry = ui_iniswap_dropdown->itemText(i);
-    if (!swaplist.contains(entry) && entry != char_list.at(m_cid).name)
+    if (!swaplist.contains(entry) && entry != char_list.at(m_cid).name && !defswaplist.contains(entry))
       swaplist.append(entry);
   }
   ao_app->write_to_file(
       swaplist.join("\n"),
-      ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+      ao_app->get_base_path() + "iniswaps.ini");
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
