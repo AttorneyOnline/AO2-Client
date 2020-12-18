@@ -8,7 +8,8 @@ base_override.h
 base-full/
 bass.lib
 
-bins/
+build/
+bin/
 release/
 debug/
 
@@ -26,3 +27,5 @@ discord/
 moc*
 /Attorney_Online_CC_resource.rc
 /attorney_online_cc_plugin_import.cpp
+
+.idea/
