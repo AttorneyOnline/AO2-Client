@@ -66,7 +66,7 @@ public slots:
   void clearEntry();
 
 private slots:
-  void on_interjection_toggled(bool toggled);
+  void onInterjectionToggle(bool toggled);
   void on_side_currentIndexChanged(int index);
   void on_emote_currentIndexChanged(int index);
   void on_emotes_currentItemChanged(QListWidgetItem *cur, QListWidgetItem *prev);

@@ -37,10 +37,10 @@ AOChat::AOChat(QWidget *parent, AOApplication *p_ao_app)
   FROM_UI(QListWidget, emotes)
   FROM_UI(QLineEdit, showname)
 
-  connect(ui_custom_interjection, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
-  connect(ui_holdit, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
-  connect(ui_objection, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
-  connect(ui_takethat, &QPushButton::toggled, this, &AOChat::on_interjection_toggled);
+  connect(ui_custom_interjection, &QPushButton::toggled, this, &AOChat::onInterjectionToggle);
+  connect(ui_holdit, &QPushButton::toggled, this, &AOChat::onInterjectionToggle);
+  connect(ui_objection, &QPushButton::toggled, this, &AOChat::onInterjectionToggle);
+  connect(ui_takethat, &QPushButton::toggled, this, &AOChat::onInterjectionToggle);
 
   interjectionButtons[0] = ui_custom_interjection;
   interjectionButtons[1] = ui_holdit;
@@ -109,7 +109,7 @@ void AOChat::clearEntry()
   ui_realization->setChecked(false);
 }
 
-void AOChat::on_interjection_toggled(bool toggled)
+void AOChat::onInterjectionToggle(bool toggled)
 {
   if (toggled)
   {

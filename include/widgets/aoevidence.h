@@ -84,7 +84,7 @@ private slots:
   void on_name_textChanged();
   void on_description_textChanged();
   void on_image_linkActivated();
-  void on_deleteButton_clicked();
+  void on_delete_button_clicked();
 
 public slots:
   void setEvidenceList(QVector<evi_type> list);

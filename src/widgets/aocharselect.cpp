@@ -120,7 +120,7 @@ void AOCharSelect::setCharacters(QVector<char_type> characters)
   }
 }
 
-void AOCharSelect::on_charList_itemChanged(QListWidgetItem *item)
+void AOCharSelect::on_char_list_itemChanged(QListWidgetItem *item)
 {
   ui_buttons->button(QDialogButtonBox::Ok)->setEnabled(item != nullptr);
 }

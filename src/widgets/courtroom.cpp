@@ -19,7 +19,6 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   QFile uiFile(":/resource/ui/courtroom.ui");
   uiFile.open(QFile::ReadOnly);
   QMainWindow *windowWidget = static_cast<QMainWindow *>(loader.load(&uiFile, this));
-  QMetaObject::connectSlotsByName(this);
 
   windowWidget->setWindowFlag(Qt::Window, false);
   windowWidget->setWindowFlag(Qt::Widget);
@@ -73,31 +72,32 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   ui_casing->setChecked(options.casingEnabled());
   ui_showname_enable->setChecked(options.shownamesEnabled());
 
-  connect(ui_server_chat, &AOServerChat::messageSent, this, &Courtroom::on_ooc_return_pressed);
-  connect(ui_ms_chat, &AOServerChat::messageSent, this, &Courtroom::on_ms_return_pressed);
+  connect(ui_ic_chat, &AOChat::messageSent, this, &Courtroom::onICMessageSend);
+  connect(ui_server_chat, &AOServerChat::messageSent, this, &Courtroom::onOOCSend);
+  connect(ui_ms_chat, &AOServerChat::messageSent, this, &Courtroom::onGlobalChatSend);
 
-  // TODO: remove the autoconnect name of these slots - they don't autoconnect
-  // due to the nature of the shared_ptr
-  connect(client.get(), &Client::icReceived, this, &Courtroom::on_client_icReceived);
-  connect(client.get(), &Client::connectionLost, this, &Courtroom::on_client_disconnected);
-  connect(client.get(), &Client::trackChanged, this, &Courtroom::on_client_trackChanged);
-  connect(client.get(), &Client::modCalled, this, &Courtroom::on_client_modCalled);
-  connect(client.get(), &Client::caseCalled, this, &Courtroom::on_client_caseCalled);
+  connect(client.get(), &Client::icReceived, this, &Courtroom::onICMessage);
+  connect(client.get(), &Client::connectionLost, this, &Courtroom::onDisconnect);
+  connect(client.get(), &Client::trackChanged, this, &Courtroom::onTrackChange);
+  connect(client.get(), &Client::modCalled, this, &Courtroom::onModCall);
+  connect(client.get(), &Client::caseCalled, this, &Courtroom::onCaseCall);
 
-  connect(client.get(), &Client::oocReceived, this,
-          [&](const QString &name, const QString &message) {
-    append_server_chatmessage(name, message, false);
-  });
+  connect(client.get(), &Client::oocReceived, this, &Courtroom::onOOCMessage);
   connect(client.get(), &Client::characterChanged, this, &Courtroom::resetCourtroom);
   connect(client.get(), &Client::backgroundChanged, ui_viewport, &AOViewport::set_background);
   connect(client.get(), &Client::wtceReceived, ui_viewport, &AOViewport::wtce);
   connect(client.get(), &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
-  connect(client.get(), &Client::areasUpdated, this, [&] {
-    ui_room_chooser->setAreas(this->client->rooms());
-  });
-  connect(client.get(), &Client::evidenceChanged, this, [&] {
-    ui_evidence->setEvidenceList(this->client->evidence());
-  });
+  connect(client.get(), &Client::areasUpdated, this, &Courtroom::onAreaUpdate);
+  connect(client.get(), &Client::evidenceChanged, this, &Courtroom::onEvidenceUpdate);
+
+  connect(ui_mixer, &AOMixer::volumeChanged, this, &Courtroom::onMixerVolumeChange);
+  connect(ui_room_controls, &AORoomControls::requestHealthChange, this,
+          &Courtroom::onRequestHealthChange);
+  connect(ui_room_controls, &AORoomControls::wtce, this, &Courtroom::onRequestWTCE);
+
+  // Note that autoconnect will only work for courtroom widgets. It will not work
+  // for windows or other miscellaneous children that the courtroom happens to own.
+  QMetaObject::connectSlotsByName(this);
 
   ui_room_chooser->setAreas(client->rooms());
   ui_music_list->setTracks(client->tracks().toVector());
@@ -176,7 +176,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, boo
   ui_server_chat->append_chat_message(p_name, p_message, color);
 }
 
-void Courtroom::on_ic_chat_messageSent()
+void Courtroom::onICMessageSend()
 {
   if (ui_viewport->is_busy() && !ui_ic_chat->interjectionSelected())
     return;
@@ -199,7 +199,7 @@ void Courtroom::on_ic_chat_messageSent()
   });
 }
 
-void Courtroom::on_client_icReceived(const chat_message_type &message)
+void Courtroom::onICMessage(const chat_message_type &message)
 {
   if (message.char_id < 0 || message.char_id >= client->characters().size() ||
       mute_map.value(message.char_id))
@@ -254,7 +254,7 @@ void Courtroom::on_client_icReceived(const chat_message_type &message)
   ui_viewport->chat(message, f_showname, evidence_image);
 }
 
-void Courtroom::on_client_disconnected(DisconnectReason code, const QString &message)
+void Courtroom::onDisconnect(DisconnectReason code, const QString &message)
 {
   const QString reasonText = QMap<DisconnectReason, QString> {
     {CONNECTION_RESET, tr("Connection to the server was lost.")},
@@ -272,7 +272,7 @@ void Courtroom::on_client_disconnected(DisconnectReason code, const QString &mes
   deleteLater();
 }
 
-void Courtroom::on_client_trackChanged(const QString &track, const QString &showname)
+void Courtroom::onTrackChange(const QString &track, const QString &showname)
 {
   // TODO: ignore track change if the character who changed it is on the mute map
 
@@ -284,7 +284,7 @@ void Courtroom::on_client_trackChanged(const QString &track, const QString &show
   music_player->play(track);
 }
 
-void Courtroom::on_client_modCalled(const QString &message)
+void Courtroom::onModCall(const QString &message)
 {
   ui_server_chat->append_text(message);
   if (ui_modcall_notify->isChecked())
@@ -294,7 +294,7 @@ void Courtroom::on_client_modCalled(const QString &message)
   }
 }
 
-void Courtroom::on_client_caseCalled(const QString &message,
+void Courtroom::onCaseCall(const QString &message,
                                      std::bitset<CASING_FLAGS_COUNT> flags)
 {
   if (ui_casing->isChecked())
@@ -308,7 +308,22 @@ void Courtroom::on_client_caseCalled(const QString &message,
   }
 }
 
-void Courtroom::on_ooc_return_pressed(QString name, QString message)
+void Courtroom::onOOCMessage(const QString &name, const QString &message)
+{
+  append_server_chatmessage(name, message, false);
+}
+
+void Courtroom::onAreaUpdate()
+{
+  ui_room_chooser->setAreas(this->client->rooms());
+}
+
+void Courtroom::onEvidenceUpdate()
+{
+  ui_evidence->setEvidenceList(this->client->evidence());
+}
+
+void Courtroom::onOOCSend(QString name, QString message)
 {
   if (message.isEmpty())
     return;
@@ -418,22 +433,22 @@ void Courtroom::on_ooc_return_pressed(QString name, QString message)
   client->sendOOC(name, message);
 }
 
-void Courtroom::on_ms_return_pressed(QString name, QString message)
+void Courtroom::onGlobalChatSend(QString name, QString message)
 {
   append_ms_chatmessage("Client", "Not implemented yet.");
 }
 
-void Courtroom::on_icChat_positionChanged(QString pos)
+void Courtroom::onICPositionChange(QString pos)
 {
   client->sendOOC(ui_server_chat->name(), QStringLiteral("/pos %1").arg(pos));
 }
 
-void Courtroom::on_jukebox_trackSelected(QString track)
+void Courtroom::onJukeboxTrackSelect(QString track)
 {
   client->playTrack(track, ui_ic_chat->showname());
 }
 
-void Courtroom::on_rooms_roomSelected(QString room)
+void Courtroom::onRoomSelect(QString room)
 {
   client->joinRoom(room);
 }
@@ -462,7 +477,7 @@ void Courtroom::on_pair_triggered()
                                         "the next version.");
 }
 
-void Courtroom::on_mixer_volumeChanged(AUDIO_TYPE type, int volume)
+void Courtroom::onMixerVolumeChange(AUDIO_TYPE type, int volume)
 {
   switch (type)
   {
@@ -479,12 +494,12 @@ void Courtroom::on_mixer_volumeChanged(AUDIO_TYPE type, int volume)
   }
 }
 
-void Courtroom::on_room_controls_requestHealthChange(HEALTH_TYPE type, int value)
+void Courtroom::onRequestHealthChange(HEALTH_TYPE type, int value)
 {
   client->sendHealth(type, value);
 }
 
-void Courtroom::on_room_controls_wtce(WTCE_TYPE type)
+void Courtroom::onRequestWTCE(WTCE_TYPE type)
 {
   client->sendWTCE(type);
 }
@@ -511,7 +526,7 @@ void Courtroom::on_reload_theme_triggered()
 void Courtroom::on_quit_triggered()
 {
   disconnect(client.get(), &Client::connectionLost,
-             this, &Courtroom::on_client_disconnected);
+             this, &Courtroom::onDisconnect);
 
   ao_app->openLobby();
   deleteLater();

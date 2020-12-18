@@ -38,15 +38,15 @@ class AORoomControls : public QWidget
    void toggleJudgeControls(bool visible);
 
  private slots:
-   void on_witnessTestimony_clicked();
-   void on_crossExamination_clicked();
-   void on_notGuilty_clicked();
+   void on_witness_testimony_clicked();
+   void on_cross_examination_clicked();
+   void on_not_guilty_clicked();
    void on_guilty_clicked();
 
-   void on_defPlus_clicked();
-   void on_defMinus_clicked();
-   void on_proPlus_clicked();
-   void on_proMinus_clicked();
+   void on_def_plus_clicked();
+   void on_def_minus_clicked();
+   void on_pro_plus_clicked();
+   void on_pro_minus_clicked();
 };
 
 #endif // AOROOMCONTROLS_H

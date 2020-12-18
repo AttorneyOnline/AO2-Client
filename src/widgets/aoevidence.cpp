@@ -177,7 +177,7 @@ void AOEvidence::on_image_linkActivated()
   evidence[selectedEvidenceId()].image = relativePath;
 }
 
-void AOEvidence::on_deleteButton_clicked()
+void AOEvidence::on_delete_button_clicked()
 {
   debounceTimer->stop();
   debounceTimer->deleteLater();

@@ -36,7 +36,7 @@ public slots:
   void responseReceived();
 
 private slots:
-  void on_charList_itemChanged(QListWidgetItem *item);
+  void on_char_list_itemChanged(QListWidgetItem *item);
 };
 
 

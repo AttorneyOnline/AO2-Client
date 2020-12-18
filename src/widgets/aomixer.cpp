@@ -35,17 +35,17 @@ void AOMixer::set_master_level(int level)
   ui_master_level->setValue(level);
 }
 
-void AOMixer::on_musicSlider_valueChanged(int volume)
+void AOMixer::on_music_slider_valueChanged(int volume)
 {
   emit volumeChanged(MUSIC, volume);
 }
 
-void AOMixer::on_sfxSlider_valueChanged(int volume)
+void AOMixer::on_sfx_slider_valueChanged(int volume)
 {
   emit volumeChanged(SFX, volume);
 }
 
-void AOMixer::on_blipsSlider_valueChanged(int volume)
+void AOMixer::on_blips_slider_valueChanged(int volume)
 {
   emit volumeChanged(BLIPS, volume);
 }

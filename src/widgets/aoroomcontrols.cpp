@@ -54,17 +54,17 @@ void AORoomControls::toggleJudgeControls(bool visible)
   }
 }
 
-void AORoomControls::on_witnessTestimony_clicked()
+void AORoomControls::on_witness_testimony_clicked()
 {
   emit wtce(WITNESS_TESTIMONY);
 }
 
-void AORoomControls::on_crossExamination_clicked()
+void AORoomControls::on_cross_examination_clicked()
 {
   emit wtce(CROSS_EXAMINATION);
 }
 
-void AORoomControls::on_notGuilty_clicked()
+void AORoomControls::on_not_guilty_clicked()
 {
   emit wtce(NOT_GUILTY);
 }
@@ -74,7 +74,7 @@ void AORoomControls::on_guilty_clicked()
   emit wtce(GUILTY);
 }
 
-void AORoomControls::on_defPlus_clicked()
+void AORoomControls::on_def_plus_clicked()
 {
   int newValue = ui_def_health->value() + 1;
   emit requestHealthChange(DEF, newValue);
@@ -88,21 +88,21 @@ void AORoomControls::on_defPlus_clicked()
   ui_def_health->setValue(newValue);
 }
 
-void AORoomControls::on_defMinus_clicked()
+void AORoomControls::on_def_minus_clicked()
 {
   int newValue = ui_def_health->value() - 1;
   emit requestHealthChange(DEF, newValue);
   ui_def_health->setValue(newValue);
 }
 
-void AORoomControls::on_proPlus_clicked()
+void AORoomControls::on_pro_plus_clicked()
 {
   int newValue = ui_pro_health->value() + 1;
   emit requestHealthChange(PRO, newValue);
   ui_def_health->setValue(newValue);
 }
 
-void AORoomControls::on_proMinus_clicked()
+void AORoomControls::on_pro_minus_clicked()
 {
   int newValue = ui_pro_health->value() - 1;
   emit requestHealthChange(PRO, newValue);

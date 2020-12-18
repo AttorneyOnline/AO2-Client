@@ -29,9 +29,9 @@ public slots:
   void set_master_level(int level);
 
 private slots:
-  void on_musicSlider_valueChanged(int volume);
-  void on_sfxSlider_valueChanged(int volume);
-  void on_blipsSlider_valueChanged(int volume);
+  void on_music_slider_valueChanged(int volume);
+  void on_sfx_slider_valueChanged(int volume);
+  void on_blips_slider_valueChanged(int volume);
 };
 
 #endif // AOMIXER_H

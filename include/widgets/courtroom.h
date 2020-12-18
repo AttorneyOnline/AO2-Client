@@ -59,6 +59,7 @@
   { \
     ui_##widget##_dock = new QDockWidget(this); \
     ui_##widget = new type(ui_##widget##_dock, ##__VA_ARGS__); \
+    ui_##widget->setObjectName(#widget); \
     ui_##widget##_dock->setWidget(ui_##widget); \
     ui_##widget##_dock->setWindowTitle(ui_##widget->windowTitle()); \
     windowWidget->addDockWidget(Qt::BottomDockWidgetArea, ui_##widget##_dock); \
@@ -188,27 +189,30 @@ private:
 private slots:
   void resetCourtroom();
 
-  void on_ic_chat_messageSent();
-  void on_client_icReceived(const chat_message_type &message);
-  void on_client_disconnected(DisconnectReason code, const QString &message);
-  void on_client_trackChanged(const QString &track, const QString &showname);
-  void on_client_modCalled(const QString &message);
-  void on_client_caseCalled(const QString &message,
-                            const std::bitset<CASING_FLAGS_COUNT> casingFlags);
+  void onICMessageSend();
+  void onICMessage(const chat_message_type &message);
+  void onDisconnect(DisconnectReason code, const QString &message);
+  void onTrackChange(const QString &track, const QString &showname);
+  void onModCall(const QString &message);
+  void onCaseCall(const QString &message,
+                  const std::bitset<CASING_FLAGS_COUNT> casingFlags);
+  void onOOCMessage(const QString &name, const QString &message);
+  void onAreaUpdate();
+  void onEvidenceUpdate();
 
-  void on_ooc_return_pressed(QString name, QString message);
-  void on_ms_return_pressed(QString name, QString message);
-  void on_icChat_positionChanged(QString pos);
-  void on_jukebox_trackSelected(QString track);
-  void on_rooms_roomSelected(QString room);
+  void onOOCSend(QString name, QString message);
+  void onGlobalChatSend(QString name, QString message);
+  void onICPositionChange(QString pos);
+  void onJukeboxTrackSelect(QString track);
+  void onRoomSelect(QString room);
 
   void on_mute_triggered();
   void on_pair_triggered();
 
-  void on_mixer_volumeChanged(AUDIO_TYPE type, int volume);
+  void onMixerVolumeChange(AUDIO_TYPE type, int volume);
 
-  void on_room_controls_requestHealthChange(HEALTH_TYPE type, int value);
-  void on_room_controls_wtce(WTCE_TYPE type);
+  void onRequestHealthChange(HEALTH_TYPE type, int value);
+  void onRequestWTCE(WTCE_TYPE type);
 
   void on_change_character_triggered();
   void on_reload_theme_triggered();
