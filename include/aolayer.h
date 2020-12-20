@@ -181,8 +181,8 @@ private:
   void play_frame_effect(int p_frame);
 
 private slots:
-  void preanim_done(); // overloaded so we don't accidentally cull characters
-  void movie_ticker(); // overloaded so we can play effects
+  void preanim_done() override; // overridden so we don't accidentally cull characters
+  void movie_ticker() override; // overridden so we can play effects
 
 signals:
   void shake();
