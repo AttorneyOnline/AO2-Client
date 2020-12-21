@@ -9,6 +9,7 @@
 #include <widgets/aocaseannouncerdialog.h>
 #include <widgets/aomutedialog.h>
 #include <widgets/aooptionsdialog.h>
+#include "widgetdumper.h"
 
 Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   : QMainWindow(), ao_app(ao_app), client(client)
@@ -23,6 +24,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   windowWidget->setWindowFlag(Qt::Window, false);
   windowWidget->setWindowFlag(Qt::Widget);
   windowWidget->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
+  setContentsMargins(0, 0, 0, 0);
 
   windowWidget->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   windowWidget->setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
@@ -101,6 +103,8 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
 
   ui_room_chooser->setAreas(client->rooms());
   ui_music_list->setTracks(client->tracks().toVector());
+
+  WidgetDumper::dumpWidgetHierarchy(windowWidget);
 }
 
 void Courtroom::chooseCharacter()
@@ -595,7 +599,9 @@ void Courtroom::initBASS()
 
   if (options.audioDevice() == "default")
   {
+    qDebug() << "Initializing BASS";
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
+    qDebug() << "Initialized BASS";
   }
   else
   {

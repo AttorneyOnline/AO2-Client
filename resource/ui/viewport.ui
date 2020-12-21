@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>256</width>
-    <height>280</height>
+    <height>282</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,10 +59,10 @@
   <widget class="QLabel" name="ui_vp_showname">
    <property name="geometry">
     <rect>
-     <x>6</x>
-     <y>177</y>
-     <width>65</width>
-     <height>13</height>
+     <x>1</x>
+     <y>178</y>
+     <width>70</width>
+     <height>15</height>
     </rect>
    </property>
    <property name="font">
@@ -138,9 +138,9 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>174</y>
+     <y>178</y>
      <width>256</width>
-     <height>108</height>
+     <height>104</height>
     </rect>
    </property>
    <property name="text">
@@ -156,10 +156,10 @@
   <widget class="QTextEdit" name="ui_vp_message">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>198</y>
+     <x>2</x>
+     <y>190</y>
      <width>256</width>
-     <height>78</height>
+     <height>89</height>
     </rect>
    </property>
    <property name="font">

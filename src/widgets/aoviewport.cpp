@@ -14,6 +14,8 @@ AOViewport::AOViewport(QWidget *parent, AOApplication *p_ao_app)
 
   QVBoxLayout *parentLayout = new QVBoxLayout;
   parentLayout->addWidget(windowWidget);
+  parentLayout->setContentsMargins(0, 0, 0, 0);
+  parentLayout->setSpacing(0);
   setLayout(parentLayout);
 
   chat_tick_timer = new QTimer(this);

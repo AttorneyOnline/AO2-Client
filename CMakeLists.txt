@@ -24,14 +24,16 @@ find_package(Qt5
     COMPONENTS Gui Multimedia Network UiTools
     REQUIRED)
 
-string(CONCAT CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} "
-    "-Os -ffunction-sections -fdata-sections -fvisibility=hidden -Wl,--gc-sections"
-)
-string(CONCAT CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} "
-    "--enable-stdcall-fixup"
-)
+if (CMAKE_CXX_COMPILER_ID MATCHES "(Clang|GNU)")
+    string(CONCAT CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} "
+        "-Os -ffunction-sections -fdata-sections -fvisibility=hidden -Wl,--gc-sections"
+    )
+    string(CONCAT CMAKE_EXE_LINKER_FLAGS
+        "${CMAKE_EXE_LINKER_FLAGS} "
+        "--enable-stdcall-fixup"
+    )
+endif()
 
 # TODO add RC file for win32 icon
 add_executable(Attorney_Online

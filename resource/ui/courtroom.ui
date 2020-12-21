@@ -473,12 +473,12 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>274</width>
-     <height>300</height>
+     <width>256</width>
+     <height>282</height>
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true">QWidget#centralWidget { background-color: palette(dark); }</string>
+    <string notr="true">QWidget#centralWidget { background-color: palette(dark); border: none; }</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
     <property name="leftMargin">
@@ -506,8 +506,8 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>274</width>
-        <height>300</height>
+        <width>256</width>
+        <height>282</height>
        </size>
       </property>
      </widget>
