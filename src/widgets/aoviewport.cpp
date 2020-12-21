@@ -628,27 +628,27 @@ void AOViewport::chat_tick()
     }
 
     // Escape character.
-    else if (f_character == "\\" and !next_character_is_not_special)
+    else if (f_character == "\\" && !next_character_is_not_special)
     {
         next_character_is_not_special = true;
         formatting_char = true;
     }
 
     // Text speed modifier.
-    else if (f_character == "{" and !next_character_is_not_special)
+    else if (f_character == "{" && !next_character_is_not_special)
     {
         // ++, because it INCREASES delay!
         current_display_speed++;
         formatting_char = true;
     }
-    else if (f_character == "}" and !next_character_is_not_special)
+    else if (f_character == "}" && !next_character_is_not_special)
     {
         current_display_speed--;
         formatting_char = true;
     }
 
     // Orange inline colourisation.
-    else if (f_character == "|" and !next_character_is_not_special)
+    else if (f_character == "|" && !next_character_is_not_special)
     {
         if (!inline_colour_stack.empty())
         {
@@ -669,7 +669,7 @@ void AOViewport::chat_tick()
     }
 
     // Blue inline colourisation.
-    else if (f_character == "(" and !next_character_is_not_special)
+    else if (f_character == "(" && !next_character_is_not_special)
     {
         inline_colour_stack.push(INLINE_BLUE);
         ui_vp_message->insertHtml("<font color=\""+ get_text_color(QString::number(BLUE)).name() +"\">" + f_character + "</font>");
@@ -679,15 +679,15 @@ void AOViewport::chat_tick()
 
         // Here, we check if the entire message is blue.
         // If it isn't, we stop talking.
-        if (!entire_message_is_blue and anim_state != 4)
+        if (!entire_message_is_blue && anim_state != 4)
         {
           QString f_char = m_chatmessage.character;
           QString f_emote = m_chatmessage.anim;
           ui_vp_player_char->play_idle(f_char, f_emote);
         }
     }
-    else if (f_character == ")" and !next_character_is_not_special
-             and !inline_colour_stack.empty())
+    else if (f_character == ")" && !next_character_is_not_special
+             && !inline_colour_stack.empty())
     {
         if (inline_colour_stack.top() == INLINE_BLUE)
         {
@@ -704,7 +704,7 @@ void AOViewport::chat_tick()
               if (!entire_message_is_blue)
               {
                 // We should only go back to talking if we're out of inline blues, not during a non. int. pre, and not on the last character.
-                if (inline_blue_depth == 0 and anim_state != 4 and !(tick_pos+1 >= f_message.size()))
+                if (inline_blue_depth == 0 && anim_state != 4 && !(tick_pos+1 >= f_message.size()))
                 {
                   QString f_char = m_chatmessage.character;
                   QString f_emote = m_chatmessage.anim;
@@ -721,13 +721,13 @@ void AOViewport::chat_tick()
     }
 
     // Grey inline colourisation.
-    else if (f_character == "[" and !next_character_is_not_special)
+    else if (f_character == "[" && !next_character_is_not_special)
     {
         inline_colour_stack.push(INLINE_GREY);
         ui_vp_message->insertHtml("<font color=\""+ get_text_color("_inline_grey").name() +"\">" + f_character + "</font>");
     }
-    else if (f_character == "]" and !next_character_is_not_special
-             and !inline_colour_stack.empty())
+    else if (f_character == "]" && !next_character_is_not_special
+             && !inline_colour_stack.empty())
     {
         if (inline_colour_stack.top() == INLINE_GREY)
         {
@@ -742,7 +742,7 @@ void AOViewport::chat_tick()
     }
 
     // Green inline colourisation.
-    else if (f_character == "`" and !next_character_is_not_special)
+    else if (f_character == "`" && !next_character_is_not_special)
     {
         if (!inline_colour_stack.empty())
         {
