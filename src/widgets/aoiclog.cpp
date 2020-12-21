@@ -188,24 +188,24 @@ QString AOICLog::filter_ic_text(QString p_text)
       f_character = p_text.at(trick_check_pos);
 
       // Escape character.
-      if (f_character == "\\" and !ic_next_is_not_special)
+      if (f_character == "\\" && !ic_next_is_not_special)
       {
           ic_next_is_not_special = true;
           p_text.remove(trick_check_pos,1);
       }
 
       // Text speed modifier.
-      else if (f_character == "{" and !ic_next_is_not_special)
+      else if (f_character == "{" && !ic_next_is_not_special)
       {
           p_text.remove(trick_check_pos,1);
       }
-      else if (f_character == "}" and !ic_next_is_not_special)
+      else if (f_character == "}" && !ic_next_is_not_special)
       {
           p_text.remove(trick_check_pos,1);
       }
 
       // Orange inline colourisation.
-      else if (f_character == "|" and !ic_next_is_not_special)
+      else if (f_character == "|" && !ic_next_is_not_special)
       {
           if (!ic_colour_stack.empty())
           {
@@ -228,13 +228,13 @@ QString AOICLog::filter_ic_text(QString p_text)
       }
 
       // Blue inline colourisation.
-      else if (f_character == "(" and !ic_next_is_not_special)
+      else if (f_character == "(" && !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_BLUE);
           trick_check_pos++;
       }
-      else if (f_character == ")" and !ic_next_is_not_special
-               and !ic_colour_stack.empty())
+      else if (f_character == ")" && !ic_next_is_not_special
+               && !ic_colour_stack.empty())
       {
           if (ic_colour_stack.top() == INLINE_BLUE)
           {
@@ -248,13 +248,13 @@ QString AOICLog::filter_ic_text(QString p_text)
       }
 
       // Grey inline colourisation.
-      else if (f_character == "[" and !ic_next_is_not_special)
+      else if (f_character == "[" && !ic_next_is_not_special)
       {
           ic_colour_stack.push(INLINE_GREY);
           trick_check_pos++;
       }
-      else if (f_character == "]" and !ic_next_is_not_special
-               and !ic_colour_stack.empty())
+      else if (f_character == "]" && !ic_next_is_not_special
+               && !ic_colour_stack.empty())
       {
           if (ic_colour_stack.top() == INLINE_GREY)
           {
@@ -268,7 +268,7 @@ QString AOICLog::filter_ic_text(QString p_text)
       }
 
       // Green inline colourisation.
-      else if (f_character == "`" and !ic_next_is_not_special)
+      else if (f_character == "`" && !ic_next_is_not_special)
       {
           if (!ic_colour_stack.empty())
           {
