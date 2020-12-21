@@ -998,29 +998,30 @@ QColor AOViewport::get_text_color(QString color)
 
 void AOViewport::wtce(WTCE_TYPE type)
 {
-  switch (type)
+  const QMap<WTCE_TYPE, QString> sfxNames = {
+    {WITNESS_TESTIMONY, "witness_testimony"},
+    {CROSS_EXAMINATION, "cross_examination"},
+    {NOT_GUILTY, "not_guilty"},
+    {GUILTY, "guilty"}
+  };
+  const QMap<WTCE_TYPE, QString> animNames = {
+    {WITNESS_TESTIMONY, "witnessestimony"},
+    {CROSS_EXAMINATION, "crossexamination"},
+    {NOT_GUILTY, "notguilty"},
+    {GUILTY, "guilty"}
+  };
+
+  sfx_player->play(ao_app->get_sfx(sfxNames[type]));
+  ui_vp_wtce->play(animNames[type]);
+
+  if (type == WITNESS_TESTIMONY)
   {
-  case WITNESS_TESTIMONY:
-    sfx_player->play(ao_app->get_sfx("witness_testimony"));
-    ui_vp_wtce->play("witnesstestimony");
     testimony_in_progress = true;
     show_testimony();
-    break;
-  case CROSS_EXAMINATION:
-    sfx_player->play(ao_app->get_sfx("cross_examination"));
-    ui_vp_wtce->play("crossexamination");
+  }
+  else
+  {
     testimony_in_progress = false;
-    break;
-  case NOT_GUILTY:
-    sfx_player->play(ao_app->get_sfx("not_guilty"));
-    ui_vp_wtce->play("notguilty");
-    testimony_in_progress = false;
-    break;
-  case GUILTY:
-    sfx_player->play(ao_app->get_sfx("guilty"));
-    ui_vp_wtce->play("guilty");
-    testimony_in_progress = false;
-    break;
   }
 }
 
