@@ -477,6 +477,9 @@
      <height>300</height>
     </size>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QWidget#centralWidget { background-color: palette(dark); }</string>
+   </property>
    <layout class="QGridLayout" name="gridLayout_3">
     <property name="leftMargin">
      <number>0</number>
