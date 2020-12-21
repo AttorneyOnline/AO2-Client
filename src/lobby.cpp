@@ -38,10 +38,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_description->setOpenExternalLinks(true);
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
-  ui_chatname = new QLineEdit(this);
-  ui_chatname->setPlaceholderText(tr("Name"));
-  ui_chatname->setText(ao_app->get_ooc_name());
-  ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_text = new QTextEdit(ui_loading_background);
   ui_progress_bar = new QProgressBar(ui_loading_background);
@@ -69,8 +65,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           this, SLOT(on_server_list_doubleclicked(QTreeWidgetItem *, int)));
   connect(ui_server_search, SIGNAL(textChanged(QString)), this,
           SLOT(on_server_search_edited(QString)));
-  connect(ui_chatmessage, SIGNAL(returnPressed()), this,
-          SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   ui_connect->setEnabled(false);
@@ -157,15 +151,6 @@ void Lobby::set_widgets()
   ui_chatbox->setStyleSheet(
       "QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
 
-  set_size_and_pos(ui_chatname, "chatname");
-  ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                             "selection-background-color: rgba(0, 0, 0, 0);");
-
-  set_size_and_pos(ui_chatmessage, "chatmessage");
-  ui_chatmessage->setStyleSheet(
-      "background-color: rgba(0, 0, 0, 0);"
-      "selection-background-color: rgba(0, 0, 0, 0);");
-
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground");
 
@@ -210,8 +195,6 @@ void Lobby::set_fonts()
   set_font(ui_player_count, "player_count");
   set_font(ui_description, "description");
   set_font(ui_chatbox, "chatbox");
-  set_font(ui_chatname, "chatname");
-  set_font(ui_chatmessage, "chatmessage");
   set_font(ui_loading_text, "loading_text");
   set_font(ui_server_list, "server_list");
 }
@@ -230,8 +213,6 @@ void Lobby::set_stylesheets()
   set_stylesheet(ui_player_count, "[PLAYER COUNT]");
   set_stylesheet(ui_description, "[DESCRIPTION]");
   set_stylesheet(ui_chatbox, "[CHAT BOX]");
-  set_stylesheet(ui_chatname, "[CHAT NAME]");
-  set_stylesheet(ui_chatmessage, "[CHAT MESSAGE]");
   set_stylesheet(ui_loading_text, "[LOADING TEXT]");
   set_stylesheet(ui_server_list, "[SERVER LIST]");
 }
@@ -466,22 +447,6 @@ void Lobby::on_server_search_edited(QString p_text)
       item->setHidden(false);
     }
   }
-}
-
-void Lobby::on_chatfield_return_pressed()
-{
-  // no you can't send empty messages
-  if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
-    return;
-
-  QString f_header = "CT";
-  QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
-
-  AOPacket *f_packet = new AOPacket(f_header, f_contents);
-
-  ao_app->send_ms_packet(f_packet);
-
-  ui_chatmessage->clear();
 }
 
 void Lobby::list_servers()

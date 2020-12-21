@@ -75,9 +75,6 @@ private:
 
   AOTextArea *ui_chatbox;
 
-  QLineEdit *ui_chatname;
-  QLineEdit *ui_chatmessage;
-
   AOImage *ui_loading_background;
   QTextEdit *ui_loading_text;
   QProgressBar *ui_progress_bar;
@@ -102,7 +99,6 @@ private slots:
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column);
   void on_server_search_edited(QString p_text);
-  void on_chatfield_return_pressed();
 };
 
 #endif // LOBBY_H

@@ -202,7 +202,6 @@ public:
   void list_areas();
 
   // these are for OOC chat
-  void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
@@ -514,7 +513,6 @@ private:
 
   QTextEdit *ui_ic_chatlog;
 
-  AOTextArea *ui_ms_chatlog;
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
@@ -566,8 +564,6 @@ private:
   AOButton *ui_hold_it;
   AOButton *ui_objection;
   AOButton *ui_take_that;
-
-  AOButton *ui_ooc_toggle;
 
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
@@ -641,15 +637,12 @@ private:
 
   AOButton *ui_back_to_lobby;
 
-  QLineEdit *ui_char_password;
-
   AOButton *ui_char_select_left;
   AOButton *ui_char_select_right;
 
   AOButton *ui_spectator;
 
-  QLineEdit *ui_char_search;
-  QCheckBox *ui_char_passworded;
+  QLineEdit *ui_char_search;;
   QCheckBox *ui_char_taken;
 
   void construct_char_select();
@@ -785,8 +778,6 @@ private slots:
   void on_pair_offset_changed(int value);
   void on_pair_vert_offset_changed(int value);
 
-  void on_ooc_toggle_clicked();
-
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();
   void on_not_guilty_clicked();
@@ -829,7 +820,6 @@ private slots:
   void on_char_select_right_clicked();
   void on_char_search_changed();
   void on_char_taken_clicked();
-  void on_char_passworded_clicked();
 
   void on_spectator_clicked();
 
