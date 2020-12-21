@@ -153,6 +153,8 @@ public:
   //Returns p_char's gender
   QString get_gender(QString p_char);
 
+  // For debugging purposes only
+  QString get_relative_path(QString path);
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 6;

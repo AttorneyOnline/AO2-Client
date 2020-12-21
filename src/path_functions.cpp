@@ -157,3 +157,8 @@ QString AOApplication::get_case_sensitive_path(QString p_file) {
   //if nothing is found, let the caller handle the missing file
   return file_parent_dir + "/" + file_basename;
 }
+
+QString AOApplication::get_relative_path(QString path)
+{
+  return QDir(get_base_path()).relativeFilePath(path);
+}
