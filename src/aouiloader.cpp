@@ -1,5 +1,6 @@
 #include "widgets/aocharmovie.h"
 #include "widgets/aochatentry.h"
+#include "widgets/aoevidence.h"
 #include "widgets/aoevidencedisplay.h"
 #include "widgets/aoimage.h"
 #include "widgets/aomovie.h"
@@ -27,6 +28,7 @@ QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent, con
   AO_WIDGET(AOScene, ao_app)
   AO_WIDGET(AOMovie, ao_app)
   AO_WIDGET(AOCharMovie, ao_app)
+  AO_WIDGET(AOEvidence, ao_app)
   AO_WIDGET(AOEvidenceDisplay, ao_app)
   AO_WIDGET(AOViewport, ao_app)
   AO_WIDGET(AOICLog, ao_app)

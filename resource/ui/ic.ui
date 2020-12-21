@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Chat: (character)</string>
+   <string>Chat</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
@@ -267,7 +267,7 @@ background: transparent;
              <number>1</number>
             </property>
             <property name="verticalScrollBarPolicy">
-             <enum>Qt::ScrollBarAlwaysOff</enum>
+             <enum>Qt::ScrollBarAsNeeded</enum>
             </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
@@ -279,13 +279,16 @@ background: transparent;
              <enum>QListView::LeftToRight</enum>
             </property>
             <property name="isWrapping" stdset="0">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="resizeMode">
-             <enum>QListView::Fixed</enum>
+             <enum>QListView::Adjust</enum>
             </property>
             <property name="viewMode">
              <enum>QListView::IconMode</enum>
+            </property>
+            <property name="uniformItemSizes">
+             <bool>true</bool>
             </property>
             <property name="itemAlignment">
              <set>Qt::AlignCenter</set>

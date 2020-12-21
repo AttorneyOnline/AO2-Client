@@ -109,8 +109,8 @@ void LegacyClient::mapSignals()
         QStringList eviInfo = evi.split("&");
         evi_type eviEntry;
         eviEntry.name = eviInfo[0];
-        eviEntry.image = eviInfo[1];
-        eviEntry.description = eviInfo[2];
+        eviEntry.description = eviInfo[1];
+        eviEntry.image = eviInfo[2];
         evidenceList.append(eviEntry);
       }
 

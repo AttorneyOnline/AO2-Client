@@ -42,7 +42,8 @@ public:
   explicit AOEvidence(QWidget *parent, AOApplication *p_ao_app);
   bool presenting();
   int selectedEvidenceId();
-  void showEvidence(int id);
+  evi_type *selectedEvidence();
+  void showEvidence(const evi_type *evi);
   void addMessageData(chat_message_type &message);
 
 signals:
@@ -73,13 +74,11 @@ private:
   QWidget *ui_evidence_info_page;
   QWidget *ui_empty_page;
 
-  void setEvidenceImage(QString filename);
-
   void setupDebouncer();
 
 private slots:
   void debounceFired();
-  void on_list_itemChanged(QListWidgetItem *item);
+  void on_list_currentItemChanged(QListWidgetItem *item);
   void on_list_itemActivated(QListWidgetItem *item);
   void on_name_textChanged();
   void on_description_textChanged();

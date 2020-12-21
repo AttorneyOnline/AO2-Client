@@ -96,6 +96,9 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   connect(ui_room_controls, &AORoomControls::requestHealthChange, this,
           &Courtroom::onRequestHealthChange);
   connect(ui_room_controls, &AORoomControls::wtce, this, &Courtroom::onRequestWTCE);
+  connect(ui_evidence, &AOEvidence::evidenceAdded, client.get(), &Client::addEvidence);
+  connect(ui_evidence, &AOEvidence::evidenceEdited, client.get(), &Client::editEvidence);
+  connect(ui_evidence, &AOEvidence::evidenceDeleted, client.get(), &Client::removeEvidence);
 
   // Note that autoconnect will only work for courtroom widgets. It will not work
   // for windows or other miscellaneous children that the courtroom happens to own.
@@ -103,8 +106,6 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
 
   ui_room_chooser->setAreas(client->rooms());
   ui_music_list->setTracks(client->tracks().toVector());
-
-  WidgetDumper::dumpWidgetHierarchy(windowWidget);
 }
 
 void Courtroom::chooseCharacter()

@@ -93,9 +93,8 @@ void LegacySocket::send(const QString &header, QStringList args)
       .replaceInStrings("$", "<dollar>")
       .replaceInStrings("&", "<and>");
 
-  qDebug() << "send:" << header << args;
-
   auto bytes = (header % "#" % args.join('#') % "#%").toUtf8();
+  qDebug().noquote() << "send:" << bytes;
   socket.write(bytes, bytes.length());
 }
 

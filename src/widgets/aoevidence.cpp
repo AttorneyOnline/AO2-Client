@@ -12,7 +12,6 @@ AOEvidence::AOEvidence(QWidget *parent, AOApplication *p_ao_app)
   QFile uiFile(":/resource/ui/evidence.ui");
   uiFile.open(QFile::ReadOnly);
   QWidget *windowWidget = loader.load(&uiFile, this);
-  QMetaObject::connectSlotsByName(this);
 
   setWindowTitle(tr("Evidence"));
 
@@ -30,6 +29,19 @@ AOEvidence::AOEvidence(QWidget *parent, AOApplication *p_ao_app)
   FROM_UI(QStackedWidget, pages)
   FROM_UI(QWidget, evidence_info_page)
   FROM_UI(QWidget, empty_page)
+
+  connect(ui_list, &QListWidget::currentItemChanged,
+          this, &AOEvidence::on_list_currentItemChanged);
+  connect(ui_list, &QListWidget::itemActivated,
+          this, &AOEvidence::on_list_itemActivated);
+  connect(ui_name, &QTextEdit::textChanged,
+          this, &AOEvidence::on_name_textChanged);
+  connect(ui_description, &QPlainTextEdit::textChanged,
+          this, &AOEvidence::on_description_textChanged);
+  connect(ui_image, &QLabel::linkActivated,
+          this, &AOEvidence::on_image_linkActivated);
+  connect(ui_delete_button, &QPushButton::clicked,
+          this, &AOEvidence::on_delete_button_clicked);
 
   // There are some style decisions to be made for the new evidence button,
   // and therefore its creation cannot be deferred to this constructor code.
@@ -61,19 +73,26 @@ int AOEvidence::selectedEvidenceId()
   return ui_list->currentItem()->data(Qt::UserRole).toInt();
 }
 
-void AOEvidence::showEvidence(int id)
+evi_type *AOEvidence::selectedEvidence()
 {
-  if (id > -1)
+  auto id = selectedEvidenceId();
+  if (id == -1 || id >= evidence.count())
+    return nullptr;
+  return &evidence[id];
+}
+
+void AOEvidence::showEvidence(const evi_type *evi)
+{
+  if (evi)
   {
     ui_pages->setCurrentWidget(ui_evidence_info_page);
-    evi_type &evi = evidence[selectedEvidenceId()];
 
     if (debounceCause != ui_name)
-      ui_name->document()->setPlainText(evi.name);
+      ui_name->document()->setPlainText(evi->name);
     if (debounceCause != ui_description)
-      ui_description->document()->setPlainText(evi.description);
+      ui_description->document()->setPlainText(evi->description);
     if (debounceCause != ui_image)
-      ui_image->setPixmap(QPixmap(ao_app->get_evidence_path(evi.image)));
+      ui_image->setPixmap(QPixmap(ao_app->get_evidence_path(evi->image)));
   }
   else
   {
@@ -100,11 +119,14 @@ void AOEvidence::debounceFired()
 {
   debounceTimer->deleteLater();
 
+  if (!selectedEvidence())
+    return;
+
   int id = selectedEvidenceId();
   emit evidenceEdited(id, evidence[id]);
 }
 
-void AOEvidence::on_list_itemChanged(QListWidgetItem *item)
+void AOEvidence::on_list_currentItemChanged(QListWidgetItem *item)
 {
   // Force send changes immediately if debounce timer is running
   if (debounceTimer)
@@ -112,8 +134,8 @@ void AOEvidence::on_list_itemChanged(QListWidgetItem *item)
 
   // If item is now null, switch to the empty page
   // Otherwise, switch to the evidence info page and populate entries
-  if (item != nullptr)
-    showEvidence(selectedEvidenceId());
+  if (item != nullptr && selectedEvidence() != nullptr)
+    showEvidence(selectedEvidence());
   else
     ui_pages->setCurrentWidget(ui_empty_page);
 }
@@ -139,7 +161,10 @@ void AOEvidence::on_name_textChanged()
     setupDebouncer();
   debounceCause = ui_name;
 
-  evidence[selectedEvidenceId()].name = ui_name->document()->toRawText();
+  auto *evi = selectedEvidence();
+  if (evi == nullptr)
+    return;
+  evi->name = ui_name->document()->toRawText();
 }
 
 void AOEvidence::on_description_textChanged()
@@ -148,7 +173,10 @@ void AOEvidence::on_description_textChanged()
     setupDebouncer();
   debounceCause = ui_description;
 
-  evidence[selectedEvidenceId()].description = ui_description->document()->toRawText();
+  auto *evi = selectedEvidence();
+  if (evi == nullptr)
+    return;
+  evi->description = ui_description->document()->toRawText();
 }
 
 void AOEvidence::on_image_linkActivated()
@@ -217,8 +245,8 @@ void AOEvidence::setEvidenceList(QVector<evi_type> list)
   // Clear the selection if it no longer exists
   if (originalIndex >= ui_list->count() - 1)
     ui_list->clearSelection();
-  else
-    showEvidence(selectedEvidenceId());
+  else if (selectedEvidence() != nullptr)
+    showEvidence(selectedEvidence());
 
   debounceCause.clear();
 }
