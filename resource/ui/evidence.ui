@@ -54,7 +54,7 @@ QPushButton:checked {
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="evidence_info_page">
       <property name="sizePolicy">
@@ -106,7 +106,7 @@ QPushButton:checked {
            </property>
            <property name="font">
             <font>
-             <family>Serif,Georgia</family>
+             <family>Serif</family>
              <pointsize>17</pointsize>
              <weight>75</weight>
              <bold>true</bold>

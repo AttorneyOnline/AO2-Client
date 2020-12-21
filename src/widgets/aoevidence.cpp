@@ -28,6 +28,8 @@ AOEvidence::AOEvidence(QWidget *parent, AOApplication *p_ao_app)
   FROM_UI(QPushButton, present_button)
   FROM_UI(QPushButton, delete_button)
   FROM_UI(QStackedWidget, pages)
+  FROM_UI(QWidget, evidence_info_page)
+  FROM_UI(QWidget, empty_page)
 
   // There are some style decisions to be made for the new evidence button,
   // and therefore its creation cannot be deferred to this constructor code.
@@ -63,7 +65,7 @@ void AOEvidence::showEvidence(int id)
 {
   if (id > -1)
   {
-    ui_pages->setCurrentIndex(info_page_id);
+    ui_pages->setCurrentWidget(ui_evidence_info_page);
     evi_type &evi = evidence[selectedEvidenceId()];
 
     if (debounceCause != ui_name)
@@ -75,7 +77,7 @@ void AOEvidence::showEvidence(int id)
   }
   else
   {
-    ui_pages->setCurrentIndex(empty_page_id);
+    ui_pages->setCurrentWidget(ui_empty_page);
   }
 }
 
@@ -113,7 +115,7 @@ void AOEvidence::on_list_itemChanged(QListWidgetItem *item)
   if (item != nullptr)
     showEvidence(selectedEvidenceId());
   else
-    ui_pages->setCurrentIndex(empty_page_id);
+    ui_pages->setCurrentWidget(ui_empty_page);
 }
 
 void AOEvidence::on_list_itemActivated(QListWidgetItem *item)

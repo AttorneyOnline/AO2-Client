@@ -69,9 +69,9 @@ private:
   QPushButton *ui_present_button;
   QPushButton *ui_delete_button;
 
-  static const int info_page_id = 0;
-  static const int empty_page_id = 1;
   QStackedWidget *ui_pages;
+  QWidget *ui_evidence_info_page;
+  QWidget *ui_empty_page;
 
   void setEvidenceImage(QString filename);
 
