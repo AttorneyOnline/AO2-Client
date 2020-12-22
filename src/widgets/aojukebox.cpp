@@ -11,7 +11,6 @@ AOJukebox::AOJukebox(QWidget *parent, AOApplication *p_ao_app)
   QFile uiFile(":/resource/ui/jukebox.ui");
   uiFile.open(QFile::ReadOnly);
   QWidget *windowWidget = loader.load(&uiFile, this);
-  QMetaObject::connectSlotsByName(this);
 
   setWindowTitle(tr("Jukebox"));
 
@@ -20,8 +19,13 @@ AOJukebox::AOJukebox(QWidget *parent, AOApplication *p_ao_app)
   parentLayout->addWidget(windowWidget);
   setLayout(parentLayout);
 
-  ui_music_list = findChild<QListWidget *>("music_list");
-  ui_search = findChild<QLineEdit *>("search");
+  FROM_UI(QListWidget, music_list)
+  FROM_UI(QLineEdit, search)
+
+  connect(ui_music_list, &QListWidget::doubleClicked,
+          this, &AOJukebox::on_music_list_doubleClicked);
+  connect(ui_search, &QLineEdit::textEdited,
+          this, &AOJukebox::on_search_textEdited);
 }
 
 void AOJukebox::setTracks(QVector<QString> tracks)

@@ -49,10 +49,10 @@ void LegacySocket::packetReceived()
     if (msg[msg.size() - 1] == '#')
       args.removeLast();
 
-//    QStringList debugArgs = args;
-//    debugArgs.replaceInStrings(QRegularExpression("(.{60}).+(.{60})"),
-//                               "\\1...\\2");
-//    qDebug() << "recv:" << header << debugArgs;
+    QStringList debugArgs = args;
+    debugArgs.replaceInStrings(QRegularExpression("(.{60}).+(.{60})"),
+                               "\\1...\\2");
+    qDebug() << header << debugArgs;
 
     emit messageReceived(header, args);
 
@@ -94,7 +94,7 @@ void LegacySocket::send(const QString &header, QStringList args)
       .replaceInStrings("&", "<and>");
 
   auto bytes = (header % "#" % args.join('#') % "#%").toUtf8();
-  qDebug().noquote() << "send:" << bytes;
+  qDebug().noquote() << bytes;
   socket.write(bytes, bytes.length());
 }
 

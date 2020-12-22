@@ -457,11 +457,6 @@ void Courtroom::onJukeboxTrackSelect(QString track)
   client->playTrack(track, ui_ic_chat->showname());
 }
 
-void Courtroom::onRoomSelect(QString room)
-{
-  client->joinRoom(room);
-}
-
 void Courtroom::on_mute_triggered()
 {
   auto dialog = new AOMuteDialog(this);
@@ -607,11 +602,6 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool 
 {
   // TODO: replace with direct call by announcer dialog to announceCase
   client->announceCase(title, casing_flags_to_bitset(def, pro, jud, jur, steno, false));
-}
-
-Courtroom::~Courtroom()
-{
-  delete music_player;
 }
 
 void Courtroom::initBASS()

@@ -99,22 +99,12 @@ public:
 
   void chooseCharacter();
 
-  void arup_append(int players, QString status, QString cm, QString locked);
-  void arup_modify(int type, int place, QString value);
-
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message, bool special = false);
 
-  void handle_chatmessage(QStringList *p_contents);
-
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
 
-  void check_connection_received();
-
-  ~Courtroom();
-
-  static constexpr int chatmessage_size = 23;
 private:
   AOApplication *ao_app;
   Options options;
@@ -206,7 +196,6 @@ private slots:
   void onGlobalChatSend(QString name, QString message);
   void onICPositionChange(QString pos);
   void onJukeboxTrackSelect(QString track);
-  void onRoomSelect(QString room);
 
   void on_mute_triggered();
   void on_pair_triggered();
