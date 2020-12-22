@@ -3272,24 +3272,24 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
 
   // witness testimony
   if (p_wtce == "testimony1") {
-    sfx_player->play(ao_app->get_sfx("witness_testimony"), "", "", 0);
+    sfx_player->play(ao_app->get_sfx("witness_testimony"));
     ui_vp_wtce->play("witnesstestimony", "", "", 1500);
     ui_vp_testimony->play("testimony");
   }
   // cross examination
   else if (p_wtce == "testimony2") {
-    sfx_player->play(ao_app->get_sfx("cross_examination"), "", "", 0);
+    sfx_player->play(ao_app->get_sfx("cross_examination"));
     ui_vp_wtce->play("crossexamination", "", "", 1500);
     ui_vp_testimony->stop();
   }
   else if (p_wtce == "judgeruling") {
     if (variant == 0) {
-      sfx_player->play(ao_app->get_sfx("not_guilty"), "", "", 0);
+      sfx_player->play(ao_app->get_sfx("not_guilty"));
       ui_vp_wtce->play("notguilty", "", "", 3000);
       ui_vp_testimony->stop();
     }
     else if (variant == 1) {
-      sfx_player->play(ao_app->get_sfx("guilty"), "", "", 0);
+      sfx_player->play(ao_app->get_sfx("guilty"));
       ui_vp_wtce->play("guilty", "", "", 3000);
       ui_vp_testimony->stop();
     }
