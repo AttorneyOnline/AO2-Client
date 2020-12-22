@@ -13,6 +13,8 @@ AOMuteDialog::AOMuteDialog(QWidget *parent)
   QWidget *windowWidget = loader.load(&uiFile, this);
   QMetaObject::connectSlotsByName(this);
 
+  setWindowTitle(tr("Mute"));
+
   QVBoxLayout *parentLayout = new QVBoxLayout;
   parentLayout->setMargin(0);
   parentLayout->addWidget(windowWidget);
@@ -22,20 +24,24 @@ AOMuteDialog::AOMuteDialog(QWidget *parent)
   ui_buttons = findChild<QDialogButtonBox *>("buttons");
 }
 
-void AOMuteDialog::setCharacters(QVector<QString> characters)
+void AOMuteDialog::setMuteMap(QVector<QPair<QString, bool>> characters)
 {
   ui_mute_list->clear();
 
   int cid = 0;
-  for (const QString &character : characters)
+  for (const auto &character : characters)
   {
-    auto item = new QListWidgetItem(character);
+    auto item = new QListWidgetItem(character.first);
+    item->setFlags(Qt::ItemFlag::ItemIsEnabled |
+                   Qt::ItemFlag::ItemIsUserCheckable);
+    item->setCheckState(character.second ? Qt::Checked
+                                         : Qt::Unchecked);
     item->setData(Qt::UserRole, cid++);
     ui_mute_list->addItem(item);
   }
 }
 
-void AOMuteDialog::on_muteList_itemChanged(QListWidgetItem *item)
+void AOMuteDialog::on_mute_list_itemChanged(QListWidgetItem *item)
 {
   // POTENTIAL BUG: itemChanged could trigger for changes that were not
   // check states.
@@ -45,7 +51,12 @@ void AOMuteDialog::on_muteList_itemChanged(QListWidgetItem *item)
 
 void AOMuteDialog::on_buttons_clicked(QAbstractButton *button)
 {
-  if (ui_buttons->standardButton(button) == QDialogButtonBox::Reset) {
-    ui_mute_list->reset();
+  switch (ui_buttons->standardButton(button)) {
+  case QDialogButtonBox::Reset:
+    cleared();
+    break;
+  case QDialogButtonBox::Close:
+    close();
+    break;
   }
 }

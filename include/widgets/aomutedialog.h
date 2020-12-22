@@ -20,13 +20,15 @@ private:
 
 signals:
   void mute(int cid, bool muted);
+  void cleared();
 
 public slots:
-  void setCharacters(QVector<QString> characters);
+  void setMuteMap(QVector<QPair<QString, bool>> characters);
 
 private slots:
-  void on_muteList_itemChanged(QListWidgetItem *item);
+  void on_mute_list_itemChanged(QListWidgetItem *item);
   void on_buttons_clicked(QAbstractButton *button);
+
 };
 
 

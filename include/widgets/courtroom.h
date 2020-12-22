@@ -172,6 +172,8 @@ private:
   QDockWidget *ui_server_chat_dock;
   QAction *ui_toggle_server_chat;
 
+  QAction *ui_mute;
+  QAction *ui_pair;
   QAction *ui_change_character;
   QAction *ui_reload_theme;
   QAction *ui_call_mod;

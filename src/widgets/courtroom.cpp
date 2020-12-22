@@ -37,6 +37,8 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   FROM_UI(AOViewport, viewport)
   FROM_UI(AOChat, ic_chat)
 
+  FROM_UI(QAction, mute)
+  FROM_UI(QAction, pair)
   FROM_UI(QAction, change_character)
   FROM_UI(QAction, reload_theme)
   FROM_UI(QAction, call_mod)
@@ -467,11 +469,27 @@ void Courtroom::on_mute_triggered()
     mute_map.insert(mute_cid, muted);
   });
 
-  QVector<QString> char_names;
-  for (const char_type &character : client->characters())
-    char_names.push_back(character.name);
+  auto makeMuteMap = [this, dialog] {
+    QVector<QPair<QString, bool>> characters;
+    for (const char_type &character : client->characters()) {
+      characters.push_back({ character.name, false });
+    }
 
-  dialog->setCharacters(char_names);
+    for (const auto &cid : mute_map.keys()) {
+      if (mute_map[cid])
+        characters[cid].second = true;
+    }
+
+    dialog->setMuteMap(characters);
+  };
+
+  connect(dialog, &AOMuteDialog::cleared, this, [=] {
+    mute_map.clear();
+    makeMuteMap();
+  });
+
+  makeMuteMap();
+  dialog->setModal(true);
   dialog->show();
 
   // Dialog will be freed by Qt on dialog close
