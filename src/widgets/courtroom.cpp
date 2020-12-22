@@ -106,6 +106,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
 
   ui_room_chooser->setAreas(client->rooms());
   ui_music_list->setTracks(client->tracks().toVector());
+  ui_evidence->setEvidenceList(client->evidence());
 }
 
 void Courtroom::chooseCharacter()

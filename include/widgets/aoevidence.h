@@ -63,7 +63,7 @@ private:
   QPointer<QWidget> debounceCause;
 
   QPlainTextEdit *ui_description;
-  QLabel *ui_image;
+  QPushButton *ui_image;
   QTextEdit *ui_name;
 
   QListWidget *ui_list;
@@ -82,7 +82,7 @@ private slots:
   void on_list_itemActivated(QListWidgetItem *item);
   void on_name_textChanged();
   void on_description_textChanged();
-  void on_image_linkActivated();
+  void on_image_clicked();
   void on_delete_button_clicked();
 
 public slots:

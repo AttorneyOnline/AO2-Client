@@ -21,7 +21,7 @@ AOEvidence::AOEvidence(QWidget *parent, AOApplication *p_ao_app)
   setLayout(parentLayout);
 
   FROM_UI(QPlainTextEdit, description)
-  FROM_UI(QLabel, image)
+  FROM_UI(QPushButton, image)
   FROM_UI(QTextEdit, name)
   FROM_UI(QListWidget, list)
   FROM_UI(QPushButton, present_button)
@@ -38,8 +38,8 @@ AOEvidence::AOEvidence(QWidget *parent, AOApplication *p_ao_app)
           this, &AOEvidence::on_name_textChanged);
   connect(ui_description, &QPlainTextEdit::textChanged,
           this, &AOEvidence::on_description_textChanged);
-  connect(ui_image, &QLabel::linkActivated,
-          this, &AOEvidence::on_image_linkActivated);
+  connect(ui_image, &QPushButton::clicked,
+          this, &AOEvidence::on_image_clicked);
   connect(ui_delete_button, &QPushButton::clicked,
           this, &AOEvidence::on_delete_button_clicked);
 
@@ -87,12 +87,24 @@ void AOEvidence::showEvidence(const evi_type *evi)
   {
     ui_pages->setCurrentWidget(ui_evidence_info_page);
 
+    // Prevent textChanged signals from firing
+    ui_name->blockSignals(true);
+    ui_description->blockSignals(true);
+
     if (debounceCause != ui_name)
       ui_name->document()->setPlainText(evi->name);
     if (debounceCause != ui_description)
       ui_description->document()->setPlainText(evi->description);
-    if (debounceCause != ui_image)
-      ui_image->setPixmap(QPixmap(ao_app->get_evidence_path(evi->image)));
+
+    QString imagePath = ao_app->get_evidence_path(evi->image);
+    if (!QFile::exists(imagePath))
+      imagePath = ao_app->get_evidence_path("empty.png");
+    QPixmap icon(imagePath);
+    ui_image->setIcon(icon);
+    ui_image->setIconSize(icon.size());
+
+    ui_name->blockSignals(false);
+    ui_description->blockSignals(false);
   }
   else
   {
@@ -113,10 +125,13 @@ void AOEvidence::setupDebouncer()
   debounceTimer->setInterval(debounceInterval);
   connect(debounceTimer, &QTimer::timeout, this, &AOEvidence::debounceFired);
   connect(debounceTimer, &QTimer::timeout, debounceTimer, &QTimer::deleteLater);
+  debounceTimer->start();
+  qDebug() << "will fire in" << debounceInterval << "ms";
 }
 
 void AOEvidence::debounceFired()
 {
+  debounceTimer->stop();
   debounceTimer->deleteLater();
 
   if (!selectedEvidence())
@@ -149,7 +164,7 @@ void AOEvidence::on_list_itemActivated(QListWidgetItem *item)
     evi_type newEvidence;
     newEvidence.name = "New Evidence";
     newEvidence.description = "";
-    newEvidence.image = "";
+    newEvidence.image = "empty.png";
 
     emit evidenceAdded(newEvidence);
   }
@@ -179,7 +194,7 @@ void AOEvidence::on_description_textChanged()
   evi->description = ui_description->document()->toRawText();
 }
 
-void AOEvidence::on_image_linkActivated()
+void AOEvidence::on_image_clicked()
 {
   // This is my least favorite feature
   QDir evidenceDir(ao_app->get_evidence_path(""));
@@ -193,24 +208,27 @@ void AOEvidence::on_image_linkActivated()
   QString relativePath = evidenceDir.relativeFilePath(filename);
   if (relativePath.startsWith("..")) {
     QMessageBox::critical(this, tr("Error adding evidence"),
-                          tr("You can only use evidence images that are in the"
+                          tr("You can only use evidence images that are in the "
                           "evidence folder."));
     return;
   }
 
-  ui_image->setPixmap(QPixmap(evidenceDir.absoluteFilePath(relativePath)));
+  QPixmap icon(evidenceDir.absoluteFilePath(relativePath));
+  ui_image->setIcon(icon);
+  ui_image->setIconSize(icon.size());
 
-  if (debounceTimer)
-    debounceFired();
-  debounceCause = ui_image;
+  if (!debounceTimer)
+    setupDebouncer();
 
   evidence[selectedEvidenceId()].image = relativePath;
 }
 
 void AOEvidence::on_delete_button_clicked()
 {
-  debounceTimer->stop();
-  debounceTimer->deleteLater();
+  if (debounceTimer) {
+    debounceTimer->stop();
+    debounceTimer->deleteLater();
+  }
 
   emit evidenceDeleted(selectedEvidenceId());
 }
@@ -224,6 +242,8 @@ void AOEvidence::setEvidenceList(QVector<evi_type> list)
   for (int i = 0; i < ui_list->count() - 1 && i < list.count(); i++)
   {
     QString imagePath = ao_app->get_evidence_path(evidence[i].image);
+    if (!QFile::exists(imagePath))
+      imagePath = ao_app->get_evidence_path("empty.png");
     auto item = ui_list->item(i);
     item->setIcon(QIcon(imagePath));
     item->setText(evidence[i].name);
@@ -237,6 +257,8 @@ void AOEvidence::setEvidenceList(QVector<evi_type> list)
   for (int i = ui_list->count() - 1; i < list.length(); i++)
   {
     QString imagePath = ao_app->get_evidence_path(evidence[i].image);
+    if (!QFile::exists(imagePath))
+      imagePath = ao_app->get_evidence_path("empty.png");
     auto item = new QListWidgetItem(QIcon(imagePath), evidence[i].name);
     item->setData(Qt::UserRole, i);
     ui_list->insertItem(i, item);
