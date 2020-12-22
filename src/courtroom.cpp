@@ -1763,7 +1763,8 @@ void Courtroom::on_chat_return_pressed()
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
   if (ao_app->effects_enabled) {
-    QString fx_sound = ao_app->get_effect_sound(effect, current_char);
+    QString fx_sound =
+        ao_app->get_effect_property(effect, current_char, "sound");
     QString p_effect =
         ao_app->read_char_ini(current_char, "effects", "Options");
     packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
@@ -2286,6 +2287,7 @@ void Courtroom::do_flash()
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
+  ui_vp_effect->stretch = true;
   ui_vp_effect->set_static_duration(60);
   ui_vp_effect->set_max_duration(60);
   ui_vp_effect->load_image(
@@ -2306,7 +2308,14 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
   // Only check if effects are disabled after playing the sound if it exists
   if (!ao_app->is_effects_enabled())
     return;
-
+  ui_vp_effect->transform_mode =
+      (ao_app->get_effect_property(fx_name, p_char, "scaling") == "smooth"
+           ? Qt::SmoothTransformation
+           : Qt::FastTransformation);
+  ui_vp_effect->stretch =
+      (ao_app->get_effect_property(fx_name, p_char, "stretch") == "true"
+           ? true
+           : false);
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.

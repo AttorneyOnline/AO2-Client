@@ -77,7 +77,7 @@ QPixmap AOLayer::get_pixmap(QImage image)
   //    auto aspect_ratio = Qt::KeepAspectRatio;
   if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
     transform_mode = Qt::SmoothTransformation;
-  if ((f_pixmap.height() == 1) && (f_pixmap.width() == 1))
+  if (stretch)
     f_pixmap = f_pixmap.scaled(f_w, f_h); // I'm annoyed that I have to do this
   else
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
@@ -93,7 +93,9 @@ void AOLayer::set_frame(QPixmap f_pixmap)
       x + (f_w - f_pixmap.width()) / 2,
       y + (f_h - f_pixmap.height())); // Always center horizontally, always put
                                       // at the bottom vertically
-  this->setMask(QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w, f_h)); // make sure we don't escape the area we've been given
+  this->setMask(
+      QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
+              f_h)); // make sure we don't escape the area we've been given
 }
 
 void AOLayer::combo_resize(int w, int h)
@@ -120,9 +122,12 @@ void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
   cull_image = false;
-  if (ao_app->read_design_ini(
-          "scaling", ao_app->get_background_path("design.ini")) == "smooth")
-    transform_mode = Qt::SmoothTransformation;
+  QString design_path = ao_app->get_background_path("design.ini");
+  transform_mode = (ao_app->read_design_ini("scaling", design_path) == "smooth"
+                        ? Qt::SmoothTransformation
+                        : Qt::FastTransformation);
+  stretch = (ao_app->read_design_ini("stretch", design_path) == "true" ? true
+                                                                       : false);
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(
@@ -159,7 +164,11 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   duration = p_duration;
   cull_image = false;
   force_continuous = false;
-  transform_mode = ao_app->get_char_scaling(p_charname);
+  transform_mode = ao_app->get_emote_scaling(p_charname, p_filename);
+  stretch =
+      (ao_app->get_emote_property(p_charname, p_filename, "stretch") == "true"
+           ? true
+           : false);
   if ((p_charname == last_char) &&
       ((p_filename == last_emote) ||
        (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&
@@ -300,11 +309,15 @@ void AOLayer::start_playback(QString p_image)
 
   QString scaling_override =
       ao_app->read_design_ini("scaling", p_image + ".ini");
-  if (scaling_override == "smooth")
-    transform_mode = Qt::SmoothTransformation;
-  else if (scaling_override == "fast")
-    transform_mode = Qt::FastTransformation;
+  if (scaling_override != "")
+    transform_mode = (scaling_override == "smooth" ? Qt::SmoothTransformation
+                                                   : Qt::FastTransformation);
+  QString stretch_override =
+      ao_app->read_design_ini("stretch", p_image + ".ini");
+  if (stretch_override != "")
+    stretch = (stretch_override == "true" ? true : false);
 
+  qDebug() << "stretch:" << stretch << "filename:" << p_image;
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
@@ -387,8 +400,14 @@ void AOLayer::play()
 
 void AOLayer::set_play_once(bool p_play_once) { play_once = p_play_once; }
 void AOLayer::set_cull_image(bool p_cull_image) { cull_image = p_cull_image; }
-void AOLayer::set_static_duration(int p_static_duration) { static_duration = p_static_duration; }
-void AOLayer::set_max_duration(int p_max_duration) { max_duration = p_max_duration; }
+void AOLayer::set_static_duration(int p_static_duration)
+{
+  static_duration = p_static_duration;
+}
+void AOLayer::set_max_duration(int p_max_duration)
+{
+  max_duration = p_max_duration;
+}
 
 void CharLayer::load_effects()
 {

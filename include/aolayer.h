@@ -25,6 +25,7 @@ public:
   bool cull_image = true; // if we're done playing this animation, should we
                           // hide it? also controls durational culling
   Qt::TransformationMode transform_mode = Qt::FastTransformation; // transformation mode to use for this image
+  bool stretch = false; // Should we stretch/squash this image to fill the screen?
 
   // Set the movie's image to provided paths, preparing for playback.
   void start_playback(QString p_image);

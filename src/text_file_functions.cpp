@@ -611,10 +611,17 @@ QString AOApplication::get_gender(QString p_char)
   return f_result;
 }
 
-Qt::TransformationMode AOApplication::get_char_scaling(QString p_char)
+QString AOApplication::get_emote_property(QString p_char, QString p_emote, QString p_property)
 {
-  QString f_result = read_char_ini(p_char, "scaling", "Options");
+  QString f_result = read_char_ini(p_char, p_emote, p_property); // per-emote override
+  if (f_result == "")
+    f_result = read_char_ini(p_char, p_property, "Options"); // global for this character
+  return f_result;
+}
 
+Qt::TransformationMode AOApplication::get_emote_scaling(QString p_char, QString p_emote)
+{
+  QString f_result = get_emote_property(p_char, p_emote, "scaling");
   if (f_result == "smooth")
     return Qt::SmoothTransformation;
   return Qt::FastTransformation;
@@ -861,7 +868,7 @@ QStringList AOApplication::get_theme_effects()
 
   QStringList lines = read_file(p_path).split("\n");
   foreach (QString effect, lines) {
-    effect = effect.split("=")[0].trimmed();
+    effect = effect.split("=")[0].trimmed().split("_")[0];
     if (!effect.isEmpty() && !effects.contains(effect))
       effects.append(effect);
   }
@@ -879,7 +886,7 @@ QStringList AOApplication::get_effects(QString p_char)
 
   QStringList lines = read_file(p_path).split("\n");
   foreach (QString effect, lines) {
-    effect = effect.split("=")[0].trimmed();
+    effect = effect.split("=")[0].trimmed().split("_")[0];
     if (!effect.isEmpty() && !effects.contains(effect))
       effects.append(effect);
   }
@@ -914,24 +921,31 @@ QString AOApplication::get_effect(QString effect, QString p_char,
   return p_path;
 }
 
-QString AOApplication::get_effect_sound(QString fx_name, QString p_char)
+QString AOApplication::get_effect_property(QString fx_name, QString p_char, QString p_property)
 {
+  QString f_property;
+  if (p_property == "sound")
+    f_property = fx_name;
+  else
+    f_property = fx_name + "_" + p_property;
   QString p_effect = read_char_ini(p_char, "effects", "Options");
   QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
   QString design_ini_path = get_theme_path("effects/effects.ini");
   QString default_path = get_default_theme_path("effects/effects.ini");
 
-  QString f_result = read_design_ini(fx_name, p_path);
+  QString f_result = read_design_ini(f_property, p_path);
   if (f_result == "") {
-    f_result = read_design_ini(fx_name, design_ini_path);
+    f_result = read_design_ini(f_property, design_ini_path);
     if (f_result == "") {
-      f_result = read_design_ini(fx_name, default_path);
+      f_result = read_design_ini(f_property, default_path);
     }
   }
 
-  if (fx_name == "realization") {
+  if (fx_name == "realization" && p_property == "sound") {
     f_result = get_custom_realization(p_char);
   }
+
+  qDebug() << "got" << f_property << "of" << fx_name << "==" << f_result;
 
   return f_result;
 }

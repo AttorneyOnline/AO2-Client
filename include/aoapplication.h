@@ -351,9 +351,9 @@ public:
   // t
   QString get_effect(QString effect, QString p_char, QString p_folder);
 
-  // Return the effect sound associated with the fx_name in the
-  // misc/effects/<char-defined>/sounds.ini, or theme/effects/sounds.ini.
-  QString get_effect_sound(QString fx_name, QString p_char);
+  // Return p_property of fx_name. If p_property is "sound", return
+  // the value associated with fx_name, otherwise use fx_name + '_' + p_property.
+  QString get_effect_property(QString fx_name, QString p_char, QString p_property);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
@@ -403,8 +403,11 @@ public:
   // Returns p_char's gender
   QString get_gender(QString p_char);
 
-  // Returns the scaling type for p_char
-  Qt::TransformationMode get_char_scaling(QString p_char);
+  // Get a property of a given emote, or get it from "options" if emote doesn't have it
+  QString get_emote_property(QString p_char, QString p_emote, QString p_property);
+
+  // Returns the scaling type for p_char's p_emote, or the scaling for p_char if p_emote has no override
+  Qt::TransformationMode get_emote_scaling(QString p_char, QString p_emote);
 
   // Returns the scaling type for p_miscname
   Qt::TransformationMode get_misc_scaling(QString p_miscname);
