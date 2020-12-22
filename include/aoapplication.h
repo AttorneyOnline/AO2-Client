@@ -219,6 +219,9 @@ public:
   // Returns whether the log should have a timestamp.
   bool get_log_timestamp();
 
+  // Returns whether to log IC actions.
+  bool get_log_ic_actions();
+
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
 
