@@ -1891,17 +1891,17 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     switch (objection_mod) {
     case 1:
       ui_vp_objection->play("holdit_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("holdit", f_char, f_custom_theme);
+      objection_player->play("holdit", f_char, f_custom_theme, 0);
       break;
     case 2:
       ui_vp_objection->play("objection_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("objection", f_char, f_custom_theme);
+      objection_player->play("objection", f_char, f_custom_theme, 0);
       if (ao_app->objection_stop_music())
         music_player->stop();
       break;
     case 3:
       ui_vp_objection->play("takethat_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("takethat", f_char, f_custom_theme);
+      objection_player->play("takethat", f_char, f_custom_theme, 0);
       break;
     // case 4 is AO2 only
     case 4:
@@ -1910,12 +1910,12 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
                               f_custom_theme, shout_stay_time);
         objection_player->play("custom_objections/" +
                                    custom_objection.split('.')[0],
-                               f_char, f_custom_theme);
+                               f_char, f_custom_theme, 0);
       }
       else {
         ui_vp_objection->play("custom", f_char, f_custom_theme,
                               shout_stay_time);
-        objection_player->play("custom", f_char, f_custom_theme);
+        objection_player->play("custom", f_char, f_custom_theme, 0);
       }
       m_chatmessage[EMOTE_MOD] = 1;
       break;
@@ -3272,24 +3272,24 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
 
   // witness testimony
   if (p_wtce == "testimony1") {
-    sfx_player->play(ao_app->get_sfx("witness_testimony"));
+    sfx_player->play(ao_app->get_sfx("witness_testimony"), "", "", 0);
     ui_vp_wtce->play("witnesstestimony", "", "", 1500);
     ui_vp_testimony->play("testimony");
   }
   // cross examination
   else if (p_wtce == "testimony2") {
-    sfx_player->play(ao_app->get_sfx("cross_examination"));
+    sfx_player->play(ao_app->get_sfx("cross_examination"), "", "", 0);
     ui_vp_wtce->play("crossexamination", "", "", 1500);
     ui_vp_testimony->stop();
   }
   else if (p_wtce == "judgeruling") {
     if (variant == 0) {
-      sfx_player->play(ao_app->get_sfx("not_guilty"));
+      sfx_player->play(ao_app->get_sfx("not_guilty"), "", "", 0);
       ui_vp_wtce->play("notguilty", "", "", 3000);
       ui_vp_testimony->stop();
     }
     else if (variant == 1) {
-      sfx_player->play(ao_app->get_sfx("guilty"));
+      sfx_player->play(ao_app->get_sfx("guilty"), "", "", 0);
       ui_vp_wtce->play("guilty", "", "", 3000);
       ui_vp_testimony->stop();
     }
