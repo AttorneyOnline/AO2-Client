@@ -23,7 +23,7 @@ private:
   QVector<area_type> area_list;
 
 signals:
-  void roomSelected(QString room);
+  void roomSelected(const QString &room);
 
 public slots:
   void refresh();

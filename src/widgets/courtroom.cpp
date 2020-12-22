@@ -99,6 +99,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   connect(ui_evidence, &AOEvidence::evidenceAdded, client.get(), &Client::addEvidence);
   connect(ui_evidence, &AOEvidence::evidenceEdited, client.get(), &Client::editEvidence);
   connect(ui_evidence, &AOEvidence::evidenceDeleted, client.get(), &Client::removeEvidence);
+  connect(ui_room_chooser, &AORoomChooser::roomSelected, client.get(), &Client::joinRoom);
 
   // Note that autoconnect will only work for courtroom widgets. It will not work
   // for windows or other miscellaneous children that the courtroom happens to own.

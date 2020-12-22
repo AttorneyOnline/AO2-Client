@@ -34,7 +34,7 @@ public:
   virtual bool spectating() = 0;
 
   virtual QVector<area_type> rooms() = 0;
-  virtual void joinRoom(QString &name) = 0;
+  virtual void joinRoom(const QString &name) = 0;
   virtual void setCharacter(int charId) = 0;
 
   virtual void callMod(const QString &message = QStringLiteral()) = 0;

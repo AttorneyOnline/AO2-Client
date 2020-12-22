@@ -68,7 +68,7 @@ public:
   bool spectating() override { return currentCharId == -1; }
 
   QVector<area_type> rooms() override { return areasList; }
-  void joinRoom(QString &name) override;
+  void joinRoom(const QString &name) override;
   void setCharacter(int charId) override;
 
   void callMod(const QString &message) override;

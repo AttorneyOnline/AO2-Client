@@ -360,7 +360,7 @@ char_type LegacyClient::character()
  * this case, the client's character will be automatically reassigned by the
  * server.
  */
-void LegacyClient::joinRoom(QString &name)
+void LegacyClient::joinRoom(const QString &name)
 {
   socket.send("MC", { name, "0" });
 }

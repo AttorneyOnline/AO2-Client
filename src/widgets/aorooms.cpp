@@ -11,7 +11,6 @@ AORoomChooser::AORoomChooser(QWidget *parent, AOApplication *p_ao_app)
   QFile uiFile(":/resource/ui/rooms.ui");
   uiFile.open(QFile::ReadOnly);
   QWidget *windowWidget = loader.load(&uiFile, this);
-  QMetaObject::connectSlotsByName(this);
 
   setWindowTitle(tr("Room List"));
 
@@ -20,8 +19,13 @@ AORoomChooser::AORoomChooser(QWidget *parent, AOApplication *p_ao_app)
   parentLayout->addWidget(windowWidget);
   setLayout(parentLayout);
 
-  ui_area_list = findChild<QListWidget *>("area_list");
-  ui_search = findChild<QLineEdit *>("search");
+  FROM_UI(QListWidget, area_list)
+  FROM_UI(QLineEdit, search)
+
+  connect(ui_area_list, &QListWidget::doubleClicked,
+          this, &AORoomChooser::on_area_list_doubleClicked);
+  connect(ui_search, &QLineEdit::textEdited,
+          this, &AORoomChooser::on_search_textEdited);
 }
 
 void AORoomChooser::setAreas(QVector<area_type> areas)
@@ -32,6 +36,11 @@ void AORoomChooser::setAreas(QVector<area_type> areas)
 
 void AORoomChooser::on_area_list_doubleClicked(QModelIndex p_model)
 {
+  if (p_model.row() >= area_list.length()) {
+    qWarning() << "selected area is out of area list bounds";
+    return;
+  }
+
   QString p_room = area_list.at(p_model.row()).name;
 
   emit roomSelected(p_room);
@@ -72,7 +81,6 @@ void AORoomChooser::refresh()
     if (desc.toLower().contains(ui_search->text().toLower()))
     {
       auto area_item = new QListWidgetItem(desc, ui_area_list);
-      ui_area_list->addItem(desc);
 
       // Colouring logic here.
       const std::map<QString, QBrush &> backgrounds = {
