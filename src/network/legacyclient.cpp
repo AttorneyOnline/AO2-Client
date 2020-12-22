@@ -84,7 +84,7 @@ void LegacyClient::mapSignals()
       tracksList.clear();
       areasList.clear();
 
-      int musicStart = tracksList.indexOf(QRegExp("(\\=.+|.*\\.(wav|mp3|ogg|opus))"));
+      int musicStart = args.indexOf(QRegExp("(\\=.+|.+\\.(wav|mp3|ogg|opus))"));
       tracksList.append(args.mid(musicStart));
 
       for (int i = 0; i < musicStart; i++)
