@@ -331,6 +331,9 @@ private:
   // True, if the log should display the message like name<br>text instead of name: text
   bool log_newline = false;
 
+  // True, if the log should include RP actions like interjections, showing evidence, etc.
+  bool log_ic_actions = true;
+
   // Margin in pixels between log entries for the IC log.
   int log_margin = 0;
 
@@ -397,6 +400,11 @@ private:
 
   int objection_state = 0;
   QString objection_custom = "";
+  struct CustomObjection {
+    QString name;
+    QString filename;
+  };
+  QList<CustomObjection> custom_objections_list;
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
