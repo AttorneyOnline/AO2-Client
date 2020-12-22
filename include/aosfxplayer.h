@@ -17,7 +17,7 @@ public:
   void clear();
   void loop_clear();
   void play(QString p_sfx, QString p_char = "", QString shout = "",
-            int channel = -1);
+            int channel = 0);
   void stop(int channel = -1);
   void set_volume(qreal p_volume);
   void set_looping(bool toggle, int channel = -1);
