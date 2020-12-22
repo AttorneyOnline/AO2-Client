@@ -123,11 +123,8 @@ void BackgroundLayer::load_image(QString p_filename)
   play_once = false;
   cull_image = false;
   QString design_path = ao_app->get_background_path("design.ini");
-  transform_mode = (ao_app->read_design_ini("scaling", design_path) == "smooth"
-                        ? Qt::SmoothTransformation
-                        : Qt::FastTransformation);
-  stretch = (ao_app->read_design_ini("stretch", design_path) == "true" ? true
-                                                                       : false);
+  transform_mode = ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
+  stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(
@@ -164,11 +161,8 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   duration = p_duration;
   cull_image = false;
   force_continuous = false;
-  transform_mode = ao_app->get_emote_scaling(p_charname, p_filename);
-  stretch =
-      (ao_app->get_emote_property(p_charname, p_filename, "stretch") == "true"
-           ? true
-           : false);
+  transform_mode = ao_app->get_scaling(ao_app->get_emote_property(p_charname, p_filename, "scaling"));
+  stretch = ao_app->get_emote_property(p_charname, p_filename, "stretch").startsWith(true);
   if ((p_charname == last_char) &&
       ((p_filename == last_emote) ||
        (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&
@@ -310,12 +304,11 @@ void AOLayer::start_playback(QString p_image)
   QString scaling_override =
       ao_app->read_design_ini("scaling", p_image + ".ini");
   if (scaling_override != "")
-    transform_mode = (scaling_override == "smooth" ? Qt::SmoothTransformation
-                                                   : Qt::FastTransformation);
+    transform_mode = ao_app->get_scaling(scaling_override);
   QString stretch_override =
       ao_app->read_design_ini("stretch", p_image + ".ini");
   if (stretch_override != "")
-    stretch = (stretch_override == "true" ? true : false);
+    stretch = stretch_override.startsWith("true");
 
   qDebug() << "stretch:" << stretch << "filename:" << p_image;
   m_reader.setFileName(p_image);

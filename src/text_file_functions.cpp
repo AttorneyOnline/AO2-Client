@@ -250,6 +250,13 @@ QString AOApplication::read_design_ini(QString p_identifier,
   }
 }
 
+Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
+{
+  if (p_scaling == "smooth")
+    return Qt::SmoothTransformation;
+  return Qt::FastTransformation;
+}
+
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
@@ -611,28 +618,25 @@ QString AOApplication::get_gender(QString p_char)
   return f_result;
 }
 
-QString AOApplication::get_emote_property(QString p_char, QString p_emote, QString p_property)
+QString AOApplication::get_emote_property(QString p_char, QString p_emote,
+                                          QString p_property)
 {
-  QString f_result = read_char_ini(p_char, p_emote, p_property); // per-emote override
+  QString f_result =
+      read_char_ini(p_char, p_emote, p_property); // per-emote override
   if (f_result == "")
-    f_result = read_char_ini(p_char, p_property, "Options"); // global for this character
+    f_result = read_char_ini(p_char, p_property,
+                             "Options"); // global for this character
   return f_result;
-}
-
-Qt::TransformationMode AOApplication::get_emote_scaling(QString p_char, QString p_emote)
-{
-  QString f_result = get_emote_property(p_char, p_emote, "scaling");
-  if (f_result == "smooth")
-    return Qt::SmoothTransformation;
-  return Qt::FastTransformation;
 }
 
 Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
 {
   if (p_miscname != "") {
-    QString misc_transform_mode = read_design_ini("scaling", get_theme_path("misc/" + p_miscname + "/config.ini"));
+    QString misc_transform_mode = read_design_ini(
+        "scaling", get_theme_path("misc/" + p_miscname + "/config.ini"));
     if (misc_transform_mode == "")
-      misc_transform_mode = read_design_ini("scaling", get_misc_path(p_miscname, "config.ini"));
+      misc_transform_mode =
+          read_design_ini("scaling", get_misc_path(p_miscname, "config.ini"));
     if (misc_transform_mode == "smooth")
       return Qt::SmoothTransformation;
   }
@@ -921,7 +925,8 @@ QString AOApplication::get_effect(QString effect, QString p_char,
   return p_path;
 }
 
-QString AOApplication::get_effect_property(QString fx_name, QString p_char, QString p_property)
+QString AOApplication::get_effect_property(QString fx_name, QString p_char,
+                                           QString p_property)
 {
   QString f_property;
   if (p_property == "sound")

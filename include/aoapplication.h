@@ -406,8 +406,8 @@ public:
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
 
-  // Returns the scaling type for p_char's p_emote, or the scaling for p_char if p_emote has no override
-  Qt::TransformationMode get_emote_scaling(QString p_char, QString p_emote);
+  // Return a transformation mode from a string ("smooth" for smooth, anything else for fast)
+  Qt::TransformationMode get_scaling(QString p_scaling);
 
   // Returns the scaling type for p_miscname
   Qt::TransformationMode get_misc_scaling(QString p_miscname);

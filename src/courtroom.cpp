@@ -2308,14 +2308,11 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
   // Only check if effects are disabled after playing the sound if it exists
   if (!ao_app->is_effects_enabled())
     return;
-  ui_vp_effect->transform_mode =
-      (ao_app->get_effect_property(fx_name, p_char, "scaling") == "smooth"
-           ? Qt::SmoothTransformation
-           : Qt::FastTransformation);
+  ui_vp_effect->transform_mode = ao_app->get_scaling(
+      ao_app->get_effect_property(fx_name, p_char, "scaling"));
   ui_vp_effect->stretch =
-      (ao_app->get_effect_property(fx_name, p_char, "stretch") == "true"
-           ? true
-           : false);
+      ao_app->get_effect_property(fx_name, p_char, "stretch")
+          .startsWith("true");
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
