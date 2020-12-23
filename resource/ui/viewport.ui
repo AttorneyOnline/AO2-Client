@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>256</width>
-    <height>282</height>
+    <height>192</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,19 +59,24 @@
   <widget class="QLabel" name="ui_vp_showname">
    <property name="geometry">
     <rect>
-     <x>1</x>
-     <y>178</y>
+     <x>4</x>
+     <y>114</y>
      <width>70</width>
      <height>15</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>8</pointsize>
+     <family>Ace Name</family>
+     <pointsize>6</pointsize>
+     <stylestrategy>NoAntialias</stylestrategy>
     </font>
    </property>
    <property name="styleSheet">
     <string notr="true">color: white;</string>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
   <widget class="AOImage" name="ui_vp_testimony">
@@ -138,9 +143,9 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>178</y>
+     <y>114</y>
      <width>256</width>
-     <height>104</height>
+     <height>78</height>
     </rect>
    </property>
    <property name="text">
@@ -156,15 +161,17 @@
   <widget class="QTextEdit" name="ui_vp_message">
    <property name="geometry">
     <rect>
-     <x>2</x>
-     <y>190</y>
-     <width>256</width>
-     <height>89</height>
+     <x>10</x>
+     <y>127</y>
+     <width>242</width>
+     <height>57</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>10</pointsize>
+     <family>Igiari Cyrillic</family>
+     <pointsize>12</pointsize>
+     <stylestrategy>NoAntialias</stylestrategy>
     </font>
    </property>
    <property name="styleSheet">
@@ -181,6 +188,13 @@
    </property>
    <property name="readOnly">
     <bool>true</bool>
+   </property>
+   <property name="html">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Igiari Cyrillic'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;[No courtroom activity]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="AOCharMovie" name="ui_vp_sideplayer_char">

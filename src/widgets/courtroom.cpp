@@ -18,6 +18,10 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
 {
   initBASS();
 
+  QFontDatabase fontDatabase;
+  fontDatabase.addApplicationFont(":/resource/fonts/ace-name.ttf");
+  fontDatabase.addApplicationFont(":/resource/fonts/igiari-cyrillic.ttf");
+
   AOUiLoader loader(this, ao_app);
   QFile uiFile(":/resource/ui/courtroom.ui");
   uiFile.open(QFile::ReadOnly);

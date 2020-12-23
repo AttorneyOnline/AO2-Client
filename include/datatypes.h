@@ -207,7 +207,7 @@ struct chat_message_type
   int char_id;
   int sfx_delay;
   OBJECTION_TYPE objection_modifier;
-  int evidence = -1; // -1 if no evidence
+  int evidence = 0; // 0 if no evidence (one-indexed)
   bool flip;
   bool realization;
   COLOR text_color;

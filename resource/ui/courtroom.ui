@@ -474,7 +474,7 @@
    <property name="minimumSize">
     <size>
      <width>256</width>
-     <height>282</height>
+     <height>192</height>
     </size>
    </property>
    <property name="styleSheet">
@@ -507,7 +507,7 @@
       <property name="minimumSize">
        <size>
         <width>256</width>
-        <height>282</height>
+        <height>192</height>
        </size>
       </property>
      </widget>
