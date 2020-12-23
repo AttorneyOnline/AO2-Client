@@ -114,6 +114,8 @@ void AOEvidence::showEvidence(const evi_type *evi)
 
 void AOEvidence::addMessageData(chat_message_type &message)
 {
+  if (!presenting())
+    return;
   // the evidence index is shifted by 1 because 0 is no evidence, per legacy standards
   message.evidence = selectedEvidenceId() + 1;
 }
