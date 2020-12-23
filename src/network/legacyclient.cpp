@@ -45,6 +45,8 @@ void LegacyClient::mapSignals()
           charEntry.description = charInfo[1];
         charsList.append(std::move(charEntry));
       }
+
+      qInfo() << "Got" << charsList.count() << "playable characters.";
     }
     else if (header == "CharsCheck")
     {
@@ -98,6 +100,9 @@ void LegacyClient::mapSignals()
         area.locked = "Unknown";
         areasList.append(area);
       }
+
+      qInfo() << "Got" << tracksList.count() << "tracks and"
+              << areasList.count() << "areas.";
 
       emit tracksChanged();
     }
@@ -313,7 +318,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
     socket.send("RM");
     return socket.waitForMessage("SM");
   }).then([&] {
-    emit connectProgress(80, 100, tr("Loading client..."));
+    emit connectProgress(80, 100, tr("Loading courtroom..."));
 
     // I am not going to put up with server-side preferences.
     // Filter case announcements on the client side.

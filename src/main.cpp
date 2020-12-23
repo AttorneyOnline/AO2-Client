@@ -10,9 +10,23 @@
 
 //Q_IMPORT_PLUGIN(ApngImagePlugin);
 
+static const QtMessageHandler QT_DEFAULT_MESSAGE_HANDLER = qInstallMessageHandler(nullptr);
+
+static void customMessageHandler(QtMsgType type, const QMessageLogContext &context,
+                                 const QString &msg)
+{
+  static const QString before = "AttorneyOnline::", after = "AO::";
+  QString function = QString::fromLocal8Bit(context.function);
+  function.replace(before, after);
+  const std::string functionName = function.toStdString();
+  QMessageLogContext newContext(context.file, context.line, functionName.c_str(), context.category);
+  (*QT_DEFAULT_MESSAGE_HANDLER)(type, newContext, msg);
+}
+
 int main(int argc, char *argv[])
 {
   qSetMessagePattern("[%{time process}] [%{function}] %{message}");
+  qInstallMessageHandler(customMessageHandler);
 #if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
   // High-DPI support is for Qt version >=5.6.
   // However, many Linux distros still haven't brought their stable/LTS
