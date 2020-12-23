@@ -1,4 +1,4 @@
-#include "aocharselect.h"
+#include "widgets/aocharselect.h"
 #include "aouiloader.h"
 #include "file_functions.h"
 

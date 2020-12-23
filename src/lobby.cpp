@@ -6,7 +6,7 @@
 #include "aouiloader.h"
 
 #include <QVBoxLayout>
-#include <aocharselect.h>
+#include <widgets/aocharselect.h>
 
 #include <network/legacyclient.h>
 

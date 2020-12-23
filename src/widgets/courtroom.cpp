@@ -4,11 +4,13 @@
 
 #include <QLayout>
 #include <QMenu>
-#include <aocharselect.h>
 
-#include <widgets/aocaseannouncerdialog.h>
-#include <widgets/aomutedialog.h>
-#include <widgets/aooptionsdialog.h>
+#include "widgets/aocaseannouncerdialog.h"
+#include "widgets/aocharselect.h"
+#include "widgets/aomutedialog.h"
+#include "widgets/aooptionsdialog.h"
+#include "widgets/aopairdialog.h"
+#include "network/legacyclient.h"
 #include "widgetdumper.h"
 
 Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
@@ -193,14 +195,6 @@ void Courtroom::onICMessageSend()
   chat_message_type message;
   ui_ic_chat->addMessageData(message);
   ui_evidence->addMessageData(message);
-
-  // We send over whom we're paired with, unless we have chosen ourselves.
-  // Or a charid of -1 or lower, through some means.
-  if (message.pair_char_id == -1 || message.pair_char_id == message.char_id)
-  {
-    message.pair_char_id = -1;
-    message.pair_offset = 0;
-  }
 
   client->sendIC(message).then([&] {
     ui_evidence->togglePresenting(false);
@@ -492,9 +486,22 @@ void Courtroom::on_mute_triggered()
 
 void Courtroom::on_pair_triggered()
 {
-  QMessageBox::warning(this, "Pairing", "Unfortunately, pairing was removed due "
-                                        "to time constraints. It will return in "
-                                        "the next version.");
+  // Break the abstraction layer to access intricacies of AO pairing
+  auto *legacyClient = dynamic_cast<LegacyClient *>(client.get());
+  if (!legacyClient) {
+    QMessageBox::warning(this, tr("Pairing"), tr("Pairing is not supported on this server."));
+    return;
+  }
+  auto dialog = new AOPairDialog(this);
+  connect(dialog, &AOPairDialog::pairChanged, legacyClient, &LegacyClient::setPair);
+  connect(dialog, &AOPairDialog::offsetChanged, legacyClient, &LegacyClient::setPairOffset);
+  dialog->setCharacters(client->characters());
+  dialog->setCurrentPair(legacyClient->currentPair());
+  dialog->setPairOffset(legacyClient->currentPairOffset());
+  dialog->setModal(true);
+  dialog->show();
+
+  // Dialog will be freed by Qt on dialog close
 }
 
 void Courtroom::onMixerVolumeChange(AUDIO_TYPE type, int volume)

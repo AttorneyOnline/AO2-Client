@@ -413,6 +413,14 @@ QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
   auto msgCopy = message;
   msgCopy.char_id = currentCharId;
 
+  // We send over whom we're paired with, unless we have chosen ourselves.
+  // Or a charid of -1 or lower, through some means.
+  if (msgCopy.pair_char_id == -1 || msgCopy.pair_char_id == msgCopy.char_id)
+  {
+    msgCopy.pair_char_id = -1;
+    msgCopy.pair_offset = 0;
+  }
+
   socket.send("MS", msgCopy.serialize(caseCafeFeatures));
 
   return QPromise<void>([&](const QPromiseResolve<void>& resolve) {

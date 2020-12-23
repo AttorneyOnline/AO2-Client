@@ -27,6 +27,9 @@ class LegacyClient : public Client {
 private:
   bool caseCafeFeatures = false;
 
+  int pairCharId = -1;
+  int pairOffset = 0;
+
   QVector<char_type> charsList;
   QStringList tracksList;
   QVector<evi_type> evidenceList;
@@ -92,6 +95,12 @@ public:
                     const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) override;
 
   std::pair<int, int> playerCount() const override;
+
+  int currentPair() const { return pairCharId; }
+  void setPair(int cid) { pairCharId = cid; }
+
+  int currentPairOffset() const { return pairOffset; }
+  void setPairOffset(int offset) { pairOffset = offset; }
 };
 
 } // namespace AttorneyOnline

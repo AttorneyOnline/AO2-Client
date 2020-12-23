@@ -1,7 +1,6 @@
 target_sources(Attorney_Online PRIVATE
     aoapplication.h
     aoblipplayer.h
-    aocharselect.h
     aomusicplayer.h
     aosfxplayer.h
     aouiloader.h
@@ -36,6 +35,7 @@ target_sources(Attorney_Online PRIVATE
     widgetdumper.h
     widgets/aocaseannouncerdialog.h
     widgets/aocharmovie.h
+    widgets/aocharselect.h
     widgets/aochatentry.h
     widgets/aochat.h
     widgets/aoevidencedisplay.h
@@ -48,6 +48,7 @@ target_sources(Attorney_Online PRIVATE
     widgets/aomovie.h
     widgets/aomutedialog.h
     widgets/aooptionsdialog.h
+    widgets/aopairdialog.h
     widgets/aoroomcontrols.h
     widgets/aorooms.h
     widgets/aoscene.h

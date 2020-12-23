@@ -34,6 +34,7 @@ target_sources(Attorney_Online PRIVATE
     widgets/aomovie.cpp
     widgets/aomutedialog.cpp
     widgets/aooptionsdialog.cpp
+    widgets/aopairdialog.cpp
     widgets/aoroomcontrols.cpp
     widgets/aorooms.cpp
     widgets/aoscene.cpp

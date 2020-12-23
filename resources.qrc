@@ -98,6 +98,7 @@
         <file>resource/ui/ic.ui</file>
         <file>resource/ui/mixer.ui</file>
         <file>resource/ui/mute.ui</file>
+        <file>resource/ui/pair.ui</file>
         <file>resource/ui/room_controls.ui</file>
     </qresource>
 </RCC>
