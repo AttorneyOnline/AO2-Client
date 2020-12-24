@@ -566,7 +566,7 @@
     <property name="title">
      <string>Window</string>
     </property>
-    <addaction name="toggle_ic_log"/>
+    <addaction name="toggle_ic_chatlog"/>
     <addaction name="toggle_evidence"/>
     <addaction name="separator"/>
     <addaction name="toggle_server_chat"/>
@@ -575,8 +575,11 @@
     <addaction name="toggle_room_controls"/>
     <addaction name="toggle_room_chooser"/>
     <addaction name="separator"/>
-    <addaction name="toggle_jukebox"/>
+    <addaction name="toggle_music_list"/>
     <addaction name="toggle_mixer"/>
+    <addaction name="separator"/>
+    <addaction name="load_layout"/>
+    <addaction name="save_layout"/>
    </widget>
    <addaction name="menuPlayer"/>
    <addaction name="menuCase"/>
@@ -633,7 +636,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
     </sizepolicy>
    </property>
    <property name="windowTitle">
-    <string>Chat: (character)</string>
+    <string>Chat</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -725,7 +728,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
     <string>Reload theme</string>
    </property>
   </action>
-  <action name="toggle_ic_log">
+  <action name="toggle_ic_chatlog">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -800,7 +803,7 @@ QLineEdit { background-color: #575757; color: white; }</string>
     <string>mixer</string>
    </property>
   </action>
-  <action name="toggle_jukebox">
+  <action name="toggle_music_list">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -817,6 +820,16 @@ QLineEdit { background-color: #575757; color: white; }</string>
    </property>
    <property name="text">
     <string>Evidence</string>
+   </property>
+  </action>
+  <action name="save_layout">
+   <property name="text">
+    <string>Save Layout…</string>
+   </property>
+  </action>
+  <action name="load_layout">
+   <property name="text">
+    <string>Load Layout…</string>
    </property>
   </action>
  </widget>

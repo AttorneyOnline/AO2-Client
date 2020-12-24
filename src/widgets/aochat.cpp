@@ -89,7 +89,7 @@ void AOChat::setCharacter(const QString &character)
     const QString imagePathOn = ao_app->get_character_path(character, imagePath.arg("_on.png"));
     const QString emoteName = ao_app->get_emote_comment(character, i);
 
-    auto emoteButton = new QListWidgetItem(emoteName);
+    auto emoteButton = new QListWidgetItem();
 
     QIcon icon;
     icon.addFile(imagePathOff, QSize(), QIcon::Mode::Normal);
