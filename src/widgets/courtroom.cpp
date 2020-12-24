@@ -647,6 +647,36 @@ void Courtroom::load_bass_opus_plugin()
 {
   BASS_PluginLoad("bassopus.dll", 0);
 }
+
+void Courtroom::on_load_layout_triggered() {
+  QString filename = QFileDialog::getOpenFileName(this, tr("Load Layout File"),
+                                                  ao_app->get_base_path(),
+                                                  tr("Layout Data (*.dat)"));
+  QFile file(filename);
+  if (filename.isEmpty() || !file.exists())
+    return;
+  if (!file.open(QFile::OpenModeFlag::ReadOnly)) {
+    QMessageBox::warning(this, tr("Layout Error"), tr("Couldn't open the layout file."));
+    return;
+  }
+  if (!windowWidget->restoreState(file.readAll()))
+    QMessageBox::warning(this, tr("Layout Error"), tr("There was an error restoring the layout file."));
+}
+
+void Courtroom::on_save_layout_triggered() {
+  QString filename = QFileDialog::getSaveFileName(this, tr("Save Layout File"),
+                                                  ao_app->get_base_path(),
+                                                  tr("Layout Data (*.dat)"));
+  QFile file(filename);
+  if (filename.isEmpty())
+    return;
+  if (!file.open(QFile::OpenModeFlag::WriteOnly)) {
+    QMessageBox::warning(this, tr("Layout Error"), tr("Couldn't open the layout file for writing."));
+    return;
+  }
+  file.write(windowWidget->saveState());
+}
+
 #elif (defined (LINUX) || defined (__linux__))
 void Courtroom::load_bass_opus_plugin()
 {

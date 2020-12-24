@@ -121,6 +121,8 @@ private:
   // XXX: needs rework
   QMap<int, bool> mute_map;
 
+  QMainWindow *windowWidget;
+
   AOMusicPlayer *music_player;
   AOSfxPlayer *modcall_player;
 
@@ -129,7 +131,7 @@ private:
 
   AOICLog *ui_ic_chatlog;
   QDockWidget *ui_ic_chatlog_dock;
-  QAction *ui_toggle_ic_log;
+  QAction *ui_toggle_ic_chatlog;
 
   AORoomChooser *ui_room_chooser;
   QDockWidget *ui_room_chooser_dock;
@@ -137,7 +139,7 @@ private:
 
   AOJukebox *ui_music_list;
   QDockWidget *ui_music_list_dock;
-  QAction *ui_toggle_jukebox;
+  QAction *ui_toggle_music_list;
 
   AOMixer *ui_mixer;
   QDockWidget *ui_mixer_dock;
@@ -175,6 +177,8 @@ private:
   QAction *ui_showname_enable;
 
   QMenu *ui_window_menu;
+  QAction *ui_load_layout;
+  QAction *ui_save_layout;
 
   void initBASS();
 
@@ -216,6 +220,9 @@ private slots:
   void on_quit_triggered();
 
   void on_casing_triggered();
+
+  void on_load_layout_triggered();
+  void on_save_layout_triggered();
 
   void load_bass_opus_plugin();
 };
