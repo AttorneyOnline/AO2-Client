@@ -115,6 +115,14 @@ enum COLOR
   CYAN
 };
 
+// This is for inline message-colouring.
+enum INLINE_COLOURS {
+  INLINE_BLUE,
+  INLINE_GREEN,
+  INLINE_ORANGE,
+  INLINE_GREY
+};
+
 enum ARUP_PARAM
 {
   PLAYERS = 0,

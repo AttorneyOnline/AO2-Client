@@ -1,5 +1,4 @@
 #include "aoapplication.h"
-#include "widgets/courtroom.h"
 #include "file_functions.h"
 
 #include <QDir>

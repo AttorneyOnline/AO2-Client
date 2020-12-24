@@ -1,5 +1,15 @@
 #include "aoapplication.h"
 
+#include <QFile>
+#include <QSettings>
+
+#include <QDebug>
+#include <QScreen>
+
+#include <QStandardPaths>
+
+#include <QStringList>
+
 #include "lobby.h"
 #include "widgets/courtroom.h"
 #include "debug_functions.h"
@@ -42,7 +52,7 @@ void AOApplication::openLobby()
   });
 
   // XXX: is this needed?
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
+  QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
   int x = (screenGeometry.width() - lobby->width()) / 2;
   int y = (screenGeometry.height() - lobby->height()) / 2;
   lobby->move(x, y);

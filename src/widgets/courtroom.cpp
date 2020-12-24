@@ -25,7 +25,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   AOUiLoader loader(this, ao_app);
   QFile uiFile(":/resource/ui/courtroom.ui");
   uiFile.open(QFile::ReadOnly);
-  QMainWindow *windowWidget = static_cast<QMainWindow *>(loader.load(&uiFile, this));
+  windowWidget = static_cast<QMainWindow *>(loader.load(&uiFile, this));
 
   windowWidget->setWindowFlag(Qt::Window, false);
   windowWidget->setWindowFlag(Qt::Widget);
@@ -59,14 +59,14 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   // Connect each widget to its toggle button. If the widget was not instantiated
   // in the .ui file, then instantiate it now. Even if a widget is hidden,
   // it will not be destroyed, so connections will not be invalidated.
-  REGISTER_WINDOW(AOICLog, ic_chatlog, toggle_ic_log, ao_app)
-  REGISTER_WINDOW(AOServerChat, ms_chat, toggle_ms_chat, ao_app)
-  REGISTER_WINDOW(AOServerChat, server_chat, toggle_server_chat, ao_app)
-  REGISTER_WINDOW(AOJukebox, music_list, toggle_jukebox, ao_app)
-  REGISTER_WINDOW(AORoomChooser, room_chooser, toggle_room_chooser, ao_app)
-  REGISTER_WINDOW(AOMixer, mixer, toggle_mixer, ao_app)
-  REGISTER_WINDOW(AORoomControls, room_controls, toggle_room_controls, ao_app)
-  REGISTER_WINDOW(AOEvidence, evidence, toggle_evidence, ao_app)
+  REGISTER_WINDOW(AOICLog, ic_chatlog)
+  REGISTER_WINDOW(AOServerChat, ms_chat)
+  REGISTER_WINDOW(AOServerChat, server_chat)
+  REGISTER_WINDOW(AOJukebox, music_list)
+  REGISTER_WINDOW(AORoomChooser, room_chooser)
+  REGISTER_WINDOW(AOMixer, mixer)
+  REGISTER_WINDOW(AORoomControls, room_controls)
+  REGISTER_WINDOW(AOEvidence, evidence)
 
   ui_ms_chat->setWindowTitle(tr("Master Chat"));
 
@@ -116,6 +116,36 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   ui_room_chooser->setAreas(client->rooms());
   ui_music_list->setTracks(client->tracks().toVector());
   ui_evidence->setEvidenceList(client->evidence());
+}
+
+template<typename T>
+void Courtroom::registerWindow(T *&widget, const QString &name,
+                               QDockWidget *&dockWidget, QAction *&toggleAction)
+{
+  widget = findChild<T *>(name);
+  dockWidget = findChild<QDockWidget *>(name + "_dock");
+  toggleAction = findChild<QAction *>("toggle_" + name);
+  if (widget == nullptr)
+  {
+    dockWidget = new QDockWidget(this);
+    widget = new T(dockWidget, ao_app);
+    widget->setObjectName(name);
+    dockWidget->setWidget(widget);
+    dockWidget->setWindowTitle(widget->windowTitle());
+    windowWidget->addDockWidget(Qt::BottomDockWidgetArea, dockWidget);
+    dockWidget->setFloating(true);
+    dockWidget->setVisible(false);
+  }
+  else
+  {
+    toggleAction->setChecked(true);
+  }
+  connect(toggleAction, &QAction::toggled, this, [=](bool toggled) {
+    dockWidget->setVisible(toggled);
+  });
+  connect(ui_window_menu, &QMenu::aboutToShow, this, [=] {
+    toggleAction->setChecked(dockWidget->isVisible());
+  });
 }
 
 void Courtroom::chooseCharacter()
@@ -365,7 +395,7 @@ void Courtroom::onOOCSend(QString name, QString message)
   }
   else if (message.startsWith("/load_case"))
   {
-    QStringList command = message.split(" ", QString::SkipEmptyParts);
+    QStringList command = message.split(" ", Qt::SkipEmptyParts);
 
     QDir casefolder("base/cases");
     if (!casefolder.exists())

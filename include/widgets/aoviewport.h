@@ -9,14 +9,12 @@
 #include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aoscene.h"
-#include "courtroom.h"
+#include "datatypes.h"
 
 #include <QTextEdit>
 #include <QWidget>
 
 #include <stack>
-
-class Courtroom;
 
 class AOViewport : public QWidget
 {
@@ -24,6 +22,8 @@ class AOViewport : public QWidget
 public:
   explicit AOViewport(QWidget *parent, AOApplication *p_ao_app);
   ~AOViewport();
+
+  QSize sizeHint() const override;
 
   //sets the current background to argument. also does some checks to see if it's a legacy bg
   void set_background(QString p_background);

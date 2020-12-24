@@ -319,11 +319,6 @@ QPromise<void> LegacyClient::connect(const QString &address,
     return socket.waitForMessage("SM");
   }).then([&] {
     emit connectProgress(80, 100, tr("Loading courtroom..."));
-
-    // I am not going to put up with server-side preferences.
-    // Filter case announcements on the client side.
-    socket.send("SETCASE", {"", "1", "1", "1", "1", "1", "1"});
-
     socket.send("RD");
     return socket.waitForMessage("DONE");
   }).then([&] {

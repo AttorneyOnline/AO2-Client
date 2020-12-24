@@ -1,7 +1,12 @@
 #include "aouiloader.h"
-#include "widgets/aoviewport.h"
 
+#include <QFile>
+#include <QScrollBar>
 #include <QVBoxLayout>
+
+#include "widgets/aoviewport.h"
+#include "widgetdumper.h"
+#include "file_functions.h"
 
 AOViewport::AOViewport(QWidget *parent, AOApplication *p_ao_app)
   : QWidget(parent), ao_app(p_ao_app)
@@ -67,6 +72,8 @@ AOViewport::AOViewport(QWidget *parent, AOApplication *p_ao_app)
   ui_vp_wtce = findChild<AOMovie *>("ui_vp_wtce");
   ui_vp_objection = findChild<AOMovie *>("ui_vp_objection");
 
+  WidgetDumper::dumpWidgetHierarchy(this);
+
   ui_vp_background->raise();
   ui_vp_speedlines->raise();
   ui_vp_player_char->raise();
@@ -119,6 +126,17 @@ AOViewport::AOViewport(QWidget *parent, AOApplication *p_ao_app)
 
   connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
   connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
+}
+
+AOViewport::~AOViewport()
+{
+  delete sfx_player;
+  delete objection_player;
+  delete blip_player;
+}
+
+QSize AOViewport::sizeHint() const {
+  return QSize(256, 192);
 }
 
 void AOViewport::set_background(QString p_background)
@@ -1035,11 +1053,4 @@ void AOViewport::set_sfx_volume(int value)
 
 void AOViewport::set_blip_volume(int value) {
   blip_player->set_volume(value);
-}
-
-AOViewport::~AOViewport()
-{
-  delete sfx_player;
-  delete objection_player;
-  delete blip_player;
 }

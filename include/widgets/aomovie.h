@@ -4,7 +4,6 @@
 #include <QLabel>
 #include <QMovie>
 
-class Courtroom;
 class AOApplication;
 
 class AOMovie : public QLabel

@@ -51,45 +51,13 @@
 #include <QFileDialog>
 #include <QAction>
 
-#define REGISTER_WINDOW(type, widget, toggleAction, ...) \
-  FROM_UI(type, widget) \
-  FROM_UI(QDockWidget, widget##_dock) \
-  FROM_UI(QAction, toggleAction) \
-  if (ui_##widget == nullptr) \
-  { \
-    ui_##widget##_dock = new QDockWidget(this); \
-    ui_##widget = new type(ui_##widget##_dock, ##__VA_ARGS__); \
-    ui_##widget->setObjectName(#widget); \
-    ui_##widget##_dock->setWidget(ui_##widget); \
-    ui_##widget##_dock->setWindowTitle(ui_##widget->windowTitle()); \
-    windowWidget->addDockWidget(Qt::BottomDockWidgetArea, ui_##widget##_dock); \
-    ui_##widget##_dock->setFloating(true); \
-    \
-    ui_##widget##_dock->setVisible(false); \
-  } \
-  else \
-  { \
-    ui_##toggleAction->setChecked(true); \
-  } \
-  connect(ui_##toggleAction, &QAction::toggled, this, [&](bool toggled) { \
-    ui_##widget##_dock->setVisible(toggled); \
-  }); \
-  connect(ui_window_menu, &QMenu::aboutToShow, this, [&] { \
-    ui_##toggleAction->setChecked(ui_##widget##_dock->isVisible()); \
-  });
+#define REGISTER_WINDOW(type, name) \
+  registerWindow<type>(ui_##name, #name, ui_##name##_dock, ui_toggle_##name);
 
 using namespace AttorneyOnline;
 
 class AOApplication;
 class AOViewport;
-
-// This is for inline message-colouring.
-enum INLINE_COLOURS {
-    INLINE_BLUE,
-    INLINE_GREEN,
-    INLINE_ORANGE,
-    INLINE_GREY
-};
 
 class Courtroom : public QMainWindow
 {
@@ -180,6 +148,9 @@ private:
   QAction *ui_load_layout;
   QAction *ui_save_layout;
 
+  template<typename T>
+  void registerWindow(T *&widget, const QString &name,
+                      QDockWidget *&dockWidget, QAction *&toggleAction);
   void initBASS();
 
 private slots:

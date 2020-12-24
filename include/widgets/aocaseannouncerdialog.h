@@ -2,7 +2,6 @@
 #define AOCASEANNOUNCERDIALOG_H
 
 #include "aoapplication.h"
-#include "courtroom.h"
 
 #include <QtWidgets/QDialog>
 #include <QDialogButtonBox>
@@ -11,6 +10,8 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+
+class Courtroom;
 
 class AOCaseAnnouncerDialog : public QDialog
 {

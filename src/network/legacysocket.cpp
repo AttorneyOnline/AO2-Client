@@ -70,7 +70,7 @@ QPromise<void> LegacySocket::connect(const QString &address,
 
   // (QTcpSocket::error is overloaded, so we have to select the right one)
   auto errorFunc = static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>
-      (&QTcpSocket::error);
+      (&QTcpSocket::errorOccurred);
 
   auto promise = QtPromise::connect(&socket, &QTcpSocket::connected, errorFunc)
       .then([&] {

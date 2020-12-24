@@ -1,14 +1,21 @@
+#include "aouiloader.h"
+
 #include "widgets/aocharmovie.h"
+#include "widgets/aochat.h"
 #include "widgets/aochatentry.h"
 #include "widgets/aoevidence.h"
 #include "widgets/aoevidencedisplay.h"
+#include "widgets/aoiclog.h"
 #include "widgets/aoimage.h"
+#include "widgets/aojukebox.h"
+#include "widgets/aomixer.h"
 #include "widgets/aomovie.h"
+#include "widgets/aoroomcontrols.h"
+#include "widgets/aorooms.h"
 #include "widgets/aoscene.h"
 #include "widgets/aoserverchat.h"
 #include "widgets/aotextedit.h"
 #include "widgets/aoviewport.h"
-#include "aouiloader.h"
 
 #include <QMessageBox>
 

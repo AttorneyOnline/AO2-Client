@@ -4,6 +4,7 @@
 #include "aoapplication.h"
 
 #include <QObject>
+#include <QFile>
 #include <QUiLoader>
 
 #define FROM_UI(type, name) ui_##name = findChild<type *>(#name);

@@ -1,6 +1,7 @@
 #include "widgets/aomutedialog.h"
 
 #include <QAbstractButton>
+#include <QFile>
 #include <QUiLoader>
 #include <QVBoxLayout>
 

@@ -180,7 +180,7 @@ void AOCharMovie::frame_change(int n_frame)
     else
       this->setPixmap(f_pixmap.scaled(this->width(), this->height(), aspect_ratio, Qt::FastTransformation));
 
-    QLabel::move(x + (this->width() - this->pixmap()->width())/2, y);
+    QLabel::move(x + (this->width() - this->pixmap(Qt::ReturnByValue).width())/2, y);
    }
 
   if (m_movie->frameCount() - 1 == n_frame && play_once)

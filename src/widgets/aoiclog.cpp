@@ -1,9 +1,10 @@
 #include "widgets/aoiclog.h"
 #include "aouiloader.h"
-#include "widgets/courtroom.h"
+#include "datatypes.h"
 
 #include <stack>
 
+#include <QFile>
 #include <QScrollBar>
 #include <QVBoxLayout>
 

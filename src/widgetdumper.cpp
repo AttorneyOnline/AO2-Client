@@ -147,7 +147,8 @@ void WidgetDumper::dumpWidgetAndChildren(std::ostream &os, const QWidget *w, int
 //------------------------------------------------------------------------
 void WidgetDumper::dumpWidgetHierarchy(const QWidget *w) {
   std::ostringstream oss;
+  oss << "Widget hierarchy of " << w->objectName().toStdString() << ":\n";
   oss << getWidgetInfo(*w);
   dumpWidgetAndChildren(oss, w, 0);
-  std::cout << oss.str();
+  std::cout << oss.str() << std::endl;
 }

@@ -6,22 +6,6 @@
 #include "options.h"
 
 #include <QApplication>
-#include <QVector>
-#include <QFile>
-#include <QSettings>
-
-#include <QDebug>
-#include <QRect>
-#include <QDesktopWidget>
-
-#include <QCryptographicHash>
-
-#include <QDir>
-#include <QStandardPaths>
-
-#include <QTextStream>
-#include <QStringList>
-#include <QColor>
 
 #include <network/client.h>
 #include <network/masterserver.h>

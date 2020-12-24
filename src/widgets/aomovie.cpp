@@ -1,7 +1,7 @@
 #include "widgets/aomovie.h"
+#include "aoapplication.h"
 
 #include "file_functions.h"
-#include "widgets/courtroom.h"
 #include "misc_functions.h"
 
 AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)

@@ -5,12 +5,12 @@
 #include "aosfxplayer.h"
 #include "aouiloader.h"
 
+#include <QScreen>
 #include <QVBoxLayout>
-#include <widgets/aocharselect.h>
 
-#include <network/legacyclient.h>
-
-#include <widgets/courtroom.h>
+#include "widgets/aocharselect.h"
+#include "widgets/courtroom.h"
+#include "network/legacyclient.h"
 
 using namespace AttorneyOnline;
 
@@ -137,7 +137,7 @@ void Lobby::on_connect_released()
     auto courtroom = new Courtroom(ao_app, client);
 
     // XXX: is this necessary?
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
     int x = (screenGeometry.width() - courtroom->width()) / 2;
     int y = (screenGeometry.height() - courtroom->height()) / 2;
     courtroom->move(x, y);

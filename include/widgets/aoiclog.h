@@ -7,6 +7,8 @@
 #include <QTextEdit>
 #include <QWidget>
 
+class QFile;
+
 class AOICLog : public QWidget
 {
   Q_OBJECT

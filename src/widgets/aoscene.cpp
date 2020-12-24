@@ -1,5 +1,6 @@
 #include "widgets/aoscene.h"
-#include "widgets/courtroom.h"
+
+#include "aoapplication.h"
 #include "file_functions.h"
 
 AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
