@@ -1,21 +1,13 @@
 #include "aoapplication.h"
 
 #include <QFile>
-#include <QSettings>
 
-#include <QDebug>
 #include <QScreen>
-
-#include <QStandardPaths>
-
-#include <QStringList>
 
 #include "lobby.h"
 #include "widgets/courtroom.h"
-#include "debug_functions.h"
 
 #include "widgets/aooptionsdialog.h"
-#include "widgets/aocaseannouncerdialog.h"
 
 #include <network/legacyclient.h>
 #include <network/legacyms.h>

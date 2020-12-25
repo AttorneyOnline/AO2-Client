@@ -2,7 +2,6 @@
 
 #include "network/hdid.h"
 
-#include <QStringBuilder>
 #include <QApplication>
 
 namespace AttorneyOnline {

@@ -1,10 +1,8 @@
 #include "widgets/aoiclog.h"
 #include "aouiloader.h"
-#include "datatypes.h"
 
 #include <stack>
 
-#include <QFile>
 #include <QScrollBar>
 #include <QVBoxLayout>
 
