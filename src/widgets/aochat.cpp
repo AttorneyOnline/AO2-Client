@@ -111,6 +111,22 @@ void AOChat::clearEntry()
   ui_realization->setChecked(false);
 }
 
+void AOChat::setPosition(const QString &pos)
+{
+  auto i = positions.indexOf(pos);
+  if (i == -1) {
+    // Unknown position - it just exists now, I guess
+    qDebug() << "new unknown position" << pos;
+    positions.append(pos);
+    i = pos.size() - 1;
+  }
+
+  // Prevent currentIndexChanged signal from firing
+  ui_side->blockSignals(true);
+  ui_side->setCurrentIndex(i);
+  ui_side->blockSignals(false);
+}
+
 void AOChat::onInterjectionToggle(bool toggled)
 {
   if (toggled)
@@ -200,7 +216,31 @@ void AOChat::addMessageData(chat_message_type &message)
   message.message = ui_chat_entry->document()->toPlainText();
   message.side = positions[ui_side->currentIndex()];
   message.sfx_name = ao_app->get_sfx_name(character, emote);
-  message.emote_modifier = ao_app->get_emote_mod(character, emote);
+
+  auto emoteModifier = ao_app->get_emote_mod(character, emote);
+  // Cursed translation table lifted from the classic source code.
+  // XXX: Here is where implementation details start leaking into the UI code.
+  // Unfortunately not much that can be done right now.
+  if (interjectionSelected() && ui_preanim->isChecked()) {
+    if (emoteModifier == 4 || emoteModifier == 5)
+      emoteModifier = OBJECTION_ZOOM;
+    else
+      emoteModifier = OBJECTION_PREANIM;
+  }
+  else if (ui_preanim->isChecked() && !ui_no_interrupt->isChecked()) {
+    if (emoteModifier == NO_PREANIM)
+      emoteModifier = PREANIM;
+    else if (emoteModifier == ZOOM)
+      emoteModifier = OBJECTION_ZOOM;
+  }
+  else {
+    if (emoteModifier == PREANIM)
+      emoteModifier = NO_PREANIM;
+    else if (emoteModifier == 4)
+      emoteModifier = ZOOM;
+  }
+
+  message.emote_modifier = emoteModifier;
 
   // Char ID not set here because this class doesn't have access to it.
 

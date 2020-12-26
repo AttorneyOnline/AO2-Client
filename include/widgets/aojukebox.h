@@ -23,7 +23,7 @@ private:
   QVector<QString> track_list;
 
 signals:
-  void trackSelected(QString track);
+  void trackSelected(const QString &track);
 
 public slots:
   void refresh();

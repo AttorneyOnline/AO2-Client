@@ -458,6 +458,11 @@
     </disabled>
    </palette>
   </property>
+  <property name="font">
+   <font>
+    <family>MS Shell Dlg 2</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -520,7 +525,7 @@
      <x>0</x>
      <y>0</y>
      <width>672</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuPlayer">
@@ -568,9 +573,7 @@
     </property>
     <addaction name="toggle_ic_chatlog"/>
     <addaction name="toggle_evidence"/>
-    <addaction name="separator"/>
     <addaction name="toggle_server_chat"/>
-    <addaction name="toggle_ms_chat"/>
     <addaction name="separator"/>
     <addaction name="toggle_room_controls"/>
     <addaction name="toggle_room_chooser"/>

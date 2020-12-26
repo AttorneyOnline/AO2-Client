@@ -67,8 +67,6 @@ public:
 
   void chooseCharacter();
 
-  //these are for OOC chat
-  void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message, bool special = false);
 
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
@@ -129,10 +127,6 @@ private:
   QDockWidget *ui_evidence_dock;
   QAction *ui_toggle_evidence;
 
-  AOServerChat *ui_ms_chat;
-  QDockWidget *ui_ms_chat_dock;
-  QAction *ui_toggle_ms_chat;
-
   AOServerChat *ui_server_chat;
   QDockWidget *ui_server_chat_dock;
   QAction *ui_toggle_server_chat;
@@ -173,9 +167,9 @@ private slots:
   void onEvidenceUpdate();
 
   void onOOCSend(QString name, QString message);
-  void onGlobalChatSend(QString name, QString message);
-  void onICPositionChange(QString pos);
-  void onJukeboxTrackSelect(QString track);
+
+  void onICPositionChange(const QString &pos);
+  void onJukeboxTrackSelect(const QString &track);
 
   void on_mute_triggered();
   void on_pair_triggered();

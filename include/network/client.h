@@ -79,6 +79,8 @@ signals:
   void caseCalled(const QString &message,
                   const std::bitset<CASING_FLAGS_COUNT> casingFlags);
 
+  void positionChanged(const QString &pos);
+
   void connectionLost(DisconnectReason code, const QString &message);
   void modCalled(const QString &message);
 };

@@ -42,8 +42,8 @@ private:
   QComboBox *ui_emote;
   QComboBox *ui_side;
 
-  const QVector<QString> positions = {"wit", "def", "pro", "jud", "hld", "hlp",
-                                      "jur", "sea"};
+  QVector<QString> positions = {"wit", "def", "pro", "jud", "hld", "hlp",
+                                "jur", "sea"};
 
   QCheckBox *ui_flip;
   QCheckBox *ui_no_interrupt;
@@ -59,11 +59,12 @@ private:
 
 signals:
   void messageSent();
-  void positionChanged(QString pos);
+  void positionChanged(const QString &pos);
 
 public slots:
   void setCharacter(const QString &character);
   void clearEntry();
+  void setPosition(const QString &pos);
 
 private slots:
   void onInterjectionToggle(bool toggled);

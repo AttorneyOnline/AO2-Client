@@ -57,15 +57,12 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   // in the .ui file, then instantiate it now. Even if a widget is hidden,
   // it will not be destroyed, so connections will not be invalidated.
   REGISTER_WINDOW(AOICLog, ic_chatlog)
-  REGISTER_WINDOW(AOServerChat, ms_chat)
   REGISTER_WINDOW(AOServerChat, server_chat)
   REGISTER_WINDOW(AOJukebox, music_list)
   REGISTER_WINDOW(AORoomChooser, room_chooser)
   REGISTER_WINDOW(AOMixer, mixer)
   REGISTER_WINDOW(AORoomControls, room_controls)
   REGISTER_WINDOW(AOEvidence, evidence)
-
-  ui_ms_chat->setWindowTitle(tr("Master Chat"));
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(options.defaultMusicVolume());
@@ -80,8 +77,8 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   ui_showname_enable->setChecked(options.shownamesEnabled());
 
   connect(ui_ic_chat, &AOChat::messageSent, this, &Courtroom::onICMessageSend);
+  connect(ui_ic_chat, &AOChat::positionChanged, this, &Courtroom::onICPositionChange);
   connect(ui_server_chat, &AOServerChat::messageSent, this, &Courtroom::onOOCSend);
-  connect(ui_ms_chat, &AOServerChat::messageSent, this, &Courtroom::onGlobalChatSend);
 
   connect(client.get(), &Client::icReceived, this, &Courtroom::onICMessage);
   connect(client.get(), &Client::connectionLost, this, &Courtroom::onDisconnect);
@@ -96,11 +93,13 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   connect(client.get(), &Client::healthChanged, ui_room_controls, &AORoomControls::setHealth);
   connect(client.get(), &Client::areasUpdated, this, &Courtroom::onAreaUpdate);
   connect(client.get(), &Client::evidenceChanged, this, &Courtroom::onEvidenceUpdate);
+  connect(client.get(), &Client::positionChanged, ui_ic_chat, &AOChat::setPosition);
 
   connect(ui_mixer, &AOMixer::volumeChanged, this, &Courtroom::onMixerVolumeChange);
   connect(ui_room_controls, &AORoomControls::requestHealthChange, this,
           &Courtroom::onRequestHealthChange);
   connect(ui_room_controls, &AORoomControls::wtce, this, &Courtroom::onRequestWTCE);
+  connect(ui_music_list, &AOJukebox::trackSelected, this, &Courtroom::onJukeboxTrackSelect);
   connect(ui_evidence, &AOEvidence::evidenceAdded, client.get(), &Client::addEvidence);
   connect(ui_evidence, &AOEvidence::evidenceEdited, client.get(), &Client::editEvidence);
   connect(ui_evidence, &AOEvidence::evidenceDeleted, client.get(), &Client::removeEvidence);
@@ -212,14 +211,10 @@ void Courtroom::resetCourtroom()
 
   const QString side = ao_app->get_char_side(f_char);
   ui_room_controls->toggleJudgeControls(side == "jud");
+  ui_ic_chat->setPosition(side);
 
   // TODO: ensure that when the spectator button is clicked, the set character
   // signal is emitted and the IC widget empties the emote list
-}
-
-void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
-{
-  ui_ms_chat->append_chat_message(f_name, f_message, ao_app->get_color("ooc_default_color", "courtroom_design.ini").name());
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message, bool special)
@@ -483,17 +478,14 @@ void Courtroom::onOOCSend(QString name, QString message)
   client->sendOOC(name, message);
 }
 
-void Courtroom::onGlobalChatSend(QString name, QString message)
+void Courtroom::onICPositionChange(const QString &pos)
 {
-  append_ms_chatmessage("Client", "Not implemented yet.");
-}
-
-void Courtroom::onICPositionChange(QString pos)
-{
+  // In some servers, position changes require validation and may also return
+  // a new evidence list.
   client->sendOOC(ui_server_chat->name(), QStringLiteral("/pos %1").arg(pos));
 }
 
-void Courtroom::onJukeboxTrackSelect(QString track)
+void Courtroom::onJukeboxTrackSelect(const QString &track)
 {
   client->playTrack(track, ui_ic_chat->showname());
 }

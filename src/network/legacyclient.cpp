@@ -245,6 +245,11 @@ void LegacyClient::mapSignals()
             0);
       emit caseCalled(args[0], casingFlags);
     }
+    else if (header == "SP")
+    {
+      ENFORCE_MIN_LENGTH(1)
+      emit positionChanged(args[0]);
+    }
     else if (header == "KK")
     {
       const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
