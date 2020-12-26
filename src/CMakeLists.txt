@@ -19,7 +19,6 @@ target_sources(Attorney_Online PRIVATE
     path_functions.cpp
     text_file_functions.cpp
     widgetdumper.cpp
-    widgets/aocaseannouncerdialog.cpp
     widgets/aocharmovie.cpp
     widgets/aocharselect.cpp
     widgets/aochat.cpp

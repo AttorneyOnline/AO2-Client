@@ -5,7 +5,6 @@
 #include <QLayout>
 #include <QMenu>
 
-#include "widgets/aocaseannouncerdialog.h"
 #include "widgets/aocharselect.h"
 #include "widgets/aomutedialog.h"
 #include "widgets/aooptionsdialog.h"
@@ -46,9 +45,7 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   FROM_UI(QAction, reload_theme)
   FROM_UI(QAction, call_mod)
   FROM_UI(QAction, open_settings)
-  FROM_UI(QAction, announce_case)
   FROM_UI(QAction, modcall_notify)
-  FROM_UI(QAction, casing)
   FROM_UI(QAction, showname_enable)
 
   FROM_UI(QMenu, window_menu)
@@ -73,7 +70,6 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   ui_viewport->set_sfx_volume(options.defaultSfxVolume());
   ui_viewport->set_blip_volume(options.defaultBlipVolume());
 
-  ui_casing->setChecked(options.casingEnabled());
   ui_showname_enable->setChecked(options.shownamesEnabled());
 
   connect(ui_ic_chat, &AOChat::messageSent, this, &Courtroom::onICMessageSend);
@@ -84,7 +80,6 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   connect(client.get(), &Client::connectionLost, this, &Courtroom::onDisconnect);
   connect(client.get(), &Client::trackChanged, this, &Courtroom::onTrackChange);
   connect(client.get(), &Client::modCalled, this, &Courtroom::onModCall);
-  connect(client.get(), &Client::caseCalled, this, &Courtroom::onCaseCall);
 
   connect(client.get(), &Client::oocReceived, this, &Courtroom::onOOCMessage);
   connect(client.get(), &Client::characterChanged, this, &Courtroom::resetCourtroom);
@@ -336,20 +331,6 @@ void Courtroom::onModCall(const QString &message)
   {
     modcall_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);
-  }
-}
-
-void Courtroom::onCaseCall(const QString &message,
-                                     std::bitset<CASING_FLAGS_COUNT> flags)
-{
-  if (ui_casing->isChecked())
-  {
-    ui_server_chat->append_text(message);
-    if ((options.casingFlags() & flags).any())
-    {
-        modcall_player->play(ao_app->get_sfx("case_call"));
-        ao_app->alert(this);
-    }
   }
 }
 
@@ -624,26 +605,9 @@ void Courtroom::on_open_settings_triggered()
   AOOptionsDialog(nullptr, ao_app).exec();
 }
 
-void Courtroom::on_announce_case_triggered()
-{
-  AOCaseAnnouncerDialog(nullptr, ao_app, this).exec();
-}
-
 void Courtroom::on_showname_enable_triggered()
 {
   ui_ic_chatlog->reload();
-}
-
-void Courtroom::on_casing_triggered()
-{
-  // TODO: remove button
-  QMessageBox::warning(this, "Casing Filter", "This button is obsolete.");
-}
-
-void Courtroom::announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno)
-{
-  // TODO: replace with direct call by announcer dialog to announceCase
-  client->announceCase(title, casing_flags_to_bitset(def, pro, jud, jur, steno, false));
 }
 
 void Courtroom::initBASS()

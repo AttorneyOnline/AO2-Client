@@ -41,9 +41,6 @@ public:
   QString msAddress() const;
   uint16_t msPort() const;
 
-  bool casingEnabled() const;
-  std::bitset<CASING_FLAGS_COUNT> casingFlags() const;
-
 private:
   bool casingRoleEnabled(const QString &role) const;
 };

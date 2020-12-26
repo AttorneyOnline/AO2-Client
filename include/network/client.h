@@ -54,9 +54,6 @@ public:
   virtual QStringList tracks() = 0;
   virtual void playTrack(const QString &trackName, const QString &showname) = 0;
 
-  virtual void announceCase(const QString &caseTitle,
-                            const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) = 0;
-
   virtual std::pair<int, int> playerCount() const = 0;
 
 signals:
@@ -75,9 +72,6 @@ signals:
   void tracksChanged();
   void evidenceChanged();
   void areasUpdated();
-
-  void caseCalled(const QString &message,
-                  const std::bitset<CASING_FLAGS_COUNT> casingFlags);
 
   void positionChanged(const QString &pos);
 

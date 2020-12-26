@@ -33,7 +33,6 @@ target_sources(Attorney_Online PRIVATE
     options.h
     text_file_functions.h
     widgetdumper.h
-    widgets/aocaseannouncerdialog.h
     widgets/aocharmovie.h
     widgets/aocharselect.h
     widgets/aochatentry.h

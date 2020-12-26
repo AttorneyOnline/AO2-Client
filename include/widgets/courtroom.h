@@ -69,8 +69,6 @@ public:
 
   void append_server_chatmessage(QString p_name, QString p_message, bool special = false);
 
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur, bool steno);
-
 private:
   AOApplication *ao_app;
   Options options;
@@ -137,10 +135,8 @@ private:
   QAction *ui_reload_theme;
   QAction *ui_call_mod;
   QAction *ui_open_settings;
-  QAction *ui_announce_case;
 
   QAction *ui_modcall_notify;
-  QAction *ui_casing;
   QAction *ui_showname_enable;
 
   QMenu *ui_window_menu;
@@ -160,8 +156,7 @@ private slots:
   void onDisconnect(DisconnectReason code, const QString &message);
   void onTrackChange(const QString &track, const QString &showname);
   void onModCall(const QString &message);
-  void onCaseCall(const QString &message,
-                  const std::bitset<CASING_FLAGS_COUNT> casingFlags);
+
   void onOOCMessage(const QString &name, const QString &message);
   void onAreaUpdate();
   void onEvidenceUpdate();
@@ -183,13 +178,10 @@ private slots:
   void on_reload_theme_triggered();
   void on_call_mod_triggered();
   void on_open_settings_triggered();
-  void on_announce_case_triggered();
 
   void on_showname_enable_triggered();
 
   void on_quit_triggered();
-
-  void on_casing_triggered();
 
   void on_load_layout_triggered();
   void on_save_layout_triggered();

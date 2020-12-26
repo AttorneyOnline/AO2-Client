@@ -231,20 +231,6 @@ void LegacyClient::mapSignals()
 
       emit areasUpdated();
     }
-    else if (header == "CASEA")
-    {
-      ENFORCE_MIN_LENGTH(6)
-
-      // (The purpose of this packet is somewhat inane for its complexity.)
-      auto casingFlags = casing_flags_to_bitset(
-            args[1] == "1",
-            args[2] == "1",
-            args[3] == "1",
-            args[4] == "1",
-            args[5] == "1",
-            0);
-      emit caseCalled(args[0], casingFlags);
-    }
     else if (header == "SP")
     {
       ENFORCE_MIN_LENGTH(1)
@@ -538,27 +524,6 @@ void LegacyClient::removeEvidence(const int index)
 void LegacyClient::playTrack(const QString &trackName, const QString &showname)
 {
   socket.send("MC", { trackName, "0", showname });
-}
-
-/*!
- * Announces a case with a list of roles needed to be filled.
- *
- * \param caseTitle  the title of the case
- * \param rolesNeeded  a bitset that controls what recipients will receive
- * the casing announcement, depending on the roles that each player has
- * chosen to receive casing announcements for
- */
-void LegacyClient::announceCase(const QString &caseTitle,
-                                const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded)
-{
-  socket.send("CASEA", {
-    caseTitle,
-    QString::number(rolesNeeded.test(CASING_DEF)),
-    QString::number(rolesNeeded.test(CASING_PRO)),
-    QString::number(rolesNeeded.test(CASING_JUD)),
-    QString::number(rolesNeeded.test(CASING_JUR)),
-    QString::number(rolesNeeded.test(CASING_STENO))
-  });
 }
 
 /*!

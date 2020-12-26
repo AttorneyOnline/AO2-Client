@@ -4,8 +4,8 @@
 // https://gist.github.com/pjwhams/6ebc040db3ab55615eafd831e184e39c
 
 #include <string>
+#include <QLayout>
 #include <QLayoutItem>
-#include <widgets/aocaseannouncerdialog.h>
 
 namespace WidgetDumper {
   std::string toString(const QSizePolicy::Policy& policy);

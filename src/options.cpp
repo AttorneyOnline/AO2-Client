@@ -159,24 +159,6 @@ uint16_t Options::msPort() const
   return static_cast<uint16_t>(config.value("master_port", 27016).toInt());
 }
 
-/*! Whether or not casing announcements are to be received. */
-bool Options::casingEnabled() const
-{
-  return config.value("casing_enabled", true).toBool();
-}
-
-/*! Indicates which roles a client wishes to receive casing
- *  announcements for. */
-std::bitset<CASING_FLAGS_COUNT> Options::casingFlags() const
-{
-  return casing_flags_to_bitset(casingRoleEnabled("defence"),
-                                casingRoleEnabled("prosecution"),
-                                casingRoleEnabled("judge"),
-                                casingRoleEnabled("juror"),
-                                casingRoleEnabled("steno"),
-                                casingRoleEnabled("cm"));
-}
-
 bool Options::casingRoleEnabled(const QString &role) const
 {
   return config.value(QStringLiteral("casing_%1_enabled").arg(role), true).toBool();

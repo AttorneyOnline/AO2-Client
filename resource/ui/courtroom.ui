@@ -551,14 +551,6 @@
     <addaction name="showname_enable"/>
     <addaction name="modcall_notify"/>
    </widget>
-   <widget class="QMenu" name="menuCase">
-    <property name="title">
-     <string>Case</string>
-    </property>
-    <addaction name="casing"/>
-    <addaction name="separator"/>
-    <addaction name="announce_case"/>
-   </widget>
    <widget class="QMenu" name="assetStatus">
     <property name="enabled">
      <bool>false</bool>
@@ -585,7 +577,6 @@
     <addaction name="save_layout"/>
    </widget>
    <addaction name="menuPlayer"/>
-   <addaction name="menuCase"/>
    <addaction name="menuOptions"/>
    <addaction name="window_menu"/>
    <addaction name="assetStatus"/>

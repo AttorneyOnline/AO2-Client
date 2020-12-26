@@ -14,17 +14,6 @@ struct server_type
   int port;
 };
 
-struct emote_type
-{
-  QString comment;
-  QString preanim;
-  QString anim;
-  int mod;
-  QString sfx_name;
-  int sfx_delay;
-  int sfx_duration;
-};
-
 struct char_type
 {
   QString name;
@@ -55,51 +44,12 @@ struct area_type
   QString locked;
 };
 
-struct track_type
-{
-  QString name;
-  int id;
-};
-
-struct pos_type
-{
-  int x;
-  int y;
-};
-
 struct pos_size_type
 {
   int x = 0;
   int y = 0;
   int width = 0;
   int height = 0;
-};
-
-enum CHAT_MESSAGE
-{
-  DESK_MOD = 0,
-  PRE_EMOTE,
-  CHAR_NAME,
-  EMOTE,
-  MESSAGE,
-  SIDE,
-  SFX_NAME,
-  EMOTE_MOD,
-  CHAR_ID,
-  SFX_DELAY,
-  OBJECTION_MOD,
-  EVIDENCE_ID,
-  FLIP,
-  REALIZATION,
-  TEXT_COLOR,
-  SHOWNAME,
-  OTHER_CHARID,
-  OTHER_NAME,
-  OTHER_EMOTE,
-  SELF_OFFSET,
-  OTHER_OFFSET,
-  OTHER_FLIP,
-  NONINTERRUPTING_PRE
 };
 
 enum COLOR
@@ -176,31 +126,6 @@ enum OBJECTION_TYPE
   TAKE_THAT,
   CUSTOM
 };
-
-enum CASING_FLAGS
-{
-  CASING_DEF = 0,
-  CASING_PRO,
-  CASING_JUD,
-  CASING_JUR,
-  CASING_STENO,
-  CASING_CM
-};
-const auto CASING_FLAGS_COUNT = 6;
-
-std::bitset<CASING_FLAGS_COUNT>
-inline casing_flags_to_bitset(bool def, bool pro, bool jud, bool jur,
-                              bool steno, bool cm)
-{
-  std::bitset<CASING_FLAGS_COUNT> bitset;
-  bitset[CASING_DEF] = def;
-  bitset[CASING_PRO] = pro;
-  bitset[CASING_JUD] = jud;
-  bitset[CASING_JUR] = jur;
-  bitset[CASING_STENO] = steno;
-  bitset[CASING_CM] = cm;
-  return bitset;
-}
 
 struct chat_message_type
 {

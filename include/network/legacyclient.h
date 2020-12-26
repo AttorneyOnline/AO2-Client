@@ -91,9 +91,6 @@ public:
   QStringList tracks() override { return tracksList; }
   void playTrack(const QString &trackName, const QString &showname) override;
 
-  void announceCase(const QString &caseTitle,
-                    const std::bitset<CASING_FLAGS_COUNT> &rolesNeeded) override;
-
   std::pair<int, int> playerCount() const override;
 
   int currentPair() const { return pairCharId; }
