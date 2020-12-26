@@ -7,6 +7,7 @@
 #include <QPluginLoader>
 #include <QDebug>
 #include <QStyleFactory>
+#include <QDirIterator>
 
 //Q_IMPORT_PLUGIN(ApngImagePlugin);
 
@@ -23,20 +24,15 @@ static void customMessageHandler(QtMsgType type, const QMessageLogContext &conte
   (*QT_DEFAULT_MESSAGE_HANDLER)(type, newContext, msg);
 }
 
-int main(int argc, char *argv[])
-{
-  qSetMessagePattern("[%{time process}] [%{function}] %{message}");
-  qInstallMessageHandler(customMessageHandler);
-#if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
-  // High-DPI support is for Qt version >=5.6.
-  // However, many Linux distros still haven't brought their stable/LTS
-  // packages up to Qt 5.6, so this is conditional.
-  AOApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
+void loadFonts() {
+  QFontDatabase fontDatabase;
+  QDirIterator it(":/resource/fonts", QDirIterator::Subdirectories);
+  while (it.hasNext())
+    fontDatabase.addApplicationFont(it.next());
+}
 
-  AOApplication main_app(argc, argv);
-
-  main_app.setStyle(QStyleFactory::create("Fusion"));
+void loadTheme(QApplication &app) {
+  app.setStyle(QStyleFactory::create("Fusion"));
 
   QPalette darkPalette;
   darkPalette.setColor(QPalette::Window, QColor(61, 61, 61));
@@ -57,10 +53,22 @@ int main(int argc, char *argv[])
   darkPalette.setColor(QPalette::Highlight, QColor(186, 83, 0));
   darkPalette.setColor(QPalette::HighlightedText, Qt::black);
 
-  main_app.setPalette(darkPalette);
-  main_app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+  app.setPalette(darkPalette);
+  app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+}
 
-  main_app.openLobby();
-  main_app.connectToMaster();
-  return main_app.exec();
+int main(int argc, char *argv[])
+{
+  qSetMessagePattern("[%{time process}] [%{function}] %{message}");
+  qInstallMessageHandler(customMessageHandler);
+
+  AOApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+  AOApplication app(argc, argv);
+  loadTheme(app);
+  loadFonts();
+
+  app.openLobby();
+  app.connectToMaster();
+  return app.exec();
 }

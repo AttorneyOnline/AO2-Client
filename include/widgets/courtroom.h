@@ -89,6 +89,11 @@ private:
   // XXX: needs rework
   QMap<int, bool> mute_map;
 
+  // List of registered windows; used for saving/loading layout
+  QSet<QWidget *> windows;
+  const QString LAYOUT_AUTOSAVE_FILE = "last_layout.dat";
+  const int LAYOUT_AUTOSAVE_INTERVAL = 30000;
+
   QMainWindow *windowWidget;
 
   AOMusicPlayer *music_player;
@@ -196,6 +201,13 @@ private slots:
   void on_save_layout_triggered();
 
   void load_bass_opus_plugin();
+
+  bool loadLayout(const QString &filename);
+  bool saveLayout(const QString &filename);
+  void autosaveLayout();
+
+protected:
+  void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // COURTROOM_H
