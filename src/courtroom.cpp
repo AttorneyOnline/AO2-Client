@@ -1891,17 +1891,17 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     switch (objection_mod) {
     case 1:
       ui_vp_objection->play("holdit_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("holdit", f_char, f_custom_theme, 0);
+      objection_player->play("holdit", f_char, f_custom_theme);
       break;
     case 2:
       ui_vp_objection->play("objection_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("objection", f_char, f_custom_theme, 0);
+      objection_player->play("objection", f_char, f_custom_theme);
       if (ao_app->objection_stop_music())
         music_player->stop();
       break;
     case 3:
       ui_vp_objection->play("takethat_bubble", f_char, f_custom_theme, 724);
-      objection_player->play("takethat", f_char, f_custom_theme, 0);
+      objection_player->play("takethat", f_char, f_custom_theme);
       break;
     // case 4 is AO2 only
     case 4:
@@ -1910,12 +1910,12 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
                               f_custom_theme, shout_stay_time);
         objection_player->play("custom_objections/" +
                                    custom_objection.split('.')[0],
-                               f_char, f_custom_theme, 0);
+                               f_char, f_custom_theme);
       }
       else {
         ui_vp_objection->play("custom", f_char, f_custom_theme,
                               shout_stay_time);
-        objection_player->play("custom", f_char, f_custom_theme, 0);
+        objection_player->play("custom", f_char, f_custom_theme);
       }
       m_chatmessage[EMOTE_MOD] = 1;
       break;
@@ -2237,7 +2237,7 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
     return;
 
   if (fx_sound != "")
-    sfx_player->play(fx_sound, "","",0);
+    sfx_player->play(fx_sound);
 
   // Only check if effects are disabled after playing the sound if it exists
   if (!ao_app->is_effects_enabled())
@@ -2252,7 +2252,7 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
 
 void Courtroom::play_char_sfx(QString sfx_name)
 {
-  sfx_player->play(sfx_name, "","",0);
+  sfx_player->play(sfx_name);
   //  sfx_player->set_looping(false);
   //  if (ao_app->get_looping_sfx())
   //    sfx_player->set_looping(
@@ -2792,7 +2792,7 @@ void Courtroom::start_chat_ticking()
   }
   else if (m_chatmessage[REALIZATION] == "1") {
     this->do_flash();
-    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]), "","",0);
+    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); // text meme bonanza
   if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1") {
@@ -3060,7 +3060,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  sfx_player->play(sfx_name, "","",0);
+  sfx_player->play(sfx_name);
   if (ao_app->get_looping_sfx())
     sfx_player->set_looping(
         ao_app->get_sfx_looping(current_char, current_emote) == "1");

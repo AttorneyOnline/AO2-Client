@@ -24,20 +24,15 @@ void AOSfxPlayer::loop_clear()
   set_volume_internal(m_volume);
 }
 
-void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
-                       int channel)
+void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
 {
-  qDebug() << "playing sfx" << p_sfx << "on channel" << channel;
-  if (channel != -1) {
-    for (int i = 0; i < m_channelmax; ++i) {
-      if (BASS_ChannelIsActive(m_stream_list[i]) == BASS_ACTIVE_PLAYING) {
-          m_channel = (i + 1) % m_channelmax;
-          qDebug() << "channel" << i << "active, using channel" << m_channel;
-      }
-      else
-        break;
+  for (int i = 0; i < m_channelmax; ++i) {
+    if (BASS_ChannelIsActive(m_stream_list[i]) == BASS_ACTIVE_PLAYING)
+      m_channel = (i + 1) % m_channelmax;
+    else {
+      m_channel = i;
+      break;
     }
-    channel = m_channel;
   }
 
   QString misc_path = "";
@@ -50,7 +45,8 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
                                        shout + "/" + p_sfx);
     theme_path = ao_app->get_sfx_suffix(ao_app->get_theme_path(p_sfx));
     if (!file_exists(theme_path))
-      theme_path = ao_app->get_sfx_suffix(ao_app->get_default_theme_path(p_sfx));
+      theme_path =
+          ao_app->get_sfx_suffix(ao_app->get_default_theme_path(p_sfx));
   }
   if (p_char != "")
     char_path =
@@ -62,17 +58,17 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
     f_path = char_path;
   else if (file_exists(misc_path))
     f_path = misc_path;
-  else if (shout != "" && file_exists(theme_path)) //only check here for shouts
+  else if (shout != "" && file_exists(theme_path)) // only check here for shouts
     f_path = theme_path;
   else
     f_path = sound_path;
 
   if (f_path.endsWith(".opus"))
-    m_stream_list[channel] = BASS_OPUS_StreamCreateFile(
+    m_stream_list[m_channel] = BASS_OPUS_StreamCreateFile(
         FALSE, f_path.utf16(), 0, 0,
         BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
   else
-    m_stream_list[channel] = BASS_StreamCreateFile(
+    m_stream_list[m_channel] = BASS_StreamCreateFile(
         FALSE, f_path.utf16(), 0, 0,
         BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
 
@@ -86,7 +82,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout,
   }
 
   BASS_ChannelPlay(m_stream_list[m_channel], false);
-  BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_DEV_FAIL, 0,
+  BASS_ChannelSetSync(m_stream_list[m_channel], BASS_SYNC_DEV_FAIL, 0,
                       ao_app->BASSreset, 0);
 }
 
