@@ -400,16 +400,16 @@ void Courtroom::onOOCSend(QString name, QString message)
 
     if (command.size() < 2)
     {
-      append_server_chatmessage("CLIENT", "You need to give a filename to loadAll (extension not needed)! "
+      append_server_chatmessage("CLIENT", "You need to give a filename to load (extension not needed)! "
                                           "Make sure that it is in the `base/cases/` folder, and that "
-                                          "it is a correctly formatted ini.\nCases you can loadAll: " + caseslist.join(", "), true);
+                                          "it is a correctly formatted ini.\nCases you can load: " + caseslist.join(", "), true);
       return;
     }
 
 
     if (command.size() > 2)
     {
-      append_server_chatmessage("CLIENT", "Too many arguments to loadAll a case! You only need one filename, "
+      append_server_chatmessage("CLIENT", "Too many arguments to load a case! You only need one filename, "
                                           "without extension.", true);
       return;
     }
