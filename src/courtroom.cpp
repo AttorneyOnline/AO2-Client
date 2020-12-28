@@ -1941,7 +1941,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
         objection_player->play("custom", f_char, f_custom_theme);
         shout_message = ao_app->read_char_ini(f_char, "custom_message", "Shouts");
         if (shout_message == "")
-          shout_message = tr("CUSTOM!");
+          shout_message = tr("CUSTOM OBJECTION!");
       }
       m_chatmessage[EMOTE_MOD] = 1;
       break;
