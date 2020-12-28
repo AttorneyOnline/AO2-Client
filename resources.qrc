@@ -1,10 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>resource/fonts/ace-name.ttf</file>
-        <file>resource/fonts/igiari-cyrillic.ttf</file>
-        <file>logo.png</file>
-        <file>base/themes/default/addevidence.png</file>
         <file>base/themes/default/about.png</file>
+        <file>base/themes/default/addevidence.png</file>
         <file>base/themes/default/addtofav.png</file>
         <file>base/themes/default/addtofav_pressed.png</file>
         <file>base/themes/default/arrow_left.png</file>
@@ -24,6 +21,7 @@
         <file>base/themes/default/custom_selected.png</file>
         <file>base/themes/default/defensebar0.png</file>
         <file>base/themes/default/defensebar1.png</file>
+        <file>base/themes/default/defensebar10.png</file>
         <file>base/themes/default/defensebar2.png</file>
         <file>base/themes/default/defensebar3.png</file>
         <file>base/themes/default/defensebar4.png</file>
@@ -32,7 +30,6 @@
         <file>base/themes/default/defensebar7.png</file>
         <file>base/themes/default/defensebar8.png</file>
         <file>base/themes/default/defensebar9.png</file>
-        <file>base/themes/default/defensebar10.png</file>
         <file>base/themes/default/defminus.png</file>
         <file>base/themes/default/defplus.png</file>
         <file>base/themes/default/deleteevidence.png</file>
@@ -48,6 +45,7 @@
         <file>base/themes/default/guilty.png</file>
         <file>base/themes/default/holdit.png</file>
         <file>base/themes/default/holdit_selected.png</file>
+        <file>base/themes/default/ic_log_background.png</file>
         <file>base/themes/default/loadingbackground.png</file>
         <file>base/themes/default/lobbybackground.png</file>
         <file>base/themes/default/mute.png</file>
@@ -65,6 +63,7 @@
         <file>base/themes/default/proplus.png</file>
         <file>base/themes/default/prosecutionbar0.png</file>
         <file>base/themes/default/prosecutionbar1.png</file>
+        <file>base/themes/default/prosecutionbar10.png</file>
         <file>base/themes/default/prosecutionbar2.png</file>
         <file>base/themes/default/prosecutionbar3.png</file>
         <file>base/themes/default/prosecutionbar4.png</file>
@@ -73,7 +72,6 @@
         <file>base/themes/default/prosecutionbar7.png</file>
         <file>base/themes/default/prosecutionbar8.png</file>
         <file>base/themes/default/prosecutionbar9.png</file>
-        <file>base/themes/default/prosecutionbar10.png</file>
         <file>base/themes/default/publicservers.png</file>
         <file>base/themes/default/publicservers_selected.png</file>
         <file>base/themes/default/realization.png</file>
@@ -84,22 +82,25 @@
         <file>base/themes/default/takethat_selected.png</file>
         <file>base/themes/default/testimony.png</file>
         <file>base/themes/default/witnesstestimony.png</file>
-        <file>resource/ui/courtroom.ui</file>
-        <file>resource/ui/ic_log.ui</file>
-        <file>resource/ui/lobby.ui</file>
-        <file>resource/ui/viewport.ui</file>
-        <file>base/themes/default/ic_log_background.png</file>
-        <file>resource/ui/ooc.ui</file>
-        <file>resource/ui/jukebox.ui</file>
-        <file>resource/ui/rooms.ui</file>
+        <file>logo.png</file>
+        <file>resource/fonts/ace-name.ttf</file>
+        <file>resource/fonts/igiari-cyrillic.ttf</file>
         <file>resource/icons/evidence_placeholder.png</file>
         <file>resource/ui/char_select.ui</file>
+        <file>resource/ui/courtroom.ui</file>
         <file>resource/ui/debug.ui</file>
         <file>resource/ui/evidence.ui</file>
         <file>resource/ui/ic.ui</file>
+        <file>resource/ui/ic_log.ui</file>
+        <file>resource/ui/jukebox.ui</file>
+        <file>resource/ui/lobby.ui</file>
         <file>resource/ui/mixer.ui</file>
         <file>resource/ui/mute.ui</file>
+        <file>resource/ui/ooc.ui</file>
+        <file>resource/ui/options.ui</file>
         <file>resource/ui/pair.ui</file>
         <file>resource/ui/room_controls.ui</file>
+        <file>resource/ui/rooms.ui</file>
+        <file>resource/ui/viewport.ui</file>
     </qresource>
 </RCC>

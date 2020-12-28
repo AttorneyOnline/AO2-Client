@@ -339,7 +339,7 @@ typedef struct {
 #define BASS_MUSIC_POSRESET		0x8000	// stop all notes when moving position
 #define BASS_MUSIC_POSRESETEX	0x400000 // stop all notes and reset bmp/etc when moving position
 #define BASS_MUSIC_STOPBACK		0x80000	// stop the music on a backwards jump effect
-#define BASS_MUSIC_NOSAMPLE		0x100000 // don't load the samples
+#define BASS_MUSIC_NOSAMPLE		0x100000 // don't loadAll the samples
 
 // Speaker assignment flags
 #define BASS_SPEAKER_FRONT	0x1000000	// front speakers

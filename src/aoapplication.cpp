@@ -5,6 +5,7 @@
 #include <QScreen>
 
 #include "lobby.h"
+#include "options.h"
 #include "widgets/courtroom.h"
 
 #include "widgets/aooptionsdialog.h"
@@ -16,10 +17,10 @@ using namespace AttorneyOnline;
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  // Create the QSettings class that points to the config.ini.
-  configini = new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
   ms = std::make_shared<LegacyMasterServer>(this);
   discord = std::make_shared<Discord>();
+
+  Options().migrate();
 }
 
 void AOApplication::openLobby()

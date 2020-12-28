@@ -70,8 +70,6 @@ Courtroom::Courtroom(AOApplication *ao_app, std::shared_ptr<Client> client)
   ui_viewport->set_sfx_volume(options.defaultSfxVolume());
   ui_viewport->set_blip_volume(options.defaultBlipVolume());
 
-  ui_showname_enable->setChecked(options.shownamesEnabled());
-
   connect(ui_ic_chat, &AOChat::messageSent, this, &Courtroom::onICMessageSend);
   connect(ui_ic_chat, &AOChat::positionChanged, this, &Courtroom::onICPositionChange);
   connect(ui_server_chat, &AOServerChat::messageSent, this, &Courtroom::onOOCSend);
@@ -247,7 +245,7 @@ void Courtroom::onICMessage(const chat_message_type &message)
 
   QString f_showname;
   QString f_default_showname = ao_app->get_showname(client->characters()[message.char_id].name);
-  if (message.showname.isEmpty() || !ui_showname_enable->isChecked())
+  if (message.showname.isEmpty() || options.disableCustomShownames())
   {
       f_showname = f_default_showname;
   }
@@ -402,16 +400,16 @@ void Courtroom::onOOCSend(QString name, QString message)
 
     if (command.size() < 2)
     {
-      append_server_chatmessage("CLIENT", "You need to give a filename to load (extension not needed)! "
+      append_server_chatmessage("CLIENT", "You need to give a filename to loadAll (extension not needed)! "
                                           "Make sure that it is in the `base/cases/` folder, and that "
-                                          "it is a correctly formatted ini.\nCases you can load: " + caseslist.join(", "), true);
+                                          "it is a correctly formatted ini.\nCases you can loadAll: " + caseslist.join(", "), true);
       return;
     }
 
 
     if (command.size() > 2)
     {
-      append_server_chatmessage("CLIENT", "Too many arguments to load a case! You only need one filename, "
+      append_server_chatmessage("CLIENT", "Too many arguments to loadAll a case! You only need one filename, "
                                           "without extension.", true);
       return;
     }

@@ -56,9 +56,6 @@ public:
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
 
-  // Instead of reinventing the wheel, we'll use a QSettings class.
-  QSettings *configini;
-
   //Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
