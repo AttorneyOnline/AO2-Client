@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
   AOApplication main_app(argc, argv);
 
-  AOApplication::setLibraryPaths({AOApplication::applicationDirPath() + "/lib"});
+  AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
 
   QSettings *configini = main_app.configini;
 
