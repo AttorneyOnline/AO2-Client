@@ -1351,6 +1351,9 @@ void Courtroom::update_character(int p_cid)
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
+  // have to call these to make sure sfx and blips don't get accidentally muted forever when we change characters
+  sfx_player->set_volume(ui_sfx_slider->value());
+  blip_player->set_volume(ui_blip_slider->value());
 }
 
 void Courtroom::enter_courtroom()
@@ -1825,6 +1828,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (p_contents->size() < MS_MINIMUM)
     return;
 
+  int prev_char_id = m_chatmessage[CHAR_ID].toInt();
   for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
     // Note that we have added stuff that vanilla clients and servers simply
     // won't send. So now, we have to check if the thing we want even exists
@@ -1892,7 +1896,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   {
     m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
   }
-
+  
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
