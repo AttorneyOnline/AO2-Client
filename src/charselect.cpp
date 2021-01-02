@@ -11,6 +11,15 @@ void Courtroom::construct_char_select()
 
   ui_char_select_background = new AOImage(this, ao_app);
 
+  ui_char_list = new QTreeWidget(ui_char_select_background);
+  ui_char_list->setColumnCount(2);
+  ui_char_list->setHeaderLabels({"Name", "ID"});
+  ui_char_list->setHeaderHidden(true);
+  ui_char_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+  ui_char_list->hideColumn(1);
+  ui_char_list->setDropIndicatorShown(true);
+
+
   ui_char_buttons = new QWidget(ui_char_select_background);
 
   ui_selector = new AOImage(ui_char_select_background, ao_app);
@@ -45,6 +54,10 @@ void Courtroom::construct_char_select()
   ui_char_passworded->setChecked(true);
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
+  set_size_and_pos(ui_char_list, "char_list");
+
+  connect(ui_char_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+          this, SLOT(on_char_list_double_clicked(QTreeWidgetItem *, int)));
 
   connect(ui_back_to_lobby, SIGNAL(clicked()), this,
           SLOT(on_back_to_lobby_clicked()));
@@ -121,6 +134,20 @@ void Courtroom::set_char_select_page()
     ui_char_select_left->show();
 
   put_button_in_place(current_char_page * max_chars_on_page, chars_on_page);
+}
+
+void Courtroom::on_char_list_double_clicked(QTreeWidgetItem *p_item, int column)
+{
+  int cid = p_item->text(1).toInt();
+  if (cid == -1 && !p_item->isExpanded()) {
+    p_item->setExpanded(true);
+    return;
+  }
+  else if (cid == -1) {
+    p_item->setExpanded(false);
+    return;
+  }
+  char_clicked(cid);
 }
 
 void Courtroom::char_clicked(int n_char)
@@ -203,6 +230,16 @@ void Courtroom::character_loading_finished()
     }
     ui_char_button_list.clear();
   }
+  // make categories from the misc directory
+  QDir misc_dir = QDir(ao_app->get_base_path() + "misc");
+  QStringList misc_dirs = misc_dir.entryList(QDir::Dirs);
+  for (const QString &category : misc_dirs) {
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_char_list);
+    treeItem->setText(0, category);
+    treeItem->setData(1, Qt::DisplayRole, -1);
+    treeItem->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicatorWhenChildless);
+  }
+  
 
   // First, we'll make all the character buttons in the very beginning.
   // We also hide them all, so they can't be accidentally clicked.
@@ -215,7 +252,20 @@ void Courtroom::character_loading_finished()
     char_button->set_image(char_list.at(n).name);
     char_button->setToolTip(char_list.at(n).name);
     ui_char_button_list.append(char_button);
-
+    QString chat = ao_app->get_chat(char_list.at(n).name);
+    QList<QTreeWidgetItem*> matching_list = ui_char_list->findItems(chat, Qt::MatchFixedString, 0);
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem();
+    treeItem->setText(0, char_list.at(n).name);
+    treeItem->setIcon(0, QIcon(ao_app->get_static_image_suffix(
+      ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
+    treeItem->setData(1, Qt::DisplayRole, n);
+    if (!matching_list.isEmpty()) {
+      QTreeWidgetItem *category = matching_list[0];
+      category->addChild(treeItem);
+    }
+    else
+      ui_char_list->addTopLevelItem(treeItem);
+    
     connect(char_button, &AOCharButton::clicked,
             [this, n]() { this->char_clicked(n); });
 
@@ -238,7 +288,7 @@ void Courtroom::character_loading_finished()
               .arg(QString::number(ao_app->char_list_size)));
     }
   }
-
+  ui_char_list->expandAll();
   filter_character_list();
 }
 
