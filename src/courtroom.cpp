@@ -51,7 +51,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_showname->setAlignment(Qt::AlignLeft);
-  ui_vp_chat_arrow = new InterfaceLayer(ui_vp_chatbox, ao_app);
+  ui_vp_chat_arrow = new InterfaceLayer(this, ao_app);
   ui_vp_chat_arrow->set_play_once(false);
 
   ui_vp_message = new QTextEdit(this);
@@ -530,7 +530,7 @@ void Courtroom::set_widgets()
     ui_vp_chat_arrow->hide();
   }
   else {
-    ui_vp_chat_arrow->move(design_ini_result.x, design_ini_result.y);
+    ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
     ui_vp_chat_arrow->combo_resize(design_ini_result.width,
                                    design_ini_result.height);
   }
@@ -2071,7 +2071,7 @@ void Courtroom::handle_chatmessage_2()
       ui_vp_chat_arrow->hide();
     }
     else {
-      ui_vp_chat_arrow->move(design_ini_result.x, design_ini_result.y);
+      ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
       ui_vp_chat_arrow->combo_resize(design_ini_result.width,
                                      design_ini_result.height);
     }
