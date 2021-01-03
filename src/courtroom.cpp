@@ -2100,7 +2100,11 @@ void Courtroom::handle_chatmessage_2()
       if (got_other_charid > -1) {
         // If there is, show them!
         ui_vp_sideplayer_char->show();
-        QStringList other_offsets = m_chatmessage[OTHER_OFFSET].split("&");
+        QStringList other_offsets;
+        if (ao_app->y_offset_enabled)
+             other_offsets = m_chatmessage[OTHER_OFFSET].split("&");
+        else
+            other_offsets.append(m_chatmessage[OTHER_OFFSET]);
         int other_offset;
         int other_offset_v;
         if (other_offsets.length() <= 1) {
