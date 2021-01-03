@@ -1708,7 +1708,10 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+    if(ao_app->y_offset_enabled)
+        packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+    else
+        packet_contents.append(QString::number(char_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked()) {
@@ -2100,11 +2103,7 @@ void Courtroom::handle_chatmessage_2()
       if (got_other_charid > -1) {
         // If there is, show them!
         ui_vp_sideplayer_char->show();
-        QStringList other_offsets;
-        if (ao_app->y_offset_enabled)
-             other_offsets = m_chatmessage[OTHER_OFFSET].split("&");
-        else
-            other_offsets.append(m_chatmessage[OTHER_OFFSET]);
+        QStringList other_offsets = m_chatmessage[OTHER_OFFSET].split("&");
         int other_offset;
         int other_offset_v;
         if (other_offsets.length() <= 1) {
@@ -4454,7 +4453,8 @@ void Courtroom::on_pair_clicked()
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
-    ui_pair_vert_offset_spinbox->show();
+    if(ao_app->y_offset_enabled)
+        ui_pair_vert_offset_spinbox->show();
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
     ui_mute->set_image("mute");
