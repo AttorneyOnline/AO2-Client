@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QMessageBox>
+#include <QTimer>
 
 #include "debug_functions.h"
 
@@ -24,6 +25,10 @@ void call_notice(QString p_message)
   msgBox->setWindowTitle(
       QCoreApplication::translate("debug_functions", "Notice"));
 
-  // msgBox->setWindowModality(Qt::NonModal);
-  msgBox->exec();
+  msgBox->setStandardButtons(QMessageBox::NoButton);
+
+  QTimer::singleShot(3000, msgBox, std::bind(&QMessageBox::setStandardButtons,msgBox,QMessageBox::Ok));
+
+  msgBox->exec();  
+
 }
