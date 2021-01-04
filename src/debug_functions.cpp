@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QTimer>
+#include <functional>
 
 #include "debug_functions.h"
 
