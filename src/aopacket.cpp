@@ -5,7 +5,9 @@ AOPacket::AOPacket(QString p_packet_string)
   QStringList packet_contents = p_packet_string.split("#");
 
   m_header = packet_contents.first();
-  m_contents = QStringList(packet_contents.begin()+1, packet_contents.end()-1); // trims %
+  for (auto it = packet_contents.begin()+1; it != packet_contents.end()-1; it++) {
+    m_contents += *it;
+  }
 }
 
 QString AOPacket::to_string()
