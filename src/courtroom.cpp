@@ -2619,7 +2619,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
-                               int color)
+                               int color, QDateTime timestamp)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2645,10 +2645,15 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 
   // Timestamp if we're doing that meme
-  if (log_timestamp)
-    ui_ic_chatlog->textCursor().insertText(
-        "[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ",
-        normal);
+  if (log_timestamp) {
+    if (timestamp.isValid()) {
+      ui_ic_chatlog->textCursor().insertText(
+        "[" + timestamp.toString("h:mm:ss AP") + "] ", normal);
+    } else {
+      ui_ic_chatlog->textCursor().insertText(
+        "[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ", normal);
+    }
+  }
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
@@ -4780,7 +4785,8 @@ void Courtroom::regenerate_ic_chatlog()
     append_ic_text(item.get_message(),
                    ui_showname_enable->isChecked() ? item.get_showname()
                                                    : item.get_name(),
-                   item.get_action(), item.get_chat_color());
+                   item.get_action(), item.get_chat_color(),
+                   item.get_datetime().toLocalTime());
   }
 }
 
