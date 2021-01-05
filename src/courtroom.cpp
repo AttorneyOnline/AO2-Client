@@ -205,6 +205,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_casing->setText(tr("Casing"));
   ui_casing->hide();
 
+  ui_sfx = new QCheckBox(this);
+  ui_sfx->setChecked(true);
+  ui_sfx->setText(tr("SFX"));
+
   ui_showname_enable = new QCheckBox(this);
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
   ui_showname_enable->setText(tr("Shownames"));
@@ -383,6 +387,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_additive, SIGNAL(clicked()), this, SLOT(on_additive_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
   connect(ui_casing, SIGNAL(clicked()), this, SLOT(on_casing_clicked()));
+  connect(ui_sfx, &QCheckBox::clicked, [this]() {ui_ic_chat_message->setFocus();});
 
   connect(ui_showname_enable, SIGNAL(clicked()), this,
           SLOT(on_showname_enable_clicked()));
@@ -857,6 +862,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_casing, "casing");
   ui_casing->setToolTip(tr("Lets you receive case alerts when enabled.\n"
                            "(You can set your preferences in the Settings!)"));
+
+  set_size_and_pos(ui_sfx, "sfx");
+  ui_sfx->setToolTip(tr("Enable/disable sfx for the message.\n"));
 
   set_size_and_pos(ui_showname_enable, "showname_enable");
   ui_showname_enable->setToolTip(
@@ -4090,6 +4098,7 @@ bool Courtroom::effects_dropdown_find_and_set(QString effect)
 
 QString Courtroom::get_char_sfx()
 {
+  if (!ui_sfx->isChecked()) return "0";
   QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
   if (sfx != "" && sfx != "Default")
     return sfx;
@@ -4101,6 +4110,7 @@ int Courtroom::get_char_sfx_delay()
   //  QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
   //  if (sfx != "" && sfx != "Default")
   //    return 0; //todo: a way to define this
+  if (!ui_sfx->isChecked()) return 0;
   return ao_app->get_sfx_delay(current_char, current_emote);
 }
 

@@ -586,6 +586,7 @@ private:
   QCheckBox *ui_additive;
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
+  QCheckBox *ui_sfx;
 
   QCheckBox *ui_pre_non_interrupt;
   QCheckBox *ui_showname_enable;
