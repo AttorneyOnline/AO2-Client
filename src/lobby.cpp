@@ -504,6 +504,7 @@ void Lobby::list_servers()
   }
   ui_server_list->setSortingEnabled(true);
   ui_server_list->sortItems(0, Qt::SortOrder::AscendingOrder);
+  ui_server_list->setCurrentItem(ui_server_list->topLevelItem(0));
 }
 
 void Lobby::list_favorites()
@@ -520,6 +521,7 @@ void Lobby::list_favorites()
     i++;
   }
   ui_server_list->setSortingEnabled(true);
+  ui_server_list->setCurrentItem(ui_server_list->topLevelItem(0));
 }
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
