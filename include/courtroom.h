@@ -225,7 +225,7 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0, QDateTime timestamp = {});
+                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime());
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and

@@ -2650,8 +2650,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
       ui_ic_chatlog->textCursor().insertText(
         "[" + timestamp.toString("h:mm:ss AP") + "] ", normal);
     } else {
-      ui_ic_chatlog->textCursor().insertText(
-        "[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ", normal);
+      qDebug() << "could not insert invalid timestamp";
     }
   }
 
