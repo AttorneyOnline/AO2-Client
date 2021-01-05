@@ -4098,7 +4098,8 @@ bool Courtroom::effects_dropdown_find_and_set(QString effect)
 
 QString Courtroom::get_char_sfx()
 {
-  if (!ui_sfx->isChecked()) return "0";
+  if (!ui_sfx->isChecked())
+    return "1";
   QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
   if (sfx != "" && sfx != "Default")
     return sfx;
