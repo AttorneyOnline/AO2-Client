@@ -387,7 +387,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_additive, SIGNAL(clicked()), this, SLOT(on_additive_clicked()));
   connect(ui_guard, SIGNAL(clicked()), this, SLOT(on_guard_clicked()));
   connect(ui_casing, SIGNAL(clicked()), this, SLOT(on_casing_clicked()));
-  connect(ui_sfx, &QCheckBox::clicked, [this]() {ui_ic_chat_message->setFocus();});
+  connect(ui_sfx, &QCheckBox::clicked, ui_ic_chat_message, &QWidget::setFocus);
 
   connect(ui_showname_enable, SIGNAL(clicked()), this,
           SLOT(on_showname_enable_clicked()));
