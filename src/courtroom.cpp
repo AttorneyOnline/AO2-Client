@@ -3588,7 +3588,15 @@ void Courtroom::on_ooc_return_pressed()
           new AOPacket("DE#" + QString::number(i) + "#%"));
     }
 
-    foreach (QString evi, casefile.childGroups()) {
+    // sort the case_evidence numerically
+    QStringList case_evidence = casefile.childGroups();
+    std::sort(case_evidence.begin(), case_evidence.end(),
+              [] (const QString &a, const QString &b) {
+                return a.toInt() < b.toInt();
+              });
+
+    // load evidence
+    foreach (QString evi, case_evidence) {
       if (evi == "General")
         continue;
 

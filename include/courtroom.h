@@ -58,6 +58,7 @@
 #include <QTextCharFormat>
 //#include <QRandomGenerator>
 
+#include <algorithm>
 #include <stack>
 
 class AOApplication;
