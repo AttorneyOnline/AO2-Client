@@ -337,7 +337,8 @@ void Lobby::on_add_to_fav_released()
 {
   ui_add_to_fav->set_image("addtofav");
   if (public_servers_selected) {
-    if (int selection = get_selected_server(); selection > -1) {
+    int selection = get_selected_server();
+    if (selection > -1) {
       ao_app->add_favorite_server(selection);
     }
   }
