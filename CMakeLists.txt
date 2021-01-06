@@ -25,7 +25,7 @@ target_include_directories(Attorney_Online PRIVATE include)
 find_package(Qt5 COMPONENTS Core Gui Network Widgets REQUIRED)
 target_link_directories(Attorney_Online PRIVATE lib)
 target_link_libraries(Attorney_Online PRIVATE Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
-    bass bassopus qapng discord-rpc)
+    bass bassopus discord-rpc)
 
 # Subdirectories
 add_subdirectory(test)
