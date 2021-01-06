@@ -71,12 +71,8 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE --target test
 
-    - name: Copy libs to test directory
-      run: cp ${{github.workspace}}/lib/* ${{github.workspace}}/build/test/
-
     - name: Test
       working-directory: ${{github.workspace}}/build/test
       shell: bash
       # Skipping tests for bass since no audio device
-      run: |
-        ./test ~[bass]
+      run: ./test ~[bass]
