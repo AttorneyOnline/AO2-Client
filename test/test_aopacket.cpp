@@ -12,7 +12,8 @@ TEST_CASE("AOPacket construct", "[aopacket]") {
     REQUIRE(p.to_string() == packet_string);
   }
   SECTION("Header and contents") {
-    AOPacket p("CT", {"MY_OOC_NAME", "/doc https://docs.google.com/document/d/123/edit#"});
+    QStringList contents = {"MY_OOC_NAME", "/doc https://docs.google.com/document/d/123/edit#"};
+    AOPacket p("CT", contents);
     REQUIRE(p.to_string() == packet_string);
   }
 }
@@ -32,7 +33,8 @@ TEST_CASE("AOPacket encode/decode", "[aopacket]") {
   }
 
   SECTION("Good encode/decode with header and contents constructor") {
-    AOPacket p("CT", {"MY_OOC_NAME", "/doc https://docs.google.com/document/d/%$&/edit#"});
+    QStringList contents = {"MY_OOC_NAME", "/doc https://docs.google.com/document/d/%$&/edit#"};
+    AOPacket p("CT", contents);
 
     p.net_encode();
     REQUIRE(p.to_string() == good_encode);
