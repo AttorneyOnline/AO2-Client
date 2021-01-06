@@ -3577,9 +3577,10 @@ void Courtroom::on_ooc_return_pressed()
     if (!caseauth.isEmpty())
       append_server_chatmessage(tr("CLIENT"),
                                 tr("Case made by %1.").arg(caseauth), "1");
-    if (!casedoc.isEmpty())
-      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
-                                              "#/doc " + casedoc + "#%"));
+    if (!casedoc.isEmpty()) {
+      QStringList f_contents = {ui_ooc_chat_name->text(), "/doc " + casedoc};
+      ao_app->send_server_packet(new AOPacket("CT", f_contents));
+    }
     if (!casestatus.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
                                               "#/status " + casestatus + "#%"));
