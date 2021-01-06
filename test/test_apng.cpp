@@ -4,14 +4,15 @@
 #include <QImageReader>
 #include <QCoreApplication>
 
-TEST_CASE("Support APNG Plugin (place lib same path)", "[apng]") {
+TEST_CASE("Support APNG Plugin", "[apng]") {
+  // Check paths for libs
   QCoreApplication::addLibraryPath(".");
-  QPluginLoader apngPlugin("qapng");
-  REQUIRE(apngPlugin.load());
+  QCoreApplication::addLibraryPath("lib");
 
-  // Fails for some reason on windows and linux don't know about osx
-  // apng animation seems to be broken linux qt5-5.15.2
+  // Either it's loaded from system or we load local
+  QPluginLoader apngPlugin("qapng");
+  apngPlugin.load();
+
   INFO(QImageReader::supportedImageFormats().join(' ').toStdString());
-  REQUIRE((QImageReader::supportedImageFormats().contains("apng") ||
-           QImageReader::supportedImageFormats().contains("APNG")));
+  REQUIRE(QImageReader::supportedImageFormats().contains("apng"));
 }
