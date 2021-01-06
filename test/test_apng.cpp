@@ -11,6 +11,7 @@ TEST_CASE("Support APNG Plugin (place lib same path)", "[apng]") {
 
   // Fails for some reason on windows and linux don't know about osx
   // apng animation seems to be broken linux qt5-5.15.2
+  INFO(QImageReader::supportedImageFormats().join(' ').toStdString());
   REQUIRE((QImageReader::supportedImageFormats().contains("apng") ||
            QImageReader::supportedImageFormats().contains("APNG")));
 }
