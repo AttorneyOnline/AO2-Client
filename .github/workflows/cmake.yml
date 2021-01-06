@@ -50,6 +50,7 @@ jobs:
         git clone https://github.com/Skycoder42/QtApng
         cd QtApng
         qmake
+        make
         sudo make install
 
     - name: Create Build Environment
