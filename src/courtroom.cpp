@@ -4275,11 +4275,14 @@ void Courtroom::music_random()
                              QTreeWidgetItemIterator::NotHidden |
                                  QTreeWidgetItemIterator::NoChildren);
   while (*it) {
-    clist += (*it);
+    if ((*it)->parent()->isExpanded()) {
+      clist += (*it);
+    }
     ++it;
   }
-  int i = qrand() % clist.length();
-  on_music_list_double_clicked(clist.at(i), 1);
+  if (clist.length() == 0)
+      return;
+  on_music_list_double_clicked(clist.at(qrand() % clist.length()), 1);
 }
 
 void Courtroom::music_list_expand_all() { ui_music_list->expandAll(); }
