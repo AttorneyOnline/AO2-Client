@@ -14,6 +14,7 @@ SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
 
 LIBS += -L$$PWD/lib
+QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 
 # Uncomment for verbose network logging
 # DEFINES += DEBUG_NETWORK

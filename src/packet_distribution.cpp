@@ -133,6 +133,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     looping_sfx_support_enabled = false;
     additive_enabled = false;
     effects_enabled = false;
+    y_offset_enabled = false;
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -205,6 +206,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       additive_enabled = true;
     if (f_packet.contains("effects", Qt::CaseInsensitive))
       effects_enabled = true;
+    if (f_packet.contains("y_offset", Qt::CaseInsensitive))
+        y_offset_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
@@ -531,6 +534,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "UM") {
     if (courtroom_constructed && f_contents.size() > 0)
       w_courtroom->set_mute(false, f_contents.at(0).toInt());
+  }
+  else if (header == "BB") {
+    if (courtroom_constructed && f_contents.size() >= 1) {
+      call_notice(f_contents.at(0));
+    }
   }
   else if (header == "KK") {
     if (courtroom_constructed && f_contents.size() >= 1) {

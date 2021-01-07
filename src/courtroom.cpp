@@ -1339,6 +1339,9 @@ void Courtroom::update_character(int p_cid)
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
+  // have to call these to make sure sfx and blips don't get accidentally muted forever when we change characters
+  sfx_player->set_volume(ui_sfx_slider->value());
+  blip_player->set_volume(ui_blip_slider->value());
 }
 
 void Courtroom::enter_courtroom()
@@ -1711,8 +1714,10 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    packet_contents.append(QString::number(char_offset) + "&" +
-                           QString::number(char_vert_offset));
+    if(ao_app->y_offset_enabled)
+        packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+    else
+        packet_contents.append(QString::number(char_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked()) {
@@ -1814,6 +1819,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (p_contents->size() < MS_MINIMUM)
     return;
 
+  int prev_char_id = m_chatmessage[CHAR_ID].toInt();
   for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
     // Note that we have added stuff that vanilla clients and servers simply
     // won't send. So now, we have to check if the thing we want even exists
@@ -1882,8 +1888,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
   }
 
-  if (!m_chatmessage[MESSAGE].isEmpty() || ic_chatlog_history.isEmpty() ||
-      ic_chatlog_history.last().get_message() != "") {
+  if (prev_char_id != f_char_id || !m_chatmessage[MESSAGE].isEmpty() ||
+      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
     log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
                 m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
@@ -2621,7 +2627,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
-                               int color)
+                               int color, QDateTime timestamp)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2647,10 +2653,14 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 
   // Timestamp if we're doing that meme
-  if (log_timestamp)
-    ui_ic_chatlog->textCursor().insertText(
-        "[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ",
-        normal);
+  if (log_timestamp) {
+    if (timestamp.isValid()) {
+      ui_ic_chatlog->textCursor().insertText(
+        "[" + timestamp.toString("h:mm:ss AP") + "] ", normal);
+    } else {
+      qDebug() << "could not insert invalid timestamp";
+    }
+  }
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
@@ -3586,9 +3596,10 @@ void Courtroom::on_ooc_return_pressed()
     if (!caseauth.isEmpty())
       append_server_chatmessage(tr("CLIENT"),
                                 tr("Case made by %1.").arg(caseauth), "1");
-    if (!casedoc.isEmpty())
-      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
-                                              "#/doc " + casedoc + "#%"));
+    if (!casedoc.isEmpty()) {
+      QStringList f_contents = {ui_ooc_chat_name->text(), "/doc " + casedoc};
+      ao_app->send_server_packet(new AOPacket("CT", f_contents));
+    }
     if (!casestatus.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
                                               "#/status " + casestatus + "#%"));
@@ -3601,7 +3612,15 @@ void Courtroom::on_ooc_return_pressed()
           new AOPacket("DE#" + QString::number(i) + "#%"));
     }
 
-    foreach (QString evi, casefile.childGroups()) {
+    // sort the case_evidence numerically
+    QStringList case_evidence = casefile.childGroups();
+    std::sort(case_evidence.begin(), case_evidence.end(),
+              [] (const QString &a, const QString &b) {
+                return a.toInt() < b.toInt();
+              });
+
+    // load evidence
+    foreach (QString evi, case_evidence) {
       if (evi == "General")
         continue;
 
@@ -4466,7 +4485,8 @@ void Courtroom::on_pair_clicked()
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
-    ui_pair_vert_offset_spinbox->show();
+    if(ao_app->y_offset_enabled)
+        ui_pair_vert_offset_spinbox->show();
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
     ui_mute->set_image("mute");
@@ -4795,7 +4815,8 @@ void Courtroom::regenerate_ic_chatlog()
     append_ic_text(item.get_message(),
                    ui_showname_enable->isChecked() ? item.get_showname()
                                                    : item.get_name(),
-                   item.get_action(), item.get_chat_color());
+                   item.get_action(), item.get_chat_color(),
+                   item.get_datetime().toLocalTime());
   }
 }
 
