@@ -3856,6 +3856,7 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = ui_iniswap_dropdown->lineEdit()->createStandardContextMenu();
 
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
   if (file_exists(ao_app->get_character_path(current_char, "char.ini")))
     menu->addAction(QString("Edit " + current_char + "/char.ini"), this,
@@ -3963,6 +3964,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = ui_sfx_dropdown->lineEdit()->createStandardContextMenu();
 
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
   if (file_exists(ao_app->get_character_path(current_char, "soundlist.ini")))
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
@@ -4052,6 +4054,7 @@ void Courtroom::on_effects_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu();
 
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   if (!ao_app->read_char_ini(current_char, "effects", "Options").isEmpty())
     menu->addAction(
         QString("Open misc/" +
@@ -4215,6 +4218,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu();
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addAction(QString(tr("Stop Current Song")), this, SLOT(music_stop()));
   menu->addAction(QString(tr("Play Random Song")), this, SLOT(music_random()));
   menu->addSeparator();
