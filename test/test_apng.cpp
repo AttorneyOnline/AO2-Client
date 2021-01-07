@@ -19,7 +19,7 @@ TEST_CASE("Support APNG Plugin", "[apng]") {
   REQUIRE(QImageReader::supportedImageFormats().contains("apng"));
 }
 
-TEST_CASE("Detect png animation", "[apng]") {
+TEST_CASE("Detect png animation", "[apng][noci]") {
   // Required for QPixmap methods
   int argc = 1;
   char bin[] = "test";
