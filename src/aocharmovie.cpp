@@ -61,6 +61,15 @@ void AOCharMovie::load_image(QString p_char, QString p_emote,
     return;
 
   m_reader->setFileName(emote_path);
+
+  // set format to apng if png supports animation
+  if (emote_path.endsWith("png")) {
+    m_reader->setFormat("apng");
+    if (!m_reader->supportsAnimation()) {
+      m_reader->setFormat("png");
+    }
+  }
+
   QPixmap f_pixmap = this->get_pixmap(m_reader->read());
   int f_delay = m_reader->nextImageDelay();
 
