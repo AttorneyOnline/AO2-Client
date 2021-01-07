@@ -7,7 +7,7 @@
 #include "bass.h"
 #include "bassopus.h"
 
-TEST_CASE("BASS URL streaming", "[bass]") {
+TEST_CASE("BASS URL streaming", "[bass][noci]") {
   // Sample
   QString url = "https://raw.githubusercontent.com/skyedeving/aocharedit/master/Attorney%20Online%20Character%20Editor/Resources/about.mp3";
 
