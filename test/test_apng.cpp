@@ -3,7 +3,7 @@
 #include <QPluginLoader>
 #include <QImageReader>
 #include <QCoreApplication>
-#include <QApplication>
+#include <QGuiApplication>
 #include <QPixmap>
 
 TEST_CASE("Support APNG Plugin", "[apng]") {
@@ -24,7 +24,7 @@ TEST_CASE("Detect png animation", "[apng]") {
   int argc = 1;
   char bin[] = "test";
   char *argv[] = { bin };
-  QApplication app(argc, argv);
+  QGuiApplication app(argc, argv);
 
   // Detect apng supports animation
   QImageReader a("snackoo.png", "apng");
