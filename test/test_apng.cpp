@@ -37,10 +37,17 @@ TEST_CASE("Detect png animation", "[apng][noci]") {
   p.setFormat("png");
   REQUIRE(!QPixmap::fromImage(p.read()).isNull());
 
-  // Auto detect fails
+  // Auto detect fails on apng
   QImageReader d;
-  d.setAutoDetectImageFormat(true);
+  d.setDecideFormatFromContent(true);
   d.setFileName("snackoo.png");
   REQUIRE(!d.supportsAnimation());
   REQUIRE(!QPixmap::fromImage(d.read()).isNull());
+
+  // Decide format fom content fails on apng
+  QImageReader c;
+  c.setDecideFormatFromContent(true);
+  c.setFileName("snackoo.png");
+  REQUIRE(!c.supportsAnimation());
+  REQUIRE(!QPixmap::fromImage(c.read()).isNull());
 }
