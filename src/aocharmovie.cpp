@@ -64,9 +64,9 @@ void AOCharMovie::load_image(QString p_char, QString p_emote,
 
   // set format to apng if png supports animation
   if (emote_path.endsWith("png")) {
-    m_reader.setFormat("apng");
-    if (!m_reader.supportsAnimation()) {
-      m_reader.setFormat("png");
+    m_reader->setFormat("apng");
+    if (!m_reader->supportsAnimation()) {
+      m_reader->setFormat("png");
     }
   }
 
