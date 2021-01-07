@@ -75,4 +75,6 @@ jobs:
       working-directory: ${{github.workspace}}/build/test
       shell: bash
       # Skipping tests for bass since no audio device
-      run: QT_QPA_PLATFORM=offscreen ./test ~[bass] ~[noci]
+      run: |
+        ln -s ../../test/*.png .
+        QT_QPA_PLATFORM=offscreen ./test ~[bass] ~[noci]

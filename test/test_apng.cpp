@@ -19,7 +19,7 @@ TEST_CASE("Support APNG Plugin", "[apng]") {
   REQUIRE(QImageReader::supportedImageFormats().contains("apng"));
 }
 
-TEST_CASE("Detect png animation", "[apng][noci]") {
+TEST_CASE("Detect png animation", "[apng]") {
   // Required for QPixmap methods
   int argc = 1;
   char bin[] = "test";
@@ -51,7 +51,7 @@ TEST_CASE("Detect png animation", "[apng][noci]") {
   }
 
   SECTION("Detect png frame has no animation") {
-    reader.setFileName("snackoo-frame.png");
+    reader.setFileName("missle.png");
     reader.setFormat("apng");
     REQUIRE(!reader.supportsAnimation());
     reader.setFormat("png");
