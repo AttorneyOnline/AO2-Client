@@ -26,28 +26,36 @@ TEST_CASE("Detect png animation", "[apng][noci]") {
   char *argv[] = { bin };
   QGuiApplication app(argc, argv);
 
-  // Detect apng supports animation
-  QImageReader a("snackoo.png", "apng");
-  REQUIRE(a.supportsAnimation());
-  REQUIRE(!QPixmap::fromImage(a.read()).isNull());
+  // Instantiate reader
+  QImageReader reader;
 
-  // Detect png frame has no animation
-  QImageReader p("snackoo-frame.png", "apng");
-  REQUIRE(!p.supportsAnimation());
-  p.setFormat("png");
-  REQUIRE(!QPixmap::fromImage(p.read()).isNull());
+  SECTION("Decide format from content fails on apng") {
+    reader.setFileName("snackoo.png");
+    reader.setDecideFormatFromContent(true);
+    REQUIRE(!reader.supportsAnimation());
+    REQUIRE(!QPixmap::fromImage(reader.read()).isNull());
+  }
 
-  // Auto detect fails on apng
-  QImageReader d;
-  d.setAutoDetectImageFormat(true);
-  d.setFileName("snackoo.png");
-  REQUIRE(!d.supportsAnimation());
-  REQUIRE(!QPixmap::fromImage(d.read()).isNull());
+  SECTION("Auto detect fails on apng") {
+    reader.setFileName("snackoo.png");
+    reader.setAutoDetectImageFormat(true);
+    REQUIRE(!reader.supportsAnimation());
+    REQUIRE(!QPixmap::fromImage(reader.read()).isNull());
+  }
 
-  // Decide format fom content fails on apng
-  QImageReader c;
-  c.setDecideFormatFromContent(true);
-  c.setFileName("snackoo.png");
-  REQUIRE(!c.supportsAnimation());
-  REQUIRE(!QPixmap::fromImage(c.read()).isNull());
+  SECTION("Detect apng supports animation") {
+    reader.setFileName("snackoo.png");
+    reader.setFormat("apng");
+    REQUIRE(reader.supportsAnimation());
+    REQUIRE(!QPixmap::fromImage(reader.read()).isNull());
+  }
+
+  SECTION("Detect png frame has no animation") {
+    reader.setFileName("snackoo-frame.png");
+    reader.setFormat("apng");
+    REQUIRE(!reader.supportsAnimation());
+    reader.setFormat("png");
+    REQUIRE(!reader.supportsAnimation());
+    REQUIRE(!QPixmap::fromImage(reader.read()).isNull());
+  }
 }
