@@ -3080,8 +3080,16 @@ void Courtroom::play_sfx()
 void Courtroom::set_scene(QString f_desk_mod, QString f_side)
 {
   // witness is default if pos is invalid
-  QString f_background = "witnessempty";
-  QString f_desk_image = "stand";
+  QString f_background;
+  QString f_desk_image;
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("witnessempty")) {
+    f_background = "witnessempty";
+    f_desk_image = "stand";
+  }
+  else {
+    f_background = "wit";
+    f_desk_image = "wit_overlay";
+  }
 
   if (f_side == "def" && file_exists(ao_app->get_image_suffix(
                              ao_app->get_background_path("defenseempty")))) {
@@ -3768,7 +3776,7 @@ void Courtroom::on_music_search_return_pressed()
 
 void Courtroom::on_pos_dropdown_changed(int p_index)
 {
-  if (p_index < 0 || p_index > 7)
+  if (p_index < 0)
     return;
 
   toggle_judge_buttons(false);
