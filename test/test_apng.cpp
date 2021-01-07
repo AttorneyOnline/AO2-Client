@@ -39,7 +39,7 @@ TEST_CASE("Detect png animation", "[apng][noci]") {
 
   // Auto detect fails on apng
   QImageReader d;
-  d.setDecideFormatFromContent(true);
+  d.setAutoDetectImageFormat(true);
   d.setFileName("snackoo.png");
   REQUIRE(!d.supportsAnimation());
   REQUIRE(!QPixmap::fromImage(d.read()).isNull());
