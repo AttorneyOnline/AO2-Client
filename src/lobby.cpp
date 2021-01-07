@@ -356,7 +356,7 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-  const bool hasApng = QImageReader::supportedImageFormats().contains("APNG");
+  const bool hasApng = QImageReader::supportedImageFormats().contains("apng");
 
   QString msg =
       tr("<h2>Attorney Online %1</h2>"

@@ -133,7 +133,7 @@ void Courtroom::char_clicked(int n_char)
     qDebug() << "char_ini_path" << char_ini_path;
 
     if (!file_exists(char_ini_path)) {
-      call_notice("Could not find " + char_ini_path);
+      call_error("Could not find " + char_ini_path);
       return;
     }
   }
