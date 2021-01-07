@@ -3,6 +3,8 @@
 #include <QPluginLoader>
 #include <QImageReader>
 #include <QCoreApplication>
+#include <QApplication>
+#include <QPixmap>
 
 TEST_CASE("Support APNG Plugin", "[apng]") {
   // Check paths for libs
@@ -15,4 +17,23 @@ TEST_CASE("Support APNG Plugin", "[apng]") {
 
   INFO(QImageReader::supportedImageFormats().join(' ').toStdString());
   REQUIRE(QImageReader::supportedImageFormats().contains("apng"));
+}
+
+TEST_CASE("Detect png animation", "[apng]") {
+  // Required for QPixmap methods
+  int argc = 1;
+  char bin[] = "test";
+  char *argv[] = { bin };
+  QApplication app(argc, argv);
+
+  // Detect apng supports animation
+  QImageReader a("snackoo.png", "apng");
+  REQUIRE(a.supportsAnimation());
+  REQUIRE(!QPixmap::fromImage(a.read()).isNull());
+
+  // Detect png frame has no animation
+  QImageReader p("snackoo-frame.png", "apng");
+  REQUIRE(!p.supportsAnimation());
+  p.setFormat("png");
+  REQUIRE(!QPixmap::fromImage(p.read()).isNull());
 }
