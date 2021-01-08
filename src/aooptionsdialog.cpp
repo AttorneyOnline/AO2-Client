@@ -41,7 +41,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   // Let's add the tabs one by one.
   // First, we'll start with 'Gameplay'.
-  ui_gameplay_tab = new QWidget();
+  ui_gameplay_tab = new QWidget(this);
   ui_gameplay_tab->setSizePolicy(sizePolicy1);
   ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
   ui_form_layout_widget = new QWidget(ui_gameplay_tab);
@@ -379,7 +379,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_tab->show();
 
   // Here we start the callwords tab.
-  ui_callwords_tab = new QWidget();
+  ui_callwords_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
 
   ui_callwords_widget = new QWidget(ui_callwords_tab);
@@ -416,7 +416,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
 
   // The audio tab.
-  ui_audio_tab = new QWidget();
+  ui_audio_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
 
   ui_audio_widget = new QWidget(ui_audio_tab);
@@ -577,7 +577,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_objectmusic_cb);
 
   // The casing tab!
-  ui_casing_tab = new QWidget();
+  ui_casing_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
 
   ui_casing_widget = new QWidget(ui_casing_tab);
