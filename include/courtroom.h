@@ -207,12 +207,16 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
-  // these functions handle chatmessages sequentially.
-  // The process itself is very convoluted and merits separate documentation
-  // But the general idea is objection animation->pre animation->talking->idle
-  void handle_chatmessage(QStringList *p_contents);
-  void handle_chatmessage_2();
-  void handle_chatmessage_3();
+  // im gonna fuckin commentate the exact purpose of each and every one of these fuckwits
+  void unpack_chatmessage(QStringList *p_contents);
+  void log_chatmessage();
+  bool handle_objection();
+  bool handle_ic_message();
+  void display_character();
+  void display_pair_character();
+  void handle_emote_mod();
+  void initialize_chatbox();
+  void handle_chatbox();
 
   // This function filters out the common CC inline text trickery, for appending
   // to the IC chatlog.
@@ -669,7 +673,6 @@ private:
   void refresh_evidence();
   void set_evidence_page();
 
-  void reset_ic();
   void reset_ui();
 
   void regenerate_ic_chatlog();

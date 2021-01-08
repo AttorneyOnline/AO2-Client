@@ -1774,17 +1774,6 @@ void Courtroom::on_chat_return_pressed()
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
-void Courtroom::reset_ic()
-{
-  ui_vp_chat_arrow->stop();
-  text_state = 0;
-  anim_state = 0;
-  evidence_presented = false;
-  ui_vp_objection->stop();
-  chat_tick_timer->stop();
-  ui_vp_evidence_display->reset();
-}
-
 void Courtroom::reset_ui()
 {
   ui_ic_chat_message->clear();
@@ -1805,15 +1794,8 @@ void Courtroom::reset_ui()
   ui_evidence_present->set_image("present");
 }
 
-void Courtroom::handle_chatmessage(QStringList *p_contents)
+void Courtroom::unpack_chatmessage(QStringList *p_contents)
 {
-  // Instead of checking for whether a message has at least chatmessage_size
-  // amount of packages, we'll check if it has at least 15.
-  // That was the original chatmessage_size.
-  if (p_contents->size() < MS_MINIMUM)
-    return;
-
-  int prev_char_id = m_chatmessage[CHAR_ID].toInt();
   for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
     // Note that we have added stuff that vanilla clients and servers simply
     // won't send. So now, we have to check if the thing we want even exists
@@ -1830,15 +1812,45 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
-  const bool is_spectator = (f_char_id == -1);
-
   if (f_char_id < -1 || f_char_id >= char_list.size())
     return;
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
+  // Reset UI elements if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+  if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
+    reset_ui();
+  }
+
+  log_chatmessage();
+
+  // Reset the interface to make room for objection handling
+  ui_vp_chat_arrow->stop();
+  text_state = 0;
+  anim_state = 0;
+  evidence_presented = false;
+  ui_vp_objection->stop();
+  chat_tick_timer->stop();
+  ui_vp_evidence_display->reset();
+  // This chat msg is not objection so we're not waiting on the objection animation to finish to display the character.
+  if (!handle_objection())
+    handle_ic_message();
+}
+
+void Courtroom::log_chatmessage()
+{
+  int f_char_id = m_chatmessage[CHAR_ID].toInt();
+  QString f_charname = "";
+  if (f_char_id >= 0)
+    f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
+
+  if (m_chatmessage[MESSAGE].trimmed().isEmpty()) // User-created blankpost
+  {
+    m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
+  }
+
   QString f_displayname;
-  if (!is_spectator &&
+  if (m_chatmessage[CHAR_ID].toInt() != -1 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     // If the users is not a spectator and showname is disabled, use the
     // character's name
@@ -1853,36 +1865,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_displayname.trimmed().isEmpty())
     f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
 
-  // Check if a custom objection is in use
-  int objection_mod = 0;
-  QString custom_objection = "";
-  if (m_chatmessage[OBJECTION_MOD].contains("4&")) {
-    objection_mod = 4;
-    custom_objection = m_chatmessage[OBJECTION_MOD].split(
-        "4&")[1]; // takes the name of custom objection.
-  }
-  else {
-    objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
-  }
-
-  // Reset IC display
-  reset_ic();
-
-  // Reset UI elements after client message gets sent
-  if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
-    reset_ui();
-  }
-
-  QString f_charname = "";
-  if (f_char_id >= 0)
-    f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
-
-  if (m_chatmessage[MESSAGE].trimmed().isEmpty()) // User-created blankpost
-  {
-    m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
-  }
-
-  if (prev_char_id != f_char_id || !m_chatmessage[MESSAGE].isEmpty() ||
+  if (!m_chatmessage[MESSAGE].isEmpty() ||
       ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
     log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
                 m_chatmessage[TEXT_COLOR].toInt());
@@ -1897,6 +1880,21 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
                 tr("has presented evidence"),
                 m_chatmessage[TEXT_COLOR].toInt());
     append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+  }
+}
+
+bool Courtroom::handle_objection()
+{
+  // Check if a custom objection is in use
+  int objection_mod = 0;
+  QString custom_objection = "";
+  if (m_chatmessage[OBJECTION_MOD].contains("4&")) {
+    objection_mod = 4;
+    custom_objection = m_chatmessage[OBJECTION_MOD].split(
+        "4&")[1]; // takes the name of custom objection.
+  }
+  else {
+    objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   }
 
   QString f_char = m_chatmessage[CHAR_NAME];
@@ -1937,21 +1935,26 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       break;
     }
     sfx_player->clear(); // Objection played! Cut all sfx.
+    return true;
   }
-  else
-    handle_chatmessage_2();
+  return false;
 }
 
-void Courtroom::objection_done() { handle_chatmessage_2(); }
-
-void Courtroom::handle_chatmessage_2()
+void Courtroom::display_character()
 {
+  // Stop all previously playing animations, effects etc.
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
   ui_vp_effect->stop();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
+  // Hide the message and chatbox and handle the emotes
+  ui_vp_message->hide();
+  ui_vp_chatbox->hide();
+  // Initialize the correct pos (called SIDE here for some reason) with DESK_MOD to determine if we should hide the desk or not.
+  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
+  // Arrange the netstrings of the frame SFX for the character to know about
   if (!m_chatmessage[FRAME_SFX].isEmpty() &&
       ao_app->is_frame_network_enabled()) {
     // ORDER IS IMPORTANT!!
@@ -1963,118 +1966,153 @@ void Courtroom::handle_chatmessage_2()
   else
     ui_vp_player_char->network_strings.clear();
 
-  ui_vp_message->hide();
-  ui_vp_chatbox->hide();
-
-  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
-
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-  // Deal with invalid emote modifiers
-  if (emote_mod != 0 && emote_mod != 1 && emote_mod != 2 && emote_mod != 5 &&
-      emote_mod != 6) {
-    if (emote_mod == 4)
-      emote_mod = 6; // Addresses issue with an old bug that sent the wrong
-                     // emote modifier for zoompre
-    else
-      emote_mod = 0;
-  }
-
+  // Determine if we should flip the character or not (what servers don't support flipping at this point?)
   if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
     ui_vp_player_char->set_flipped(true);
   else
     ui_vp_player_char->set_flipped(false);
 
-  QString side = m_chatmessage[SIDE];
+  // Parse the character X offset
+  QStringList offsets = m_chatmessage[SELF_OFFSET].split("&");
+  int offset_x = offsets[0].toInt();
+  // Y offset is 0 by default unless we find that the server sent us the Y position as well
+  int offset_y = 0;
+  if (offsets.length() > 1)
+    offset_y = offsets[1].toInt();
+  // Move the character on the viewport according to the offsets
+  ui_vp_player_char->move(ui_viewport->width() * offset_x / 100, ui_viewport->height() * offset_y / 100);
+}
 
-  // Making the second character appear.
-  if (m_chatmessage[OTHER_CHARID].isEmpty()) {
-    // If there is no second character, hide 'em
-    ui_vp_sideplayer_char->stop();
-    ui_vp_sideplayer_char->move(0, 0);
-  }
-  else {
+void Courtroom::display_pair_character()
+{
+  // Reset the side player
+  ui_vp_sideplayer_char->stop();
+  ui_vp_sideplayer_char->move(0, 0);
+
+  // If we're zooming, just keep the pair character hidden.
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+  if (emote_mod == 5 || emote_mod == 6)
+    return;
+
+  // If pair information exists
+  if (!m_chatmessage[OTHER_CHARID].isEmpty()) {
+    // Initialize the "ok" bool check to see if the toInt conversion succeeded
     bool ok;
-    int got_other_charid = m_chatmessage[OTHER_CHARID].split("^")[0].toInt(&ok);
-    if (ok) {
-      if (got_other_charid > -1) {
-        // If there is, show them!
-        ui_vp_sideplayer_char->show();
-        QStringList other_offsets = m_chatmessage[OTHER_OFFSET].split("&");
-        int other_offset;
-        int other_offset_v;
-        if (other_offsets.length() <= 1) {
-          other_offset = m_chatmessage[OTHER_OFFSET].toInt();
-          other_offset_v = 0;
-        }
-        else {
-          other_offset = other_offsets[0].toInt();
-          other_offset_v = other_offsets[1].toInt();
-        }
-        ui_vp_sideplayer_char->move(ui_viewport->width() * other_offset / 100,
-                                    ui_viewport->height() * other_offset_v / 100);
-
-        QStringList args = m_chatmessage[OTHER_CHARID].split("^");
-        if (args.size() >
-            1) // This ugly workaround is so we don't make an extra packet just
-               // for this purpose. Rewrite pairing when?
-        {
-          // Change the order of appearance based on the pair order variable
-          int order = args.at(1).toInt();
-          switch (order) {
-          case 0:
-            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
-            break;
-          case 1:
-            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
-            break;
-          default:
-            break;
-          }
-        }
-
-        // We should probably also play the other character's idle emote.
-        if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
-          ui_vp_sideplayer_char->set_flipped(true);
-        else
-          ui_vp_sideplayer_char->set_flipped(false);
-        ui_vp_sideplayer_char->play_idle(m_chatmessage[OTHER_NAME],
-                                         m_chatmessage[OTHER_EMOTE]);
+    // Grab the charid of the pair
+    int charid = m_chatmessage[CHARID].split("^")[0].toInt(&ok);
+    // If the charid is an int and is valid...
+    if (ok && charid > -1) {
+      // Show the pair character
+      ui_vp_sideplayer_char->show();
+      // Obtain the offsets, splitting it up by & char
+      QStringList offsets = m_chatmessage[OTHER_OFFSET].split("&");
+      int offset_x;
+      int offset_y;
+      // If we only got one number...
+      if (offsets.length() <= 1) {
+        // That's just the X offset. Make Y offset 0.
+        offset_x = m_chatmessage[OTHER_OFFSET].toInt();
+        offset_y = 0;
       }
       else {
-        // If the server understands other characters, but there
-        // really is no second character, hide 'em, and center the first.
-        ui_vp_sideplayer_char->hide();
-        ui_vp_sideplayer_char->move(0, 0);
+        // We got two numbers, set x and y offsets!
+        offset_x = offsets[0].toInt();
+        offset_y = offsets[1].toInt();
       }
+      // Move pair character according to the offsets
+      ui_vp_sideplayer_char->move(ui_viewport->width() * offset_x / 100,
+                                  ui_viewport->height() * offset_y / 100);
+
+      // Split the charid according to the ^ to determine if we have "ordering" info
+      QStringList args = m_chatmessage[OTHER_CHARID].split("^");
+      if (args.size() >
+          1) // This ugly workaround is so we don't make an extra packet just
+              // for this purpose. Rewrite pairing when?
+      {
+        // Change the order of appearance based on the pair order variable
+        int order = args.at(1).toInt();
+        switch (order) {
+        case 0: // Our character is in front
+          ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
+          break;
+        case 1: // Our character is behind
+          ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
+          break;
+        default:
+          break;
+        }
+      }
+
+      // Flip the pair character
+      if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
+        ui_vp_sideplayer_char->set_flipped(true);
+      else
+        ui_vp_sideplayer_char->set_flipped(false);
+
+      // Play the other pair character's idle animation
+      ui_vp_sideplayer_char->play_idle(m_chatmessage[OTHER_NAME],
+                                        m_chatmessage[OTHER_EMOTE]);
     }
   }
-  // Set ourselves according to SELF_OFFSET
+}
 
-  QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
-  int self_offset = self_offsets[0].toInt();
-  int self_offset_v;
-  if (self_offsets.length() <= 1)
-    self_offset_v = 0;
-  else 
-    self_offset_v = self_offsets[1].toInt();
-  ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+void Courtroom::handle_emote_mod()
+{
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+  // Deal with invalid emote modifiers
+  if (emote_mod != 0 && emote_mod != 1 && emote_mod != 2 && emote_mod != 5 &&
+      emote_mod != 6) {
+    // If emote mod is 4...
+    if (emote_mod == 4)
+      emote_mod = 6; // Addresses issue with an old bug that sent the wrong
+                     // emote modifier for zoompre
+    else
+      emote_mod = 0; // Reset emote mod to 0
+  }
 
+  // Handle the emote mod
   switch (emote_mod) {
   case 1:
   case 2:
   case 6:
+    // Emotes 1, 2 and 6 all play preanim that makes the chatbox wait for it to finish.
     play_preanim(false);
     break;
   case 0:
   case 5:
+    // If noninterrupting is false...
     if (m_chatmessage[NONINTERRUPTING_PRE].toInt() == 0)
-      handle_chatmessage_3();
+    {
+      // Skip preanim.
+      handle_chatbox();
+    }
     else
+    {
+      // Emotes 0, 5 all play preanim alongside the chatbox, not waiting for the animation to finish.
       play_preanim(true);
+    }
     break;
   default:
+    // This should never happen, but if it does anyway, yell in the console about it.
     qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
   }
+}
+
+void Courtroom::objection_done() { handle_ic_message(); }
+
+void Courtroom::handle_ic_message()
+{
+  // Display our own character
+  display_character();
+
+  // Display the pair character
+  display_pair_character();
+
+  // Parse the emote_mod part of the chat message
+  handle_emote_mod();
+
+  // Update the chatbox information
+  initialize_chatbox();
 }
 
 void Courtroom::do_screenshake()
@@ -2156,19 +2194,10 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
 void Courtroom::play_char_sfx(QString sfx_name)
 {
   sfx_player->play(sfx_name);
-  //  sfx_player->set_looping(false);
-  //  if (ao_app->get_looping_sfx())
-  //    sfx_player->set_looping(
-  //        ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
 
-void Courtroom::handle_chatmessage_3()
+void Courtroom::initialize_chatbox()
 {
-  QString f_side = m_chatmessage[SIDE];
-
-  //
-  // Updating chatbox hell BEGINS
-  //
   int f_charid = m_chatmessage[CHAR_ID].toInt();
   if (f_charid >= 0 &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
@@ -2281,77 +2310,84 @@ void Courtroom::handle_chatmessage_3()
   if (chatsize > 0)
     f_pointsize = chatsize;
   set_font(ui_vp_message, "", "message", customchar, font_name, f_pointsize);
-  //
-  // Updating chatbox hell ENDS
-  //
+}
 
-  //
+void Courtroom::handle_chatbox()
+{
   // Display evidence image
-  //
+  QString side = m_chatmessage[SIDE];
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
     // shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     // def jud and hlp should display the evidence icon on the RIGHT side
-    bool is_left_side = !(f_side == "def" || f_side == "hlp" ||
-                          f_side == "jud" || f_side == "jur");
+    bool is_left_side = !(side == "def" || side == "hlp" ||
+                          side == "jud" || side == "jur");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
                                           ui_sfx_slider->value());
   }
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-
-  QString side = m_chatmessage[SIDE];
-
+  // emote_mod 5 is zoom and emote_mod 6 is zoom w/ preanim.
   if (emote_mod == 5 || emote_mod == 6) {
+    // Hide the desks
     ui_vp_desk->hide();
     ui_vp_legacy_desk->hide();
 
-    // Since we're zooming, hide the second character, and centre the first.
-    ui_vp_sideplayer_char->hide();
-    ui_vp_player_char->move(0, 0);
-
+    // Obtain character information for our character
     QString f_char = m_chatmessage[CHAR_NAME];
     QString f_custom_theme = ao_app->get_char_shouts(f_char);
+    // I still hate this hardcoding. If we're on pos pro, hlp and wit, use prosecution_speedlines. Otherwise, defense_speedlines.
     if (side == "pro" || side == "hlp" || side == "wit")
       ui_vp_speedlines->play("prosecution_speedlines", f_char, f_custom_theme);
     else
       ui_vp_speedlines->play("defense_speedlines", f_char, f_custom_theme);
   }
 
-  // If this color is talking
+  // Check if this is a talking color (white text, etc.)
   color_is_talking =
       color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
 
+  // If color is talking, and our state isn't already talking
   if (color_is_talking && text_state == 1 &&
-      anim_state < 2) // Set it to talking as we're not on that already
+      anim_state < 2)
   {
+    // Stop the previous animation and play the talking animation
     ui_vp_player_char->stop();
     ui_vp_player_char->play_talking(m_chatmessage[CHAR_NAME],
                                     m_chatmessage[EMOTE]);
+    // Set the anim state accordingly
     anim_state = 2;
   }
-  else if (anim_state < 3) // Set it to idle as we're not on that already
+  else if (anim_state < 3)
   {
+    // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME],
                                  m_chatmessage[EMOTE]);
+    // Set the anim state accordingly
     anim_state = 3;
   }
 
+  // Quickly check through the message for the word_call (callwords) sfx
   QString f_message = m_chatmessage[MESSAGE];
+  // Obtain the current call words (Really? It does File I/O on every single message???)
   QStringList call_words = ao_app->get_call_words();
-
+  // Loop through each word in the call words list
   for (QString word : call_words) {
+    // If our message contains that specific call word
     if (f_message.contains(word, Qt::CaseInsensitive)) {
+      // Play the call word sfx on the modcall_player sound container
       modcall_player->play(ao_app->get_sfx("word_call"));
+      // Make the window flash
       ao_app->alert(this);
-
+      // Break the loop so we don't spam sound effects
       break;
     }
   }
 
+  // Begin parsing through the chatbox message
   start_chat_ticking();
 }
 
@@ -2766,13 +2802,13 @@ void Courtroom::play_preanim(bool noninterrupting)
     text_delay_timer->start(text_delay);
 
   if (noninterrupting)
-    handle_chatmessage_3();
+    handle_chatbox();
 }
 
 void Courtroom::preanim_done()
 {
   anim_state = 1;
-  handle_chatmessage_3();
+  handle_chatbox();
 }
 
 void Courtroom::start_chat_ticking()
