@@ -26,10 +26,6 @@ void AOBlipPlayer::set_blips(QString p_sfx)
 
 void AOBlipPlayer::blip_tick()
 {
-  if (delay.isValid() && delay.elapsed() < max_blip_ms)
-    return;
-
-  delay.start();
   int f_cycle = m_cycle++;
 
   if (m_cycle == 5)

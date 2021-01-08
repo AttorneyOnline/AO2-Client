@@ -58,6 +58,7 @@
 #include <QTextCharFormat>
 //#include <QRandomGenerator>
 
+#include <algorithm>
 #include <stack>
 
 class AOApplication;
@@ -225,7 +226,7 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0);
+                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime());
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -275,13 +276,16 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
+  int message_display_speed[7] = {5, 10, 25, 40, 50, 70, 90};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
 
-  // The offset this user has given if they want to appear alongside someone.
+  // The horizontal offset this user has given if they want to appear alongside someone.
   int char_offset = 0;
+
+  // The vertical offset this user has given.
+  int char_vert_offset = 0;
 
   // 0 = in front, 1 = behind
   int pair_order = 0;
@@ -311,7 +315,7 @@ private:
   int real_tick_pos = 0;
   // used to determine how often blips sound
   int blip_ticker = 0;
-  int blip_rate = 1;
+  int blip_rate = 2;
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
@@ -424,7 +428,11 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+
+  // have we already presented evidence for this message?
+  bool evidence_presented = false;
 
   QString effect = "";
 
@@ -520,6 +528,7 @@ private:
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
+  QSpinBox *ui_pair_vert_offset_spinbox;
 
   QComboBox *ui_pair_order_dropdown;
 
@@ -701,6 +710,7 @@ private slots:
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
+  void music_stop();
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
@@ -774,6 +784,7 @@ private slots:
 
   void on_log_limit_changed(int value);
   void on_pair_offset_changed(int value);
+  void on_pair_vert_offset_changed(int value);
 
   void on_ooc_toggle_clicked();
 
