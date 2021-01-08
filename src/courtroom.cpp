@@ -4052,7 +4052,7 @@ void Courtroom::set_effects_dropdown()
 
 void Courtroom::on_effects_context_menu_requested(const QPoint &pos)
 {
-  QMenu *menu = new QMenu();
+  QMenu *menu = new QMenu(this);
 
   menu->setAttribute(Qt::WA_DeleteOnClose);
   if (!ao_app->read_char_ini(current_char, "effects", "Options").isEmpty())
@@ -4217,7 +4217,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
-  QMenu *menu = new QMenu();
+  QMenu *menu = new QMenu(this);
   menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addAction(QString(tr("Stop Current Song")), this, SLOT(music_stop()));
   menu->addAction(QString(tr("Play Random Song")), this, SLOT(music_random()));
