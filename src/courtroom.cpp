@@ -1811,13 +1811,16 @@ void Courtroom::unpack_chatmessage(QStringList *p_contents)
     }
   }
 
+  // Check the validity of the character ID we got
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
   if (f_char_id < -1 || f_char_id >= char_list.size())
     return;
+
+  // We muted this char, gtfo
   if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
     return;
 
-  // Reset UI elements if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+  // Reset input UI elements if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
     reset_ui();
   }
@@ -1827,6 +1830,9 @@ void Courtroom::unpack_chatmessage(QStringList *p_contents)
     // Turn it into true blankpost
     m_chatmessage[MESSAGE] = "";
   }
+
+  if (m_chatmessage[OBJECTION_MOD].toInt() == 4)
+      m_chatmessage[EMOTE_MOD] = "1";
 
   // Put this message into the IC chat log
   log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
@@ -1942,7 +1948,6 @@ bool Courtroom::handle_objection()
                               shout_stay_time);
         objection_player->play("custom", f_char, f_custom_theme);
       }
-      m_chatmessage[EMOTE_MOD] = 1;
       break;
     }
     sfx_player->clear(); // Objection played! Cut all sfx.
@@ -2067,9 +2072,8 @@ void Courtroom::display_pair_character()
   }
 }
 
-void Courtroom::handle_emote_mod()
+void Courtroom::handle_emote_mod(int emote_mod, bool nonint_pre)
 {
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // Deal with invalid emote modifiers
   if (emote_mod != 0 && emote_mod != 1 && emote_mod != 2 && emote_mod != 5 &&
       emote_mod != 6) {
@@ -2092,7 +2096,7 @@ void Courtroom::handle_emote_mod()
   case 0:
   case 5:
     // If noninterrupting is false...
-    if (m_chatmessage[NONINTERRUPTING_PRE].toInt() == 0)
+    if (!nonint_pre)
     {
       // Skip preanim.
       handle_ic_speaking();
@@ -2120,7 +2124,7 @@ void Courtroom::handle_ic_message()
   display_pair_character();
 
   // Parse the emote_mod part of the chat message
-  handle_emote_mod();
+  handle_emote_mod(m_chatmessage[EMOTE_MOD].toInt(), m_chatmessage[NONINTERRUPTING_PRE].toInt() == 1);
 
   // Update the chatbox information
   initialize_chatbox();

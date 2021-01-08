@@ -233,7 +233,7 @@ public:
   void display_pair_character();
 
   // Handle the emote modifier value and proceed through the logic accordingly.
-  void handle_emote_mod();
+  void handle_emote_mod(int emote_mod, bool nonint_pre);
 
   // Initialize the chatbox image, showname shenanigans, custom chatboxes, etc.
   void initialize_chatbox();
