@@ -372,7 +372,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_customchat_cb);
 
-  QScrollArea *scroll = new QScrollArea;
+  QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
   ui_gameplay_tab->layout()->addWidget(scroll);
