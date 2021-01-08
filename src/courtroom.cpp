@@ -1822,8 +1822,14 @@ void Courtroom::unpack_chatmessage(QStringList *p_contents)
     reset_ui();
   }
 
+  // User-created blankpost
+  if (m_chatmessage[MESSAGE].trimmed().isEmpty()) {
+    // Turn it into true blankpost
+    m_chatmessage[MESSAGE] = "";
+  }
+
   // Put this message into the IC chat log
-  log_chatmessage();
+  log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
 
   // Process the callwords for this message
   handle_callwords();
@@ -1841,48 +1847,49 @@ void Courtroom::unpack_chatmessage(QStringList *p_contents)
     handle_ic_message();
 }
 
-void Courtroom::log_chatmessage()
+void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
 {
-  int f_char_id = m_chatmessage[CHAR_ID].toInt();
-  QString f_charname = "";
-  if (f_char_id >= 0)
-    f_charname = ao_app->get_showname(char_list.at(f_char_id).name);
+  // Servers could use spectator char for IC system messages, which is why we use "System" for char name
+  QString f_char_showname = "System";
 
-  if (m_chatmessage[MESSAGE].trimmed().isEmpty()) // User-created blankpost
-  {
-    m_chatmessage[MESSAGE] = ""; // Turn it into true blankpost
+  // Display name will use the showname
+  QString f_displayname = f_showname;
+
+  if (f_char_id != -1) {
+    // Grab the char.ini showname
+    f_char_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+    // If custom serversided shownames are not enabled
+    if (!ui_showname_enable->isChecked())) {
+      // Set the display name to the char.ini showname
+      f_displayname = f_char_showname;
+    }
   }
 
-  QString f_displayname;
-  if (m_chatmessage[CHAR_ID].toInt() != -1 &&
-      (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
-    // If the users is not a spectator and showname is disabled, use the
-    // character's name
-    f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
-  }
-  else {
-    // Otherwise, use the showname
-    f_displayname = m_chatmessage[SHOWNAME];
-  }
-
-  // If chatblank is enabled, use the character's name for logs
+  // If display name is just whitespace, use the char.ini showname.
   if (f_displayname.trimmed().isEmpty())
-    f_displayname = ao_app->get_showname(char_list.at(f_char_id).name);
+    f_displayname = f_char_showname;
 
-  if (!m_chatmessage[MESSAGE].isEmpty() ||
+  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
+  if (!f_message.isEmpty() ||
       ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
-    log_ic_text(f_charname, f_displayname, m_chatmessage[MESSAGE], "",
-                m_chatmessage[TEXT_COLOR].toInt());
-    append_ic_text(m_chatmessage[MESSAGE], f_displayname, "",
-                   m_chatmessage[TEXT_COLOR].toInt());
+    // Add the message to the logs file
+    log_ic_text(f_char_showname, f_displayname, f_message, "",
+                f_color);
+    // Append the message to the IC chatlogs in client
+    append_ic_text(f_message, f_displayname, "",
+                   f_color);
   }
 
+  // Obtain evidence ID we're trying to work with
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
+  // If the evidence ID is in the valid range
   if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+    // Obtain the evidence name
     QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
-    log_ic_text(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_displayname,
-                tr("has presented evidence"),
-                m_chatmessage[TEXT_COLOR].toInt());
+    // Add the message to the logs file
+    log_ic_text(f_char_showname, f_displayname, f_evi_name,
+                tr("has presented evidence"));
+    // Append the message to the IC chatlogs in client
     append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
   }
 }
@@ -2003,7 +2010,7 @@ void Courtroom::display_pair_character()
     // Initialize the "ok" bool check to see if the toInt conversion succeeded
     bool ok;
     // Grab the charid of the pair
-    int charid = m_chatmessage[CHARID].split("^")[0].toInt(&ok);
+    int charid = m_chatmessage[OTHER_CHARID].split("^")[0].toInt(&ok);
     // If the charid is an int and is valid...
     if (ok && charid > -1) {
       // Show the pair character
@@ -3300,13 +3307,11 @@ void Courtroom::handle_song(QStringList *p_contents)
 
     if (!mute_map.value(n_char)) {
       if (f_song == "~stop.mp3") {
-        log_ic_text(str_char, str_show, "", tr("has stopped the music"),
-                    m_chatmessage[TEXT_COLOR].toInt());
+        log_ic_text(str_char, str_show, "", tr("has stopped the music"));
         append_ic_text("", str_show, tr("has stopped the music"));
       }
       else {
-        log_ic_text(str_char, str_show, f_song, tr("has played a song"),
-                    m_chatmessage[TEXT_COLOR].toInt());
+        log_ic_text(str_char, str_show, f_song, tr("has played a song"));
         append_ic_text(f_song_clear, str_show, tr("has played a song"));
       }
       music_player->play(f_song, channel, looping, effect_flags);

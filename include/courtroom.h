@@ -211,7 +211,7 @@ public:
   void unpack_chatmessage(QStringList *p_contents);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
-  void log_chatmessage();
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
