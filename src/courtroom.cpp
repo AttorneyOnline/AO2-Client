@@ -1794,6 +1794,22 @@ void Courtroom::reset_ui()
   ui_evidence_present->set_image("present");
 }
 
+void Courtroom::add_chatmessage_stack(AOPacket *msg_packet)
+{
+  chatmessage_stack.append(msg_packet);
+  if (text_state >= 2 && chatmessage_stack.size() == 1)
+    parse_chatmessage_stack();
+}
+
+void Courtroom::parse_chatmessage_stack()
+{
+  if (chatmessage_stack.isEmpty())
+    return;
+
+  AOPacket *p_packet = chatmessage_stack.takeLast();
+  unpack_chatmessage(&p_packet->get_contents());
+}
+
 void Courtroom::unpack_chatmessage(QStringList *p_contents)
 {
   for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
@@ -2929,6 +2945,9 @@ void Courtroom::chat_tick()
         additive_previous +
         filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     real_tick_pos = ui_vp_message->toPlainText().size();
+
+    // Parse the next chatmessage if it exists
+    parse_chatmessage_stack();
     return;
   }
 

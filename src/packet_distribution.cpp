@@ -470,7 +470,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
-      w_courtroom->unpack_chatmessage(&p_packet->get_contents());
+      w_courtroom->add_chatmessage_stack(p_packet);
   }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)
