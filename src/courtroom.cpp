@@ -1708,7 +1708,10 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+    if(ao_app->y_offset_enabled)
+        packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+    else
+        packet_contents.append(QString::number(char_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked()) {
@@ -2616,7 +2619,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
-                               int color)
+                               int color, QDateTime timestamp)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -2642,10 +2645,14 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 
   // Timestamp if we're doing that meme
-  if (log_timestamp)
-    ui_ic_chatlog->textCursor().insertText(
-        "[" + QDateTime::currentDateTime().toString("h:mm:ss AP") + "] ",
-        normal);
+  if (log_timestamp) {
+    if (timestamp.isValid()) {
+      ui_ic_chatlog->textCursor().insertText(
+        "[" + timestamp.toString("h:mm:ss AP") + "] ", normal);
+    } else {
+      qDebug() << "could not insert invalid timestamp";
+    }
+  }
 
   // Format the name of the actor
   ui_ic_chatlog->textCursor().insertText(p_name, bold);
@@ -3570,9 +3577,10 @@ void Courtroom::on_ooc_return_pressed()
     if (!caseauth.isEmpty())
       append_server_chatmessage(tr("CLIENT"),
                                 tr("Case made by %1.").arg(caseauth), "1");
-    if (!casedoc.isEmpty())
-      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
-                                              "#/doc " + casedoc + "#%"));
+    if (!casedoc.isEmpty()) {
+      QStringList f_contents = {ui_ooc_chat_name->text(), "/doc " + casedoc};
+      ao_app->send_server_packet(new AOPacket("CT", f_contents));
+    }
     if (!casestatus.isEmpty())
       ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
                                               "#/status " + casestatus + "#%"));
@@ -3585,7 +3593,15 @@ void Courtroom::on_ooc_return_pressed()
           new AOPacket("DE#" + QString::number(i) + "#%"));
     }
 
-    foreach (QString evi, casefile.childGroups()) {
+    // sort the case_evidence numerically
+    QStringList case_evidence = casefile.childGroups();
+    std::sort(case_evidence.begin(), case_evidence.end(),
+              [] (const QString &a, const QString &b) {
+                return a.toInt() < b.toInt();
+              });
+
+    // load evidence
+    foreach (QString evi, case_evidence) {
       if (evi == "General")
         continue;
 
@@ -3840,6 +3856,7 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = ui_iniswap_dropdown->lineEdit()->createStandardContextMenu();
 
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
   if (file_exists(ao_app->get_character_path(current_char, "char.ini")))
     menu->addAction(QString("Edit " + current_char + "/char.ini"), this,
@@ -3948,6 +3965,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = ui_sfx_dropdown->lineEdit()->createStandardContextMenu();
 
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
   if (file_exists(ao_app->get_character_path(current_char, "soundlist.ini")))
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
@@ -4035,8 +4053,9 @@ void Courtroom::set_effects_dropdown()
 
 void Courtroom::on_effects_context_menu_requested(const QPoint &pos)
 {
-  QMenu *menu = new QMenu();
+  QMenu *menu = new QMenu(this);
 
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   if (!ao_app->read_char_ini(current_char, "effects", "Options").isEmpty())
     menu->addAction(
         QString("Open misc/" +
@@ -4201,7 +4220,8 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 {
-  QMenu *menu = new QMenu();
+  QMenu *menu = new QMenu(this);
+  menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addAction(QString(tr("Stop Current Song")), this, SLOT(music_stop()));
   menu->addAction(QString(tr("Play Random Song")), this, SLOT(music_random()));
   menu->addSeparator();
@@ -4453,7 +4473,8 @@ void Courtroom::on_pair_clicked()
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
-    ui_pair_vert_offset_spinbox->show();
+    if(ao_app->y_offset_enabled)
+        ui_pair_vert_offset_spinbox->show();
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
     ui_mute->set_image("mute");
@@ -4779,7 +4800,8 @@ void Courtroom::regenerate_ic_chatlog()
     append_ic_text(item.get_message(),
                    ui_showname_enable->isChecked() ? item.get_showname()
                                                    : item.get_name(),
-                   item.get_action(), item.get_chat_color());
+                   item.get_action(), item.get_chat_color(),
+                   item.get_datetime().toLocalTime());
   }
 }
 
