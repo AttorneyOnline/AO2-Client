@@ -1891,7 +1891,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   }
 
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-  if (f_evi_id <= local_evidence_list.size()) {
+  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
     QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     log_ic_text(m_chatmessage[CHAR_NAME], m_chatmessage[SHOWNAME], f_displayname,
                 tr("has presented evidence"),
@@ -2289,7 +2289,7 @@ void Courtroom::handle_chatmessage_3()
   // Display evidence image
   //
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-  if (f_evi_id <= local_evidence_list.size()) {
+  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
     // shifted by 1 because 0 is no evidence per legacy standards
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
