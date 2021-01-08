@@ -207,6 +207,12 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
+  // Add the message packet to the stack
+  void add_chatmessage_stack(AOPacket *msg_packet);
+
+  // Proceed to parse the oldest chatmessage and remove it from the stack
+  void parse_chatmessage_stack();
+
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList *p_contents);
 
@@ -221,16 +227,16 @@ public:
   bool handle_objection();
 
   // Display the evidence image box when presenting evidence in IC
-  bool display_evidence_image();
+  void display_evidence_image();
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
-  bool handle_ic_message();
+  void handle_ic_message();
   
   // Display the character.
   void display_character();
 
   // Display the character's pair if present.
-  void display_pair_character();
+  void display_pair_character(QString other_charid, QString other_offset);
 
   // Handle the emote modifier value and proceed through the logic accordingly.
   void handle_emote_mod(int emote_mod, bool nonint_pre);
@@ -329,6 +335,8 @@ private:
   QVector<QString> arup_locks;
 
   QVector<chatlogpiece> ic_chatlog_history;
+
+  QVector<AOPacket *> chatmessage_stack;
 
   // triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;

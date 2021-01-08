@@ -1865,7 +1865,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     // Grab the char.ini showname
     f_char_showname = ao_app->get_showname(char_list.at(f_char_id).name);
     // If custom serversided shownames are not enabled
-    if (!ui_showname_enable->isChecked())) {
+    if (!ui_showname_enable->isChecked()) {
       // Set the display name to the char.ini showname
       f_displayname = f_char_showname;
     }
@@ -1999,35 +1999,26 @@ void Courtroom::display_character()
   ui_vp_player_char->move(ui_viewport->width() * offset_x / 100, ui_viewport->height() * offset_y / 100);
 }
 
-void Courtroom::display_pair_character()
+void Courtroom::display_pair_character(QString other_charid, QString other_offset)
 {
-  // Reset the side player
-  ui_vp_sideplayer_char->stop();
-  ui_vp_sideplayer_char->move(0, 0);
-
-  // If we're zooming, just keep the pair character hidden.
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-  if (emote_mod == 5 || emote_mod == 6)
-    return;
-
   // If pair information exists
-  if (!m_chatmessage[OTHER_CHARID].isEmpty()) {
+  if (!other_charid.isEmpty()) {
     // Initialize the "ok" bool check to see if the toInt conversion succeeded
     bool ok;
     // Grab the charid of the pair
-    int charid = m_chatmessage[OTHER_CHARID].split("^")[0].toInt(&ok);
+    int charid = other_charid.split("^")[0].toInt(&ok);
     // If the charid is an int and is valid...
     if (ok && charid > -1) {
       // Show the pair character
       ui_vp_sideplayer_char->show();
       // Obtain the offsets, splitting it up by & char
-      QStringList offsets = m_chatmessage[OTHER_OFFSET].split("&");
+      QStringList offsets = other_offset.split("&");
       int offset_x;
       int offset_y;
       // If we only got one number...
       if (offsets.length() <= 1) {
         // That's just the X offset. Make Y offset 0.
-        offset_x = m_chatmessage[OTHER_OFFSET].toInt();
+        offset_x = other_offset.toInt();
         offset_y = 0;
       }
       else {
@@ -2040,7 +2031,7 @@ void Courtroom::display_pair_character()
                                   ui_viewport->height() * offset_y / 100);
 
       // Split the charid according to the ^ to determine if we have "ordering" info
-      QStringList args = m_chatmessage[OTHER_CHARID].split("^");
+      QStringList args = other_charid.split("^");
       if (args.size() >
           1) // This ugly workaround is so we don't make an extra packet just
               // for this purpose. Rewrite pairing when?
@@ -2120,8 +2111,16 @@ void Courtroom::handle_ic_message()
   // Display our own character
   display_character();
 
-  // Display the pair character
-  display_pair_character();
+  // Reset the pair character
+  ui_vp_sideplayer_char->stop();
+  ui_vp_sideplayer_char->move(0, 0);
+
+  // If the emote_mod is not zooming
+  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+  if (emote_mod != 5 && emote_mod != 6) {
+    // Display the pair character
+    display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
+  }
 
   // Parse the emote_mod part of the chat message
   handle_emote_mod(m_chatmessage[EMOTE_MOD].toInt(), m_chatmessage[NONINTERRUPTING_PRE].toInt() == 1);
@@ -2367,7 +2366,7 @@ void Courtroom::handle_ic_speaking()
 {
   // Display the evidence
   display_evidence_image();
-
+  QString side = m_chatmessage[SIDE];
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // emote_mod 5 is zoom and emote_mod 6 is zoom w/ preanim.
   if (emote_mod == 5 || emote_mod == 6) {
