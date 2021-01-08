@@ -207,16 +207,40 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
-  // im gonna fuckin commentate the exact purpose of each and every one of these fuckwits
+  // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList *p_contents);
+
+  // Log the message contents and information such as evidence presenting etc. into the IC logs
   void log_chatmessage();
+
+  // Log the message contents and information such as evidence presenting etc. into the IC logs
+  void handle_callwords();
+
+  // Handle the objection logic, if it's interrupting the currently parsing message.
+  // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
   bool handle_objection();
+
+  // Display the evidence image box when presenting evidence in IC
+  bool display_evidence_image();
+
+  // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   bool handle_ic_message();
+  
+  // Display the character.
   void display_character();
+
+  // Display the character's pair if present.
   void display_pair_character();
+
+  // Handle the emote modifier value and proceed through the logic accordingly.
   void handle_emote_mod();
+
+  // Initialize the chatbox image, showname shenanigans, custom chatboxes, etc.
   void initialize_chatbox();
-  void handle_chatbox();
+
+  // Finally start displaying the chatbox we initialized, display the evidence, and play the talking or idle emote for the character.
+  // Callwords are also handled here.
+  void handle_ic_speaking();
 
   // This function filters out the common CC inline text trickery, for appending
   // to the IC chatlog.

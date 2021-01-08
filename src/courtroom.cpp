@@ -1822,7 +1822,11 @@ void Courtroom::unpack_chatmessage(QStringList *p_contents)
     reset_ui();
   }
 
+  // Put this message into the IC chat log
   log_chatmessage();
+
+  // Process the callwords for this message
+  handle_callwords();
 
   // Reset the interface to make room for objection handling
   ui_vp_chat_arrow->stop();
@@ -2084,7 +2088,7 @@ void Courtroom::handle_emote_mod()
     if (m_chatmessage[NONINTERRUPTING_PRE].toInt() == 0)
     {
       // Skip preanim.
-      handle_chatbox();
+      handle_ic_speaking();
     }
     else
     {
@@ -2312,9 +2316,28 @@ void Courtroom::initialize_chatbox()
   set_font(ui_vp_message, "", "message", customchar, font_name, f_pointsize);
 }
 
-void Courtroom::handle_chatbox()
+void Courtroom::handle_callwords()
 {
-  // Display evidence image
+  // Quickly check through the message for the word_call (callwords) sfx
+  QString f_message = m_chatmessage[MESSAGE];
+  // Obtain the current call words (Really? It does File I/O on every single message???)
+  QStringList call_words = ao_app->get_call_words();
+  // Loop through each word in the call words list
+  for (QString word : call_words) {
+    // If our message contains that specific call word
+    if (f_message.contains(word, Qt::CaseInsensitive)) {
+      // Play the call word sfx on the modcall_player sound container
+      modcall_player->play(ao_app->get_sfx("word_call"));
+      // Make the window flash
+      ao_app->alert(this);
+      // Break the loop so we don't spam sound effects
+      break;
+    }
+  }
+}
+
+void Courtroom::display_evidence_image()
+{
   QString side = m_chatmessage[SIDE];
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
@@ -2327,6 +2350,12 @@ void Courtroom::handle_chatbox()
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
                                           ui_sfx_slider->value());
   }
+}
+
+void Courtroom::handle_ic_speaking()
+{
+  // Display the evidence
+  display_evidence_image();
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // emote_mod 5 is zoom and emote_mod 6 is zoom w/ preanim.
@@ -2368,23 +2397,6 @@ void Courtroom::handle_chatbox()
                                  m_chatmessage[EMOTE]);
     // Set the anim state accordingly
     anim_state = 3;
-  }
-
-  // Quickly check through the message for the word_call (callwords) sfx
-  QString f_message = m_chatmessage[MESSAGE];
-  // Obtain the current call words (Really? It does File I/O on every single message???)
-  QStringList call_words = ao_app->get_call_words();
-  // Loop through each word in the call words list
-  for (QString word : call_words) {
-    // If our message contains that specific call word
-    if (f_message.contains(word, Qt::CaseInsensitive)) {
-      // Play the call word sfx on the modcall_player sound container
-      modcall_player->play(ao_app->get_sfx("word_call"));
-      // Make the window flash
-      ao_app->alert(this);
-      // Break the loop so we don't spam sound effects
-      break;
-    }
   }
 
   // Begin parsing through the chatbox message
@@ -2802,13 +2814,13 @@ void Courtroom::play_preanim(bool noninterrupting)
     text_delay_timer->start(text_delay);
 
   if (noninterrupting)
-    handle_chatbox();
+    handle_ic_speaking();
 }
 
 void Courtroom::preanim_done()
 {
   anim_state = 1;
-  handle_chatbox();
+  handle_ic_speaking();
 }
 
 void Courtroom::start_chat_ticking()
