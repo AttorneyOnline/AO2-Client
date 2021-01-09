@@ -428,6 +428,12 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // Current list file sorted line by line
+  QStringList sound_list;
+
+  // Current SFX the user put in for the sfx dropdown list
+  QString custom_sfx = "";
+
   // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
 
@@ -730,6 +736,7 @@ private slots:
   void on_iniswap_remove_clicked();
 
   void on_sfx_dropdown_changed(int p_index);
+  void on_sfx_dropdown_custom(QString p_sfx);
   void set_sfx_dropdown();
   void on_sfx_context_menu_requested(const QPoint &pos);
   void on_sfx_edit_requested();
