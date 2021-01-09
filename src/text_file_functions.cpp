@@ -48,7 +48,7 @@ int AOApplication::get_max_log_size()
 
 int AOApplication::stay_time()
 {
-  int result = configini->value("stay_time", 0).toInt();
+  int result = configini->value("stay_time", 200).toInt();
   return result;
 }
 

@@ -1828,8 +1828,8 @@ void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
 
   log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
 
-  // No message is being parsed right now and we're not waiting on one
-  if (text_state >= 2 && !text_queue_timer->isActive())
+  // Our settings disabled queue, or no message is being parsed right now and we're not waiting on one
+  if (ao_app->text_delay() <= 0 || (text_state >= 2 && !text_queue_timer->isActive()))
     chatmessage_dequeue(); // Process the message instantly
 
   // Otherwise, since a message is being parsed, chat_tick() should be called which will call dequeue once it's done.
@@ -2976,8 +2976,9 @@ void Courtroom::chat_tick()
     real_tick_pos = ui_vp_message->toPlainText().size();
 
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
-    if (!text_queue_timer->isActive())
-      text_queue_timer->start(ao_app->stay_time());
+    int delay = ao_app->stay_time();
+    if (delay > 0 && !text_queue_timer->isActive())
+      text_queue_timer->start(delay);
     return;
   }
 
