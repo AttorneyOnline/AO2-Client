@@ -5050,12 +5050,12 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
 
 void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
 {
-  // Get the pixel width of the string if it were p_widget's label
   QString filename = "courtroom_design.ini";
-  // Get the width of the element as defined by the current theme
   pos_size_type design_ini_result =
       ao_app->get_element_dimensions(p_identifier, filename);
+  // Get the width of the element as defined by the current theme
 
+  // Cast to make sure we're working with one of the two supported widget types
   QLabel *p_label = qobject_cast<QLabel *>(p_widget);
   QCheckBox *p_checkbox = qobject_cast<QCheckBox *>(p_widget);
 
@@ -5065,7 +5065,7 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     qWarning() << "W: Tried to truncate an unsupported widget:" << p_identifier;
     return;
   }
-
+  // translate the text for the widget we're working with so we truncate the right string
   QString label_text_tr =
       QCoreApplication::translate(p_widget->metaObject()->className(), "%1")
           .arg((p_label != nullptr ? p_label->text() : p_checkbox->text()));
@@ -5074,9 +5074,9 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
            ? design_ini_result.width
            : design_ini_result.width -
                  18); // 18 is the width of a checkbox on win10 + 5px of
-                      // padding, should probably try to fetch the actual size
+                      // padding, TODO: fetch the actual size
   int label_px_width =
-      p_widget->fontMetrics().boundingRect(label_text_tr).width();
+      p_widget->fontMetrics().boundingRect(label_text_tr).width(); // pixel width of our translated text
   p_widget->setToolTip(label_text_tr + "\n" + p_widget->toolTip());
   // qInfo() << "I: Width of label text: " << label_px_width << "px. Theme's
   // width: " << label_theme_width << "px.";
