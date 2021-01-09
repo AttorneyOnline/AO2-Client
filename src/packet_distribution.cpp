@@ -167,7 +167,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (get_auto_logging_enabled() && !log_filename.isEmpty())
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(), path, true);
+        append_to_file(p_packet->to_string(true), path, true);
         if (!demo_timer.isValid())
           demo_timer.start();
         else
@@ -353,7 +353,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (get_auto_logging_enabled() && !log_filename.isEmpty())
     {
       QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-      append_to_file(p_packet->to_string(), path, true);
+      append_to_file(p_packet->to_string(true), path, true);
       if (!demo_timer.isValid())
         demo_timer.start();
       else
@@ -461,7 +461,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (get_auto_logging_enabled() && !log_filename.isEmpty())
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(), path, true);
+        append_to_file(p_packet->to_string(true), path, true);
         if (!demo_timer.isValid())
           demo_timer.start();
         else
@@ -479,7 +479,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (get_auto_logging_enabled() && !log_filename.isEmpty())
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(), path, true);
+        append_to_file(p_packet->to_string(true), path, true);
         if (!demo_timer.isValid())
           demo_timer.start();
         else
@@ -511,7 +511,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (get_auto_logging_enabled() && !log_filename.isEmpty())
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(), path, true);
+        append_to_file(p_packet->to_string(true), path, true);
         if (!demo_timer.isValid())
           demo_timer.start();
         else
@@ -526,7 +526,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (get_auto_logging_enabled() && !log_filename.isEmpty())
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(), path, true);
+        append_to_file(p_packet->to_string(true), path, true);
         if (!demo_timer.isValid())
           demo_timer.start();
         else
@@ -545,7 +545,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         if (get_auto_logging_enabled() && !log_filename.isEmpty())
         {
           QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-          append_to_file(p_packet->to_string(), path, true);
+          append_to_file(p_packet->to_string(true), path, true);
           if (!demo_timer.isValid())
             demo_timer.start();
           else
@@ -562,7 +562,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       if (get_auto_logging_enabled() && !log_filename.isEmpty())
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(), path, true);
+        append_to_file(p_packet->to_string(true), path, true);
         if (!demo_timer.isValid())
           demo_timer.start();
         else

@@ -8,9 +8,15 @@ AOPacket::AOPacket(QString p_packet_string)
   m_contents = packet_contents.mid(1, packet_contents.size()-2); // trims %
 }
 
-QString AOPacket::to_string()
+QString AOPacket::to_string(bool encoded)
 {
-  return m_header + "#" + m_contents.join("#") + "#%";
+  QString contents = m_contents;
+  if (encoded)
+    contents.replaceInStrings("#", "<num>")
+      .replaceInStrings("%", "<percent>")
+      .replaceInStrings("$", "<dollar>")
+      .replaceInStrings("&", "<and>");
+  return m_header + "#" + contents.join("#") + "#%";
 }
 
 void AOPacket::net_encode()
