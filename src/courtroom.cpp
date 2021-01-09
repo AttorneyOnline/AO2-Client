@@ -2041,6 +2041,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       }
       log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
     }
+  }
 }
 
 void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
@@ -2386,7 +2387,7 @@ void Courtroom::handle_ic_message()
   }
 
   // Parse the emote_mod part of the chat message
-  handle_emote_mod(m_chatmessage[EMOTE_MOD].toInt(), m_chatmessage[NONINTERRUPTING_PRE].toInt() == 1);
+  handle_emote_mod(m_chatmessage[EMOTE_MOD].toInt(), m_chatmessage[IMMEDIATE].toInt() == 1);
 
   // Update the chatbox information
   initialize_chatbox();
