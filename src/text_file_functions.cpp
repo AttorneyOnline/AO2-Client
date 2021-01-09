@@ -73,6 +73,13 @@ bool AOApplication::get_log_timestamp()
   return result.startsWith("true");
 }
 
+bool AOApplication::get_log_ic_actions()
+{
+  QString result =
+      configini->value("log_ic_actions", "true").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::get_showname_enabled_by_default()
 {
   QString result =
@@ -639,6 +646,8 @@ QString AOApplication::get_blips(QString p_char)
 
 QString AOApplication::get_chat(QString p_char)
 {
+  if (p_char == "default")
+    return "default";
   QString f_result = read_char_ini(p_char, "chat", "Options");
 
   // handling the correct order of chat is a bit complicated, we let the caller
