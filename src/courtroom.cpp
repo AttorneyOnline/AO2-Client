@@ -1826,9 +1826,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     p_contents[MESSAGE] = "";
   }
 
-  if (p_contents[OBJECTION_MOD].toInt() == 4)
-      p_contents[EMOTE_MOD] = "1";
-
   bool is_objection = false;
   // If the user wants to clear queue on objection
   if (ao_app->is_instant_objection_enabled())
@@ -1840,7 +1837,12 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
       chatmessage_queue.clear();
   }
 
+  // Record the log I/O, log files should be accurate.
   log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
+  if (ao_app->is_desyncrhonized_logs_enabled()) {
+    // Display the logs immediately.
+    display_log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
+  }
 
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
@@ -1890,8 +1892,10 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     }
   }
 
-  // // Put this message into the IC chat log
-  // log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
+  if (!ao_app->is_desyncrhonized_logs_enabled()) {
+    // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
+    display_log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
+  }
 
   // Process the callwords for this message
   handle_callwords();
@@ -1911,37 +1915,28 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
 
 void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
 {
-  // Servers could use spectator char for IC system messages, which is why we use "System" for char name
-  QString f_char_showname = "System";
-
   // Display name will use the showname
   QString f_displayname = f_showname;
-
   if (f_char_id != -1) {
     // Grab the char.ini showname
-    f_char_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
     // If custom serversided shownames are not enabled
     if (!ui_showname_enable->isChecked()) {
       // Set the display name to the char.ini showname
-      f_displayname = f_char_showname;
+      f_displayname = f_showname;
     }
   }
-
   // If display name is just whitespace, use the char.ini showname.
   if (f_displayname.trimmed().isEmpty())
-    f_displayname = f_char_showname;
+    f_displayname = f_showname;
 
   // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
   if (!f_message.isEmpty() ||
       ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
     // Add the message to the logs file
-    log_ic_text(f_char_showname, f_displayname, f_message, "",
+    log_ic_text(f_showname, f_displayname, f_message, "",
                 f_color);
-    // Append the message to the IC chatlogs in client
-    append_ic_text(f_message, f_displayname, "",
-                   f_color);
   }
-
   // Obtain evidence ID we're trying to work with
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
   // If the evidence ID is in the valid range
@@ -1949,8 +1944,41 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     // Obtain the evidence name
     QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     // Add the message to the logs file
-    log_ic_text(f_char_showname, f_displayname, f_evi_name,
+    log_ic_text(f_showname, f_displayname, f_evi_name,
                 tr("has presented evidence"));
+  }
+}
+
+void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
+{
+  // Display name will use the showname
+  QString f_displayname = f_showname;
+  if (f_char_id != -1) {
+    // Grab the char.ini showname
+    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+    // If custom serversided shownames are not enabled
+    if (!ui_showname_enable->isChecked()) {
+      // Set the display name to the char.ini showname
+      f_displayname = f_showname;
+    }
+  }
+  // If display name is just whitespace, use the char.ini showname.
+  if (f_displayname.trimmed().isEmpty())
+    f_displayname = f_showname;
+
+  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
+  if (!f_message.isEmpty() ||
+      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
+    // Append the message to the IC chatlogs in client
+    append_ic_text(f_message, f_displayname, "",
+                   f_color);
+  }
+  // Obtain evidence ID we're trying to work with
+  int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
+  // If the evidence ID is in the valid range
+  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+    // Obtain the evidence name
+    QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     // Append the message to the IC chatlogs in client
     append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
   }

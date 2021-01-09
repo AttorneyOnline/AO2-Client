@@ -979,6 +979,12 @@ bool AOApplication::is_instant_objection_enabled()
   return result.startsWith("true");
 }
 
+bool AOApplication::is_desyncrhonized_logs_enabled()
+{
+  QString result = configini->value("desync_logs", "false").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::is_discord_enabled()
 {
   QString result = configini->value("discord", "true").value<QString>();

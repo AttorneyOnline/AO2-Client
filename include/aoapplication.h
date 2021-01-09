@@ -169,6 +169,10 @@ public:
   // from the config.ini.
   bool is_instant_objection_enabled();
 
+  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
+  // from the config.ini
+  bool is_desyncrhonized_logs_enabled();
+
   // Returns the value of whether Discord should be enabled on startup
   // from the config.ini.
   bool is_discord_enabled();

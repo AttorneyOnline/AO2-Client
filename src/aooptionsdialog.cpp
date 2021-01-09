@@ -179,10 +179,23 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stay_time_spinbox);
 
   row += 1;
+  ui_desync_logs_lbl = new QLabel(ui_form_layout_widget);
+  ui_desync_logs_lbl->setText(tr("Desynchronize IC Logs:"));
+  ui_desync_logs_lbl->setToolTip(
+      tr("If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_desync_logs_lbl);
+
+  ui_desync_logs_cb = new QCheckBox(ui_form_layout_widget);
+  ui_desync_logs_cb->setChecked(p_ao_app->get_log_timestamp());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_desync_logs_cb);
+
+  row += 1;
   ui_instant_objection_lbl = new QLabel(ui_form_layout_widget);
   ui_instant_objection_lbl->setText(tr("Instant Objection:"));
   ui_instant_objection_lbl->setToolTip(
-      tr("If Text Stay Time is more than 0, should objections skip queued up messages, or wait for their turn?"));
+      tr("If Text Stay Time is more than 0, instant objection will skip queued messages instead of waiting to catch up."));
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_instant_objection_lbl);
 
@@ -793,6 +806,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("log_newline", ui_log_newline_cb->isChecked());
   configini->setValue("log_margin", ui_log_margin_spinbox->value());
   configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
+  configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
   configini->setValue("stay_time", ui_stay_time_spinbox->value());
   configini->setValue("instant_objection", ui_instant_objection_cb->isChecked());
   configini->setValue("default_username", ui_username_textbox->text());
