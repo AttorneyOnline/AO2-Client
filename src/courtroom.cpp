@@ -2990,8 +2990,16 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // Make shout text bold
   else if (p_action == tr("shouts") && log_ic_actions) {
     ui_ic_chatlog->textCursor().insertText(" " + p_action + " ", normal);
-    if (log_colors)
-      ui_ic_chatlog->textCursor().insertHtml("<b>" + filter_ic_text(p_text, true, -1, 0) + "</b>");
+    if (log_colors) {
+      ui_ic_chatlog->textCursor().insertHtml(
+          "<b>" +
+          filter_ic_text(p_text, true, -1, 0)
+              .replace(
+                  "$c0",
+                  ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini")
+                      .name(QColor::HexRgb)) +
+          "</b>");
+    }
     else
       ui_ic_chatlog->textCursor().insertText(" " + p_text, italics);
   }
