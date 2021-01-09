@@ -46,6 +46,12 @@ int AOApplication::get_max_log_size()
   return result;
 }
 
+int AOApplication::stay_time()
+{
+  int result = configini->value("stay_time", 0).toInt();
+  return result;
+}
+
 bool AOApplication::get_log_goes_downwards()
 {
   QString result =
@@ -842,7 +848,7 @@ QString AOApplication::get_flash_frame(QString p_char, QString p_emote,
 
 int AOApplication::get_text_delay(QString p_char, QString p_emote)
 {
-  QString f_result = read_char_ini(p_char, p_emote, "TextDelay");
+  QString f_result = read_char_ini(p_char, p_emote, "stay_time");
 
   if (f_result == "")
     return -1;

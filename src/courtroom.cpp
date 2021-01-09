@@ -18,6 +18,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   text_delay_timer = new QTimer(this);
   text_delay_timer->setSingleShot(true);
 
+  text_queue_timer = new QTimer(this);
+  text_queue_timer->setSingleShot(true);
+
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
 
@@ -273,6 +276,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(text_delay_timer, SIGNAL(timeout()), this,
           SLOT(start_chat_ticking()));
+
+  connect(text_queue_timer, SIGNAL(timeout()), this,
+          SLOT(chatmessage_dequeue()));
+
   connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
@@ -1797,16 +1804,54 @@ void Courtroom::reset_ui()
 void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
 {
   chatmessage_queue.enqueue(msg_packet);
-  if (text_state >= 2 && chatmessage_queue.size() == 1)
-    chatmessage_dequeue();
+  // Put this message into the IC chat log
+  QStringList p_contents = msg_packet.get_contents();
+  // Check the validity of the character ID we got
+  int f_char_id = p_contents[CHAR_ID].toInt();
+  if (f_char_id < -1 || f_char_id >= char_list.size())
+    return;
+
+  // We muted this char, gtfo
+  if (mute_map.value(f_char_id))
+    return;
+
+  // Reset input UI elements if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+  if (f_char_id == m_cid) {
+    reset_ui();
+  }
+
+  // User-created blankpost
+  if (p_contents[MESSAGE].trimmed().isEmpty()) {
+    // Turn it into true blankpost
+    p_contents[MESSAGE] = "";
+  }
+
+  log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
+
+  // No message is being parsed right now and we're not waiting on one
+  if (text_state >= 2 && !text_queue_timer->isActive())
+    chatmessage_dequeue(); // Process the message instantly
+
+  // Otherwise, since a message is being parsed, chat_tick() should be called which will call dequeue once it's done.
 }
 
 void Courtroom::chatmessage_dequeue()
 {
+  // Chat stopped being processed, indicate that the user can post their message now.
+  QString f_char = m_chatmessage[CHAR_NAME];
+  QString f_custom_theme = ao_app->get_char_shouts(f_char);
+  ui_vp_chat_arrow->play(
+      "chat_arrow", f_char,
+      f_custom_theme);
+
+  // Nothing to parse in the queue
   if (chatmessage_queue.isEmpty())
     return;
 
-  qDebug() << "Queueing up this next message";
+  // Stop the text queue timer
+  if (text_queue_timer->isActive())
+    text_queue_timer->stop();
+
   AOPacket p_packet = chatmessage_queue.dequeue();
   unpack_chatmessage(p_packet.get_contents());
 }
@@ -1828,20 +1873,6 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     }
   }
 
-  // Check the validity of the character ID we got
-  int f_char_id = m_chatmessage[CHAR_ID].toInt();
-  if (f_char_id < -1 || f_char_id >= char_list.size())
-    return;
-
-  // We muted this char, gtfo
-  if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
-    return;
-
-  // Reset input UI elements if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-  if (m_chatmessage[CHAR_ID].toInt() == m_cid) {
-    reset_ui();
-  }
-
   // User-created blankpost
   if (m_chatmessage[MESSAGE].trimmed().isEmpty()) {
     // Turn it into true blankpost
@@ -1851,8 +1882,8 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   if (m_chatmessage[OBJECTION_MOD].toInt() == 4)
       m_chatmessage[EMOTE_MOD] = "1";
 
-  // Put this message into the IC chat log
-  log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
+  // // Put this message into the IC chat log
+  // log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
 
   // Process the callwords for this message
   handle_callwords();
@@ -2807,7 +2838,7 @@ void Courtroom::play_preanim(bool noninterrupting)
   // all time values in char.inis are multiplied by a constant(time_mod) to get
   // the actual time
   int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
-  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
+  int stay_time = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
 
   int preanim_duration;
@@ -2837,8 +2868,8 @@ void Courtroom::play_preanim(bool noninterrupting)
   else
     anim_state = 1;
 
-  if (text_delay >= 0)
-    text_delay_timer->start(text_delay);
+  if (stay_time >= 0)
+    text_delay_timer->start(stay_time);
 
   if (noninterrupting)
     handle_ic_speaking();
@@ -2939,16 +2970,14 @@ void Courtroom::chat_tick()
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
     }
-    ui_vp_chat_arrow->play(
-        "chat_arrow", f_char,
-        f_custom_theme); // Chat stopped being processed, indicate that.
     additive_previous =
         additive_previous +
         filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     real_tick_pos = ui_vp_message->toPlainText().size();
 
-    // Parse the next chatmessage if it exists
-    chatmessage_dequeue();
+    // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
+    if (!text_queue_timer->isActive())
+      text_queue_timer->start(ao_app->stay_time());
     return;
   }
 

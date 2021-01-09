@@ -211,9 +211,6 @@ public:
   // Add the message packet to the stack
   void chatmessage_enqueue(AOPacket msg_packet);
 
-  // Proceed to parse the oldest chatmessage and remove it from the stack
-  void chatmessage_dequeue();
-
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList p_contents);
 
@@ -377,6 +374,9 @@ private:
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
+  
+  // delay before the next queue entry is going to be processed
+  QTimer *text_queue_timer;
 
   // delay before sfx plays
   QTimer *sfx_delay_timer;
@@ -875,6 +875,9 @@ private slots:
   void on_casing_clicked();
 
   void ping_server();
+
+  // Proceed to parse the oldest chatmessage and remove it from the stack
+  void chatmessage_dequeue();
 };
 
 #endif // COURTROOM_H

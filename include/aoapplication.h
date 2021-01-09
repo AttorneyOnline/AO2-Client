@@ -207,6 +207,9 @@ public:
   // may contain, from config.ini.
   int get_max_log_size();
 
+  // Current wait time between messages for the queue system
+  int stay_time();
+
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();
