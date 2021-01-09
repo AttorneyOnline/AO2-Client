@@ -210,9 +210,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
   ui_showname_enable->setText(tr("Shownames"));
 
-  ui_pre_non_interrupt = new QCheckBox(this);
-  ui_pre_non_interrupt->setText(tr("No Interrupt"));
-  ui_pre_non_interrupt->hide();
+  ui_immediate = new QCheckBox(this);
+  ui_immediate->setText(tr("No Interrupt"));
+  ui_immediate->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_custom_objection->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -477,14 +477,14 @@ void Courtroom::set_widgets()
   // if needed.
   if (ao_app->cccc_ic_support_enabled) {
     ui_pair_button->show();
-    ui_pre_non_interrupt->show();
+    ui_immediate->show();
     ui_showname_enable->show();
     ui_ic_chat_name->show();
     ui_ic_chat_name->setEnabled(true);
   }
   else {
     ui_pair_button->hide();
-    ui_pre_non_interrupt->hide();
+    ui_immediate->hide();
     ui_showname_enable->hide();
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
@@ -839,8 +839,16 @@ void Courtroom::set_widgets()
   ui_pre->setToolTip(
       tr("Play a single-shot animation as defined by the emote when checked."));
 
-  set_size_and_pos(ui_pre_non_interrupt, "pre_no_interrupt");
-  ui_pre_non_interrupt->setToolTip(
+  pos_size_type design_ini_result =
+      ao_app->get_element_dimensions("immediate", "courtroom_design.ini");
+
+  // If we don't have new-style naming, fall back to the old method
+  if (design_ini_result.width < 0 || design_ini_result.height < 0) 
+    set_size_and_pos(ui_immediate, "pre_no_interrupt");
+  else // Adopt the based new method instead
+    set_size_and_pos(ui_immediate, "immediate");
+
+  ui_immediate->setToolTip(
       tr("If preanim is checked, display the input text immediately as the "
          "animation plays concurrently."));
 
@@ -1597,7 +1605,7 @@ void Courtroom::on_chat_return_pressed()
   // showname#
   // other_charid#
   // self_offset#
-  // noninterrupting_preanim#%
+  // immediate_preanim#%
 
   QStringList packet_contents;
 
@@ -1642,7 +1650,7 @@ void Courtroom::on_chat_return_pressed()
     else
       f_emote_mod = 2;
   }
-  else if (ui_pre->isChecked() && !ui_pre_non_interrupt->isChecked()) {
+  else if (ui_pre->isChecked() && !ui_immediate->isChecked()) {
     if (f_emote_mod == 0)
       f_emote_mod = 1;
     else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
@@ -1738,7 +1746,7 @@ void Courtroom::on_chat_return_pressed()
         packet_contents.append(QString::number(char_offset));
 
     // Finally, we send over if we want our pres to not interrupt.
-    if (ui_pre_non_interrupt->isChecked() && ui_pre->isChecked()) {
+    if (ui_immediate->isChecked() && ui_pre->isChecked()) {
       packet_contents.append("1");
     }
     else {
@@ -2216,7 +2224,7 @@ void Courtroom::handle_chatmessage_2()
     break;
   case 0:
   case 5:
-    if (m_chatmessage[NONINTERRUPTING_PRE].toInt() == 0)
+    if (m_chatmessage[IMMEDIATE].toInt() == 0)
       handle_chatmessage_3();
     else
       play_preanim(true);
@@ -2782,7 +2790,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 }
 
-void Courtroom::play_preanim(bool noninterrupting)
+void Courtroom::play_preanim(bool immediate)
 {
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_preanim = m_chatmessage[PRE_EMOTE];
@@ -2804,7 +2812,7 @@ void Courtroom::play_preanim(bool noninterrupting)
   QString anim_to_find =
       ao_app->get_image_suffix(ao_app->get_character_path(f_char, f_preanim));
   if (!file_exists(anim_to_find)) {
-    if (noninterrupting)
+    if (immediate)
       anim_state = 4;
     else
       anim_state = 1;
@@ -2815,7 +2823,7 @@ void Courtroom::play_preanim(bool noninterrupting)
 
   ui_vp_player_char->play_pre(f_char, f_preanim, preanim_duration);
 
-  if (noninterrupting)
+  if (immediate)
     anim_state = 4;
   else
     anim_state = 1;
@@ -2823,7 +2831,7 @@ void Courtroom::play_preanim(bool noninterrupting)
   if (text_delay >= 0)
     text_delay_timer->start(text_delay);
 
-  if (noninterrupting)
+  if (immediate)
     handle_chatmessage_3();
 }
 
@@ -3564,13 +3572,13 @@ void Courtroom::on_ooc_return_pressed()
     return;
   }
   else if (ooc_message.startsWith("/non_int_pre")) {
-    if (ui_pre_non_interrupt->isChecked())
+    if (ui_immediate->isChecked())
       append_server_chatmessage(
           "CLIENT", tr("Your pre-animations interrupt again."), "1");
     else
       append_server_chatmessage(
           "CLIENT", tr("Your pre-animations will not interrupt text."), "1");
-    ui_pre_non_interrupt->setChecked(!ui_pre_non_interrupt->isChecked());
+    ui_immediate->setChecked(!ui_immediate->isChecked());
     ui_ooc_chat_message->clear();
     return;
   }

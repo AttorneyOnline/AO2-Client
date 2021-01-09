@@ -233,7 +233,7 @@ public:
   // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim(bool noninterrupting);
+  void play_preanim(bool immediate);
 
   // plays the witness testimony or cross examination animation based on
   // argument
@@ -607,7 +607,7 @@ private:
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
 
-  QCheckBox *ui_pre_non_interrupt;
+  QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;
