@@ -73,6 +73,13 @@ bool AOApplication::get_log_timestamp()
   return result.startsWith("true");
 }
 
+bool AOApplication::get_log_ic_actions()
+{
+  QString result =
+      configini->value("log_ic_actions", "true").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::get_showname_enabled_by_default()
 {
   QString result =
