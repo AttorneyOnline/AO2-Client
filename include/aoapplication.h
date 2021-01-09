@@ -77,6 +77,7 @@ public:
   bool additive_enabled = false;
   bool effects_enabled = false;
   bool y_offset_enabled = false;
+  bool expanded_desk_mods_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -230,6 +231,9 @@ public:
 
   // Returns whether the log should have a timestamp.
   bool get_log_timestamp();
+
+  // Returns whether to log IC actions.
+  bool get_log_ic_actions();
 
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
@@ -411,8 +415,8 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's gender
-  QString get_gender(QString p_char);
+  // Returns p_char's blips (previously called their "gender")
+  QString get_blips(QString p_char);
 
   // ======
   // These are all casing-related settings.

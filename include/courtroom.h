@@ -176,6 +176,9 @@ public:
   // sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
 
+  // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
+  void set_self_offset(QString p_list);
+
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
   void set_ip_list(QString p_list);
@@ -240,7 +243,7 @@ public:
   void display_pair_character(QString other_charid, QString other_offset);
 
   // Handle the emote modifier value and proceed through the logic accordingly.
-  void handle_emote_mod(int emote_mod, bool nonint_pre);
+  void handle_emote_mod(int emote_mod, bool p_immediate);
 
   // Initialize the chatbox image, showname shenanigans, custom chatboxes, etc.
   void initialize_chatbox();
@@ -268,7 +271,7 @@ public:
   // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim(bool noninterrupting);
+  void play_preanim(bool immediate);
 
   // plays the witness testimony or cross examination animation based on
   // argument
@@ -369,6 +372,9 @@ private:
   // True, if the log should display the message like name<br>text instead of name: text
   bool log_newline = false;
 
+  // True, if the log should include RP actions like interjections, showing evidence, etc.
+  bool log_ic_actions = true;
+
   // Margin in pixels between log entries for the IC log.
   int log_margin = 0;
 
@@ -441,6 +447,11 @@ private:
 
   int objection_state = 0;
   QString objection_custom = "";
+  struct CustomObjection {
+    QString name;
+    QString filename;
+  };
+  QList<CustomObjection> custom_objections_list;
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -454,6 +465,17 @@ private:
 
   // List of associated RGB colors for this color index
   QVector<QColor> color_rgb_list;
+
+  // Same as above but populated from misc/default's config
+  QVector<QColor> default_color_rgb_list;
+
+  // Get a color index from an arbitrary misc config
+  void gen_char_rgb_list(QString p_char);
+  QVector<QColor> char_color_rgb_list;
+
+  // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
+  QString current_misc;
+  QString last_misc;
 
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
@@ -631,7 +653,7 @@ private:
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
 
-  QCheckBox *ui_pre_non_interrupt;
+  QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;

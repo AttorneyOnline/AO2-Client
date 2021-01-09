@@ -58,6 +58,8 @@ private:
   QCheckBox *ui_desync_logs_cb;
   QLabel *ui_instant_objection_lbl;
   QCheckBox *ui_instant_objection_cb;
+  QLabel *ui_log_ic_actions_lbl;
+  QCheckBox *ui_log_ic_actions_cb;
   QFrame *ui_log_names_divider;
   QLineEdit *ui_username_textbox;
   QLabel *ui_username_lbl;
