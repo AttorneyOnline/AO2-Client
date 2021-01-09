@@ -83,8 +83,13 @@ jobs:
       shell: bash
       run: strip -s Attorney_Online
 
+    - name: Compress
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: tar czvf Attorney_Online-linux-x86_64.tgz Attorney_Online
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         name: Attorney_Online
-        path: ${{github.workspace}}/build/Attorney_Online
+        path: ${{github.workspace}}/build/Attorney_Online-linux-x86_64.tgz
