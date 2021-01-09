@@ -1806,6 +1806,12 @@ void Courtroom::reset_ui()
 
 void Courtroom::chatmessage_enqueue(QStringList p_contents)
 {
+  // Instead of checking for whether a message has at least chatmessage_size
+  // amount of packages, we'll check if it has at least 15.
+  // That was the original chatmessage_size.
+  if (p_contents->size() < MS_MINIMUM)
+    return;
+
   // Check the validity of the character ID we got
   int f_char_id = p_contents[CHAR_ID].toInt();
   if (f_char_id < -1 || f_char_id >= char_list.size())
