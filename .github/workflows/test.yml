@@ -77,6 +77,8 @@ jobs:
     - name: Test
       working-directory: ${{github.workspace}}/build/test
       shell: bash
+      env:
+        QT_QPA_PLATFORM: offscreen
       run: |
         ln -s ../../test/*.png .
-        QT_QPA_PLATFORM=offscreen ./test ~[noci]
+        ./test ~[noci]
