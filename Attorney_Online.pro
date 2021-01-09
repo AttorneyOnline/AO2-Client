@@ -30,8 +30,8 @@ contains(DEFINES, DISCORD) {
 #
 # git submodule update --init --recursive
 #
+# patch external/QtApng/.qmake.conf external/static-QtApng.patch
 # cd external/QtApng
-# Add 'static' to the CONFIG var in external/QtApng/.qmake.conf
 # qmake
 # make
 #
