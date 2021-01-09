@@ -846,7 +846,7 @@ void Courtroom::set_widgets()
   ui_pre->setToolTip(
       tr("Play a single-shot animation as defined by the emote when checked."));
 
-  pos_size_type design_ini_result =
+  design_ini_result =
       ao_app->get_element_dimensions("immediate", "courtroom_design.ini");
 
   // If we don't have new-style naming, fall back to the old method
@@ -1847,7 +1847,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   // Instead of checking for whether a message has at least chatmessage_size
   // amount of packages, we'll check if it has at least 15.
   // That was the original chatmessage_size.
-  if (p_contents->size() < MS_MINIMUM)
+  if (p_contents.size() < MS_MINIMUM)
     return;
 
   // Check the validity of the character ID we got
@@ -1981,16 +1981,66 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     log_ic_text(f_showname, f_displayname, f_message, "",
                 f_color);
   }
-  // Obtain evidence ID we're trying to work with
-  int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-  // If the evidence ID is in the valid range
-  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
-    // Obtain the evidence name
-    QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
-    // Add the message to the logs file
-    log_ic_text(f_showname, f_displayname, f_evi_name,
-                tr("has presented evidence"));
-  }
+    // Obtain evidence ID we're trying to work with
+    int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
+    // If the evidence ID is in the valid range
+    if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+      // Obtain the evidence name
+      QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
+      // Add the message to the logs file
+      log_ic_text(f_showname, f_displayname, f_evi_name,
+                  tr("has presented evidence"));
+    }
+
+  if (log_ic_actions) {
+    // Check if a custom objection is in use
+    int objection_mod = 0;
+    QString custom_objection = "";
+    if (m_chatmessage[OBJECTION_MOD].contains("4&")) {
+      objection_mod = 4;
+      custom_objection = m_chatmessage[OBJECTION_MOD].split(
+          "4&")[1]; // takes the name of custom objection.
+    }
+    else {
+      objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
+    }
+
+    QString f_char = m_chatmessage[CHAR_NAME];
+    QString f_custom_theme = ao_app->get_char_shouts(f_char);
+    if (objection_mod <= 4 && objection_mod >= 1) {
+      QString shout_message;
+      switch (objection_mod) {
+      case 1:
+        shout_message = ao_app->read_char_ini(f_char, "holdit_message", "Shouts");
+        if (shout_message == "")
+          shout_message = tr("HOLD IT!");
+        break;
+      case 2:
+        shout_message = ao_app->read_char_ini(f_char, "objection_message", "Shouts");
+        if (shout_message == "")
+          shout_message = tr("OBJECTION!");
+        break;
+      case 3:
+        shout_message = ao_app->read_char_ini(f_char, "takethat_message", "Shouts");
+        if (shout_message == "")
+          shout_message = tr("TAKE THAT!");
+        break;
+      // case 4 is AO2 only
+      case 4:
+        if (custom_objection != "") {
+          shout_message = ao_app->read_char_ini(f_char, custom_objection.split('.')[0] + "_message", "Shouts");
+          if (shout_message == "")
+            shout_message = custom_objection.split('.')[0];
+        }
+        else {
+          shout_message = ao_app->read_char_ini(f_char, "custom_message", "Shouts");
+          if (shout_message == "")
+            shout_message = tr("CUSTOM OBJECTION!");
+        }
+        break;
+      }
+      log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
+    }
 }
 
 void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
@@ -2027,6 +2077,55 @@ void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QStrin
       QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
       // Append the message to the IC chatlogs in client
       append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+    }
+
+    // Check if a custom objection is in use
+    int objection_mod = 0;
+    QString custom_objection = "";
+    if (m_chatmessage[OBJECTION_MOD].contains("4&")) {
+      objection_mod = 4;
+      custom_objection = m_chatmessage[OBJECTION_MOD].split(
+          "4&")[1]; // takes the name of custom objection.
+    }
+    else {
+      objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
+    }
+
+    QString f_char = m_chatmessage[CHAR_NAME];
+    QString f_custom_theme = ao_app->get_char_shouts(f_char);
+    if (objection_mod <= 4 && objection_mod >= 1) {
+      QString shout_message;
+      switch (objection_mod) {
+      case 1:
+        shout_message = ao_app->read_char_ini(f_char, "holdit_message", "Shouts");
+        if (shout_message == "")
+          shout_message = tr("HOLD IT!");
+        break;
+      case 2:
+        shout_message = ao_app->read_char_ini(f_char, "objection_message", "Shouts");
+        if (shout_message == "")
+          shout_message = tr("OBJECTION!");
+        break;
+      case 3:
+        shout_message = ao_app->read_char_ini(f_char, "takethat_message", "Shouts");
+        if (shout_message == "")
+          shout_message = tr("TAKE THAT!");
+        break;
+      // case 4 is AO2 only
+      case 4:
+        if (custom_objection != "") {
+          shout_message = ao_app->read_char_ini(f_char, custom_objection.split('.')[0] + "_message", "Shouts");
+          if (shout_message == "")
+            shout_message = custom_objection.split('.')[0];
+        }
+        else {
+          shout_message = ao_app->read_char_ini(f_char, "custom_message", "Shouts");
+          if (shout_message == "")
+            shout_message = tr("CUSTOM OBJECTION!");
+        }
+        break;
+      }
+      append_ic_text(shout_message, f_displayname, tr("shouts"));
     }
   }
 }
@@ -2097,9 +2196,6 @@ bool Courtroom::handle_objection()
       }
       break;
     }
-    log_ic_text(f_char, f_displayname, shout_message,
-                  tr("shouts"),2);
-    append_ic_text(shout_message, f_displayname, tr("shouts"));
     sfx_player->clear(); // Objection played! Cut all sfx.
     return true;
   }
