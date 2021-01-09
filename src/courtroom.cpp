@@ -8,7 +8,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
 
   keepalive_timer = new QTimer(this);
-  keepalive_timer->start(1000);
+  keepalive_timer->start(45000);
 
   chat_tick_timer = new QTimer(this);
 
@@ -114,6 +114,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_clock = new AOClockLabel(this);
   ui_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_clock->hide();
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -4672,8 +4673,18 @@ void Courtroom::on_switch_area_music_clicked()
 void Courtroom::ping_server()
 {
   ping_timer.start();
+  is_pinging = true;
   ao_app->send_server_packet(
       new AOPacket("CH#" + QString::number(m_cid) + "#%"));
+}
+
+qint64 Courtroom::pong()
+{
+  if (!is_pinging)
+    return -1;
+
+  is_pinging = false;
+  return ping_timer.elapsed();
 }
 
 void Courtroom::on_casing_clicked()
@@ -4738,6 +4749,11 @@ void Courtroom::pause_clock()
 void Courtroom::stop_clock()
 {
   ui_clock->stop();
+}
+
+void Courtroom::set_clock_visibility(bool visible)
+{
+  ui_clock->setVisible(visible);
 }
 
 Courtroom::~Courtroom()

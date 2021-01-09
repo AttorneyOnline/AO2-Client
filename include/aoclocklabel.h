@@ -14,7 +14,7 @@ public:
   AOClockLabel(QWidget *parent);
   void start();
   void start(int msecs);
-  void set(int msecs, bool update_text=false);
+  void set(int msecs, bool update_text = false);
   void pause();
   void stop();
 

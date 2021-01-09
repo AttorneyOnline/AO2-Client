@@ -723,34 +723,57 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                f_contents.at(5) == "1");
   }
   else if (header == "TI") { // Timer packet
-    if (courtroom_constructed && f_contents.size() > 0) {
-      qint64 resolution = f_contents.at(0).toInt();
-      //Type 0 = start/stop timer
-      //Type 1 = pause timer
-      int type = 0;
-      if (f_contents.size() > 1)
-        type = f_contents.at(1).toInt();
-      qDebug() << "timer" << resolution << last_ping << resolution - last_ping;
-      resolution = resolution - last_ping;
-      if (resolution > 0)
+    if (!courtroom_constructed || f_contents.size() < 2)
+      goto end;
+
+    // Note: timer ID is reserved as argument 0
+
+    // Type 0 = start/resume/sync timer at time
+    // Type 1 = pause timer at time
+    // Type 2 = show timer
+    // Type 3 = hide timer
+    int type = f_contents.at(1).toInt();
+
+    if (type == 0 || type == 1)
+    {
+      if (f_contents.size() < 2)
+        goto end;
+
+      // The time as displayed on the clock, in milliseconds.
+      // If the number received is negative, stop the timer.
+      qint64 timer_value = f_contents.at(2).toLongLong();
+      qDebug() << "timer:" << timer_value;
+      if (timer_value > 0)
       {
-        if (type == 1)
+        if (type == 0)
         {
-          w_courtroom->pause_clock();
-          w_courtroom->set_clock(resolution);
+          timer_value -= latency / 2;
+          w_courtroom->start_clock(timer_value);
         }
         else
-          w_courtroom->start_clock(resolution);
+        {
+          w_courtroom->pause_clock();
+          w_courtroom->set_clock(timer_value);
+        }
       }
       else
+      {
         w_courtroom->stop_clock();
+      }
     }
+    else if (type == 2)
+      w_courtroom->set_clock_visibility(true);
+    else if (type == 3)
+      w_courtroom->set_clock_visibility(false);
   }
   else if (header == "CHECK") {
-    if (courtroom_constructed) {
-      last_ping = w_courtroom->get_ping();
-      w_courtroom->set_window_title(window_title + " [ping:" + QString::number(last_ping) + "]");
-    }
+    if (!courtroom_constructed)
+      goto end;
+
+    qint64 ping_time = w_courtroom->pong();
+    qDebug() << "ping:" << ping_time;
+    if (ping_time != -1)
+      latency = ping_time;
   }
 
 end:

@@ -4,7 +4,7 @@ AOClockLabel::AOClockLabel(QWidget *parent) : QLabel(parent) {}
 
 void AOClockLabel::start()
 {
-  timer.start(100, this);
+  timer.start(1000 / 60, this);
 }
 
 void AOClockLabel::start(int msecs)
@@ -15,11 +15,7 @@ void AOClockLabel::start(int msecs)
 
 void AOClockLabel::set(int msecs, bool update_text)
 {
-  QTime time = QTime::currentTime();
-  if (msecs > time.msec())
-  {
-    target_time = time.addMSecs(msecs);
-  }
+  target_time = QTime::currentTime().addMSecs(msecs);
   if (update_text)
   {
     if (QTime::currentTime() >= target_time)

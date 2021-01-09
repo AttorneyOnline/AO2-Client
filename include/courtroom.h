@@ -256,11 +256,11 @@ public:
   void set_clock(qint64 msecs);
   void pause_clock();
   void stop_clock();
+  void set_clock_visibility(bool visible);
 
-  qint64 get_ping() { return ping_timer.elapsed(); }
+  qint64 pong();
 
   ~Courtroom();
-
 private:
   AOApplication *ao_app;
 
@@ -315,6 +315,7 @@ private:
 
   // count up timer to check how long it took for us to get a response from ping_server()
   QElapsedTimer ping_timer;
+  bool is_pinging = false;
 
   // int chat_tick_interval = 60;
   // which tick position(character in chat message) we are at

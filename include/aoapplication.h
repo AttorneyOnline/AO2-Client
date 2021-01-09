@@ -26,6 +26,7 @@
 #include <QScreen>
 #include <QStringList>
 #include <QTextStream>
+#include <QTime>
 
 class NetworkManager;
 class Lobby;
@@ -61,7 +62,7 @@ public:
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
 
-  qint64 last_ping;
+  qint64 latency = 0;
   QString window_title;
 
   /////////////////server metadata//////////////////
