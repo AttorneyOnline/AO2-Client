@@ -1602,7 +1602,7 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(current_side);
 
   packet_contents.append(get_char_sfx());
-  if (ui_pre->isChecked() && !ao_app->is_stickysounds_enabled()) {
+  if (ui_pre->isChecked() && !ao_app->is_stickysounds_enabled() && ui_sfx_dropdown->currentIndex() > 1) {
     ui_sfx_dropdown->blockSignals(true);
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_dropdown->blockSignals(false);
@@ -3928,6 +3928,7 @@ void Courtroom::set_sfx_dropdown()
     ui_sfx_remove->hide();
     return;
   }
+  soundlist.prepend("Nothing");
   soundlist.prepend("Default");
 
   ui_sfx_dropdown->show();
@@ -3942,9 +3943,9 @@ void Courtroom::on_sfx_dropdown_changed(int p_index)
   ui_ic_chat_message->setFocus();
 
   QStringList soundlist;
-  for (int i = 0; i < ui_sfx_dropdown->count(); ++i) {
+  for (int i = 2; i < ui_sfx_dropdown->count(); ++i) {
     QString entry = ui_sfx_dropdown->itemText(i);
-    if (!soundlist.contains(entry) && entry != "Default")
+    if (!soundlist.contains(entry))
       soundlist.append(entry);
   }
 
@@ -3966,7 +3967,7 @@ void Courtroom::on_sfx_dropdown_changed(int p_index)
   ui_sfx_dropdown->blockSignals(true);
   ui_sfx_dropdown->setCurrentIndex(p_index);
   ui_sfx_dropdown->blockSignals(false);
-  if (p_index != 0)
+  if (p_index > 1)
     ui_sfx_remove->show();
   else
     ui_sfx_remove->hide();
@@ -3984,7 +3985,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
   else
     menu->addAction(QString("Edit theme's character_soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
-  if (ui_sfx_dropdown->currentIndex() != 0)
+  if (ui_sfx_dropdown->currentIndex() > 1)
     menu->addAction(QString("Remove " + ui_sfx_dropdown->itemText(
                                             ui_sfx_dropdown->currentIndex())),
                     this, SLOT(on_sfx_remove_clicked()));
@@ -4012,7 +4013,7 @@ void Courtroom::on_sfx_remove_clicked()
                            // client will crash
     return;
   }
-  if (ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex()) != "Default") {
+  if (ui_sfx_dropdown->currentIndex() > 1) {
     ui_sfx_dropdown->removeItem(ui_sfx_dropdown->currentIndex());
     on_sfx_dropdown_changed(0); // Reset back to original
   }
@@ -4119,6 +4120,8 @@ bool Courtroom::effects_dropdown_find_and_set(QString effect)
 QString Courtroom::get_char_sfx()
 {
   QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
+  if (sfx == "Nothing")
+      return "1";
   if (sfx != "" && sfx != "Default")
     return sfx;
   return ao_app->get_sfx_name(current_char, current_emote);
