@@ -1974,24 +1974,6 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if (f_displayname.trimmed().isEmpty())
     f_displayname = f_showname;
 
-  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() ||
-      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
-    // Add the message to the logs file
-    log_ic_text(f_showname, f_displayname, f_message, "",
-                f_color);
-  }
-    // Obtain evidence ID we're trying to work with
-    int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-    // If the evidence ID is in the valid range
-    if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
-      // Obtain the evidence name
-      QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
-      // Add the message to the logs file
-      log_ic_text(f_showname, f_displayname, f_evi_name,
-                  tr("has presented evidence"));
-    }
-
   if (log_ic_actions) {
     // Check if a custom objection is in use
     int objection_mod = 0;
@@ -2041,6 +2023,25 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       }
       log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
     }
+
+    // Obtain evidence ID we're trying to work with
+    int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
+    // If the evidence ID is in the valid range
+    if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+      // Obtain the evidence name
+      QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
+      // Add the message to the logs file
+      log_ic_text(f_showname, f_displayname, f_evi_name,
+                  tr("has presented evidence"));
+    }
+  }
+
+  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
+  if (!f_message.isEmpty() ||
+      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
+    // Add the message to the logs file
+    log_ic_text(f_showname, f_displayname, f_message, "",
+                f_color);
   }
 }
 
@@ -2061,25 +2062,7 @@ void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QStrin
   if (f_displayname.trimmed().isEmpty())
     f_displayname = f_showname;
 
-  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() ||
-      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
-    // Append the message to the IC chatlogs in client
-    append_ic_text(f_message, f_displayname, "",
-                   f_color);
-  }
-  
   if (log_ic_actions) {
-    // Obtain evidence ID we're trying to work with
-    int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-    // If the evidence ID is in the valid range
-    if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
-      // Obtain the evidence name
-      QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
-      // Append the message to the IC chatlogs in client
-      append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
-    }
-
     // Check if a custom objection is in use
     int objection_mod = 0;
     QString custom_objection = "";
@@ -2128,6 +2111,24 @@ void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QStrin
       }
       append_ic_text(shout_message, f_displayname, tr("shouts"));
     }
+
+    // Obtain evidence ID we're trying to work with
+    int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
+    // If the evidence ID is in the valid range
+    if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+      // Obtain the evidence name
+      QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
+      // Append the message to the IC chatlogs in client
+      append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+    }
+  }
+
+  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
+  if (!f_message.isEmpty() ||
+      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
+    // Append the message to the IC chatlogs in client
+    append_ic_text(f_message, f_displayname, "",
+                   f_color);
   }
 }
 
