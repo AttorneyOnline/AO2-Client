@@ -26,8 +26,12 @@ int main(int argc, char *argv[])
   QSettings *configini = main_app.configini;
 
   QPluginLoader apngPlugin("qapng");
+#ifdef STATIC_LIB
+  Q_IMPORT_PLUGIN(ApngImagePlugin)
+#else
   if (!apngPlugin.load())
     qCritical() << "QApng plugin could not be loaded";
+#endif
 
   QPluginLoader webpPlugin("qwebp");
   if (!webpPlugin.load())

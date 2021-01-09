@@ -1,3 +1,9 @@
 [submodule "base/themes"]
 	path = base/themes
 	url = https://github.com/AttorneyOnline/AO2-Themes
+[submodule "external/QtApng"]
+	path = external/QtApng
+	url = https://github.com/Skycoder42/QtApng
+[submodule "external/discord-rpc"]
+	path = external/discord-rpc
+	url = https://github.com/discord/discord-rpc

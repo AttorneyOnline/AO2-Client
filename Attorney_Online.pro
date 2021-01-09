@@ -26,6 +26,28 @@ contains(DEFINES, DISCORD) {
   LIBS += -ldiscord-rpc
 }
 
+# Uncomment to use the static libs built in external
+#
+# git submodule update --init --recursive
+#
+# cd external/QtApng
+# Add 'static' to the CONFIG var in external/QtApng/.qmake.conf
+# qmake
+# make
+#
+# cd external/discord-rpc && mkdir build && cd build
+# cmake ..
+# make
+#
+# DEFINES += STATIC_LIB
+contains(DEFINES, STATIC_LIB) {
+  LIBS += -L$$PWD/external/QtApng/plugins/imageformats -L$$PWD/external/QtApng/lib
+  contains(DEFINES, DISCORD) {
+    LIBS += -L$$PWD/external/discord-rpc/build/src
+  }
+  LIBS += -l:libqapng.a -l:libqtapng_png.a -l:libqtapng_zlib.a
+}
+
 # As of 2.8.5, BASS and BASSOPUS are required for all platforms. Qt Multimedia
 # is no longer an option due to outdated code and lack of versatility.
 # Download at un4seen.com and place the DLLs in the "lib" and "bin" folders.
