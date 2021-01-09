@@ -1,4 +1,4 @@
-name: CMake
+name: build
 
 on: [push]
 
@@ -13,16 +13,9 @@ jobs:
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-20.04
+
     steps:
     - uses: actions/checkout@v2
-
-    - name: Install catch2
-      run: |
-        curl -L https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz -o catch2.tar.gz
-        tar xvf catch2.tar.gz
-        cd Catch2-2.13.4
-        cmake -Bbuild -H. -DBUILD_TESTING=OFF
-        sudo cmake --build build/ --target install
 
     - name: Fetch external libs
       run: |
@@ -72,11 +65,16 @@ jobs:
       working-directory: ${{github.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE --target test
+      run: cmake --build . --config $BUILD_TYPE Attorney_Online
 
-    - name: Test
-      working-directory: ${{github.workspace}}/build/test
+    - name: Strip
+      working-directory: ${{github.workspace}}/build
       shell: bash
-      run: |
-        ln -s ../../test/*.png .
-        QT_QPA_PLATFORM=offscreen ./test ~[noci]
+      run: strip -s Attorney_Online
+
+    - name: Upload Artifact
+      working-directory: ${{github.workspace}}/build
+      uses: actions/upload-artifact@v2
+      with:
+        name: Attorney_Online
+        path: Attorney_Online
