@@ -696,7 +696,7 @@ Grund: </translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="241"/>
-        <source>No Interrupt</source>
+        <source>Immediate</source>
         <translation>Keine Unterbrechung</translation>
     </message>
     <message>

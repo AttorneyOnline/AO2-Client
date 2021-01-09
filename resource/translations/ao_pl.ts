@@ -620,7 +620,7 @@ Powód: %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="241"/>
-        <source>No Interrupt</source>
+        <source>Immediate</source>
         <translation>Bez ociągania się</translation>
     </message>
     <message>
