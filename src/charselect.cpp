@@ -62,6 +62,9 @@ void Courtroom::construct_char_select()
           SLOT(on_char_passworded_clicked()));
   connect(ui_char_taken, SIGNAL(stateChanged(int)), this,
           SLOT(on_char_taken_clicked()));
+
+  truncate_label_text(ui_char_taken, "char_taken");
+  truncate_label_text(ui_char_passworded, "char_passworded");
 }
 
 void Courtroom::set_char_select()

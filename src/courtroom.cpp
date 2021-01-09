@@ -846,18 +846,23 @@ void Courtroom::set_widgets()
   ui_pre->setToolTip(
       tr("Play a single-shot animation as defined by the emote when checked."));
 
+  ui_immediate->setToolTip(
+      tr("If preanim is checked, display the input text immediately as the "
+         "animation plays concurrently."));
+
   design_ini_result =
       ao_app->get_element_dimensions("immediate", "courtroom_design.ini");
 
   // If we don't have new-style naming, fall back to the old method
-  if (design_ini_result.width < 0 || design_ini_result.height < 0) 
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)  {
     set_size_and_pos(ui_immediate, "pre_no_interrupt");
-  else // Adopt the based new method instead
+    truncate_label_text(ui_immediate, "pre_no_interrupt");
+  }
+  else {// Adopt the based new method instead
     set_size_and_pos(ui_immediate, "immediate");
+    truncate_label_text(ui_immediate, "immediate");
+  }
 
-  ui_immediate->setToolTip(
-      tr("If preanim is checked, display the input text immediately as the "
-         "animation plays concurrently."));
 
   set_size_and_pos(ui_flip, "flip");
   ui_flip->setToolTip(tr("Mirror your character's emotes when checked."));
@@ -952,6 +957,17 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_spectator, "spectator");
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
                               "interact with the in-character screen."));
+
+  // QCheckBox
+  truncate_label_text(ui_guard, "guard");
+  truncate_label_text(ui_pre, "pre");
+  truncate_label_text(ui_flip, "flip");
+  truncate_label_text(ui_showname_enable, "showname_enable");
+
+  // QLabel
+  truncate_label_text(ui_music_label, "music_label");
+  truncate_label_text(ui_sfx_label, "sfx_label");
+  truncate_label_text(ui_blip_label, "blip_label");
 
   free_brush =
       QBrush(ao_app->get_color("area_free_color", "courtroom_design.ini"));
@@ -5290,6 +5306,75 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
 
     ao_app->send_server_packet(new AOPacket("CASEA", f_packet));
   }
+}
+
+void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
+{
+  QString filename = "courtroom_design.ini";
+  pos_size_type design_ini_result =
+      ao_app->get_element_dimensions(p_identifier, filename);
+  // Get the width of the element as defined by the current theme
+
+  // Cast to make sure we're working with one of the two supported widget types
+  QLabel *p_label = qobject_cast<QLabel *>(p_widget);
+  QCheckBox *p_checkbox = qobject_cast<QCheckBox *>(p_widget);
+
+  if (p_checkbox == nullptr &&
+      p_label ==
+          nullptr) { // i.e. the given p_widget isn't a QLabel or a QCheckBox
+    qWarning() << "W: Tried to truncate an unsupported widget:" << p_identifier;
+    return;
+  }
+  // translate the text for the widget we're working with so we truncate the right string
+  QString label_text_tr =
+      QCoreApplication::translate(p_widget->metaObject()->className(), "%1")
+          .arg((p_label != nullptr ? p_label->text() : p_checkbox->text()));
+  int label_theme_width =
+      (p_label != nullptr
+           ? design_ini_result.width
+           : design_ini_result.width -
+                 18); // 18 is the width of a checkbox on win10 + 5px of
+                      // padding, TODO: fetch the actual size
+  int label_px_width =
+      p_widget->fontMetrics().boundingRect(label_text_tr).width(); // pixel width of our translated text
+  p_widget->setToolTip(label_text_tr + "\n" + p_widget->toolTip());
+  // qInfo() << "I: Width of label text: " << label_px_width << "px. Theme's
+  // width: " << label_theme_width << "px.";
+
+  // we can't do much with a 0-width widget, and there's no need to truncate if
+  // the theme gives us enough space
+  if (label_theme_width <= 0 || label_px_width < label_theme_width) {
+    qInfo() << "I: Truncation aborted for label text " << label_text_tr
+            << ", either theme width <= 0 or label width < theme width.";
+    return;
+  }
+
+  QString truncated_label = label_text_tr;
+  int truncated_px_width = label_px_width;
+  while (truncated_px_width > label_theme_width && truncated_label != "…") {
+    truncated_label.chop(2);
+    truncated_label.append("…");
+    // qInfo() << "I: Attempted to truncate label to string: " <<
+    // truncated_label;
+    truncated_px_width =
+        p_widget->fontMetrics().boundingRect(truncated_label).width();
+  }
+  if (truncated_label == "…") {
+    // Safeguard against edge case where label text is shorter in px than '…',
+    // causing an infinite loop. Additionally, having just an ellipse for a
+    // label looks strange, so we don't set the new label.
+    qWarning() << "W: Potential infinite loop prevented: Label text "
+               << label_text_tr
+               << "truncated to '…', so truncation was aborted.";
+    return;
+  }
+  if (p_label != nullptr)
+    p_label->setText(truncated_label);
+  else if (p_checkbox != nullptr)
+    p_checkbox->setText(truncated_label);
+  qInfo() << "I: Truncated label text from " << label_text_tr << " ("
+          << label_px_width << "px ) to " << truncated_label << " ("
+          << truncated_px_width << "px )";
 }
 
 Courtroom::~Courtroom()
