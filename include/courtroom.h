@@ -254,6 +254,9 @@ public:
 
   void check_connection_received();
 
+  // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
+  void truncate_label_text(QWidget* p_widget, QString p_identifier);
+
   ~Courtroom();
 
 private:
