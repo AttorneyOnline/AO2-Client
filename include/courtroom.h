@@ -412,6 +412,17 @@ private:
   // List of associated RGB colors for this color index
   QVector<QColor> color_rgb_list;
 
+  // Same as above but populated from misc/default's config
+  QVector<QColor> default_color_rgb_list;
+
+  // Get a color index from an arbitrary misc config
+  void gen_char_rgb_list(QString p_char);
+  QVector<QColor> char_color_rgb_list;
+
+  // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
+  QString current_misc;
+  QString last_misc;
+
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
 

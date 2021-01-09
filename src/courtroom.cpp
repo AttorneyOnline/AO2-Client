@@ -2395,9 +2395,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
   // If html is enabled, prepare this text to be all ready for it.
   if (html) {
     ic_color_stack.push(default_color);
-    QString appendage = "<font color=\"" +
-                        color_rgb_list.at(default_color).name(QColor::HexRgb) +
-                        "\">";
+    QString appendage = "<font color=\"$c" + QString::number(default_color) + "\">";
 
     if (!align.isEmpty())
       appendage.prepend("<div align=" + align + ">");
@@ -2516,8 +2514,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
 
             if (!ic_color_stack.empty())
               appendage +=
-                  "<font color=\"" +
-                  color_rgb_list.at(ic_color_stack.top()).name(QColor::HexRgb) +
+                  "<font color=\"$c" + QString::number(ic_color_stack.top()) +
                   "\">";
 
             if (is_end && !skip) {
@@ -2683,12 +2680,16 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     else
       ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result according to html
-    if (log_colors)
-      ui_ic_chatlog->textCursor().insertHtml(
-          filter_ic_text(p_text, true, -1, color));
+    if (log_colors) {
+      QString p_text_filtered = filter_ic_text(p_text, true, -1, color);
+      p_text_filtered = p_text_filtered.replace("$c0", ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini").name(QColor::HexRgb));
+      for (int c = 1; c < max_colors; ++c) {
+        p_text_filtered = p_text_filtered.replace("$c" + QString::number(c), default_color_rgb_list.at(c).name(QColor::HexRgb));
+      }
+      ui_ic_chatlog->textCursor().insertHtml(p_text_filtered);
+    }
     else
-      ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false),
-                                             normal);
+      ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false), normal);
   }
 
   // Only append with newline if log goes upwards
@@ -2837,6 +2838,11 @@ void Courtroom::start_chat_ticking()
   chat_tick_timer->start(0); // Display the first char right away
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
+  
+  last_misc = current_misc;
+  current_misc = ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]);
+  if (last_misc != current_misc)
+    gen_char_rgb_list(m_chatmessage[CHAR_NAME]);
 
   blip_player->set_blips(f_gender);
 
@@ -2870,9 +2876,11 @@ void Courtroom::chat_tick()
     ui_vp_chat_arrow->play(
         "chat_arrow", f_char,
         f_custom_theme); // Chat stopped being processed, indicate that.
-    additive_previous =
-        additive_previous +
-        filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
+    QString f_message_filtered = filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
+    for (int c = 0; c < max_colors; ++c) {
+      f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
+    }
+    additive_previous = additive_previous + f_message_filtered;
     real_tick_pos = ui_vp_message->toPlainText().size();
     return;
   }
@@ -2985,9 +2993,11 @@ void Courtroom::chat_tick()
   else {
     int msg_delay = message_display_speed[current_display_speed];
     // Do the colors, gradual showing, etc. in here
-    ui_vp_message->setHtml(additive_previous +
-                           filter_ic_text(f_message, true, tick_pos,
-                                          m_chatmessage[TEXT_COLOR].toInt()));
+    QString f_message_filtered = filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt());
+    for (int c = 0; c < max_colors; ++c) {
+      f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
+    }
+    ui_vp_message->setHtml(additive_previous + f_message_filtered);
 
     // This should always be done AFTER setHtml. Scroll the chat window with the
     // text.
@@ -4535,6 +4545,7 @@ void Courtroom::set_text_color_dropdown()
 
   // Clear the stored optimization information
   color_rgb_list.clear();
+  default_color_rgb_list.clear();
   color_markdown_start_list.clear();
   color_markdown_end_list.clear();
   color_markdown_remove_list.clear();
@@ -4570,6 +4581,18 @@ void Courtroom::set_text_color_dropdown()
     pixmap.fill(color);
     ui_text_color->setItemIcon(ui_text_color->count() - 1, QIcon(pixmap));
     color_row_to_number.append(c);
+  }
+  for (int c = 0; c < max_colors; ++c) {
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), "default");
+    default_color_rgb_list.append(color);
+  }
+}
+
+void Courtroom::gen_char_rgb_list(QString p_char) {
+  char_color_rgb_list.clear();
+  for (int c = 0; c < max_colors; ++c) {
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), p_char);
+    char_color_rgb_list.append(color);
   }
 }
 
