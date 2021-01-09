@@ -839,8 +839,8 @@ void Courtroom::set_widgets()
   ui_pre->setToolTip(
       tr("Play a single-shot animation as defined by the emote when checked."));
 
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions("immediate", "courtroom_design.ini");
+  design_ini_result =
+    ao_app->get_element_dimensions("immediate", "courtroom_design.ini");
 
   // If we don't have new-style naming, fall back to the old method
   if (design_ini_result.width < 0 || design_ini_result.height < 0) 
