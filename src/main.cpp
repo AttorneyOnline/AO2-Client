@@ -10,6 +10,10 @@
 #include <QPluginLoader>
 #include <QTranslator>
 
+#ifdef STATIC_LIB
+  Q_IMPORT_PLUGIN(ApngImagePlugin)
+#endif
+
 int main(int argc, char *argv[])
 {
 #if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
@@ -25,10 +29,8 @@ int main(int argc, char *argv[])
 
   QSettings *configini = main_app.configini;
 
+#ifndef STATIC_LIB
   QPluginLoader apngPlugin("qapng");
-#ifdef STATIC_LIB
-  Q_IMPORT_PLUGIN(ApngImagePlugin)
-#else
   if (!apngPlugin.load())
     qCritical() << "QApng plugin could not be loaded";
 #endif
