@@ -3147,7 +3147,7 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
   // witness is default if pos is invalid
   QString f_background;
   QString f_desk_image;
-  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("witnessempty")) {
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("witnessempty")))) {
     f_background = "witnessempty";
     f_desk_image = "stand";
   }
