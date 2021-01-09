@@ -1803,7 +1803,6 @@ void Courtroom::reset_ui()
 
 void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
 {
-  chatmessage_queue.enqueue(msg_packet);
   // Put this message into the IC chat log
   QStringList p_contents = msg_packet.get_contents();
   // Check the validity of the character ID we got
@@ -1826,12 +1825,19 @@ void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
     p_contents[MESSAGE] = "";
   }
 
+  int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
+  bool is_objection = objection_mod >= 1 && objection_mod <= 5;
+  if (is_objection)
+    chatmessage_queue.clear(); // This is an interjection - nuke the queue!
+
+  chatmessage_queue.enqueue(msg_packet);
   log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
 
   // Our settings disabled queue, or no message is being parsed right now and we're not waiting on one
-  if (ao_app->text_delay() <= 0 || (text_state >= 2 && !text_queue_timer->isActive()))
+  bool start_queue = ao_app->stay_time() <= 0 || (text_state >= 2 && !text_queue_timer->isActive());
+  // Objections also immediately play the message
+  if (start_queue || is_objection)
     chatmessage_dequeue(); // Process the message instantly
-
   // Otherwise, since a message is being parsed, chat_tick() should be called which will call dequeue once it's done.
 }
 
