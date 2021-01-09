@@ -41,7 +41,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   // Let's add the tabs one by one.
   // First, we'll start with 'Gameplay'.
-  ui_gameplay_tab = new QWidget();
+  ui_gameplay_tab = new QWidget(this);
   ui_gameplay_tab->setSizePolicy(sizePolicy1);
   ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
   ui_form_layout_widget = new QWidget(ui_gameplay_tab);
@@ -163,6 +163,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
 
+  row += 1;
+  ui_log_ic_actions_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
+  ui_log_ic_actions_lbl->setToolTip(
+      tr("If ticked, log will show IC actions such as shouting and presenting evidence."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_ic_actions_lbl);
+
+  ui_log_ic_actions_cb = new QCheckBox(ui_form_layout_widget);
+  ui_log_ic_actions_cb->setChecked(p_ao_app->get_log_ic_actions());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
+  
   row += 1;
   ui_log_names_divider = new QFrame(ui_form_layout_widget);
   ui_log_names_divider->setFrameShape(QFrame::HLine);
@@ -372,14 +385,14 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_customchat_cb);
 
-  QScrollArea *scroll = new QScrollArea;
+  QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
   ui_gameplay_tab->layout()->addWidget(scroll);
   ui_gameplay_tab->show();
 
   // Here we start the callwords tab.
-  ui_callwords_tab = new QWidget();
+  ui_callwords_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
 
   ui_callwords_widget = new QWidget(ui_callwords_tab);
@@ -416,7 +429,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
 
   // The audio tab.
-  ui_audio_tab = new QWidget();
+  ui_audio_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_audio_tab, tr("Audio"));
 
   ui_audio_widget = new QWidget(ui_audio_tab);
@@ -577,7 +590,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_objectmusic_cb);
 
   // The casing tab!
-  ui_casing_tab = new QWidget();
+  ui_casing_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
 
   ui_casing_widget = new QWidget(ui_casing_tab);
@@ -765,6 +778,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("log_newline", ui_log_newline_cb->isChecked());
   configini->setValue("log_margin", ui_log_margin_spinbox->value());
   configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
+  configini->setValue("log_ic_actions", ui_log_ic_actions_cb->isChecked());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
   configini->setValue("master", ui_ms_textbox->text());

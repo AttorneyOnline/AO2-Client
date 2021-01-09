@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
 
   AOApplication main_app(argc, argv);
 
+  AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
+
   QSettings *configini = main_app.configini;
 
   QPluginLoader apngPlugin("qapng");

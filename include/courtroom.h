@@ -58,6 +58,7 @@
 #include <QTextCharFormat>
 //#include <QRandomGenerator>
 
+#include <algorithm>
 #include <stack>
 
 class AOApplication;
@@ -228,7 +229,7 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0);
+                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime());
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -334,6 +335,9 @@ private:
   // True, if the log should display the message like name<br>text instead of name: text
   bool log_newline = false;
 
+  // True, if the log should include RP actions like interjections, showing evidence, etc.
+  bool log_ic_actions = true;
+
   // Margin in pixels between log entries for the IC log.
   int log_margin = 0;
 
@@ -400,6 +404,11 @@ private:
 
   int objection_state = 0;
   QString objection_custom = "";
+  struct CustomObjection {
+    QString name;
+    QString filename;
+  };
+  QList<CustomObjection> custom_objections_list;
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -413,6 +422,17 @@ private:
 
   // List of associated RGB colors for this color index
   QVector<QColor> color_rgb_list;
+
+  // Same as above but populated from misc/default's config
+  QVector<QColor> default_color_rgb_list;
+
+  // Get a color index from an arbitrary misc config
+  void gen_char_rgb_list(QString p_char);
+  QVector<QColor> char_color_rgb_list;
+
+  // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
+  QString current_misc;
+  QString last_misc;
 
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
