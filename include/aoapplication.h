@@ -76,6 +76,7 @@ public:
   bool looping_sfx_support_enabled = false;
   bool additive_enabled = false;
   bool effects_enabled = false;
+  bool expanded_desk_mods_enabled = false;
 
   ///////////////loading info///////////////////
 

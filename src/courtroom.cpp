@@ -1582,6 +1582,12 @@ void Courtroom::on_chat_return_pressed()
   if (ao_app->desk_mod_enabled) {
     f_desk_mod =
         QString::number(ao_app->get_desk_mod(current_char, current_emote));
+    if (!ao_app->expanded_desk_mods_enabled) {
+      if (f_desk_mod == "2" || f_desk_mod == "4")
+        f_desk_mod = "0";
+      else if (f_desk_mod == "3" || f_desk_mod == "5")
+        f_desk_mod = "1";
+    }
     if (f_desk_mod == "-1")
       f_desk_mod = "chat";
   }

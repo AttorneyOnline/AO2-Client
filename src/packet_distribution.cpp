@@ -179,6 +179,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     looping_sfx_support_enabled = false;
     additive_enabled = false;
     effects_enabled = false;
+    expanded_desk_mods_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -205,6 +206,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       additive_enabled = true;
     if (f_packet.contains("effects", Qt::CaseInsensitive))
       effects_enabled = true;
+    if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
+      expanded_desk_mods_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
