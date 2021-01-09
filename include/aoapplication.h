@@ -400,8 +400,8 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's gender
-  QString get_gender(QString p_char);
+  // Returns p_char's blips (previously called their "gender")
+  QString get_blips(QString p_char);
 
   // ======
   // These are all casing-related settings.

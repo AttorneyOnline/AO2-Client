@@ -618,12 +618,15 @@ QString AOApplication::get_char_side(QString p_char)
   return f_result;
 }
 
-QString AOApplication::get_gender(QString p_char)
+QString AOApplication::get_blips(QString p_char)
 {
-  QString f_result = read_char_ini(p_char, "gender", "Options");
+  QString f_result = read_char_ini(p_char, "blips", "Options");
 
-  if (f_result == "")
-    f_result = "male";
+  if (f_result == "") {
+    f_result = read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
+    if (f_result == "")
+      f_result = "male";
+  }
 
   if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
     if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))

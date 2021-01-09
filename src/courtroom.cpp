@@ -2836,9 +2836,9 @@ void Courtroom::start_chat_ticking()
   current_display_speed = 3;
   chat_tick_timer->start(0); // Display the first char right away
 
-  QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
+  QString f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
 
-  blip_player->set_blips(f_gender);
+  blip_player->set_blips(f_blips);
 
   // means text is currently ticking
   text_state = 1;
