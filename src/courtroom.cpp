@@ -1794,23 +1794,24 @@ void Courtroom::reset_ui()
   ui_evidence_present->set_image("present");
 }
 
-void Courtroom::add_chatmessage_stack(AOPacket *msg_packet)
+void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
 {
-  chatmessage_stack.append(msg_packet);
-  if (text_state >= 2 && chatmessage_stack.size() == 1)
-    parse_chatmessage_stack();
+  chatmessage_queue.enqueue(msg_packet);
+  if (text_state >= 2 && chatmessage_queue.size() == 1)
+    chatmessage_dequeue();
 }
 
-void Courtroom::parse_chatmessage_stack()
+void Courtroom::chatmessage_dequeue()
 {
-  if (chatmessage_stack.isEmpty())
+  if (chatmessage_queue.isEmpty())
     return;
 
-  AOPacket *p_packet = chatmessage_stack.takeLast();
-  unpack_chatmessage(&p_packet->get_contents());
+  qDebug() << "Queueing up this next message";
+  AOPacket p_packet = chatmessage_queue.dequeue();
+  unpack_chatmessage(p_packet.get_contents());
 }
 
-void Courtroom::unpack_chatmessage(QStringList *p_contents)
+void Courtroom::unpack_chatmessage(QStringList p_contents)
 {
   for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
     // Note that we have added stuff that vanilla clients and servers simply
@@ -1818,9 +1819,9 @@ void Courtroom::unpack_chatmessage(QStringList *p_contents)
     // amongst the packet's content. We also have to check if the server even
     // supports CCCC's IC features, or if it's just japing us. Also, don't
     // forget! A size 15 message will have indices from 0 to 14.
-    if (n_string < p_contents->size() &&
+    if (n_string < p_contents.size() &&
         (n_string < MS_MINIMUM || ao_app->cccc_ic_support_enabled)) {
-      m_chatmessage[n_string] = p_contents->at(n_string);
+      m_chatmessage[n_string] = p_contents.at(n_string);
     }
     else {
       m_chatmessage[n_string] = "";
@@ -2947,7 +2948,7 @@ void Courtroom::chat_tick()
     real_tick_pos = ui_vp_message->toPlainText().size();
 
     // Parse the next chatmessage if it exists
-    parse_chatmessage_stack();
+    chatmessage_dequeue();
     return;
   }
 

@@ -41,6 +41,7 @@
 #include <QTextBrowser>
 #include <QTreeWidget>
 #include <QVector>
+#include <QQueue>
 
 #include <QBrush>
 #include <QDebug>
@@ -208,13 +209,13 @@ public:
                                  QString p_color);
 
   // Add the message packet to the stack
-  void add_chatmessage_stack(AOPacket *msg_packet);
+  void chatmessage_enqueue(AOPacket msg_packet);
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
-  void parse_chatmessage_stack();
+  void chatmessage_dequeue();
 
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
-  void unpack_chatmessage(QStringList *p_contents);
+  void unpack_chatmessage(QStringList p_contents);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
@@ -336,7 +337,7 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
-  QVector<AOPacket *> chatmessage_stack;
+  QQueue<AOPacket> chatmessage_queue;
 
   // triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
