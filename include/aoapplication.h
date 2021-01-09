@@ -167,7 +167,7 @@ public:
 
   // Returns the value if objections interrupt and skip the message queue
   // from the config.ini.
-  bool is_instant_objection();
+  bool is_instant_objection_enabled();
 
   // Returns the value of whether Discord should be enabled on startup
   // from the config.ini.

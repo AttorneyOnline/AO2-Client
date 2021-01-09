@@ -209,7 +209,7 @@ public:
                                  QString p_color);
 
   // Add the message packet to the stack
-  void chatmessage_enqueue(AOPacket msg_packet);
+  void chatmessage_enqueue(QStringList p_contents);
 
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList p_contents);
@@ -334,7 +334,7 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
-  QQueue<AOPacket> chatmessage_queue;
+  QQueue<QStringList> chatmessage_queue;
 
   // triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
@@ -371,6 +371,9 @@ private:
 
   // True, if the log should have a timestamp.
   bool log_timestamp = false;
+
+  // How long in miliseconds should the objection wait before appearing.
+  int objection_threshold = 1500;
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;

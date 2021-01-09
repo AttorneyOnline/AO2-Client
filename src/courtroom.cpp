@@ -1804,10 +1804,8 @@ void Courtroom::reset_ui()
   ui_evidence_present->set_image("present");
 }
 
-void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
+void Courtroom::chatmessage_enqueue(QStringList p_contents)
 {
-  // Put this message into the IC chat log
-  QStringList p_contents = msg_packet.get_contents();
   // Check the validity of the character ID we got
   int f_char_id = p_contents[CHAR_ID].toInt();
   if (f_char_id < -1 || f_char_id >= char_list.size())
@@ -1828,9 +1826,12 @@ void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
     p_contents[MESSAGE] = "";
   }
 
+  if (p_contents[OBJECTION_MOD].toInt() == 4)
+      p_contents[EMOTE_MOD] = "1";
+
   bool is_objection = false;
   // If the user wants to clear queue on objection
-  if (ao_app->is_instant_objection())
+  if (ao_app->is_instant_objection_enabled())
   {
     int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
     is_objection = objection_mod >= 1 && objection_mod <= 5;
@@ -1839,8 +1840,10 @@ void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
       chatmessage_queue.clear();
   }
 
-  chatmessage_queue.enqueue(msg_packet);
   log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
+
+  // Send this boi into the queue
+  chatmessage_queue.enqueue(p_contents);
 
   // Our settings disabled queue, or no message is being parsed right now and we're not waiting on one
   bool start_queue = ao_app->stay_time() <= 0 || (text_state >= 2 && !text_queue_timer->isActive());
@@ -1867,8 +1870,7 @@ void Courtroom::chatmessage_dequeue()
   if (text_queue_timer->isActive())
     text_queue_timer->stop();
 
-  AOPacket p_packet = chatmessage_queue.dequeue();
-  unpack_chatmessage(p_packet.get_contents());
+  unpack_chatmessage(chatmessage_queue.dequeue());
 }
 
 void Courtroom::unpack_chatmessage(QStringList p_contents)
@@ -1887,15 +1889,6 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
       m_chatmessage[n_string] = "";
     }
   }
-
-  // User-created blankpost
-  if (m_chatmessage[MESSAGE].trimmed().isEmpty()) {
-    // Turn it into true blankpost
-    m_chatmessage[MESSAGE] = "";
-  }
-
-  if (m_chatmessage[OBJECTION_MOD].toInt() == 4)
-      m_chatmessage[EMOTE_MOD] = "1";
 
   // // Put this message into the IC chat log
   // log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
@@ -2190,6 +2183,17 @@ void Courtroom::handle_ic_message()
 
   // Update the chatbox information
   initialize_chatbox();
+
+  // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
+  if (!ao_app->is_instant_objection_enabled() && chatmessage_queue.size() > 0)
+  {
+    QStringList p_contents = chatmessage_queue.head();
+    int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
+    bool is_objection = objection_mod >= 1 && objection_mod <= 5;
+    // If this is an objection, we'll need to interrupt our current message.
+    if (is_objection)
+      text_queue_timer->start(objection_threshold);
+  }
 }
 
 void Courtroom::do_screenshake()
