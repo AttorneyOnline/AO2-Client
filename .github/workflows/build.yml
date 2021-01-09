@@ -73,8 +73,7 @@ jobs:
       run: strip -s Attorney_Online
 
     - name: Upload Artifact
-      working-directory: ${{github.workspace}}/build
       uses: actions/upload-artifact@v2
       with:
         name: Attorney_Online
-        path: Attorney_Online
+        path: ${{github.workspace}}/build/Attorney_Online
