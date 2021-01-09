@@ -179,6 +179,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stay_time_spinbox);
 
   row += 1;
+  ui_instant_objection_lbl = new QLabel(ui_form_layout_widget);
+  ui_instant_objection_lbl->setText(tr("Instant Objection:"));
+  ui_instant_objection_lbl->setToolTip(
+      tr("If Text Stay Time is more than 0, should objections skip queued up messages, or wait for their turn?"));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_instant_objection_lbl);
+
+  ui_instant_objection_cb = new QCheckBox(ui_form_layout_widget);
+  ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_instant_objection_cb);
+
+  row += 1;
   ui_log_names_divider = new QFrame(ui_form_layout_widget);
   ui_log_names_divider->setFrameShape(QFrame::HLine);
   ui_log_names_divider->setFrameShadow(QFrame::Sunken);
@@ -781,6 +794,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("log_margin", ui_log_margin_spinbox->value());
   configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
   configini->setValue("stay_time", ui_stay_time_spinbox->value());
+  configini->setValue("instant_objection", ui_instant_objection_cb->isChecked());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
   configini->setValue("master", ui_ms_textbox->text());

@@ -1828,10 +1828,16 @@ void Courtroom::chatmessage_enqueue(AOPacket msg_packet)
     p_contents[MESSAGE] = "";
   }
 
-  int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
-  bool is_objection = objection_mod >= 1 && objection_mod <= 5;
-  if (is_objection)
-    chatmessage_queue.clear(); // This is an interjection - nuke the queue!
+  bool is_objection = false;
+  // If the user wants to clear queue on objection
+  if (ao_app->is_instant_objection())
+  {
+    int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
+    is_objection = objection_mod >= 1 && objection_mod <= 5;
+    // If this is an objection, nuke the queue
+    if (is_objection)
+      chatmessage_queue.clear();
+  }
 
   chatmessage_queue.enqueue(msg_packet);
   log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());

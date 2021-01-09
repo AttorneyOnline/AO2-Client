@@ -973,6 +973,12 @@ bool AOApplication::objection_stop_music()
   return result.startsWith("true");
 }
 
+bool AOApplication::is_instant_objection()
+{
+  QString result = configini->value("instant_objection", "true").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::is_discord_enabled()
 {
   QString result = configini->value("discord", "true").value<QString>();

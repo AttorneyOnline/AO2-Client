@@ -165,6 +165,10 @@ public:
   // Returns the value of default_blip in config.ini
   int get_default_blip();
 
+  // Returns the value if objections interrupt and skip the message queue
+  // from the config.ini.
+  bool is_instant_objection();
+
   // Returns the value of whether Discord should be enabled on startup
   // from the config.ini.
   bool is_discord_enabled();
