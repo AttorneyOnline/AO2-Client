@@ -2994,10 +2994,22 @@ void Courtroom::chat_tick()
         filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     real_tick_pos = ui_vp_message->toPlainText().size();
 
+
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
     int delay = ao_app->stay_time();
     if (delay > 0 && !text_queue_timer->isActive())
       text_queue_timer->start(delay);
+
+    // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
+    if (!ao_app->is_instant_objection_enabled() && chatmessage_queue.size() > 0)
+    {
+      QStringList p_contents = chatmessage_queue.head();
+      int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
+      bool is_objection = objection_mod >= 1 && objection_mod <= 5;
+      // If this is an objection, we'll need to interrupt our current message.
+      if (is_objection)
+        chatmessage_dequeue();
+    }
     return;
   }
 
