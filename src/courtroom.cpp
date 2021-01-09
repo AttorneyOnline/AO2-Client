@@ -214,7 +214,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_showname_enable->setText(tr("Shownames"));
 
   ui_immediate = new QCheckBox(this);
-  ui_immediate->setText(tr("No Interrupt"));
+  ui_immediate->setText(tr("Immediate"));
   ui_immediate->hide();
 
   ui_custom_objection = new AOButton(this, ao_app);
