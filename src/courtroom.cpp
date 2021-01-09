@@ -1183,9 +1183,12 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_effect->stop();
     ui_vp_message->hide();
     ui_vp_chatbox->hide();
-
     // Stop the chat arrow from animating
     ui_vp_chat_arrow->stop();
+
+    // Clear the message queue
+    text_queue_timer->stop();
+    chatmessage_queue.clear();
 
     text_state = 2;
     anim_state = 3;
