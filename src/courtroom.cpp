@@ -1609,6 +1609,12 @@ void Courtroom::on_chat_return_pressed()
   if (ao_app->desk_mod_enabled) {
     f_desk_mod =
         QString::number(ao_app->get_desk_mod(current_char, current_emote));
+    if (!ao_app->expanded_desk_mods_enabled) {
+      if (f_desk_mod == "2" || f_desk_mod == "4")
+        f_desk_mod = "0";
+      else if (f_desk_mod == "3" || f_desk_mod == "5")
+        f_desk_mod = "1";
+    }
     if (f_desk_mod == "-1")
       f_desk_mod = "chat";
   }
@@ -2113,8 +2119,6 @@ void Courtroom::handle_chatmessage_2()
     f_pointsize = chatsize;
   set_font(ui_vp_message, "", "message", customchar, font_name, f_pointsize);
 
-  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
-
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // Deal with invalid emote modifiers
   if (emote_mod != 0 && emote_mod != 1 && emote_mod != 2 && emote_mod != 5 &&
@@ -2208,6 +2212,22 @@ void Courtroom::handle_chatmessage_2()
   ui_vp_player_char->move(ui_viewport->width() * self_offset / 100,
                           ui_viewport->height() * self_offset_v / 100);
 
+  switch(m_chatmessage[DESK_MOD].toInt()) {
+    case 4:
+      ui_vp_sideplayer_char->hide();
+      ui_vp_player_char->move(0, 0);
+      [[fallthrough]];
+    case 2:
+      set_scene("0", m_chatmessage[SIDE]);
+      break;
+    case 5:
+    case 3:
+      set_scene("1", m_chatmessage[SIDE]);
+      break;
+    default:
+      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+      break;
+  }
   switch (emote_mod) {
   case 1:
   case 2:
@@ -2353,6 +2373,24 @@ void Courtroom::handle_chatmessage_3()
 
   QString side = m_chatmessage[SIDE];
 
+  switch(m_chatmessage[DESK_MOD].toInt()) {
+    case 4:
+      set_self_offset(m_chatmessage[SELF_OFFSET]);
+      [[fallthrough]];
+    case 2:
+      set_scene("1", m_chatmessage[SIDE]);
+      break;
+    case 5:
+      ui_vp_sideplayer_char->hide();
+      ui_vp_player_char->move(0, 0);
+      [[fallthrough]];
+    case 3:
+      set_scene("0", m_chatmessage[SIDE]);
+      break;
+    default:
+      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+      break;
+  }
   if (emote_mod == 5 || emote_mod == 6) {
     ui_vp_desk->hide();
     ui_vp_legacy_desk->hide();
@@ -3217,6 +3255,17 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
     ui_vp_legacy_desk->hide();
     ui_vp_desk->show();
   }
+}
+
+void Courtroom::set_self_offset(QString p_list) {
+    QStringList self_offsets = p_list.split("&");
+    int self_offset = self_offsets[0].toInt();
+    int self_offset_v;
+    if (self_offsets.length() <= 1)
+      self_offset_v = 0;
+    else 
+      self_offset_v = self_offsets[1].toInt();
+    ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 }
 
 void Courtroom::set_ip_list(QString p_list)

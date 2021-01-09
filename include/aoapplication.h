@@ -77,6 +77,7 @@ public:
   bool additive_enabled = false;
   bool effects_enabled = false;
   bool y_offset_enabled = false;
+  bool expanded_desk_mods_enabled = false;
 
   ///////////////loading info///////////////////
 
