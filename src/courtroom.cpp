@@ -289,7 +289,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_sfx_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_sfx_dropdown_changed(int)));
-  connect(ui_sfx_dropdown, SIGNAL(currentTextChanged(QString)), this,
+  connect(ui_sfx_dropdown, SIGNAL(editTextChanged(QString)), this,
           SLOT(on_sfx_dropdown_custom(QString)));
   connect(ui_sfx_dropdown, SIGNAL(customContextMenuRequested(QPoint)), this,
           SLOT(on_sfx_context_menu_requested(QPoint)));
@@ -3932,6 +3932,7 @@ void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
   ui_sfx_remove->hide();
+  custom_sfx = "";
 }
 
 void Courtroom::on_sfx_dropdown_custom(QString p_sfx)
@@ -3974,7 +3975,7 @@ void Courtroom::on_sfx_edit_requested()
 void Courtroom::on_sfx_remove_clicked()
 {
   ui_sfx_remove->hide();
-  ui_sfx_dropdown->clearEditText();
+  ui_sfx_dropdown->setCurrentIndex(0);
   custom_sfx = "";
 }
 
