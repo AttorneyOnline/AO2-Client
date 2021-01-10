@@ -92,6 +92,13 @@ public:
     arup_locks.append(locked);
   }
 
+  void arup_clear() {
+    arup_players.clear();
+    arup_statuses.clear();
+    arup_cms.clear();
+    arup_locks.clear();
+  }
+
   void arup_modify(int type, int place, QString value)
   {
     if (type == 0) {
