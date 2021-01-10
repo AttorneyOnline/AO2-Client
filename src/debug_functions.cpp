@@ -9,6 +9,7 @@ void call_error(QString p_message)
 {
   QMessageBox *msgBox = new QMessageBox;
 
+  msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setText(QCoreApplication::translate("debug_functions", "Error: %1")
                       .arg(p_message));
   msgBox->setWindowTitle(
@@ -22,6 +23,7 @@ void call_notice(QString p_message)
 {
   QMessageBox *msgBox = new QMessageBox;
 
+  msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setText(p_message);
   msgBox->setWindowTitle(
       QCoreApplication::translate("debug_functions", "Notice"));
