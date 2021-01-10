@@ -23,14 +23,26 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE |
                        BASS_UNICODE | BASS_ASYNCFILE;
-  if (loop)
+  unsigned int streaming_flags = BASS_STREAM_AUTOFREE;
+  if (loop) {
     flags |= BASS_SAMPLE_LOOP;
+    streaming_flags |= BASS_SAMPLE_LOOP;
+  }
 
   DWORD newstream;
-  if (f_path.endsWith(".opus"))
-    newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
-  else
-    newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
+  if (f_path.startsWith("http")) {
+    if (f_path.endsWith(".opus"))
+      newstream = BASS_OPUS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
+    else
+      newstream = BASS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
+
+  } else {
+    if (f_path.endsWith(".opus"))
+      newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
+    else
+      newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
+  }
+
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());

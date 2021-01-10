@@ -35,8 +35,8 @@ void AOCharMovie::load_image(QString p_char, QString p_emote,
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_char, emote_prefix + "/" +
                       p_emote)), // Path check if it's categorized into a folder
-      ao_app->get_character_path(
-          p_char, p_emote + ".png"), // Non-animated path if emote_prefix fails
+      ao_app->get_image_suffix(ao_app->get_character_path(
+          p_char, p_emote)), // Just use the non-prefixed image, animated or not
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Theme placeholder path
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
@@ -61,6 +61,15 @@ void AOCharMovie::load_image(QString p_char, QString p_emote,
     return;
 
   m_reader->setFileName(emote_path);
+
+  // set format to apng if png supports animation
+  if (emote_path.endsWith("png")) {
+    m_reader->setFormat("apng");
+    if (!m_reader->supportsAnimation()) {
+      m_reader->setFormat("png");
+    }
+  }
+
   QPixmap f_pixmap = this->get_pixmap(m_reader->read());
   int f_delay = m_reader->nextImageDelay();
 

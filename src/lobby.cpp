@@ -13,6 +13,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   this->setWindowTitle(tr("Attorney Online 2"));
   this->setWindowIcon(QIcon(":/logo.png"));
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
   ui_background = new AOImage(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
@@ -97,10 +98,10 @@ void Lobby::set_widgets()
            "Did you download all resources correctly from tiny.cc/getao, "
            "including the large 'base' folder?"));
 
-    this->resize(517, 666);
+    this->setFixedSize(517, 666);
   }
   else {
-    this->resize(f_lobby.width, f_lobby.height);
+    this->setFixedSize(f_lobby.width, f_lobby.height);
   }
 
   set_size_and_pos(ui_background, "lobby");
@@ -282,7 +283,10 @@ QString Lobby::get_chatlog()
 
 int Lobby::get_selected_server()
 {
-  return ui_server_list->currentItem()->text(0).toInt();
+  if (auto item = ui_server_list->currentItem()) {
+    return item->text(0).toInt();
+  }
+  return -1;
 }
 
 void Lobby::set_loading_value(int p_value)
@@ -332,12 +336,12 @@ void Lobby::on_add_to_fav_pressed()
 void Lobby::on_add_to_fav_released()
 {
   ui_add_to_fav->set_image("addtofav");
-
-  // you cant add favorites from favorites m8
-  if (!public_servers_selected)
-    return;
-
-  ao_app->add_favorite_server(get_selected_server());
+  if (public_servers_selected) {
+    int selection = get_selected_server();
+    if (selection > -1) {
+      ao_app->add_favorite_server(selection);
+    }
+  }
 }
 
 void Lobby::on_connect_pressed() { ui_connect->set_image("connect_pressed"); }
@@ -355,7 +359,7 @@ void Lobby::on_connect_released()
 
 void Lobby::on_about_clicked()
 {
-  const bool hasApng = QImageReader::supportedImageFormats().contains("APNG");
+  const bool hasApng = QImageReader::supportedImageFormats().contains("apng");
 
   QString msg =
       tr("<h2>Attorney Online %1</h2>"
@@ -441,8 +445,9 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 // doubleclicked on an item in the serverlist so we'll connect right away
 void Lobby::on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 {
+  doubleclicked = true;
   on_server_list_clicked(p_item, column);
-  on_connect_released();
+  //on_connect_released();
 }
 
 void Lobby::on_server_search_edited(QString p_text)

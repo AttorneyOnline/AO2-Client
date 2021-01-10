@@ -59,6 +59,7 @@
 #include <QTextCharFormat>
 #include <QElapsedTimer>
 
+#include <algorithm>
 #include <stack>
 
 class AOApplication;
@@ -175,6 +176,9 @@ public:
   // sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
 
+  // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
+  void set_self_offset(QString p_list);
+
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
   void set_ip_list(QString p_list);
@@ -226,14 +230,14 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0);
+                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime());
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
   // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim(bool noninterrupting);
+  void play_preanim(bool immediate);
 
   // plays the witness testimony or cross examination animation based on
   // argument
@@ -259,6 +263,8 @@ public:
   void set_clock_visibility(bool visible);
 
   qint64 pong();
+  // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
+  void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
   ~Courtroom();
 private:
@@ -284,13 +290,16 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {0, 10, 25, 40, 50, 70, 90};
+  int message_display_speed[7] = {5, 10, 25, 40, 50, 70, 90};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
 
-  // The offset this user has given if they want to appear alongside someone.
+  // The horizontal offset this user has given if they want to appear alongside someone.
   int char_offset = 0;
+
+  // The vertical offset this user has given.
+  int char_vert_offset = 0;
 
   // 0 = in front, 1 = behind
   int pair_order = 0;
@@ -325,7 +334,7 @@ private:
   int real_tick_pos = 0;
   // used to determine how often blips sound
   int blip_ticker = 0;
-  int blip_rate = 1;
+  int blip_rate = 2;
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
@@ -341,6 +350,9 @@ private:
 
   // True, if the log should display the message like name<br>text instead of name: text
   bool log_newline = false;
+
+  // True, if the log should include RP actions like interjections, showing evidence, etc.
+  bool log_ic_actions = true;
 
   // Margin in pixels between log entries for the IC log.
   int log_margin = 0;
@@ -408,6 +420,11 @@ private:
 
   int objection_state = 0;
   QString objection_custom = "";
+  struct CustomObjection {
+    QString name;
+    QString filename;
+  };
+  QList<CustomObjection> custom_objections_list;
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -421,6 +438,17 @@ private:
 
   // List of associated RGB colors for this color index
   QVector<QColor> color_rgb_list;
+
+  // Same as above but populated from misc/default's config
+  QVector<QColor> default_color_rgb_list;
+
+  // Get a color index from an arbitrary misc config
+  void gen_char_rgb_list(QString p_char);
+  QVector<QColor> char_color_rgb_list;
+
+  // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
+  QString current_misc;
+  QString last_misc;
 
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
@@ -438,7 +466,11 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+
+  // have we already presented evidence for this message?
+  bool evidence_presented = false;
 
   QString effect = "";
 
@@ -536,6 +568,7 @@ private:
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
+  QSpinBox *ui_pair_vert_offset_spinbox;
 
   QComboBox *ui_pair_order_dropdown;
 
@@ -595,7 +628,7 @@ private:
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
 
-  QCheckBox *ui_pre_non_interrupt;
+  QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;
@@ -717,6 +750,7 @@ private slots:
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
+  void music_stop();
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
@@ -790,6 +824,7 @@ private slots:
 
   void on_log_limit_changed(int value);
   void on_pair_offset_changed(int value);
+  void on_pair_vert_offset_changed(int value);
 
   void on_ooc_toggle_clicked();
 

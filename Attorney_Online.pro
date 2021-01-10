@@ -14,6 +14,10 @@ SOURCES += $$files($$PWD/src/*.cpp)
 HEADERS += $$files($$PWD/include/*.h)
 
 LIBS += -L$$PWD/lib
+QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
+
+# Uncomment for verbose network logging
+# DEFINES += DEBUG_NETWORK
 
 # Uncomment to enable Discord Rich Presence
 # DEFINES += DISCORD
@@ -31,7 +35,7 @@ LIBS += -lbassopus
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
-CONFIG += c++14
+CONFIG += c++17
 
 RESOURCES += resources.qrc
 
