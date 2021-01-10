@@ -164,6 +164,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
 
   row += 1;
+  ui_log_ic_actions_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
+  ui_log_ic_actions_lbl->setToolTip(
+      tr("If ticked, log will show IC actions such as shouting and presenting evidence."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_ic_actions_lbl);
+
+  ui_log_ic_actions_cb = new QCheckBox(ui_form_layout_widget);
+  ui_log_ic_actions_cb->setChecked(p_ao_app->get_log_ic_actions());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
+  
+  row += 1;
   ui_log_names_divider = new QFrame(ui_form_layout_widget);
   ui_log_names_divider->setFrameShape(QFrame::HLine);
   ui_log_names_divider->setFrameShadow(QFrame::Sunken);
@@ -765,6 +778,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("log_newline", ui_log_newline_cb->isChecked());
   configini->setValue("log_margin", ui_log_margin_spinbox->value());
   configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
+  configini->setValue("log_ic_actions", ui_log_ic_actions_cb->isChecked());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
   configini->setValue("master", ui_ms_textbox->text());
