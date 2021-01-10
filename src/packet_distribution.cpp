@@ -413,9 +413,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     w_courtroom->clear_areas();
+    w_courtroom->arup_clear();
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       w_courtroom->append_area(f_contents.at(n_element));
+      w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
     }
 
     w_courtroom->list_areas();
