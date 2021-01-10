@@ -316,7 +316,7 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
-  // triggers ping_server() every 1 second
+  // triggers ping_server() every 45 seconds
   QTimer *keepalive_timer;
 
   // determines how fast messages tick onto screen
