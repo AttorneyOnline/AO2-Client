@@ -1,6 +1,9 @@
 name: test
 
-on: [push]
+on:
+  push:
+    branch:
+      - test
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
