@@ -3340,18 +3340,19 @@ void Courtroom::handle_song(QStringList *p_contents)
 void Courtroom::handle_wtce(QString p_wtce, int variant)
 {
   QString sfx_file = "courtroom_sounds.ini";
+  QString sfx_name;
   QString filename;
   ui_vp_wtce->set_static_duration(wtce_static_time);
   ui_vp_wtce->set_max_duration(wtce_max_time);
   // witness testimony
   if (p_wtce == "testimony1") {
-    sfx_player->play(ao_app->get_sfx("witness_testimony"));
+    sfx_name = "witness_testimony";
     filename = "witnesstestimony";
     ui_vp_testimony->load_image("testimony", "");
   }
   // cross examination
   else if (p_wtce == "testimony2") {
-    sfx_player->play(ao_app->get_sfx("cross_examination"));
+    sfx_name = "cross_examination";
     filename = "crossexamination";
     ui_vp_testimony->stop();
   }
@@ -3359,17 +3360,18 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     ui_vp_wtce->set_static_duration(verdict_static_time);
     ui_vp_wtce->set_max_duration(verdict_max_time);
     if (variant == 0) {
-      sfx_player->play(ao_app->get_sfx("not_guilty"));
+      sfx_name = "not_guilty";
       filename = "notguilty";
       ui_vp_testimony->stop();
     }
     else if (variant == 1) {
-      sfx_player->play(ao_app->get_sfx("guilty"));
+      sfx_name = "guilty";
       filename = "guilty";
       ui_vp_testimony->stop();
     }
   }
   QString bg_misc = ao_app->read_design_ini("misc", ao_app->get_background_path("design.ini"));
+  sfx_player->play(sfx_name, bg_misc);
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
