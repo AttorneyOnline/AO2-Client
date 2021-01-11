@@ -286,7 +286,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (AOApplication::get_auto_logging_enabled()) {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
-          "/'ddd MMMM yyyy hh.mm.ss t'.log'");
+          "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name + " on address " +
                               server_address + " on " +
                               QDateTime::currentDateTime().toUTC().toString(),
