@@ -514,7 +514,7 @@ private:
   QTextEdit *ui_vp_message;
   EffectLayer *ui_vp_effect;
   InterfaceLayer *ui_vp_testimony;
-  InterfaceLayer *ui_vp_wtce;
+  InterjectionLayer *ui_vp_wtce;
   InterjectionLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;

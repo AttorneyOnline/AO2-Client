@@ -63,7 +63,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_testimony = new InterfaceLayer(this, ao_app);
   ui_vp_testimony->set_play_once(false);
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_wtce = new InterfaceLayer(this, ao_app);
+  ui_vp_wtce = new InterjectionLayer(this, ao_app);
   ui_vp_wtce->set_play_once(true);
   ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_objection = new InterjectionLayer(this, ao_app);
@@ -3369,7 +3369,8 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       ui_vp_testimony->stop();
     }
   }
-  ui_vp_wtce->load_image(filename, "");
+  QString bg_misc = ao_app->read_design_ini("misc", ao_app->get_background_path("design.ini")));
+  ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
 
