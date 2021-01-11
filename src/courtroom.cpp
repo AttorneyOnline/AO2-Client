@@ -1380,7 +1380,9 @@ void Courtroom::update_character(int p_cid)
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
-  // have to call these to make sure sfx and blips don't get accidentally muted forever when we change characters
+  // have to call these to make sure music, sfx, and blips don't get accidentally muted forever when we change characters
+  music_player->set_volume(ui_music_slider->value(), 0);
+  objection_player->set_volume(ui_sfx_slider->value());
   sfx_player->set_volume(ui_sfx_slider->value());
   blip_player->set_volume(ui_blip_slider->value());
 }
