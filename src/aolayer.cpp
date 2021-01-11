@@ -503,9 +503,7 @@ void AOLayer::stop()
 {
   // for all intents and purposes, stopping is the same as hiding. at no point
   // do we want a frozen gif to display
-  ticker->stop();
-  preanim_timer->stop();
-  shfx_timer->stop();
+  this->freeze();
   this->hide();
 }
 
