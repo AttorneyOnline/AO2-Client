@@ -50,7 +50,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
   evidence_movie->max_duration = 1000;
   evidence_movie->set_play_once(true);
   evidence_movie->load_image(gif_name, "");
-  sfx_player->play(ao_app->get_sfx("evidence_present"));
+  sfx_player->play(ao_app->get_sfx("evidence_present", "default"));
 }
 
 void AOEvidenceDisplay::reset()

@@ -282,7 +282,7 @@ public:
   QColor get_chat_color(QString p_identifier, QString p_chat);
 
   // Returns the sfx with p_identifier from sounds.ini in the current theme path
-  QString get_sfx(QString p_identifier);
+  QString get_sfx(QString p_identifier, QString p_misc="default");
 
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
