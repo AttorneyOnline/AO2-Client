@@ -3369,7 +3369,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       ui_vp_testimony->stop();
     }
   }
-  QString bg_misc = ao_app->read_design_ini("misc", ao_app->get_background_path("design.ini")));
+  QString bg_misc = ao_app->read_design_ini("misc", ao_app->get_background_path("design.ini"));
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
