@@ -628,8 +628,8 @@ void Courtroom::set_widgets()
     ui_music_list->setIndentation(music_list_indentation);
   else
     ui_music_list->resetIndentation();
-  QString music_list_animated = ao_app->read_design_ini("music_list_animated", ao_app->get_theme_path("courtroom_design.ini"));
-  if (music_list_animated == "true")
+  int music_list_animated = ao_app->read_design_ini("music_list_animated", ao_app->get_theme_path("courtroom_design.ini")).toInt();
+  if (music_list_animated == 1)
     ui_music_list->setAnimated(true);
   else
     ui_music_list->setAnimated(false);
