@@ -107,6 +107,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_list->header()->setStretchLastSection(false);
   ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_music_list->setUniformRowHeights(true);
+  
 
   ui_music_display = new AOMovie(this, ao_app);
   ui_music_display->set_play_once(false);
@@ -626,6 +628,11 @@ void Courtroom::set_widgets()
     ui_music_list->setIndentation(music_list_indentation);
   else
     ui_music_list->resetIndentation();
+  QString music_list_animated = ao_app->read_design_ini("music_list_animated", ao_app->get_theme_path("courtroom_design.ini"));
+  if (music_list_animated == "true")
+    ui_music_list->setAnimated(true);
+  else
+    ui_music_list->setAnimated(false);
 
   set_size_and_pos(ui_music_name, "music_name");
 
