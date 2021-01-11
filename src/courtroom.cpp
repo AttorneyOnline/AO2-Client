@@ -621,6 +621,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_music_list, "music_list");
   ui_music_list->header()->setMinimumSectionSize(ui_music_list->width());
+  int music_list_indentation = ao_app->read_design_ini("music_list_indent", ao_app->get_theme_path("courtroom_design.ini")).toInt();
+  if (music_list_indentation >= 0)
+    ui_music_list->setIndentation(music_list_indentation);
+  else
+    ui_music_list->resetIndentation();
 
   set_size_and_pos(ui_music_name, "music_name");
 
