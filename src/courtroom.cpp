@@ -648,7 +648,7 @@ void Courtroom::set_widgets()
   ui_music_display->set_play_once(false);
 
   for (int i = 0; i < max_clocks; i++) {
-    set_size_and_pos(ui_clock[i], "clock_" + QString::number(i+1));
+    set_size_and_pos(ui_clock[i], "clock_" + QString::number(i));
   }
 
   if (is_ao2_bg) {
@@ -1000,7 +1000,7 @@ void Courtroom::set_fonts(QString p_char)
   set_font(ui_music_name, "", "music_name", p_char);
 
   for (int i = 0; i < max_clocks; i++)
-    set_font(ui_clock[i], "", "clock_" + QString::number(i+1), p_char);
+    set_font(ui_clock[i], "", "clock_" + QString::number(i), p_char);
 
   set_dropdowns();
 }
