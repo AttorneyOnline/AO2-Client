@@ -480,23 +480,19 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 
 QString AOApplication::get_sfx(QString p_identifier, QString p_misc)
 {
-  QString misc_theme_path = get_theme_path("misc/" + p_misc + "/courtroom_sounds.ini");
-  QString misc_path = get_misc_path(p_misc, "courtroom_sounds.ini");
-  QString design_ini_path = get_theme_path("courtroom_sounds.ini");
-  QString default_path = get_default_theme_path("courtroom_sounds.ini");
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QStringList paths{get_theme_path("misc/" + p_misc + "/courtroom_sounds.ini"),
+                    get_misc_path(p_misc, "courtroom_sounds.ini"),
+                    get_theme_path("courtroom_sounds.ini"),
+                    get_default_theme_path("courtroom_sounds.ini")};
 
   QString return_sfx = "";
 
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, default_path);
-
-    if (f_result == "")
-      return return_sfx;
+  for (const QString &path : paths) {
+    QString value = read_design_ini(p_identifier, path);
+    if (!value.isEmpty()) {
+      return value.toLatin1();
+    }
   }
-
-  return_sfx = f_result;
-
   return return_sfx;
 }
 

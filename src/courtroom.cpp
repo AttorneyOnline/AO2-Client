@@ -3371,7 +3371,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     }
   }
   QString bg_misc = ao_app->read_design_ini("misc", ao_app->get_background_path("design.ini"));
-  sfx_player->play(sfx_name, bg_misc);
+  sfx_player->play(ao_app->get_sfx(sfx_name, bg_misc));
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
