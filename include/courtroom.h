@@ -255,12 +255,12 @@ public:
 
   void check_connection_received();
 
-  void start_clock();
-  void start_clock(qint64 msecs);
-  void set_clock(qint64 msecs);
-  void pause_clock();
-  void stop_clock();
-  void set_clock_visibility(bool visible);
+  void start_clock(int id);
+  void start_clock(int id, qint64 msecs);
+  void set_clock(int id, qint64 msecs);
+  void pause_clock(int id);
+  void stop_clock(int id);
+  void set_clock_visibility(int id, bool visible);
 
   qint64 pong();
   // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
@@ -563,7 +563,8 @@ private:
   ScrollText *ui_music_name;
   AOMovie *ui_music_display;
 
-  AOClockLabel *ui_clock;
+  static const int max_clocks = 5;
+  AOClockLabel *ui_clock[max_clocks];
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;

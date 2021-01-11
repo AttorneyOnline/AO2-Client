@@ -578,7 +578,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed || f_contents.size() < 2)
       goto end;
 
-    // Note: timer ID is reserved as argument 0
+    // Timer ID is reserved as argument 0
+    int id = f_contents.at(0).toInt();
+
+    // ID is invalid
+    if (id < 0 || id >= w_courtroom->max_clocks)
+      goto end;
 
     // Type 0 = start/resume/sync timer at time
     // Type 1 = pause timer at time
@@ -600,23 +605,23 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         if (type == 0)
         {
           timer_value -= latency / 2;
-          w_courtroom->start_clock(timer_value);
+          w_courtroom->start_clock(id, timer_value);
         }
         else
         {
-          w_courtroom->pause_clock();
-          w_courtroom->set_clock(timer_value);
+          w_courtroom->pause_clock(id);
+          w_courtroom->set_clock(id, timer_value);
         }
       }
       else
       {
-        w_courtroom->stop_clock();
+        w_courtroom->stop_clock(id);
       }
     }
     else if (type == 2)
-      w_courtroom->set_clock_visibility(true);
+      w_courtroom->set_clock_visibility(id, true);
     else if (type == 3)
-      w_courtroom->set_clock_visibility(false);
+      w_courtroom->set_clock_visibility(id, false);
   }
   else if (header == "CHECK") {
     if (!courtroom_constructed)

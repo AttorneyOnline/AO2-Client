@@ -115,10 +115,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_name = new ScrollText(ui_music_display);
   ui_music_name->setText(tr("None"));
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
-
-  ui_clock = new AOClockLabel(this);
-  ui_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_clock->hide();
+  
+  for (int i = 0; i < max_clocks; i++) {
+    ui_clock[i] = new AOClockLabel(this);
+    ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui_clock[i]->hide();
+  }
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -645,7 +647,9 @@ void Courtroom::set_widgets()
   ui_music_display->play("music_display");
   ui_music_display->set_play_once(false);
 
-  set_size_and_pos(ui_clock, "clock");
+  for (int i = 0; i < max_clocks; i++) {
+    set_size_and_pos(ui_clock[i], "clock_" + QString::number(i+1));
+  }
 
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
@@ -994,7 +998,9 @@ void Courtroom::set_fonts(QString p_char)
   set_font(ui_music_list, "", "music_list", p_char);
   set_font(ui_area_list, "", "area_list", p_char);
   set_font(ui_music_name, "", "music_name", p_char);
-  set_font(ui_clock, "", "clock", p_char);
+
+  for (int i = 0; i < max_clocks; i++)
+    set_font(ui_clock[i], "", "clock_" + QString::number(i+1), p_char);
 
   set_dropdowns();
 }
@@ -5066,34 +5072,52 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
   }
 }
 
-void Courtroom::start_clock()
+void Courtroom::start_clock(int id)
 {
-  ui_clock->start();
+  if (id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->start();
+  }
 }
 
-void Courtroom::start_clock(qint64 msecs)
+void Courtroom::start_clock(int id, qint64 msecs)
 {
-  ui_clock->start(static_cast<int>(msecs));
+  if (id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->start(static_cast<int>(msecs));
+  }
 }
 
-void Courtroom::set_clock(qint64 msecs)
+void Courtroom::set_clock(int id, qint64 msecs)
 {
-  ui_clock->set(static_cast<int>(msecs), true);
+  if (id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->set(static_cast<int>(msecs), true);
+  }
 }
 
-void Courtroom::pause_clock()
+void Courtroom::pause_clock(int id)
 {
-  ui_clock->pause();
+  if (id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->pause();
+  }
 }
 
-void Courtroom::stop_clock()
+void Courtroom::stop_clock(int id)
 {
-  ui_clock->stop();
+  if (id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->stop();
+  }
 }
 
-void Courtroom::set_clock_visibility(bool visible)
+void Courtroom::set_clock_visibility(int id, bool visible)
 {
-  ui_clock->setVisible(visible);
+  if (id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->setVisible(visible);
+  }
 }
 
 void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
