@@ -52,6 +52,12 @@ private:
   QSpinBox *ui_log_margin_spinbox;
   QLabel *ui_log_timestamp_lbl;
   QCheckBox *ui_log_timestamp_cb;
+  QLabel *ui_stay_time_lbl;
+  QSpinBox *ui_stay_time_spinbox;
+  QLabel *ui_desync_logs_lbl;
+  QCheckBox *ui_desync_logs_cb;
+  QLabel *ui_instant_objection_lbl;
+  QCheckBox *ui_instant_objection_cb;
   QLabel *ui_log_ic_actions_lbl;
   QCheckBox *ui_log_ic_actions_cb;
   QFrame *ui_log_names_divider;
