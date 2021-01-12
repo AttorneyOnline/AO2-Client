@@ -286,7 +286,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (AOApplication::get_auto_logging_enabled()) {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
-          "/'ddd MMMM yyyy hh.mm.ss t'.log'");
+          "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name + " on address " +
                               server_address + " on " +
                               QDateTime::currentDateTime().toUTC().toString(),
@@ -413,9 +413,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     w_courtroom->clear_areas();
+    w_courtroom->arup_clear();
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       w_courtroom->append_area(f_contents.at(n_element));
+      w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
     }
 
     w_courtroom->list_areas();
@@ -473,7 +475,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
-      w_courtroom->handle_chatmessage(&p_packet->get_contents());
+      w_courtroom->chatmessage_enqueue(p_packet->get_contents());
   }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)

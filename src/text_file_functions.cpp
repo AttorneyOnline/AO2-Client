@@ -46,6 +46,12 @@ int AOApplication::get_max_log_size()
   return result;
 }
 
+int AOApplication::stay_time()
+{
+  int result = configini->value("stay_time", 200).toInt();
+  return result;
+}
+
 bool AOApplication::get_log_goes_downwards()
 {
   QString result =
@@ -854,7 +860,7 @@ QString AOApplication::get_flash_frame(QString p_char, QString p_emote,
 
 int AOApplication::get_text_delay(QString p_char, QString p_emote)
 {
-  QString f_result = read_char_ini(p_char, p_emote, "TextDelay");
+  QString f_result = read_char_ini(p_char, p_emote, "stay_time");
 
   if (f_result == "")
     return -1;
@@ -976,6 +982,18 @@ bool AOApplication::objection_stop_music()
 {
   QString result =
       configini->value("objection_stop_music", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::is_instant_objection_enabled()
+{
+  QString result = configini->value("instant_objection", "true").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::is_desyncrhonized_logs_enabled()
+{
+  QString result = configini->value("desync_logs", "false").value<QString>();
   return result.startsWith("true");
 }
 

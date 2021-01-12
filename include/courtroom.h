@@ -42,6 +42,7 @@
 #include <QTextBrowser>
 #include <QTreeWidget>
 #include <QVector>
+#include <QQueue>
 
 #include <QBrush>
 #include <QDebug>
@@ -91,6 +92,13 @@ public:
     arup_statuses.append(status);
     arup_cms.append(cm);
     arup_locks.append(locked);
+  }
+
+  void arup_clear() {
+    arup_players.clear();
+    arup_statuses.clear();
+    arup_cms.clear();
+    arup_locks.clear();
   }
 
   void arup_modify(int type, int place, QString value)
@@ -211,12 +219,46 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
-  // these functions handle chatmessages sequentially.
-  // The process itself is very convoluted and merits separate documentation
-  // But the general idea is objection animation->pre animation->talking->idle
-  void handle_chatmessage(QStringList *p_contents);
-  void handle_chatmessage_2();
-  void handle_chatmessage_3();
+  // Add the message packet to the stack
+  void chatmessage_enqueue(QStringList p_contents);
+
+  // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
+  void unpack_chatmessage(QStringList p_contents);
+
+  // Log the message contents and information such as evidence presenting etc. into the log file
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
+
+  // Display the message contents and information such as evidence presenting etc. in the IC logs
+  void display_log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
+
+  // Log the message contents and information such as evidence presenting etc. into the IC logs
+  void handle_callwords();
+
+  // Handle the objection logic, if it's interrupting the currently parsing message.
+  // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
+  bool handle_objection();
+
+  // Display the evidence image box when presenting evidence in IC
+  void display_evidence_image();
+
+  // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
+  void handle_ic_message();
+  
+  // Display the character.
+  void display_character();
+
+  // Display the character's pair if present.
+  void display_pair_character(QString other_charid, QString other_offset);
+
+  // Handle the emote modifier value and proceed through the logic accordingly.
+  void handle_emote_mod(int emote_mod, bool p_immediate);
+
+  // Initialize the chatbox image, showname shenanigans, custom chatboxes, etc.
+  void initialize_chatbox();
+
+  // Finally start displaying the chatbox we initialized, display the evidence, and play the talking or idle emote for the character.
+  // Callwords are also handled here.
+  void handle_ic_speaking();
 
   // This function filters out the common CC inline text trickery, for appending
   // to the IC chatlog.
@@ -360,8 +402,14 @@ private:
   // True, if the log should have a timestamp.
   bool log_timestamp = false;
 
+  // How long in miliseconds should the objection wait before appearing.
+  int objection_threshold = 1500;
+
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
+  
+  // delay before the next queue entry is going to be processed
+  QTimer *text_queue_timer;
 
   // delay before sfx plays
   QTimer *sfx_delay_timer;
@@ -710,7 +758,6 @@ private:
   void refresh_evidence();
   void set_evidence_page();
 
-  void reset_ic();
   void reset_ui();
 
   void regenerate_ic_chatlog();
@@ -880,6 +927,9 @@ private slots:
   void on_casing_clicked();
 
   void ping_server();
+
+  // Proceed to parse the oldest chatmessage and remove it from the stack
+  void chatmessage_dequeue();
 };
 
 #endif // COURTROOM_H
