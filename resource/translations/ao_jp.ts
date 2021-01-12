@@ -6,12 +6,12 @@
     <message>
         <location filename="../../src/aoapplication.cpp" line="129"/>
         <source>Disconnected from server.</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーがつながらなくなりました</translation>
     </message>
     <message>
         <location filename="../../src/aoapplication.cpp" line="152"/>
         <source>Error connecting to master server. Will try again in %1 seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>マスターサーバーにつながりません。%1秒の後でもう一回</translation>
     </message>
     <message>
         <location filename="../../src/aoapplication.cpp" line="157"/>
@@ -29,7 +29,7 @@ Please go to aceattorneyonline.com to update.</source>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="235"/>
         <source>Attorney Online 2</source>
-        <translation type="unfinished"></translation>
+        <translation>逆転裁判オンライン２</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="263"/>
@@ -118,7 +118,7 @@ Reason: %1</source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="12"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>設定</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="46"/>
@@ -413,7 +413,7 @@ Reason: %1</source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="580"/>
         <source>Defense:</source>
-        <translation type="unfinished"></translation>
+        <translation>弁護士</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="581"/>
@@ -423,7 +423,7 @@ Reason: %1</source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="595"/>
         <source>Prosecution:</source>
-        <translation type="unfinished"></translation>
+        <translation>検事</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="597"/>
@@ -433,7 +433,7 @@ Reason: %1</source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="611"/>
         <source>Judge:</source>
-        <translation type="unfinished"></translation>
+        <translation>裁判官</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="612"/>
@@ -443,7 +443,7 @@ Reason: %1</source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="626"/>
         <source>Juror:</source>
-        <translation type="unfinished"></translation>
+        <translation>陪審員</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="627"/>
@@ -453,7 +453,7 @@ Reason: %1</source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="641"/>
         <source>Stenographer:</source>
-        <translation type="unfinished"></translation>
+        <translation>記録官</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="643"/>
@@ -486,7 +486,7 @@ Reason: %1</source>
     <message>
         <location filename="../../src/charselect.cpp" line="21"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>パースワード</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="27"/>
@@ -497,7 +497,7 @@ Reason: %1</source>
         <location filename="../../src/charselect.cpp" line="30"/>
         <location filename="../../src/courtroom.cpp" line="175"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>検索</translation>
     </message>
     <message>
         <location filename="../../src/charselect.cpp" line="35"/>
@@ -615,17 +615,17 @@ Cases you can load: %1</source>
         <location filename="../../src/courtroom.cpp" line="767"/>
         <location filename="../../src/courtroom.cpp" line="3475"/>
         <source>Server</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバー</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="143"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>無</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="749"/>
         <source>Hold It!</source>
-        <translation type="unfinished"></translation>
+        <translation>待った！</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="750"/>
@@ -637,12 +637,12 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="755"/>
         <source>Objection!</source>
-        <translation type="unfinished">意義あり!</translation>
+        <translation>意義あり!</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="761"/>
         <source>Take That!</source>
-        <translation type="unfinished"></translation>
+        <translation>くらえ！</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="769"/>
@@ -660,7 +660,7 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="781"/>
         <source>Guilty!</source>
-        <translation type="unfinished"></translation>
+        <translation>有罪！</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="794"/>
@@ -894,7 +894,7 @@ char.ini [Options] category, effects = &apos;miscname&apos; where it referes to 
     <message>
         <location filename="../../src/courtroom.cpp" line="791"/>
         <source>Change character</source>
-        <translation type="unfinished"></translation>
+        <translation>キャラを変更します</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="797"/>
@@ -909,7 +909,7 @@ char.ini [Options] category, effects = &apos;miscname&apos; where it referes to 
     <message>
         <location filename="../../src/courtroom.cpp" line="809"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>設定</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="822"/>
@@ -924,7 +924,7 @@ char.ini [Options] category, effects = &apos;miscname&apos; where it referes to 
     <message>
         <location filename="../../src/courtroom.cpp" line="914"/>
         <source>Return back to the server list.</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーリストに戻る</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="927"/>
@@ -940,7 +940,7 @@ char.ini [Options] category, effects = &apos;miscname&apos; where it referes to 
         <location filename="../../src/courtroom.cpp" line="1457"/>
         <location filename="../../src/courtroom.cpp" line="3343"/>
         <source>CLIENT</source>
-        <translation type="unfinished"></translation>
+        <translation>クライアント</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="2984"/>
@@ -1283,12 +1283,12 @@ Description:
     <message>
         <location filename="../../src/lobby.cpp" line="12"/>
         <source>Attorney Online 2</source>
-        <translation type="unfinished"></translation>
+        <translation>逆転裁判オンライン2</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="31"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>検索</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="39"/>
@@ -1299,22 +1299,22 @@ Description:
         <location filename="../../src/lobby.cpp" line="94"/>
         <source>It doesn&apos;t look like your client is set up correctly.
 Did you download all resources correctly from tiny.cc/getao, including the large &apos;base&apos; folder?</source>
-        <translation type="unfinished"></translation>
+        <translation>クライアントの設定が正しくないかもしれません。「tiny.cc/getao」からのファイルをダウンロードしましたか？</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="123"/>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>バージョン: %1</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="129"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>設定</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="132"/>
         <source>Allows you to change various aspects of the client.</source>
-        <translation type="unfinished"></translation>
+        <translation>クライアントで変更できます</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="176"/>
@@ -1334,12 +1334,12 @@ Did you download all resources correctly from tiny.cc/getao, including the large
     <message>
         <location filename="../../src/lobby.cpp" line="380"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>について</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="521"/>
         <source>Online: %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>オンライン: %1/%2</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="142"/>
@@ -1355,12 +1355,12 @@ Did you download all resources correctly from tiny.cc/getao, including the large
         <location filename="../../src/chatlogpiece.cpp" line="6"/>
         <location filename="../../src/chatlogpiece.cpp" line="7"/>
         <source>UNKNOWN</source>
-        <translation type="unfinished"></translation>
+        <translation>未知</translation>
     </message>
     <message>
         <location filename="../../src/chatlogpiece.cpp" line="55"/>
         <source> has played a song: </source>
-        <translation type="unfinished"></translation>
+        <translation>は音楽をかける</translation>
     </message>
 </context>
 <context>
