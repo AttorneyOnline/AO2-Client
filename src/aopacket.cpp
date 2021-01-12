@@ -10,7 +10,7 @@ AOPacket::AOPacket(QString p_packet_string)
 
 QString AOPacket::to_string(bool encoded)
 {
-  QString contents = m_contents;
+  QStringList contents = m_contents;
   if (encoded)
     contents.replaceInStrings("#", "<num>")
       .replaceInStrings("%", "<percent>")

@@ -2511,17 +2511,13 @@ void Courtroom::play_char_sfx(QString sfx_name)
 void Courtroom::initialize_chatbox()
 {
   int f_charid = m_chatmessage[CHAR_ID].toInt();
-  if (f_charid >= 0 &&
+  if (f_charid >= 0 && f_charid < char_list.size() &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     QString real_name = char_list.at(f_charid).name;
 
-  if (f_char_id > -1 && f_char_id < char_list.size())
-    f_char_name = char_list.at(f_char_id).name;
-  else
-    f_char_id = -1;
+    QString f_showname = ao_app->get_showname(real_name);
 
-  if (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked()) {
-    ui_vp_showname->setText(ao_app->get_showname(f_char_name));
+    ui_vp_showname->setText(f_showname);
   }
   else {
     ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
