@@ -358,6 +358,8 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
+  QQueue<QStringList> chatmessage_queue;
+
   // triggers ping_server() every 45 seconds
   QTimer *keepalive_timer;
 
