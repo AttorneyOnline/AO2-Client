@@ -52,6 +52,12 @@ int AOApplication::stay_time()
   return result;
 }
 
+int AOApplication::get_chat_ratelimit()
+{
+  int result = configini->value("chat_ratelimit", 300).toInt();
+  return result;
+}
+
 bool AOApplication::get_log_goes_downwards()
 {
   QString result =
