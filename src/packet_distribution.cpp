@@ -583,10 +583,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Timer ID is reserved as argument 0
     int id = f_contents.at(0).toInt();
 
-    // ID is invalid
-    if (id < 0 || id >= w_courtroom->max_clocks)
-      goto end;
-
     // Type 0 = start/resume/sync timer at time
     // Type 1 = pause timer at time
     // Type 2 = show timer

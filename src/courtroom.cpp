@@ -5336,7 +5336,7 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
 
 void Courtroom::start_clock(int id)
 {
-  if (id < max_clocks && ui_clock[id] != nullptr)
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
     ui_clock[id]->start();
   }
@@ -5344,7 +5344,7 @@ void Courtroom::start_clock(int id)
 
 void Courtroom::start_clock(int id, qint64 msecs)
 {
-  if (id < max_clocks && ui_clock[id] != nullptr)
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
     ui_clock[id]->start(static_cast<int>(msecs));
   }
@@ -5352,7 +5352,7 @@ void Courtroom::start_clock(int id, qint64 msecs)
 
 void Courtroom::set_clock(int id, qint64 msecs)
 {
-  if (id < max_clocks && ui_clock[id] != nullptr)
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
     ui_clock[id]->set(static_cast<int>(msecs), true);
   }
@@ -5360,7 +5360,7 @@ void Courtroom::set_clock(int id, qint64 msecs)
 
 void Courtroom::pause_clock(int id)
 {
-  if (id < max_clocks && ui_clock[id] != nullptr)
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
     ui_clock[id]->pause();
   }
@@ -5368,7 +5368,7 @@ void Courtroom::pause_clock(int id)
 
 void Courtroom::stop_clock(int id)
 {
-  if (id < max_clocks && ui_clock[id] != nullptr)
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
     ui_clock[id]->stop();
   }
@@ -5376,7 +5376,7 @@ void Courtroom::stop_clock(int id)
 
 void Courtroom::set_clock_visibility(int id, bool visible)
 {
-  if (id < max_clocks && ui_clock[id] != nullptr)
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
     ui_clock[id]->setVisible(visible);
   }
