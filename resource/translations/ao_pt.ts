@@ -709,7 +709,7 @@ Motivo: %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="210"/>
-        <source>No Interrupt</source>
+        <source>Immediate</source>
         <translatorcomment>A translation wouldn&apos;t fit because of the shitty theme system.</translatorcomment>
         <translation></translation>
     </message>

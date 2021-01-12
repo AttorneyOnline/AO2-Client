@@ -166,6 +166,14 @@ public:
   // Returns the value of default_blip in config.ini
   int get_default_blip();
 
+  // Returns the value if objections interrupt and skip the message queue
+  // from the config.ini.
+  bool is_instant_objection_enabled();
+
+  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
+  // from the config.ini
+  bool is_desyncrhonized_logs_enabled();
+
   // Returns the value of whether Discord should be enabled on startup
   // from the config.ini.
   bool is_discord_enabled();
@@ -207,6 +215,9 @@ public:
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();
+
+  // Current wait time between messages for the queue system
+  int stay_time();
 
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).

@@ -176,6 +176,48 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
   
+
+  row += 1;
+  ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
+  ui_stay_time_lbl->setText(tr("Text Stay Time:"));
+  ui_stay_time_lbl->setToolTip(tr(
+      "Minimum amount of time (in miliseconds) an IC message must stay on screen before "
+      "the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behaivor."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stay_time_lbl);
+
+  ui_stay_time_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_stay_time_spinbox->setMaximum(10000);
+  ui_stay_time_spinbox->setValue(p_ao_app->stay_time());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stay_time_spinbox);
+
+  row += 1;
+  ui_desync_logs_lbl = new QLabel(ui_form_layout_widget);
+  ui_desync_logs_lbl->setText(tr("Desynchronize IC Logs:"));
+  ui_desync_logs_lbl->setToolTip(
+      tr("If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_desync_logs_lbl);
+
+  ui_desync_logs_cb = new QCheckBox(ui_form_layout_widget);
+  ui_desync_logs_cb->setChecked(p_ao_app->get_log_timestamp());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_desync_logs_cb);
+
+  row += 1;
+  ui_instant_objection_lbl = new QLabel(ui_form_layout_widget);
+  ui_instant_objection_lbl->setText(tr("Instant Objection:"));
+  ui_instant_objection_lbl->setToolTip(
+      tr("If Text Stay Time is more than 0, instant objection will skip queued messages instead of waiting to catch up."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_instant_objection_lbl);
+
+  ui_instant_objection_cb = new QCheckBox(ui_form_layout_widget);
+  ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_instant_objection_cb);
+
   row += 1;
   ui_log_names_divider = new QFrame(ui_form_layout_widget);
   ui_log_names_divider->setFrameShape(QFrame::HLine);
@@ -779,6 +821,9 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("log_margin", ui_log_margin_spinbox->value());
   configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
   configini->setValue("log_ic_actions", ui_log_ic_actions_cb->isChecked());
+  configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
+  configini->setValue("stay_time", ui_stay_time_spinbox->value());
+  configini->setValue("instant_objection", ui_instant_objection_cb->isChecked());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
   configini->setValue("master", ui_ms_textbox->text());
