@@ -230,16 +230,6 @@ void Courtroom::character_loading_finished()
     }
     ui_char_button_list.clear();
   }
-  // make categories from the misc directory
-  QDir misc_dir = QDir(ao_app->get_base_path() + "misc");
-  QStringList misc_dirs = misc_dir.entryList(QDir::Dirs);
-  for (const QString &category : misc_dirs) {
-    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_char_list);
-    treeItem->setText(0, category);
-    treeItem->setData(1, Qt::DisplayRole, -1);
-    treeItem->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicatorWhenChildless);
-  }
-  
 
   // First, we'll make all the character buttons in the very beginning.
   // We also hide them all, so they can't be accidentally clicked.
@@ -252,19 +242,31 @@ void Courtroom::character_loading_finished()
     char_button->set_image(char_list.at(n).name);
     char_button->setToolTip(char_list.at(n).name);
     ui_char_button_list.append(char_button);
-    QString chat = ao_app->get_chat(char_list.at(n).name);
-    QList<QTreeWidgetItem*> matching_list = ui_char_list->findItems(chat, Qt::MatchFixedString, 0);
+    QString char_category = ao_app->get_category(char_list.at(n).name);
+    QList<QTreeWidgetItem*> matching_list = ui_char_list->findItems(char_category, Qt::MatchFixedString, 0);
+    // create the character tree item
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
     treeItem->setText(0, char_list.at(n).name);
     treeItem->setIcon(0, QIcon(ao_app->get_static_image_suffix(
       ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
     treeItem->setData(1, Qt::DisplayRole, n);
-    if (!matching_list.isEmpty()) {
-      QTreeWidgetItem *category = matching_list[0];
+    // category logic
+    QTreeWidgetItem *category;
+    if (char_category == "") // no category
+      ui_char_list->addTopLevelItem(treeItem);
+    else if (!matching_list.isEmpty()) { // our category already exists
+      category = matching_list[0];
       category->addChild(treeItem);
     }
-    else
-      ui_char_list->addTopLevelItem(treeItem);
+    else { // we need to make a new category
+      category = new QTreeWidgetItem();
+      category->setText(0, char_category);
+      category->setData(1, Qt::DisplayRole, -1);
+      category->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicatorWhenChildless);
+      ui_char_list->insertTopLevelItem(0, category);
+      category->addChild(treeItem);
+    }
+      
     
     connect(char_button, &AOCharButton::clicked,
             [this, n]() { this->char_clicked(n); });

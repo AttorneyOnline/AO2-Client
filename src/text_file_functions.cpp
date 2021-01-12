@@ -634,6 +634,12 @@ QString AOApplication::get_gender(QString p_char)
   return f_result;
 }
 
+QString AOApplication::get_category(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "category", "Options");
+  return f_result;
+}
+
 QString AOApplication::get_chat(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "chat", "Options");
