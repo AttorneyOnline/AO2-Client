@@ -189,6 +189,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     looping_sfx_support_enabled = false;
     additive_enabled = false;
     effects_enabled = false;
+    expanded_desk_mods_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -217,6 +218,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       effects_enabled = true;
     if (f_packet.contains("y_offset", Qt::CaseInsensitive))
         y_offset_enabled = true;
+    if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
+      expanded_desk_mods_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
@@ -290,7 +293,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (AOApplication::get_auto_logging_enabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
-          "/'ddd MMMM yyyy hh.mm.ss t'.log'");
+          "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name + " on address " +
                               server_address + " on " +
                               QDateTime::currentDateTime().toUTC().toString(),
@@ -428,9 +431,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     w_courtroom->clear_areas();
+    w_courtroom->arup_clear();
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       w_courtroom->append_area(f_contents.at(n_element));
+      w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
     }
 
     w_courtroom->list_areas();
@@ -507,7 +512,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
     {
-      w_courtroom->handle_chatmessage(&p_packet->get_contents());
+      w_courtroom->chatmessage_enqueue(p_packet->get_contents());
       if (get_auto_logging_enabled() && !log_filename.isEmpty())
       {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");

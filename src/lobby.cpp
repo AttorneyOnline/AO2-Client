@@ -284,7 +284,10 @@ QString Lobby::get_chatlog()
 
 int Lobby::get_selected_server()
 {
-  return ui_server_list->currentItem()->text(0).toInt();
+  if (auto item = ui_server_list->currentItem()) {
+    return item->text(0).toInt();
+  }
+  return -1;
 }
 
 void Lobby::set_loading_value(int p_value)
@@ -334,12 +337,12 @@ void Lobby::on_add_to_fav_pressed()
 void Lobby::on_add_to_fav_released()
 {
   ui_add_to_fav->set_image("addtofav");
-
-  // you cant add favorites from favorites m8
-  if (!public_servers_selected)
-    return;
-
-  ao_app->add_favorite_server(get_selected_server());
+  if (public_servers_selected) {
+    int selection = get_selected_server();
+    if (selection > -1) {
+      ao_app->add_favorite_server(selection);
+    }
+  }
 }
 
 void Lobby::on_connect_pressed() { ui_connect->set_image("connect_pressed"); }

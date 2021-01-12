@@ -80,6 +80,7 @@ public:
   bool additive_enabled = false;
   bool effects_enabled = false;
   bool y_offset_enabled = false;
+  bool expanded_desk_mods_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -168,6 +169,14 @@ public:
   // Returns the value of default_blip in config.ini
   int get_default_blip();
 
+  // Returns the value if objections interrupt and skip the message queue
+  // from the config.ini.
+  bool is_instant_objection_enabled();
+
+  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
+  // from the config.ini
+  bool is_desyncrhonized_logs_enabled();
+
   // Returns the value of whether Discord should be enabled on startup
   // from the config.ini.
   bool is_discord_enabled();
@@ -210,6 +219,9 @@ public:
   // may contain, from config.ini.
   int get_max_log_size();
 
+  // Current wait time between messages for the queue system
+  int stay_time();
+
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();
@@ -222,6 +234,9 @@ public:
 
   // Returns whether the log should have a timestamp.
   bool get_log_timestamp();
+
+  // Returns whether to log IC actions.
+  bool get_log_ic_actions();
 
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
@@ -403,8 +418,8 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's gender
-  QString get_gender(QString p_char);
+  // Returns p_char's blips (previously called their "gender")
+  QString get_blips(QString p_char);
 
   // ======
   // These are all casing-related settings.

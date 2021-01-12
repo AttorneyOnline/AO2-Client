@@ -41,6 +41,7 @@
 #include <QTextBrowser>
 #include <QTreeWidget>
 #include <QVector>
+#include <QQueue>
 
 #include <QBrush>
 #include <QDebug>
@@ -90,6 +91,13 @@ public:
     arup_statuses.append(status);
     arup_cms.append(cm);
     arup_locks.append(locked);
+  }
+
+  void arup_clear() {
+    arup_players.clear();
+    arup_statuses.clear();
+    arup_cms.clear();
+    arup_locks.clear();
   }
 
   void arup_modify(int type, int place, QString value)
@@ -175,6 +183,9 @@ public:
   // sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
 
+  // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
+  void set_self_offset(QString p_list);
+
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
   void set_ip_list(QString p_list);
@@ -207,12 +218,46 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
-  // these functions handle chatmessages sequentially.
-  // The process itself is very convoluted and merits separate documentation
-  // But the general idea is objection animation->pre animation->talking->idle
-  void handle_chatmessage(QStringList *p_contents);
-  void handle_chatmessage_2();
-  void handle_chatmessage_3();
+  // Add the message packet to the stack
+  void chatmessage_enqueue(QStringList p_contents);
+
+  // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
+  void unpack_chatmessage(QStringList p_contents);
+
+  // Log the message contents and information such as evidence presenting etc. into the log file
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
+
+  // Display the message contents and information such as evidence presenting etc. in the IC logs
+  void display_log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
+
+  // Log the message contents and information such as evidence presenting etc. into the IC logs
+  void handle_callwords();
+
+  // Handle the objection logic, if it's interrupting the currently parsing message.
+  // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
+  bool handle_objection();
+
+  // Display the evidence image box when presenting evidence in IC
+  void display_evidence_image();
+
+  // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
+  void handle_ic_message();
+  
+  // Display the character.
+  void display_character();
+
+  // Display the character's pair if present.
+  void display_pair_character(QString other_charid, QString other_offset);
+
+  // Handle the emote modifier value and proceed through the logic accordingly.
+  void handle_emote_mod(int emote_mod, bool p_immediate);
+
+  // Initialize the chatbox image, showname shenanigans, custom chatboxes, etc.
+  void initialize_chatbox();
+
+  // Finally start displaying the chatbox we initialized, display the evidence, and play the talking or idle emote for the character.
+  // Callwords are also handled here.
+  void handle_ic_speaking();
 
   // This function filters out the common CC inline text trickery, for appending
   // to the IC chatlog.
@@ -233,7 +278,7 @@ public:
   // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim(bool noninterrupting);
+  void play_preanim(bool immediate);
 
   // plays the witness testimony or cross examination animation based on
   // argument
@@ -250,6 +295,9 @@ public:
                      bool steno);
 
   void check_connection_received();
+
+  // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
+  void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
   ~Courtroom();
 
@@ -302,6 +350,8 @@ private:
 
   QVector<chatlogpiece> ic_chatlog_history;
 
+  QQueue<QStringList> chatmessage_queue;
+
   // triggers ping_server() every 60 seconds
   QTimer *keepalive_timer;
 
@@ -332,14 +382,23 @@ private:
   // True, if the log should display the message like name<br>text instead of name: text
   bool log_newline = false;
 
+  // True, if the log should include RP actions like interjections, showing evidence, etc.
+  bool log_ic_actions = true;
+
   // Margin in pixels between log entries for the IC log.
   int log_margin = 0;
 
   // True, if the log should have a timestamp.
   bool log_timestamp = false;
 
+  // How long in miliseconds should the objection wait before appearing.
+  int objection_threshold = 1500;
+
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
+  
+  // delay before the next queue entry is going to be processed
+  QTimer *text_queue_timer;
 
   // delay before sfx plays
   QTimer *sfx_delay_timer;
@@ -398,6 +457,11 @@ private:
 
   int objection_state = 0;
   QString objection_custom = "";
+  struct CustomObjection {
+    QString name;
+    QString filename;
+  };
+  QList<CustomObjection> custom_objections_list;
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -411,6 +475,17 @@ private:
 
   // List of associated RGB colors for this color index
   QVector<QColor> color_rgb_list;
+
+  // Same as above but populated from misc/default's config
+  QVector<QColor> default_color_rgb_list;
+
+  // Get a color index from an arbitrary misc config
+  void gen_char_rgb_list(QString p_char);
+  QVector<QColor> char_color_rgb_list;
+
+  // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
+  QString current_misc;
+  QString last_misc;
 
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
@@ -588,7 +663,7 @@ private:
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
 
-  QCheckBox *ui_pre_non_interrupt;
+  QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;
@@ -669,7 +744,6 @@ private:
   void refresh_evidence();
   void set_evidence_page();
 
-  void reset_ic();
   void reset_ui();
 
   void regenerate_ic_chatlog();
@@ -839,6 +913,9 @@ private slots:
   void on_casing_clicked();
 
   void ping_server();
+
+  // Proceed to parse the oldest chatmessage and remove it from the stack
+  void chatmessage_dequeue();
 };
 
 #endif // COURTROOM_H
