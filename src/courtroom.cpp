@@ -2067,8 +2067,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   }
 
   // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() ||
-      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
+  if (!f_message.isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_showname() != f_showname) {
     // Add the message to the logs file
     log_ic_text(f_showname, f_displayname, f_message, "",
                 f_color);
@@ -2140,6 +2139,7 @@ void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QStrin
         break;
       }
       append_ic_text(shout_message, f_displayname, tr("shouts"));
+      ic_chatlog_current += 1;
     }
 
     // Obtain evidence ID we're trying to work with
@@ -2150,15 +2150,16 @@ void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QStrin
       QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
       // Append the message to the IC chatlogs in client
       append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+      ic_chatlog_current += 1;
     }
   }
 
   // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() ||
-      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
+  if (!f_message.isEmpty() || ic_chatlog_current == -1 || ic_chatlog_history[ic_chatlog_current].get_showname() != f_showname) {
     // Append the message to the IC chatlogs in client
     append_ic_text(f_message, f_displayname, "",
-                   f_color);
+                    f_color);
+    ic_chatlog_current += 1;
   }
 }
 
@@ -3678,10 +3679,12 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (f_song == "~stop.mp3") {
         log_ic_text(str_char, str_show, "", tr("has stopped the music"));
         append_ic_text("", str_show, tr("has stopped the music"));
+        ic_chatlog_current += 1;
       }
       else {
         log_ic_text(str_char, str_show, f_song, tr("has played a song"));
         append_ic_text(f_song_clear, str_show, tr("has played a song"));
+        ic_chatlog_current += 1;
       }
       music_player->play(f_song, channel, looping, effect_flags);
       if (f_song == "~stop.mp3")
@@ -5243,12 +5246,14 @@ void Courtroom::on_showname_enable_clicked()
 void Courtroom::regenerate_ic_chatlog()
 {
   ui_ic_chatlog->clear();
+  ic_chatlog_current = -1;
   foreach (chatlogpiece item, ic_chatlog_history) {
     append_ic_text(item.get_message(),
                    ui_showname_enable->isChecked() ? item.get_showname()
                                                    : item.get_name(),
                    item.get_action(), item.get_chat_color(),
                    item.get_datetime().toLocalTime());
+    ic_chatlog_current += 1;
   }
 }
 
