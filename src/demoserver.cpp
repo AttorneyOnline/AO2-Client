@@ -225,6 +225,10 @@ void DemoServer::handle_packet(AOPacket packet)
             client_sock->write(" milliseconds.#1#%");
           }
         }
+        else if (contents[1].startsWith("/help"))
+        {
+            client_sock->write("CT#DEMO#Available commands:\nload, play, pause, max_wait, min_wait, help#1#%");
+        }
     }
 }
 
