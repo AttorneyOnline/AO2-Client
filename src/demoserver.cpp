@@ -25,17 +25,23 @@ void DemoServer::start_server()
     server_started = true;
 }
 
+void DemoServer::destroy_connection()
+{
+    QTcpSocket* temp_socket = tcp_server->nextPendingConnection();
+    connect(temp_socket, &QAbstractSocket::disconnected, temp_socket, &QObject::deleteLater);
+    temp_socket->disconnectFromHost();
+    return;
+}
+
 void DemoServer::accept_connection()
 {
     QString path = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
-    if (path.isEmpty() || demo_data.isEmpty())
-    {
-      QTcpSocket* temp_socket = tcp_server->nextPendingConnection();
-      connect(temp_socket, &QAbstractSocket::disconnected, temp_socket, &QObject::deleteLater);
-      temp_socket->disconnectFromHost();
-      return;
-    }
+    if (path.isEmpty())
+        destroy_connection();
     load_demo(path);
+
+    if (demo_data.isEmpty())
+        destroy_connection();
 
     if (demo_data.head().startsWith("SC#"))
     {

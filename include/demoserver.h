@@ -40,6 +40,7 @@ private:
 
 private slots:
     void accept_connection();
+    void destroy_connection();
     void recv_data();
     void client_disconnect();
     void playback();
