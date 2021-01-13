@@ -4316,11 +4316,7 @@ void Courtroom::set_sfx_dropdown()
 
   if (sound_list.size() <= 0) {
     sound_list = ao_app->get_list_file(
-        ao_app->get_theme_path("character_soundlist.ini"));
-    if (sound_list.size() <= 0) {
-      sound_list = ao_app->get_list_file(
-          ao_app->get_default_theme_path("character_soundlist.ini"));
-    }
+    ao_app->get_base_path() + "soundlist.ini");
   }
 
   QStringList display_sounds;
@@ -4365,24 +4361,19 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
   else
-    menu->addAction(QString("Edit theme's character_soundlist.ini"), this,
+    menu->addAction(QString("Edit global soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
   if (!custom_sfx.isEmpty())
     menu->addAction(QString("Clear Edit Text"), this, SLOT(on_sfx_remove_clicked()));
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
 }
+
 void Courtroom::on_sfx_edit_requested()
 {
   QString p_path = ao_app->get_character_path(current_char, "soundlist.ini");
   if (!file_exists(p_path)) {
-    p_path = ao_app->get_theme_path("character_soundlist.ini");
-    if (!file_exists(p_path)) {
-      p_path = ao_app->get_default_theme_path("character_soundlist.ini");
-      if (!file_exists(p_path)) {
-        return;
-      }
+    p_path = ao_app->get_base_path() + "soundlist.ini";
     }
-  }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
