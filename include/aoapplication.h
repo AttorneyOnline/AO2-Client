@@ -264,6 +264,9 @@ public:
   // directory if it doesn't exist.
   bool append_to_file(QString p_text, QString p_file, bool make_dir = false);
 
+  // Append to the currently open demo file if there is one
+  void append_to_demofile(QString packet_string);
+
   // Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
 

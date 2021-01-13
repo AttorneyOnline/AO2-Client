@@ -102,6 +102,19 @@ end:
   delete p_packet;
 }
 
+void AOApplication::append_to_demofile(QString packet_string)
+{
+    if (get_auto_logging_enabled() && !log_filename.isEmpty())
+    {
+        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
+        append_to_file(packet_string, path, true);
+        if (!demo_timer.isValid())
+            demo_timer.start();
+        else
+            append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
+    }
+}
+
 void AOApplication::server_packet_received(AOPacket *p_packet)
 {
   p_packet->net_decode();
@@ -164,15 +177,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       else
         w_courtroom->append_server_chatmessage(f_contents.at(0),
                                                f_contents.at(1), "0");
-      if (get_auto_logging_enabled() && !log_filename.isEmpty())
-      {
-        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(true), path, true);
-        if (!demo_timer.isValid())
-          demo_timer.start();
-        else
-          append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-      }
+
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "FL") {
@@ -353,15 +359,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     send_server_packet(new AOPacket("RM#%"));
-    if (get_auto_logging_enabled() && !log_filename.isEmpty())
-    {
-      QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-      append_to_file(p_packet->to_string(true), path, true);
-      if (!demo_timer.isValid())
-        demo_timer.start();
-      else
-        append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-    }
+    append_to_demofile(p_packet->to_string(true));
   }
   else if (header == "SM") {
     if (!courtroom_constructed || courtroom_loaded)
@@ -463,15 +461,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           2) // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
       w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
-      if (get_auto_logging_enabled() && !log_filename.isEmpty())
-      {
-        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(true), path, true);
-        if (!demo_timer.isValid())
-          demo_timer.start();
-        else
-          append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-      }
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "SP") {
@@ -481,15 +471,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed) // We were sent a "set position" packet
     {
       w_courtroom->set_side(f_contents.at(0));
-      if (get_auto_logging_enabled() && !log_filename.isEmpty())
-      {
-        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(true), path, true);
-        if (!demo_timer.isValid())
-          demo_timer.start();
-        else
-          append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-      }
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "SD") // Send pos dropdown
@@ -513,30 +495,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->chatmessage_enqueue(p_packet->get_contents());
-      if (get_auto_logging_enabled() && !log_filename.isEmpty())
-      {
-        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(true), path, true);
-        if (!demo_timer.isValid())
-          demo_timer.start();
-        else
-          append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-      }
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->handle_song(&p_packet->get_contents());
-      if (get_auto_logging_enabled() && !log_filename.isEmpty())
-      {
-        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(true), path, true);
-        if (!demo_timer.isValid())
-          demo_timer.start();
-        else
-          append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-      }
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "RT") {
@@ -547,15 +513,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           w_courtroom->handle_wtce(f_contents.at(0), 0);
         else if (f_contents.size() == 2) {
           w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
-        if (get_auto_logging_enabled() && !log_filename.isEmpty())
-        {
-          QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-          append_to_file(p_packet->to_string(true), path, true);
-          if (!demo_timer.isValid())
-            demo_timer.start();
-          else
-            append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-        }
+        append_to_demofile(p_packet->to_string(true));
       }
     }
   }
@@ -564,15 +522,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     {
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
-      if (get_auto_logging_enabled() && !log_filename.isEmpty())
-      {
-        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(p_packet->to_string(true), path, true);
-        if (!demo_timer.isValid())
-          demo_timer.start();
-        else
-          append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-      }
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "LE") {
