@@ -178,6 +178,10 @@ bool AOApplication::write_to_file(QString p_text, QString p_file, bool make_dir)
 bool AOApplication::append_to_file(QString p_text, QString p_file,
                                    bool make_dir)
 {
+  if(!file_exists(p_file)) //Don't create a newline if file didn't exist before now
+  {
+    return write_to_file(p_text, p_file, make_dir);
+  }
   QString path = QFileInfo(p_file).path();
   // Create the dir if it doesn't exist yet
   if (make_dir) {
@@ -248,6 +252,13 @@ QVector<server_type> AOApplication::read_serverlist_txt()
 
     f_server_list.append(f_server);
   }
+
+  server_type demo_server;
+  demo_server.ip = "127.0.0.1";
+  demo_server.port = 99999;
+  demo_server.name = "Demo playback";
+  demo_server.desc = "Play back demos you have previously recorded";
+  f_server_list.append(demo_server);
 
   return f_server_list;
 }
