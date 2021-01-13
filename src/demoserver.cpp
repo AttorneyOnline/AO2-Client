@@ -15,7 +15,7 @@ DemoServer::DemoServer(QObject *parent) : QObject(parent)
 void DemoServer::start_server()
 {
     if (server_started) return;
-    if (!tcp_server->listen(QHostAddress::Any, 0)) {
+    if (!tcp_server->listen(QHostAddress::LocalHost, 0)) {
         qCritical() << "Could not start demo playback server...";
         qDebug() << tcp_server->errorString();
         return;
