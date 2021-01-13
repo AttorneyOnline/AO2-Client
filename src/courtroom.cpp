@@ -299,6 +299,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_sfx_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_sfx_dropdown_changed(int)));
+  connect(ui_sfx_dropdown, SIGNAL(editTextChanged(QString)), this,
+          SLOT(on_sfx_dropdown_custom(QString)));
   connect(ui_sfx_dropdown, SIGNAL(customContextMenuRequested(QPoint)), this,
           SLOT(on_sfx_context_menu_requested(QPoint)));
   connect(ui_sfx_remove, SIGNAL(clicked()), this,
@@ -731,7 +733,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_sfx_dropdown, "sfx_dropdown");
   ui_sfx_dropdown->setEditable(true);
-  ui_sfx_dropdown->setInsertPolicy(QComboBox::InsertAtBottom);
+  ui_sfx_dropdown->setInsertPolicy(QComboBox::NoInsert);
   ui_sfx_dropdown->setToolTip(
       tr("Set a sound effect to play on your next 'Preanim'. Leaving it on "
          "Default will use the emote-defined sound (if any).\n"
@@ -1625,7 +1627,7 @@ void Courtroom::on_chat_return_pressed()
     return;
 
   ui_ic_chat_message->blockSignals(true);
-  QTimer::singleShot(200, this,
+  QTimer::singleShot(600, this,
                      [=] { ui_ic_chat_message->blockSignals(false); });
   // MS#
   // deskmod#
@@ -1684,12 +1686,6 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(current_side);
 
   packet_contents.append(get_char_sfx());
-  if (ui_pre->isChecked() && !ao_app->is_stickysounds_enabled() && ui_sfx_dropdown->currentIndex() > 1) {
-    ui_sfx_dropdown->blockSignals(true);
-    ui_sfx_dropdown->setCurrentIndex(0);
-    ui_sfx_dropdown->blockSignals(false);
-    ui_sfx_remove->hide();
-  }
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -1865,8 +1861,6 @@ void Courtroom::reset_ui()
   realization_state = 0;
   screenshake_state = 0;
   is_presenting_evidence = false;
-  if (!ao_app->is_stickypres_enabled())
-    ui_pre->setChecked(false);
   ui_hold_it->set_image("holdit");
   ui_objection->set_image("objection");
   ui_take_that->set_image("takethat");
@@ -1874,6 +1868,14 @@ void Courtroom::reset_ui()
   ui_realization->set_image("realization");
   ui_screenshake->set_image("screenshake");
   ui_evidence_present->set_image("present");
+
+  if (ui_pre->isChecked() && !ao_app->is_stickysounds_enabled()) {
+    ui_sfx_dropdown->setCurrentIndex(0);
+    ui_sfx_remove->hide();
+    custom_sfx = "";
+  }
+  if (!ao_app->is_stickypres_enabled())
+    ui_pre->setChecked(false);
 }
 
 void Courtroom::chatmessage_enqueue(QStringList p_contents)
@@ -4322,28 +4324,28 @@ void Courtroom::set_sfx_dropdown()
     ui_sfx_remove->hide();
     return;
   }
-  QStringList soundlist = ao_app->get_list_file(
+  sound_list = ao_app->get_list_file(
       ao_app->get_character_path(current_char, "soundlist.ini"));
 
-  if (soundlist.size() <= 0) {
-    soundlist = ao_app->get_list_file(
-        ao_app->get_theme_path("character_soundlist.ini"));
-    if (soundlist.size() <= 0) {
-      soundlist = ao_app->get_list_file(
-          ao_app->get_default_theme_path("character_soundlist.ini"));
-    }
+  if (sound_list.size() <= 0) {
+    sound_list = ao_app->get_list_file(
+    ao_app->get_base_path() + "soundlist.ini");
   }
 
-  if (soundlist.size() <= 0) {
-    ui_sfx_dropdown->hide();
-    ui_sfx_remove->hide();
-    return;
+  QStringList display_sounds;
+  for (QString sound : sound_list) {
+    QStringList unpacked = sound.split("=");
+    QString display = unpacked[0].trimmed();
+    if (unpacked.size() > 1)
+      display = unpacked[1].trimmed();
+
+    display_sounds.append(display);
   }
-  soundlist.prepend("Nothing");
-  soundlist.prepend("Default");
+  display_sounds.prepend("Nothing");
+  display_sounds.prepend("Default");
 
   ui_sfx_dropdown->show();
-  ui_sfx_dropdown->addItems(soundlist);
+  ui_sfx_dropdown->addItems(display_sounds);
   ui_sfx_dropdown->setCurrentIndex(0);
   ui_sfx_remove->hide();
   ui_sfx_dropdown->blockSignals(false);
@@ -4352,36 +4354,14 @@ void Courtroom::set_sfx_dropdown()
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
+  ui_sfx_remove->hide();
+  custom_sfx = "";
+}
 
-  QStringList soundlist;
-  for (int i = 2; i < ui_sfx_dropdown->count(); ++i) {
-    QString entry = ui_sfx_dropdown->itemText(i);
-    if (!soundlist.contains(entry))
-      soundlist.append(entry);
-  }
-
-  QStringList defaultlist =
-      ao_app->get_list_file(ao_app->get_theme_path("character_soundlist.ini"));
-  if (defaultlist.size() <= 0) {
-    defaultlist = ao_app->get_list_file(
-        ao_app->get_default_theme_path("character_soundlist.ini"));
-  }
-
-  if (defaultlist.size() > 0 &&
-      defaultlist.toSet().subtract(soundlist.toSet()).size() >
-          0) // There's a difference from the default configuration
-    ao_app->write_to_file(
-        soundlist.join("\n"),
-        ao_app->get_character_path(current_char,
-                                   "soundlist.ini")); // Create a new sound list
-
-  ui_sfx_dropdown->blockSignals(true);
-  ui_sfx_dropdown->setCurrentIndex(p_index);
-  ui_sfx_dropdown->blockSignals(false);
-  if (p_index > 1)
-    ui_sfx_remove->show();
-  else
-    ui_sfx_remove->hide();
+void Courtroom::on_sfx_dropdown_custom(QString p_sfx)
+{
+  ui_sfx_remove->show();
+  custom_sfx = p_sfx;
 }
 
 void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
@@ -4394,40 +4374,27 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
   else
-    menu->addAction(QString("Edit theme's character_soundlist.ini"), this,
+    menu->addAction(QString("Edit global soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
-  if (ui_sfx_dropdown->currentIndex() > 1)
-    menu->addAction(QString("Remove " + ui_sfx_dropdown->itemText(
-                                            ui_sfx_dropdown->currentIndex())),
-                    this, SLOT(on_sfx_remove_clicked()));
+  if (!custom_sfx.isEmpty())
+    menu->addAction(QString("Clear Edit Text"), this, SLOT(on_sfx_remove_clicked()));
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
 }
+
 void Courtroom::on_sfx_edit_requested()
 {
   QString p_path = ao_app->get_character_path(current_char, "soundlist.ini");
   if (!file_exists(p_path)) {
-    p_path = ao_app->get_theme_path("character_soundlist.ini");
-    if (!file_exists(p_path)) {
-      p_path = ao_app->get_default_theme_path("character_soundlist.ini");
-      if (!file_exists(p_path)) {
-        return;
-      }
+    p_path = ao_app->get_base_path() + "soundlist.ini";
     }
-  }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
 void Courtroom::on_sfx_remove_clicked()
 {
-  if (ui_sfx_dropdown->count() <= 0) {
-    ui_sfx_remove->hide(); // We're not supposed to see it. Do this or the
-                           // client will crash
-    return;
-  }
-  if (ui_sfx_dropdown->currentIndex() > 1) {
-    ui_sfx_dropdown->removeItem(ui_sfx_dropdown->currentIndex());
-    on_sfx_dropdown_changed(0); // Reset back to original
-  }
+  ui_sfx_remove->hide();
+  ui_sfx_dropdown->setCurrentIndex(0);
+  custom_sfx = "";
 }
 
 void Courtroom::set_effects_dropdown()
@@ -4530,19 +4497,21 @@ bool Courtroom::effects_dropdown_find_and_set(QString effect)
 
 QString Courtroom::get_char_sfx()
 {
-  QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
-  if (sfx == "Nothing")
-      return "1";
-  if (sfx != "" && sfx != "Default")
-    return sfx;
-  return ao_app->get_sfx_name(current_char, current_emote);
+  if (!custom_sfx.isEmpty())
+    return custom_sfx;
+  int index = ui_sfx_dropdown->currentIndex();
+  if (index == 0) // Default
+    return ao_app->get_sfx_name(current_char, current_emote);
+  if (index == 1) // Nothing
+    return "1";
+  QString sfx = sound_list[index-2].split("=")[0].trimmed();
+  if (sfx == "")
+    return "1";
+  return sfx;
 }
 
 int Courtroom::get_char_sfx_delay()
 {
-  //  QString sfx = ui_sfx_dropdown->itemText(ui_sfx_dropdown->currentIndex());
-  //  if (sfx != "" && sfx != "Default")
-  //    return 0; //todo: a way to define this
   return ao_app->get_sfx_delay(current_char, current_emote);
 }
 
