@@ -15,15 +15,12 @@ DemoServer::DemoServer(QObject *parent) : QObject(parent)
 void DemoServer::start_server()
 {
     if (server_started) return;
-    // Just use port 27088
-    // This should be user configurable
-    // Also, it runs into problems if multiple clients are running
-    // Someone can figure out a better solution to this later, before merge
-    if (!tcp_server->listen(QHostAddress::Any, 27088)) {
+    if (!tcp_server->listen(QHostAddress::Any, 0)) {
         qCritical() << "Could not start demo playback server...";
         qDebug() << tcp_server->errorString();
         return;
     }
+    this->port = tcp_server->serverPort();
     qDebug() << "Server started";
     server_started = true;
 }
