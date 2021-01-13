@@ -3,6 +3,7 @@
 
 #include "aopacket.h"
 #include "datatypes.h"
+#include "demoserver.h"
 #include "discord_rich_presence.h"
 
 #include "bass.h"
@@ -26,6 +27,8 @@
 #include <QScreen>
 #include <QStringList>
 #include <QTextStream>
+
+#include <QElapsedTimer>
 
 class NetworkManager;
 class Lobby;
@@ -264,6 +267,9 @@ public:
   // directory if it doesn't exist.
   bool append_to_file(QString p_text, QString p_file, bool make_dir = false);
 
+  // Append to the currently open demo file if there is one
+  void append_to_demofile(QString packet_string);
+
   // Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
 
@@ -460,6 +466,9 @@ public:
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
   static void doBASSreset();
+
+  QElapsedTimer demo_timer;
+  DemoServer* demo_server = nullptr;
 
 private:
   const int RELEASE = 2;

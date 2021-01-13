@@ -182,7 +182,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_stay_time_lbl->setText(tr("Text Stay Time:"));
   ui_stay_time_lbl->setToolTip(tr(
       "Minimum amount of time (in miliseconds) an IC message must stay on screen before "
-      "the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behaivor."));
+      "the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behavior."));
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stay_time_lbl);
 
