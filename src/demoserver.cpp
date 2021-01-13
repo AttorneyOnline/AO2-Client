@@ -144,6 +144,7 @@ void DemoServer::handle_packet(AOPacket packet)
     }
     else if (header == "CC") {
         client_sock->write("PV#0#CID#-1#%");
+        client_sock->write("CT#DEMO#Demo file loaded. Send /play or > in OOC to begin playback.#1#%");
     }
     else if (header == "CT") {
         if (contents[1].startsWith("/load"))
