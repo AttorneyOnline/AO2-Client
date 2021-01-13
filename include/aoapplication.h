@@ -219,6 +219,9 @@ public:
   // Current wait time between messages for the queue system
   int stay_time();
 
+  // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
+  int get_chat_ratelimit();
+
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();
