@@ -2221,7 +2221,6 @@ bool Courtroom::handle_objection()
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
-	QString shout_message;
     ui_vp_objection->set_static_duration(shout_static_time);
     ui_vp_objection->set_max_duration(shout_max_time);
     QString filename;
@@ -2230,17 +2229,11 @@ bool Courtroom::handle_objection()
       filename = "holdit_bubble";
       objection_player->play("holdit", m_chatmessage[CHAR_NAME],
                              ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
-      shout_message = ao_app->read_char_ini(f_char, "holdit_message", "Shouts");
-      if (shout_message == "")
-        shout_message = tr("HOLD IT!");
       break;
     case 2:
       filename = "objection_bubble";
       objection_player->play("objection", m_chatmessage[CHAR_NAME],
                              ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
-      shout_message = ao_app->read_char_ini(f_char, "objection_message", "Shouts");
-      if (shout_message == "")
-        shout_message = tr("OBJECTION!");
       if (ao_app->objection_stop_music())
         music_player->stop();
       break;
@@ -2248,9 +2241,6 @@ bool Courtroom::handle_objection()
       filename = "takethat_bubble";
       objection_player->play("takethat", m_chatmessage[CHAR_NAME],
                              ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
-      shout_message = ao_app->read_char_ini(f_char, "takethat_message", "Shouts");
-      if (shout_message == "")
-        shout_message = tr("TAKE THAT!");
       break;
     // case 4 is AO2 only
     case 4:
@@ -2260,18 +2250,12 @@ bool Courtroom::handle_objection()
             "custom_objections/" + custom_objection.split('.')[0],
             m_chatmessage[CHAR_NAME],
             ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
-        shout_message = ao_app->read_char_ini(f_char, custom_objection.split('.')[0] + "_message", "Shouts");
-        if (shout_message == "")
-          shout_message = custom_objection.split('.')[0];
       }
       else {
         filename = "custom";
         objection_player->play(
             "custom", m_chatmessage[CHAR_NAME],
             ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
-        shout_message = ao_app->read_char_ini(f_char, "custom_message", "Shouts");
-        if (shout_message == "")
-          shout_message = tr("CUSTOM OBJECTION!");
       }
 	  break;
       m_chatmessage[EMOTE_MOD] = 1;
