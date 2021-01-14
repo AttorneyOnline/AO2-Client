@@ -77,8 +77,8 @@ QPixmap AOLayer::get_pixmap(QImage image)
   //    auto aspect_ratio = Qt::KeepAspectRatio;
   if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
     transform_mode = Qt::SmoothTransformation;
-  if (stretch)
-    f_pixmap = f_pixmap.scaled(f_w, f_h); // I'm annoyed that I have to do this
+  if (stretch || (f_pixmap.height() == 1 && f_pixmap.width() == 1))
+    f_pixmap = f_pixmap.scaled(f_w, f_h);
   else
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
   this->resize(f_pixmap.size());
