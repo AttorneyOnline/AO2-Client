@@ -2270,10 +2270,6 @@ bool Courtroom::handle_objection()
   return false;
 }
 
-void Courtroom::objection_done() { display_character(); }
-void Courtroom::display_character()
-void Courtroom::objection_done() { display_character(); }
-
 void Courtroom::effect_done()
 {
   ui_vp_effect->stop();
