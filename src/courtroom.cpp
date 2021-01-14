@@ -1627,7 +1627,7 @@ void Courtroom::on_chat_return_pressed()
     return;
 
   ui_ic_chat_message->blockSignals(true);
-  QTimer::singleShot(600, this,
+  QTimer::singleShot(ao_app->get_chat_ratelimit(), this,
                      [=] { ui_ic_chat_message->blockSignals(false); });
   // MS#
   // deskmod#
