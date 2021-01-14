@@ -299,24 +299,35 @@ void Courtroom::filter_character_list()
   ui_char_button_list_filtered.clear();
   for (int i = 0; i < char_list.size(); i++) {
     AOCharButton *current_char = ui_char_button_list.at(i);
+    QTreeWidgetItem *current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchFixedString, 1)[0];
 
     // It seems passwording characters is unimplemented yet?
     // Until then, this will stay here, I suppose.
     // if (ui_char_passworded->isChecked() && character_is_passworded??)
     //    continue;
 
-    if (!ui_char_taken->isChecked() && char_list.at(i).taken)
+    if (!ui_char_taken->isChecked() && char_list.at(i).taken) {
+      current_char_list_item->setHidden(true);
       continue;
+    }
 
     if (!char_list.at(i).name.contains(ui_char_search->text(),
-                                       Qt::CaseInsensitive))
+                                       Qt::CaseInsensitive)) {
+      current_char_list_item->setHidden(true);
       continue;
+  }
 
     // We only really need to update the fact that a character is taken
     // for the buttons that actually appear.
     // You'd also update the passwordedness and etc. here later.
     current_char->reset();
+    current_char_list_item->setHidden(false);
     current_char->set_taken(char_list.at(i).taken);
+    QString last_four = current_char_list_item->text(0).right(4);
+    if (last_four == " [x]") // reset us
+      current_char_list_item->setText(0, char_list.at(i).name);
+    if (char_list.at(i).taken) // woops, we are taken
+      current_char_list_item->setText(0, current_char_list_item->text(0) + " [x]");
 
     ui_char_button_list_filtered.append(current_char);
   }
