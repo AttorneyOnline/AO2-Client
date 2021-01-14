@@ -77,7 +77,7 @@ QPixmap AOLayer::get_pixmap(QImage image)
   //    auto aspect_ratio = Qt::KeepAspectRatio;
   if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
     transform_mode = Qt::SmoothTransformation;
-  if (stretch || (f_pixmap.height() == 1 && f_pixmap.width() == 1))
+  if (stretch)
     f_pixmap = f_pixmap.scaled(f_w, f_h);
   else
     f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
@@ -141,7 +141,7 @@ void ForegroundLayer::load_image(QString p_filename, QString p_charname)
           p_charname, p_filename)), // first check the character folder
       ao_app->get_image_suffix(ao_app->get_theme_path(
           "misc/" + miscname + "/" +
-          p_filename)), // first check our theme's misc directory
+          p_filename)), // then check our theme's misc directory
       ao_app->get_image_suffix(ao_app->get_misc_path(
           miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(
