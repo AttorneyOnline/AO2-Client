@@ -127,7 +127,7 @@ void BackgroundLayer::load_image(QString p_filename)
       ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
   stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
-  start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
+  start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename)));
 }
 
 void ForegroundLayer::load_image(QString p_filename, QString p_charname)
