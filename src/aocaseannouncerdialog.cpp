@@ -3,7 +3,7 @@
 AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent,
                                              AOApplication *p_ao_app,
                                              Courtroom *p_court)
-    : QDialog(parent)
+    : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
 {
   ao_app = p_ao_app;
   court = p_court;

@@ -3,6 +3,7 @@
 
 #include "aopacket.h"
 #include "datatypes.h"
+#include "demoserver.h"
 #include "discord_rich_presence.h"
 
 #include "bass.h"
@@ -26,6 +27,8 @@
 #include <QScreen>
 #include <QStringList>
 #include <QTextStream>
+
+#include <QElapsedTimer>
 
 class NetworkManager;
 class Lobby;
@@ -76,6 +79,8 @@ public:
   bool looping_sfx_support_enabled = false;
   bool additive_enabled = false;
   bool effects_enabled = false;
+  bool y_offset_enabled = false;
+  bool expanded_desk_mods_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -165,6 +170,14 @@ public:
   // Returns the value of default_blip in config.ini
   int get_default_blip();
 
+  // Returns the value if objections interrupt and skip the message queue
+  // from the config.ini.
+  bool is_instant_objection_enabled();
+
+  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
+  // from the config.ini
+  bool is_desyncrhonized_logs_enabled();
+
   // Returns the value of whether Discord should be enabled on startup
   // from the config.ini.
   bool is_discord_enabled();
@@ -207,6 +220,9 @@ public:
   // may contain, from config.ini.
   int get_max_log_size();
 
+  // Current wait time between messages for the queue system
+  int stay_time();
+
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();
@@ -219,6 +235,9 @@ public:
 
   // Returns whether the log should have a timestamp.
   bool get_log_timestamp();
+
+  // Returns whether to log IC actions.
+  bool get_log_ic_actions();
 
   // Returns the username the user may have set in config.ini.
   QString get_default_username();
@@ -245,6 +264,9 @@ public:
   // Append text to the end of the file. make_dir would auto-create the
   // directory if it doesn't exist.
   bool append_to_file(QString p_text, QString p_file, bool make_dir = false);
+
+  // Append to the currently open demo file if there is one
+  void append_to_demofile(QString packet_string);
 
   // Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
@@ -400,8 +422,8 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's gender
-  QString get_gender(QString p_char);
+  // Returns p_char's blips (previously called their "gender")
+  QString get_blips(QString p_char);
 
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
@@ -451,6 +473,9 @@ public:
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
   static void doBASSreset();
+
+  QElapsedTimer demo_timer;
+  DemoServer* demo_server = nullptr;
 
 private:
   const int RELEASE = 2;

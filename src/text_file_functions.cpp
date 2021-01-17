@@ -46,6 +46,12 @@ int AOApplication::get_max_log_size()
   return result;
 }
 
+int AOApplication::stay_time()
+{
+  int result = configini->value("stay_time", 200).toInt();
+  return result;
+}
+
 bool AOApplication::get_log_goes_downwards()
 {
   QString result =
@@ -68,6 +74,13 @@ int AOApplication::get_log_margin()
 bool AOApplication::get_log_timestamp()
 {
   QString result = configini->value("log_timestamp", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::get_log_ic_actions()
+{
+  QString result =
+      configini->value("log_ic_actions", "true").value<QString>();
   return result.startsWith("true");
 }
 
@@ -163,6 +176,10 @@ bool AOApplication::write_to_file(QString p_text, QString p_file, bool make_dir)
 bool AOApplication::append_to_file(QString p_text, QString p_file,
                                    bool make_dir)
 {
+  if(!file_exists(p_file)) //Don't create a newline if file didn't exist before now
+  {
+    return write_to_file(p_text, p_file, make_dir);
+  }
   QString path = QFileInfo(p_file).path();
   // Create the dir if it doesn't exist yet
   if (make_dir) {
@@ -233,6 +250,13 @@ QVector<server_type> AOApplication::read_serverlist_txt()
 
     f_server_list.append(f_server);
   }
+
+  server_type demo_server;
+  demo_server.ip = "127.0.0.1";
+  demo_server.port = 99999;
+  demo_server.name = "Demo playback";
+  demo_server.desc = "Play back demos you have previously recorded";
+  f_server_list.append(demo_server);
 
   return f_server_list;
 }
@@ -600,12 +624,15 @@ QString AOApplication::get_char_side(QString p_char)
   return f_result;
 }
 
-QString AOApplication::get_gender(QString p_char)
+QString AOApplication::get_blips(QString p_char)
 {
-  QString f_result = read_char_ini(p_char, "gender", "Options");
+  QString f_result = read_char_ini(p_char, "blips", "Options");
 
-  if (f_result == "")
-    f_result = "male";
+  if (f_result == "") {
+    f_result = read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
+    if (f_result == "")
+      f_result = "male";
+  }
 
   if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
     if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))
@@ -643,6 +670,8 @@ Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
 
 QString AOApplication::get_chat(QString p_char)
 {
+  if (p_char == "default")
+    return "default";
   QString f_result = read_char_ini(p_char, "chat", "Options");
 
   // handling the correct order of chat is a bit complicated, we let the caller
@@ -849,7 +878,7 @@ QString AOApplication::get_flash_frame(QString p_char, QString p_emote,
 
 int AOApplication::get_text_delay(QString p_char, QString p_emote)
 {
-  QString f_result = read_char_ini(p_char, p_emote, "TextDelay");
+  QString f_result = read_char_ini(p_char, p_emote, "stay_time");
 
   if (f_result == "")
     return -1;
@@ -979,6 +1008,18 @@ bool AOApplication::objection_stop_music()
 {
   QString result =
       configini->value("objection_stop_music", "false").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::is_instant_objection_enabled()
+{
+  QString result = configini->value("instant_objection", "true").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::is_desyncrhonized_logs_enabled()
+{
+  QString result = configini->value("desync_logs", "false").value<QString>();
   return result.startsWith("true");
 }
 
