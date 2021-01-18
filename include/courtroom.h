@@ -715,6 +715,9 @@ private:
 
   AOImage *ui_char_select_background;
 
+  // pretty list of characters
+  QTreeWidget *ui_char_list;
+
   // abstract widget to hold char buttons
   QWidget *ui_char_buttons;
 
@@ -908,6 +911,7 @@ private slots:
 
   void on_back_to_lobby_clicked();
 
+  void on_char_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
   void on_char_search_changed();
