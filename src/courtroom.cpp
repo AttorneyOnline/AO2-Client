@@ -134,6 +134,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // todo: filter out \n from showing up as that commonly breaks the chatlog and
   // can be spammed to hell
 
+  ui_vp_sticker = new AOMovie(ui_viewport, ao_app);
+  ui_vp_sticker->set_play_once(false);
+  ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
+
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
 
@@ -651,7 +655,7 @@ void Courtroom::set_widgets()
       ao_app->get_element_dimensions("music_display", "courtroom_design.ini");
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"music_name\" in courtroom_design.ini";
+    qDebug() << "W: could not find \"music_display\" in courtroom_design.ini";
     ui_music_display->hide();
   }
   else {
@@ -662,6 +666,7 @@ void Courtroom::set_widgets()
 
   ui_music_display->play("music_display");
   ui_music_display->set_play_once(false);
+
 
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
@@ -692,6 +697,10 @@ void Courtroom::set_widgets()
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
                       ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+
+  ui_vp_sticker->move(0, 0);
+  ui_vp_sticker->combo_resize(ui_viewport->width(),
+                              ui_viewport->height());
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
   ui_muted->set_image("muted");
@@ -2253,6 +2262,8 @@ void Courtroom::display_character()
   // Hide the message and chatbox and handle the emotes
   ui_vp_message->hide();
   ui_vp_chatbox->hide();
+  // Hide the face sticker
+  ui_vp_sticker->stop();
   // Initialize the correct pos (called SIDE here for some reason) with DESK_MOD to determine if we should hide the desk or not.
   switch(m_chatmessage[DESK_MOD].toInt()) {
     case 4:
@@ -3208,6 +3219,30 @@ void Courtroom::start_chat_ticking()
 
   ui_vp_chatbox->show();
   ui_vp_message->show();
+
+  QString sticker_path = "";
+  QList<QString> pathlist;
+  pathlist = {
+      ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
+                                ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]) + "/sticker/" + m_chatmessage[CHAR_NAME]), // Misc path
+      ao_app->get_image_suffix(ao_app->get_custom_theme_path(
+          ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]), "sticker/" + m_chatmessage[CHAR_NAME])), // Custom theme path
+      ao_app->get_image_suffix(ao_app->get_theme_path("sticker/" + m_chatmessage[CHAR_NAME])), // Theme path
+      ao_app->get_image_suffix(
+          ao_app->get_default_theme_path("sticker/" + m_chatmessage[CHAR_NAME])), // Default theme path
+      ao_app->get_image_suffix(
+          ao_app->get_character_path(m_chatmessage[CHAR_NAME], "sticker")), // Character folder
+      ao_app->get_image_suffix(
+          ao_app->get_character_path(m_chatmessage[CHAR_NAME], "showname")), // Scuffed DRO way
+  };
+  for (QString path : pathlist) {
+    if (file_exists(path)) {
+      sticker_path = path;
+      break;
+    }
+  }
+  if (file_exists(sticker_path))
+    ui_vp_sticker->play(sticker_path);
 
   if (m_chatmessage[ADDITIVE] != "1") {
     ui_vp_message->clear();

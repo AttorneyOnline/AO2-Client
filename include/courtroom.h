@@ -607,6 +607,8 @@ private:
   ScrollText *ui_music_name;
   AOMovie *ui_music_display;
 
+  AOMovie *ui_vp_sticker;
+
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
