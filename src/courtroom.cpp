@@ -2066,12 +2066,13 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     }
   }
 
-  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() || ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_showname() != f_showname) {
-    // Add the message to the logs file
-    log_ic_text(f_showname, f_displayname, f_message, "",
-                f_color);
-  }
+  // If our current message is a blankpost, the chat log isn't empty, the chat log's last message is a blank post, and the blankpost's showname is the same as ours
+  if (f_message.isEmpty() && !ic_chatlog_history.isEmpty() && ic_chatlog_history.last().get_message().isEmpty() && ic_chatlog_history.last().get_showname() == f_displayname)
+    return; // Skip adding message
+
+  // Add the message to the logs file
+  log_ic_text(f_showname, f_displayname, f_message, "",
+              f_color);
 }
 
 void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
@@ -2151,13 +2152,15 @@ void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QStrin
       append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
     }
   }
-  int current = ic_chatlog_history.size() - chatmessage_queue.size() - 1;
-  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() || current <= -1 || ic_chatlog_history[current].get_showname() != f_showname) {
-    // Append the message to the IC chatlogs in client
-    append_ic_text(f_message, f_displayname, "",
-                    f_color);
-  }
+
+  // If our current message is a blankpost, the chat log isn't empty, the chat log's last message is a blank post, and the blankpost's showname is the same as ours
+  if (f_message.isEmpty() && last_ic_message == f_displayname + ":")
+    return; // Skip adding message
+  
+  last_ic_message = f_displayname + ":" + f_message;
+  // Append the message to the IC chatlogs in client
+  append_ic_text(f_message, f_displayname, "",
+                  f_color);
 }
 
 bool Courtroom::handle_objection()
@@ -5241,12 +5244,16 @@ void Courtroom::on_showname_enable_clicked()
 void Courtroom::regenerate_ic_chatlog()
 {
   ui_ic_chatlog->clear();
+  last_ic_message = "";
   foreach (chatlogpiece item, ic_chatlog_history) {
-    append_ic_text(item.get_message(),
-                   ui_showname_enable->isChecked() ? item.get_showname()
-                                                   : item.get_name(),
+    QString message = item.get_message();
+    QString name = ui_showname_enable->isChecked() ? item.get_showname()
+                                                   : item.get_name();
+    append_ic_text(message,
+                   name,
                    item.get_action(), item.get_chat_color(),
                    item.get_datetime().toLocalTime());
+    last_ic_message = name + ":" + message;
   }
 }
 
