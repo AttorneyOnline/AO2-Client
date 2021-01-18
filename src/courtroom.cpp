@@ -632,13 +632,14 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_music_list, "music_list");
   ui_music_list->header()->setMinimumSectionSize(ui_music_list->width());
-  int music_list_indentation = ao_app->read_design_ini("music_list_indent", ao_app->get_theme_path("courtroom_design.ini")).toInt();
-  if (music_list_indentation >= 0)
-    ui_music_list->setIndentation(music_list_indentation);
-  else
+  QString music_list_indentation = ao_app->get_font_name("music_list_indent", "courtroom_design.ini");
+  if (music_list_indentation == "")
     ui_music_list->resetIndentation();
-  int music_list_animated = ao_app->read_design_ini("music_list_animated", ao_app->get_theme_path("courtroom_design.ini")).toInt();
-  if (music_list_animated == 1)
+  else
+    ui_music_list->setIndentation(music_list_indentation.toInt());
+  
+  QString music_list_animated = ao_app->get_font_name("music_list_animated", "courtroom_design.ini");
+  if (music_list_animated == "1")
     ui_music_list->setAnimated(true);
   else
     ui_music_list->setAnimated(false);
