@@ -349,7 +349,6 @@ private:
   QVector<QString> arup_locks;
 
   QVector<chatlogpiece> ic_chatlog_history;
-  int ic_chatlog_current = -1;
 
   QQueue<QStringList> chatmessage_queue;
 
