@@ -4324,13 +4324,13 @@ void Courtroom::set_sfx_dropdown()
     ui_sfx_remove->hide();
     return;
   }
+  // Initialzie character sound list first. Will be empty if not found.
   sound_list = ao_app->get_list_file(
       ao_app->get_character_path(current_char, "soundlist.ini"));
 
-  if (sound_list.size() <= 0) {
-    sound_list = ao_app->get_list_file(
-    ao_app->get_base_path() + "soundlist.ini");
-  }
+  // Append default sound list after the character sound list.
+  sound_list += ao_app->get_list_file(
+  ao_app->get_base_path() + "soundlist.ini");
 
   QStringList display_sounds;
   for (QString sound : sound_list) {
