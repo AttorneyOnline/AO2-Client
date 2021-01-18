@@ -323,11 +323,11 @@ void Courtroom::filter_character_list()
     current_char->reset();
     current_char_list_item->setHidden(false);
     current_char->set_taken(char_list.at(i).taken);
-    QString last_four = current_char_list_item->text(0).right(4);
-    if (last_four == " [x]") // reset us
-      current_char_list_item->setText(0, char_list.at(i).name);
+    current_char_list_item->setText(0, char_list.at(i).name);
+    // reset disabled
+    current_char_list_item->setDisabled(false);
     if (char_list.at(i).taken) // woops, we are taken
-      current_char_list_item->setText(0, current_char_list_item->text(0) + " [x]");
+      current_char_list_item->setDisabled(true);
 
     ui_char_button_list_filtered.append(current_char);
   }
