@@ -37,11 +37,17 @@ void DemoServer::accept_connection()
 {
     QString path = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
     if (path.isEmpty())
+    {
         destroy_connection();
+        return;
+    }
     load_demo(path);
 
     if (demo_data.isEmpty())
+    {
         destroy_connection();
+        return;
+    }
 
     if (demo_data.head().startsWith("SC#"))
     {
