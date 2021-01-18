@@ -349,6 +349,7 @@ private:
   QVector<QString> arup_locks;
 
   QVector<chatlogpiece> ic_chatlog_history;
+  QString last_ic_message = "";
 
   QQueue<QStringList> chatmessage_queue;
 
