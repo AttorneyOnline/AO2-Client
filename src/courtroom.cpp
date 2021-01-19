@@ -134,7 +134,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // todo: filter out \n from showing up as that commonly breaks the chatlog and
   // can be spammed to hell
 
-  ui_vp_sticker = new AOMovie(ui_viewport, ao_app);
+  ui_vp_sticker = new StickerLayer(ui_viewport, ao_app);
   ui_vp_sticker->set_play_once(false);
   ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
 
@@ -537,9 +537,6 @@ void Courtroom::set_widgets()
   // the AO2 desk element
   ui_vp_desk->move(0, 0);
   ui_vp_desk->combo_resize(ui_viewport->width(), ui_viewport->height());
-
-  double y_modifier = 147.0 / 192.0;
-  int final_y = static_cast<int>(y_modifier * ui_viewport->height());
 
   ui_vp_evidence_display->move(0, 0);
   ui_vp_evidence_display->combo_resize(ui_viewport->width(),
@@ -3188,29 +3185,7 @@ void Courtroom::start_chat_ticking()
   ui_vp_chatbox->show();
   ui_vp_message->show();
 
-  QString sticker_path = "";
-  QList<QString> pathlist;
-  pathlist = {
-      ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
-                                ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]) + "/sticker/" + m_chatmessage[CHAR_NAME]), // Misc path
-      ao_app->get_image_suffix(ao_app->get_custom_theme_path(
-          ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]), "sticker/" + m_chatmessage[CHAR_NAME])), // Custom theme path
-      ao_app->get_image_suffix(ao_app->get_theme_path("sticker/" + m_chatmessage[CHAR_NAME])), // Theme path
-      ao_app->get_image_suffix(
-          ao_app->get_default_theme_path("sticker/" + m_chatmessage[CHAR_NAME])), // Default theme path
-      ao_app->get_image_suffix(
-          ao_app->get_character_path(m_chatmessage[CHAR_NAME], "sticker")), // Character folder
-      ao_app->get_image_suffix(
-          ao_app->get_character_path(m_chatmessage[CHAR_NAME], "showname")), // Scuffed DRO way
-  };
-  for (QString path : pathlist) {
-    if (file_exists(path)) {
-      sticker_path = path;
-      break;
-    }
-  }
-  if (file_exists(sticker_path))
-    ui_vp_sticker->play(sticker_path);
+  ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
 
   if (m_chatmessage[ADDITIVE] != "1") {
     ui_vp_message->clear();

@@ -211,4 +211,11 @@ public:
   InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, QString p_miscname);
 };
+
+class StickerLayer : public AOLayer {
+  Q_OBJECT
+public:
+  StickerLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  void load_image(QString p_charname);
+};
 #endif // AOLAYER_H
