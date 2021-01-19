@@ -18,6 +18,7 @@ void Courtroom::construct_char_select()
   ui_char_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_char_list->hideColumn(1);
   ui_char_list->setDropIndicatorShown(true);
+  set_size_and_pos(ui_char_list, "char_list");
 
 
   ui_char_buttons = new QWidget(ui_char_select_background);
@@ -54,7 +55,6 @@ void Courtroom::construct_char_select()
   ui_char_passworded->setChecked(true);
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
-  set_size_and_pos(ui_char_list, "char_list");
 
   connect(ui_char_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
           this, SLOT(on_char_list_double_clicked(QTreeWidgetItem *, int)));
@@ -252,7 +252,7 @@ void Courtroom::character_loading_finished()
     treeItem->setText(0, char_list.at(n).name);
     treeItem->setIcon(0, QIcon(ao_app->get_static_image_suffix(
       ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
-    treeItem->setData(1, Qt::DisplayRole, n);
+    treeItem->setText(1, QString::number(n));
     // category logic
     QTreeWidgetItem *category;
     if (char_category == "") // no category
@@ -264,7 +264,7 @@ void Courtroom::character_loading_finished()
     else { // we need to make a new category
       category = new QTreeWidgetItem();
       category->setText(0, char_category);
-      category->setData(1, Qt::DisplayRole, -1);
+      category->setText(1, "-1");
       category->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicatorWhenChildless);
       ui_char_list->insertTopLevelItem(0, category);
       category->addChild(treeItem);
@@ -302,7 +302,13 @@ void Courtroom::filter_character_list()
   ui_char_button_list_filtered.clear();
   for (int i = 0; i < char_list.size(); i++) {
     AOCharButton *current_char = ui_char_button_list.at(i);
-    QTreeWidgetItem *current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchFixedString, 1)[0];
+    QList<QTreeWidgetItem*> current_char_list_item_list = ui_char_list->findItems(QString::number(i), Qt::MatchFixedString, 1);
+    QTreeWidgetItem* current_char_list_item;
+    if (current_char_list_item_list.isEmpty()) //wtf?
+        continue;
+    else
+        current_char_list_item = current_char_list_item_list[0];
+
 
     // It seems passwording characters is unimplemented yet?
     // Until then, this will stay here, I suppose.
