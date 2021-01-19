@@ -186,6 +186,10 @@ void AOApplication::call_announce_menu(Courtroom *court)
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
                                        DWORD data, void *user)
 {
+  UNUSED(handle);
+  UNUSED(channel);
+  UNUSED(data);
+  UNUSED(user);
   doBASSreset();
 }
 
