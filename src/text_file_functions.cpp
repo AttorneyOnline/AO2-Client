@@ -52,6 +52,12 @@ int AOApplication::stay_time()
   return result;
 }
 
+int AOApplication::get_chat_ratelimit()
+{
+  int result = configini->value("chat_ratelimit", 300).toInt();
+  return result;
+}
+
 bool AOApplication::get_log_goes_downwards()
 {
   QString result =
@@ -666,6 +672,12 @@ Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
       return Qt::SmoothTransformation;
   }
   return Qt::FastTransformation;
+}
+
+QString AOApplication::get_category(QString p_char)
+{
+  QString f_result = read_char_ini(p_char, "category", "Options");
+  return f_result;
 }
 
 QString AOApplication::get_chat(QString p_char)

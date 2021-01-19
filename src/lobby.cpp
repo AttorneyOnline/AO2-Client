@@ -29,6 +29,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list = new QTreeWidget(this);
   ui_server_list->setHeaderLabels({"#", "Name"}); //, "Players"});
   ui_server_list->hideColumn(0);
+  ui_server_list->setHeaderHidden(true);
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);

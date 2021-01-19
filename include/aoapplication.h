@@ -223,6 +223,9 @@ public:
   // Current wait time between messages for the queue system
   int stay_time();
 
+  // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
+  int get_chat_ratelimit();
+
   // Returns whether the log should go upwards (new behaviour)
   // or downwards (vanilla behaviour).
   bool get_log_goes_downwards();
@@ -339,6 +342,9 @@ public:
 
   // Returns the showname from the ini of p_char
   QString get_showname(QString p_char);
+
+  // Returns the category of this character
+  QString get_category(QString p_char);
 
   // Returns the value of chat image from the specific p_char's ini file
   QString get_chat(QString p_char);
