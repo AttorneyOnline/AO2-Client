@@ -551,8 +551,7 @@ void Courtroom::set_widgets()
   }
   else {
     ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
-    ui_vp_chat_arrow->combo_resize(design_ini_result.width,
-                                   design_ini_result.height);
+    ui_vp_chat_arrow->combo_resize(design_ini_result.width, design_ini_result.height);
   }
 
   // layering shenanigans with ui_vp_chatbox prevent us from doing the sensible
@@ -2367,140 +2366,18 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
       ui_vp_sideplayer_char->move(ui_viewport->width() * offset_x / 100,
                                   ui_viewport->height() * offset_y / 100);
 
-      QString customchar;
-      if (ao_app->is_customchat_enabled())
-        customchar = m_chatmessage[CHAR_NAME];
-      if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
-      {
-        QString chatbox = ao_app->get_chat(customchar);
-        QString chatbox_path = ao_app->get_theme_path("chatblank");
-        if (chatbox != "") {
-          chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chatblank");
-          if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-            chatbox_path =
-              ao_app->get_base_path() + "misc/" + chatbox + "/chatblank";
-            if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-              chatbox_path = ao_app->get_theme_path("chat");
-              if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-                chatbox_path = ao_app->get_theme_path("chatbox");
-                if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-                  chatbox_path = ao_app->get_default_theme_path("chat");
-                  if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-                    chatbox_path = ao_app->get_default_theme_path("chatbox");
-                    ui_vp_chatbox->set_chatbox(chatbox_path);
-                  }
-                }
-              }
-            }
-          }
-        }
-        else if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-          chatbox_path = ao_app->get_theme_path("chat");
-          if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-            chatbox_path = ao_app->get_theme_path("chatbox");
-            if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-              chatbox_path = ao_app->get_default_theme_path("chat");
-              if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-                chatbox_path = ao_app->get_default_theme_path("chatbox");
-                ui_vp_chatbox->set_chatbox(chatbox_path);
-              }
-            }
-          }
-        }
-      }
-      else // Aw yeah dude do some showname magic
-      {
-        if (!ui_vp_chatbox->set_image("chat"))
-          ui_vp_chatbox->set_image("chatbox");
-        set_font(ui_vp_showname, "", "showname", customchar);
-        QFontMetrics fm(ui_vp_showname->font());
-// Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-        int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
-#else
-        int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
-#endif
-        QString chatbox_path = ao_app->get_theme_path("chat");
-        QString chatbox = ao_app->get_chat(customchar);
+      // Flip the pair character
+      if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
+        ui_vp_sideplayer_char->set_flipped(true);
+      else
+        ui_vp_sideplayer_char->set_flipped(false);
 
-        if (chatbox != "" && ao_app->is_customchat_enabled()) {
-          chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chat");
-          if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
-            chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-            if (!ui_vp_chatbox->set_chatbox(chatbox_path))
-              ui_vp_chatbox->set_chatbox(chatbox_path + "box");
-          }
-        }
-
-        // This should probably be called only if any change from the last chat
-        // arrow was actually detected.
-        pos_size_type design_ini_result = ao_app->get_element_dimensions(
-          "chat_arrow", "courtroom_design.ini", customchar);
-        if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-          qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
-          ui_vp_chat_arrow->hide();
-        }
-        else {
-          ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
-          ui_vp_chat_arrow->combo_resize(design_ini_result.width,
-                                         design_ini_result.height);
-        }
-
-        pos_size_type default_width = ao_app->get_element_dimensions(
-          "showname", "courtroom_design.ini", customchar);
-        int extra_width =
-          ao_app
-          ->get_design_element("showname_extra_width", "courtroom_design.ini",
-                               customchar)
-          .toInt();
-        QString align = ao_app
-          ->get_design_element("showname_align",
-                               "courtroom_design.ini", customchar)
-          .toLower();
-        if (align == "right")
-          ui_vp_showname->setAlignment(Qt::AlignRight);
-        else if (align == "center")
-          ui_vp_showname->setAlignment(Qt::AlignHCenter);
-        else if (align == "justify")
-          ui_vp_showname->setAlignment(Qt::AlignHCenter);
-        else
-          ui_vp_showname->setAlignment(Qt::AlignLeft);
-
-        if (extra_width > 0) {
-          if (fm_width > default_width.width &&
-              ui_vp_chatbox->set_chatbox(
-                chatbox_path +
-                "med")) // This text be big. Let's do some shenanigans.
-          {
-            // Change the order of appearance based on the pair order variable
-            QStringList args = m_chatmessage[OTHER_CHARID].split("^");
-            int order = args.at(1).toInt();
-            switch (order) {
-              case 0: // Our character is in front
-                ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
-                break;
-              case 1: // Our character is behind
-                ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
-                break;
-              default:
-                break;
-            }
-          }
-
-          // Flip the pair character
-          if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
-            ui_vp_sideplayer_char->set_flipped(true);
-          else
-            ui_vp_sideplayer_char->set_flipped(false);
-
-          // Play the other pair character's idle animation
-          QString filename = "(a)" + m_chatmessage[OTHER_EMOTE];
-          ui_vp_sideplayer_char->load_image(filename, m_chatmessage[OTHER_NAME],
+      // Play the other pair character's idle animation
+      QString filename = "(a)" + m_chatmessage[OTHER_EMOTE];
+      ui_vp_sideplayer_char->load_image(filename, m_chatmessage[OTHER_NAME],
                                             0, false);
-        }
       }
     }
-  }
 }
 
 void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
@@ -2523,61 +2400,6 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     ui_vp_player_char->set_flipped(false);
 
   QString side = m_chatmessage[SIDE];
-
-  // Making the second character appear.
-  if (m_chatmessage[OTHER_CHARID].isEmpty()) {
-    // If there is no second character, hide 'em
-    ui_vp_sideplayer_char->stop();
-    ui_vp_sideplayer_char->move(0, 0);
-  }
-  else {
-    bool ok;
-    int got_other_charid = m_chatmessage[OTHER_CHARID].split("^")[0].toInt(&ok);
-    if (ok) {
-      if (got_other_charid > -1) {
-        // If there is, show them!
-        ui_vp_sideplayer_char->show();
-
-        int other_offset = m_chatmessage[OTHER_OFFSET].toInt();
-        ui_vp_sideplayer_char->move(ui_viewport->width() * other_offset / 100,
-                                    0);
-
-        QStringList args = m_chatmessage[OTHER_CHARID].split("^");
-        if (args.size() >
-            1) // This ugly workaround is so we don't make an extra packet just
-               // for this purpose. Rewrite pairing when?
-        {
-          // Change the order of appearance based on the pair order variable
-          int order = args.at(1).toInt();
-          switch (order) {
-          case 0:
-            ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
-            break;
-          case 1:
-            ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
-            break;
-          default:
-            break;
-          }
-        }
-
-        // We should probably also play the other character's idle emote.
-        if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
-          ui_vp_sideplayer_char->set_flipped(true);
-        else
-          ui_vp_sideplayer_char->set_flipped(false);
-        QString filename = "(a)" + m_chatmessage[OTHER_EMOTE];
-        ui_vp_sideplayer_char->load_image(filename, m_chatmessage[OTHER_NAME],
-                                          0, false);
-      }
-      else {
-        // If the server understands other characters, but there
-        // really is no second character, hide 'em, and center the first.
-        ui_vp_sideplayer_char->hide();
-        ui_vp_sideplayer_char->move(0, 0);
-      }
-    }
-  }
   // Set ourselves according to SELF_OFFSET
 
   bool ok;
@@ -2792,7 +2614,7 @@ void Courtroom::initialize_chatbox()
       ui_vp_chat_arrow->hide();
     }
     else {
-      ui_vp_chat_arrow->move(design_ini_result.x, design_ini_result.y);
+      ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
       ui_vp_chat_arrow->combo_resize(design_ini_result.width,
                                      design_ini_result.height);
     }
