@@ -260,7 +260,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = tr("Attorney Online 2");
+    window_title = tr("Attorney Online 2");
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -603,6 +603,60 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                f_contents.at(2) == "1", f_contents.at(3) == "1",
                                f_contents.at(4) == "1",
                                f_contents.at(5) == "1");
+  }
+  else if (header == "TI") { // Timer packet
+    if (!courtroom_constructed || f_contents.size() < 2)
+      goto end;
+
+    // Timer ID is reserved as argument 0
+    int id = f_contents.at(0).toInt();
+
+    // Type 0 = start/resume/sync timer at time
+    // Type 1 = pause timer at time
+    // Type 2 = show timer
+    // Type 3 = hide timer
+    int type = f_contents.at(1).toInt();
+
+    if (type == 0 || type == 1)
+    {
+      if (f_contents.size() < 2)
+        goto end;
+
+      // The time as displayed on the clock, in milliseconds.
+      // If the number received is negative, stop the timer.
+      qint64 timer_value = f_contents.at(2).toLongLong();
+      qDebug() << "timer:" << timer_value;
+      if (timer_value > 0)
+      {
+        if (type == 0)
+        {
+          timer_value -= latency / 2;
+          w_courtroom->start_clock(id, timer_value);
+        }
+        else
+        {
+          w_courtroom->pause_clock(id);
+          w_courtroom->set_clock(id, timer_value);
+        }
+      }
+      else
+      {
+        w_courtroom->stop_clock(id);
+      }
+    }
+    else if (type == 2)
+      w_courtroom->set_clock_visibility(id, true);
+    else if (type == 3)
+      w_courtroom->set_clock_visibility(id, false);
+  }
+  else if (header == "CHECK") {
+    if (!courtroom_constructed)
+      goto end;
+
+    qint64 ping_time = w_courtroom->pong();
+    qDebug() << "ping:" << ping_time;
+    if (ping_time != -1)
+      latency = ping_time;
   }
 
 end:

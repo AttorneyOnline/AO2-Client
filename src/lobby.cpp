@@ -29,6 +29,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list = new QTreeWidget(this);
   ui_server_list->setHeaderLabels({"#", "Name"}); //, "Players"});
   ui_server_list->hideColumn(0);
+  ui_server_list->setHeaderHidden(true);
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);
@@ -364,20 +365,23 @@ void Lobby::on_about_clicked()
 
   QString msg =
       tr("<h2>Attorney Online %1</h2>"
-         "The courtroom drama simulator"
+         "The courtroom drama simulator."
          "<p><b>Source code:</b> "
          "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
          "https://github.com/AttorneyOnline/AO2-Client</a>"
          "<p><b>Major development:</b><br>"
          "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
-         "Crystalwarrior, Iamgoofball"
+         "Crystalwarrior, Iamgoofball, in1tiate"
          "<p><b>Client development:</b><br>"
-         "Cents02, in1tiate, raidensnake, windrammer"
+         "Cents02, windrammer, skyedeving"
          "<p><b>QA testing:</b><br>"
          "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
          "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
          "Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, "
          "Veritas, Wiso"
+         "<p><b>Translations:</b><br>"
+         "k-emiko (Русский), Pyraq (Polski), scatterflower (日本語), vintprox (Русский), "
+         "windrammer (Español, Português)"
          "<p><b>Special thanks:</b><br>"
          "CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); "
          "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
@@ -387,7 +391,7 @@ void Lobby::on_about_clicked()
          "server hosts, game masters, case makers, content creators, "
          "and the whole AO2 community!"
          "<p>The Attorney Online networked visual novel project "
-         "is copyright (c) 2016-2020 Attorney Online developers. Open-source "
+         "is copyright (c) 2016-2021 Attorney Online developers. Open-source "
          "licenses apply. All other assets are the property of their "
          "respective owners."
          "<p>Running on Qt version %2 with the BASS audio engine.<br>"
