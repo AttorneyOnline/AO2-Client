@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aosfxplayer.h"
 #include "debug_functions.h"
+#include "demoserver.h"
 #include "networkmanager.h"
 
 #include <QImageReader>
@@ -28,6 +29,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list = new QTreeWidget(this);
   ui_server_list->setHeaderLabels({"#", "Name"}); //, "Players"});
   ui_server_list->hideColumn(0);
+  ui_server_list->setHeaderHidden(true);
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);
@@ -438,7 +440,15 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
     ui_connect->setEnabled(false);
 
-    ao_app->net_manager->connect_to_server(f_server);
+    if (f_server.port == 99999 && f_server.ip == "127.0.0.1") {
+        // Demo playback server selected
+        ao_app->demo_server->start_server();
+        server_type demo_server;
+        demo_server.ip = "127.0.0.1";
+        demo_server.port = ao_app->demo_server->port;
+        ao_app->net_manager->connect_to_server(demo_server);
+    }
+    else ao_app->net_manager->connect_to_server(f_server);
   }
 }
 

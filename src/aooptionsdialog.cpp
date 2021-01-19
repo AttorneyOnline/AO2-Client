@@ -182,7 +182,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_stay_time_lbl->setText(tr("Text Stay Time:"));
   ui_stay_time_lbl->setToolTip(tr(
       "Minimum amount of time (in miliseconds) an IC message must stay on screen before "
-      "the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behaivor."));
+      "the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behavior."));
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stay_time_lbl);
 
@@ -218,6 +218,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_instant_objection_cb);
 
+  row += 1;
+  ui_chat_ratelimit_lbl = new QLabel(ui_form_layout_widget);
+  ui_chat_ratelimit_lbl->setText(tr("Chat Rate Limit:"));
+  ui_chat_ratelimit_lbl->setToolTip(tr(
+      "Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_chat_ratelimit_lbl);
+
+  ui_chat_ratelimit_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_chat_ratelimit_spinbox->setMaximum(5000);
+  ui_chat_ratelimit_spinbox->setValue(p_ao_app->get_chat_ratelimit());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_chat_ratelimit_spinbox);
   row += 1;
   ui_log_names_divider = new QFrame(ui_form_layout_widget);
   ui_log_names_divider->setFrameShape(QFrame::HLine);
@@ -824,6 +837,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
   configini->setValue("stay_time", ui_stay_time_spinbox->value());
   configini->setValue("instant_objection", ui_instant_objection_cb->isChecked());
+  configini->setValue("chat_ratelimit", ui_chat_ratelimit_spinbox->value());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
   configini->setValue("master", ui_ms_textbox->text());

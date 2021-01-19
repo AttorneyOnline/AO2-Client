@@ -45,6 +45,10 @@ void AOApplication::construct_lobby()
   if (is_discord_enabled())
     discord->state_lobby();
 
+  if (demo_server)
+      demo_server->deleteLater();
+  demo_server = new DemoServer();
+
   w_lobby->show();
 }
 
@@ -182,6 +186,10 @@ void AOApplication::call_announce_menu(Courtroom *court)
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
                                        DWORD data, void *user)
 {
+  UNUSED(handle);
+  UNUSED(channel);
+  UNUSED(data);
+  UNUSED(user);
   doBASSreset();
 }
 
