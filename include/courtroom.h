@@ -448,7 +448,7 @@ private:
   bool is_muted = false;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
-  // noniterrupting preanim
+  // noniterrupting preanim, 5 = (c) animation
   int anim_state = 3;
 
   // whether or not current color is a talking one

@@ -2394,21 +2394,6 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
   }
 
   // Handle the emote mod
-  if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
-    ui_vp_player_char->set_flipped(true);
-  else
-    ui_vp_player_char->set_flipped(false);
-
-  QString side = m_chatmessage[SIDE];
-  // Set ourselves according to SELF_OFFSET
-
-  bool ok;
-  int self_offset = m_chatmessage[SELF_OFFSET].toInt(&ok);
-  if (ok)
-    ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, 0);
-  else
-    ui_vp_player_char->move(0, 0);
-
   switch (emote_mod) {
   case 1:
   case 2:
@@ -2600,9 +2585,12 @@ void Courtroom::initialize_chatbox()
     QString chatbox = ao_app->get_chat(customchar);
 
     if (chatbox != "" && ao_app->is_customchat_enabled()) {
-      chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-      if (!ui_vp_chatbox->set_chatbox(chatbox_path))
-        ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+      chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chat");
+      if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+        chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
+        if (!ui_vp_chatbox->set_chatbox(chatbox_path))
+          ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+      }
     }
 
     // This should probably be called only if any change from the last chat
@@ -3292,13 +3280,12 @@ void Courtroom::chat_tick()
   if (tick_pos >= f_message.size()) {
     text_state = 2;
     if (anim_state < 3) {
-      if ((file_exists(ui_vp_player_char->find_image(
-              {ao_app->get_image_suffix(ao_app->get_character_path(
-                   m_chatmessage[CHAR_NAME], "(c)" + m_chatmessage[EMOTE])),
-               ao_app->get_image_suffix(ao_app->get_character_path(
-                   m_chatmessage[CHAR_NAME],
-                   "(c)/" + m_chatmessage[EMOTE]))}))) &&
-          (!c_played)) { // this is disgusting and I don't care
+      QStringList c_paths = {
+        ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)" + m_chatmessage[EMOTE])),
+        ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)/" + m_chatmessage[EMOTE]))
+        };
+      // if there is a (c) animation for this emote and we haven't played it already
+      if (file_exists(ui_vp_player_char->find_image(c_paths)) &&(!c_played)) {
         anim_state = 5;
         ui_vp_player_char->set_play_once(true);
         filename = "(c)" + m_chatmessage[EMOTE];
@@ -3318,13 +3305,11 @@ void Courtroom::chat_tick()
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
     }
-    ui_vp_chat_arrow->load_image(
-        "chat_arrow",
-        f_custom_theme); // Chat stopped being processed, indicate that.
+    ui_vp_chat_arrow->load_image("chat_arrow",f_custom_theme); // Chat stopped being processed, indicate that.
     additive_previous =
         additive_previous +
         filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
-	QString f_message_filtered = filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
+	  QString f_message_filtered = filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     for (int c = 0; c < max_colors; ++c) {
       f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
     }
