@@ -49,6 +49,11 @@ InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app)
 {
 }
 
+StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOLayer(p_parent, p_ao_app)
+{
+}
+
 QString AOLayer::find_image(QList<QString> p_list)
 {
   QString image_path;
@@ -275,6 +280,25 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
           p_filename)), // then check the user's theme for a default image
       ao_app->get_image_suffix(ao_app->get_default_theme_path(
           p_filename))}; // and finally check the default theme
+  start_playback(find_image(pathlist));
+}
+
+void StickerLayer::load_image(QString p_charname)
+{
+  QString miscname = ao_app->get_char_shouts(p_charname);
+  transform_mode = ao_app->get_misc_scaling(miscname);
+  QList<QString> pathlist = {
+      ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
+                                miscname + "/sticker/" + p_charname), // Misc path
+      ao_app->get_image_suffix(ao_app->get_custom_theme_path(miscname, "sticker/" + p_charname)), // Custom theme path
+      ao_app->get_image_suffix(ao_app->get_theme_path("sticker/" + p_charname)), // Theme path
+      ao_app->get_image_suffix(
+          ao_app->get_default_theme_path("sticker/" + p_charname)), // Default theme path
+      ao_app->get_image_suffix(
+          ao_app->get_character_path(p_charname, "sticker")), // Character folder
+      ao_app->get_image_suffix(
+          ao_app->get_character_path(p_charname, "showname")), // Scuffed DRO way
+  };
   start_playback(find_image(pathlist));
 }
 

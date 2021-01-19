@@ -617,6 +617,8 @@ private:
   ScrollText *ui_music_name;
   InterfaceLayer *ui_music_display;
 
+  StickerLayer *ui_vp_sticker;
+
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
