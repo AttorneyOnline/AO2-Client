@@ -1941,12 +1941,9 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   }
 
   // Record the log I/O, log files should be accurate.
-  log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
-  if (ao_app->is_desyncrhonized_logs_enabled()) {
-    // Display the logs immediately.
-    display_log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt());
-  }
-
+  // If desynced logs are on, display the log IC immediately.
+  LogMode log_mode = ao_app->is_desyncrhonized_logs_enabled() ? DISPLAY_AND_IO : IO_ONLY;
+  log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt(), log_mode);
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
 
@@ -1998,7 +1995,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
 
   if (!ao_app->is_desyncrhonized_logs_enabled()) {
     // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
-    display_log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt());
+    log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY);
   }
 
   // Process the callwords for this message
@@ -2017,7 +2014,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     handle_ic_message();
 }
 
-void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
+void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color, LogMode f_log_mode)
 {
   // Display name will use the showname
   QString f_displayname = f_showname;
@@ -2081,95 +2078,17 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
         }
         break;
       }
-      log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
-    }
-
-    // Obtain evidence ID we're trying to work with
-    int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-    // If the evidence ID is in the valid range
-    if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
-      // Obtain the evidence name
-      QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
-      // Add the message to the logs file
-      log_ic_text(f_showname, f_displayname, f_evi_name,
-                  tr("has presented evidence"));
-    }
-  }
-
-  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() ||
-      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
-    // Add the message to the logs file
-    log_ic_text(f_showname, f_displayname, f_message, "",
-                f_color);
-  }
-}
-
-void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color)
-{
-  // Display name will use the showname
-  QString f_displayname = f_showname;
-  if (f_char_id != -1) {
-    // Grab the char.ini showname
-    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
-    // If custom serversided shownames are not enabled
-    if (!ui_showname_enable->isChecked()) {
-      // Set the display name to the char.ini showname
-      f_displayname = f_showname;
-    }
-  }
-  // If display name is just whitespace, use the char.ini showname.
-  if (f_displayname.trimmed().isEmpty())
-    f_displayname = f_showname;
-
-  if (log_ic_actions) {
-    // Check if a custom objection is in use
-    int objection_mod = 0;
-    QString custom_objection = "";
-    if (m_chatmessage[OBJECTION_MOD].contains("4&")) {
-      objection_mod = 4;
-      custom_objection = m_chatmessage[OBJECTION_MOD].split(
-          "4&")[1]; // takes the name of custom objection.
-    }
-    else {
-      objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
-    }
-
-    QString f_char = m_chatmessage[CHAR_NAME];
-    QString f_custom_theme = ao_app->get_char_shouts(f_char);
-    if (objection_mod <= 4 && objection_mod >= 1) {
-      QString shout_message;
-      switch (objection_mod) {
-      case 1:
-        shout_message = ao_app->read_char_ini(f_char, "holdit_message", "Shouts");
-        if (shout_message == "")
-          shout_message = tr("HOLD IT!");
-        break;
-      case 2:
-        shout_message = ao_app->read_char_ini(f_char, "objection_message", "Shouts");
-        if (shout_message == "")
-          shout_message = tr("OBJECTION!");
-        break;
-      case 3:
-        shout_message = ao_app->read_char_ini(f_char, "takethat_message", "Shouts");
-        if (shout_message == "")
-          shout_message = tr("TAKE THAT!");
-        break;
-      // case 4 is AO2 only
-      case 4:
-        if (custom_objection != "") {
-          shout_message = ao_app->read_char_ini(f_char, custom_objection.split('.')[0] + "_message", "Shouts");
-          if (shout_message == "")
-            shout_message = custom_objection.split('.')[0];
-        }
-        else {
-          shout_message = ao_app->read_char_ini(f_char, "custom_message", "Shouts");
-          if (shout_message == "")
-            shout_message = tr("CUSTOM OBJECTION!");
-        }
-        break;
+      switch (f_log_mode) {
+        case IO_ONLY:
+          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
+          break;
+        case DISPLAY_AND_IO:
+          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
+          [[fallthrough]];
+        case DISPLAY_ONLY:
+          append_ic_text(shout_message, f_displayname, tr("shouts"));
+          break;
       }
-      append_ic_text(shout_message, f_displayname, tr("shouts"));
     }
 
     // Obtain evidence ID we're trying to work with
@@ -2178,17 +2097,34 @@ void Courtroom::display_log_chatmessage(QString f_message, int f_char_id, QStrin
     if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
       // Obtain the evidence name
       QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
-      // Append the message to the IC chatlogs in client
-      append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+      switch (f_log_mode) {
+        case IO_ONLY:
+          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"));
+          break;
+        case DISPLAY_AND_IO:
+          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"));
+          [[fallthrough]];
+        case DISPLAY_ONLY:
+          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+          break;
+      }
     }
   }
 
   // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
   if (!f_message.isEmpty() ||
       ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
-    // Append the message to the IC chatlogs in client
-    append_ic_text(f_message, f_displayname, "",
-                   f_color);
+    switch (f_log_mode) {
+      case IO_ONLY:
+        log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+        break;
+      case DISPLAY_AND_IO:
+        log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+        [[fallthrough]];
+      case DISPLAY_ONLY:
+        append_ic_text(f_message, f_displayname, "",f_color);
+        break;
+    }
   }
 }
 

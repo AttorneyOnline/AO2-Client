@@ -225,11 +225,13 @@ public:
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList p_contents);
 
-  // Log the message contents and information such as evidence presenting etc. into the log file
-  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
-
-  // Display the message contents and information such as evidence presenting etc. in the IC logs
-  void display_log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
+  enum LogMode {
+    IO_ONLY,
+    DISPLAY_ONLY,
+    DISPLAY_AND_IO
+  };
+  // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0, LogMode f_log_mode=IO_ONLY);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
