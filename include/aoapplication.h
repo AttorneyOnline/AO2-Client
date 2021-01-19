@@ -29,6 +29,7 @@
 #include <QScreen>
 #include <QStringList>
 #include <QTextStream>
+#include <QTime>
 
 #include <QElapsedTimer>
 
@@ -65,6 +66,9 @@ public:
 
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
+
+  qint64 latency = 0;
+  QString window_title;
 
   /////////////////server metadata//////////////////
 

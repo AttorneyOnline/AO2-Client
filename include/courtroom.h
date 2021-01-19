@@ -5,6 +5,7 @@
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
+#include "aoclocklabel.h"
 #include "aoemotebutton.h"
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
@@ -55,7 +56,7 @@
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
-//#include <QRandomGenerator>
+#include <QElapsedTimer>
 
 #include <algorithm>
 #include <stack>
@@ -300,11 +301,18 @@ public:
 
   void check_connection_received();
 
+  void start_clock(int id);
+  void start_clock(int id, qint64 msecs);
+  void set_clock(int id, qint64 msecs);
+  void pause_clock(int id);
+  void stop_clock(int id);
+  void set_clock_visibility(int id, bool visible);
+
+  qint64 pong();
   // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
   ~Courtroom();
-
 private:
   AOApplication *ao_app;
 
@@ -357,11 +365,16 @@ private:
 
   QQueue<QStringList> chatmessage_queue;
 
-  // triggers ping_server() every 60 seconds
+  // triggers ping_server() every 45 seconds
   QTimer *keepalive_timer;
 
   // determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
+
+  // count up timer to check how long it took for us to get a response from ping_server()
+  QElapsedTimer ping_timer;
+  bool is_pinging = false;
+
   // int chat_tick_interval = 60;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
@@ -618,6 +631,9 @@ private:
   InterfaceLayer *ui_music_display;
 
   StickerLayer *ui_vp_sticker;
+
+  static const int max_clocks = 5;
+  AOClockLabel *ui_clock[max_clocks];
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;

@@ -12,7 +12,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
 
   keepalive_timer = new QTimer(this);
-  keepalive_timer->start(60000);
+  keepalive_timer->start(45000);
 
   chat_tick_timer = new QTimer(this);
 
@@ -120,6 +120,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_name = new ScrollText(ui_music_display);
   ui_music_name->setText(tr("None"));
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
+  
+  for (int i = 0; i < max_clocks; i++) {
+    ui_clock[i] = new AOClockLabel(this);
+    ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui_clock[i]->hide();
+  }
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -663,6 +669,10 @@ void Courtroom::set_widgets()
   ui_music_display->load_image("music_display", "");
 
 
+  for (int i = 0; i < max_clocks; i++) {
+    set_size_and_pos(ui_clock[i], "clock_" + QString::number(i));
+  }
+
   if (is_ao2_bg) {
     set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
     //  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
@@ -1015,6 +1025,9 @@ void Courtroom::set_fonts(QString p_char)
   set_font(ui_music_list, "", "music_list", p_char);
   set_font(ui_area_list, "", "area_list", p_char);
   set_font(ui_music_name, "", "music_name", p_char);
+
+  for (int i = 0; i < max_clocks; i++)
+    set_font(ui_clock[i], "", "clock_" + QString::number(i), p_char);
 
   set_dropdowns();
 }
@@ -5266,8 +5279,19 @@ void Courtroom::on_switch_area_music_clicked()
 
 void Courtroom::ping_server()
 {
+  ping_timer.start();
+  is_pinging = true;
   ao_app->send_server_packet(
       new AOPacket("CH#" + QString::number(m_cid) + "#%"));
+}
+
+qint64 Courtroom::pong()
+{
+  if (!is_pinging)
+    return -1;
+
+  is_pinging = false;
+  return ping_timer.elapsed();
 }
 
 void Courtroom::on_casing_clicked()
@@ -5306,6 +5330,54 @@ void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
     f_packet.append(QString::number(steno));
 
     ao_app->send_server_packet(new AOPacket("CASEA", f_packet));
+  }
+}
+
+void Courtroom::start_clock(int id)
+{
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->start();
+  }
+}
+
+void Courtroom::start_clock(int id, qint64 msecs)
+{
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->start(static_cast<int>(msecs));
+  }
+}
+
+void Courtroom::set_clock(int id, qint64 msecs)
+{
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->set(static_cast<int>(msecs), true);
+  }
+}
+
+void Courtroom::pause_clock(int id)
+{
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->pause();
+  }
+}
+
+void Courtroom::stop_clock(int id)
+{
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->stop();
+  }
+}
+
+void Courtroom::set_clock_visibility(int id, bool visible)
+{
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->setVisible(visible);
   }
 }
 

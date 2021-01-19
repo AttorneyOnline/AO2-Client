@@ -161,7 +161,6 @@ void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
 
 void AOMusicPlayer::set_looping(bool toggle, int channel)
 {
-  qDebug() << "Setting looping for channel" << channel << "to" << toggle;
   m_looping = toggle;
   if (!m_looping) {
     if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
