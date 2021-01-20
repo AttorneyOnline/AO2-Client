@@ -5402,6 +5402,10 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
   QString label_text_tr =
       QCoreApplication::translate(p_widget->metaObject()->className(), "%1")
           .arg((p_label != nullptr ? p_label->text() : p_checkbox->text()));
+  if (label_text_tr.endsWith("…") || label_text_tr.endsWith("…")) {
+    qInfo() << "Truncation aborted for label text" << label_text_tr << ", label text was already truncated!";
+    return;
+  }
   int label_theme_width =
       (p_label != nullptr
            ? design_ini_result.width
@@ -5410,7 +5414,8 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
                       // padding, TODO: fetch the actual size
   int label_px_width =
       p_widget->fontMetrics().boundingRect(label_text_tr).width(); // pixel width of our translated text
-  p_widget->setToolTip(label_text_tr + "\n" + p_widget->toolTip());
+  if (!p_widget->toolTip().startsWith(label_text_tr)) // don't want to append this multiple times
+    p_widget->setToolTip(label_text_tr + "\n" + p_widget->toolTip());
   // qInfo() << "I: Width of label text: " << label_px_width << "px. Theme's
   // width: " << label_theme_width << "px.";
 
