@@ -816,6 +816,32 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
   return string_result.toInt();
 }
 
+QString AOApplication::get_pre_emote_overlay (QString p_char, int p_emote)
+{
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Overlays")
+
+  QStringList result_contents = f_result.split("#");
+
+  if (result_contents.size() < 4) {
+    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    return "";
+  }
+  return result_contents.at(0);
+}
+
+QString AOApplication::get_emote_overlay (QString p_char, int p_emote)
+{
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Overlays")
+
+  QStringList result_contents = f_result.split("#");
+
+  if (result_contents.size() < 4) {
+    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    return "";
+  }
+  return result_contents.at(1);
+}
+
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)
 {
   QString f_result =

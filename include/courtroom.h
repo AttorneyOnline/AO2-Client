@@ -606,7 +606,9 @@ private:
   BackgroundLayer *ui_vp_background;
   ForegroundLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
+  ForegroundLayer *ui_vp_player_char_overlay;
   CharLayer *ui_vp_sideplayer_char;
+  ForegroundLayer *ui_vp_sideplayer_char_overlay;
   BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;

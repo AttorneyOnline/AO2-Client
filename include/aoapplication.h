@@ -87,6 +87,7 @@ public:
   bool effects_enabled = false;
   bool y_offset_enabled = false;
   bool expanded_desk_mods_enabled = false;
+  bool char_overlays_enabled = false;
 
   ///////////////loading info///////////////////
 

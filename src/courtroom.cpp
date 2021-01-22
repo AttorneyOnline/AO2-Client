@@ -46,8 +46,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_speedlines = new ForegroundLayer(ui_viewport, ao_app);
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_player_char_overlay = new ForegroundLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_sideplayer_char_overlay = new ForegroundLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char->hide();
+  ui_vp_sideplayer_char_overlay->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
 
   ui_vp_effect = new EffectLayer(this, ao_app);
@@ -535,10 +538,16 @@ void Courtroom::set_widgets()
 
   ui_vp_player_char->move(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_player_char_overlay->move(0,0);
+  ui_vp_player_char_overlay->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_sideplayer_char->move(0, 0);
   ui_vp_sideplayer_char->combo_resize(ui_viewport->width(),
                                       ui_viewport->height());
+  ui_vp_sideplayer_char_overlay->move(0, 0);
+  ui_vp_sideplayer_char_overlay->combo_resize(ui_viewport->width(),
+                                      ui_viewport->height());
+
 
   // the AO2 desk element
   ui_vp_desk->move(0, 0);
@@ -1265,8 +1274,11 @@ void Courtroom::set_background(QString p_background, bool display)
   if (display) {
     ui_vp_speedlines->stop();
     ui_vp_player_char->stop();
+    ui_vp_player_char_overlay->stop();
 
     ui_vp_sideplayer_char->stop();
+    ui_vp_sideplayer_char_overlay->stop();
+
     ui_vp_effect->stop();
     ui_vp_message->hide();
     ui_vp_chatbox->hide();
@@ -1890,6 +1902,12 @@ void Courtroom::on_chat_return_pressed()
       ui_effects_dropdown->blockSignals(false);
       effect = "";
     }
+  if (ao_app->char_overlays_enabled) {
+    QString pre_overlay = ao_app->get_pre_emote_overlay(current_char, current_emote);
+    QString overlay = ao_app->get_emote_overlay(current_char, current_emote);
+    packet_contents.append(pre_overlay);
+    packet_contents.append(overlay);
+  }
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
@@ -2236,6 +2254,7 @@ void Courtroom::display_character()
   // Stop all previously playing animations, effects etc.
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
+  ui_vp_player_char_overlay->stop();
   ui_vp_effect->stop();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
@@ -2254,7 +2273,9 @@ void Courtroom::display_character()
       break;
     case 5:
       ui_vp_sideplayer_char->hide();
+      ui_vp_sideplayer_char_overlay->hide();
       ui_vp_player_char->move(0, 0);
+      ui_vp_player_char_overlay->move(0, 0);
       [[fallthrough]];
     case 3:
       set_scene("0", m_chatmessage[SIDE]);
@@ -2277,10 +2298,14 @@ void Courtroom::display_character()
     ui_vp_player_char->network_strings.clear();
 
   // Determine if we should flip the character or not (what servers don't support flipping at this point?)
-  if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
+  if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1) {
     ui_vp_player_char->set_flipped(true);
-  else
+    ui_vp_player_char_overlay->set_flipped(true);
+  }
+  else {
     ui_vp_player_char->set_flipped(false);
+    ui_vp_player_char_overlay->set_flipped(false);
+  }
 
   // Parse the character X offset
   QStringList offsets = m_chatmessage[SELF_OFFSET].split("&");
@@ -2291,6 +2316,7 @@ void Courtroom::display_character()
     offset_y = offsets[1].toInt();
   // Move the character on the viewport according to the offsets
   ui_vp_player_char->move(ui_viewport->width() * offset_x / 100, ui_viewport->height() * offset_y / 100);
+  ui_vp_player_char_overlay->move(ui_viewport->width() * offset_x / 100, ui_viewport->height() * offset_y / 100);
 }
 
 void Courtroom::display_pair_character(QString other_charid, QString other_offset)
@@ -2305,6 +2331,7 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
     if (ok && charid > -1) {
       // Show the pair character
       ui_vp_sideplayer_char->show();
+      ui_vp_sideplayer_char_overlay->show();
       // Obtain the offsets, splitting it up by & char
       QStringList offsets = other_offset.split("&");
       int offset_x;
@@ -2323,17 +2350,25 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
       // Move pair character according to the offsets
       ui_vp_sideplayer_char->move(ui_viewport->width() * offset_x / 100,
                                   ui_viewport->height() * offset_y / 100);
+      ui_vp_sideplayer_char_overlay->move(ui_viewport->width() * offset_x / 100,
+                                  ui_viewport->height() * offset_y / 100);
 
       // Flip the pair character
-      if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
+      if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1) {
         ui_vp_sideplayer_char->set_flipped(true);
-      else
+        ui_vp_sideplayer_char_overlay->set_flipped(true);
+      }
+      else {
         ui_vp_sideplayer_char->set_flipped(false);
+        ui_vp_sideplayer_char_overlay->set_flipped(false);
+      }
 
       // Play the other pair character's idle animation
       QString filename = "(a)" + m_chatmessage[OTHER_EMOTE];
       ui_vp_sideplayer_char->load_image(filename, m_chatmessage[OTHER_NAME],
                                             0, false);
+      if (ao_app->char_overlays_enabled)
+        ui_vp_sideplayer_char_overlay->load_image(m_chatmessage[OTHER_OVERLAY], m_chatmessage[OTHER_NAME]);
       }
     }
 }
@@ -2428,8 +2463,8 @@ void Courtroom::do_screenshake()
       screenshake_animation_group->duration());
   screenshake_animation_group->clear();
 
-  QList<QWidget *> affected_list = {ui_vp_background, ui_vp_player_char,
-                                    ui_vp_sideplayer_char, ui_vp_chatbox};
+  QList<QWidget *> affected_list = {ui_vp_background, ui_vp_player_char, ui_vp_player_char_overlay,
+                                    ui_vp_sideplayer_char, ui_vp_sideplayer_char_overlay, ui_vp_chatbox};
 
   // I would prefer if this was its own "shake" function to be honest.
   foreach (QWidget *ui_element, affected_list) {
@@ -3133,6 +3168,9 @@ void Courtroom::play_preanim(bool immediate)
   ui_vp_player_char->set_static_duration(preanim_duration);
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
+  if (ao_app->char_overlays_enabled)
+    ui_vp_player_char_overlay->load_image(m_chatmessage[PRE_OVERLAY], f_char);
+  
 
   if (immediate)
     anim_state = 4;
@@ -3260,6 +3298,8 @@ void Courtroom::chat_tick()
       }
       ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
                                     false);
+      if (ao_app->char_overlays_enabled)
+        ui_vp_player_char_overlay->load_image(m_chatmessage[OVERLAY], m_chatmessage[CHAR_NAME]);
     }
     QString f_char;
     QString f_custom_theme;
@@ -3587,6 +3627,7 @@ void Courtroom::set_self_offset(QString p_list) {
     else 
       self_offset_v = self_offsets[1].toInt();
     ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+    ui_vp_player_char_overlay->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 }
 
 void Courtroom::set_ip_list(QString p_list)

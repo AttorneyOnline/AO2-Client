@@ -196,6 +196,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     additive_enabled = false;
     effects_enabled = false;
     expanded_desk_mods_enabled = false;
+    char_overlays_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -226,6 +227,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         y_offset_enabled = true;
     if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
       expanded_desk_mods_enabled = true;
+    if (f_packet.contains("char_overlays", Qt::CaseInsensitive))
+        char_overlays_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
