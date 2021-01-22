@@ -2487,8 +2487,7 @@ void Courtroom::do_flash()
   ui_vp_effect->stretch = true;
   ui_vp_effect->set_static_duration(60);
   ui_vp_effect->set_max_duration(60);
-  ui_vp_player_char->stackUnder(ui_vp_effect);
-  ui_vp_sideplayer_char->stackUnder(ui_vp_effect);
+  ui_vp_player_char->stackUnder(ui_vp_objection); // go above the chatbox
   ui_vp_effect->load_image(
       ao_app->get_effect("realization", f_char, f_custom_theme), false);
 }
@@ -2512,15 +2511,11 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
   ui_vp_effect->stretch =
       ao_app->get_effect_property(fx_name, p_char, "stretch")
           .startsWith("true");
-  bool underlay = ao_app->get_effect_property(fx_name, p_char, "underlay").startsWith("true");
-  if (underlay) {
-    ui_vp_effect->stackUnder(ui_vp_player_char);
-    ui_vp_effect->stackUnder(ui_vp_sideplayer_char);
-  }
-  else {
-    ui_vp_player_char->stackUnder(ui_vp_effect);
-    ui_vp_sideplayer_char->stackUnder(ui_vp_effect);
-  }
+  bool under_chatbox = ao_app->get_effect_property(fx_name, p_char, "under_chatbox").startsWith("true");
+  if (under_chatbox)
+    ui_vp_effect->stackUnder(ui_vp_chatbox);
+  else
+    ui_vp_effect->stackUnder(ui_vp_objection);
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
@@ -3202,7 +3197,6 @@ void Courtroom::start_chat_ticking()
       fx_folder = fx_list[1];
       fx_sound = fx_list[2];
     }
-
     this->do_effect(fx, fx_sound, m_chatmessage[CHAR_NAME], fx_folder);
   }
   else if (m_chatmessage[REALIZATION] == "1") {
