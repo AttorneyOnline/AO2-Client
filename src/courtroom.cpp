@@ -2323,7 +2323,25 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
       // Move pair character according to the offsets
       ui_vp_sideplayer_char->move(ui_viewport->width() * offset_x / 100,
                                   ui_viewport->height() * offset_y / 100);
-
+      // Split the charid according to the ^ to determine if we have "ordering" info
+      QStringList args = other_charid.split("^");
+      if (args.size() >
+          1) // This ugly workaround is so we don't make an extra packet just
+              // for this purpose. Rewrite pairing when?
+      {
+        // Change the order of appearance based on the pair order variable
+        int order = args.at(1).toInt();
+        switch (order) {
+        case 0: // Our character is in front
+          ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
+          break;
+        case 1: // Our character is behind
+          ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
+          break;
+        default:
+          break;
+        }
+      }
       // Flip the pair character
       if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
         ui_vp_sideplayer_char->set_flipped(true);
@@ -2469,6 +2487,8 @@ void Courtroom::do_flash()
   ui_vp_effect->stretch = true;
   ui_vp_effect->set_static_duration(60);
   ui_vp_effect->set_max_duration(60);
+  ui_vp_player_char->stackUnder(ui_vp_effect);
+  ui_vp_sideplayer_char->stackUnder(ui_vp_effect);
   ui_vp_effect->load_image(
       ao_app->get_effect("realization", f_char, f_custom_theme), false);
 }
@@ -2492,6 +2512,15 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
   ui_vp_effect->stretch =
       ao_app->get_effect_property(fx_name, p_char, "stretch")
           .startsWith("true");
+  bool underlay = ao_app->get_effect_property(fx_name, p_char, "underlay").startsWith("true");
+  if (underlay) {
+    ui_vp_effect->stackUnder(ui_vp_player_char);
+    ui_vp_effect->stackUnder(ui_vp_sideplayer_char);
+  }
+  else {
+    ui_vp_player_char->stackUnder(ui_vp_effect);
+    ui_vp_sideplayer_char->stackUnder(ui_vp_effect);
+  }
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
