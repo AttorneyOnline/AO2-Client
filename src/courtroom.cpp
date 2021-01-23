@@ -4266,7 +4266,6 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
 void Courtroom::on_pos_remove_clicked()
 {
-  current_side = "";
   QString default_side = ao_app->get_char_side(current_char);
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
@@ -4281,6 +4280,7 @@ void Courtroom::on_pos_remove_clicked()
     ui_pos_dropdown->setCurrentIndex(wit_index); // fall back to "wit"
   else if (ui_pos_dropdown->currentText() != default_side) // we don't have "wit" either?
     ui_pos_dropdown->setCurrentIndex(0); // as a last resort, choose the first item in the dropdown
+  current_side = "";
   ui_pos_remove->hide();
 }
 
