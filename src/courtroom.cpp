@@ -1307,6 +1307,27 @@ void Courtroom::set_side(QString p_side)
   else
     f_side = p_side;
 
+  if (f_side == "jud") {
+    ui_witness_testimony->show();
+    ui_cross_examination->show();
+    ui_not_guilty->show();
+    ui_guilty->show();
+    ui_defense_minus->show();
+    ui_defense_plus->show();
+    ui_prosecution_minus->show();
+    ui_prosecution_plus->show();
+  }
+  else {
+    ui_witness_testimony->hide();
+    ui_cross_examination->hide();
+    ui_guilty->hide();
+    ui_not_guilty->hide();
+    ui_defense_minus->hide();
+    ui_defense_plus->hide();
+    ui_prosecution_minus->hide();
+    ui_prosecution_plus->hide();
+  }
+
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
     if (pos == f_side) {
