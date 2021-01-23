@@ -440,6 +440,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_customchat_cb);
 
+  row += 1;
+  ui_continuous_lbl = new QLabel(ui_form_layout_widget);
+  ui_continuous_lbl->setText(tr("Continuous Playback:"));
+  ui_continuous_lbl->setToolTip(
+      tr("Whether or not to resume playing animations from where they left off. Turning off might reduce lag."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_continuous_lbl);
+
+  ui_continuous_cb = new QCheckBox(ui_form_layout_widget);
+  ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_continuous_cb);
+
   QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
@@ -852,6 +865,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("stickypres", ui_stickypres_cb->isChecked());
   configini->setValue("customchat", ui_customchat_cb->isChecked());
   configini->setValue("automatic_logging_enabled", ui_log_cb->isChecked());
+  configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |

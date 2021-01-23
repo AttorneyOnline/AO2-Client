@@ -97,6 +97,9 @@ private:
   QLabel *ui_customchat_lbl;
   QCheckBox *ui_customchat_cb;
 
+  QLabel *ui_continuous_lbl;
+  QCheckBox *ui_continuous_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;
