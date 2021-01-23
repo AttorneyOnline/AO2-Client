@@ -613,9 +613,9 @@ private:
   QLabel *ui_vp_showname;
   InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  EffectLayer *ui_vp_effect;
   InterfaceLayer *ui_vp_testimony;
   InterjectionLayer *ui_vp_wtce;
+  EffectLayer *ui_vp_effect;
   InterjectionLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
