@@ -658,6 +658,7 @@ private:
 
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
+  AOButton *ui_pos_remove;
 
   QComboBox *ui_iniswap_dropdown;
   AOButton *ui_iniswap_remove;
@@ -835,6 +836,7 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
+  void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);
   void set_iniswap_dropdown();

@@ -165,6 +165,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   initialize_emotes();
 
   ui_pos_dropdown = new QComboBox(this);
+  ui_pos_remove = new AOButton(this, ao_app);
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -301,6 +302,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_pos_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_pos_dropdown_changed(int)));
+  connect(ui_pos_remove, SIGNAL(clicked()), this, SLOT(on_pos_remove_clicked()));
 
   connect(ui_iniswap_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_iniswap_dropdown_changed(int)));
@@ -728,6 +730,15 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
   ui_pos_dropdown->setToolTip(
       tr("Set your character's supplementary background."));
+
+  set_size_and_pos(ui_pos_remove, "pos_remove");
+  ui_pos_remove->setText("X");
+  ui_pos_remove->set_image("evidencex");
+  ui_pos_remove->setToolTip(tr("Reset your character's supplementary background to its default."));
+  if (current_side == "")
+    ui_pos_remove->hide();
+  else
+    ui_pos_remove->show();
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown");
   ui_iniswap_dropdown->setEditable(true);
@@ -1290,14 +1301,15 @@ void Courtroom::set_background(QString p_background, bool display)
 
 void Courtroom::set_side(QString p_side)
 {
+  QString f_side;
   if (p_side == "")
-    current_side = ao_app->get_char_side(current_char);
+    f_side = ao_app->get_char_side(current_char);
   else
-    current_side = p_side;
+    f_side = p_side;
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
-    if (pos == current_side) {
+    if (pos == f_side) {
       // Block the signals to prevent setCurrentIndex from triggering a pos
       // change
       ui_pos_dropdown->blockSignals(true);
@@ -1324,6 +1336,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   ui_pos_dropdown->addItems(pos_dropdown_list);
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
+  set_side(current_side);
 }
 
 void Courtroom::update_character(int p_cid)
@@ -1347,7 +1360,7 @@ void Courtroom::update_character(int p_cid)
   }
 
   current_char = f_char;
-  current_side = ao_app->get_char_side(current_char);
+  set_side(current_side);
 
   set_text_color_dropdown();
 
@@ -1368,27 +1381,6 @@ void Courtroom::update_character(int p_cid)
 
   if (newchar) // Avoid infinite loop of death and suffering
     set_iniswap_dropdown();
-
-  if (current_side == "jud") {
-    ui_witness_testimony->show();
-    ui_cross_examination->show();
-    ui_not_guilty->show();
-    ui_guilty->show();
-    ui_defense_minus->show();
-    ui_defense_plus->show();
-    ui_prosecution_minus->show();
-    ui_prosecution_plus->show();
-  }
-  else {
-    ui_witness_testimony->hide();
-    ui_cross_examination->hide();
-    ui_guilty->hide();
-    ui_not_guilty->hide();
-    ui_defense_minus->hide();
-    ui_defense_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_prosecution_plus->hide();
-  }
 
   ui_custom_objection->hide();
   if (ao_app->custom_objection_enabled) // if setting is enabled
@@ -1696,9 +1688,12 @@ void Courtroom::on_chat_return_pressed()
   // immediate_preanim#%
 
   QStringList packet_contents;
+  QString f_side;
 
   if (current_side == "")
-    current_side = ao_app->get_char_side(current_char);
+    f_side = ao_app->get_char_side(current_char);
+  else
+    f_side = current_side;
 
   QString f_desk_mod = "chat";
 
@@ -1725,7 +1720,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(ui_ic_chat_message->text());
 
-  packet_contents.append(current_side);
+  packet_contents.append(f_side);
 
   packet_contents.append(get_char_sfx());
 
@@ -4259,10 +4254,34 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
   if (f_pos == "jud")
     toggle_judge_buttons(true);
+  
+  ui_pos_remove->show();
+
+  current_side = f_pos;
 
   // YEAH SENDING LIKE 20 PACKETS IF THE USER SCROLLS THROUGH, GREAT IDEA
   // how about this instead
   set_side(f_pos);
+}
+
+void Courtroom::on_pos_remove_clicked()
+{
+  current_side = "";
+  QString default_side = ao_app->get_char_side(current_char);
+
+  for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
+    QString pos = ui_pos_dropdown->itemText(i);
+    if (pos == default_side) {
+      ui_pos_dropdown->setCurrentIndex(i);
+      break;
+    }
+  }
+  int wit_index = ui_pos_dropdown->findText("wit");
+  if ((ui_pos_dropdown->currentText() != default_side) & (wit_index != -1)) //i.e. this bg doesn't have our pos
+    ui_pos_dropdown->setCurrentIndex(wit_index); // fall back to "wit"
+  else if (ui_pos_dropdown->currentText() != default_side) // we don't have "wit" either?
+    ui_pos_dropdown->setCurrentIndex(0); // as a last resort, choose the first item in the dropdown
+  ui_pos_remove->hide();
 }
 
 void Courtroom::set_iniswap_dropdown()
