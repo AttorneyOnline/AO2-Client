@@ -19,6 +19,9 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 # Uncomment for verbose network logging
 # DEFINES += DEBUG_NETWORK
 
+# Uncomment for building with debug symbols
+# CONFIG += debug
+
 # Uncomment to enable Discord Rich Presence
 # DEFINES += DISCORD
 
