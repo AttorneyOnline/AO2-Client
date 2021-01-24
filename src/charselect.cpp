@@ -176,8 +176,10 @@ void Courtroom::char_clicked(int n_char)
         new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" +
                      QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
-  else
+  else {
     update_character(n_char);
+    set_widgets(); // so we don't erroneously keep the charselect's fixedSize
+  }
 
   if (n_char != -1)
     ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
