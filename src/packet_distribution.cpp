@@ -8,9 +8,12 @@
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
-  p_packet->net_decode();
-
   QString header = p_packet->get_header();
+
+  // Some packets need to handle decode/encode separately
+  if (header != "SC") {
+    p_packet->net_decode();
+  }
   QStringList f_contents = p_packet->get_contents();
 
 #ifdef DEBUG_NETWORK
@@ -332,6 +335,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       QStringList sub_elements = f_contents.at(n_element).split("&");
+
+      sub_elements.replaceInStrings("#", "<num>")
+        .replaceInStrings("%", "<percent>")
+        .replaceInStrings("$", "<dollar>")
+        .replaceInStrings("&", "<and>");
 
       char_type f_char;
       f_char.name = sub_elements.at(0);
