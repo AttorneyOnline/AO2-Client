@@ -336,10 +336,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       QStringList sub_elements = f_contents.at(n_element).split("&");
 
-      sub_elements.replaceInStrings("#", "<num>")
-        .replaceInStrings("%", "<percent>")
-        .replaceInStrings("$", "<dollar>")
-        .replaceInStrings("&", "<and>");
+      AOPacket::unescape(sub_elements);
 
       char_type f_char;
       f_char.name = sub_elements.at(0);
