@@ -17,6 +17,8 @@ public:
   void net_encode();
   void net_decode();
 
+  static void escape(QStringList &contents);
+  static void unescape(QStringList &contents);
 private:
 
   QString m_header;
