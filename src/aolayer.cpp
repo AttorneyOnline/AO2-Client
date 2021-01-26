@@ -196,8 +196,6 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
 void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
-  continuous = false;
-  force_continuous = true;
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
@@ -338,11 +336,8 @@ void AOLayer::start_playback(QString p_image)
       int l_delay = m_reader.nextImageDelay();
       movie_frames.append(l_pixmap);
       movie_delays.append(l_delay);
-      // qDebug() << "appending delay of " << l_delay;
     }
   }
-  // qDebug() << "CONT: " << continuous << " MAX: " << max_frames
-  //         << " LAST MAX: " << last_max_frames << " FRAME: " << frame;
   QPixmap f_pixmap = this->get_pixmap(m_reader.read());
   int f_delay = m_reader.nextImageDelay();
 

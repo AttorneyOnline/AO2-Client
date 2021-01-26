@@ -10,6 +10,27 @@
 
 class AOApplication;
 
+// "Brief" explanation of what the hell this is:
+//
+// AOLayer handles all animations both inside and outside
+// the viewport. It was originally devised as a layering
+// system, but turned into a full refactor of the existing
+// animation code. 
+//
+// AOLayer has six subclasses, all of which differ mainly in
+// how they handle path resolution.
+//
+//  - BackgroundLayer: self-explanatory, handles files found in base/background
+//  - CharLayer: handles all the "wonderful" quirks of character path resolution 
+//  - SplashLayer: handles elements that can either be provided by a misc/ directory
+//    or by the theme - speedlines, shouts, WT/CE, et cetera
+//  - EffectLayer: this is basically a dummy layer since effects do their own wonky
+//    path resolution in a different file
+//  - InterfaceLayer: handles UI elements like the chat arrow and the music display
+//  - StickerLayer: Crystalwarrior really wanted this. Handles "stickers," whatever those are.
+//
+// For questions comments or concerns, bother someone else
+
 class AOLayer : public QLabel {
   Q_OBJECT
 
@@ -72,7 +93,7 @@ protected:
   QElapsedTimer actual_time;
 
   // Usually used to turn seconds into milliseconds such as for [Time] tag in
-  // char.ini
+  // char.ini (which is no longer used)
   const int tick_ms = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's
