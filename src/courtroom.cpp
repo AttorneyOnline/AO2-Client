@@ -1299,7 +1299,7 @@ void Courtroom::set_background(QString p_background, bool display)
   }
 }
 
-void Courtroom::set_side(QString p_side)
+void Courtroom::set_side(QString p_side, bool block_signals)
 {
   QString f_side;
   if (p_side == "")
@@ -1333,14 +1333,16 @@ void Courtroom::set_side(QString p_side)
     if (pos == f_side) {
       // Block the signals to prevent setCurrentIndex from triggering a pos
       // change
-      ui_pos_dropdown->blockSignals(true);
+      if (block_signals)
+        ui_pos_dropdown->blockSignals(true);
 
       // Set the index on dropdown ui element to let you know what pos you're on
       // right now
       ui_pos_dropdown->setCurrentIndex(i);
 
       // Unblock the signals so the element can be used for setting pos again
-      ui_pos_dropdown->blockSignals(false);
+      if (block_signals)
+        ui_pos_dropdown->blockSignals(false);
 
       // alright we dun, jobs done here boyos
       break;

@@ -165,7 +165,7 @@ public:
   void set_background(QString p_background, bool display = false);
 
   // sets the local character pos/side to use.
-  void set_side(QString p_side);
+  void set_side(QString p_side, bool block_signals=true);
 
   // sets the pos dropdown
   void set_pos_dropdown(QStringList pos_dropdowns);
