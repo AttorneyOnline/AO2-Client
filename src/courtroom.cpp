@@ -44,7 +44,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_viewport = new QWidget(this);
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
-  ui_vp_speedlines = new ForegroundLayer(ui_viewport, ao_app);
+  ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char->hide();
@@ -2707,7 +2707,7 @@ void Courtroom::handle_ic_speaking()
       filename = "prosecution_speedlines";
     else
       filename = "defense_speedlines";
-    ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME]);
+    ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
   }
 
   // Check if this is a talking color (white text, etc.)

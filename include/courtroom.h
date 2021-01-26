@@ -604,7 +604,7 @@ private:
 
   QWidget *ui_viewport;
   BackgroundLayer *ui_vp_background;
-  ForegroundLayer *ui_vp_speedlines;
+  SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
   CharLayer *ui_vp_sideplayer_char;
   BackgroundLayer *ui_vp_desk;

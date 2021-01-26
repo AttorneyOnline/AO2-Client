@@ -129,14 +129,6 @@ public:
   void load_image(QString p_filename);
 };
 
-class ForegroundLayer : public AOLayer {
-  Q_OBJECT
-public:
-  ForegroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
-  QString miscname; //'misc' folder to search. we fetch this based on p_charname below
-  void load_image(QString p_filename, QString p_charname);
-};
-
 class CharLayer : public AOLayer {
   Q_OBJECT
 public:

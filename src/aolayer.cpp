@@ -28,10 +28,6 @@ BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
-ForegroundLayer::ForegroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
-{
-}
 CharLayer::CharLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
@@ -48,7 +44,6 @@ InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
-
 StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
@@ -133,27 +128,6 @@ void BackgroundLayer::load_image(QString p_filename)
   stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
   start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename)));
-}
-
-void ForegroundLayer::load_image(QString p_filename, QString p_charname)
-{
-  play_once = false;
-  cull_image = false;
-  miscname = ao_app->get_char_shouts(p_charname);
-  qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, p_filename)), // first check the character folder
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + miscname + "/" +
-          p_filename)), // then check our theme's misc directory
-      ao_app->get_image_suffix(ao_app->get_misc_path(
-          miscname, p_filename)), // then check our global misc folder
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path(p_filename)), // then check the user's theme
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          p_filename))}; // and finally check the default theme
-  start_playback(find_image(pathlist));
 }
 
 void CharLayer::load_image(QString p_filename, QString p_charname,
