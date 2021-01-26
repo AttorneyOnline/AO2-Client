@@ -67,7 +67,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
-  ui_vp_testimony = new InterfaceLayer(this, ao_app);
+  ui_vp_testimony = new ForegroundLayer(this, ao_app);
   ui_vp_testimony->set_play_once(false);
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_wtce = new InterjectionLayer(this, ao_app);
@@ -115,6 +115,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_display = new InterfaceLayer(this, ao_app);
   ui_music_display->set_play_once(false);
+  ui_music_display->transform_mode = Qt::SmoothTransformation;
   ui_music_display->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_music_name = new ScrollText(ui_music_display);
@@ -1983,6 +1984,7 @@ void Courtroom::chatmessage_dequeue()
     QString f_char = m_chatmessage[CHAR_NAME];
     f_custom_theme = ao_app->get_chat(f_char);
   }
+  ui_vp_chat_arrow->transform_mode = ao_app->get_misc_scaling(f_custom_theme);
   ui_vp_chat_arrow->load_image("chat_arrow", f_custom_theme);
 
   // Nothing to parse in the queue
@@ -3290,6 +3292,7 @@ void Courtroom::chat_tick()
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
     }
+    ui_vp_chat_arrow->transform_mode = ao_app->get_misc_scaling(f_custom_theme);
     ui_vp_chat_arrow->load_image("chat_arrow",f_custom_theme); // Chat stopped being processed, indicate that.
     additive_previous =
         additive_previous +
@@ -3744,6 +3747,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 void Courtroom::handle_wtce(QString p_wtce, int variant)
 {
   QString sfx_file = "courtroom_sounds.ini";
+  QString bg_misc = ao_app->read_design_ini("misc", ao_app->get_background_path("design.ini"));
   QString sfx_name;
   QString filename;
   ui_vp_wtce->set_static_duration(wtce_static_time);
@@ -3774,7 +3778,6 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       ui_vp_testimony->stop();
     }
   }
-  QString bg_misc = ao_app->read_design_ini("misc", ao_app->get_background_path("design.ini"));
   sfx_player->play(ao_app->get_sfx(sfx_name, bg_misc));
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);

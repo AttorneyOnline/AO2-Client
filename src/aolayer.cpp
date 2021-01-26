@@ -269,7 +269,7 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
-  transform_mode = ao_app->get_misc_scaling(p_miscname);
+  stretch = true;
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
           "misc/" + p_miscname + "/" +
