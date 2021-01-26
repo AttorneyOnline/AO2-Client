@@ -65,6 +65,16 @@ QString AOApplication::get_character_path(QString p_char, QString p_file)
   return get_case_sensitive_path(path);
 }
 
+QString AOApplication::get_misc_path(QString p_misc, QString p_file)
+{
+  QString path = get_base_path() + "misc/" + p_misc + "/" + p_file;
+#ifndef CASE_SENSITIVE_FILESYSTEM
+  return path;
+#else
+  return get_case_sensitive_path(path);
+#endif
+}
+
 QString AOApplication::get_sounds_path(QString p_file)
 {
   QString path = get_base_path() + "sounds/general/" + p_file;

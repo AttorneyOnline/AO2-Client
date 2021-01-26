@@ -12,11 +12,13 @@ public:
 
   QString get_header() { return m_header; }
   QStringList &get_contents() { return m_contents; }
-  QString to_string();
+  QString to_string(bool encoded = false);
 
   void net_encode();
   void net_decode();
 
+  static void escape(QStringList &contents);
+  static void unescape(QStringList &contents);
 private:
 
   QString m_header;

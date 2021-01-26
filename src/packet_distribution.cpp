@@ -8,9 +8,12 @@
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
-  p_packet->net_decode();
-
   QString header = p_packet->get_header();
+
+  // Some packets need to handle decode/encode separately
+  if (header != "SC") {
+    p_packet->net_decode();
+  }
   QStringList f_contents = p_packet->get_contents();
 
 #ifdef DEBUG_NETWORK
@@ -102,6 +105,19 @@ end:
   delete p_packet;
 }
 
+void AOApplication::append_to_demofile(QString packet_string)
+{
+    if (get_auto_logging_enabled() && !log_filename.isEmpty())
+    {
+        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
+        append_to_file(packet_string, path, true);
+        if (!demo_timer.isValid())
+            demo_timer.start();
+        else
+            append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
+    }
+}
+
 void AOApplication::server_packet_received(AOPacket *p_packet)
 {
   p_packet->net_decode();
@@ -164,6 +180,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       else
         w_courtroom->append_server_chatmessage(f_contents.at(0),
                                                f_contents.at(1), "0");
+
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "FL") {
@@ -180,6 +198,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     looping_sfx_support_enabled = false;
     additive_enabled = false;
     effects_enabled = false;
+    expanded_desk_mods_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -208,6 +227,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       effects_enabled = true;
     if (f_packet.contains("y_offset", Qt::CaseInsensitive))
         y_offset_enabled = true;
+    if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
+      expanded_desk_mods_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
@@ -229,7 +250,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     evidence_list_size = f_contents.at(1).toInt();
     music_list_size = f_contents.at(2).toInt();
 
-    if (char_list_size < 1 || evidence_list_size < 0 || music_list_size < 0)
+    if (char_list_size < 0 || evidence_list_size < 0 || music_list_size < 0)
       goto end;
 
     loaded_chars = 0;
@@ -242,7 +263,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    QString window_title = tr("Attorney Online 2");
+    window_title = tr("Attorney Online 2");
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -252,7 +273,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        qDebug() << server_address;
         window_title += ": " + server_name;
       }
     }
@@ -262,7 +282,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        qDebug() << server_address;
         window_title += ": " + server_name;
       }
     }
@@ -280,15 +299,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_auto_logging_enabled()) {
+    if (AOApplication::get_auto_logging_enabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
-          "/'ddd MMMM yyyy hh.mm.ss t'.log'");
+          "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name + " on address " +
                               server_address + " on " +
                               QDateTime::currentDateTime().toUTC().toString(),
                           log_filename, true);
     }
+    else
+      this->log_filename = "";
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
@@ -309,11 +330,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
 
   else if (header == "SC") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       QStringList sub_elements = f_contents.at(n_element).split("&");
+
+      AOPacket::unescape(sub_elements);
 
       char_type f_char;
       f_char.name = sub_elements.at(0);
@@ -341,9 +364,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     send_server_packet(new AOPacket("RM#%"));
+    append_to_demofile(p_packet->to_string(true));
   }
   else if (header == "SM") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
     bool musics_time = false;
@@ -410,9 +434,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     w_courtroom->clear_areas();
+    w_courtroom->arup_clear();
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       w_courtroom->append_area(f_contents.at(n_element));
+      w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
     }
 
     w_courtroom->list_areas();
@@ -440,6 +466,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           2) // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
       w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "SP") {
@@ -449,6 +476,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed) // We were sent a "set position" packet
     {
       w_courtroom->set_side(f_contents.at(0));
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "SD") // Send pos dropdown
@@ -470,27 +498,37 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
-      w_courtroom->handle_chatmessage(&p_packet->get_contents());
+    {
+      w_courtroom->chatmessage_enqueue(p_packet->get_contents());
+      append_to_demofile(p_packet->to_string(true));
+    }
   }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)
+    {
       w_courtroom->handle_song(&p_packet->get_contents());
+      append_to_demofile(p_packet->to_string(true));
+    }
   }
   else if (header == "RT") {
     if (f_contents.size() < 1)
       goto end;
     if (courtroom_constructed) {
-      if (f_contents.size() == 1)
-        w_courtroom->handle_wtce(f_contents.at(0), 0);
-      else if (f_contents.size() == 2) {
-        w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
+        if (f_contents.size() == 1)
+          w_courtroom->handle_wtce(f_contents.at(0), 0);
+        else if (f_contents.size() == 2) {
+          w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
+        append_to_demofile(p_packet->to_string(true));
       }
     }
   }
   else if (header == "HP") {
     if (courtroom_constructed && f_contents.size() > 1)
+    {
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
+      append_to_demofile(p_packet->to_string(true));
+    }
   }
   else if (header == "LE") {
     if (courtroom_constructed) {
@@ -570,6 +608,60 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                f_contents.at(2) == "1", f_contents.at(3) == "1",
                                f_contents.at(4) == "1",
                                f_contents.at(5) == "1");
+  }
+  else if (header == "TI") { // Timer packet
+    if (!courtroom_constructed || f_contents.size() < 2)
+      goto end;
+
+    // Timer ID is reserved as argument 0
+    int id = f_contents.at(0).toInt();
+
+    // Type 0 = start/resume/sync timer at time
+    // Type 1 = pause timer at time
+    // Type 2 = show timer
+    // Type 3 = hide timer
+    int type = f_contents.at(1).toInt();
+
+    if (type == 0 || type == 1)
+    {
+      if (f_contents.size() < 2)
+        goto end;
+
+      // The time as displayed on the clock, in milliseconds.
+      // If the number received is negative, stop the timer.
+      qint64 timer_value = f_contents.at(2).toLongLong();
+      qDebug() << "timer:" << timer_value;
+      if (timer_value > 0)
+      {
+        if (type == 0)
+        {
+          timer_value -= latency / 2;
+          w_courtroom->start_clock(id, timer_value);
+        }
+        else
+        {
+          w_courtroom->pause_clock(id);
+          w_courtroom->set_clock(id, timer_value);
+        }
+      }
+      else
+      {
+        w_courtroom->stop_clock(id);
+      }
+    }
+    else if (type == 2)
+      w_courtroom->set_clock_visibility(id, true);
+    else if (type == 3)
+      w_courtroom->set_clock_visibility(id, false);
+  }
+  else if (header == "CHECK") {
+    if (!courtroom_constructed)
+      goto end;
+
+    qint64 ping_time = w_courtroom->pong();
+    qDebug() << "ping:" << ping_time;
+    if (ping_time != -1)
+      latency = ping_time;
   }
 
 end:

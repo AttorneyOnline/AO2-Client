@@ -5,17 +5,16 @@
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
-#include "aocharmovie.h"
+#include "aoclocklabel.h"
 #include "aoemotebutton.h"
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
+#include "aolayer.h"
 #include "aolineedit.h"
-#include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
-#include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
 #include "aotextedit.h"
@@ -41,6 +40,7 @@
 #include <QTextBrowser>
 #include <QTreeWidget>
 #include <QVector>
+#include <QQueue>
 
 #include <QBrush>
 #include <QDebug>
@@ -56,7 +56,7 @@
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
-//#include <QRandomGenerator>
+#include <QElapsedTimer>
 
 #include <algorithm>
 #include <stack>
@@ -90,6 +90,13 @@ public:
     arup_statuses.append(status);
     arup_cms.append(cm);
     arup_locks.append(locked);
+  }
+
+  void arup_clear() {
+    arup_players.clear();
+    arup_statuses.clear();
+    arup_cms.clear();
+    arup_locks.clear();
   }
 
   void arup_modify(int type, int place, QString value)
@@ -143,6 +150,9 @@ public:
   // reads theme inis and sets size and pos based on the identifier
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
+  // reads theme and char inis and sets size and pos based on the identifier
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_char);
+
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
 
@@ -174,6 +184,9 @@ public:
 
   // sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
+
+  // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
+  void set_self_offset(QString p_list);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -207,19 +220,56 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
-  // these functions handle chatmessages sequentially.
-  // The process itself is very convoluted and merits separate documentation
-  // But the general idea is objection animation->pre animation->talking->idle
-  void handle_chatmessage(QStringList *p_contents);
-  void handle_chatmessage_2();
-  void handle_chatmessage_3();
+  // Add the message packet to the stack
+  void chatmessage_enqueue(QStringList p_contents);
+
+  // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
+  void unpack_chatmessage(QStringList p_contents);
+
+  enum LogMode {
+    IO_ONLY,
+    DISPLAY_ONLY,
+    DISPLAY_AND_IO
+  };
+  // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0, LogMode f_log_mode=IO_ONLY);
+
+  // Log the message contents and information such as evidence presenting etc. into the IC logs
+  void handle_callwords();
+
+  // Handle the objection logic, if it's interrupting the currently parsing message.
+  // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
+  bool handle_objection();
+
+  // Display the evidence image box when presenting evidence in IC
+  void display_evidence_image();
+
+  // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
+  void handle_ic_message();
+  
+  // Display the character.
+  void display_character();
+
+  // Display the character's pair if present.
+  void display_pair_character(QString other_charid, QString other_offset);
+
+  // Handle the emote modifier value and proceed through the logic accordingly.
+  void handle_emote_mod(int emote_mod, bool p_immediate);
+
+  // Initialize the chatbox image, showname shenanigans, custom chatboxes, etc.
+  void initialize_chatbox();
+
+  // Finally start displaying the chatbox we initialized, display the evidence, and play the talking or idle emote for the character.
+  // Callwords are also handled here.
+  void handle_ic_speaking();
 
   // This function filters out the common CC inline text trickery, for appending
   // to the IC chatlog.
   QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1,
                          int default_color = 0);
 
-  void log_ic_text(QString p_name, QString p_showname, QString p_message, QString p_action="", int p_color=0);
+  void log_ic_text(QString p_name, QString p_showname, QString p_message,
+                   QString p_action = "", int p_color = 0);
 
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
@@ -233,7 +283,7 @@ public:
   // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
-  void play_preanim(bool noninterrupting);
+  void play_preanim(bool immediate);
 
   // plays the witness testimony or cross examination animation based on
   // argument
@@ -251,8 +301,18 @@ public:
 
   void check_connection_received();
 
-  ~Courtroom();
+  void start_clock(int id);
+  void start_clock(int id, qint64 msecs);
+  void set_clock(int id, qint64 msecs);
+  void pause_clock(int id);
+  void stop_clock(int id);
+  void set_clock_visibility(int id, bool visible);
 
+  qint64 pong();
+  // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
+  void truncate_label_text(QWidget* p_widget, QString p_identifier);
+
+  ~Courtroom();
 private:
   AOApplication *ao_app;
 
@@ -301,12 +361,20 @@ private:
   QVector<QString> arup_locks;
 
   QVector<chatlogpiece> ic_chatlog_history;
+  QString last_ic_message = "";
 
-  // triggers ping_server() every 60 seconds
+  QQueue<QStringList> chatmessage_queue;
+
+  // triggers ping_server() every 45 seconds
   QTimer *keepalive_timer;
 
   // determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
+
+  // count up timer to check how long it took for us to get a response from ping_server()
+  QElapsedTimer ping_timer;
+  bool is_pinging = false;
+
   // int chat_tick_interval = 60;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
@@ -329,8 +397,12 @@ private:
   // True, if log should display colors.
   bool log_colors = true;
 
-  // True, if the log should display the message like name<br>text instead of name: text
+  // True, if the log should display the message like name<br>text instead of
+  // name: text
   bool log_newline = false;
+
+  // True, if the log should include RP actions like interjections, showing evidence, etc.
+  bool log_ic_actions = true;
 
   // Margin in pixels between log entries for the IC log.
   int log_margin = 0;
@@ -338,8 +410,14 @@ private:
   // True, if the log should have a timestamp.
   bool log_timestamp = false;
 
+  // How long in miliseconds should the objection wait before appearing.
+  int objection_threshold = 1500;
+
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
+  
+  // delay before the next queue entry is going to be processed
+  QTimer *text_queue_timer;
 
   // delay before sfx plays
   QTimer *sfx_delay_timer;
@@ -348,16 +426,21 @@ private:
   const int time_mod = 40;
 
   // the amount of time non-animated objection/hold it/takethat images stay
-  // onscreen for in ms
-  const int shout_stay_time = 724;
+  // onscreen for in ms, and the maximum amount of time any interjections are
+  // allowed to play
+  const int shout_static_time = 724;
+  const int shout_max_time = 1500;
 
   // the amount of time non-animated guilty/not guilty images stay onscreen for
-  // in ms
-  const int verdict_stay_time = 3000;
+  // in ms, and the maximum amount of time g/ng images are allowed to play
+  const int verdict_static_time = 3000;
+  const int verdict_max_time = 4000;
 
   // the amount of time non-animated witness testimony/cross-examination images
-  // stay onscreen for in ms
-  const int wtce_stay_time = 1500;
+  // stay onscreen for in ms, and the maximum time any wt/ce image is allowed to
+  // play
+  const int wtce_static_time = 1500;
+  const int wtce_max_time = 4000;
 
   // characters we consider punctuation
   const QString punctuation_chars = ".,?!:;";
@@ -381,7 +464,7 @@ private:
   bool is_muted = false;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
-  // noniterrupting preanim
+  // noniterrupting preanim, 5 = (c) animation
   int anim_state = 3;
 
   // whether or not current color is a talking one
@@ -398,6 +481,11 @@ private:
 
   int objection_state = 0;
   QString objection_custom = "";
+  struct CustomObjection {
+    QString name;
+    QString filename;
+  };
+  QList<CustomObjection> custom_objections_list;
   int realization_state = 0;
   int screenshake_state = 0;
   int text_color = 0;
@@ -411,6 +499,17 @@ private:
 
   // List of associated RGB colors for this color index
   QVector<QColor> color_rgb_list;
+
+  // Same as above but populated from misc/default's config
+  QVector<QColor> default_color_rgb_list;
+
+  // Get a color index from an arbitrary misc config
+  void gen_char_rgb_list(QString p_char);
+  QVector<QColor> char_color_rgb_list;
+
+  // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
+  QString current_misc;
+  QString last_misc;
 
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
@@ -428,8 +527,15 @@ private:
   // List of all currently available pos
   QStringList pos_dropdown_list;
 
+  // Current list file sorted line by line
+  QStringList sound_list;
+
+  // Current SFX the user put in for the sfx dropdown list
+  QString custom_sfx = "";
+
   // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+  bool c_played = false; // whether we've played a (c)-style postanimation yet
 
   // have we already presented evidence for this message?
   bool evidence_presented = false;
@@ -497,21 +603,20 @@ private:
   AOImage *ui_background;
 
   QWidget *ui_viewport;
-  AOScene *ui_vp_background;
-  AOMovie *ui_vp_speedlines;
-  AOCharMovie *ui_vp_player_char;
-  AOCharMovie *ui_vp_sideplayer_char;
-  AOScene *ui_vp_desk;
-  AOScene *ui_vp_legacy_desk;
+  BackgroundLayer *ui_vp_background;
+  ForegroundLayer *ui_vp_speedlines;
+  CharLayer *ui_vp_player_char;
+  CharLayer *ui_vp_sideplayer_char;
+  BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
-  AOMovie *ui_vp_chat_arrow;
+  InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOMovie *ui_vp_effect;
-  AOMovie *ui_vp_testimony;
-  AOMovie *ui_vp_wtce;
-  AOMovie *ui_vp_objection;
+  InterfaceLayer *ui_vp_testimony;
+  InterjectionLayer *ui_vp_wtce;
+  EffectLayer *ui_vp_effect;
+  InterjectionLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -523,7 +628,12 @@ private:
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
-  AOMovie *ui_music_display;
+  InterfaceLayer *ui_music_display;
+
+  StickerLayer *ui_vp_sticker;
+
+  static const int max_clocks = 5;
+  AOClockLabel *ui_clock[max_clocks];
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
@@ -588,7 +698,7 @@ private:
   QCheckBox *ui_guard;
   QCheckBox *ui_casing;
 
-  QCheckBox *ui_pre_non_interrupt;
+  QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
   AOButton *ui_custom_objection;
@@ -633,6 +743,9 @@ private:
 
   AOImage *ui_char_select_background;
 
+  // pretty list of characters
+  QTreeWidget *ui_char_list;
+
   // abstract widget to hold char buttons
   QWidget *ui_char_buttons;
 
@@ -669,12 +782,12 @@ private:
   void refresh_evidence();
   void set_evidence_page();
 
-  void reset_ic();
   void reset_ui();
 
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
+  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
@@ -730,6 +843,7 @@ private slots:
   void on_iniswap_remove_clicked();
 
   void on_sfx_dropdown_changed(int p_index);
+  void on_sfx_dropdown_custom(QString p_sfx);
   void set_sfx_dropdown();
   void on_sfx_context_menu_requested(const QPoint &pos);
   void on_sfx_edit_requested();
@@ -826,6 +940,7 @@ private slots:
 
   void on_back_to_lobby_clicked();
 
+  void on_char_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
   void on_char_search_changed();
@@ -839,6 +954,9 @@ private slots:
   void on_casing_clicked();
 
   void ping_server();
+
+  // Proceed to parse the oldest chatmessage and remove it from the stack
+  void chatmessage_dequeue();
 };
 
 #endif // COURTROOM_H

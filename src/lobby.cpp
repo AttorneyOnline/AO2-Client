@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aosfxplayer.h"
 #include "debug_functions.h"
+#include "demoserver.h"
 #include "networkmanager.h"
 
 #include <QImageReader>
@@ -28,6 +29,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list = new QTreeWidget(this);
   ui_server_list->setHeaderLabels({"#", "Name"}); //, "Players"});
   ui_server_list->hideColumn(0);
+  ui_server_list->setHeaderHidden(true);
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);
@@ -283,7 +285,10 @@ QString Lobby::get_chatlog()
 
 int Lobby::get_selected_server()
 {
-  return ui_server_list->currentItem()->text(0).toInt();
+  if (auto item = ui_server_list->currentItem()) {
+    return item->text(0).toInt();
+  }
+  return -1;
 }
 
 void Lobby::set_loading_value(int p_value)
@@ -333,12 +338,12 @@ void Lobby::on_add_to_fav_pressed()
 void Lobby::on_add_to_fav_released()
 {
   ui_add_to_fav->set_image("addtofav");
-
-  // you cant add favorites from favorites m8
-  if (!public_servers_selected)
-    return;
-
-  ao_app->add_favorite_server(get_selected_server());
+  if (public_servers_selected) {
+    int selection = get_selected_server();
+    if (selection > -1) {
+      ao_app->add_favorite_server(selection);
+    }
+  }
 }
 
 void Lobby::on_connect_pressed() { ui_connect->set_image("connect_pressed"); }
@@ -360,20 +365,23 @@ void Lobby::on_about_clicked()
 
   QString msg =
       tr("<h2>Attorney Online %1</h2>"
-         "The courtroom drama simulator"
+         "The courtroom drama simulator."
          "<p><b>Source code:</b> "
          "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
          "https://github.com/AttorneyOnline/AO2-Client</a>"
          "<p><b>Major development:</b><br>"
          "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
-         "Crystalwarrior, Iamgoofball"
+         "Crystalwarrior, Iamgoofball, in1tiate"
          "<p><b>Client development:</b><br>"
-         "Cents02, in1tiate, raidensnake, windrammer"
+         "Cents02, windrammer, skyedeving"
          "<p><b>QA testing:</b><br>"
          "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
          "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
          "Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, "
          "Veritas, Wiso"
+         "<p><b>Translations:</b><br>"
+         "k-emiko (Русский), Pyraq (Polski), scatterflower (日本語), vintprox (Русский), "
+         "windrammer (Español, Português)"
          "<p><b>Special thanks:</b><br>"
          "CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); "
          "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
@@ -383,7 +391,7 @@ void Lobby::on_about_clicked()
          "server hosts, game masters, case makers, content creators, "
          "and the whole AO2 community!"
          "<p>The Attorney Online networked visual novel project "
-         "is copyright (c) 2016-2020 Attorney Online developers. Open-source "
+         "is copyright (c) 2016-2021 Attorney Online developers. Open-source "
          "licenses apply. All other assets are the property of their "
          "respective owners."
          "<p>Running on Qt version %2 with the BASS audio engine.<br>"
@@ -435,7 +443,15 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
     ui_connect->setEnabled(false);
 
-    ao_app->net_manager->connect_to_server(f_server);
+    if (f_server.port == 99999 && f_server.ip == "127.0.0.1") {
+        // Demo playback server selected
+        ao_app->demo_server->start_server();
+        server_type demo_server;
+        demo_server.ip = "127.0.0.1";
+        demo_server.port = ao_app->demo_server->port;
+        ao_app->net_manager->connect_to_server(demo_server);
+    }
+    else ao_app->net_manager->connect_to_server(f_server);
   }
 }
 
