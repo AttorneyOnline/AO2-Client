@@ -191,10 +191,10 @@ signals:
   void play_sfx(QString sfx);
 };
 
-class InterjectionLayer : public AOLayer {
+class SplashLayer : public AOLayer {
   Q_OBJECT
 public:
-  InterjectionLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  SplashLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, QString p_charname, QString p_miscname);
 };
 

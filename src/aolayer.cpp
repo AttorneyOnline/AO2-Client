@@ -40,7 +40,7 @@ EffectLayer::EffectLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
-InterjectionLayer::InterjectionLayer(QWidget *p_parent, AOApplication *p_ao_app)
+SplashLayer::SplashLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
@@ -219,7 +219,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   this->start_playback(find_image(pathlist));
 }
 
-void InterjectionLayer::load_image(QString p_filename, QString p_charname,
+void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
   continuous = false;
