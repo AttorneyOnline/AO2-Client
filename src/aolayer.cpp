@@ -224,7 +224,6 @@ void InterjectionLayer::load_image(QString p_filename, QString p_charname,
 {
   continuous = false;
   force_continuous = true;
-  play_once = true;
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(

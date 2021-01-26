@@ -67,13 +67,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
-  ui_vp_testimony = new ForegroundLayer(this, ao_app);
+  ui_vp_testimony = new InterjectionLayer(this, ao_app);
   ui_vp_testimony->set_play_once(false);
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_wtce = new InterjectionLayer(this, ao_app);
   ui_vp_wtce->set_play_once(true);
   ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_objection = new InterjectionLayer(this, ao_app);
+  ui_vp_objection->set_play_once(true);
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_ic_chatlog = new QTextEdit(this);
@@ -3756,7 +3757,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   if (p_wtce == "testimony1") {
     sfx_name = "witness_testimony";
     filename = "witnesstestimony";
-    ui_vp_testimony->load_image("testimony", "");
+    ui_vp_testimony->load_image("testimony", "", bg_misc);
   }
   // cross examination
   else if (p_wtce == "testimony2") {
