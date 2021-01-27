@@ -47,7 +47,6 @@ jobs:
       uses: jurplel/install-qt-action@v2
       with:
         version: '5.15.2'
-        arch: win64_msvc2019_64
         cached: ${{steps.cache-qt.outputs.cache-hit}}
 
     - name: Create Build Environment
