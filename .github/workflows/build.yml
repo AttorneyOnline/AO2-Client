@@ -71,7 +71,7 @@ jobs:
     - name: Deploy
       working-directory: ${{github.workspace}}/build/Release
       shell: bash
-      run: windeployqt . && ls build
+      run: windeployqt .
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
