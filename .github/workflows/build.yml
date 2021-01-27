@@ -20,15 +20,15 @@ jobs:
       uses: actions/cache@v1
       id: cache
       with:
-        path: qt/5.15.2/msvc2019_64
-        key: qt-5.15.2-msvc2019_64
+        path: qt/5.15.0/msvc2019_64
+        key: qt-5.15.0-msvc2019_64
         
     - uses: Skycoder42/action-setup-qt@master
       id: qt
       with:
-        version: 5.15.2
+        version: 5.15.0
         platform: msvc2019_64
-        cachedir: qt/5.15.2/msvc2019_64
+        cachedir: qt/5.15.0/msvc2019_64
 
     - name: qmake
       run: |
@@ -40,7 +40,6 @@ jobs:
       with:
         name: Attorney_Online
         path: ${{github.workspace}}/bin/Attorney_Online
-
 
   # linux:
   #   # The CMake configure and build commands are platform agnostic and should work equally
