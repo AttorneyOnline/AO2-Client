@@ -71,7 +71,7 @@ jobs:
     - name: Deploy
       working-directory: ${{github.workspace}}/build
       shell: bash
-      run: windeployqt Attorney_Online && ls build
+      run: windeployqt Attorney_Online.exe && ls build
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
