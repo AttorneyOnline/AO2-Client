@@ -72,9 +72,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_wtce = new SplashLayer(this, ao_app);
   ui_vp_wtce->set_play_once(true);
+  ui_vp_wtce->continuous = false;
+  ui_vp_wtce->force_continuous = true;
   ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_objection = new SplashLayer(this, ao_app);
   ui_vp_objection->set_play_once(true);
+  ui_vp_objection->continuous = false;
+  ui_vp_objection->force_continuous = true;
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_ic_chatlog = new QTextEdit(this);
