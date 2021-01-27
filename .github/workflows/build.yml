@@ -35,14 +35,12 @@ jobs:
         # BASS
         curl http://www.un4seen.com/files/bass24.zip -o bass.zip
         unzip bass.zip
-        cp ./c/bass.lib ./lib
-        cp ./x64/bass.dll ./lib
+        cp ./c/x64/bass.lib ./lib
 
         # BASS Opus
         curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
         unzip bassopus.zip
-        cp ./c/bassopus.lib ./lib
-        cp ./x64/bassopus.dll ./lib
+        cp ./c/x64/bassopus.lib ./lib
 
     - name: Cache Qt
       id: cache-qt
