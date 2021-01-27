@@ -16,6 +16,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install catch2
+      shell: bash
+      run: |
+        curl -L https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz -o catch2.tar.gz
+        tar xvf catch2.tar.gz
+        cd Catch2-2.13.4
+        cmake -Bbuild -H. -DBUILD_TESTING=OFF
+        sudo cmake --build build/ --target install
+
     - name: Download BASS
       run: |
         mkdir bass
