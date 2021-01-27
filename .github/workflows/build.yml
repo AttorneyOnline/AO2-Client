@@ -73,9 +73,9 @@ jobs:
       shell: bash
       run: |
         windeployqt .
-        cp ${{github.workspace}}/discord-rpc/win64-dynamic/bin/discord-rpc.dll .
-        cp ${{github.workspace}}/x64/bass.dll .
-        cp ${{github.workspace}}/x64/bassopus.dll .
+        cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
+        cp ../../x64/bass.dll .
+        cp ../../x64/bassopus.dll .
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
