@@ -30,19 +30,17 @@ jobs:
         # discord-rpc
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
         unzip discord_rpc_win.zip
-        cp discord-rpc/win32-static/lib/discord-rpc.lib ../lib
+        cp ./discord-rpc/win64-static/lib/discord-rpc.lib ./lib
 
         # BASS
-        mkdir bass
-        cd bass
         curl http://www.un4seen.com/files/bass24.zip -o bass.zip
         unzip bass.zip
-        cp ./c/bass.lib ../lib
+        cp ./c/bass.lib ./lib
 
         # BASS Opus
         curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
         unzip bassopus.zip
-        cp ./c/bassopus.lib ../lib
+        cp ./c/bassopus.lib ./lib
 
     - name: Cache Qt
       id: cache-qt
@@ -62,9 +60,6 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      env:
-        CC: gcc-10
-        CXX: g++-10
       working-directory: ${{github.workspace}}/build
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
