@@ -15,20 +15,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      
-    - name: actions/cache qt
-      uses: actions/cache@v1
-      id: cache
-      with:
-        path: qt/5.15.0/msvc2019_64
-        key: qt-5.15.0-msvc2019_64
         
     - uses: Skycoder42/action-setup-qt@master
       id: qt
       with:
         version: 5.15.0
         platform: msvc2019_64
-        cachedir: qt/5.15.0/msvc2019_64
 
     - name: qmake
       run: |
