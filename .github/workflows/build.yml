@@ -16,18 +16,37 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v1
-        
-    - uses: Skycoder42/action-setup-qt@master
-      id: qt
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1
       with:
-        version: 5.15.0
-        platform: msvc2019_64
+        path: ${{ github.workspace }}/qt5
+        key: ${{ runner.os }}-qt5
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        dir: '${{ github.workspace }}/qt5/'
+        install-deps: 'true'
+        modules: ''
+        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        setup-python: 'true'
+        tools: ''
+        set-env: 'false'
+        tools-only: 'false'
+        aqtversion: '==0.11.1'
+        py7zrversion: '==0.11.3'
+        extra: '--external 7z'
 
     - name: qmake
       run: |
-        qmake CONFIG+=install_ok QT_PLATFORM=msvc2019_64
-        ${{steps.qt.outputs.make}} qmake_all
+        Invoke-BatchFile "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        qmake
+        nmake
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
