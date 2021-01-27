@@ -42,13 +42,12 @@ jobs:
         py7zrversion: '==0.11.3'
         extra: '--external 7z'
 
+    - name: Install compiler
+      uses: ilammy/msvc-dev-cmd@v1
+
     - name: qmake
-      shell: cmd
       run: |
-        call "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        qmake -v
         qmake
-        set CL=/MP
         nmake
 
     - name: Upload Artifact
