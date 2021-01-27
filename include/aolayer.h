@@ -45,6 +45,11 @@ public:
   bool play_once = false; // Whether to loop this animation or not
   bool cull_image = true; // if we're done playing this animation, should we
                           // hide it? also controls durational culling
+  // Are we loading this from the same frame we left off on? 
+  bool continuous = false;
+  // Whether or not to forcibly bypass the simple check done by start_playback
+  // and use the existent value of continuous instead
+  bool force_continuous = false;
   Qt::TransformationMode transform_mode = Qt::FastTransformation; // transformation mode to use for this image
   bool stretch = false; // Should we stretch/squash this image to fill the screen?
 
@@ -112,12 +117,6 @@ protected:
   int speed = 100;
 
   bool m_flipped = false;
-  // Are we loading this from the same frame we left off on? TODO: actually make
-  // this work
-  bool continuous = false;
-  // Whether or not to forcibly bypass the simple check done by start_playback
-  // and use the existent value of continuous instead
-  bool force_continuous = false;
 
   int duration = 0;
 

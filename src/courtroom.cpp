@@ -2584,18 +2584,16 @@ void Courtroom::initialize_chatbox()
 
     // This should probably be called only if any change from the last chat
     // arrow was actually detected.
-    if (current_misc != last_misc) {
-      pos_size_type design_ini_result = ao_app->get_element_dimensions(
-          "chat_arrow", "courtroom_design.ini", customchar);
-      if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-        qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
-        ui_vp_chat_arrow->hide();
-      }
-      else {
-        ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
-        ui_vp_chat_arrow->combo_resize(design_ini_result.width,
-                                       design_ini_result.height);
-      }
+    pos_size_type design_ini_result = ao_app->get_element_dimensions(
+        "chat_arrow", "courtroom_design.ini", customchar);
+    if (design_ini_result.width < 0 || design_ini_result.height < 0) {
+      qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+      ui_vp_chat_arrow->hide();
+    }
+    else {
+      ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
+      ui_vp_chat_arrow->combo_resize(design_ini_result.width,
+                                      design_ini_result.height);
     }
 
     pos_size_type default_width = ao_app->get_element_dimensions(
@@ -3298,7 +3296,7 @@ void Courtroom::chat_tick()
       f_custom_theme = ao_app->get_chat(f_char);
     }
     ui_vp_chat_arrow->transform_mode = ao_app->get_misc_scaling(f_custom_theme);
-    ui_vp_chat_arrow->load_image("chat_arrow",f_custom_theme); // Chat stopped being processed, indicate that.
+    ui_vp_chat_arrow->load_image("chat_arrow", f_custom_theme); // Chat stopped being processed, indicate that.
     additive_previous =
         additive_previous +
         filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
