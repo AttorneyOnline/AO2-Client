@@ -52,6 +52,12 @@ int AOApplication::stay_time()
   return result;
 }
 
+int AOApplication::get_text_scrawl()
+{
+  int result = configini->value("text_scrawl", 40).toInt();
+  return result;
+}
+
 int AOApplication::get_chat_ratelimit()
 {
   int result = configini->value("chat_ratelimit", 300).toInt();

@@ -219,6 +219,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_instant_objection_cb);
 
   row += 1;
+  ui_text_scrawl_lbl = new QLabel(ui_form_layout_widget);
+  ui_text_scrawl_lbl->setText(tr("Text Scrawl:"));
+  ui_text_scrawl_lbl->setToolTip(tr(
+      "Amount of time spent on each letter when the in-character text is being displayed."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_text_scrawl_lbl);
+
+  ui_text_scrawl_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_text_scrawl_spinbox->setMaximum(500);
+  ui_text_scrawl_spinbox->setValue(p_ao_app->get_text_scrawl());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_text_scrawl_spinbox);
+
+  row += 1;
   ui_chat_ratelimit_lbl = new QLabel(ui_form_layout_widget);
   ui_chat_ratelimit_lbl->setText(tr("Chat Rate Limit:"));
   ui_chat_ratelimit_lbl->setToolTip(tr(
@@ -231,6 +245,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_chat_ratelimit_spinbox->setValue(p_ao_app->get_chat_ratelimit());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_chat_ratelimit_spinbox);
+
   row += 1;
   ui_log_names_divider = new QFrame(ui_form_layout_widget);
   ui_log_names_divider->setFrameShape(QFrame::HLine);
@@ -837,6 +852,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
   configini->setValue("stay_time", ui_stay_time_spinbox->value());
   configini->setValue("instant_objection", ui_instant_objection_cb->isChecked());
+  configini->setValue("text_scrawl", ui_text_scrawl_spinbox->value());
   configini->setValue("chat_ratelimit", ui_chat_ratelimit_spinbox->value());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
