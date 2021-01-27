@@ -16,6 +16,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Grab bass
+      run: |
+        mkdir bass
+        cd bass
+        curl http://www.un4seen.com/files/bass24.zip -o bass.zip
+        unzip bass.zip
+        cp bass.dll ../lib
+        curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp bassopus.dll ../lib
+
     - name: Cache Qt
       id: cache-qt
       uses: actions/cache@v1
