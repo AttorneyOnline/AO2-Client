@@ -467,9 +467,6 @@ void Courtroom::set_pair_list()
 
 void Courtroom::set_widgets()
 {
-  blip_rate = ao_app->read_blip_rate();
-  blank_blip = ao_app->get_blank_blip();
-
   QString filename = "courtroom_design.ini";
 
   pos_size_type f_courtroom =
@@ -3232,6 +3229,8 @@ void Courtroom::start_chat_ticking()
   tick_pos = 0;
   blip_ticker = 0;
   text_scrawl = ao_app->get_text_scrawl();
+  blip_rate = ao_app->read_blip_rate();
+  blank_blip = ao_app->get_blank_blip();
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
