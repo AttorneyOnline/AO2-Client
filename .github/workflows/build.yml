@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install catch2
+    - name: Install Catch2
       shell: bash
       run: |
         curl -L https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz -o catch2.tar.gz
@@ -30,7 +30,7 @@ jobs:
         # discord-rpc
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
         unzip discord_rpc_win.zip
-        cp discord-rpc/win64-static/lib/discord-rpc.lib ../lib
+        cp discord-rpc/win64-dynamic/lib/discord-rpc.lib ../lib
 
         # BASS
         mkdir bass
