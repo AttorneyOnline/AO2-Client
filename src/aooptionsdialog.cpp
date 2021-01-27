@@ -8,18 +8,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 
   // Setting up the basics.
-  // setAttribute(Qt::WA_DeleteOnClose);
+  setWindowFlag(Qt::WindowCloseButtonHint);
   setWindowTitle(tr("Settings"));
-  resize(398, 320);
+  resize(400, 408);
 
   ui_settings_buttons = new QDialogButtonBox(this);
 
-  QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+  QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
   sizePolicy1.setHorizontalStretch(0);
   sizePolicy1.setVerticalStretch(0);
   sizePolicy1.setHeightForWidth(
       ui_settings_buttons->sizePolicy().hasHeightForWidth());
-  ui_settings_buttons->setSizePolicy(sizePolicy1);
+  ui_settings_buttons->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum));
   ui_settings_buttons->setOrientation(Qt::Horizontal);
   ui_settings_buttons->setStandardButtons(QDialogButtonBox::Cancel |
                                           QDialogButtonBox::Save);
@@ -45,7 +45,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_tab->setSizePolicy(sizePolicy1);
   ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
   ui_form_layout_widget = new QWidget(ui_gameplay_tab);
-  ui_form_layout_widget->setGeometry(QRect(10, 10, 361, 361));
   ui_form_layout_widget->setSizePolicy(sizePolicy1);
 
   ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
@@ -54,7 +53,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
                                      Qt::AlignTop);
   ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
-  ui_gameplay_form->setSpacing(2);
+  ui_gameplay_form->setSpacing(4);
 
   int row = 0;
 
@@ -109,12 +108,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_length_lbl = new QLabel(ui_form_layout_widget);
   ui_length_lbl->setText(tr("Log length:"));
   ui_length_lbl->setToolTip(tr(
-      "The amount of messages the IC chatlog will keep before "
-      "deleting older messages. A value of 0 or below counts as 'infinite'."));
+      "The amount of message lines the IC chatlog will keep before "
+      "deleting older message lines. A value of 0 or below counts as 'infinite'."));
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_length_lbl);
 
   ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_length_spinbox->setSuffix(" lines");
   ui_length_spinbox->setMaximum(10000);
   ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
 
@@ -145,6 +145,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_margin_lbl);
 
   ui_log_margin_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_log_margin_spinbox->setSuffix(" px");
   ui_log_margin_spinbox->setMaximum(1000);
   ui_log_margin_spinbox->setValue(p_ao_app->get_log_margin());
 
@@ -187,6 +188,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stay_time_lbl);
 
   ui_stay_time_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_stay_time_spinbox->setSuffix(" ms");
   ui_stay_time_spinbox->setMaximum(10000);
   ui_stay_time_spinbox->setValue(p_ao_app->stay_time());
 
@@ -227,6 +229,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_chat_ratelimit_lbl);
 
   ui_chat_ratelimit_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_chat_ratelimit_spinbox->setSuffix(" ms");
   ui_chat_ratelimit_spinbox->setMaximum(5000);
   ui_chat_ratelimit_spinbox->setValue(p_ao_app->get_chat_ratelimit());
 
