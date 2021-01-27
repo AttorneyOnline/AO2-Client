@@ -96,7 +96,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
       BASS_ChannelLock(oldstream, false);
     }
 
-    if (effect_flags & FADE_OUT) {
+    if ((effect_flags & FADE_OUT) && m_volume[channel] > 0) {
       // Fade out the other sample and stop it (due to -1)
       BASS_ChannelSlideAttribute(oldstream, BASS_ATTRIB_VOL | BASS_SLIDE_LOG,
                                  -1, 4000);
