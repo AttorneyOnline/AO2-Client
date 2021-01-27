@@ -68,6 +68,11 @@ jobs:
       shell: bash
       run: cmake --build . --config $BUILD_TYPE --target Attorney_Online
 
+    - name: Deploy
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: windeployqt Attorney_Online && ls build
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
