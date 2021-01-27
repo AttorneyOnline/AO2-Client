@@ -3427,7 +3427,6 @@ void Courtroom::chat_tick()
                                       // scrollbar convenience
   }
   else {
-    int msg_delay = message_display_speed[current_display_speed];
     // Do the colors, gradual showing, etc. in here
     QString f_message_filtered = filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt());
     for (int c = 0; c < max_colors; ++c) {
