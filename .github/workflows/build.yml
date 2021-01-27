@@ -30,7 +30,7 @@ jobs:
         # discord-rpc
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
         unzip discord_rpc_win.zip
-        cp ./discord-rpc/win64-static/lib/discord-rpc.lib ./lib
+        cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib
 
         # BASS
         curl http://www.un4seen.com/files/bass24.zip -o bass.zip
@@ -71,7 +71,11 @@ jobs:
     - name: Deploy
       working-directory: ${{github.workspace}}/build/Release
       shell: bash
-      run: windeployqt .
+      run: |
+        windeployqt .
+        cp ${{github.workspace}}/discord-rpc/win64-dynamic/bin/discord-rpc.dll .
+        cp ${{github.workspace}}/x64/bass.dll .
+        cp ${{github.workspace}}/x64/bassopus.dll .
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
