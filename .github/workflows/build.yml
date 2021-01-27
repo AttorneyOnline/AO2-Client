@@ -72,7 +72,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Attorney_Online
-        path: ${{github.workspace}}/build/Attorney_Online
+        path: ${{github.workspace}}/build/Release/Attorney_Online.exe
 
   # linux:
   #   # The CMake configure and build commands are platform agnostic and should work equally
