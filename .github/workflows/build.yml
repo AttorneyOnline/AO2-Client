@@ -41,14 +41,21 @@ jobs:
         arch: win64_msvc2019_64
         cached: ${{steps.cache-qt.outputs.cache-hit}}
 
-    - name: Install compiler
-      uses: ilammy/msvc-dev-cmd@v1
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
 
-    - name: cmake
-      run: |
-        mkdir build && cd build
-        cmake ..
-        make
+    - name: Configure CMake
+      shell: bash
+      env:
+        CC: gcc-10
+        CXX: g++-10
+      working-directory: ${{github.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE --target Attorney_Online
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
