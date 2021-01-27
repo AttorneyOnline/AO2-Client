@@ -20,27 +20,15 @@ jobs:
       id: cache-qt
       uses: actions/cache@v1
       with:
-        path: ${{ github.workspace }}/qt5
+        path: ../Qt
         key: ${{ runner.os }}-qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
         version: '5.15.2'
-        host: 'windows'
-        target: 'desktop'
-        arch: 'win64_msvc2019_64'
-        dir: '${{ github.workspace }}/qt5'
-        install-deps: 'true'
-        modules: ''
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
-        setup-python: 'true'
-        tools: ''
-        set-env: 'false'
-        tools-only: 'false'
-        aqtversion: '==0.11.1'
-        py7zrversion: '==0.11.3'
-        extra: '--external 7z'
+        arch: win64_msvc2019_64
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
 
     - name: Install compiler
       uses: ilammy/msvc-dev-cmd@v1
