@@ -4,17 +4,16 @@ aoblipplayer.cpp
 aobutton.cpp
 aocaseannouncerdialog.cpp
 aocharbutton.cpp
-aocharmovie.cpp
+aoclocklabel.cpp
 aoemotebutton.cpp
 aoevidencebutton.cpp
 aoevidencedisplay.cpp
 aoimage.cpp
+aolayer.cpp
 aolineedit.cpp
-aomovie.cpp
 aomusicplayer.cpp
 aooptionsdialog.cpp
 aopacket.cpp
-aoscene.cpp
 aosfxplayer.cpp
 aotextarea.cpp
 aotextedit.cpp
@@ -22,6 +21,7 @@ charselect.cpp
 chatlogpiece.cpp
 courtroom.cpp
 debug_functions.cpp
+demoserver.cpp
 discord_rich_presence.cpp
 emotes.cpp
 evidence.cpp

@@ -4,17 +4,16 @@ aoblipplayer.h
 aobutton.h
 aocaseannouncerdialog.h
 aocharbutton.h
-aocharmovie.h
+aoclocklabel.h
 aoemotebutton.h
 aoevidencebutton.h
 aoevidencedisplay.h
 aoimage.h
+aolayer.h
 aolineedit.h
-aomovie.h
 aomusicplayer.h
 aooptionsdialog.h
 aopacket.h
-aoscene.h
 aosfxplayer.h
 aotextarea.h
 aotextedit.h
@@ -24,6 +23,7 @@ chatlogpiece.h
 courtroom.h
 datatypes.h
 debug_functions.h
+demoserver.h
 discord-rpc.h
 discord_register.h
 discord_rich_presence.h
