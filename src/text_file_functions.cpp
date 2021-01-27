@@ -52,9 +52,9 @@ int AOApplication::stay_time()
   return result;
 }
 
-int AOApplication::get_text_scrawl()
+int AOApplication::get_text_crawl()
 {
-  int result = configini->value("text_scrawl", 40).toInt();
+  int result = configini->value("text_crawl", 40).toInt();
   return result;
 }
 

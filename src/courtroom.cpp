@@ -3228,7 +3228,7 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_ticker = 0;
-  text_scrawl = ao_app->get_text_scrawl();
+  text_crawl = ao_app->get_text_crawl();
   blip_rate = ao_app->read_blip_rate();
   blank_blip = ao_app->get_blank_blip();
 
@@ -3415,7 +3415,7 @@ void Courtroom::chat_tick()
   else if (current_display_speed > 6)
     current_display_speed = 6;
 
-  int msg_delay = text_scrawl * message_display_mult[current_display_speed];
+  int msg_delay = text_crawl * message_display_mult[current_display_speed];
   if ((msg_delay <= 0 &&
        tick_pos < f_message.size() - 1) ||
       formatting_char) {
@@ -3459,7 +3459,7 @@ void Courtroom::chat_tick()
       // And if it's faster than that:
       // 40/10 = 4
       b_rate =
-          qMax(b_rate, qRound(static_cast<float>(text_scrawl) /
+          qMax(b_rate, qRound(static_cast<float>(text_crawl) /
                               msg_delay));
     }
     if (blip_ticker % b_rate == 0) {
@@ -3480,7 +3480,7 @@ void Courtroom::chat_tick()
     if (current_display_speed > 1 && punctuation_chars.contains(f_character)) {
       // Making the user have to wait any longer than 1.5 of the slowest speed
       // is downright unreasonable
-      int max_delay = text_scrawl * message_display_mult[6] * 1.5;
+      int max_delay = text_crawl * message_display_mult[6] * 1.5;
       msg_delay = qMin(max_delay, msg_delay * punctuation_modifier);
     }
 

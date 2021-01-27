@@ -219,19 +219,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_instant_objection_cb);
 
   row += 1;
-  ui_text_scrawl_lbl = new QLabel(ui_form_layout_widget);
-  ui_text_scrawl_lbl->setText(tr("Text Scrawl:"));
-  ui_text_scrawl_lbl->setToolTip(tr(
+  ui_text_crawl_lbl = new QLabel(ui_form_layout_widget);
+  ui_text_crawl_lbl->setText(tr("Text crawl:"));
+  ui_text_crawl_lbl->setToolTip(tr(
       "Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_text_scrawl_lbl);
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_text_crawl_lbl);
 
-  ui_text_scrawl_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_text_scrawl_spinbox->setSuffix(" ms");
-  ui_text_scrawl_spinbox->setMaximum(500);
-  ui_text_scrawl_spinbox->setValue(p_ao_app->get_text_scrawl());
+  ui_text_crawl_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_text_crawl_spinbox->setSuffix(" ms");
+  ui_text_crawl_spinbox->setMaximum(500);
+  ui_text_crawl_spinbox->setValue(p_ao_app->get_text_crawl());
 
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_text_scrawl_spinbox);
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_text_crawl_spinbox);
 
   row += 1;
   ui_chat_ratelimit_lbl = new QLabel(ui_form_layout_widget);
@@ -853,7 +853,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
   configini->setValue("stay_time", ui_stay_time_spinbox->value());
   configini->setValue("instant_objection", ui_instant_objection_cb->isChecked());
-  configini->setValue("text_scrawl", ui_text_scrawl_spinbox->value());
+  configini->setValue("text_crawl", ui_text_crawl_spinbox->value());
   configini->setValue("chat_ratelimit", ui_chat_ratelimit_spinbox->value());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
