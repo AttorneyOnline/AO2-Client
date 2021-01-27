@@ -222,11 +222,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_text_scrawl_lbl = new QLabel(ui_form_layout_widget);
   ui_text_scrawl_lbl->setText(tr("Text Scrawl:"));
   ui_text_scrawl_lbl->setToolTip(tr(
-      "Amount of time spent on each letter when the in-character text is being displayed."));
+      "Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed."));
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_text_scrawl_lbl);
 
   ui_text_scrawl_spinbox = new QSpinBox(ui_form_layout_widget);
+  ui_text_scrawl_spinbox->setSuffix(" ms");
   ui_text_scrawl_spinbox->setMaximum(500);
   ui_text_scrawl_spinbox->setValue(p_ao_app->get_text_scrawl());
 
