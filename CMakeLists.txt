@@ -18,6 +18,13 @@ endif()
 # AO
 add_executable(Attorney_Online resources.qrc)
 
+# WIN32
+if(WIN32)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set_property(TARGET Attorney_Online PROPERTY WIN32_EXECUTABLE true)
+    endif()
+endif()
+
 # Target Include
 target_include_directories(Attorney_Online PRIVATE include)
 
