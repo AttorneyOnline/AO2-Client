@@ -475,7 +475,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (courtroom_constructed) // We were sent a "set position" packet
     {
-      w_courtroom->set_side(f_contents.at(0));
+      w_courtroom->set_side(f_contents.at(0), false);
       append_to_demofile(p_packet->to_string(true));
     }
   }
