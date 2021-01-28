@@ -22,6 +22,8 @@ add_executable(Attorney_Online resources.qrc)
 if(WIN32)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         set_property(TARGET Attorney_Online PROPERTY WIN32_EXECUTABLE true)
+        set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resource/logo_ao2.rc")
+        target_sources(Attorney_Online PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
     endif()
 endif()
 
