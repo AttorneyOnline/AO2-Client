@@ -3659,6 +3659,11 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   QString f_song = f_contents.at(0);
   QString f_song_clear = f_song.left(f_song.lastIndexOf("."));
+  if (f_song.startsWith("http")) {
+    QByteArray f_song_bytearray = f_song.toUtf8();
+    QString f_song_decoded = QUrl::fromPercentEncoding(f_song_bytearray);
+    f_song_clear = f_song_decoded.left(f_song_decoded.lastIndexOf("."));
+  }
   f_song_clear = f_song_clear.right(f_song_clear.length() -
                                     (f_song_clear.lastIndexOf("/") + 1));
   int n_char = f_contents.at(1).toInt();
@@ -3691,8 +3696,10 @@ void Courtroom::handle_song(QStringList *p_contents)
     if (f_song == "~stop.mp3")
       ui_music_name->setText(tr("None"));
     else if (channel == 0) {
-      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) & !f_song.startsWith("http"))
         ui_music_name->setText(f_song_clear);
+      else if (f_song.startsWith("http"))
+        ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
       else
         ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
     }
@@ -3733,8 +3740,10 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (f_song == "~stop.mp3")
         ui_music_name->setText(tr("None"));
       else if (channel == 0) {
-        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) & !f_song.startsWith("http"))
           ui_music_name->setText(f_song_clear);
+        else if (f_song.startsWith("http"))
+          ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
         else
           ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
       }
