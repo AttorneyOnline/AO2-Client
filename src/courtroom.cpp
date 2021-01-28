@@ -467,9 +467,6 @@ void Courtroom::set_pair_list()
 
 void Courtroom::set_widgets()
 {
-  blip_rate = ao_app->read_blip_rate();
-  blank_blip = ao_app->get_blank_blip();
-
   QString filename = "courtroom_design.ini";
 
   pos_size_type f_courtroom =
@@ -3231,6 +3228,9 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_ticker = 0;
+  text_crawl = ao_app->get_text_crawl();
+  blip_rate = ao_app->read_blip_rate();
+  blank_blip = ao_app->get_blank_blip();
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
@@ -3415,7 +3415,8 @@ void Courtroom::chat_tick()
   else if (current_display_speed > 6)
     current_display_speed = 6;
 
-  if ((message_display_speed[current_display_speed] <= 0 &&
+  int msg_delay = text_crawl * message_display_mult[current_display_speed];
+  if ((msg_delay <= 0 &&
        tick_pos < f_message.size() - 1) ||
       formatting_char) {
     chat_tick_timer->start(0); // Don't bother rendering anything out as we're
@@ -3426,7 +3427,6 @@ void Courtroom::chat_tick()
                                       // scrollbar convenience
   }
   else {
-    int msg_delay = message_display_speed[current_display_speed];
     // Do the colors, gradual showing, etc. in here
     QString f_message_filtered = filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt());
     for (int c = 0; c < max_colors; ++c) {
@@ -3459,7 +3459,7 @@ void Courtroom::chat_tick()
       // And if it's faster than that:
       // 40/10 = 4
       b_rate =
-          qMax(b_rate, qRound(static_cast<float>(message_display_speed[3]) /
+          qMax(b_rate, qRound(static_cast<float>(text_crawl) /
                               msg_delay));
     }
     if (blip_ticker % b_rate == 0) {
@@ -3478,9 +3478,10 @@ void Courtroom::chat_tick()
 
     // Punctuation delayer, only kicks in on speed ticks less than }}
     if (current_display_speed > 1 && punctuation_chars.contains(f_character)) {
-      // Making the user have to wait any longer than 150ms per letter is
-      // downright unreasonable
-      msg_delay = qMin(150, msg_delay * punctuation_modifier);
+      // Making the user have to wait any longer than 1.5 of the slowest speed
+      // is downright unreasonable
+      int max_delay = text_crawl * message_display_mult[6] * 1.5;
+      msg_delay = qMin(max_delay, msg_delay * punctuation_modifier);
     }
 
     // If this color is talking
