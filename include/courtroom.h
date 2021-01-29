@@ -605,7 +605,7 @@ private:
 
   QWidget *ui_viewport;
   BackgroundLayer *ui_vp_background;
-  ForegroundLayer *ui_vp_speedlines;
+  SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
   CharLayer *ui_vp_sideplayer_char;
   BackgroundLayer *ui_vp_desk;
@@ -614,10 +614,10 @@ private:
   QLabel *ui_vp_showname;
   InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  InterfaceLayer *ui_vp_testimony;
-  InterjectionLayer *ui_vp_wtce;
+  SplashLayer *ui_vp_testimony;
+  SplashLayer *ui_vp_wtce;
   EffectLayer *ui_vp_effect;
-  InterjectionLayer *ui_vp_objection;
+  SplashLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
