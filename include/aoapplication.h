@@ -222,12 +222,19 @@ public:
   // for settings.
   bool is_customchat_enabled();
 
+  // Returns the value of whether continuous playback should be used
+  // from the config.ini.
+  bool is_continuous_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();
 
   // Current wait time between messages for the queue system
   int stay_time();
+
+  // Returns the letter display speed during text crawl in in-character messages
+  int get_text_crawl();
 
   // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
   int get_chat_ratelimit();

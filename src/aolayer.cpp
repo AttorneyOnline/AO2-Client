@@ -296,6 +296,11 @@ void AOLayer::start_playback(QString p_image)
   if (!file_exists(p_image))
     return;
 
+  if (!ao_app->is_continuous_enabled()) {
+    continuous = false;
+    force_continuous = true;
+  }
+
   QString scaling_override =
       ao_app->read_design_ini("scaling", p_image + ".ini");
   if (scaling_override != "")
@@ -322,12 +327,13 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
-  // CANTFIX: this causes a slight hitch
+  // CANTFIX: this causes a hitch
   // The correct way of doing this would be to use QImageReader::jumpToImage()
   // and populate missing data in the movie ticker when it's needed. This is
-  // unforunately completely impossible, because QImageReader::jumpToImage() is
+  // unfortunately completely impossible, because QImageReader::jumpToImage() is
   // not implemented in any image format AO2 is equipped to use. Instead, the
   // default behavior is used - that is, absolutely nothing.
+  // This is why continuous playback can be toggled off.
   if (continuous) {
     for (int i = frame; i--;) {
       if (i <= -1)
@@ -338,6 +344,7 @@ void AOLayer::start_playback(QString p_image)
       movie_delays.append(l_delay);
     }
   }
+  last_path = p_image;
   QPixmap f_pixmap = this->get_pixmap(m_reader.read());
   int f_delay = m_reader.nextImageDelay();
 

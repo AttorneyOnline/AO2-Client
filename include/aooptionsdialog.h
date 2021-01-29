@@ -58,6 +58,8 @@ private:
   QCheckBox *ui_desync_logs_cb;
   QLabel *ui_instant_objection_lbl;
   QCheckBox *ui_instant_objection_cb;
+  QLabel *ui_text_crawl_lbl;
+  QSpinBox *ui_text_crawl_spinbox;
   QLabel *ui_chat_ratelimit_lbl;
   QSpinBox *ui_chat_ratelimit_spinbox;
   QLabel *ui_log_ic_actions_lbl;
@@ -96,6 +98,9 @@ private:
 
   QLabel *ui_customchat_lbl;
   QCheckBox *ui_customchat_cb;
+
+  QLabel *ui_continuous_lbl;
+  QCheckBox *ui_continuous_cb;
 
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;

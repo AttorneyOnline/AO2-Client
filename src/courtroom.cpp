@@ -171,6 +171,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   initialize_emotes();
 
   ui_pos_dropdown = new QComboBox(this);
+  ui_pos_remove = new AOButton(this, ao_app);
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -307,6 +308,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_pos_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_pos_dropdown_changed(int)));
+  connect(ui_pos_remove, SIGNAL(clicked()), this, SLOT(on_pos_remove_clicked()));
 
   connect(ui_iniswap_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_iniswap_dropdown_changed(int)));
@@ -473,9 +475,6 @@ void Courtroom::set_pair_list()
 
 void Courtroom::set_widgets()
 {
-  blip_rate = ao_app->read_blip_rate();
-  blank_blip = ao_app->get_blank_blip();
-
   QString filename = "courtroom_design.ini";
 
   pos_size_type f_courtroom =
@@ -734,6 +733,15 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
   ui_pos_dropdown->setToolTip(
       tr("Set your character's supplementary background."));
+
+  set_size_and_pos(ui_pos_remove, "pos_remove");
+  ui_pos_remove->setText("X");
+  ui_pos_remove->set_image("evidencex");
+  ui_pos_remove->setToolTip(tr("Reset your character's supplementary background to its default."));
+  if (current_side == "")
+    ui_pos_remove->hide();
+  else
+    ui_pos_remove->show();
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown");
   ui_iniswap_dropdown->setEditable(true);
@@ -1294,26 +1302,50 @@ void Courtroom::set_background(QString p_background, bool display)
   }
 }
 
-void Courtroom::set_side(QString p_side)
+void Courtroom::set_side(QString p_side, bool block_signals)
 {
+  QString f_side;
   if (p_side == "")
-    current_side = ao_app->get_char_side(current_char);
+    f_side = ao_app->get_char_side(current_char);
   else
-    current_side = p_side;
+    f_side = p_side;
+
+  if (f_side == "jud") {
+    ui_witness_testimony->show();
+    ui_cross_examination->show();
+    ui_not_guilty->show();
+    ui_guilty->show();
+    ui_defense_minus->show();
+    ui_defense_plus->show();
+    ui_prosecution_minus->show();
+    ui_prosecution_plus->show();
+  }
+  else {
+    ui_witness_testimony->hide();
+    ui_cross_examination->hide();
+    ui_guilty->hide();
+    ui_not_guilty->hide();
+    ui_defense_minus->hide();
+    ui_defense_plus->hide();
+    ui_prosecution_minus->hide();
+    ui_prosecution_plus->hide();
+  }
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
-    if (pos == current_side) {
+    if (pos == f_side) {
       // Block the signals to prevent setCurrentIndex from triggering a pos
       // change
-      ui_pos_dropdown->blockSignals(true);
+      if (block_signals)
+        ui_pos_dropdown->blockSignals(true);
 
       // Set the index on dropdown ui element to let you know what pos you're on
       // right now
       ui_pos_dropdown->setCurrentIndex(i);
 
       // Unblock the signals so the element can be used for setting pos again
-      ui_pos_dropdown->blockSignals(false);
+      if (block_signals)
+        ui_pos_dropdown->blockSignals(false);
 
       // alright we dun, jobs done here boyos
       break;
@@ -1330,6 +1362,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   ui_pos_dropdown->addItems(pos_dropdown_list);
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
+  set_side(current_side);
 }
 
 void Courtroom::update_character(int p_cid)
@@ -1353,7 +1386,7 @@ void Courtroom::update_character(int p_cid)
   }
 
   current_char = f_char;
-  current_side = ao_app->get_char_side(current_char);
+  set_side(current_side);
 
   set_text_color_dropdown();
 
@@ -1374,27 +1407,6 @@ void Courtroom::update_character(int p_cid)
 
   if (newchar) // Avoid infinite loop of death and suffering
     set_iniswap_dropdown();
-
-  if (current_side == "jud") {
-    ui_witness_testimony->show();
-    ui_cross_examination->show();
-    ui_not_guilty->show();
-    ui_guilty->show();
-    ui_defense_minus->show();
-    ui_defense_plus->show();
-    ui_prosecution_minus->show();
-    ui_prosecution_plus->show();
-  }
-  else {
-    ui_witness_testimony->hide();
-    ui_cross_examination->hide();
-    ui_guilty->hide();
-    ui_not_guilty->hide();
-    ui_defense_minus->hide();
-    ui_defense_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_prosecution_plus->hide();
-  }
 
   ui_custom_objection->hide();
   if (ao_app->custom_objection_enabled) // if setting is enabled
@@ -1702,9 +1714,12 @@ void Courtroom::on_chat_return_pressed()
   // immediate_preanim#%
 
   QStringList packet_contents;
+  QString f_side;
 
   if (current_side == "")
-    current_side = ao_app->get_char_side(current_char);
+    f_side = ao_app->get_char_side(current_char);
+  else
+    f_side = current_side;
 
   QString f_desk_mod = "chat";
 
@@ -1731,7 +1746,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(ui_ic_chat_message->text());
 
-  packet_contents.append(current_side);
+  packet_contents.append(f_side);
 
   packet_contents.append(get_char_sfx());
 
@@ -3236,6 +3251,9 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_ticker = 0;
+  text_crawl = ao_app->get_text_crawl();
+  blip_rate = ao_app->read_blip_rate();
+  blank_blip = ao_app->get_blank_blip();
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
@@ -3422,7 +3440,8 @@ void Courtroom::chat_tick()
   else if (current_display_speed > 6)
     current_display_speed = 6;
 
-  if ((message_display_speed[current_display_speed] <= 0 &&
+  int msg_delay = text_crawl * message_display_mult[current_display_speed];
+  if ((msg_delay <= 0 &&
        tick_pos < f_message.size() - 1) ||
       formatting_char) {
     chat_tick_timer->start(0); // Don't bother rendering anything out as we're
@@ -3433,7 +3452,6 @@ void Courtroom::chat_tick()
                                       // scrollbar convenience
   }
   else {
-    int msg_delay = message_display_speed[current_display_speed];
     // Do the colors, gradual showing, etc. in here
     QString f_message_filtered = filter_ic_text(f_message, true, tick_pos, m_chatmessage[TEXT_COLOR].toInt());
     for (int c = 0; c < max_colors; ++c) {
@@ -3467,7 +3485,7 @@ void Courtroom::chat_tick()
       // And if it's faster than that:
       // 40/10 = 4
       b_rate =
-          qMax(b_rate, qRound(static_cast<float>(message_display_speed[3]) /
+          qMax(b_rate, qRound(static_cast<float>(text_crawl) /
                               msg_delay));
     }
     if (blip_ticker % b_rate == 0) {
@@ -3486,9 +3504,10 @@ void Courtroom::chat_tick()
 
     // Punctuation delayer, only kicks in on speed ticks less than }}
     if (current_display_speed > 1 && punctuation_chars.contains(f_character)) {
-      // Making the user have to wait any longer than 150ms per letter is
-      // downright unreasonable
-      msg_delay = qMin(150, msg_delay * punctuation_modifier);
+      // Making the user have to wait any longer than 1.5 of the slowest speed
+      // is downright unreasonable
+      int max_delay = text_crawl * message_display_mult[6] * 1.5;
+      msg_delay = qMin(max_delay, msg_delay * punctuation_modifier);
     }
 
     // If this color is talking
@@ -3666,6 +3685,11 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   QString f_song = f_contents.at(0);
   QString f_song_clear = f_song.left(f_song.lastIndexOf("."));
+  if (f_song.startsWith("http")) {
+    QByteArray f_song_bytearray = f_song.toUtf8();
+    QString f_song_decoded = QUrl::fromPercentEncoding(f_song_bytearray);
+    f_song_clear = f_song_decoded.left(f_song_decoded.lastIndexOf("."));
+  }
   f_song_clear = f_song_clear.right(f_song_clear.length() -
                                     (f_song_clear.lastIndexOf("/") + 1));
   int n_char = f_contents.at(1).toInt();
@@ -3698,8 +3722,10 @@ void Courtroom::handle_song(QStringList *p_contents)
     if (f_song == "~stop.mp3")
       ui_music_name->setText(tr("None"));
     else if (channel == 0) {
-      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) & !f_song.startsWith("http"))
         ui_music_name->setText(f_song_clear);
+      else if (f_song.startsWith("http"))
+        ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
       else
         ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
     }
@@ -3740,8 +3766,10 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (f_song == "~stop.mp3")
         ui_music_name->setText(tr("None"));
       else if (channel == 0) {
-        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))))
+        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) & !f_song.startsWith("http"))
           ui_music_name->setText(f_song_clear);
+        else if (f_song.startsWith("http"))
+          ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
         else
           ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
       }
@@ -4267,10 +4295,34 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
   if (f_pos == "jud")
     toggle_judge_buttons(true);
+  
+  ui_pos_remove->show();
+
+  current_side = f_pos;
 
   // YEAH SENDING LIKE 20 PACKETS IF THE USER SCROLLS THROUGH, GREAT IDEA
   // how about this instead
   set_side(f_pos);
+}
+
+void Courtroom::on_pos_remove_clicked()
+{
+  QString default_side = ao_app->get_char_side(current_char);
+
+  for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
+    QString pos = ui_pos_dropdown->itemText(i);
+    if (pos == default_side) {
+      ui_pos_dropdown->setCurrentIndex(i);
+      break;
+    }
+  }
+  int wit_index = ui_pos_dropdown->findText("wit");
+  if ((ui_pos_dropdown->currentText() != default_side) & (wit_index != -1)) //i.e. this bg doesn't have our pos
+    ui_pos_dropdown->setCurrentIndex(wit_index); // fall back to "wit"
+  else if (ui_pos_dropdown->currentText() != default_side) // we don't have "wit" either?
+    ui_pos_dropdown->setCurrentIndex(0); // as a last resort, choose the first item in the dropdown
+  current_side = "";
+  ui_pos_remove->hide();
 }
 
 void Courtroom::set_iniswap_dropdown()

@@ -52,6 +52,12 @@ int AOApplication::stay_time()
   return result;
 }
 
+int AOApplication::get_text_crawl()
+{
+  int result = configini->value("text_crawl", 40).toInt();
+  return result;
+}
+
 int AOApplication::get_chat_ratelimit()
 {
   int result = configini->value("chat_ratelimit", 300).toInt();
@@ -1086,6 +1092,12 @@ bool AOApplication::is_stickypres_enabled()
 bool AOApplication::is_customchat_enabled()
 {
   QString result = configini->value("customchat", "true").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::is_continuous_enabled()
+{
+  QString result = configini->value("continuous_playback", "true").value<QString>();
   return result.startsWith("true");
 }
 
