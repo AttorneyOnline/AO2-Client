@@ -243,7 +243,7 @@ Reason: </source>
         <location filename="../../src/aooptionsdialog.cpp" line="199"/>
         <source>If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time).</source>
         <translation>Показывать сообщения в истории игрового чата в реальном времени, 
-а в самом чате - в соответствии с настройками очереди (&quot;Задержка текста&quot;).</translation>
+а в самом игровом чате - в соответствии с настройками очереди (&quot;Задержка текста&quot;).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="210"/>
