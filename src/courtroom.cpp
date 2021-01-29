@@ -2536,7 +2536,7 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
               // Static effects will linger.
   ui_vp_effect->set_static_duration(0);
   ui_vp_effect->set_max_duration(0);
-  ui_vp_effect->load_image(effect, false);
+  ui_vp_effect->load_image(effect, true);
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
