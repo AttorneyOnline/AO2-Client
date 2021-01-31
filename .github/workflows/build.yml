@@ -205,7 +205,7 @@ jobs:
       run: |
         git clone https://github.com/Skycoder42/QtApng
         cd QtApng
-        qmake
+        /usr/local/opt/qt/bin/qmake
         make
         make install
 
