@@ -62,7 +62,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{github.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5
 
     - name: Build
       working-directory: ${{github.workspace}}/build
