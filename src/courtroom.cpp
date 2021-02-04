@@ -2152,21 +2152,16 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       }
     }
   }
-
-  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() ||
-      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
-    switch (f_log_mode) {
-      case IO_ONLY:
-        log_ic_text(f_showname, f_displayname, f_message, "",f_color);
-        break;
-      case DISPLAY_AND_IO:
-        log_ic_text(f_showname, f_displayname, f_message, "",f_color);
-        [[fallthrough]];
-      case DISPLAY_ONLY:
-        append_ic_text(f_message, f_displayname, "",f_color);
-        break;
-    }
+  switch (f_log_mode) {
+    case IO_ONLY:
+      log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+      break;
+    case DISPLAY_AND_IO:
+      log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+      [[fallthrough]];
+    case DISPLAY_ONLY:
+      append_ic_text(f_message, f_displayname, "",f_color);
+      break;
   }
 }
 
