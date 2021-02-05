@@ -118,6 +118,18 @@ void AOLayer::move(int ax, int ay)
   QLabel::move(x, y);
 }
 
+void AOLayer::move_and_center(int ax, int ay)
+{
+  x = ax;
+  y = ay;
+  if (movie_frames.isEmpty()) // safeguard
+    QLabel::move(x,y);
+  else if (frame >= movie_frames.count())
+    set_frame(movie_frames[0]);
+  else
+    set_frame(movie_frames[frame]);
+}
+
 void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;

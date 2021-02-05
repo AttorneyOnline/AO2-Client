@@ -73,6 +73,9 @@ public:
   // Move the label itself around
   void move(int ax, int ay);
 
+  // Move the label and center it
+  void move_and_center(int ax, int ay);
+
   // This is somewhat pointless now as there's no "QMovie" object to resize, aka
   // no "combo" to speak of
   void combo_resize(int w, int h);
