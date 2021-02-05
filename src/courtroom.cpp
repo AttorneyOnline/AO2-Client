@@ -549,7 +549,7 @@ void Courtroom::set_widgets()
   ui_vp_desk->move_and_center(0, 0);
   ui_vp_desk->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_evidence_display->move_and_center(0, 0);
+  ui_vp_evidence_display->move(0, 0);
   ui_vp_evidence_display->combo_resize(ui_viewport->width(),
                                        ui_viewport->height());
 
