@@ -532,21 +532,21 @@ void Courtroom::set_widgets()
   // them.
   ui_settings->show();
 
-  ui_vp_background->move(0, 0);
+  ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_speedlines->move(0, 0);
+  ui_vp_speedlines->move_and_center(0, 0);
   ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_player_char->move(0, 0);
+  ui_vp_player_char->move_and_center(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_sideplayer_char->move(0, 0);
+  ui_vp_sideplayer_char->move_and_center(0, 0);
   ui_vp_sideplayer_char->combo_resize(ui_viewport->width(),
                                       ui_viewport->height());
 
   // the AO2 desk element
-  ui_vp_desk->move(0, 0);
+  ui_vp_desk->move_and_center(0, 0);
   ui_vp_desk->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_evidence_display->move(0, 0);
@@ -570,16 +570,16 @@ void Courtroom::set_widgets()
   // thing, which is to parent these to ui_viewport. instead, AOLayer handles
   // masking so we don't overlap parts of the UI, and they become free floating
   // widgets.
-  ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_testimony->move_and_center(ui_viewport->x(), ui_viewport->y());
   ui_vp_testimony->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_effect->move_and_center(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_wtce->move_and_center(ui_viewport->x(), ui_viewport->y());
   ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
+  ui_vp_objection->move_and_center(ui_viewport->x(), ui_viewport->y());
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   log_maximum_blocks = ao_app->get_max_log_size();
@@ -2277,24 +2277,7 @@ void Courtroom::display_character()
   // Hide the face sticker
   ui_vp_sticker->stop();
   // Initialize the correct pos (called SIDE here for some reason) with DESK_MOD to determine if we should hide the desk or not.
-  switch(m_chatmessage[DESK_MOD].toInt()) {
-    case 4:
-      set_self_offset(m_chatmessage[SELF_OFFSET]);
-      [[fallthrough]];
-    case 2:
-      set_scene("1", m_chatmessage[SIDE]);
-      break;
-    case 5:
-      ui_vp_sideplayer_char->hide();
-      ui_vp_player_char->move(0, 0);
-      [[fallthrough]];
-    case 3:
-      set_scene("0", m_chatmessage[SIDE]);
-      break;
-    default:
-      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
-      break;
-  }
+  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
   // Arrange the netstrings of the frame SFX for the character to know about
   if (!m_chatmessage[FRAME_SFX].isEmpty() &&
@@ -2313,16 +2296,8 @@ void Courtroom::display_character()
     ui_vp_player_char->set_flipped(true);
   else
     ui_vp_player_char->set_flipped(false);
-
-  // Parse the character X offset
-  QStringList offsets = m_chatmessage[SELF_OFFSET].split("&");
-  int offset_x = offsets[0].toInt();
-  // Y offset is 0 by default unless we find that the server sent us the Y position as well
-  int offset_y = 0;
-  if (offsets.length() > 1)
-    offset_y = offsets[1].toInt();
   // Move the character on the viewport according to the offsets
-  ui_vp_player_char->move(ui_viewport->width() * offset_x / 100, ui_viewport->height() * offset_y / 100);
+  set_self_offset(m_chatmessage[SELF_OFFSET]);
 }
 
 void Courtroom::display_pair_character(QString other_charid, QString other_offset)
@@ -3189,6 +3164,23 @@ void Courtroom::play_preanim(bool immediate)
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
 
+  switch(m_chatmessage[DESK_MOD].toInt()) {
+    case 4:
+      ui_vp_sideplayer_char->hide();
+      ui_vp_player_char->move_and_center(0, 0);
+      [[fallthrough]];
+    case 2:
+      set_scene("0", m_chatmessage[SIDE]);
+      break;
+    case 5:
+    case 3:
+      set_scene("1", m_chatmessage[SIDE]);
+      break;
+    default:
+      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+      break;
+  }
+
   if (immediate)
     anim_state = 4;
   else
@@ -3204,6 +3196,24 @@ void Courtroom::play_preanim(bool immediate)
 void Courtroom::preanim_done()
 {
   anim_state = 1;
+  switch(m_chatmessage[DESK_MOD].toInt()) {
+    case 4:
+      set_self_offset(m_chatmessage[SELF_OFFSET]);
+      [[fallthrough]];
+    case 2:
+      set_scene("1", m_chatmessage[SIDE]);
+      break;
+    case 5:
+      ui_vp_sideplayer_char->hide();
+      ui_vp_player_char->move_and_center(0, 0);
+      [[fallthrough]];
+    case 3:
+      set_scene("0", m_chatmessage[SIDE]);
+      break;
+    default:
+      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+      break;
+  }
   qDebug() << "preanim over, anim_state set to 1";
   handle_ic_speaking();
 }
