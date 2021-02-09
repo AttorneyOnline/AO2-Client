@@ -472,6 +472,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_continuous_cb);
 
+  row += 1;
+  ui_category_stop_lbl = new QLabel(ui_form_layout_widget);
+  ui_category_stop_lbl->setText(tr("Stop Music w/ Category:"));
+  ui_category_stop_lbl->setToolTip(
+      tr("Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_category_stop_lbl);
+
+  ui_category_stop_cb = new QCheckBox(ui_form_layout_widget);
+  ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
+
   QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
@@ -886,6 +899,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("customchat", ui_customchat_cb->isChecked());
   configini->setValue("automatic_logging_enabled", ui_log_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
+  configini->setValue("category_stop", ui_category_stop_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |

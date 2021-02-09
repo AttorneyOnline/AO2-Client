@@ -1101,6 +1101,12 @@ bool AOApplication::is_continuous_enabled()
   return result.startsWith("true");
 }
 
+bool AOApplication::is_category_stop_enabled()
+{
+  QString result = configini->value("category_stop", "true").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::get_casing_enabled()
 {
   QString result = configini->value("casing_enabled", "false").value<QString>();
