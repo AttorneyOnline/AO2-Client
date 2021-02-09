@@ -2161,20 +2161,22 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     }
   }
 
-  // If the chat message isn't a blankpost, or the chatlog history is empty, or its last message isn't a blankpost
-  if (!f_message.isEmpty() ||
-      ic_chatlog_history.isEmpty() || ic_chatlog_history.last().get_message() != "") {
-    switch (f_log_mode) {
-      case IO_ONLY:
-        log_ic_text(f_showname, f_displayname, f_message, "",f_color);
-        break;
-      case DISPLAY_AND_IO:
-        log_ic_text(f_showname, f_displayname, f_message, "",f_color);
-        [[fallthrough]];
-      case DISPLAY_ONLY:
-        append_ic_text(f_message, f_displayname, "",f_color);
-        break;
-    }
+  if ((f_log_mode != IO_ONLY) && // if we're not in I/O only mode,
+      f_message.isEmpty() &&  // our current message is a blankpost,
+      !ic_chatlog_history.isEmpty() && // the chat log isn't empty,
+      last_ic_message == f_displayname + ":" && // the chat log's last message is a blank post, and 
+      last_ic_message.mid(0, last_ic_message.lastIndexOf(":")) == f_displayname) // the blankpost's showname is the same as ours
+    return; // Skip adding message
+  switch (f_log_mode) {
+    case IO_ONLY:
+      log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+      break;
+    case DISPLAY_AND_IO:
+      log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+      [[fallthrough]];
+    case DISPLAY_ONLY:
+      append_ic_text(f_message, f_displayname, "",f_color);
+      break;
   }
 }
 
@@ -3027,6 +3029,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
                                int color, QDateTime timestamp)
 {
+  last_ic_message = p_name + ":" + p_text;
   QTextCharFormat bold;
   QTextCharFormat normal;
   QTextCharFormat italics;
@@ -5350,7 +5353,6 @@ void Courtroom::regenerate_ic_chatlog()
                    name,
                    item.get_action(), item.get_chat_color(),
                    item.get_datetime().toLocalTime());
-    last_ic_message = name + ":" + message;
   }
 }
 
