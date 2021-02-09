@@ -337,7 +337,7 @@ private:
 
   int current_display_speed = 3;
   int text_crawl = 40;
-  double message_display_mult[7] = {0.125, 0.25, 0.65, 1, 1.25, 1.75, 2.25};
+  double message_display_mult[7] = {0, 0.25, 0.65, 1, 1.25, 1.75, 2.25};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
