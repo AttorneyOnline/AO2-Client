@@ -1551,10 +1551,18 @@ void Courtroom::list_music()
   QTreeWidgetItem *parent = nullptr;
   for (int n_song = 0; n_song < music_list.size(); ++n_song) {
     QString i_song = music_list.at(n_song);
+    // It's a stop song or a stop category
+    // yes we cannot properly parse a stop song without a stop category cuz otherwise areas break
+    // I hate this program
+    // I hate qt5 for making .remove and .replace return a reference to the string (modify original var)
+    // instead of returning a new string
+    // please end my suffering
+    QString temp = i_song;
+    if (i_song == "~stop.mp3" || (temp.remove('=').toLower() == "stop"))
+        continue;
     QString i_song_listname = i_song.left(i_song.lastIndexOf("."));
     i_song_listname = i_song_listname.right(
         i_song_listname.length() - (i_song_listname.lastIndexOf("/") + 1));
-
     QTreeWidgetItem *treeItem;
     if (i_song_listname != i_song &&
         parent != nullptr) // not a category, parent exists
@@ -3749,9 +3757,9 @@ void Courtroom::handle_song(QStringList *p_contents)
     {
       effect_flags = p_contents->at(5).toInt();
     }
-
+    bool is_stop = f_song == "~stop.mp3";
     if (!mute_map.value(n_char)) {
-      if (f_song == "~stop.mp3") {
+      if (is_stop) {
         log_ic_text(str_char, str_show, "", tr("has stopped the music"));
         append_ic_text("", str_show, tr("has stopped the music"));
       }
@@ -3760,7 +3768,7 @@ void Courtroom::handle_song(QStringList *p_contents)
         append_ic_text(f_song_clear, str_show, tr("has played a song"));
       }
       music_player->play(f_song, channel, looping, effect_flags);
-      if (f_song == "~stop.mp3")
+      if (is_stop)
         ui_music_name->setText(tr("None"));
       else if (channel == 0) {
         if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) & !f_song.startsWith("http"))
@@ -4701,7 +4709,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 {
   if (is_muted)
     return;
-  if (p_item->parent() == nullptr) // i.e. we've clicked a category
+  if (!ao_app->is_category_stop_enabled() && p_item->parent() == nullptr)
     return;
   column = 1; // Column 1 is always the metadata (which we want)
   QString p_song = p_item->text(column);
@@ -4802,12 +4810,26 @@ void Courtroom::music_list_collapse_all()
 }
 
 void Courtroom::music_stop()
-{               // send a fake music packet with a nonexistent song
-  if (is_muted) // this requires a special exception for "~stop.mp3" in
-    return;     // tsuserver3, as it will otherwise reject songs not on
+{
+  if (is_muted)
+    return;
+  // Default fake song is a song present in Vanilla content, the ~stop.mp3
+  QString fake_song = "~stop.mp3";
+  // If the fake song is not present in the music list
+  if (!music_list.contains(fake_song)) {
+      // Loop through our music list
+      for (QString song : music_list) {
+          // Pick first song that does not contain a file extension
+          if (!song.contains('.')) {
+              // Use it as a fake song as the server we're working with must recognize song categories
+              fake_song = song;
+              break;
+          }
+      }
+  }
   QStringList packet_contents; // its music list
   packet_contents.append(
-      "~stop.mp3"); // this is our fake song, playing it triggers special code
+      fake_song); // this is our fake song, playing it triggers special code
   packet_contents.append(QString::number(m_cid));
   if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
       ao_app->effects_enabled)

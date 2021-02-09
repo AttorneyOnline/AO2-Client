@@ -102,6 +102,9 @@ private:
   QLabel *ui_continuous_lbl;
   QCheckBox *ui_continuous_cb;
 
+  QLabel *ui_category_stop_lbl;
+  QCheckBox *ui_category_stop_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;
