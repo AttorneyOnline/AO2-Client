@@ -91,11 +91,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_margin = ao_app->get_log_margin();
   log_timestamp = ao_app->get_log_timestamp();
 
-  ui_ms_chatlog = new AOTextArea(this);
-  ui_ms_chatlog->setReadOnly(true);
-  ui_ms_chatlog->setOpenExternalLinks(true);
-  ui_ms_chatlog->hide();
-
   ui_server_chatlog = new AOTextArea(this);
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
@@ -195,7 +190,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_objection = new AOButton(this, ao_app);
   ui_take_that = new AOButton(this, ao_app);
 
-  ui_ooc_toggle = new AOButton(this, ao_app);
   ui_witness_testimony = new AOButton(this, ao_app);
   ui_cross_examination = new AOButton(this, ao_app);
   ui_guilty = new AOButton(this, ao_app);
@@ -384,9 +378,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           SLOT(on_sfx_slider_moved(int)));
   connect(ui_blip_slider, SIGNAL(valueChanged(int)), this,
           SLOT(on_blip_slider_moved(int)));
-
-  connect(ui_ooc_toggle, SIGNAL(clicked()), this,
-          SLOT(on_ooc_toggle_clicked()));
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this,
           SLOT(on_music_search_edited(QString)));
@@ -601,9 +592,6 @@ void Courtroom::set_widgets()
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
   ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ Log goes down ▼"
                                                        : "▲ Log goes up ▲");
-
-  set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
-  ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
   ui_server_chatlog->setFrameShape(QFrame::NoFrame);
@@ -824,11 +812,6 @@ void Courtroom::set_widgets()
                               "message will be a shout!"));
   ui_take_that->set_image("takethat");
 
-  set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
-  ui_ooc_toggle->setText(tr("Server"));
-  ui_ooc_toggle->setToolTip(
-      tr("Toggle between server chat and global AO2 chat."));
-
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
   ui_witness_testimony->set_image("witnesstestimony");
   ui_witness_testimony->setToolTip(tr("This will display the animation in the "
@@ -1034,7 +1017,6 @@ void Courtroom::set_fonts(QString p_char)
   set_font(ui_vp_showname, "", "showname", p_char);
   set_font(ui_vp_message, "", "message", p_char);
   set_font(ui_ic_chatlog, "", "ic_chatlog", p_char);
-  set_font(ui_ms_chatlog, "", "ms_chatlog", p_char);
   set_font(ui_server_chatlog, "", "server_chatlog", p_char);
   set_font(ui_music_list, "", "music_list", p_char);
   set_font(ui_area_list, "", "area_list", p_char);
@@ -1657,22 +1639,11 @@ void Courtroom::list_areas()
   }
 }
 
-void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
-{
-  ui_ms_chatlog->append_chatmessage(
-      f_name, f_message,
-      ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini")
-          .name());
-}
-
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
                                           QString p_color)
 {
   QString color = "#000000";
-
-  if (p_color == "0")
-    color = ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini")
-                .name();
+  
   if (p_color == "1")
     color =
         ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini")
@@ -4217,24 +4188,6 @@ void Courtroom::on_ooc_return_pressed()
   ui_ooc_chat_message->clear();
 
   ui_ooc_chat_message->setFocus();
-}
-
-void Courtroom::on_ooc_toggle_clicked()
-{
-  if (server_ooc) {
-    ui_ms_chatlog->show();
-    ui_server_chatlog->hide();
-    ui_ooc_toggle->setText(tr("Master"));
-
-    server_ooc = false;
-  }
-  else {
-    ui_ms_chatlog->hide();
-    ui_server_chatlog->show();
-    ui_ooc_toggle->setText(tr("Server"));
-
-    server_ooc = true;
-  }
 }
 
 // Todo: multithread this due to some servers having large as hell music list

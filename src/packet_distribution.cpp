@@ -62,9 +62,6 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     if (lobby_constructed) {
       w_lobby->append_chatmessage(f_name, f_message);
     }
-    if (courtroom_constructed && courtroom_loaded) {
-      w_courtroom->append_ms_chatmessage(f_name, f_message);
-    }
   }
   else if (header == "AO2CHECK") {
     send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
@@ -448,8 +445,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (lobby_constructed)
-      w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
-
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 
