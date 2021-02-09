@@ -1585,10 +1585,11 @@ void Courtroom::list_music()
     ++n_listed_songs;
   }
 
-  ui_music_list->expandAll(); // Needs to somehow remember which categories were
-                              // expanded/collapsed if the music list didn't
-                              // change since last time
+  ui_music_list->collapseAll();
   if (ui_music_search->text() != "") {
+      ui_music_list->expandAll(); // Needs to somehow remember which categories were
+                                  // expanded/collapsed if the music list didn't
+                                  // change since last time
     on_music_search_edited(ui_music_search->text());
   }
 }
@@ -5373,11 +5374,13 @@ void Courtroom::on_switch_area_music_clicked()
   on_music_search_edited(ui_music_search->text());
   if (ui_area_list->isHidden()) {
     ui_area_list->show();
+	ui_music_list->collapseAll();
     ui_music_list->hide();
   }
   else {
     ui_area_list->hide();
     ui_music_list->show();
+	ui_music_list->collapseAll();
   }
 }
 
