@@ -757,15 +757,12 @@ private:
 
   AOButton *ui_back_to_lobby;
 
-  QLineEdit *ui_char_password;
-
   AOButton *ui_char_select_left;
   AOButton *ui_char_select_right;
 
   AOButton *ui_spectator;
 
   QLineEdit *ui_char_search;
-  QCheckBox *ui_char_passworded;
   QCheckBox *ui_char_taken;
 
   void construct_char_select();
@@ -948,7 +945,6 @@ private slots:
   void on_char_select_right_clicked();
   void on_char_search_changed();
   void on_char_taken_clicked();
-  void on_char_passworded_clicked();
 
   void on_spectator_clicked();
 

@@ -29,9 +29,6 @@ void Courtroom::construct_char_select()
 
   ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
 
-  ui_char_password = new QLineEdit(ui_char_select_background);
-  ui_char_password->setPlaceholderText(tr("Password"));
-
   ui_char_select_left = new AOButton(ui_char_select_background, ao_app);
   ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
 
@@ -43,16 +40,11 @@ void Courtroom::construct_char_select()
   ui_char_search->setFocus();
   set_size_and_pos(ui_char_search, "char_search");
 
-  ui_char_passworded = new QCheckBox(ui_char_select_background);
-  ui_char_passworded->setText(tr("Passworded"));
-  set_size_and_pos(ui_char_passworded, "char_passworded");
-
   ui_char_taken = new QCheckBox(ui_char_select_background);
   ui_char_taken->setText(tr("Taken"));
   set_size_and_pos(ui_char_taken, "char_taken");
 
   ui_char_taken->setChecked(true);
-  ui_char_passworded->setChecked(true);
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
@@ -71,13 +63,10 @@ void Courtroom::construct_char_select()
 
   connect(ui_char_search, SIGNAL(textEdited(const QString &)), this,
           SLOT(on_char_search_changed()));
-  connect(ui_char_passworded, SIGNAL(stateChanged(int)), this,
-          SLOT(on_char_passworded_clicked()));
   connect(ui_char_taken, SIGNAL(stateChanged(int)), this,
           SLOT(on_char_taken_clicked()));
 
   truncate_label_text(ui_char_taken, "char_taken");
-  truncate_label_text(ui_char_passworded, "char_passworded");
 }
 
 void Courtroom::set_char_select()
@@ -170,8 +159,6 @@ void Courtroom::char_clicked(int n_char)
   }
 
   if (n_char != m_cid) {
-    ao_app->send_server_packet(
-        new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(
         new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" +
                      QString::number(n_char) + "#" + get_hdid() + "#%"));
@@ -307,13 +294,6 @@ void Courtroom::filter_character_list()
     AOCharButton *current_char = ui_char_button_list.at(i);
     QTreeWidgetItem* current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchExactly | Qt::MatchRecursive, 1)[0];
 
-
-
-    // It seems passwording characters is unimplemented yet?
-    // Until then, this will stay here, I suppose.
-    // if (ui_char_passworded->isChecked() && character_is_passworded??)
-    //    continue;
-
     if (!ui_char_taken->isChecked() && char_list.at(i).taken) {
       current_char_list_item->setHidden(true);
       continue;
@@ -345,7 +325,5 @@ void Courtroom::filter_character_list()
 }
 
 void Courtroom::on_char_search_changed() { filter_character_list(); }
-
-void Courtroom::on_char_passworded_clicked() { filter_character_list(); }
 
 void Courtroom::on_char_taken_clicked() { filter_character_list(); }

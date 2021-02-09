@@ -987,8 +987,6 @@ void Courtroom::set_widgets()
   ui_back_to_lobby->setText(tr("Back to Lobby"));
   ui_back_to_lobby->setToolTip(tr("Return back to the server list."));
 
-  set_size_and_pos(ui_char_password, "char_password");
-
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
   set_size_and_pos(ui_char_select_left, "char_select_left");
