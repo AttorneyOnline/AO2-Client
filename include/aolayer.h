@@ -135,6 +135,8 @@ protected:
 
   // Set the movie's frame to provided pixmap
   void set_frame(QPixmap f_pixmap);
+  // Center the QLabel in the viewport based on the dimensions of f_pixmap
+  void center_pixmap(QPixmap f_pixmap);
 
 signals:
   void done();
