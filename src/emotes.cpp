@@ -39,6 +39,11 @@ void Courtroom::refresh_emotes()
   QPoint p_point =
       ao_app->get_button_spacing("emote_button_size", "courtroom_design.ini");
 
+  if (ui_emotes->width() == 0 || ui_emotes->height() == 0) { // Workaround for a nasty crash
+    ui_emotes->hide();
+    return;
+  }
+
   const int button_width = p_point.x();
   int x_spacing = f_spacing.x();
   int x_mod_count = 0;
