@@ -4341,6 +4341,7 @@ void Courtroom::on_pos_remove_clicked()
     ui_pos_dropdown->setCurrentIndex(0); // as a last resort, choose the first item in the dropdown
   current_side = "";
   ui_pos_remove->hide();
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::set_iniswap_dropdown()

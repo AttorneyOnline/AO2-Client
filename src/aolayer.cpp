@@ -140,7 +140,9 @@ void BackgroundLayer::load_image(QString p_filename)
   transform_mode =
       ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
   stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
+#ifdef DEBUG_MOVIE
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
+#endif
   start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename)));
 }
 
@@ -187,9 +189,11 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
     play_once = true;
     preanim_timer->start(duration * tick_ms);
   }
+#ifdef DEBUG_MOVIE
   qDebug() << "[CharLayer] anim loaded: prefix " << prefix << " filename "
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
+#endif
   QList<QString> pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname, prefix + current_emote)), // Default path
@@ -324,7 +328,9 @@ void AOLayer::start_playback(QString p_image)
   if (stretch_override != "")
     stretch = stretch_override.startsWith("true");
 
+#ifdef DEBUG_MOVIE
   qDebug() << "stretch:" << stretch << "filename:" << p_image;
+#endif
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
@@ -474,8 +480,10 @@ void CharLayer::load_network_effects()
           if (effect == "sfx^") // Currently the only frame result that feeds us
                                 // data, let's yank it in.
             effect += f_data;
+#ifdef DEBUG_MOVIE
           qDebug() << effect << f_data << "frame" << f_frame << "for"
                    << m_emote;
+#endif
           movie_effects[f_frame].append(effect);
         }
       }
