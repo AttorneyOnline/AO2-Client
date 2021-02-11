@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef _WIN32
-  setenv("QT_QPA_PLATFORM", "direct2d", false);
+  qputenv("QT_QPA_PLATFORM", "direct2d");
 #endif
 
   AOApplication main_app(argc, argv);
