@@ -644,13 +644,13 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_music_list, "music_list");
   ui_music_list->header()->setMinimumSectionSize(ui_music_list->width());
-  QString music_list_indentation = ao_app->get_font_name("music_list_indent", "courtroom_design.ini");
+  QString music_list_indentation = ao_app->get_design_element("music_list_indent", "courtroom_design.ini");
   if (music_list_indentation == "")
     ui_music_list->resetIndentation();
   else
     ui_music_list->setIndentation(music_list_indentation.toInt());
   
-  QString music_list_animated = ao_app->get_font_name("music_list_animated", "courtroom_design.ini");
+  QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
   if (music_list_animated == "1")
     ui_music_list->setAnimated(true);
   else
@@ -1053,12 +1053,12 @@ void Courtroom::set_font(QWidget *widget, QString class_name,
   QString design_file = "courtroom_fonts.ini";
   if (f_pointsize <= 0)
     f_pointsize =
-        ao_app->get_design_element(p_identifier, design_file, p_char).toInt();
+        ao_app->get_design_element(p_identifier, design_file, ao_app->get_chat(p_char)).toInt();
   if (font_name == "")
     font_name =
-        ao_app->get_design_element(p_identifier + "_font", design_file, p_char);
+        ao_app->get_design_element(p_identifier + "_font", design_file, ao_app->get_chat(p_char));
   QString f_color_result =
-      ao_app->get_design_element(p_identifier + "_color", design_file, p_char);
+      ao_app->get_design_element(p_identifier + "_color", design_file, ao_app->get_chat(p_char));
   QColor f_color(0, 0, 0);
   if (f_color_result != "") {
     QStringList color_list = f_color_result.split(",");
@@ -1070,10 +1070,10 @@ void Courtroom::set_font(QWidget *widget, QString class_name,
     }
   }
   bool bold =
-      ao_app->get_design_element(p_identifier + "_bold", design_file, p_char) ==
+      ao_app->get_design_element(p_identifier + "_bold", design_file, ao_app->get_chat(p_char)) ==
       "1"; // is the font bold or not?
   bool antialias = ao_app->get_design_element(p_identifier + "_sharp",
-                                              design_file, p_char) !=
+                                              design_file, ao_app->get_chat(p_char)) !=
                    "1"; // is the font anti-aliased or not?
 
   this->set_qfont(widget, class_name,
@@ -2095,7 +2095,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     }
 
     QString f_char = m_chatmessage[CHAR_NAME];
-    QString f_custom_theme = ao_app->get_char_shouts(f_char);
+    QString f_custom_theme = ao_app->get_chat(f_char);
     if (objection_mod <= 4 && objection_mod >= 1) {
       QString shout_message;
       switch (objection_mod) {
@@ -2215,19 +2215,19 @@ bool Courtroom::handle_objection()
     case 1:
       filename = "holdit_bubble";
       objection_player->play("holdit", m_chatmessage[CHAR_NAME],
-                             ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+                             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       break;
     case 2:
       filename = "objection_bubble";
       objection_player->play("objection", m_chatmessage[CHAR_NAME],
-                             ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+                             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       if (ao_app->objection_stop_music())
         music_player->stop();
       break;
     case 3:
       filename = "takethat_bubble";
       objection_player->play("takethat", m_chatmessage[CHAR_NAME],
-                             ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+                             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       break;
     // case 4 is AO2 only
     case 4:
@@ -2236,20 +2236,20 @@ bool Courtroom::handle_objection()
         objection_player->play(
             "custom_objections/" + custom_objection.split('.')[0],
             m_chatmessage[CHAR_NAME],
-            ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+            ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       else {
         filename = "custom";
         objection_player->play(
             "custom", m_chatmessage[CHAR_NAME],
-            ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+            ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
 	  break;
       m_chatmessage[EMOTE_MOD] = 1;
     }
     ui_vp_objection->load_image(
         filename, m_chatmessage[CHAR_NAME],
-        ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+        ao_app->get_chat(m_chatmessage[CHAR_NAME]));
     sfx_player->clear(); // Objection played! Cut all sfx.
     return true;
   }
@@ -2490,7 +2490,7 @@ void Courtroom::do_flash()
     return;
 
   QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_custom_theme = ao_app->get_char_shouts(f_char);
+  QString f_custom_theme = ao_app->get_chat(f_char);
   ui_vp_effect->stretch = true;
   ui_vp_effect->set_static_duration(60);
   ui_vp_effect->set_max_duration(60);
@@ -2601,11 +2601,11 @@ void Courtroom::initialize_chatbox()
     int extra_width =
         ao_app
             ->get_design_element("showname_extra_width", "courtroom_design.ini",
-                                 customchar)
+                                 ao_app->get_chat(customchar))
             .toInt();
     QString align = ao_app
                         ->get_design_element("showname_align",
-                                             "courtroom_design.ini", customchar)
+                                             "courtroom_design.ini", ao_app->get_chat(customchar))
                         .toLower();
     if (align == "right")
       ui_vp_showname->setAlignment(Qt::AlignRight);
@@ -2709,7 +2709,7 @@ void Courtroom::handle_ic_speaking()
       filename = "prosecution_speedlines";
     else
       filename = "defense_speedlines";
-    ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]));
+    ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
   }
 
   // Check if this is a talking color (white text, etc.)
@@ -3281,7 +3281,7 @@ void Courtroom::start_chat_ticking()
   chat_tick_timer->start(0); // Display the first char right away
 
   last_misc = current_misc;
-  current_misc = ao_app->get_char_shouts(m_chatmessage[CHAR_NAME]);
+  current_misc = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
   if (last_misc != current_misc)
     gen_char_rgb_list(m_chatmessage[CHAR_NAME]);
 

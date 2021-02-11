@@ -346,63 +346,36 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
   return return_value;
 }
 QString AOApplication::get_design_element(QString p_identifier, QString p_file,
-                                          QString p_char)
+                                          QString p_misc)
 {
-  QStringList paths{get_theme_path("misc/" + get_chat(p_char) + "/" +
-                                   p_file), // user theme overrides base/misc
-                    get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file,
-                    get_theme_path(p_file), get_theme_path(p_file, default_theme)};
-  for (const QString &path : paths) {
-    QString value = read_design_ini(p_identifier, path);
-    if (!value.isEmpty())
-      return value;
-  }
+  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme, p_misc);
+  QString value = read_design_ini(p_identifier, path);
+  if (!value.isEmpty())
+    return value;
   return "";
 }
-QString AOApplication::get_font_name(QString p_identifier, QString p_file)
-{
-  QString design_ini_path = get_theme_path(p_file);
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
-  QString default_path = get_theme_path(p_file, default_theme);
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, default_path);
-    if (f_result == "")
-      return "";
-  }
-  return f_result;
-}
+
+// tfw this function is only used for lobby and nowhere else
 int AOApplication::get_font_size(QString p_identifier, QString p_file)
 {
-  QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_theme_path(p_file, default_theme);
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
-
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, default_path);
-
-    if (f_result == "")
-      return 10;
-  }
-
-  return f_result.toInt();
+  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString value = read_design_ini(p_identifier, path);
+  if (!value.isEmpty())
+    return value.toInt();
+  return 10;
 }
 
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
-  QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_theme_path(p_file, default_theme);
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString value = read_design_ini(p_identifier, path);
 
   QColor return_color(0, 0, 0);
 
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, default_path);
+  if (value.isEmpty())
+    return return_color;
 
-    if (f_result == "")
-      return return_color;
-  }
-
-  QStringList color_list = f_result.split(",");
+  QStringList color_list = value.split(",");
 
   if (color_list.size() < 3)
     return return_color;
@@ -685,12 +658,7 @@ QString AOApplication::get_category(QString p_char)
 
 QString AOApplication::get_chat(QString p_char)
 {
-  if (p_char == "default")
-    return "default";
   QString f_result = read_char_ini(p_char, "chat", "Options");
-
-  // handling the correct order of chat is a bit complicated, we let the caller
-  // do it
   return f_result;
 }
 
@@ -708,14 +676,6 @@ int AOApplication::get_chat_size(QString p_char)
   if (f_result == "")
     return -1;
   return f_result.toInt();
-}
-
-QString AOApplication::get_char_shouts(QString p_char)
-{
-  QString f_result = read_char_ini(p_char, "shouts", "Options");
-  if (f_result == "")
-    return current_theme; // The default option is the current theme.
-  return f_result;
 }
 
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)

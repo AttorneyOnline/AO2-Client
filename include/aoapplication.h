@@ -305,10 +305,7 @@ public:
 
   // Returns the value to you
   QString get_design_element(QString p_identifier, QString p_file,
-                             QString p_char = "");
-
-  // Returns the name of the font with p_identifier from p_file
-  QString get_font_name(QString p_identifier, QString p_file);
+                             QString p_misc = "");
 
   // Returns the value of font_size with p_identifier from p_file
   int get_font_size(QString p_identifier, QString p_file);
@@ -366,9 +363,6 @@ public:
 
   // Returns the value of chat font size from the specific p_char's ini file
   int get_chat_size(QString p_char);
-
-  // Returns the value of shouts from the specified p_char's ini file
-  QString get_char_shouts(QString p_char);
 
   // Returns the preanim duration of p_char's p_emote
   int get_preanim_duration(QString p_char, QString p_emote);
