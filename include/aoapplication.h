@@ -483,6 +483,12 @@ public:
   // Get if automatic logging is enabled
   bool get_auto_logging_enabled();
 
+  // Get the subtheme from settings
+  QString get_subtheme();
+
+  // Currently defined subtheme
+  QString subtheme;
+
   QString default_theme = "default";
   QString current_theme = default_theme;
 

@@ -2575,10 +2575,10 @@ void Courtroom::initialize_chatbox()
 
     if (chatbox != "" && ao_app->is_customchat_enabled()) {
       chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chat");
-      if (!ui_vp_chatbox->set_chatbox(chatbox_path)) {
+      if (!ui_vp_chatbox->set_image(chatbox_path)) {
         chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-        if (!ui_vp_chatbox->set_chatbox(chatbox_path))
-          ui_vp_chatbox->set_chatbox(chatbox_path + "box");
+        if (!ui_vp_chatbox->set_image(chatbox_path))
+          ui_vp_chatbox->set_image(chatbox_path + "box");
       }
     }
 
@@ -2618,14 +2618,14 @@ void Courtroom::initialize_chatbox()
 
     if (extra_width > 0) {
       if (fm_width > default_width.width &&
-          ui_vp_chatbox->set_chatbox(
+          ui_vp_chatbox->set_image(
               chatbox_path +
               "med")) // This text be big. Let's do some shenanigans.
       {
         ui_vp_showname->resize(default_width.width + extra_width,
                                ui_vp_showname->height());
         if (fm_width > ui_vp_showname->width() &&
-            ui_vp_chatbox->set_chatbox(chatbox_path +
+            ui_vp_chatbox->set_image(chatbox_path +
                                        "big")) // Biggest possible size for us.
         {
           ui_vp_showname->resize(

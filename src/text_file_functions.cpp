@@ -1159,9 +1159,19 @@ QString AOApplication::get_casing_can_host_cases()
           .value<QString>();
   return result;
 }
+
 bool AOApplication::get_auto_logging_enabled()
 {
   QString result =
       configini->value("automatic_logging_enabled", "true").value<QString>();
   return result.startsWith("true");
+}
+
+QString AOApplication::get_subtheme()
+{
+  QString result =
+      configini->value("subtheme", "default").value<QString>();
+  if (result != subtheme && result == "default")
+      result = subtheme;
+  return result;
 }

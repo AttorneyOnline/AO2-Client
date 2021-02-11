@@ -104,13 +104,18 @@ QString AOApplication::get_evidence_path(QString p_file)
 
 QString AOApplication::get_asset_path(bool is_image, QString p_element, QString p_theme, QString p_subtheme, QString p_misc, QString p_character, QString p_placeholder)
 {
+  if (p_theme == "")
+      p_theme = current_theme;
   QStringList pathlist = {
+      p_element, // The path by itself
       get_character_path(p_character, p_element), // Character folder
-      get_theme_path("misc/" + p_misc + "/" + p_element), // Theme misc path
+      get_theme_path("misc/" + p_misc + "/" + p_element, p_theme + "/" + p_subtheme), // Subtheme misc path
+      get_theme_path("misc/" + p_misc + "/" + p_element, p_theme), // Theme misc path
+      get_theme_path(p_element, p_theme + "/" + p_subtheme), // Subtheme path
       get_misc_path(p_misc, p_element), // Base misc path
       get_theme_path(p_element, p_theme), // Theme path
       get_theme_path(p_element, default_theme), // Default theme path
-      get_theme_path(p_placeholder), // Placeholder path
+      get_theme_path(p_placeholder, p_theme), // Placeholder path
       get_theme_path(p_placeholder, default_theme), // Default placeholder path
   };
   QString path;
@@ -129,16 +134,15 @@ QString AOApplication::get_asset_path(bool is_image, QString p_element, QString 
 
 QString AOApplication::get_case_sensitive_path(QString p_file)
 {
-  QFileInfo file(p_file);
-  QString file_basename = file.fileName();
-
   // no path traversal above base folder
-  if (!(file.absolutePath().startsWith(get_base_path())))
-      return get_base_path() + file_basename;
+  if (!(p_file.startsWith(get_base_path())))
+      return get_base_path() + p_file;
 
   #ifdef CASE_SENSITIVE_FILESYSTEM
   // first, check to see if it's actually there (also serves as base case for
   // recursion)
+  QFileInfo file(p_file);
+  QString file_basename = file.fileName();
   if (exists(p_file))
     return p_file;
 
