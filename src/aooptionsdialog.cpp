@@ -78,7 +78,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   while (it.hasNext()) {
     QString actualname = QDir(it.next()).dirName();
     if (actualname != "." && actualname != "..")
-      ui_theme_combobox->addItem(actualname);;
+      ui_theme_combobox->addItem(actualname);
   }
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
