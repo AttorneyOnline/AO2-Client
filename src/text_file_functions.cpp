@@ -295,23 +295,18 @@ Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 {
-  QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_theme_path(p_file, default_theme);
-  QString f_result = read_design_ini(p_identifier, design_ini_path);
+  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString value = read_design_ini(p_identifier, path);
 
   QPoint return_value;
 
   return_value.setX(0);
   return_value.setY(0);
 
-  if (f_result == "") {
-    f_result = read_design_ini(p_identifier, default_path);
+  if (value == "")
+    return return_value;
 
-    if (f_result == "")
-      return return_value;
-  }
-
-  QStringList sub_line_elements = f_result.split(",");
+  QStringList sub_line_elements = value.split(",");
 
   if (sub_line_elements.size() < 2)
     return return_value;
@@ -389,18 +384,11 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
 
 QString AOApplication::get_stylesheet(QString p_file)
 {
-  QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_theme_path(p_file, default_theme);
-
+  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
   QFile design_ini;
-
-  design_ini.setFileName(design_ini_path);
-
-  if (!design_ini.open(QIODevice::ReadOnly)) {
-    design_ini.setFileName(default_path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      return "";
-  }
+  design_ini.setFileName(path);
+  if (!design_ini.open(QIODevice::ReadOnly))
+    return "";
 
   QTextStream in(&design_ini);
 
@@ -416,12 +404,9 @@ QString AOApplication::get_stylesheet(QString p_file)
 
 QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 {
-  QString design_ini_path = get_theme_path(p_file);
-
+  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
   QFile design_ini;
-
-  design_ini.setFileName(design_ini_path);
-
+  design_ini.setFileName(path);
   if (!design_ini.open(QIODevice::ReadOnly))
     return "";
 
@@ -452,13 +437,19 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 
 QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
 {
-  QStringList paths{get_theme_path("misc/" + get_chat(p_chat) + "/config.ini"),
-                    get_base_path() + "misc/" + get_chat(p_chat) +
+  // New Chadly method
+  QString path = get_asset_path(false, "chat_config.ini", current_theme, get_subtheme(), default_theme, p_chat);
+  QString value = read_design_ini(p_identifier, path);
+  if (!value.isEmpty())
+    return value.toLatin1();
+
+  // Backwards ass compatibility
+  QStringList backwards_paths{get_theme_path("misc/" + p_chat + "/config.ini"),
+                    get_base_path() + "misc/" + p_chat +
                         "/config.ini",
                     get_base_path() + "misc/default/config.ini",
                     get_theme_path("misc/default/config.ini")};
-
-  for (const QString &path : paths) {
+  for (const QString &path : backwards_paths) {
     QString value = read_design_ini(p_identifier, path);
     if (!value.isEmpty()) {
       return value.toLatin1();
@@ -489,20 +480,11 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 
 QString AOApplication::get_sfx(QString p_identifier, QString p_misc)
 {
-  QStringList paths{get_theme_path("misc/" + p_misc + "/courtroom_sounds.ini"),
-                    get_misc_path(p_misc, "courtroom_sounds.ini"),
-                    get_theme_path("courtroom_sounds.ini"),
-                    get_theme_path("courtroom_sounds.ini", default_theme)};
-
-  QString return_sfx = "";
-
-  for (const QString &path : paths) {
-    QString value = read_design_ini(p_identifier, path);
-    if (!value.isEmpty()) {
-      return value.toLatin1();
-    }
-  }
-  return return_sfx;
+  QString path = get_asset_path(false, "courtroom_sounds.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString value = read_design_ini(p_identifier, path);
+  if (!value.isEmpty())
+    return value.toLatin1();
+  return "";
 }
 
 QString AOApplication::get_sfx_suffix(QString sound_to_check)
@@ -530,9 +512,7 @@ QString AOApplication::get_image_suffix(QString path_to_check)
     return path_to_check + ".apng";
   if (file_exists(path_to_check + ".gif"))
     return path_to_check + ".gif";
-  if (file_exists(path_to_check + ".png"))
-    return path_to_check + ".png";
-  return path_to_check;
+  return path_to_check + ".png";
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and
@@ -860,37 +840,18 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
   return f_result.toInt();
 }
 
-QStringList AOApplication::get_theme_effects()
-{
-  QString p_path = get_theme_path("effects/effects.ini");
-  QString default_path = get_theme_path("effects/effects.ini", default_theme);
-
-  QStringList effects;
-  if (!file_exists(p_path)) {
-    p_path = default_path;
-    if (!file_exists(p_path))
-      return effects;
-  }
-
-  QStringList lines = read_file(p_path).split("\n");
-  foreach (QString effect, lines) {
-    effect = effect.split("=")[0].trimmed().split("_")[0];
-    if (!effect.isEmpty() && !effects.contains(effect))
-      effects.append(effect);
-  }
-  return effects;
-}
-
 QStringList AOApplication::get_effects(QString p_char)
 {
-  QString p_effect = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
-
-  QStringList effects = get_theme_effects();
-  if (!file_exists(p_path))
-    return effects;
+  QString p_misc = read_char_ini(p_char, "effects", "Options");
+  QString p_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme);
+  QString p_misc_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QStringList effects;
 
   QStringList lines = read_file(p_path).split("\n");
+  // Misc path different from default path, stack the new miscs on top of the defaults
+  if (p_misc_path != p_path) {
+      lines << read_file(p_misc_path).split("\n");
+  }
   foreach (QString effect, lines) {
     effect = effect.split("=")[0].trimmed().split("_")[0];
     if (!effect.isEmpty() && !effects.contains(effect))
@@ -903,27 +864,13 @@ QStringList AOApplication::get_effects(QString p_char)
 QString AOApplication::get_effect(QString effect, QString p_char,
                                   QString p_folder)
 {
-  QString p_effect = p_folder;
   if (p_folder == "")
-    p_effect = read_char_ini(p_char, "effects", "Options");
+    p_folder = read_char_ini(p_char, "effects", "Options");
 
-  QString p_path =
-      get_image_suffix(get_base_path() + "misc/" + p_effect + "/" + effect);
-  QString design_ini_path =
-      get_image_suffix(get_theme_path("effects/" + effect));
-  QString default_path =
-      get_image_suffix(get_theme_path("effects/" + effect, default_theme));
+  QString p_path = get_asset_path(false, "effects/" + effect, current_theme, get_subtheme(), default_theme, p_folder);
 
-  if (!file_exists(p_path)) {
-    p_path = design_ini_path;
-    if (!file_exists(p_path)) {
-      p_path = default_path;
-      if (!file_exists(p_path)) {
-        return "";
-      }
-    }
-  }
-
+  if (!file_exists(p_path))
+    return "";
   return p_path;
 }
 
@@ -935,36 +882,27 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
     f_property = fx_name;
   else
     f_property = fx_name + "_" + p_property;
-  QString p_effect = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
-  QString design_ini_path = get_theme_path("effects/effects.ini");
-  QString default_path = get_theme_path("effects/effects.ini", default_theme);
+
+  QString p_misc = read_char_ini(p_char, "effects", "Options");
+  QString p_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme);
+  QString p_misc_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
 
   QString f_result = read_design_ini(f_property, p_path);
-  if (f_result == "") {
-    f_result = read_design_ini(f_property, design_ini_path);
-    if (f_result == "") {
-      f_result = read_design_ini(f_property, default_path);
-    }
-  }
+  if (f_result == "")
+    f_result = read_design_ini(f_property, p_misc_path);
 
   if (fx_name == "realization" && p_property == "sound") {
     f_result = get_custom_realization(p_char);
   }
-
-  qDebug() << "got" << f_property << "of" << fx_name << "==" << f_result;
-
   return f_result;
 }
 
 QString AOApplication::get_custom_realization(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "realization", "Options");
-
   if (f_result == "")
     return get_sfx("realization");
-  else
-    return get_sfx_suffix(get_sounds_path(f_result));
+  return get_sfx_suffix(get_sounds_path(f_result));
 }
 
 bool AOApplication::get_blank_blip()

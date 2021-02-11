@@ -5091,21 +5091,21 @@ void Courtroom::set_text_color_dropdown()
   // config file once instead of several times
   for (int c = 0; c < max_colors; ++c) {
     QColor color =
-        ao_app->get_chat_color("c" + QString::number(c), current_char);
+        ao_app->get_chat_color("c" + QString::number(c), ao_app->get_chat(current_char));
     color_rgb_list.append(color);
     color_markdown_start_list.append(ao_app->get_chat_markup(
-        "c" + QString::number(c) + "_start", current_char));
+        "c" + QString::number(c) + "_start", ao_app->get_chat(current_char)));
     color_markdown_end_list.append(ao_app->get_chat_markup(
-        "c" + QString::number(c) + "_end", current_char));
+        "c" + QString::number(c) + "_end", ao_app->get_chat(current_char)));
     color_markdown_remove_list.append(
         ao_app->get_chat_markup("c" + QString::number(c) + "_remove",
-                                current_char) == "1");
+                                ao_app->get_chat(current_char)) == "1");
     color_markdown_talking_list.append(
         ao_app->get_chat_markup("c" + QString::number(c) + "_talking",
-                                current_char) != "0");
+                                ao_app->get_chat(current_char)) != "0");
 
     QString color_name = ao_app->get_chat_markup(
-        "c" + QString::number(c) + "_name", current_char);
+        "c" + QString::number(c) + "_name", ao_app->get_chat(current_char));
     if (color_name.isEmpty()) // Not defined
     {
       if (c > 0)
@@ -5127,7 +5127,7 @@ void Courtroom::set_text_color_dropdown()
 void Courtroom::gen_char_rgb_list(QString p_char) {
   char_color_rgb_list.clear();
   for (int c = 0; c < max_colors; ++c) {
-    QColor color = ao_app->get_chat_color("c" + QString::number(c), p_char);
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), ao_app->get_chat(p_char));
     char_color_rgb_list.append(color);
   }
 }
