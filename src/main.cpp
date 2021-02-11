@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
   AOApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
   setenv("QT_QPA_PLATFORM", "direct2d", false);
 #endif
 
