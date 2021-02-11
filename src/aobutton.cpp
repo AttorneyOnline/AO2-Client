@@ -34,5 +34,7 @@ void AOButton::set_image(QString p_image)
                         "background-color: #ffffff; border: 0px; }");
   }
   else
-    return;
+      this->setStyleSheet("QPushButton { border-image: url(); }"
+                          "QToolTip { background-image: url(); color: #000000; "
+                          "background-color: #ffffff; border: 0px; }");
 }
