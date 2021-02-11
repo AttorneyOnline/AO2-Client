@@ -19,9 +19,19 @@ int main(int argc, char *argv[])
   AOApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
+#ifdef WIN32
+  setenv("QT_QPA_PLATFORM", "direct2d", false);
+#endif
+
   AOApplication main_app(argc, argv);
 
   AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
+
+  QFontDatabase fontDatabase;
+  QDirIterator it(main_app.get_base_path() + "fonts",
+                  QDirIterator::Subdirectories);
+  while (it.hasNext())
+    fontDatabase.addApplicationFont(it.next());
 
   QSettings *configini = main_app.configini;
 
