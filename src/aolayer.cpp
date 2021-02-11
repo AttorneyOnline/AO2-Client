@@ -334,7 +334,6 @@ void AOLayer::start_playback(QString p_image)
     continuous = false;
   if (!continuous)
     frame = 0;
-  force_continuous = false;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
   if (((continuous) && (max_frames != last_max_frames)) || max_frames == 0) {
