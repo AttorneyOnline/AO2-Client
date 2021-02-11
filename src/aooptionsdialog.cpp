@@ -1,5 +1,7 @@
 #include "aooptionsdialog.h"
 #include "aoapplication.h"
+#include "courtroom.h"
+#include "lobby.h"
 #include "bass.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
@@ -22,12 +24,15 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_settings_buttons->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum));
   ui_settings_buttons->setOrientation(Qt::Horizontal);
   ui_settings_buttons->setStandardButtons(QDialogButtonBox::Cancel |
-                                          QDialogButtonBox::Save);
+                                          QDialogButtonBox::Save |
+                                          QDialogButtonBox::RestoreDefaults);
 
   QObject::connect(ui_settings_buttons, SIGNAL(accepted()), this,
                    SLOT(save_pressed()));
   QObject::connect(ui_settings_buttons, SIGNAL(rejected()), this,
                    SLOT(discard_pressed()));
+  QObject::connect(ui_settings_buttons, SIGNAL(clicked(QAbstractButton*)), this,
+                   SLOT(button_clicked(QAbstractButton*)));
 
   // We'll stop updates so that the window won't flicker while it's being made.
   setUpdatesEnabled(false);
@@ -68,17 +73,24 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
   // Fill the combobox with the names of the themes.
-  QDirIterator it(p_ao_app->get_base_path() + "themes", QDir::Dirs,
+  QDirIterator it(ao_app->get_base_path() + "themes", QDir::Dirs,
                   QDirIterator::NoIteratorFlags);
   while (it.hasNext()) {
     QString actualname = QDir(it.next()).dirName();
     if (actualname != "." && actualname != "..")
       ui_theme_combobox->addItem(actualname);
-    if (actualname == p_ao_app->read_theme())
-      ui_theme_combobox->setCurrentIndex(ui_theme_combobox->count() - 1);
   }
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
+
+  ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
+  ui_theme_reload_button->setText(tr("Reload Theme"));
+  ui_theme_reload_button->setToolTip(
+      tr("Refresh the theme and update all of the ui elements to match."));
+  row += 1;
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
+  QObject::connect(ui_theme_reload_button, SIGNAL(clicked()), this,
+          SLOT(on_reload_theme_clicked()));
 
   row += 1;
   ui_theme_log_divider = new QFrame(ui_form_layout_widget);
@@ -100,7 +112,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_downwards_lbl);
 
   ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-  ui_downwards_cb->setChecked(p_ao_app->get_log_goes_downwards());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_downwards_cb);
 
@@ -116,7 +127,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
   ui_length_spinbox->setSuffix(" lines");
   ui_length_spinbox->setMaximum(10000);
-  ui_length_spinbox->setValue(p_ao_app->get_max_log_size());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_length_spinbox);
 
@@ -131,7 +141,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_newline_lbl);
 
   ui_log_newline_cb = new QCheckBox(ui_form_layout_widget);
-  ui_log_newline_cb->setChecked(p_ao_app->get_log_newline());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_newline_cb);
 
@@ -147,7 +156,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_log_margin_spinbox = new QSpinBox(ui_form_layout_widget);
   ui_log_margin_spinbox->setSuffix(" px");
   ui_log_margin_spinbox->setMaximum(1000);
-  ui_log_margin_spinbox->setValue(p_ao_app->get_log_margin());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_margin_spinbox);
 
@@ -160,7 +168,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_lbl);
 
   ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
-  ui_log_timestamp_cb->setChecked(p_ao_app->get_log_timestamp());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
 
@@ -173,7 +180,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_ic_actions_lbl);
 
   ui_log_ic_actions_cb = new QCheckBox(ui_form_layout_widget);
-  ui_log_ic_actions_cb->setChecked(p_ao_app->get_log_ic_actions());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
   
@@ -190,7 +196,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_stay_time_spinbox = new QSpinBox(ui_form_layout_widget);
   ui_stay_time_spinbox->setSuffix(" ms");
   ui_stay_time_spinbox->setMaximum(10000);
-  ui_stay_time_spinbox->setValue(p_ao_app->stay_time());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stay_time_spinbox);
 
@@ -203,7 +208,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_desync_logs_lbl);
 
   ui_desync_logs_cb = new QCheckBox(ui_form_layout_widget);
-  ui_desync_logs_cb->setChecked(p_ao_app->get_log_timestamp());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_desync_logs_cb);
 
@@ -216,7 +220,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_instant_objection_lbl);
 
   ui_instant_objection_cb = new QCheckBox(ui_form_layout_widget);
-  ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_instant_objection_cb);
 
@@ -231,7 +234,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_text_crawl_spinbox = new QSpinBox(ui_form_layout_widget);
   ui_text_crawl_spinbox->setSuffix(" ms");
   ui_text_crawl_spinbox->setMaximum(500);
-  ui_text_crawl_spinbox->setValue(p_ao_app->get_text_crawl());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_text_crawl_spinbox);
 
@@ -246,7 +248,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_chat_ratelimit_spinbox = new QSpinBox(ui_form_layout_widget);
   ui_chat_ratelimit_spinbox->setSuffix(" ms");
   ui_chat_ratelimit_spinbox->setMaximum(5000);
-  ui_chat_ratelimit_spinbox->setValue(p_ao_app->get_chat_ratelimit());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_chat_ratelimit_spinbox);
 
@@ -269,7 +270,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_username_textbox = new QLineEdit(ui_form_layout_widget);
   ui_username_textbox->setMaxLength(30);
-  ui_username_textbox->setText(p_ao_app->get_default_username());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_username_textbox);
 
@@ -284,7 +284,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_showname_lbl);
 
   ui_showname_cb = new QCheckBox(ui_form_layout_widget);
-  ui_showname_cb->setChecked(p_ao_app->get_showname_enabled_by_default());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_showname_cb);
 
@@ -304,9 +303,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_ms_lbl);
 
-  QSettings *configini = ao_app->configini;
   ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
-  ui_ms_textbox->setText(configini->value("master", "").value<QString>());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_ms_textbox);
 
@@ -321,7 +318,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_discord_lbl);
 
   ui_discord_cb = new QCheckBox(ui_form_layout_widget);
-  ui_discord_cb->setChecked(ao_app->is_discord_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_discord_cb);
 
@@ -334,7 +330,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_language_combobox = new QComboBox(ui_form_layout_widget);
   ui_language_combobox->addItem(
-      configini->value("language", "  ").value<QString>() +
+      ao_app->configini->value("language", "  ").value<QString>() +
       tr(" - Keep current setting"));
   ui_language_combobox->addItem("   - Default");
   ui_language_combobox->addItem("en - English");
@@ -357,7 +353,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_shake_lbl);
 
   ui_shake_cb = new QCheckBox(ui_form_layout_widget);
-  ui_shake_cb->setChecked(ao_app->is_shake_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_shake_cb);
 
@@ -371,7 +366,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_effects_lbl);
 
   ui_effects_cb = new QCheckBox(ui_form_layout_widget);
-  ui_effects_cb->setChecked(ao_app->is_effects_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_effects_cb);
 
@@ -385,7 +379,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_framenetwork_lbl);
 
   ui_framenetwork_cb = new QCheckBox(ui_form_layout_widget);
-  ui_framenetwork_cb->setChecked(ao_app->is_frame_network_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_framenetwork_cb);
 
@@ -398,7 +391,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_colorlog_lbl);
 
   ui_colorlog_cb = new QCheckBox(ui_form_layout_widget);
-  ui_colorlog_cb->setChecked(ao_app->is_colorlog_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_colorlog_cb);
 
@@ -412,7 +404,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickysounds_lbl);
 
   ui_stickysounds_cb = new QCheckBox(ui_form_layout_widget);
-  ui_stickysounds_cb->setChecked(ao_app->is_stickysounds_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickysounds_cb);
 
@@ -427,7 +418,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                               ui_stickyeffects_lbl);
 
   ui_stickyeffects_cb = new QCheckBox(ui_form_layout_widget);
-  ui_stickyeffects_cb->setChecked(ao_app->is_stickyeffects_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickyeffects_cb);
 
@@ -441,7 +431,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickypres_lbl);
 
   ui_stickypres_cb = new QCheckBox(ui_form_layout_widget);
-  ui_stickypres_cb->setChecked(ao_app->is_stickypres_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickypres_cb);
 
@@ -455,7 +444,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_customchat_lbl);
 
   ui_customchat_cb = new QCheckBox(ui_form_layout_widget);
-  ui_customchat_cb->setChecked(ao_app->is_customchat_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_customchat_cb);
 
@@ -468,7 +456,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_continuous_lbl);
 
   ui_continuous_cb = new QCheckBox(ui_form_layout_widget);
-  ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_continuous_cb);
 
@@ -481,7 +468,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_category_stop_lbl);
 
   ui_category_stop_cb = new QCheckBox(ui_form_layout_widget);
-  ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
 
@@ -508,12 +494,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   sizePolicy.setHeightForWidth(
       ui_callwords_textbox->sizePolicy().hasHeightForWidth());
   ui_callwords_textbox->setSizePolicy(sizePolicy);
-
-  // Let's fill the callwords text edit with the already present callwords.
-  ui_callwords_textbox->document()->clear();
-  foreach (QString callword, p_ao_app->get_call_words()) {
-    ui_callwords_textbox->appendPlainText(callword);
-  }
 
   ui_callwords_layout->addWidget(ui_callwords_textbox);
 
@@ -561,7 +541,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   BASS_DEVICEINFO info;
   for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
     ui_audio_device_combobox->addItem(info.name);
-    if (p_ao_app->get_audio_output_device() == info.name)
+    if (ao_app->get_audio_output_device() == info.name)
       ui_audio_device_combobox->setCurrentIndex(
           ui_audio_device_combobox->count() - 1);
   }
@@ -584,7 +564,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_music_volume_lbl);
 
   ui_music_volume_spinbox = new QSpinBox(ui_audio_widget);
-  ui_music_volume_spinbox->setValue(p_ao_app->get_default_music());
   ui_music_volume_spinbox->setMaximum(100);
   ui_music_volume_spinbox->setSuffix("%");
 
@@ -600,7 +579,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_sfx_volume_lbl);
 
   ui_sfx_volume_spinbox = new QSpinBox(ui_audio_widget);
-  ui_sfx_volume_spinbox->setValue(p_ao_app->get_default_sfx());
   ui_sfx_volume_spinbox->setMaximum(100);
   ui_sfx_volume_spinbox->setSuffix("%");
 
@@ -616,7 +594,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_blips_volume_lbl);
 
   ui_blips_volume_spinbox = new QSpinBox(ui_audio_widget);
-  ui_blips_volume_spinbox->setValue(p_ao_app->get_default_blip());
   ui_blips_volume_spinbox->setMaximum(100);
   ui_blips_volume_spinbox->setSuffix("%");
 
@@ -640,7 +617,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_bliprate_lbl);
 
   ui_bliprate_spinbox = new QSpinBox(ui_audio_widget);
-  ui_bliprate_spinbox->setValue(p_ao_app->read_blip_rate());
   ui_bliprate_spinbox->setMinimum(1);
   ui_bliprate_spinbox->setToolTip(
       tr("Play a blip sound \"once per every X symbols\", where "
@@ -658,7 +634,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_blank_blips_lbl);
 
   ui_blank_blips_cb = new QCheckBox(ui_audio_widget);
-  ui_blank_blips_cb->setChecked(p_ao_app->get_blank_blip());
 
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_blank_blips_cb);
 
@@ -671,7 +646,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_loopsfx_lbl);
 
   ui_loopsfx_cb = new QCheckBox(ui_audio_widget);
-  ui_loopsfx_cb->setChecked(p_ao_app->get_looping_sfx());
 
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_loopsfx_cb);
 
@@ -685,7 +659,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_objectmusic_lbl);
 
   ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
-  ui_objectmusic_cb->setChecked(p_ao_app->objection_stop_music());
 
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_objectmusic_cb);
 
@@ -730,7 +703,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                               ui_casing_enabled_lbl);
 
   ui_casing_enabled_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole,
                               ui_casing_enabled_cb);
@@ -746,7 +718,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_def_lbl);
 
   ui_casing_def_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_def_cb);
 
@@ -762,7 +733,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_pro_lbl);
 
   ui_casing_pro_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_pro_cb);
 
@@ -777,7 +747,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_jud_lbl);
 
   ui_casing_jud_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_jud_cb->setChecked(ao_app->get_casing_judge_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_jud_cb);
 
@@ -792,7 +761,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_jur_lbl);
 
   ui_casing_jur_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_jur_cb);
 
@@ -808,7 +776,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_steno_lbl);
 
   ui_casing_steno_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_steno_cb);
 
@@ -824,7 +791,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_casing_cm_lbl);
 
   ui_casing_cm_cb = new QCheckBox(ui_casing_widget);
-  ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_casing_cm_cb);
 
@@ -841,7 +807,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                               ui_casing_cm_cases_lbl);
 
   ui_casing_cm_cases_textbox = new QLineEdit(ui_casing_widget);
-  ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole,
                               ui_casing_cm_cases_textbox);
@@ -856,12 +821,68 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_log_lbl);
 
   ui_log_cb = new QCheckBox(ui_casing_widget);
-  ui_log_cb->setChecked(ao_app->get_auto_logging_enabled());
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_log_cb);
 
+  update_values();
   // When we're done, we should continue the updates!
   setUpdatesEnabled(true);
+}
+
+void AOOptionsDialog::update_values() {
+  for (int i = 0; i < ui_theme_combobox->count(); ++i) {
+    if (ui_theme_combobox->itemText(i) == ao_app->read_theme())
+    {
+      ui_theme_combobox->setCurrentIndex(i);
+      break;
+    }
+  }
+  // Let's fill the callwords text edit with the already present callwords.
+  ui_callwords_textbox->document()->clear();
+  foreach (QString callword, ao_app->get_call_words()) {
+    ui_callwords_textbox->appendPlainText(callword);
+  }
+  ui_ms_textbox->setText(ao_app->configini->value("master", "").value<QString>());
+  ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
+  ui_username_textbox->setText(ao_app->get_default_username());
+  ui_downwards_cb->setChecked(ao_app->get_log_goes_downwards());
+  ui_log_newline_cb->setChecked(ao_app->get_log_newline());
+  ui_log_timestamp_cb->setChecked(ao_app->get_log_timestamp());
+  ui_log_ic_actions_cb->setChecked(ao_app->get_log_ic_actions());
+  ui_desync_logs_cb->setChecked(ao_app->get_log_timestamp());
+  ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
+  ui_showname_cb->setChecked(ao_app->get_showname_enabled_by_default());
+  ui_discord_cb->setChecked(ao_app->is_discord_enabled());
+  ui_shake_cb->setChecked(ao_app->is_shake_enabled());
+  ui_effects_cb->setChecked(ao_app->is_effects_enabled());
+  ui_framenetwork_cb->setChecked(ao_app->is_frame_network_enabled());
+  ui_colorlog_cb->setChecked(ao_app->is_colorlog_enabled());
+  ui_stickysounds_cb->setChecked(ao_app->is_stickysounds_enabled());
+  ui_stickyeffects_cb->setChecked(ao_app->is_stickyeffects_enabled());
+  ui_stickypres_cb->setChecked(ao_app->is_stickypres_enabled());
+  ui_customchat_cb->setChecked(ao_app->is_customchat_enabled());
+  ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
+  ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
+  ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());
+  ui_loopsfx_cb->setChecked(ao_app->get_looping_sfx());
+  ui_objectmusic_cb->setChecked(ao_app->objection_stop_music());
+  ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
+  ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
+  ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
+  ui_casing_jud_cb->setChecked(ao_app->get_casing_judge_enabled());
+  ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
+  ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
+  ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
+  ui_log_cb->setChecked(ao_app->get_auto_logging_enabled());
+  ui_length_spinbox->setValue(ao_app->get_max_log_size());
+  ui_log_margin_spinbox->setValue(ao_app->get_log_margin());
+  ui_stay_time_spinbox->setValue(ao_app->stay_time());
+  ui_text_crawl_spinbox->setValue(ao_app->get_text_crawl());
+  ui_chat_ratelimit_spinbox->setValue(ao_app->get_chat_ratelimit());
+  ui_music_volume_spinbox->setValue(ao_app->get_default_music());
+  ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
+  ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
+  ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
 }
 
 void AOOptionsDialog::save_pressed()
@@ -934,10 +955,47 @@ void AOOptionsDialog::save_pressed()
     ao_app->initBASS();
 
   callwordsini->close();
+
+  // We most probably pressed "Restore defaults" at some point. Since we're saving our settings, remove the temporary file.
+  if (QFile::exists(ao_app->get_base_path() + "config.temp"))
+      QFile::remove(ao_app->get_base_path() + "config.temp");
   done(0);
 }
 
-void AOOptionsDialog::discard_pressed() { done(0); }
+void AOOptionsDialog::discard_pressed() {
+    // The .temp file exists, meaning we are trying to undo the user clicking on "Restore defaults" and bring back the old settings.
+    if (QFile::exists(ao_app->get_base_path() + "config.temp")) {
+        // Delete the QSettings object so it does not interfere with the file
+        delete ao_app->configini;
+        // Remove the current config.ini
+        QFile::remove(ao_app->get_base_path() + "config.ini");
+        // Rename .temp to .ini
+        QFile::rename(ao_app->get_base_path() + "config.temp", ao_app->get_base_path() + "config.ini");
+        // Recreate the QSettings object from the ini file, restoring the settings before the Options Dialog was opened..
+        ao_app->configini =
+            new QSettings(ao_app->get_base_path() + "config.ini", QSettings::IniFormat);
+    }
+    done(0);
+}
+
+void AOOptionsDialog::button_clicked(QAbstractButton *button) {
+    if (ui_settings_buttons->buttonRole(button) == QDialogButtonBox::ResetRole) {
+        // Store the current settings as a .temp file
+        QFile::rename(ao_app->get_base_path() + "config.ini", ao_app->get_base_path() + "config.temp");
+        // Load up the default settings
+        ao_app->configini->clear();
+        // Update the values on the settings ui
+        update_values();
+    }
+}
+
+void AOOptionsDialog::on_reload_theme_clicked() {
+    ao_app->configini->setValue("theme", ui_theme_combobox->currentText());
+    if (ao_app->courtroom_constructed)
+        ao_app->w_courtroom->on_reload_theme_clicked();
+    if (ao_app->lobby_constructed)
+        ao_app->w_lobby->set_widgets();
+}
 
 #if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needs_default_audiodev() { return true; }
