@@ -18,8 +18,6 @@ void Courtroom::construct_char_select()
   ui_char_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_char_list->hideColumn(1);
   ui_char_list->setDropIndicatorShown(true);
-  set_size_and_pos(ui_char_list, "char_list");
-
 
   ui_char_buttons = new QWidget(ui_char_select_background);
 
@@ -40,21 +38,12 @@ void Courtroom::construct_char_select()
 
   ui_char_search = new QLineEdit(ui_char_select_background);
   ui_char_search->setPlaceholderText(tr("Search"));
-  ui_char_search->setFocus();
-  set_size_and_pos(ui_char_search, "char_search");
 
   ui_char_passworded = new QCheckBox(ui_char_select_background);
   ui_char_passworded->setText(tr("Passworded"));
-  set_size_and_pos(ui_char_passworded, "char_passworded");
 
   ui_char_taken = new QCheckBox(ui_char_select_background);
   ui_char_taken->setText(tr("Taken"));
-  set_size_and_pos(ui_char_taken, "char_taken");
-
-  ui_char_taken->setChecked(true);
-  ui_char_passworded->setChecked(true);
-
-  set_size_and_pos(ui_char_buttons, "char_buttons");
 
   connect(ui_char_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
           this, SLOT(on_char_list_double_clicked(QTreeWidgetItem *, int)));
@@ -76,8 +65,6 @@ void Courtroom::construct_char_select()
   connect(ui_char_taken, SIGNAL(stateChanged(int)), this,
           SLOT(on_char_taken_clicked()));
 
-  truncate_label_text(ui_char_taken, "char_taken");
-  truncate_label_text(ui_char_passworded, "char_passworded");
 }
 
 void Courtroom::set_char_select()
@@ -94,9 +81,21 @@ void Courtroom::set_char_select()
   }
   else
     this->setFixedSize(f_charselect.width, f_charselect.height);
-
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
   ui_char_select_background->set_image("charselect_background");
+
+  ui_char_search->setFocus();
+  set_size_and_pos(ui_char_search, "char_search");
+  set_size_and_pos(ui_char_list, "char_list");
+  set_size_and_pos(ui_char_passworded, "char_passworded");
+  set_size_and_pos(ui_char_taken, "char_taken");
+  set_size_and_pos(ui_char_buttons, "char_buttons");
+
+  ui_char_taken->setChecked(true);
+  ui_char_passworded->setChecked(true);
+
+  truncate_label_text(ui_char_taken, "char_taken");
+  truncate_label_text(ui_char_passworded, "char_passworded");
 
   filter_character_list();
 
