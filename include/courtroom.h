@@ -801,6 +801,7 @@ public slots:
 
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
+  void on_reload_theme_clicked();
 
 private slots:
   void start_chat_ticking();
@@ -911,7 +912,6 @@ private slots:
   void on_guilty_clicked();
 
   void on_change_character_clicked();
-  void on_reload_theme_clicked();
   void on_call_mod_clicked();
   void on_settings_clicked();
   void on_announce_casing_clicked();

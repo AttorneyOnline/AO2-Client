@@ -8,6 +8,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QFormLayout>
@@ -23,6 +24,9 @@
 
 #include <QDirIterator>
 #include <QTextStream>
+
+class Lobby;
+class Courtroom;
 
 class AOOptionsDialog : public QDialog {
   Q_OBJECT
@@ -41,6 +45,7 @@ private:
   QFormLayout *ui_gameplay_form;
   QLabel *ui_theme_label;
   QComboBox *ui_theme_combobox;
+  QPushButton *ui_theme_reload_button;
   QFrame *ui_theme_log_divider;
   QLabel *ui_downwards_lbl;
   QCheckBox *ui_downwards_cb;
@@ -165,6 +170,7 @@ signals:
 public slots:
   void save_pressed();
   void discard_pressed();
+  void on_reload_theme_clicked();
 };
 
 #endif // AOOPTIONSDIALOG_H

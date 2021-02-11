@@ -1,5 +1,7 @@
 #include "aooptionsdialog.h"
 #include "aoapplication.h"
+#include "courtroom.h"
+#include "lobby.h"
 #include "bass.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
@@ -79,6 +81,15 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   }
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
+
+  ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
+  ui_theme_reload_button->setText(tr("Reload Theme"));
+  ui_theme_reload_button->setToolTip(
+      tr("Refresh the theme and update all of the ui elements to match."));
+  row += 1;
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
+  QObject::connect(ui_theme_reload_button, SIGNAL(clicked()), this,
+          SLOT(on_reload_theme_clicked()));
 
   row += 1;
   ui_theme_log_divider = new QFrame(ui_form_layout_widget);
@@ -938,6 +949,14 @@ void AOOptionsDialog::save_pressed()
 }
 
 void AOOptionsDialog::discard_pressed() { done(0); }
+
+void AOOptionsDialog::on_reload_theme_clicked() {
+    ao_app->configini->setValue("theme", ui_theme_combobox->currentText());
+    if (ao_app->courtroom_constructed)
+        ao_app->w_courtroom->on_reload_theme_clicked();
+    if (ao_app->lobby_constructed)
+        ao_app->w_lobby->set_widgets();
+}
 
 #if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needs_default_audiodev() { return true; }
