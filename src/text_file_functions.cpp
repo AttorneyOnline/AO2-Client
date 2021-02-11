@@ -449,8 +449,8 @@ QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
                         "/config.ini",
                     get_base_path() + "misc/default/config.ini",
                     get_theme_path("misc/default/config.ini")};
-  for (const QString &path : backwards_paths) {
-    QString value = read_design_ini(p_identifier, path);
+  for (const QString &p : backwards_paths) {
+    QString value = read_design_ini(p_identifier, p);
     if (!value.isEmpty()) {
       return value.toLatin1();
     }
@@ -638,6 +638,8 @@ QString AOApplication::get_category(QString p_char)
 
 QString AOApplication::get_chat(QString p_char)
 {
+  if (p_char == "default")
+    return "default";
   QString f_result = read_char_ini(p_char, "chat", "Options");
   return f_result;
 }

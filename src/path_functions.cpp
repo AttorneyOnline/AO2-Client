@@ -106,18 +106,27 @@ QString AOApplication::get_asset_path(bool is_image, QString p_element, QString 
 {
   if (p_theme == "")
       p_theme = current_theme;
-  QStringList pathlist = {
-      p_element, // The path by itself
-      get_character_path(p_character, p_element), // Character folder
-      get_theme_path("misc/" + p_misc + "/" + p_element, p_theme + "/" + p_subtheme), // Subtheme misc path
-      get_theme_path("misc/" + p_misc + "/" + p_element, p_theme), // Theme misc path
-      get_theme_path(p_element, p_theme + "/" + p_subtheme), // Subtheme path
-      get_misc_path(p_misc, p_element), // Base misc path
-      get_theme_path(p_element, p_theme), // Theme path
-      get_theme_path(p_element, p_default_theme), // Default theme path
-      get_theme_path(p_placeholder, p_theme), // Placeholder path
-      get_theme_path(p_placeholder, p_default_theme), // Default placeholder path
-  };
+  QStringList pathlist;
+  pathlist += p_element; // The path by itself
+  if (!p_character.isEmpty())
+    pathlist += get_character_path(p_character, p_element); // Character folder
+  if (!p_misc.isEmpty() && !p_theme.isEmpty() && !p_subtheme.isEmpty())
+    pathlist += get_theme_path("misc/" + p_misc + "/" + p_element, p_theme + "/" + p_subtheme); // Subtheme misc path
+  if (!p_misc.isEmpty() && !p_theme.isEmpty())
+    pathlist += get_theme_path("misc/" + p_misc + "/" + p_element, p_theme); // Theme misc path
+  if (!p_theme.isEmpty() && !p_subtheme.isEmpty())
+    pathlist += get_theme_path(p_element, p_theme + "/" + p_subtheme); // Subtheme path
+  if (!p_misc.isEmpty())
+    pathlist += get_misc_path(p_misc, p_element); // Base misc path
+  if (!p_theme.isEmpty())
+    pathlist += get_theme_path(p_element, p_theme); // Theme path
+  if (!p_default_theme.isEmpty())
+    pathlist += get_theme_path(p_element, p_default_theme); // Default theme path
+  if (!p_placeholder.isEmpty() && !p_theme.isEmpty())
+    pathlist += get_theme_path(p_placeholder, p_theme); // Placeholder path
+  if (!p_placeholder.isEmpty() && !p_default_theme.isEmpty())
+    pathlist += get_theme_path(p_placeholder, p_default_theme); // Default placeholder path
+
   QString path;
   for (QString p : pathlist) {
       if (is_image) {
