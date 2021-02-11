@@ -130,9 +130,7 @@ public:
   // implementation in path_functions.cpp
   QString get_base_path();
   QString get_data_path();
-  QString get_theme_path(QString p_file);
-  QString get_default_theme_path(QString p_file);
-  QString get_custom_theme_path(QString p_theme, QString p_file);
+  QString get_theme_path(QString p_file, QString p_theme="");
   QString get_character_path(QString p_char, QString p_file);
   QString get_misc_path(QString p_misc, QString p_file);
   QString get_sounds_path(QString p_file);
@@ -140,6 +138,7 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
+  QString get_asset_path(bool is_image, QString p_element, QString p_theme="", QString p_subtheme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for reading and writing files //////
@@ -484,6 +483,9 @@ public:
   // Get if automatic logging is enabled
   bool get_auto_logging_enabled();
 
+  QString default_theme = "default";
+  QString current_theme = default_theme;
+
   // The file name of the log file in base/logs.
   QString log_filename;
 
@@ -500,8 +502,6 @@ private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 9;
   const int MINOR_VERSION = 0;
-
-  QString current_theme = "default";
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;

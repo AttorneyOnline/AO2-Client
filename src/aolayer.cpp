@@ -206,8 +206,8 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           current_emote)), // Just use the non-prefixed image, animated or not
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Theme placeholder path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          "placeholder"))}; // Default theme placeholder path
+      ao_app->get_image_suffix(ao_app->get_theme_path(
+          "placeholder", ao_app->default_theme))}; // Default theme placeholder path
   this->start_playback(find_image(pathlist));
 }
 
@@ -225,23 +225,23 @@ void SplashLayer::load_image(QString p_filename, QString p_charname,
       ao_app->get_image_suffix(
           ao_app->get_theme_path(p_filename)), // Theme path
       ao_app->get_image_suffix(
-          ao_app->get_default_theme_path(p_filename)), // Default theme path
+          ao_app->get_theme_path(p_filename, ao_app->default_theme)), // Default theme path
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Placeholder path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          "placeholder")), // Default placeholder path
+      ao_app->get_image_suffix(ao_app->get_theme_path(
+          "placeholder", ao_app->default_theme)), // Default placeholder path
   };
   QString final_image = find_image(pathlist);
   if (final_image == ao_app->get_theme_path("custom.png") ||
-      final_image == ao_app->get_default_theme_path("custom.png") ||
+      final_image == ao_app->get_theme_path("custom.png", ao_app->default_theme) ||
       final_image == ao_app->get_theme_path("witnesstestimony.png") ||
-      final_image == ao_app->get_default_theme_path("witnesstestimony.png") ||
+      final_image == ao_app->get_theme_path("witnesstestimony.png", ao_app->default_theme) ||
       final_image == ao_app->get_theme_path("crossexamination.png") ||
-      final_image == ao_app->get_default_theme_path("crossexamination.png")) 
+      final_image == ao_app->get_theme_path("crossexamination.png", ao_app->default_theme))
     // stupid exceptions because themes are stupid
     final_image = find_image(
         {ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")),
-         ao_app->get_image_suffix(ao_app->get_default_theme_path("placeholder"))});
+         ao_app->get_image_suffix(ao_app->get_theme_path("placeholder", ao_app->default_theme))});
   start_playback(final_image);
 }
 
@@ -267,8 +267,8 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
           p_miscname, p_filename)), // then check our global misc folder
       ao_app->get_image_suffix(ao_app->get_theme_path(
           p_filename)), // then check the user's theme for a default image
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          p_filename))}; // and finally check the default theme
+      ao_app->get_image_suffix(ao_app->get_theme_path(
+          p_filename, ao_app->default_theme))}; // and finally check the default theme
   start_playback(find_image(pathlist));
 }
 
@@ -279,10 +279,10 @@ void StickerLayer::load_image(QString p_charname)
   QStringList pathlist = {
       ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
                                 miscname + "/sticker/" + p_charname), // Misc path
-      ao_app->get_image_suffix(ao_app->get_custom_theme_path(miscname, "sticker/" + p_charname)), // Custom theme path
+      ao_app->get_image_suffix(ao_app->get_theme_path("sticker/" + p_charname, miscname)), // Custom theme path
       ao_app->get_image_suffix(ao_app->get_theme_path("sticker/" + p_charname)), // Theme path
       ao_app->get_image_suffix(
-          ao_app->get_default_theme_path("sticker/" + p_charname)), // Default theme path
+          ao_app->get_theme_path("sticker/" + p_charname, ao_app->default_theme)), // Default theme path
       ao_app->get_image_suffix(
           ao_app->get_character_path(p_charname, "sticker")), // Character folder
       ao_app->get_image_suffix(

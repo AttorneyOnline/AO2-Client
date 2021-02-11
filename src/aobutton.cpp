@@ -16,7 +16,7 @@ void AOButton::set_image(QString p_image)
   QString image_path =
       ao_app->get_image_suffix(ao_app->get_theme_path(p_image));
   QString default_image_path =
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(p_image));
+      ao_app->get_image_suffix(ao_app->get_theme_path(p_image, ao_app->default_theme));
 
   if (file_exists(image_path)) {
     this->setText("");

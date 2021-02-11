@@ -41,21 +41,11 @@ QString AOApplication::get_base_path()
 
 QString AOApplication::get_data_path() { return get_base_path() + "data/"; }
 
-QString AOApplication::get_default_theme_path(QString p_file)
+QString AOApplication::get_theme_path(QString p_file, QString p_theme)
 {
-  QString path = get_base_path() + "themes/default/" + p_file;
-  return get_case_sensitive_path(path);
-}
-
-QString AOApplication::get_custom_theme_path(QString p_theme, QString p_file)
-{
+  if (p_theme == "")
+      p_theme = current_theme;
   QString path = get_base_path() + "themes/" + p_theme + "/" + p_file;
-  return get_case_sensitive_path(path);
-}
-
-QString AOApplication::get_theme_path(QString p_file)
-{
-  QString path = get_base_path() + "themes/" + current_theme + "/" + p_file;
   return get_case_sensitive_path(path);
 }
 
@@ -110,6 +100,31 @@ QString AOApplication::get_evidence_path(QString p_file)
 {
   QString path = get_base_path() + "evidence/" + p_file;
   return get_case_sensitive_path(path);
+}
+
+QString AOApplication::get_asset_path(bool is_image, QString p_element, QString p_theme, QString p_subtheme, QString p_misc, QString p_character, QString p_placeholder)
+{
+  QStringList pathlist = {
+      get_character_path(p_character, p_element), // Character folder
+      get_theme_path("misc/" + p_misc + "/" + p_element), // Theme misc path
+      get_misc_path(p_misc, p_element), // Base misc path
+      get_theme_path(p_element, p_theme), // Theme path
+      get_theme_path(p_element, default_theme), // Default theme path
+      get_theme_path(p_placeholder), // Placeholder path
+      get_theme_path(p_placeholder, default_theme), // Default placeholder path
+  };
+  QString path;
+  for (QString p : pathlist) {
+      if (is_image) {
+        p = get_image_suffix(p);
+      }
+      p = get_case_sensitive_path(p);
+      if (file_exists(p)) {
+          path = p;
+          break;
+      }
+  }
+  return path;
 }
 
 QString AOApplication::get_case_sensitive_path(QString p_file)

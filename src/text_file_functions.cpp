@@ -296,7 +296,7 @@ Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_default_theme_path(p_file);
+  QString default_path = get_theme_path(p_file, default_theme);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   QPoint return_value;
@@ -351,7 +351,7 @@ QString AOApplication::get_design_element(QString p_identifier, QString p_file,
   QStringList paths{get_theme_path("misc/" + get_chat(p_char) + "/" +
                                    p_file), // user theme overrides base/misc
                     get_base_path() + "misc/" + get_chat(p_char) + "/" + p_file,
-                    get_theme_path(p_file), get_default_theme_path(p_file)};
+                    get_theme_path(p_file), get_theme_path(p_file, default_theme)};
   for (const QString &path : paths) {
     QString value = read_design_ini(p_identifier, path);
     if (!value.isEmpty())
@@ -363,7 +363,7 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
-  QString default_path = get_default_theme_path(p_file);
+  QString default_path = get_theme_path(p_file, default_theme);
   if (f_result == "") {
     f_result = read_design_ini(p_identifier, default_path);
     if (f_result == "")
@@ -374,7 +374,7 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
 int AOApplication::get_font_size(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_default_theme_path(p_file);
+  QString default_path = get_theme_path(p_file, default_theme);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   if (f_result == "") {
@@ -390,7 +390,7 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_default_theme_path(p_file);
+  QString default_path = get_theme_path(p_file, default_theme);
   QString f_result = read_design_ini(p_identifier, design_ini_path);
 
   QColor return_color(0, 0, 0);
@@ -417,7 +417,7 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
 QString AOApplication::get_stylesheet(QString p_file)
 {
   QString design_ini_path = get_theme_path(p_file);
-  QString default_path = get_default_theme_path(p_file);
+  QString default_path = get_theme_path(p_file, default_theme);
 
   QFile design_ini;
 
@@ -519,7 +519,7 @@ QString AOApplication::get_sfx(QString p_identifier, QString p_misc)
   QStringList paths{get_theme_path("misc/" + p_misc + "/courtroom_sounds.ini"),
                     get_misc_path(p_misc, "courtroom_sounds.ini"),
                     get_theme_path("courtroom_sounds.ini"),
-                    get_default_theme_path("courtroom_sounds.ini")};
+                    get_theme_path("courtroom_sounds.ini", default_theme)};
 
   QString return_sfx = "";
 
@@ -557,7 +557,9 @@ QString AOApplication::get_image_suffix(QString path_to_check)
     return path_to_check + ".apng";
   if (file_exists(path_to_check + ".gif"))
     return path_to_check + ".gif";
-  return path_to_check + ".png";
+  if (file_exists(path_to_check + ".png"))
+    return path_to_check + ".png";
+  return path_to_check;
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and
@@ -901,7 +903,7 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 QStringList AOApplication::get_theme_effects()
 {
   QString p_path = get_theme_path("effects/effects.ini");
-  QString default_path = get_default_theme_path("effects/effects.ini");
+  QString default_path = get_theme_path("effects/effects.ini", default_theme);
 
   QStringList effects;
   if (!file_exists(p_path)) {
@@ -950,7 +952,7 @@ QString AOApplication::get_effect(QString effect, QString p_char,
   QString design_ini_path =
       get_image_suffix(get_theme_path("effects/" + effect));
   QString default_path =
-      get_image_suffix(get_default_theme_path("effects/" + effect));
+      get_image_suffix(get_theme_path("effects/" + effect, default_theme));
 
   if (!file_exists(p_path)) {
     p_path = design_ini_path;
@@ -976,7 +978,7 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
   QString p_effect = read_char_ini(p_char, "effects", "Options");
   QString p_path = get_base_path() + "misc/" + p_effect + "/effects.ini";
   QString design_ini_path = get_theme_path("effects/effects.ini");
-  QString default_path = get_default_theme_path("effects/effects.ini");
+  QString default_path = get_theme_path("effects/effects.ini", default_theme);
 
   QString f_result = read_design_ini(f_property, p_path);
   if (f_result == "") {

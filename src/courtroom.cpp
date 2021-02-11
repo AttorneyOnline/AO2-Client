@@ -4550,7 +4550,7 @@ void Courtroom::set_effects_dropdown()
   QString custom_path =
       ao_app->get_base_path() + "misc/" + p_effect + "/icons/";
   QString theme_path = ao_app->get_theme_path("effects/icons/");
-  QString default_path = ao_app->get_default_theme_path("effects/icons/");
+  QString default_path = ao_app->get_theme_path("effects/icons/", "default");
   for (int i = 0; i < ui_effects_dropdown->count(); ++i) {
     QString entry = ui_effects_dropdown->itemText(i);
     QString iconpath = ao_app->get_image_suffix(custom_path + entry);
@@ -4588,7 +4588,7 @@ void Courtroom::on_effects_edit_requested()
 {
   QString p_path = ao_app->get_theme_path("effects/");
   if (!dir_exists(p_path)) {
-    p_path = ao_app->get_default_theme_path("effects/");
+    p_path = ao_app->get_theme_path("effects/", "default");
     if (!dir_exists(p_path)) {
       return;
     }

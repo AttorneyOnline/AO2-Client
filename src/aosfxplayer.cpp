@@ -46,7 +46,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_char, QString shout)
     theme_path = ao_app->get_sfx_suffix(ao_app->get_theme_path(p_sfx));
     if (!file_exists(theme_path))
       theme_path =
-          ao_app->get_sfx_suffix(ao_app->get_default_theme_path(p_sfx));
+          ao_app->get_sfx_suffix(ao_app->get_theme_path(p_sfx, ao_app->default_theme));
   }
   if (p_char != "")
     char_path =
