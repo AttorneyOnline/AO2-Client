@@ -39,11 +39,12 @@ void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
   pathlist += p_sfx; // The path by itself
   pathlist += ao_app->get_sounds_path(p_sfx); // Sounds folder path
   pathlist += ao_app->get_character_path(p_character, p_sfx); // Character folder
-  if (!p_misc.isEmpty()) {
+  if (!p_misc.isEmpty() && !ao_app->get_subtheme().isEmpty())
       pathlist += ao_app->get_theme_path("misc/" + p_misc + "/" + p_sfx, ao_app->current_theme + "/" + ao_app->get_subtheme()); // Subtheme misc path
+  if (!p_misc.isEmpty())
       pathlist += ao_app->get_theme_path("misc/" + p_misc + "/" + p_sfx, ao_app->current_theme); // Theme misc path
-  }
-  pathlist += ao_app->get_theme_path(p_sfx, ao_app->current_theme + "/" + ao_app->get_subtheme()); // Subtheme path
+  if (!ao_app->get_subtheme().isEmpty())
+    pathlist += ao_app->get_theme_path(p_sfx, ao_app->current_theme + "/" + ao_app->get_subtheme()); // Subtheme path
   if (!p_misc.isEmpty())
     pathlist += ao_app->get_misc_path(p_misc, p_sfx); // Base misc path
   pathlist += ao_app->get_theme_path(p_sfx, ao_app->current_theme); // Theme path
@@ -57,7 +58,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
           break;
       }
   }
-
+  qDebug() << "Most valid sfx path for" << p_sfx << p_character << p_misc << "is" << path;
   if (path.endsWith(".opus"))
     m_stream_list[m_channel] = BASS_OPUS_StreamCreateFile(
         FALSE, path.utf16(), 0, 0,

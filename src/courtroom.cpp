@@ -3214,7 +3214,6 @@ void Courtroom::preanim_done()
       set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
       break;
   }
-  qDebug() << "preanim over, anim_state set to 1";
   handle_ic_speaking();
 }
 

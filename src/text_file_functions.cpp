@@ -793,7 +793,6 @@ QString AOApplication::get_sfx_looping(QString p_char, int p_emote)
   QString f_result =
       read_char_ini(p_char, QString::number(p_emote + 1), "SoundL");
 
-  qDebug() << f_result;
   if (f_result == "")
     return "0";
   else
