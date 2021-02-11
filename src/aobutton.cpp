@@ -11,30 +11,19 @@ AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
 
 AOButton::~AOButton() {}
 
-void AOButton::set_image(QString p_image)
+void AOButton::set_image(QString p_path, QString p_misc)
 {
-  QString image_path =
-      ao_app->get_image_suffix(ao_app->get_theme_path(p_image));
-  QString default_image_path =
-      ao_app->get_image_suffix(ao_app->get_theme_path(p_image, ao_app->default_theme));
+  QString p_image = ao_app->get_asset_path(true, p_path, ao_app->current_theme, ao_app->subtheme, ao_app->default_theme, p_misc);
 
-  if (file_exists(image_path)) {
-    this->setText("");
-    this->setStyleSheet("QPushButton { border-image: url(\"" + image_path +
-                        "\") 0 0 0 0 stretch stretch; }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
-  }
-  else if (file_exists(default_image_path)) {
-    this->setText("");
-    this->setStyleSheet("QPushButton { border-image: url(\"" +
-                        default_image_path +
-                        "\"); }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
-  }
-  else
+  if (!file_exists(p_image)) {
       this->setStyleSheet("QPushButton { border-image: url(); }"
                           "QToolTip { background-image: url(); color: #000000; "
                           "background-color: #ffffff; border: 0px; }");
+      return;
+  };
+  this->setText("");
+  this->setStyleSheet("QPushButton { border-image: url(\"" + p_image +
+                      "\") 0 0 0 0 stretch stretch; }"
+                      "QToolTip { background-image: url(); color: #000000; "
+                      "background-color: #ffffff; border: 0px; }");
 }

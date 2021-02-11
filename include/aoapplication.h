@@ -138,7 +138,7 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
-  QString get_asset_path(bool is_image, QString p_element, QString p_theme="", QString p_subtheme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_asset_path(bool is_image, QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for reading and writing files //////

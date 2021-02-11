@@ -15,7 +15,7 @@ public:
 
   AOApplication *ao_app;
 
-  void set_image(QString p_image);
+  void set_image(QString p_image, QString p_misc="");
 };
 
 #endif // AOBUTTON_H
