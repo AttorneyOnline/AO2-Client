@@ -164,12 +164,14 @@ private:
   QCheckBox *ui_log_cb;
 
   bool needs_default_audiodev();
+  void update_values();
 
 signals:
 
 public slots:
   void save_pressed();
   void discard_pressed();
+  void button_clicked(QAbstractButton *button);
   void on_reload_theme_clicked();
 };
 
