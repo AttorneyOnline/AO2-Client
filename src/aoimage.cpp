@@ -15,9 +15,9 @@ AOImage::~AOImage() {}
 bool AOImage::set_image(QString p_image)
 {
   QString theme_image_path =
-      ao_app->get_static_image_suffix(ao_app->get_theme_path(p_image));
+      ao_app->get_image_suffix(ao_app->get_theme_path(p_image));
   QString default_image_path =
-      ao_app->get_static_image_suffix(ao_app->get_default_theme_path(p_image));
+      ao_app->get_image_suffix(ao_app->get_default_theme_path(p_image));
 
   QString final_image_path;
 
@@ -40,7 +40,7 @@ bool AOImage::set_image(QString p_image)
 
 bool AOImage::set_chatbox(QString p_path)
 {
-  p_path = ao_app->get_static_image_suffix(p_path);
+  p_path = ao_app->get_image_suffix(p_path);
   if (!file_exists(p_path)) {
     qDebug() << "Warning: Chatbox" << p_path << "not found! Can't set!";
     return false;
