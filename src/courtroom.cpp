@@ -4553,11 +4553,11 @@ void Courtroom::set_effects_dropdown()
   QString default_path = ao_app->get_default_theme_path("effects/icons/");
   for (int i = 0; i < ui_effects_dropdown->count(); ++i) {
     QString entry = ui_effects_dropdown->itemText(i);
-    QString iconpath = ao_app->get_static_image_suffix(custom_path + entry);
+    QString iconpath = ao_app->get_image_suffix(custom_path + entry);
     if (!file_exists(iconpath)) {
-      iconpath = ao_app->get_static_image_suffix(theme_path + entry);
+      iconpath = ao_app->get_image_suffix(theme_path + entry);
       if (!file_exists(iconpath)) {
-        iconpath = ao_app->get_static_image_suffix(default_path + entry);
+        iconpath = ao_app->get_image_suffix(default_path + entry);
         if (!file_exists(iconpath))
           continue;
       }

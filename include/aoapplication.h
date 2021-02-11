@@ -333,10 +333,6 @@ public:
   // PNG.
   QString get_image_suffix(QString path_to_check);
 
-  // If this image is static and non-animated, return the supported static image
-  // formats. Currently only PNG.
-  QString get_static_image_suffix(QString path_to_check);
-
   // Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line,
                         QString target_tag);

@@ -252,7 +252,7 @@ void Courtroom::character_loading_finished()
     // create the character tree item
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
     treeItem->setText(0, char_list.at(n).name);
-    treeItem->setIcon(0, QIcon(ao_app->get_static_image_suffix(
+    treeItem->setIcon(0, QIcon(ao_app->get_image_suffix(
       ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
     treeItem->setText(1, QString::number(n));
     // category logic

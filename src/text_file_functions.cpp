@@ -560,11 +560,6 @@ QString AOApplication::get_image_suffix(QString path_to_check)
   return path_to_check + ".png";
 }
 
-QString AOApplication::get_static_image_suffix(QString path_to_check)
-{
-  return path_to_check + ".png";
-}
-
 // returns whatever is to the right of "search_line =" within target_tag and
 // terminator_tag, trimmed returns the empty string if the search line couldnt
 // be found

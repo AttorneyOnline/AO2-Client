@@ -49,7 +49,7 @@ StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
 {
 }
 
-QString AOLayer::find_image(QList<QString> p_list)
+QString AOLayer::find_image(QStringList p_list)
 {
   QString image_path;
   for (QString path : p_list) {
@@ -194,7 +194,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
 #endif
-  QList<QString> pathlist = {
+  QStringList pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname, prefix + current_emote)), // Default path
       ao_app->get_image_suffix(ao_app->get_character_path(
@@ -215,13 +215,13 @@ void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, p_filename)), // Character folder
+  QStringList pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
           "misc/" + p_miscname + "/" + p_filename)), // Theme misc path
       ao_app->get_image_suffix(
           ao_app->get_misc_path(p_miscname, p_filename)), // Misc path
+      ao_app->get_image_suffix(ao_app->get_character_path(
+          p_charname, p_filename)), // Character folder
       ao_app->get_image_suffix(
           ao_app->get_theme_path(p_filename)), // Theme path
       ao_app->get_image_suffix(
@@ -259,7 +259,7 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
   stretch = true;
-  QList<QString> pathlist = {
+  QStringList pathlist = {
       ao_app->get_image_suffix(ao_app->get_theme_path(
           "misc/" + p_miscname + "/" +
           p_filename)), // first check our theme's misc directory
@@ -276,7 +276,7 @@ void StickerLayer::load_image(QString p_charname)
 {
   QString miscname = ao_app->get_char_shouts(p_charname);
   transform_mode = ao_app->get_misc_scaling(miscname);
-  QList<QString> pathlist = {
+  QStringList pathlist = {
       ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
                                 miscname + "/sticker/" + p_charname), // Misc path
       ao_app->get_image_suffix(ao_app->get_custom_theme_path(miscname, "sticker/" + p_charname)), // Custom theme path

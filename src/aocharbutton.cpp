@@ -59,7 +59,7 @@ void AOCharButton::set_passworded() { ui_passworded->show(); }
 
 void AOCharButton::set_image(QString p_character)
 {
-  QString image_path = ao_app->get_static_image_suffix(
+  QString image_path = ao_app->get_image_suffix(
       ao_app->get_character_path(p_character, "char_icon"));
 
   this->setText("");
