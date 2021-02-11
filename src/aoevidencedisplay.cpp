@@ -23,7 +23,6 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
   sfx_player->set_volume(p_volume);
 
-  QString final_gif_path;
   QString gif_name;
   QString icon_identifier;
 
