@@ -505,7 +505,7 @@ private:
   QVector<QColor> default_color_rgb_list;
 
   // Get a color index from an arbitrary misc config
-  void gen_char_rgb_list(QString p_char);
+  void gen_char_rgb_list(QString p_misc);
   QVector<QColor> char_color_rgb_list;
 
   // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed

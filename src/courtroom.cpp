@@ -3282,8 +3282,8 @@ void Courtroom::start_chat_ticking()
 
   last_misc = current_misc;
   current_misc = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
-  if (last_misc != current_misc)
-    gen_char_rgb_list(m_chatmessage[CHAR_NAME]);
+  if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
+    gen_char_rgb_list(current_misc);
 
   QString f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
   blip_player->set_blips(f_blips);
@@ -5124,10 +5124,10 @@ void Courtroom::set_text_color_dropdown()
   }
 }
 
-void Courtroom::gen_char_rgb_list(QString p_char) {
+void Courtroom::gen_char_rgb_list(QString p_misc) {
   char_color_rgb_list.clear();
   for (int c = 0; c < max_colors; ++c) {
-    QColor color = ao_app->get_chat_color("c" + QString::number(c), ao_app->get_chat(p_char));
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), p_misc);
     char_color_rgb_list.append(color);
   }
 }
