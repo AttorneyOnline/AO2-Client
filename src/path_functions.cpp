@@ -199,21 +199,8 @@ QString AOApplication::get_image(QString p_element, QString p_theme, QString p_s
 
 QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_character)
 {
-    QStringList pathlist;
-    pathlist += p_sfx; // The path by itself
-    if (!p_character.isEmpty())
-      pathlist += get_character_path(p_character, p_sfx); // Character folder
-    if (!p_misc.isEmpty() && !get_subtheme().isEmpty())
-      pathlist += get_theme_path("misc/" + p_misc + "/" + p_sfx, current_theme + "/" + get_subtheme()); // Subtheme misc path
-    if (!p_misc.isEmpty())
-      pathlist += get_theme_path("misc/" + p_misc + "/" + p_sfx, current_theme); // Theme misc path
-    if (!get_subtheme().isEmpty())
-      pathlist += get_theme_path(p_sfx, current_theme + "/" + get_subtheme()); // Subtheme path
-    if (!p_misc.isEmpty())
-      pathlist += get_misc_path(p_misc, p_sfx); // Base misc path
-    pathlist += get_theme_path(p_sfx, current_theme); // Theme path
-    pathlist += get_theme_path(p_sfx, default_theme); // Default theme path
-    pathlist += get_sounds_path(p_sfx); // Sounds folder path
+  QStringList pathlist = get_asset_paths(p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
+  pathlist += get_sounds_path(p_sfx); // Sounds folder path
   return get_sfx_path(pathlist);
 }
 
