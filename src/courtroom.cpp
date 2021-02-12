@@ -476,6 +476,9 @@ void Courtroom::set_pair_list()
 void Courtroom::set_widgets()
 {
   QString filename = "courtroom_design.ini";
+  // Update the default theme from the courtroom_design.ini, if it's not defined it will be 'default'.
+  QSettings settings(ao_app->get_theme_path(filename, ao_app->current_theme), QSettings::IniFormat);
+  ao_app->default_theme = settings.value("default_theme", "default").toString();
 
   pos_size_type f_courtroom =
       ao_app->get_element_dimensions("courtroom", filename);
