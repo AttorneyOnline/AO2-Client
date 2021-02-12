@@ -216,11 +216,6 @@ void SplashLayer::load_image(QString p_filename, QString p_charname,
 {
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
-  if (final_image.endsWith(".png"))
-    // stupid exceptions because themes are stupid
-    final_image = find_image(
-        {ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")),
-         ao_app->get_image_suffix(ao_app->get_theme_path("placeholder", ao_app->default_theme))});
   start_playback(final_image);
 }
 
@@ -490,6 +485,7 @@ void AOLayer::stop()
   // do we want a frozen gif to display
   this->freeze();
   this->hide();
+  shfx_timer->stop();
 }
 
 void AOLayer::freeze()
@@ -497,7 +493,6 @@ void AOLayer::freeze()
   // aT nO pOiNt Do We WaNt A fRoZeN gIf To DiSpLaY
   ticker->stop();
   preanim_timer->stop();
-  shfx_timer->stop();
 }
 
 void CharLayer::movie_ticker()
@@ -509,7 +504,7 @@ void CharLayer::movie_ticker()
 void AOLayer::movie_ticker()
 {
   ++frame;
-  if ((frame >= max_frames) && (max_frames > 1)) {
+  if (frame >= max_frames) {
     if (play_once) {
       if (cull_image)
         this->stop();
