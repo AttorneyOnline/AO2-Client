@@ -1059,7 +1059,7 @@ bool AOApplication::get_auto_logging_enabled()
 QString AOApplication::get_subtheme()
 {
   QString result =
-      configini->value("subtheme", "default").value<QString>();
+      configini->value("subtheme", "server").value<QString>();
   // Server means we want the server to decide for us
   if (result == "server")
       // 'subtheme' variable is affected by the server

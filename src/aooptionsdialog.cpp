@@ -876,7 +876,7 @@ void AOOptionsDialog::update_values() {
     }
   }
   QString subtheme =
-      ao_app->configini->value("subtheme", "default").value<QString>();
+      ao_app->configini->value("subtheme").value<QString>();
   for (int i = 0; i < ui_subtheme_combobox->count(); ++i) {
     if (ui_subtheme_combobox->itemText(i) == subtheme)
     {

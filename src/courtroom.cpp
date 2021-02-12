@@ -2568,13 +2568,6 @@ void Courtroom::initialize_chatbox()
     if (!ui_vp_chatbox->set_image("chat", p_misc))
       ui_vp_chatbox->set_image("chatbox", p_misc);
 
-    QFontMetrics fm(ui_vp_showname->font());
-// Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-    int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
-#else
-    int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
-#endif
     // This should probably be called only if any change from the last chat
     // arrow was actually detected.
     pos_size_type design_ini_result = ao_app->get_element_dimensions(
@@ -2589,12 +2582,15 @@ void Courtroom::initialize_chatbox()
                                       design_ini_result.height);
     }
 
+    // Remember to set the showname font before the font metrics check.
+    set_font(ui_vp_showname, "", "showname", customchar);
+
     pos_size_type default_width = ao_app->get_element_dimensions(
         "showname", "courtroom_design.ini", p_misc);
     int extra_width =
         ao_app
             ->get_design_element("showname_extra_width", "courtroom_design.ini",
-                                 ao_app->get_chat(customchar))
+                                 p_misc)
             .toInt();
     QString align = ao_app
                         ->get_design_element("showname_align",
@@ -2609,6 +2605,13 @@ void Courtroom::initialize_chatbox()
     else
       ui_vp_showname->setAlignment(Qt::AlignLeft);
 
+    QFontMetrics fm(ui_vp_showname->font());
+// Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
+    int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
+#else
+    int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
+#endif
     if (extra_width > 0) {
       QString current_path = ui_vp_chatbox->path.left(ui_vp_chatbox->path.lastIndexOf('.'));
       if (fm_width > default_width.width &&
@@ -2627,8 +2630,6 @@ void Courtroom::initialize_chatbox()
       }
       else
         ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
-
-      set_font(ui_vp_showname, "", "showname", customchar);
     }
     else {
       ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
