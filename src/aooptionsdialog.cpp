@@ -83,14 +83,26 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
 
+  row += 1;
   ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
   ui_theme_reload_button->setText(tr("Reload Theme"));
   ui_theme_reload_button->setToolTip(
       tr("Refresh the theme and update all of the ui elements to match."));
-  row += 1;
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
   QObject::connect(ui_theme_reload_button, SIGNAL(clicked()), this,
           SLOT(on_reload_theme_clicked()));
+
+  row += 1;
+  ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);
+  ui_animated_theme_lbl->setText(tr("Animated Theme:"));
+  ui_animated_theme_lbl->setToolTip(
+      tr("If ticked, themes will be allowed to have animated elements."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_animated_theme_lbl);
+
+  ui_animated_theme_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_animated_theme_cb);
 
   row += 1;
   ui_theme_log_divider = new QFrame(ui_form_layout_widget);
@@ -842,6 +854,7 @@ void AOOptionsDialog::update_values() {
   foreach (QString callword, ao_app->get_call_words()) {
     ui_callwords_textbox->appendPlainText(callword);
   }
+  ui_animated_theme_cb->setChecked(ao_app->get_animated_theme());
   ui_ms_textbox->setText(ao_app->configini->value("master", "").value<QString>());
   ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
   ui_username_textbox->setText(ao_app->get_default_username());
@@ -894,6 +907,7 @@ void AOOptionsDialog::save_pressed()
       ao_app->get_audio_output_device();
 
   configini->setValue("theme", ui_theme_combobox->currentText());
+  configini->setValue("animated_theme", ui_animated_theme_cb->isChecked());
   configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
   configini->setValue("log_maximum", ui_length_spinbox->value());
   configini->setValue("log_newline", ui_log_newline_cb->isChecked());

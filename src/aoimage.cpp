@@ -28,7 +28,7 @@ bool AOImage::set_image(QString p_path, QString p_misc)
     return false;
   }
   movie->setFileName(p_path);
-  if (movie->frameCount() > 1) {
+  if (ao_app->get_animated_theme() && movie->frameCount() > 1) {
     movie->start();
   }
   else {

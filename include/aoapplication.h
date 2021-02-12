@@ -483,6 +483,9 @@ public:
   // Get the subtheme from settings
   QString get_subtheme();
 
+  // Get if the theme is animated
+  bool get_animated_theme();
+
   // Currently defined subtheme
   QString subtheme;
 
