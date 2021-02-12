@@ -140,15 +140,15 @@ QString AOApplication::get_asset_path(QStringList pathlist)
   return path;
 }
 
-QString AOApplication::get_image_path(QStringList pathlist)
+QString AOApplication::get_image_path(QStringList pathlist, bool static_image)
 {
   QString path;
   for (QString p : pathlist) {
-      p = get_case_sensitive_path(get_image_suffix(p));
-      if (file_exists(p)) {
-          path = p;
-          break;
-      }
+    p = get_case_sensitive_path(get_image_suffix(p, static_image));
+    if (file_exists(p)) {
+      path = p;
+      break;
+    }
   }
   return path;
 }

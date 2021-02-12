@@ -495,16 +495,20 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
   return sound_to_check + ".wav";
 }
 
-QString AOApplication::get_image_suffix(QString path_to_check)
+QString AOApplication::get_image_suffix(QString path_to_check, bool static_image)
 {
   if (file_exists(path_to_check))
     return path_to_check;
-  if (file_exists(path_to_check + ".webp"))
-    return path_to_check + ".webp";
-  if (file_exists(path_to_check + ".apng"))
-    return path_to_check + ".apng";
-  if (file_exists(path_to_check + ".gif"))
-    return path_to_check + ".gif";
+  // A better method would to actually use AOImageReader and see if these images have more than 1 frame.
+  // However, that might not be performant.
+  if (!static_image) {
+    if (file_exists(path_to_check + ".webp"))
+      return path_to_check + ".webp";
+    if (file_exists(path_to_check + ".apng"))
+      return path_to_check + ".apng";
+    if (file_exists(path_to_check + ".gif"))
+      return path_to_check + ".gif";
+  }
   return path_to_check + ".png";
 }
 

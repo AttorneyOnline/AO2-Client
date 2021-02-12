@@ -1005,6 +1005,7 @@ void AOOptionsDialog::button_clicked(QAbstractButton *button) {
 
 void AOOptionsDialog::on_reload_theme_clicked() {
     ao_app->configini->setValue("theme", ui_theme_combobox->currentText());
+    ao_app->configini->setValue("animated_theme", ui_animated_theme_cb->isChecked());
     if (ao_app->courtroom_constructed)
         ao_app->w_courtroom->on_reload_theme_clicked();
     if (ao_app->lobby_constructed)
