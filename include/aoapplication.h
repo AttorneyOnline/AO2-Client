@@ -140,7 +140,7 @@ public:
   QString get_evidence_path(QString p_file);
   QStringList get_asset_paths(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_asset_path(QStringList pathlist);
-  QString get_image_path(QStringList pathlist);
+  QString get_image_path(QStringList pathlist, bool static_image=false);
   QString get_sfx_path(QStringList pathlist);
   QString get_config_value(QString p_identifier, QString p_config, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="");
   QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
@@ -334,7 +334,7 @@ public:
 
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
   // PNG.
-  QString get_image_suffix(QString path_to_check);
+  QString get_image_suffix(QString path_to_check, bool static_image=false);
 
   // Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line,
@@ -482,6 +482,9 @@ public:
 
   // Get the subtheme from settings
   QString get_subtheme();
+
+  // Get if the theme is animated
+  bool get_animated_theme();
 
   // Currently defined subtheme
   QString subtheme;

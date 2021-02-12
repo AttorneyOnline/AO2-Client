@@ -495,16 +495,20 @@ QString AOApplication::get_sfx_suffix(QString sound_to_check)
   return sound_to_check + ".wav";
 }
 
-QString AOApplication::get_image_suffix(QString path_to_check)
+QString AOApplication::get_image_suffix(QString path_to_check, bool static_image)
 {
   if (file_exists(path_to_check))
     return path_to_check;
-  if (file_exists(path_to_check + ".webp"))
-    return path_to_check + ".webp";
-  if (file_exists(path_to_check + ".apng"))
-    return path_to_check + ".apng";
-  if (file_exists(path_to_check + ".gif"))
-    return path_to_check + ".gif";
+  // A better method would to actually use AOImageReader and see if these images have more than 1 frame.
+  // However, that might not be performant.
+  if (!static_image) {
+    if (file_exists(path_to_check + ".webp"))
+      return path_to_check + ".webp";
+    if (file_exists(path_to_check + ".apng"))
+      return path_to_check + ".apng";
+    if (file_exists(path_to_check + ".gif"))
+      return path_to_check + ".gif";
+  }
   return path_to_check + ".png";
 }
 
@@ -1055,8 +1059,20 @@ bool AOApplication::get_auto_logging_enabled()
 QString AOApplication::get_subtheme()
 {
   QString result =
-      configini->value("subtheme", "default").value<QString>();
-  if (result != subtheme && result == "default")
+      configini->value("subtheme", "server").value<QString>();
+  // Server means we want the server to decide for us
+  if (result == "server")
+      // 'subtheme' variable is affected by the server
       result = subtheme;
+  // Default means we don't want any subthemes
+  else if (result == "default")
+      result = "";
   return result;
+}
+
+bool AOApplication::get_animated_theme()
+{
+  QString result =
+      configini->value("animated_theme", "true").value<QString>();
+  return result.startsWith("true");
 }

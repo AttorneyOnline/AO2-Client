@@ -2558,38 +2558,20 @@ void Courtroom::initialize_chatbox()
   QString customchar;
   if (ao_app->is_customchat_enabled())
     customchar = m_chatmessage[CHAR_NAME];
+  QString p_misc = ao_app->get_chat(customchar);
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
-    ui_vp_chatbox->set_image("chatblank");
+    ui_vp_chatbox->set_image("chatblank", p_misc);
   }
   else // Aw yeah dude do some showname magic
   {
-    if (!ui_vp_chatbox->set_image("chat"))
-      ui_vp_chatbox->set_image("chatbox");
-
-    QFontMetrics fm(ui_vp_showname->font());
-// Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-    int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
-#else
-    int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
-#endif
-    QString chatbox_path = ao_app->get_theme_path("chat");
-    QString chatbox = ao_app->get_chat(customchar);
-
-    if (chatbox != "" && ao_app->is_customchat_enabled()) {
-      chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chat");
-      if (!ui_vp_chatbox->set_image(chatbox_path)) {
-        chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-        if (!ui_vp_chatbox->set_image(chatbox_path))
-          ui_vp_chatbox->set_image(chatbox_path + "box");
-      }
-    }
+    if (!ui_vp_chatbox->set_image("chat", p_misc))
+      ui_vp_chatbox->set_image("chatbox", p_misc);
 
     // This should probably be called only if any change from the last chat
     // arrow was actually detected.
     pos_size_type design_ini_result = ao_app->get_element_dimensions(
-        "chat_arrow", "courtroom_design.ini", customchar);
+        "chat_arrow", "courtroom_design.ini", p_misc);
     if (design_ini_result.width < 0 || design_ini_result.height < 0) {
       qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
       ui_vp_chat_arrow->hide();
@@ -2600,16 +2582,19 @@ void Courtroom::initialize_chatbox()
                                       design_ini_result.height);
     }
 
+    // Remember to set the showname font before the font metrics check.
+    set_font(ui_vp_showname, "", "showname", customchar);
+
     pos_size_type default_width = ao_app->get_element_dimensions(
-        "showname", "courtroom_design.ini", customchar);
+        "showname", "courtroom_design.ini", p_misc);
     int extra_width =
         ao_app
             ->get_design_element("showname_extra_width", "courtroom_design.ini",
-                                 ao_app->get_chat(customchar))
+                                 p_misc)
             .toInt();
     QString align = ao_app
                         ->get_design_element("showname_align",
-                                             "courtroom_design.ini", ao_app->get_chat(customchar))
+                                             "courtroom_design.ini", p_misc)
                         .toLower();
     if (align == "right")
       ui_vp_showname->setAlignment(Qt::AlignRight);
@@ -2620,17 +2605,23 @@ void Courtroom::initialize_chatbox()
     else
       ui_vp_showname->setAlignment(Qt::AlignLeft);
 
+    QFontMetrics fm(ui_vp_showname->font());
+// Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
+#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
+    int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
+#else
+    int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
+#endif
     if (extra_width > 0) {
+      QString current_path = ui_vp_chatbox->path.left(ui_vp_chatbox->path.lastIndexOf('.'));
       if (fm_width > default_width.width &&
-          ui_vp_chatbox->set_image(
-              chatbox_path +
+          ui_vp_chatbox->set_image(current_path +
               "med")) // This text be big. Let's do some shenanigans.
       {
         ui_vp_showname->resize(default_width.width + extra_width,
                                ui_vp_showname->height());
         if (fm_width > ui_vp_showname->width() &&
-            ui_vp_chatbox->set_image(chatbox_path +
-                                       "big")) // Biggest possible size for us.
+            ui_vp_chatbox->set_image(current_path + "big")) // Biggest possible size for us.
         {
           ui_vp_showname->resize(
               static_cast<int>(default_width.width + (extra_width * 2)),
@@ -2639,8 +2630,6 @@ void Courtroom::initialize_chatbox()
       }
       else
         ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
-
-      set_font(ui_vp_showname, "", "showname", customchar);
     }
     else {
       ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
@@ -3808,31 +3797,44 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   ui_vp_wtce->set_max_duration(wtce_max_time);
   // witness testimony
   if (p_wtce == "testimony1") {
-    sfx_name = "witness_testimony";
+    // End testimony indicator
+    if (variant == 1) {
+      ui_vp_testimony->stop();
+      return;
+    }
+    sfx_name = ao_app->get_court_sfx("witnesstestimony", bg_misc);
     filename = "witnesstestimony";
     ui_vp_testimony->load_image("testimony", "", bg_misc);
   }
   // cross examination
   else if (p_wtce == "testimony2") {
-    sfx_name = "cross_examination";
+    sfx_name = ao_app->get_court_sfx("crossexamination", bg_misc);
     filename = "crossexamination";
     ui_vp_testimony->stop();
   }
-  else if (p_wtce == "judgeruling") {
+  else {
     ui_vp_wtce->set_static_duration(verdict_static_time);
     ui_vp_wtce->set_max_duration(verdict_max_time);
-    if (variant == 0) {
-      sfx_name = "not_guilty";
-      filename = "notguilty";
-      ui_vp_testimony->stop();
+    // Verdict?
+    if (p_wtce == "judgeruling") {
+      if (variant == 0) {
+        sfx_name = ao_app->get_court_sfx("notguilty", bg_misc);
+        filename = "notguilty";
+        ui_vp_testimony->stop();
+      }
+      else if (variant == 1) {
+        sfx_name = ao_app->get_court_sfx("guilty", bg_misc);
+        filename = "guilty";
+        ui_vp_testimony->stop();
+      }
     }
-    else if (variant == 1) {
-      sfx_name = "guilty";
-      filename = "guilty";
-      ui_vp_testimony->stop();
+    // Completely custom WTCE
+    else {
+      sfx_name = p_wtce;
+      filename = p_wtce;
     }
   }
-  sfx_player->play(ao_app->get_court_sfx(sfx_name, bg_misc));
+  sfx_player->play(sfx_name);
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
