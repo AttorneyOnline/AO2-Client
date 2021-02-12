@@ -887,7 +887,7 @@ QString AOApplication::get_custom_realization(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "realization", "Options");
   if (f_result == "")
-    return get_sfx("realization");
+    return get_court_sfx("realization");
   return get_sfx_suffix(get_sounds_path(f_result));
 }
 
