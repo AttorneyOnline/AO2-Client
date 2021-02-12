@@ -3808,31 +3808,44 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   ui_vp_wtce->set_max_duration(wtce_max_time);
   // witness testimony
   if (p_wtce == "testimony1") {
-    sfx_name = "witness_testimony";
+    // End testimony indicator
+    if (variant == 1) {
+      ui_vp_testimony->stop();
+      return;
+    }
+    sfx_name = ao_app->get_court_sfx("witnesstestimony", bg_misc);
     filename = "witnesstestimony";
     ui_vp_testimony->load_image("testimony", "", bg_misc);
   }
   // cross examination
   else if (p_wtce == "testimony2") {
-    sfx_name = "cross_examination";
+    sfx_name = ao_app->get_court_sfx("crossexamination", bg_misc);
     filename = "crossexamination";
     ui_vp_testimony->stop();
   }
-  else if (p_wtce == "judgeruling") {
+  else {
     ui_vp_wtce->set_static_duration(verdict_static_time);
     ui_vp_wtce->set_max_duration(verdict_max_time);
-    if (variant == 0) {
-      sfx_name = "not_guilty";
-      filename = "notguilty";
-      ui_vp_testimony->stop();
+    // Verdict?
+    if (p_wtce == "judgeruling") {
+      if (variant == 0) {
+        sfx_name = ao_app->get_court_sfx("notguilty", bg_misc);
+        filename = "notguilty";
+        ui_vp_testimony->stop();
+      }
+      else if (variant == 1) {
+        sfx_name = ao_app->get_court_sfx("guilty", bg_misc);
+        filename = "guilty";
+        ui_vp_testimony->stop();
+      }
     }
-    else if (variant == 1) {
-      sfx_name = "guilty";
-      filename = "guilty";
-      ui_vp_testimony->stop();
+    // Completely custom WTCE
+    else {
+      sfx_name = p_wtce;
+      filename = p_wtce;
     }
   }
-  sfx_player->play(ao_app->get_court_sfx(sfx_name, bg_misc));
+  sfx_player->play(sfx_name);
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
