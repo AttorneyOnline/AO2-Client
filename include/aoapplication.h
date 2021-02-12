@@ -138,7 +138,13 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
-  QString get_asset_path(bool is_image, QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QStringList get_asset_paths(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_asset_path(QStringList pathlist);
+  QString get_image_path(QStringList pathlist);
+  QString get_sfx_path(QStringList pathlist);
+  QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
   QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for reading and writing files //////
@@ -319,8 +325,8 @@ public:
   // Returns the color from the misc folder.
   QColor get_chat_color(QString p_identifier, QString p_chat);
 
-  // Returns the sfx with p_identifier from sounds.ini in the current theme path
-  QString get_sfx(QString p_identifier, QString p_misc="default");
+  // Returns the sfx with p_identifier from courtroom_sounds.ini in the current theme path
+  QString get_court_sfx(QString p_identifier, QString p_misc="");
 
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);

@@ -215,7 +215,7 @@ void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QString final_image = ao_app->get_asset_path(true, p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
+  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
   if (final_image.endsWith(".png"))
     // stupid exceptions because themes are stupid
     final_image = find_image(
@@ -238,7 +238,7 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
   stretch = true;
-  QString final_image = ao_app->get_asset_path(true, p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
 }
 
@@ -246,7 +246,7 @@ void StickerLayer::load_image(QString p_charname)
 {
   QString p_miscname = ao_app->get_chat(p_charname);
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QString final_image = ao_app->get_asset_path(true, "sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
   if (!file_exists((final_image)))
       final_image = ao_app->get_image_suffix(
                   ao_app->get_character_path(p_charname, "showname")), // Scuffed DRO way

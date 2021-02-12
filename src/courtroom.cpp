@@ -2502,7 +2502,8 @@ void Courtroom::do_flash()
 void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
                           QString p_folder)
 {
-
+  if (fx_name == "")
+    return;
   QString effect = ao_app->get_effect(fx_name, p_char, p_folder);
   if (effect == "")
     return;
@@ -2666,7 +2667,7 @@ void Courtroom::handle_callwords()
     // If our message contains that specific call word
     if (f_message.contains(word, Qt::CaseInsensitive)) {
       // Play the call word sfx on the modcall_player sound container
-      modcall_player->play(ao_app->get_sfx("word_call"));
+      modcall_player->play(ao_app->get_court_sfx("word_call"));
       // Make the window flash
       ao_app->alert(this);
       // Break the loop so we don't spam sound effects
@@ -3828,7 +3829,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       ui_vp_testimony->stop();
     }
   }
-  sfx_player->play(ao_app->get_sfx(sfx_name, bg_misc));
+  sfx_player->play(ao_app->get_court_sfx(sfx_name, bg_misc));
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
@@ -3876,7 +3877,7 @@ void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
   if (!ui_guard->isChecked()) {
-    modcall_player->play(ao_app->get_sfx("mod_call"));
+    modcall_player->play(ao_app->get_court_sfx("mod_call"));
     ao_app->alert(this);
   }
 }
@@ -3891,7 +3892,7 @@ void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
         (ao_app->get_casing_judge_enabled() && jud) ||
         (ao_app->get_casing_juror_enabled() && jur) ||
         (ao_app->get_casing_steno_enabled() && steno)) {
-      modcall_player->play(ao_app->get_sfx("case_call"));
+      modcall_player->play(ao_app->get_court_sfx("case_call"));
       ao_app->alert(this);
     }
   }

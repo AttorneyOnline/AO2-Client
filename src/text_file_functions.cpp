@@ -295,7 +295,7 @@ Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 {
-  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme);
   QString value = read_design_ini(p_identifier, path);
 
   QPoint return_value;
@@ -343,7 +343,7 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
 QString AOApplication::get_design_element(QString p_identifier, QString p_file,
                                           QString p_misc)
 {
-  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme, p_misc);
+  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme, p_misc);
   QString value = read_design_ini(p_identifier, path);
   if (!value.isEmpty())
     return value;
@@ -353,7 +353,7 @@ QString AOApplication::get_design_element(QString p_identifier, QString p_file,
 // tfw this function is only used for lobby and nowhere else
 int AOApplication::get_font_size(QString p_identifier, QString p_file)
 {
-  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme);
   QString value = read_design_ini(p_identifier, path);
   if (!value.isEmpty())
     return value.toInt();
@@ -362,7 +362,7 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
 
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
-  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme);
   QString value = read_design_ini(p_identifier, path);
 
   QColor return_color(0, 0, 0);
@@ -384,7 +384,7 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
 
 QString AOApplication::get_stylesheet(QString p_file)
 {
-  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme);
   QFile design_ini;
   design_ini.setFileName(path);
   if (!design_ini.open(QIODevice::ReadOnly))
@@ -404,7 +404,7 @@ QString AOApplication::get_stylesheet(QString p_file)
 
 QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 {
-  QString path = get_asset_path(false, p_file, current_theme, get_subtheme(), default_theme);
+  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme);
   QFile design_ini;
   design_ini.setFileName(path);
   if (!design_ini.open(QIODevice::ReadOnly))
@@ -438,7 +438,7 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
 {
   // New Chadly method
-  QString path = get_asset_path(false, "chat_config.ini", current_theme, get_subtheme(), default_theme, p_chat);
+  QString path = get_asset("chat_config.ini", current_theme, get_subtheme(), default_theme, p_chat);
   QString value = read_design_ini(p_identifier, path);
   if (!value.isEmpty())
     return value.toLatin1();
@@ -480,7 +480,7 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 
 QString AOApplication::get_sfx(QString p_identifier, QString p_misc)
 {
-  QString path = get_asset_path(false, "courtroom_sounds.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString path = get_asset("courtroom_sounds.ini", current_theme, get_subtheme(), default_theme, p_misc);
   QString value = read_design_ini(p_identifier, path);
   if (!value.isEmpty())
     return value.toLatin1();
@@ -844,8 +844,8 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 QStringList AOApplication::get_effects(QString p_char)
 {
   QString p_misc = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme);
-  QString p_misc_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
+  QString p_misc_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
   QStringList effects;
 
   QStringList lines = read_file(p_path).split("\n");
@@ -868,7 +868,7 @@ QString AOApplication::get_effect(QString effect, QString p_char,
   if (p_folder == "")
     p_folder = read_char_ini(p_char, "effects", "Options");
 
-  QString p_path = get_asset_path(false, "effects/" + effect, current_theme, get_subtheme(), default_theme, p_folder);
+  QString p_path = get_image("effects/" + effect, current_theme, get_subtheme(), default_theme, p_folder);
 
   if (!file_exists(p_path))
     return "";
@@ -885,8 +885,8 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
     f_property = fx_name + "_" + p_property;
 
   QString p_misc = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme);
-  QString p_misc_path = get_asset_path(false, "effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString p_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme);
+  QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
 
   QString f_result = read_design_ini(f_property, p_path);
   if (f_result == "")

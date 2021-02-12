@@ -13,7 +13,7 @@ AOButton::~AOButton() {}
 
 void AOButton::set_image(QString p_path, QString p_misc)
 {
-  QString p_image = ao_app->get_asset_path(true, p_path, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_misc);
+  QString p_image = ao_app->get_image(p_path, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_misc);
 
   if (!file_exists(p_image)) {
       this->setStyleSheet("QPushButton { border-image: url(); }"
