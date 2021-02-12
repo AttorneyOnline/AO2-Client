@@ -1060,8 +1060,13 @@ QString AOApplication::get_subtheme()
 {
   QString result =
       configini->value("subtheme", "default").value<QString>();
-  if (result != subtheme && result == "default")
+  // Server means we want the server to decide for us
+  if (result == "server")
+      // 'subtheme' variable is affected by the server
       result = subtheme;
+  // Default means we don't want any subthemes
+  else if (result == "default")
+      result = "";
   return result;
 }
 

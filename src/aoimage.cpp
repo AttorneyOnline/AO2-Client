@@ -22,7 +22,6 @@ AOImage::~AOImage() {}
 
 bool AOImage::set_image(QString p_path, QString p_misc)
 {
-  movie->stop();
   // Check if the user wants animated themes
   if (ao_app->get_animated_theme())
     // We want an animated image
@@ -35,12 +34,14 @@ bool AOImage::set_image(QString p_path, QString p_misc)
     qDebug() << "Warning: Image" << p_path << "not found! Can't set!";
     return false;
   }
-  movie->setFileName(p_path);
+  path = p_path;
+  movie->stop();
+  movie->setFileName(path);
   if (ao_app->get_animated_theme() && movie->frameCount() > 1) {
     movie->start();
   }
   else {
-    QPixmap f_pixmap(p_path);
+    QPixmap f_pixmap(path);
 
     f_pixmap =
         f_pixmap.scaled(this->size(), Qt::IgnoreAspectRatio);

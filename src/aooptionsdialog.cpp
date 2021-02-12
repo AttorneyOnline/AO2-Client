@@ -81,9 +81,35 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       ui_theme_combobox->addItem(actualname);
   }
 
+  QObject::connect(ui_theme_combobox, SIGNAL(currentIndexChanged(int)), this,
+                   SLOT(theme_changed(int)));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
 
   row += 1;
+
+  ui_subtheme_label = new QLabel(ui_form_layout_widget);
+  ui_subtheme_label->setText(tr("Subtheme:"));
+  ui_subtheme_label->setToolTip(
+      tr("Sets a 'subtheme', which will stack on top of the current theme and replace anything it can."
+         "Keep it at 'server' to let the server decide. Keep it at 'default' to keep it unchanging."));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_subtheme_label);
+  ui_subtheme_combobox = new QComboBox(ui_form_layout_widget);
+
+  // Fill the combobox with the names of the themes.
+  ui_subtheme_combobox->addItem("server");
+  ui_subtheme_combobox->addItem("default");
+  QDirIterator it2(ao_app->get_base_path() + "themes/" + ao_app->current_theme, QDir::Dirs,
+                  QDirIterator::NoIteratorFlags);
+  while (it2.hasNext()) {
+    QString actualname = QDir(it2.next()).dirName();
+    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc")
+      ui_subtheme_combobox->addItem(actualname);
+  }
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_subtheme_combobox);
+
+  row += 1;
+
   ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
   ui_theme_reload_button->setText(tr("Reload Theme"));
   ui_theme_reload_button->setToolTip(
@@ -849,6 +875,15 @@ void AOOptionsDialog::update_values() {
       break;
     }
   }
+  QString subtheme =
+      ao_app->configini->value("subtheme", "default").value<QString>();
+  for (int i = 0; i < ui_subtheme_combobox->count(); ++i) {
+    if (ui_subtheme_combobox->itemText(i) == subtheme)
+    {
+      ui_subtheme_combobox->setCurrentIndex(i);
+      break;
+    }
+  }
   // Let's fill the callwords text edit with the already present callwords.
   ui_callwords_textbox->document()->clear();
   foreach (QString callword, ao_app->get_call_words()) {
@@ -907,6 +942,7 @@ void AOOptionsDialog::save_pressed()
       ao_app->get_audio_output_device();
 
   configini->setValue("theme", ui_theme_combobox->currentText());
+  configini->setValue("subtheme", ui_subtheme_combobox->currentText());
   configini->setValue("animated_theme", ui_animated_theme_cb->isChecked());
   configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
   configini->setValue("log_maximum", ui_length_spinbox->value());
@@ -1005,11 +1041,27 @@ void AOOptionsDialog::button_clicked(QAbstractButton *button) {
 
 void AOOptionsDialog::on_reload_theme_clicked() {
     ao_app->configini->setValue("theme", ui_theme_combobox->currentText());
+    ao_app->configini->setValue("subtheme", ui_subtheme_combobox->currentText());
     ao_app->configini->setValue("animated_theme", ui_animated_theme_cb->isChecked());
     if (ao_app->courtroom_constructed)
         ao_app->w_courtroom->on_reload_theme_clicked();
     if (ao_app->lobby_constructed)
         ao_app->w_lobby->set_widgets();
+}
+
+void AOOptionsDialog::theme_changed(int i) {
+  ui_subtheme_combobox->clear();
+  // Fill the combobox with the names of the themes.
+  ui_subtheme_combobox->addItem("server");
+  ui_subtheme_combobox->addItem("default");
+  QDirIterator it(ao_app->get_base_path() + "themes/" + ui_theme_combobox->itemText(i), QDir::Dirs,
+                  QDirIterator::NoIteratorFlags);
+  while (it.hasNext()) {
+    QString actualname = QDir(it.next()).dirName();
+    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc")
+      ui_subtheme_combobox->addItem(actualname);
+  }
+
 }
 
 #if (defined(_WIN32) || defined(_WIN64))

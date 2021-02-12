@@ -2558,14 +2558,15 @@ void Courtroom::initialize_chatbox()
   QString customchar;
   if (ao_app->is_customchat_enabled())
     customchar = m_chatmessage[CHAR_NAME];
+  QString p_misc = ao_app->get_chat(customchar);
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
-    ui_vp_chatbox->set_image("chatblank");
+    ui_vp_chatbox->set_image("chatblank", p_misc);
   }
   else // Aw yeah dude do some showname magic
   {
-    if (!ui_vp_chatbox->set_image("chat"))
-      ui_vp_chatbox->set_image("chatbox");
+    if (!ui_vp_chatbox->set_image("chat", p_misc))
+      ui_vp_chatbox->set_image("chatbox", p_misc);
 
     QFontMetrics fm(ui_vp_showname->font());
 // Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
@@ -2574,22 +2575,10 @@ void Courtroom::initialize_chatbox()
 #else
     int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
 #endif
-    QString chatbox_path = ao_app->get_theme_path("chat");
-    QString chatbox = ao_app->get_chat(customchar);
-
-    if (chatbox != "" && ao_app->is_customchat_enabled()) {
-      chatbox_path = ao_app->get_theme_path("misc/" + chatbox + "/chat");
-      if (!ui_vp_chatbox->set_image(chatbox_path)) {
-        chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + "/chat";
-        if (!ui_vp_chatbox->set_image(chatbox_path))
-          ui_vp_chatbox->set_image(chatbox_path + "box");
-      }
-    }
-
     // This should probably be called only if any change from the last chat
     // arrow was actually detected.
     pos_size_type design_ini_result = ao_app->get_element_dimensions(
-        "chat_arrow", "courtroom_design.ini", customchar);
+        "chat_arrow", "courtroom_design.ini", p_misc);
     if (design_ini_result.width < 0 || design_ini_result.height < 0) {
       qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
       ui_vp_chat_arrow->hide();
@@ -2601,7 +2590,7 @@ void Courtroom::initialize_chatbox()
     }
 
     pos_size_type default_width = ao_app->get_element_dimensions(
-        "showname", "courtroom_design.ini", customchar);
+        "showname", "courtroom_design.ini", p_misc);
     int extra_width =
         ao_app
             ->get_design_element("showname_extra_width", "courtroom_design.ini",
@@ -2609,7 +2598,7 @@ void Courtroom::initialize_chatbox()
             .toInt();
     QString align = ao_app
                         ->get_design_element("showname_align",
-                                             "courtroom_design.ini", ao_app->get_chat(customchar))
+                                             "courtroom_design.ini", p_misc)
                         .toLower();
     if (align == "right")
       ui_vp_showname->setAlignment(Qt::AlignRight);
@@ -2621,16 +2610,15 @@ void Courtroom::initialize_chatbox()
       ui_vp_showname->setAlignment(Qt::AlignLeft);
 
     if (extra_width > 0) {
+      QString current_path = ui_vp_chatbox->path.left(ui_vp_chatbox->path.lastIndexOf('.'));
       if (fm_width > default_width.width &&
-          ui_vp_chatbox->set_image(
-              chatbox_path +
+          ui_vp_chatbox->set_image(current_path +
               "med")) // This text be big. Let's do some shenanigans.
       {
         ui_vp_showname->resize(default_width.width + extra_width,
                                ui_vp_showname->height());
         if (fm_width > ui_vp_showname->width() &&
-            ui_vp_chatbox->set_image(chatbox_path +
-                                       "big")) // Biggest possible size for us.
+            ui_vp_chatbox->set_image(current_path + "big")) // Biggest possible size for us.
         {
           ui_vp_showname->resize(
               static_cast<int>(default_width.width + (extra_width * 2)),
