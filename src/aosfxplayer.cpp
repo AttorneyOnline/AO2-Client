@@ -37,7 +37,6 @@ void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
 
   QStringList pathlist;
   pathlist += p_sfx; // The path by itself
-  pathlist += ao_app->get_sounds_path(p_sfx); // Sounds folder path
   if (!p_character.isEmpty())
     pathlist += ao_app->get_character_path(p_character, p_sfx); // Character folder
   if (!p_misc.isEmpty() && !ao_app->get_subtheme().isEmpty())
@@ -50,6 +49,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
     pathlist += ao_app->get_misc_path(p_misc, p_sfx); // Base misc path
   pathlist += ao_app->get_theme_path(p_sfx, ao_app->current_theme); // Theme path
   pathlist += ao_app->get_theme_path(p_sfx, ao_app->default_theme); // Default theme path
+  pathlist += ao_app->get_sounds_path(p_sfx); // Sounds folder path
 
   QString path;
   for (QString p : pathlist) {
