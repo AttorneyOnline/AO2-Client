@@ -201,7 +201,6 @@ QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_characte
 {
     QStringList pathlist;
     pathlist += p_sfx; // The path by itself
-    pathlist += get_sounds_path(p_sfx); // Sounds folder path
     if (!p_character.isEmpty())
       pathlist += get_character_path(p_character, p_sfx); // Character folder
     if (!p_misc.isEmpty() && !get_subtheme().isEmpty())
@@ -214,6 +213,7 @@ QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_characte
       pathlist += get_misc_path(p_misc, p_sfx); // Base misc path
     pathlist += get_theme_path(p_sfx, current_theme); // Theme path
     pathlist += get_theme_path(p_sfx, default_theme); // Default theme path
+    pathlist += get_sounds_path(p_sfx); // Sounds folder path
   return get_sfx_path(pathlist);
 }
 

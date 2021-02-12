@@ -34,31 +34,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
       break;
     }
   }
-
-  QStringList pathlist;
-  pathlist += p_sfx; // The path by itself
-  if (!p_character.isEmpty())
-    pathlist += ao_app->get_character_path(p_character, p_sfx); // Character folder
-  if (!p_misc.isEmpty() && !ao_app->get_subtheme().isEmpty())
-    pathlist += ao_app->get_theme_path("misc/" + p_misc + "/" + p_sfx, ao_app->current_theme + "/" + ao_app->get_subtheme()); // Subtheme misc path
-  if (!p_misc.isEmpty())
-    pathlist += ao_app->get_theme_path("misc/" + p_misc + "/" + p_sfx, ao_app->current_theme); // Theme misc path
-  if (!ao_app->get_subtheme().isEmpty())
-    pathlist += ao_app->get_theme_path(p_sfx, ao_app->current_theme + "/" + ao_app->get_subtheme()); // Subtheme path
-  if (!p_misc.isEmpty())
-    pathlist += ao_app->get_misc_path(p_misc, p_sfx); // Base misc path
-  pathlist += ao_app->get_theme_path(p_sfx, ao_app->current_theme); // Theme path
-  pathlist += ao_app->get_theme_path(p_sfx, ao_app->default_theme); // Default theme path
-  pathlist += ao_app->get_sounds_path(p_sfx); // Sounds folder path
-
-  QString path;
-  for (QString p : pathlist) {
-      p = ao_app->get_case_sensitive_path(ao_app->get_sfx_suffix(p));
-      if (file_exists(p)) {
-          path = p;
-          break;
-      }
-  }
+  QString path = ao_app->get_sfx(p_sfx, p_misc, p_character);
   if (path.endsWith(".opus"))
     m_stream_list[m_channel] = BASS_OPUS_StreamCreateFile(
         FALSE, path.utf16(), 0, 0,
