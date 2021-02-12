@@ -281,9 +281,10 @@ QString AOApplication::read_design_ini(QString p_identifier,
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
   }
-  else {
+  else if (!value.isNull()) {
     return value.toString();
   }
+  return "";
 }
 
 Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
@@ -516,7 +517,7 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
   QSettings settings(get_character_path(p_char, "char.ini"),
                      QSettings::IniFormat);
   settings.beginGroup(target_tag);
-  QString value = settings.value(p_search_line).toString();
+  QString value = settings.value(p_search_line).value<QString>();
   settings.endGroup();
   return value;
 }
@@ -540,7 +541,7 @@ QStringList AOApplication::read_ini_tags(QString p_path, QString target_tag)
     settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
   foreach (QString key, keys) {
-    QString value = settings.value(key).toString();
+    QString value = settings.value(key).value<QString>();
     r_values << key + "=" + value;
   }
   if (!settings.group().isEmpty())
