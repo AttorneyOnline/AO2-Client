@@ -165,6 +165,27 @@ QString AOApplication::get_sfx_path(QStringList pathlist)
   }
   return path;
 }
+QString AOApplication::get_config_value(QString p_identifier, QString p_config, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc)
+{
+    QString path;
+//    qDebug() << "got request for" << p_identifier << "in" << p_config;
+    for (QString p : get_asset_paths(p_config, p_theme, p_subtheme, p_default_theme, p_misc)) {
+        p = get_case_sensitive_path(p);
+        if (file_exists(p)) {
+            QSettings settings(p, QSettings::IniFormat);
+            QVariant value = settings.value(p_identifier);
+            if (value.type() == QVariant::StringList) {
+//              qDebug() << "got" << p << "is a string list, returning" << value.toStringList().join(",");
+              return value.toStringList().join(",");
+            }
+            else if (!value.isNull()){
+//              qDebug() << "got" << p << "is a string, returning" << value.toString();
+              return value.toString();
+            }
+        }
+    }
+    return "";
+}
 
 QString AOApplication::get_asset(QString p_element, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc, QString p_character, QString p_placeholder)
 {

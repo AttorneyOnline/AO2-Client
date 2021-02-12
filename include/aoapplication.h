@@ -142,6 +142,7 @@ public:
   QString get_asset_path(QStringList pathlist);
   QString get_image_path(QStringList pathlist);
   QString get_sfx_path(QStringList pathlist);
+  QString get_config_value(QString p_identifier, QString p_config, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="");
   QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
