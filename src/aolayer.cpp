@@ -268,12 +268,6 @@ void AOLayer::start_playback(QString p_image)
   movie_frames.clear();
   movie_delays.clear();
 
-  if (!file_exists(p_image)) {
-    // Call the signal back to courtroom so splash layers etc. don't freeze the courtroom completely
-    done();
-    return;
-  }
-
   if (!ao_app->is_continuous_enabled()) {
     continuous = false;
     force_continuous = true;
