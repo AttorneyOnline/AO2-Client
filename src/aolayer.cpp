@@ -75,14 +75,15 @@ QPixmap AOLayer::get_pixmap(QImage image)
   else
     f_pixmap = QPixmap::fromImage(image);
   //    auto aspect_ratio = Qt::KeepAspectRatio;
-  if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
-    transform_mode = Qt::SmoothTransformation;
-  if (stretch)
-    f_pixmap = f_pixmap.scaled(f_w, f_h);
-  else
-    f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
-  this->resize(f_pixmap.size());
-
+  if (!f_pixmap.isNull()) {
+    if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
+      transform_mode = Qt::SmoothTransformation;
+    if (stretch)
+      f_pixmap = f_pixmap.scaled(f_w, f_h);
+    else
+      f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
+    this->resize(f_pixmap.size());
+  }
   return f_pixmap;
 }
 
@@ -377,6 +378,8 @@ void AOLayer::set_max_duration(int p_max_duration)
 void CharLayer::load_effects()
 {
   movie_effects.clear();
+  if (max_frames <= 1)
+    return;
   movie_effects.resize(max_frames);
   for (int e_frame = 0; e_frame < max_frames; ++e_frame) {
     QString effect = ao_app->get_screenshake_frame(m_char, m_emote, e_frame);
@@ -399,6 +402,8 @@ void CharLayer::load_effects()
 void CharLayer::load_network_effects()
 {
   movie_effects.clear();
+  if (max_frames <= 1)
+    return;
   movie_effects.resize(max_frames);
   // Order is important!!!
   QStringList effects_list = {"shake", "flash", "sfx^"};
