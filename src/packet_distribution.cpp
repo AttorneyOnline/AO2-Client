@@ -663,6 +663,23 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (ping_time != -1)
       latency = ping_time;
   }
+  // Subtheme packet
+  else if (header == "ST") {
+    if (!courtroom_constructed)
+      goto end;
+    // Subtheme reserved as argument 0
+    subtheme = f_contents.at(0);
+
+    // Check if we have subthemes set to "server"
+    QString p_st = configini->value("subtheme").value<QString>();
+    if (p_st.toLower() != "server")
+      // We don't. Simply acknowledge the subtheme sent by the server, but don't do anything else.
+      return;
+
+    // Reload theme request
+    if (f_contents.size() > 1 && f_contents.at(1) == "1")
+      w_courtroom->on_reload_theme_clicked();
+  }
 
 end:
 

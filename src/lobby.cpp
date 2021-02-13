@@ -244,7 +244,7 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
   QString font_name =
-      ao_app->get_font_name(p_identifier + "_font", design_file);
+      ao_app->get_design_element(p_identifier + "_font", design_file);
   QFont font(font_name, f_weight);
   bool use = ao_app->get_font_size("use_custom_fonts", design_file) == 1;
   if (use) {

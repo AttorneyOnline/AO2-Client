@@ -45,7 +45,11 @@ private:
   QFormLayout *ui_gameplay_form;
   QLabel *ui_theme_label;
   QComboBox *ui_theme_combobox;
+  QLabel *ui_subtheme_label;
+  QComboBox *ui_subtheme_combobox;
   QPushButton *ui_theme_reload_button;
+  QLabel *ui_animated_theme_lbl;
+  QCheckBox *ui_animated_theme_cb;
   QFrame *ui_theme_log_divider;
   QLabel *ui_downwards_lbl;
   QCheckBox *ui_downwards_cb;
@@ -173,6 +177,7 @@ public slots:
   void discard_pressed();
   void button_clicked(QAbstractButton *button);
   void on_reload_theme_clicked();
+  void theme_changed(int i);
 };
 
 #endif // AOOPTIONSDIALOG_H

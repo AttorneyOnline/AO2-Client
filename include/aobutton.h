@@ -5,6 +5,7 @@
 
 #include <QDebug>
 #include <QPushButton>
+#include <QMovie>
 
 class AOButton : public QPushButton {
   Q_OBJECT
@@ -14,8 +15,9 @@ public:
   ~AOButton();
 
   AOApplication *ao_app;
+  QMovie *movie;
 
-  void set_image(QString p_image);
+  void set_image(QString p_image, QString p_misc="");
 };
 
 #endif // AOBUTTON_H

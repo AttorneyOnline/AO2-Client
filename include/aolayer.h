@@ -85,7 +85,7 @@ public:
 
   // iterate through a list of paths and return the first entry that exists. if
   // none exist, return NULL (safe because we check again for existence later)
-  QString find_image(QList<QString> p_list);
+  QString find_image(QStringList p_list);
 
 protected:
   AOApplication *ao_app;

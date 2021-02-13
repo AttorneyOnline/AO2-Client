@@ -49,7 +49,7 @@ StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
 {
 }
 
-QString AOLayer::find_image(QList<QString> p_list)
+QString AOLayer::find_image(QStringList p_list)
 {
   QString image_path;
   for (QString path : p_list) {
@@ -75,14 +75,15 @@ QPixmap AOLayer::get_pixmap(QImage image)
   else
     f_pixmap = QPixmap::fromImage(image);
   //    auto aspect_ratio = Qt::KeepAspectRatio;
-  if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
-    transform_mode = Qt::SmoothTransformation;
-  if (stretch)
-    f_pixmap = f_pixmap.scaled(f_w, f_h);
-  else
-    f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
-  this->resize(f_pixmap.size());
-
+  if (!f_pixmap.isNull()) {
+    if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
+      transform_mode = Qt::SmoothTransformation;
+    if (stretch)
+      f_pixmap = f_pixmap.scaled(f_w, f_h);
+    else
+      f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
+    this->resize(f_pixmap.size());
+  }
   return f_pixmap;
 }
 
@@ -194,7 +195,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
 #endif
-  QList<QString> pathlist = {
+  QStringList pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname, prefix + current_emote)), // Default path
       ao_app->get_image_suffix(ao_app->get_character_path(
@@ -206,42 +207,16 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           current_emote)), // Just use the non-prefixed image, animated or not
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Theme placeholder path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          "placeholder"))}; // Default theme placeholder path
-  this->start_playback(find_image(pathlist));
+      ao_app->get_image_suffix(ao_app->get_theme_path(
+          "placeholder", ao_app->default_theme))}; // Default theme placeholder path
+  start_playback(find_image(pathlist));
 }
 
 void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, p_filename)), // Character folder
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + p_miscname + "/" + p_filename)), // Theme misc path
-      ao_app->get_image_suffix(
-          ao_app->get_misc_path(p_miscname, p_filename)), // Misc path
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path(p_filename)), // Theme path
-      ao_app->get_image_suffix(
-          ao_app->get_default_theme_path(p_filename)), // Default theme path
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path("placeholder")), // Placeholder path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          "placeholder")), // Default placeholder path
-  };
-  QString final_image = find_image(pathlist);
-  if (final_image == ao_app->get_theme_path("custom.png") ||
-      final_image == ao_app->get_default_theme_path("custom.png") ||
-      final_image == ao_app->get_theme_path("witnesstestimony.png") ||
-      final_image == ao_app->get_default_theme_path("witnesstestimony.png") ||
-      final_image == ao_app->get_theme_path("crossexamination.png") ||
-      final_image == ao_app->get_default_theme_path("crossexamination.png")) 
-    // stupid exceptions because themes are stupid
-    final_image = find_image(
-        {ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")),
-         ao_app->get_image_suffix(ao_app->get_default_theme_path("placeholder"))});
+  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
   start_playback(final_image);
 }
 
@@ -259,36 +234,19 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
   stretch = true;
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + p_miscname + "/" +
-          p_filename)), // first check our theme's misc directory
-      ao_app->get_image_suffix(ao_app->get_misc_path(
-          p_miscname, p_filename)), // then check our global misc folder
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          p_filename)), // then check the user's theme for a default image
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          p_filename))}; // and finally check the default theme
-  start_playback(find_image(pathlist));
+  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  start_playback(final_image);
 }
 
 void StickerLayer::load_image(QString p_charname)
 {
-  QString miscname = ao_app->get_char_shouts(p_charname);
-  transform_mode = ao_app->get_misc_scaling(miscname);
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
-                                miscname + "/sticker/" + p_charname), // Misc path
-      ao_app->get_image_suffix(ao_app->get_custom_theme_path(miscname, "sticker/" + p_charname)), // Custom theme path
-      ao_app->get_image_suffix(ao_app->get_theme_path("sticker/" + p_charname)), // Theme path
-      ao_app->get_image_suffix(
-          ao_app->get_default_theme_path("sticker/" + p_charname)), // Default theme path
-      ao_app->get_image_suffix(
-          ao_app->get_character_path(p_charname, "sticker")), // Character folder
-      ao_app->get_image_suffix(
-          ao_app->get_character_path(p_charname, "showname")), // Scuffed DRO way
-  };
-  start_playback(find_image(pathlist));
+  QString p_miscname = ao_app->get_chat(p_charname);
+  transform_mode = ao_app->get_misc_scaling(p_miscname);
+  QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  if (!file_exists((final_image)))
+      final_image = ao_app->get_image_suffix(
+                  ao_app->get_character_path(p_charname, "showname")), // Scuffed DRO way
+  start_playback(final_image);
 }
 
 void CharLayer::start_playback(QString p_image)
@@ -310,9 +268,6 @@ void AOLayer::start_playback(QString p_image)
   freeze();
   movie_frames.clear();
   movie_delays.clear();
-
-  if (!file_exists(p_image))
-    return;
 
   if (!ao_app->is_continuous_enabled()) {
     continuous = false;
@@ -423,6 +378,8 @@ void AOLayer::set_max_duration(int p_max_duration)
 void CharLayer::load_effects()
 {
   movie_effects.clear();
+  if (max_frames <= 1)
+    return;
   movie_effects.resize(max_frames);
   for (int e_frame = 0; e_frame < max_frames; ++e_frame) {
     QString effect = ao_app->get_screenshake_frame(m_char, m_emote, e_frame);
@@ -445,6 +402,8 @@ void CharLayer::load_effects()
 void CharLayer::load_network_effects()
 {
   movie_effects.clear();
+  if (max_frames <= 1)
+    return;
   movie_effects.resize(max_frames);
   // Order is important!!!
   QStringList effects_list = {"shake", "flash", "sfx^"};
@@ -525,6 +484,7 @@ void AOLayer::stop()
   // do we want a frozen gif to display
   this->freeze();
   this->hide();
+  shfx_timer->stop();
 }
 
 void AOLayer::freeze()
@@ -532,7 +492,6 @@ void AOLayer::freeze()
   // aT nO pOiNt Do We WaNt A fRoZeN gIf To DiSpLaY
   ticker->stop();
   preanim_timer->stop();
-  shfx_timer->stop();
 }
 
 void CharLayer::movie_ticker()
@@ -544,7 +503,7 @@ void CharLayer::movie_ticker()
 void AOLayer::movie_ticker()
 {
   ++frame;
-  if ((frame >= max_frames) && (max_frames > 1)) {
+  if (frame >= max_frames) {
     if (play_once) {
       if (cull_image)
         this->stop();
