@@ -261,6 +261,15 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
+
+  if (!ao_app->is_continuous_enabled()) {
+    continuous = false;
+    force_continuous = true;
+  }
+
+  if ((last_path == p_image) && (!force_continuous))
+    return;
+
 #ifdef DEBUG_MOVIE
   actual_time.restart();
 #endif
@@ -268,12 +277,6 @@ void AOLayer::start_playback(QString p_image)
   freeze();
   movie_frames.clear();
   movie_delays.clear();
-
-  if (!ao_app->is_continuous_enabled()) {
-    continuous = false;
-    force_continuous = true;
-  }
-
   QString scaling_override =
       ao_app->read_design_ini("scaling", p_image + ".ini");
   if (scaling_override != "")
@@ -289,10 +292,6 @@ void AOLayer::start_playback(QString p_image)
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
-  if ((last_path == p_image) && (!force_continuous))
-    continuous = true;
-  else if ((last_path != p_image) && !force_continuous)
-    continuous = false;
   if (!continuous)
     frame = 0;
   last_max_frames = max_frames;
