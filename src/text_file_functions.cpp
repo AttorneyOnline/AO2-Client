@@ -318,14 +318,14 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 
 pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
                                                     QString p_file,
-                                                    QString p_char)
+                                                    QString p_misc)
 {
   pos_size_type return_value;
   return_value.x = 0;
   return_value.y = 0;
   return_value.width = -1;
   return_value.height = -1;
-  QString f_result = get_design_element(p_identifier, p_file, p_char);
+  QString f_result = get_design_element(p_identifier, p_file, p_misc);
 
   QStringList sub_line_elements = f_result.split(",");
 

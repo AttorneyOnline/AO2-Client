@@ -1160,7 +1160,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier,
   QString filename = "courtroom_design.ini";
 
   pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename, p_char);
+      ao_app->get_element_dimensions(p_identifier, filename, ao_app->get_chat(p_char));
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
     qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
