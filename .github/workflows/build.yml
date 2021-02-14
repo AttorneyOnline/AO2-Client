@@ -73,11 +73,12 @@ jobs:
       working-directory: ${{github.workspace}}/build/Release
       shell: bash
       run: |
-        windeployqt .
+        windeployqt --no-opengl-sw .
         cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
         cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
         cp ../../x64/bass.dll .
         cp ../../x64/bassopus.dll .
+        cp $QT_PLUGIN_PATH/platforms/qdirect2d.dll ./plugins/
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
