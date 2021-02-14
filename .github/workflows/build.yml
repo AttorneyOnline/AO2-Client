@@ -78,7 +78,7 @@ jobs:
         cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
         cp ../../x64/bass.dll .
         cp ../../x64/bassopus.dll .
-        cp $QT_PLUGIN_PATH/platforms/qdirect2d.dll ./plugins/
+        cp $QT_PLUGIN_PATH/platforms/qdirect2d.dll ./platforms/
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
