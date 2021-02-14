@@ -308,7 +308,7 @@ public:
 
   // Returns the dimensions of widget with specified identifier from p_file
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file,
-                                       QString p_char = "");
+                                       QString p_misc = "");
 
   // Returns the value to you
   QString get_design_element(QString p_identifier, QString p_file,
