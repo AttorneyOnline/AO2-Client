@@ -3803,7 +3803,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   if (p_wtce == "testimony1") {
     // End testimony indicator
     if (variant == 1) {
-      ui_vp_testimony->stop();
+      ui_vp_testimony->kill();
       return;
     }
     sfx_name = ao_app->get_court_sfx("witnesstestimony", bg_misc);
@@ -3814,7 +3814,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   else if (p_wtce == "testimony2") {
     sfx_name = ao_app->get_court_sfx("crossexamination", bg_misc);
     filename = "crossexamination";
-    ui_vp_testimony->stop();
+    ui_vp_testimony->kill();
   }
   else {
     ui_vp_wtce->set_static_duration(verdict_static_time);
@@ -3824,12 +3824,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       if (variant == 0) {
         sfx_name = ao_app->get_court_sfx("notguilty", bg_misc);
         filename = "notguilty";
-        ui_vp_testimony->stop();
+        ui_vp_testimony->kill();
       }
       else if (variant == 1) {
         sfx_name = ao_app->get_court_sfx("guilty", bg_misc);
         filename = "guilty";
-        ui_vp_testimony->stop();
+        ui_vp_testimony->kill();
       }
     }
     // Completely custom WTCE
