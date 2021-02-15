@@ -1299,6 +1299,8 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_objection->stop();
     chat_tick_timer->stop();
     ui_vp_evidence_display->reset();
+    ui_vp_background->kill();
+    ui_vp_desk->kill();
     set_scene(
         QString::number(ao_app->get_desk_mod(current_char, current_emote)),
         current_side);

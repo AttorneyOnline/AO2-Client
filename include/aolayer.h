@@ -64,6 +64,9 @@ public:
   // Stop the movie, clearing the image
   void stop();
 
+  // Stop the movie and clear all vectors
+  void kill();
+
   // Set the m_flipped variable to true/false
   void set_flipped(bool p_flipped) { m_flipped = p_flipped; }
 

@@ -493,6 +493,16 @@ void AOLayer::freeze()
   preanim_timer->stop();
 }
 
+void AOLayer::kill()
+{
+  // used for when we want to ensure a file is loaded anew
+  this->stop();
+  this->clear();
+  movie_frames.clear();
+  movie_delays.clear();
+  last_path = "";
+}
+
 void CharLayer::movie_ticker()
 {
   AOLayer::movie_ticker();
