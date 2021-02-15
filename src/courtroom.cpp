@@ -1299,6 +1299,8 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_objection->stop();
     chat_tick_timer->stop();
     ui_vp_evidence_display->reset();
+    ui_vp_background->kill();
+    ui_vp_desk->kill();
     set_scene(
         QString::number(ao_app->get_desk_mod(current_char, current_emote)),
         current_side);
@@ -2197,17 +2199,7 @@ bool Courtroom::handle_objection()
     objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   }
 
-  if (is_ao2_bg) {
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", m_chatmessage[CHAR_NAME]);
-  }
-  else {
-    set_size_and_pos(ui_vp_chatbox, "chatbox", m_chatmessage[CHAR_NAME]);
-  }
-  set_size_and_pos(ui_vp_showname, "showname", m_chatmessage[CHAR_NAME]);
-  set_size_and_pos(ui_vp_message, "message", m_chatmessage[CHAR_NAME]);
-  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
-                      ui_vp_message->y() + ui_vp_chatbox->y());
-  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
@@ -2554,6 +2546,18 @@ void Courtroom::initialize_chatbox()
   else {
     ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
+
+  if (is_ao2_bg) {
+    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", m_chatmessage[CHAR_NAME]);
+  }
+  else {
+    set_size_and_pos(ui_vp_chatbox, "chatbox", m_chatmessage[CHAR_NAME]);
+  }
+  set_size_and_pos(ui_vp_showname, "showname", m_chatmessage[CHAR_NAME]);
+  set_size_and_pos(ui_vp_message, "message", m_chatmessage[CHAR_NAME]);
+  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
+                      ui_vp_message->y() + ui_vp_chatbox->y());
+  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
   QString customchar;
   if (ao_app->is_customchat_enabled())
@@ -3799,7 +3803,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   if (p_wtce == "testimony1") {
     // End testimony indicator
     if (variant == 1) {
-      ui_vp_testimony->stop();
+      ui_vp_testimony->kill();
       return;
     }
     sfx_name = ao_app->get_court_sfx("witnesstestimony", bg_misc);
@@ -3810,7 +3814,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
   else if (p_wtce == "testimony2") {
     sfx_name = ao_app->get_court_sfx("crossexamination", bg_misc);
     filename = "crossexamination";
-    ui_vp_testimony->stop();
+    ui_vp_testimony->kill();
   }
   else {
     ui_vp_wtce->set_static_duration(verdict_static_time);
@@ -3820,12 +3824,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       if (variant == 0) {
         sfx_name = ao_app->get_court_sfx("notguilty", bg_misc);
         filename = "notguilty";
-        ui_vp_testimony->stop();
+        ui_vp_testimony->kill();
       }
       else if (variant == 1) {
         sfx_name = ao_app->get_court_sfx("guilty", bg_misc);
         filename = "guilty";
-        ui_vp_testimony->stop();
+        ui_vp_testimony->kill();
       }
     }
     // Completely custom WTCE
