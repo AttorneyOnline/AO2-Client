@@ -2199,17 +2199,7 @@ bool Courtroom::handle_objection()
     objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   }
 
-  if (is_ao2_bg) {
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", m_chatmessage[CHAR_NAME]);
-  }
-  else {
-    set_size_and_pos(ui_vp_chatbox, "chatbox", m_chatmessage[CHAR_NAME]);
-  }
-  set_size_and_pos(ui_vp_showname, "showname", m_chatmessage[CHAR_NAME]);
-  set_size_and_pos(ui_vp_message, "message", m_chatmessage[CHAR_NAME]);
-  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
-                      ui_vp_message->y() + ui_vp_chatbox->y());
-  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
@@ -2556,6 +2546,18 @@ void Courtroom::initialize_chatbox()
   else {
     ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
+
+  if (is_ao2_bg) {
+    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", m_chatmessage[CHAR_NAME]);
+  }
+  else {
+    set_size_and_pos(ui_vp_chatbox, "chatbox", m_chatmessage[CHAR_NAME]);
+  }
+  set_size_and_pos(ui_vp_showname, "showname", m_chatmessage[CHAR_NAME]);
+  set_size_and_pos(ui_vp_message, "message", m_chatmessage[CHAR_NAME]);
+  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
+                      ui_vp_message->y() + ui_vp_chatbox->y());
+  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
   QString customchar;
   if (ao_app->is_customchat_enabled())
