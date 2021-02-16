@@ -437,6 +437,28 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   set_char_select();
 }
 
+void Courtroom::set_courtroom_size()
+{
+  QString filename = "courtroom_design.ini";
+  pos_size_type f_courtroom =
+      ao_app->get_element_dimensions("courtroom", filename);
+
+  if (f_courtroom.width < 0 || f_courtroom.height < 0) {
+    qDebug() << "W: did not find courtroom width or height in " << filename;
+
+    this->setFixedSize(714, 668);
+  }
+  else {
+    m_courtroom_width = f_courtroom.width;
+    m_courtroom_height = f_courtroom.height;
+
+    this->setFixedSize(f_courtroom.width, f_courtroom.height);
+  }
+  ui_background->move(0, 0);
+  ui_background->resize(m_courtroom_width, m_courtroom_height);
+  ui_background->set_image("courtroombackground");
+}
+
 void Courtroom::set_mute_list()
 {
   mute_map.clear();
@@ -480,27 +502,7 @@ void Courtroom::set_widgets()
   QSettings settings(ao_app->get_theme_path(filename, ao_app->current_theme), QSettings::IniFormat);
   ao_app->default_theme = settings.value("default_theme", "default").toString();
 
-  pos_size_type f_courtroom =
-      ao_app->get_element_dimensions("courtroom", filename);
-
-  if (f_courtroom.width < 0 || f_courtroom.height < 0) {
-    qDebug() << "W: did not find courtroom width or height in " << filename;
-
-    this->setFixedSize(714, 668);
-  }
-  else {
-    m_courtroom_width = f_courtroom.width;
-    m_courtroom_height = f_courtroom.height;
-
-    this->setFixedSize(f_courtroom.width, f_courtroom.height);
-  }
-
   set_fonts();
-
-  ui_background->move(0, 0);
-  ui_background->resize(m_courtroom_width, m_courtroom_height);
-  ui_background->set_image("courtroombackground");
-
   set_size_and_pos(ui_viewport, "viewport");
 
   // If there is a point to it, show all CCCC features.
@@ -680,17 +682,8 @@ void Courtroom::set_widgets()
   for (int i = 0; i < max_clocks; i++) {
     set_size_and_pos(ui_clock[i], "clock_" + QString::number(i));
   }
-
-  if (is_ao2_bg) {
-    set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
-    //  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
-    set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
-  }
-  else {
-    set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-    //  set_size_and_pos(ui_vp_chatbox, "chatbox");
-    set_size_and_pos(ui_ic_chat_name, "ic_chat_name");
-  }
+  set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
+  set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
 
   ui_ic_chat_message->setStyleSheet(
       "QLineEdit{background-color: rgba(100, 100, 100, 255);}");
@@ -1137,30 +1130,12 @@ void Courtroom::set_window_title(QString p_title)
   this->setWindowTitle(p_title);
 }
 
-void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
+void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc)
 {
   QString filename = "courtroom_design.ini";
 
   pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename);
-
-  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
-    p_widget->hide();
-  }
-  else {
-    p_widget->move(design_ini_result.x, design_ini_result.y);
-    p_widget->resize(design_ini_result.width, design_ini_result.height);
-  }
-}
-
-void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier,
-                                 QString p_char)
-{
-  QString filename = "courtroom_design.ini";
-
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename, ao_app->get_chat(p_char));
+      ao_app->get_element_dimensions(p_identifier, filename, p_misc);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
     qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
@@ -1267,17 +1242,6 @@ void Courtroom::set_background(QString p_background, bool display)
   }
 
   set_pos_dropdown(pos_list);
-
-  is_ao2_bg = true;
-
-  if (is_ao2_bg) {
-    // set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
-    set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
-  }
-  else {
-    // set_size_and_pos(ui_vp_chatbox, "chatbox");
-    set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-  }
 
   if (display) {
     ui_vp_speedlines->stop();
@@ -1461,12 +1425,6 @@ void Courtroom::update_character(int p_cid)
       }
     }
   }
-  if (is_ao2_bg) {
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", f_char);
-  }
-  else {
-    set_size_and_pos(ui_vp_chatbox, "chatbox", f_char);
-  }
 
   if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
                    // to find one
@@ -1483,8 +1441,6 @@ void Courtroom::update_character(int p_cid)
 
 void Courtroom::enter_courtroom()
 {
-  set_widgets();
-
   current_evidence_page = 0;
   current_evidence = 0;
 
@@ -2546,23 +2502,18 @@ void Courtroom::initialize_chatbox()
   else {
     ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
-
-  if (is_ao2_bg) {
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", m_chatmessage[CHAR_NAME]);
-  }
-  else {
-    set_size_and_pos(ui_vp_chatbox, "chatbox", m_chatmessage[CHAR_NAME]);
-  }
-  set_size_and_pos(ui_vp_showname, "showname", m_chatmessage[CHAR_NAME]);
-  set_size_and_pos(ui_vp_message, "message", m_chatmessage[CHAR_NAME]);
-  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
-                      ui_vp_message->y() + ui_vp_chatbox->y());
-  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
-
   QString customchar;
   if (ao_app->is_customchat_enabled())
     customchar = m_chatmessage[CHAR_NAME];
   QString p_misc = ao_app->get_chat(customchar);
+
+  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", p_misc);
+  set_size_and_pos(ui_vp_showname, "showname", p_misc);
+  set_size_and_pos(ui_vp_message, "message", p_misc);
+  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
+                      ui_vp_message->y() + ui_vp_chatbox->y());
+  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
     ui_vp_chatbox->set_image("chatblank", p_misc);
@@ -5264,8 +5215,10 @@ void Courtroom::on_reload_theme_clicked()
 {
   ao_app->reload_theme();
 
-  enter_courtroom();
+  set_courtroom_size();
+  set_widgets();
   update_character(m_cid);
+  enter_courtroom();
 
   anim_state = 4;
   text_state = 3;

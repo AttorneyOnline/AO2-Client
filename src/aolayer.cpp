@@ -450,6 +450,10 @@ void CharLayer::load_network_effects()
 
 void CharLayer::play_frame_effect(int p_frame)
 {
+  if (p_frame >= movie_effects.size()) {
+    qDebug() << "W: Attempted to play a frame effect bigger than the size of movie_effects";
+    return;
+  }
   if (p_frame < max_frames) {
     foreach (QString effect, movie_effects[p_frame]) {
       if (effect == "shake") {

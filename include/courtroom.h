@@ -121,6 +121,9 @@ public:
 
   void character_loading_finished();
 
+  //
+  void set_courtroom_size();
+
   // sets position of widgets based on theme ini files
   void set_widgets();
 
@@ -147,11 +150,8 @@ public:
 
   void set_window_title(QString p_title);
 
-  // reads theme inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-
-  // reads theme and char inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_char);
+  // reads theme and sets size and pos based on the identifier (using p_misc if provided)
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc="");
 
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
@@ -575,10 +575,6 @@ private:
   int evidence_columns = 6;
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
-
-  // is set to true if the bg folder contains defensedesk.png,
-  // prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
 
   // whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;

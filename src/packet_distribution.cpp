@@ -493,8 +493,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->enter_courtroom();
 
-    if (courtroom_constructed)
+    if (courtroom_constructed) {
+      w_courtroom->set_courtroom_size();
       w_courtroom->update_character(f_contents.at(2).toInt());
+    }
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
