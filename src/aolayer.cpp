@@ -240,12 +240,11 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 
 void StickerLayer::load_image(QString p_charname)
 {
-  QString p_miscname = ao_app->get_chat(p_charname);
+  QString p_miscname;
+  if (ao_app->is_customchat_enabled())
+    p_miscname = ao_app->get_chat(p_charname);
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
-  if (!file_exists((final_image)))
-      final_image = ao_app->get_image_suffix(
-                  ao_app->get_character_path(p_charname, "showname")), // Scuffed DRO way
   start_playback(final_image);
 }
 

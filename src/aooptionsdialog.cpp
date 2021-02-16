@@ -486,6 +486,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_customchat_cb);
 
   row += 1;
+  ui_sticker_lbl = new QLabel(ui_form_layout_widget);
+  ui_sticker_lbl->setText(tr("Stickers:"));
+  ui_sticker_lbl->setToolTip(
+      tr("Turn this on to allow characters to define their own "
+         "stickers (unique images that show up over the chatbox - like avatars or shownames)."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_sticker_lbl);
+
+  ui_sticker_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_sticker_cb);
+
+  row += 1;
   ui_continuous_lbl = new QLabel(ui_form_layout_widget);
   ui_continuous_lbl->setText(tr("Continuous Playback:"));
   ui_continuous_lbl->setToolTip(
@@ -909,6 +922,7 @@ void AOOptionsDialog::update_values() {
   ui_stickyeffects_cb->setChecked(ao_app->is_stickyeffects_enabled());
   ui_stickypres_cb->setChecked(ao_app->is_stickypres_enabled());
   ui_customchat_cb->setChecked(ao_app->is_customchat_enabled());
+  ui_sticker_cb->setChecked(ao_app->is_sticker_enabled());
   ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
   ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
   ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());

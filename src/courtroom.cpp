@@ -3209,7 +3209,8 @@ void Courtroom::start_chat_ticking()
   ui_vp_chatbox->show();
   ui_vp_message->show();
 
-  ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
+  if (ao_app->is_sticker_enabled())
+    ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
 
   if (m_chatmessage[ADDITIVE] != "1") {
     ui_vp_message->clear();

@@ -228,6 +228,9 @@ public:
   // for settings.
   bool is_customchat_enabled();
 
+  // Returns the value of characer sticker (avatar) setting
+  bool is_sticker_enabled();
+
   // Returns the value of whether continuous playback should be used
   // from the config.ini.
   bool is_continuous_enabled();
