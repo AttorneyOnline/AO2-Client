@@ -727,6 +727,7 @@ void Courtroom::set_widgets()
       tr("Set your character's emote to play on your next message."));
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
+  ui_pos_dropdown->setEditable(true);
   ui_pos_dropdown->setToolTip(
       tr("Set your character's supplementary background."));
 
@@ -1317,9 +1318,19 @@ void Courtroom::set_side(QString p_side, bool block_signals)
         ui_pos_dropdown->blockSignals(false);
 
       // alright we dun, jobs done here boyos
-      break;
+      return;
     }
   }
+  // We will only get there if we failed the last step
+  if (block_signals)
+    ui_pos_dropdown->blockSignals(true);
+  if (temp_side_index > -1)
+    ui_pos_dropdown->removeItem(temp_side_index);
+  ui_pos_dropdown->addItem(f_side);
+  temp_side_index = ui_pos_dropdown->count()-1;
+  ui_pos_dropdown->setCurrentIndex(temp_side_index);
+  if (block_signals)
+    ui_pos_dropdown->blockSignals(false);
 }
 
 void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
@@ -1327,8 +1338,14 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   // Block the signals to prevent setCurrentIndex from triggering a pos change
   ui_pos_dropdown->blockSignals(true);
   pos_dropdown_list = pos_dropdowns;
+  temp_side_index = -1;
   ui_pos_dropdown->clear();
   ui_pos_dropdown->addItems(pos_dropdown_list);
+  // Custom pos
+  if (current_side != "" && !pos_dropdown_list.contains(current_side)) {
+    ui_pos_dropdown->addItem(current_side);
+    temp_side_index = ui_pos_dropdown->count() - 1;
+  }
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
   set_side(current_side);
@@ -3758,13 +3775,13 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       ui_vp_testimony->kill();
       return;
     }
-    sfx_name = ao_app->get_court_sfx("witnesstestimony", bg_misc);
+    sfx_name = ao_app->get_court_sfx("witness_testimony", bg_misc);
     filename = "witnesstestimony";
     ui_vp_testimony->load_image("testimony", "", bg_misc);
   }
   // cross examination
   else if (p_wtce == "testimony2") {
-    sfx_name = ao_app->get_court_sfx("crossexamination", bg_misc);
+    sfx_name = ao_app->get_court_sfx("cross_examination", bg_misc);
     filename = "crossexamination";
     ui_vp_testimony->kill();
   }
@@ -3774,7 +3791,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     // Verdict?
     if (p_wtce == "judgeruling") {
       if (variant == 0) {
-        sfx_name = ao_app->get_court_sfx("notguilty", bg_misc);
+        sfx_name = ao_app->get_court_sfx("not_guilty", bg_misc);
         filename = "notguilty";
         ui_vp_testimony->kill();
       }
@@ -4282,10 +4299,19 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   // YEAH SENDING LIKE 20 PACKETS IF THE USER SCROLLS THROUGH, GREAT IDEA
   // how about this instead
   set_side(f_pos);
+  if (temp_side_index > -1 && p_index == temp_side_index) {
+    ui_pos_dropdown->removeItem(temp_side_index);
+    temp_side_index = -1;
+  }
 }
 
 void Courtroom::on_pos_remove_clicked()
 {
+  if (temp_side_index > -1) {
+    ui_pos_dropdown->removeItem(temp_side_index);
+    temp_side_index = -1;
+  }
+
   QString default_side = ao_app->get_char_side(current_char);
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
@@ -4296,10 +4322,12 @@ void Courtroom::on_pos_remove_clicked()
     }
   }
   int wit_index = ui_pos_dropdown->findText("wit");
+  ui_pos_dropdown->blockSignals(true);
   if ((ui_pos_dropdown->currentText() != default_side) & (wit_index != -1)) //i.e. this bg doesn't have our pos
     ui_pos_dropdown->setCurrentIndex(wit_index); // fall back to "wit"
   else if (ui_pos_dropdown->currentText() != default_side) // we don't have "wit" either?
     ui_pos_dropdown->setCurrentIndex(0); // as a last resort, choose the first item in the dropdown
+  ui_pos_dropdown->blockSignals(false);
   current_side = "";
   ui_pos_remove->hide();
   ui_ic_chat_message->setFocus();

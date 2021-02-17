@@ -581,6 +581,7 @@ private:
 
   QString current_background = "default";
   QString current_side = "";
+  int temp_side_index = -1;
 
   QBrush free_brush;
   QBrush lfp_brush;
