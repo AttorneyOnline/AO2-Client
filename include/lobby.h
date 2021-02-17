@@ -17,6 +17,7 @@
 
 #include <QDebug>
 #include <QScrollBar>
+#include <QHeaderView>
 
 class AOApplication;
 
