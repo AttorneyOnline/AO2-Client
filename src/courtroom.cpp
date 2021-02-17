@@ -3770,13 +3770,13 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       return;
     }
     sfx_name = ao_app->get_court_sfx("witness_testimony", bg_misc);
-    filename = "witnesstestimony";
+    filename = "witnesstestimony_bubble";
     ui_vp_testimony->load_image("testimony", "", bg_misc);
   }
   // cross examination
   else if (p_wtce == "testimony2") {
     sfx_name = ao_app->get_court_sfx("cross_examination", bg_misc);
-    filename = "crossexamination";
+    filename = "crossexamination_bubble";
     ui_vp_testimony->kill();
   }
   else {
@@ -3786,12 +3786,12 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
     if (p_wtce == "judgeruling") {
       if (variant == 0) {
         sfx_name = ao_app->get_court_sfx("not_guilty", bg_misc);
-        filename = "notguilty";
+        filename = "notguilty_bubble";
         ui_vp_testimony->kill();
       }
       else if (variant == 1) {
         sfx_name = ao_app->get_court_sfx("guilty", bg_misc);
-        filename = "guilty";
+        filename = "guilty_bubble";
         ui_vp_testimony->kill();
       }
     }
