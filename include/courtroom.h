@@ -581,7 +581,6 @@ private:
 
   QString current_background = "default";
   QString current_side = "";
-  int temp_side_index = -1;
 
   QBrush free_brush;
   QBrush lfp_brush;
@@ -835,6 +834,7 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
+  void on_pos_dropdown_changed(QString p_text);
   void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);

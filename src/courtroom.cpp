@@ -308,6 +308,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_pos_dropdown, SIGNAL(currentIndexChanged(int)), this,
           SLOT(on_pos_dropdown_changed(int)));
+  connect(ui_pos_dropdown, SIGNAL(editTextChanged(QString)), this,
+          SLOT(on_pos_dropdown_changed(QString)));
   connect(ui_pos_remove, SIGNAL(clicked()), this, SLOT(on_pos_remove_clicked()));
 
   connect(ui_iniswap_dropdown, SIGNAL(currentIndexChanged(int)), this,
@@ -728,6 +730,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
   ui_pos_dropdown->setEditable(true);
+  ui_pos_dropdown->setInsertPolicy(QComboBox::NoInsert);
   ui_pos_dropdown->setToolTip(
       tr("Set your character's supplementary background."));
 
@@ -1322,15 +1325,8 @@ void Courtroom::set_side(QString p_side, bool block_signals)
     }
   }
   // We will only get there if we failed the last step
-  if (block_signals)
-    ui_pos_dropdown->blockSignals(true);
-  if (temp_side_index > -1)
-    ui_pos_dropdown->removeItem(temp_side_index);
-  ui_pos_dropdown->addItem(f_side);
-  temp_side_index = ui_pos_dropdown->count()-1;
-  ui_pos_dropdown->setCurrentIndex(temp_side_index);
-  if (block_signals)
-    ui_pos_dropdown->blockSignals(false);
+  ui_pos_dropdown->setEditText(f_side);
+  ui_pos_remove->show();
 }
 
 void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
@@ -1338,13 +1334,11 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   // Block the signals to prevent setCurrentIndex from triggering a pos change
   ui_pos_dropdown->blockSignals(true);
   pos_dropdown_list = pos_dropdowns;
-  temp_side_index = -1;
   ui_pos_dropdown->clear();
   ui_pos_dropdown->addItems(pos_dropdown_list);
-  // Custom pos
   if (current_side != "" && !pos_dropdown_list.contains(current_side)) {
-    ui_pos_dropdown->addItem(current_side);
-    temp_side_index = ui_pos_dropdown->count() - 1;
+    ui_pos_dropdown->setEditText(current_side);
+    ui_pos_remove->show();
   }
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
@@ -4281,37 +4275,27 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 {
   if (p_index < 0)
     return;
+  on_pos_dropdown_changed(ui_pos_dropdown->itemText(p_index));
+}
 
+void Courtroom::on_pos_dropdown_changed(QString p_text)
+{
   toggle_judge_buttons(false);
 
-  QString f_pos = ui_pos_dropdown->itemText(p_index);
-
-  if (f_pos == "")
-    return;
-
-  if (f_pos == "jud")
+  if (p_text == "jud")
     toggle_judge_buttons(true);
-  
+
   ui_pos_remove->show();
 
-  current_side = f_pos;
+  current_side = p_text;
 
   // YEAH SENDING LIKE 20 PACKETS IF THE USER SCROLLS THROUGH, GREAT IDEA
   // how about this instead
-  set_side(f_pos);
-  if (temp_side_index > -1 && p_index == temp_side_index) {
-    ui_pos_dropdown->removeItem(temp_side_index);
-    temp_side_index = -1;
-  }
+  set_side(p_text);
 }
 
 void Courtroom::on_pos_remove_clicked()
 {
-  if (temp_side_index > -1) {
-    ui_pos_dropdown->removeItem(temp_side_index);
-    temp_side_index = -1;
-  }
-
   QString default_side = ao_app->get_char_side(current_char);
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
