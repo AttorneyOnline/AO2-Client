@@ -462,6 +462,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed) {
+      qDebug() << f_contents;
       if (f_contents.size() >=
           2) // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
@@ -475,7 +476,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (courtroom_constructed) // We were sent a "set position" packet
     {
-      w_courtroom->set_side(f_contents.at(0), false);
+      w_courtroom->set_side(f_contents.at(0));
       append_to_demofile(p_packet->to_string(true));
     }
   }

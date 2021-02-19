@@ -1275,50 +1275,38 @@ void Courtroom::set_background(QString p_background, bool display)
   }
 }
 
-void Courtroom::set_side(QString p_side, bool block_signals)
+void Courtroom::set_side(QString p_side)
 {
   QString f_side;
-  if (p_side == "")
+  if (p_side == ao_app->get_char_side(current_char))
+      p_side = "";
+  current_side = p_side;
+  if (current_side == "") {
     f_side = ao_app->get_char_side(current_char);
-  else
-    f_side = p_side;
-
-  if (f_side == "jud") {
-    ui_witness_testimony->show();
-    ui_cross_examination->show();
-    ui_not_guilty->show();
-    ui_guilty->show();
-    ui_defense_minus->show();
-    ui_defense_plus->show();
-    ui_prosecution_minus->show();
-    ui_prosecution_plus->show();
+    ui_pos_remove->hide();
   }
   else {
-    ui_witness_testimony->hide();
-    ui_cross_examination->hide();
-    ui_guilty->hide();
-    ui_not_guilty->hide();
-    ui_defense_minus->hide();
-    ui_defense_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_prosecution_plus->hide();
+    f_side = current_side;
+    ui_pos_remove->show();
   }
 
+  toggle_judge_buttons(false);
+
+  if (f_side == "jud")
+    toggle_judge_buttons(true);
+
+  // Block the signals to prevent setCurrentIndex from triggering a pos
+  // change
+  ui_pos_dropdown->blockSignals(true);
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
     if (pos == f_side) {
-      // Block the signals to prevent setCurrentIndex from triggering a pos
-      // change
-      if (block_signals)
-        ui_pos_dropdown->blockSignals(true);
 
       // Set the index on dropdown ui element to let you know what pos you're on
       // right now
       ui_pos_dropdown->setCurrentIndex(i);
-
       // Unblock the signals so the element can be used for setting pos again
-      if (block_signals)
-        ui_pos_dropdown->blockSignals(false);
+      ui_pos_dropdown->blockSignals(false);
 
       // alright we dun, jobs done here boyos
       return;
@@ -1326,7 +1314,8 @@ void Courtroom::set_side(QString p_side, bool block_signals)
   }
   // We will only get there if we failed the last step
   ui_pos_dropdown->setEditText(f_side);
-  ui_pos_remove->show();
+  // Unblock the signals so the element can be used for setting pos again
+  ui_pos_dropdown->blockSignals(false);
 }
 
 void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
@@ -1336,12 +1325,13 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   pos_dropdown_list = pos_dropdowns;
   ui_pos_dropdown->clear();
   ui_pos_dropdown->addItems(pos_dropdown_list);
-  if (current_side != "" && !pos_dropdown_list.contains(current_side)) {
+
+  if (current_side != "" && !pos_dropdown_list.contains(current_side))
     ui_pos_dropdown->setEditText(current_side);
-    ui_pos_remove->show();
-  }
+
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
+  // Don't block the signals when setting side
   set_side(current_side);
 }
 
@@ -3699,7 +3689,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     if (f_song == "~stop.mp3")
       ui_music_name->setText(tr("None"));
     else if (channel == 0) {
-      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) & !f_song.startsWith("http"))
+      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http"))
         ui_music_name->setText(f_song_clear);
       else if (f_song.startsWith("http"))
         ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
@@ -3743,7 +3733,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (is_stop)
         ui_music_name->setText(tr("None"));
       else if (channel == 0) {
-        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) & !f_song.startsWith("http"))
+        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http"))
           ui_music_name->setText(f_song_clear);
         else if (f_song.startsWith("http"))
           ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
@@ -4280,22 +4270,12 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
 void Courtroom::on_pos_dropdown_changed(QString p_text)
 {
-  toggle_judge_buttons(false);
-
-  if (p_text == "jud")
-    toggle_judge_buttons(true);
-
-  ui_pos_remove->show();
-
-  current_side = p_text;
-
-  // YEAH SENDING LIKE 20 PACKETS IF THE USER SCROLLS THROUGH, GREAT IDEA
-  // how about this instead
   set_side(p_text);
 }
 
 void Courtroom::on_pos_remove_clicked()
 {
+  ui_pos_dropdown->blockSignals(true);
   QString default_side = ao_app->get_char_side(current_char);
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
@@ -4306,8 +4286,7 @@ void Courtroom::on_pos_remove_clicked()
     }
   }
   int wit_index = ui_pos_dropdown->findText("wit");
-  ui_pos_dropdown->blockSignals(true);
-  if ((ui_pos_dropdown->currentText() != default_side) & (wit_index != -1)) //i.e. this bg doesn't have our pos
+  if (ui_pos_dropdown->currentText() != default_side && wit_index != -1) //i.e. this bg doesn't have our pos
     ui_pos_dropdown->setCurrentIndex(wit_index); // fall back to "wit"
   else if (ui_pos_dropdown->currentText() != default_side) // we don't have "wit" either?
     ui_pos_dropdown->setCurrentIndex(0); // as a last resort, choose the first item in the dropdown
