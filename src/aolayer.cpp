@@ -261,7 +261,7 @@ void CharLayer::start_playback(QString p_image)
 void AOLayer::start_playback(QString p_image)
 {
   this->show();
-  
+
   if (!ao_app->is_continuous_enabled()) {
     continuous = false;
     force_continuous = true;

@@ -3109,6 +3109,15 @@ void Courtroom::play_preanim(bool immediate)
     qDebug() << "W: could not find " + anim_to_find;
     return;
   }
+  else {
+    QImageReader s_reader = QImageReader(anim_to_find);
+    int image_count = s_reader.imageCount();
+    if (image_count <= 1) {
+      preanim_done();
+      qDebug() << "W: tried to play static preanim " + anim_to_find;
+      return;
+    }
+  }
   ui_vp_player_char->set_static_duration(preanim_duration);
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
