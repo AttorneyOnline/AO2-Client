@@ -1248,7 +1248,7 @@ void Courtroom::set_background(QString p_background, bool display)
   set_pos_dropdown(pos_list);
 
   if (display) {
-    ui_vp_speedlines->stop();
+    ui_vp_speedlines->hide();
     ui_vp_player_char->stop();
 
     ui_vp_sideplayer_char->stop();
@@ -2218,7 +2218,7 @@ void Courtroom::effect_done()
 void Courtroom::display_character()
 {
   // Stop all previously playing animations, effects etc.
-  ui_vp_speedlines->stop();
+  ui_vp_speedlines->hide();
   ui_vp_player_char->stop();
   ui_vp_effect->stop();
   // Clear all looping sfx to prevent obnoxiousness

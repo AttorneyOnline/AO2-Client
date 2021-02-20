@@ -260,7 +260,8 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
-
+  this->show();
+  
   if (!ao_app->is_continuous_enabled()) {
     continuous = false;
     force_continuous = true;
@@ -321,7 +322,6 @@ void AOLayer::start_playback(QString p_image)
   int f_delay = m_reader.nextImageDelay();
 
   this->set_frame(f_pixmap);
-  this->show();
   if (max_frames > 1) {
     movie_frames.append(f_pixmap);
     movie_delays.append(f_delay);
