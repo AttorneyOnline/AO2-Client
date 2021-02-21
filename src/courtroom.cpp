@@ -2360,6 +2360,9 @@ void Courtroom::objection_done() { handle_ic_message(); }
 
 void Courtroom::handle_ic_message()
 {
+  // Update the chatbox information
+  initialize_chatbox();
+
   // Display our own character
   display_character();
 
@@ -2376,9 +2379,6 @@ void Courtroom::handle_ic_message()
 
   // Parse the emote_mod part of the chat message
   handle_emote_mod(m_chatmessage[EMOTE_MOD].toInt(), m_chatmessage[IMMEDIATE].toInt() == 1);
-
-  // Update the chatbox information
-  initialize_chatbox();
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
   if (!ao_app->is_instant_objection_enabled() && chatmessage_queue.size() > 0)
