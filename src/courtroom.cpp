@@ -1256,7 +1256,7 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_message->hide();
     ui_vp_chatbox->hide();
     // Stop the chat arrow from animating
-    ui_vp_chat_arrow->stop();
+    ui_vp_chat_arrow->hide();
 
     // Clear the message queue
     text_queue_timer->stop();
@@ -2014,7 +2014,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   handle_callwords();
 
   // Reset the interface to make room for objection handling
-  ui_vp_chat_arrow->stop();
+  ui_vp_chat_arrow->hide();
   text_state = 0;
   anim_state = 0;
   evidence_presented = false;
