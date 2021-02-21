@@ -1043,7 +1043,7 @@ void Courtroom::set_fonts(QString p_char)
   for (int i = 0; i < max_clocks; i++)
     set_font(ui_clock[i], "", "clock_" + QString::number(i), p_char);
 
-  set_dropdowns();
+  set_stylesheets();
 }
 
 void Courtroom::set_font(QWidget *widget, QString class_name,
@@ -1105,13 +1105,13 @@ void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font,
   widget->setFont(font);
 
   QString style_sheet_string =
-      class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: rgba(" +
+      class_name + " { color: rgba(" +
       QString::number(f_color.red()) + ", " + QString::number(f_color.green()) +
       ", " + QString::number(f_color.blue()) + ", 255);}";
   widget->setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_dropdown(QWidget *widget)
+void Courtroom::set_stylesheet(QWidget *widget)
 {
   QString f_file = "courtroom_stylesheets.css";
   QString style_sheet_string = ao_app->get_stylesheet(f_file);
@@ -1119,14 +1119,9 @@ void Courtroom::set_dropdown(QWidget *widget)
     widget->setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_dropdowns()
+void Courtroom::set_stylesheets()
 {
-  set_dropdown(
-      this); // EXPERIMENTAL - Read the style-sheet as-is for maximum memeage
-  //  set_dropdown(ui_text_color, "[TEXT COLOR]");
-  //  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
-  //  set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
-  //  set_dropdown(ui_mute_list, "[MUTE LIST]");
+  set_stylesheet(this);
 }
 
 void Courtroom::set_window_title(QString p_title)

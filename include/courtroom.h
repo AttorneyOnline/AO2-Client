@@ -143,10 +143,10 @@ public:
   void set_fonts(QString p_char = "");
 
   // sets dropdown menu stylesheet
-  void set_dropdown(QWidget *widget);
+  void set_stylesheet(QWidget *widget);
 
   // helper funciton that call above function on the relevant widgets
-  void set_dropdowns();
+  void set_stylesheets();
 
   void set_window_title(QString p_title);
 
