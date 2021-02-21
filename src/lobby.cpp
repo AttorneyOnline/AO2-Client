@@ -142,36 +142,21 @@ void Lobby::set_widgets()
       tr("Allows you to change various aspects of the client."));
 
   set_size_and_pos(ui_server_list, "server_list");
-  ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                "font: bold;");
 
   set_size_and_pos(ui_server_search, "server_search");
-  ui_server_search->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_player_count, "player_count");
   ui_player_count->setText(tr("Offline"));
-  ui_player_count->setStyleSheet("font: bold;"
-                                 "color: white;"
-                                 "qproperty-alignment: AlignCenter;");
 
   set_size_and_pos(ui_description, "description");
   ui_description->setReadOnly(true);
-  ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                "color: white;");
 
   set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
-  ui_chatbox->setStyleSheet(
-      "QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
 
   set_size_and_pos(ui_chatname, "chatname");
-  ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                             "selection-background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_chatmessage, "chatmessage");
-  ui_chatmessage->setStyleSheet(
-      "background-color: rgba(0, 0, 0, 0);"
-      "selection-background-color: rgba(0, 0, 0, 0);");
 
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground");
@@ -181,8 +166,6 @@ void Lobby::set_widgets()
   ui_loading_text->setReadOnly(true);
   ui_loading_text->setAlignment(Qt::AlignCenter);
   ui_loading_text->setFrameStyle(QFrame::NoFrame);
-  ui_loading_text->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: rgba(255, 128, 0, 255);");
   ui_loading_text->append(tr("Loading"));
 
   set_size_and_pos(ui_progress_bar, "progress_bar");
@@ -223,24 +206,17 @@ void Lobby::set_fonts()
   set_font(ui_server_list, "server_list");
 }
 
-void Lobby::set_stylesheet(QWidget *widget, QString target_tag)
+void Lobby::set_stylesheet(QWidget *widget)
 {
   QString f_file = "lobby_stylesheets.css";
-  QString style_sheet_string =
-      ao_app->get_tagged_stylesheet(target_tag, f_file);
+  QString style_sheet_string = ao_app->get_stylesheet(f_file);
   if (style_sheet_string != "")
     widget->setStyleSheet(style_sheet_string);
 }
 
 void Lobby::set_stylesheets()
 {
-  set_stylesheet(ui_player_count, "[PLAYER COUNT]");
-  set_stylesheet(ui_description, "[DESCRIPTION]");
-  set_stylesheet(ui_chatbox, "[CHAT BOX]");
-  set_stylesheet(ui_chatname, "[CHAT NAME]");
-  set_stylesheet(ui_chatmessage, "[CHAT MESSAGE]");
-  set_stylesheet(ui_loading_text, "[LOADING TEXT]");
-  set_stylesheet(ui_server_list, "[SERVER LIST]");
+  set_stylesheet(this);
 }
 
 void Lobby::set_font(QWidget *widget, QString p_identifier)
