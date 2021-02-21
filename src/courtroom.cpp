@@ -687,11 +687,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
 
-  ui_ic_chat_message->setStyleSheet(
-      "QLineEdit{background-color: rgba(100, 100, 100, 255);}");
-  ui_ic_chat_name->setStyleSheet(
-      "QLineEdit{background-color: rgba(180, 180, 180, 255);}");
-
   ui_vp_chatbox->set_image("chatblank");
   ui_vp_chatbox->hide();
 
@@ -714,15 +709,12 @@ void Courtroom::set_widgets()
   ui_muted->set_image("muted");
   ui_muted->setToolTip(tr("Oops, you're muted!"));
 
-  set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
-  ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");;
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name");
-  ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   // set_size_and_pos(ui_area_password, "area_password");
   set_size_and_pos(ui_music_search, "music_search");
-  ui_music_search->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
   ui_emote_dropdown->setToolTip(
