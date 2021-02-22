@@ -3103,7 +3103,7 @@ void Courtroom::play_preanim(bool immediate)
     return;
   }
   else {
-    QImageReader s_reader = QImageReader(anim_to_find);
+    QImageReader s_reader(anim_to_find);
     int image_count = s_reader.imageCount();
     if (image_count <= 1) {
       preanim_done();
