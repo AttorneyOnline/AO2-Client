@@ -1941,7 +1941,13 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   // Record the log I/O, log files should be accurate.
   // If desynced logs are on, display the log IC immediately.
   LogMode log_mode = ao_app->is_desyncrhonized_logs_enabled() ? DISPLAY_AND_IO : IO_ONLY;
-  log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt(), log_mode);
+
+  // Use null showname if packet does not support 2.6+ extensions
+  QString showname = QString();
+  if (SHOWNAME < p_contents.size())
+    showname = p_contents[SHOWNAME];
+
+  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[TEXT_COLOR].toInt(), log_mode);
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
 
