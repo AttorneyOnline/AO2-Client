@@ -1747,6 +1747,10 @@ void Courtroom::on_chat_return_pressed()
   else
     f_obj_state = QString::number(objection_state);
 
+  // We're doing an Objection (custom objections not yet supported)
+  if (objection_state == 2 && ao_app->objection_stop_music())
+    music_stop(true);
+
   packet_contents.append(f_obj_state);
 
   if (is_presenting_evidence)
@@ -2166,8 +2170,6 @@ bool Courtroom::handle_objection()
       filename = "objection_bubble";
       objection_player->play("objection", m_chatmessage[CHAR_NAME],
                              ao_app->get_chat(m_chatmessage[CHAR_NAME]));
-      if (ao_app->objection_stop_music())
-        music_player->stop();
       break;
     case 3:
       filename = "takethat_bubble";
@@ -4777,7 +4779,7 @@ void Courtroom::music_list_collapse_all()
   ui_music_list->setCurrentItem(current);
 }
 
-void Courtroom::music_stop()
+void Courtroom::music_stop(bool no_effects)
 {
   if (is_muted)
     return;
@@ -4802,8 +4804,12 @@ void Courtroom::music_stop()
   if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
       ao_app->effects_enabled)
     packet_contents.append(ui_ic_chat_name->text());
-  if (ao_app->effects_enabled)
-    packet_contents.append(QString::number(music_flags));
+  if (ao_app->effects_enabled) {
+    if (no_effects)
+      packet_contents.append("0");
+    else
+      packet_contents.append(QString::number(music_flags));
+  }
   ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
 

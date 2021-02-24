@@ -704,8 +704,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_objectmusic_lbl = new QLabel(ui_audio_widget);
   ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
   ui_objectmusic_lbl->setToolTip(
-      tr("If true, AO2 will stop the music for you when you or someone else "
-         "does 'Objection!'."));
+      tr("If true, AO2 will ask the server to stop music when you use 'Objection!' "));
 
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_objectmusic_lbl);
 
