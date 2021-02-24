@@ -177,7 +177,8 @@ void Courtroom::char_clicked(int n_char)
   }
   else {
     update_character(n_char);
-    set_widgets(); // so we don't erroneously keep the charselect's fixedSize
+    enter_courtroom();
+    set_courtroom_size();
   }
 
   if (n_char != -1)

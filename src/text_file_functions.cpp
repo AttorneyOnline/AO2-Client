@@ -981,6 +981,12 @@ bool AOApplication::is_customchat_enabled()
   return result.startsWith("true");
 }
 
+bool AOApplication::is_sticker_enabled()
+{
+  QString result = configini->value("sticker", "true").value<QString>();
+  return result.startsWith("true");
+}
+
 bool AOApplication::is_continuous_enabled()
 {
   QString result = configini->value("continuous_playback", "true").value<QString>();

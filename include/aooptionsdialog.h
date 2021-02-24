@@ -108,6 +108,9 @@ private:
   QLabel *ui_customchat_lbl;
   QCheckBox *ui_customchat_cb;
 
+  QLabel *ui_sticker_lbl;
+  QCheckBox *ui_sticker_cb;
+
   QLabel *ui_continuous_lbl;
   QCheckBox *ui_continuous_cb;
 

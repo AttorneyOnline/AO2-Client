@@ -240,12 +240,11 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 
 void StickerLayer::load_image(QString p_charname)
 {
-  QString p_miscname = ao_app->get_chat(p_charname);
+  QString p_miscname;
+  if (ao_app->is_customchat_enabled())
+    p_miscname = ao_app->get_chat(p_charname);
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
-  if (!file_exists((final_image)))
-      final_image = ao_app->get_image_suffix(
-                  ao_app->get_character_path(p_charname, "showname")), // Scuffed DRO way
   start_playback(final_image);
 }
 
@@ -261,6 +260,7 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
+  this->show();
 
   if (!ao_app->is_continuous_enabled()) {
     continuous = false;
@@ -322,7 +322,6 @@ void AOLayer::start_playback(QString p_image)
   int f_delay = m_reader.nextImageDelay();
 
   this->set_frame(f_pixmap);
-  this->show();
   if (max_frames > 1) {
     movie_frames.append(f_pixmap);
     movie_delays.append(f_delay);
@@ -450,6 +449,10 @@ void CharLayer::load_network_effects()
 
 void CharLayer::play_frame_effect(int p_frame)
 {
+  if (p_frame >= movie_effects.size()) {
+    qDebug() << "W: Attempted to play a frame effect bigger than the size of movie_effects";
+    return;
+  }
   if (p_frame < max_frames) {
     foreach (QString effect, movie_effects[p_frame]) {
       if (effect == "shake") {

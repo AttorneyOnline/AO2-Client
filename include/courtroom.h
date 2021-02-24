@@ -121,6 +121,9 @@ public:
 
   void character_loading_finished();
 
+  //
+  void set_courtroom_size();
+
   // sets position of widgets based on theme ini files
   void set_widgets();
 
@@ -140,18 +143,15 @@ public:
   void set_fonts(QString p_char = "");
 
   // sets dropdown menu stylesheet
-  void set_dropdown(QWidget *widget);
+  void set_stylesheet(QWidget *widget);
 
   // helper funciton that call above function on the relevant widgets
-  void set_dropdowns();
+  void set_stylesheets();
 
   void set_window_title(QString p_title);
 
-  // reads theme inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-
-  // reads theme and char inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_char);
+  // reads theme and sets size and pos based on the identifier (using p_misc if provided)
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc="");
 
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
@@ -165,7 +165,7 @@ public:
   void set_background(QString p_background, bool display = false);
 
   // sets the local character pos/side to use.
-  void set_side(QString p_side, bool block_signals=true);
+  void set_side(QString p_side);
 
   // sets the pos dropdown
   void set_pos_dropdown(QStringList pos_dropdowns);
@@ -576,10 +576,6 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  // is set to true if the bg folder contains defensedesk.png,
-  // prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
-
   // whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
@@ -826,7 +822,7 @@ private slots:
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
-  void music_stop();
+  void music_stop(bool no_effects = false);
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
@@ -838,6 +834,7 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
+  void on_pos_dropdown_changed(QString p_text);
   void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);

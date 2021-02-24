@@ -41,8 +41,6 @@ void Courtroom::initialize_evidence()
                                 "evidence and send them to server."));
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
-  ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                         "color: white;");
   ui_evidence_description->setFrameStyle(QFrame::NoFrame);
   ui_evidence_description->setToolTip(
       tr("Double-click to edit. Press [X] to update your changes."));
