@@ -256,7 +256,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
     else if (compare_evidence_changed(
                  old_list.at(current_evidence),
                  local_evidence_list.at(current_evidence))) {
-      QMessageBox *msgBox = new QMessageBox(this);
+      QMessageBox *msgBox = new QMessageBox;
 
       msgBox->setAttribute(Qt::WA_DeleteOnClose);
       msgBox->setText(tr("The piece of evidence you've been editing has changed."));
@@ -551,7 +551,7 @@ void Courtroom::on_evidence_x_clicked()
     evidence_close();
     return;
   }
-  QMessageBox *msgBox = new QMessageBox(this);
+  QMessageBox *msgBox = new QMessageBox;
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setText(tr("Evidence has been modified."));
   msgBox->setInformativeText(tr("Do you want to save your changes?"));
@@ -655,7 +655,7 @@ void Courtroom::on_evidence_transfer_clicked()
     private_evidence_list.append(f_evi);
   }
 
-  QMessageBox *msgBox = new QMessageBox(this);
+  QMessageBox *msgBox = new QMessageBox;
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setText(tr("\"%1\" has been transferred.").arg(name));
   msgBox->setStandardButtons(QMessageBox::Ok);

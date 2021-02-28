@@ -981,6 +981,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("stickyeffects", ui_stickyeffects_cb->isChecked());
   configini->setValue("stickypres", ui_stickypres_cb->isChecked());
   configini->setValue("customchat", ui_customchat_cb->isChecked());
+  configini->setValue("sticker", ui_sticker_cb->isChecked());
   configini->setValue("automatic_logging_enabled", ui_log_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());

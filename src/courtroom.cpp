@@ -1256,9 +1256,12 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_evidence_display->reset();
     ui_vp_background->kill();
     ui_vp_desk->kill();
+    QString f_side = current_side;
+    if (current_side == "")
+      f_side = ao_app->get_char_side(current_char);
     set_scene(
         QString::number(ao_app->get_desk_mod(current_char, current_emote)),
-        current_side);
+        f_side);
   }
 }
 
@@ -1318,7 +1321,6 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
 
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
-  // Don't block the signals when setting side
   set_side(current_side);
 }
 
