@@ -1575,7 +1575,9 @@ void Courtroom::list_areas()
         i_area.append(" users | ");
       }
 
-      i_area.append(arup_locks.at(n_area));
+      if (arup_locks.at(n_area) != "FREE") {
+        i_area.append(arup_locks.at(n_area));
+      }
     }
 
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
