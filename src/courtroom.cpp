@@ -1577,11 +1577,12 @@ void Courtroom::list_areas()
         wrote_users = true;
       }
 
-      if (wrote_users)
+      if (wrote_users) {
         i_area.append(" | ");
-      i_area.append(arup_locks.at(n_area));
       }
+      i_area.append(arup_locks.at(n_area));
     }
+
 
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
     treeItem->setText(0, area_list.at(n_area));
