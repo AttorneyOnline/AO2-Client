@@ -1548,13 +1548,13 @@ void Courtroom::list_music()
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
-  bool wrote_users = false;
   //  ui_music_search->setText("");
 
   int n_listed_areas = 0;
 
   for (int n_area = 0; n_area < area_list.size(); ++n_area) {
-    QString i_area = "";
+    QString i_area = "";    
+    bool wrote_users = false;
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled) {
