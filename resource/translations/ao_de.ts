@@ -380,62 +380,62 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="91"/>
         <source>Subtheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Untertheme:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="93"/>
         <source>Sets a &apos;subtheme&apos;, which will stack on top of the current theme and replace anything it can.Keep it at &apos;server&apos; to let the server decide. Keep it at &apos;default&apos; to keep it unchanging.</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzt ein &apos;Untertheme&apos;, das alles aus dem aktuellen Theme ersetzt. Lass es auf &apos;Server&apos; um den Server entscheiden zu lassen. &apos;Standard&apos; um es so zu lassen.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="114"/>
         <source>Reload Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Aussehen neu laden</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="116"/>
         <source>Refresh the theme and update all of the ui elements to match.</source>
-        <translation type="unfinished">Aktualisiert das Design und alle UI Elemente.</translation>
+        <translation>Aktualisiert das Design und alle UI Elemente.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="123"/>
         <source>Animated Theme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Animiertes Theme:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="125"/>
         <source>If ticked, themes will be allowed to have animated elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviert animierte Theme Elemente.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="159"/>
         <source>The amount of message lines the IC chatlog will keep before deleting older message lines. A value of 0 or below counts as &apos;infinite&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die menge an Zeilen die das IC Log behält bevor ältere Nachrichten gelöscht werden. 0 bedeutet unendlich.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="228"/>
         <source>Minimum amount of time (in miliseconds) an IC message must stay on screen before the next IC message is shown, acting as a &apos;queue&apos;. Set to 0 to disable this behavior.</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimale Zeit (in Milisekunden) die eine IC Nachricht auf dem Bildschirm bleibt bevore die nächste kommt, wie eine Art &apos;Warteschlange&apos;. 0 deaktiviert das.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="266"/>
         <source>Text crawl:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kriechender Text:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="267"/>
         <source>Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit (in Milisekunden) für jeden Buchstaben.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="280"/>
         <source>Chat Rate Limit:</source>
-        <translation type="unfinished"></translation>
+        <translation>Chat Rate Limit:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="281"/>
         <source>Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message.</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimale Zeit (in Milisekunden) die verstreichen müssen bevore der nächste Enter Druck die Nachricht versendet.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="372"/>
@@ -525,32 +525,32 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="490"/>
         <source>Stickers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sticker:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="492"/>
         <source>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</source>
-        <translation type="unfinished"></translation>
+        <translation>An zeigt &apos;Sticker&apos; an, kleine Bilder wie Avatare.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="503"/>
         <source>Continuous Playback:</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchgehendes Abspielen:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="505"/>
         <source>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Spielt Animationen wieder dort ab wo sie aufgehört haben. Ausschalten kann bei Lag helfen.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="515"/>
         <source>Stop Music w/ Category:</source>
-        <translation type="unfinished"></translation>
+        <translation>Musik durch eine Kategorie stoppen:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="517"/>
         <source>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</source>
-        <translation type="unfinished"></translation>
+        <translation>Stoppt die Musik wenn eine Kategorie doppelt geklickt wird. Wenn dies deaktiviert ist, benutze die Rechte Maustaste und das Kontextmenü um die Musik anzuhalten.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="533"/>
@@ -650,7 +650,7 @@ Grund: </translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="707"/>
         <source>If true, AO2 will ask the server to stop music when you use &apos;Objection!&apos; </source>
-        <translation type="unfinished"></translation>
+        <translation>Hält die Musik für alle an wenn du &apos;Einspruch&apos; benutzt.</translation>
     </message>
     <message>
         <source>If true, AO2 will stop the music for you when you or someone else does &apos;Objection!&apos;.</source>
@@ -1107,7 +1107,7 @@ Bearbeiten durch tippen und Enter drücken, [X] zum entfernen. Das wird in  base
     <message>
         <location filename="../../src/courtroom.cpp" line="732"/>
         <source>Reset your character&apos;s supplementary background to its default.</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzt den Zusatzhintergrund deines Charakters zurück.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="742"/>
@@ -1337,7 +1337,7 @@ Du kannst auch nur einen Teil der Nachricht auswählen und dessen Farbe ändern!
         <location filename="../../src/courtroom.cpp" line="2098"/>
         <location filename="../../src/courtroom.cpp" line="2992"/>
         <source>shouts</source>
-        <translation>Zwischenrufe</translation>
+        <translation>Zwischenruf</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="2111"/>
@@ -1357,13 +1357,13 @@ Du kannst auch nur einen Teil der Nachricht auswählen und dessen Farbe ändern!
         <location filename="../../src/courtroom.cpp" line="3699"/>
         <location filename="../../src/courtroom.cpp" line="3743"/>
         <source>[STREAM] %1</source>
-        <translation type="unfinished"></translation>
+        <translation>[STREAM] %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3701"/>
         <location filename="../../src/courtroom.cpp" line="3745"/>
         <source>[MISSING] %1</source>
-        <translation>[FEHLEND] %1</translation>
+        <translation>[FEHLT] %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3733"/>
@@ -1766,13 +1766,13 @@ Beschreibung:
         <location filename="../../src/demoserver.cpp" line="38"/>
         <location filename="../../src/demoserver.cpp" line="158"/>
         <source>Load Demo</source>
-        <translation type="unfinished"></translation>
+        <translation>Demo laden</translation>
     </message>
     <message>
         <location filename="../../src/demoserver.cpp" line="38"/>
         <location filename="../../src/demoserver.cpp" line="158"/>
         <source>Demo Files (*.demo)</source>
-        <translation type="unfinished"></translation>
+        <translation>Demos (*.demo)</translation>
     </message>
 </context>
 <context>
