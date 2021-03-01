@@ -1548,6 +1548,7 @@ void Courtroom::list_music()
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
+  bool wrote_users = false;
   //  ui_music_search->setText("");
 
   int n_listed_areas = 0;
@@ -1572,11 +1573,13 @@ void Courtroom::list_areas()
 
       if (arup_players.at(n_area) != -1) {
         i_area.append(QString::number(arup_players.at(n_area)));
-        i_area.append(" users | ");
+        i_area.append(" users");
+        wrote_users = true;
       }
 
-      if (arup_locks.at(n_area) != "FREE") {
-        i_area.append(arup_locks.at(n_area));
+      if (wrote_users)
+        i_area.append(" | ");
+      i_area.append(arup_locks.at(n_area));
       }
     }
 
