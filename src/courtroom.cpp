@@ -1567,8 +1567,10 @@ void Courtroom::list_areas()
 
       i_area.append("\n  ");
 
-      i_area.append(QString::number(arup_players.at(n_area)));
-      i_area.append(" users | ");
+      if (arup_players.at(n_area) != -1) {
+        i_area.append(QString::number(arup_players.at(n_area)));
+        i_area.append(" users | ");
+      }
 
       i_area.append(arup_locks.at(n_area));
     }
