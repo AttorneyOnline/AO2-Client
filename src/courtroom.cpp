@@ -1562,8 +1562,11 @@ void Courtroom::list_areas()
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
-      i_area.append(" | CM: ");
-      i_area.append(arup_cms.at(n_area));
+
+      if (arup_cms.at(n_area) != "FREE") {
+        i_area.append(" | CM: ");
+        i_area.append(arup_cms.at(n_area));
+      }
 
       i_area.append("\n  ");
 
