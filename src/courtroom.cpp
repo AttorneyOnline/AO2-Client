@@ -1553,7 +1553,7 @@ void Courtroom::list_areas()
   int n_listed_areas = 0;
 
   for (int n_area = 0; n_area < area_list.size(); ++n_area) {
-    QString i_area = "";
+    QString i_area = "";    
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled) {
@@ -1562,16 +1562,22 @@ void Courtroom::list_areas()
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
-      i_area.append(" | CM: ");
-      i_area.append(arup_cms.at(n_area));
+
+      if (arup_cms.at(n_area) != "FREE") {
+        i_area.append(" | CM: ");
+        i_area.append(arup_cms.at(n_area));
+      }
 
       i_area.append("\n  ");
 
-      i_area.append(QString::number(arup_players.at(n_area)));
-      i_area.append(" users | ");
+      if (arup_players.at(n_area) != -1) {
+        i_area.append(QString::number(arup_players.at(n_area)));
+        i_area.append(" users | ");
+      }
 
       i_area.append(arup_locks.at(n_area));
     }
+
 
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
     treeItem->setText(0, area_list.at(n_area));
