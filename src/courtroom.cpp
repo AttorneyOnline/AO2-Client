@@ -1554,7 +1554,6 @@ void Courtroom::list_areas()
 
   for (int n_area = 0; n_area < area_list.size(); ++n_area) {
     QString i_area = "";    
-    bool wrote_users = false;
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled) {
@@ -1573,13 +1572,9 @@ void Courtroom::list_areas()
 
       if (arup_players.at(n_area) != -1) {
         i_area.append(QString::number(arup_players.at(n_area)));
-        i_area.append(" users");
-        wrote_users = true;
+        i_area.append(" users | ");
       }
 
-      if (wrote_users) {
-        i_area.append(" | ");
-      }
       i_area.append(arup_locks.at(n_area));
     }
 
