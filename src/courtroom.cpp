@@ -4011,6 +4011,7 @@ void Courtroom::on_ooc_return_pressed()
     }
 
     QTextStream out(&file);
+    out.setCodec("UTF-8");
 
     foreach (chatlogpiece item, ic_chatlog_history) {
       out << item.get_full() << '\n';

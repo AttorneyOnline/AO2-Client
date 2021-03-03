@@ -176,6 +176,7 @@ bool AOApplication::write_to_file(QString p_text, QString p_file, bool make_dir)
                  QIODevice::Truncate)) {
     QTextStream out(&f_log);
 
+    out.setCodec("UTF-8");
     out << p_text;
 
     f_log.flush();
@@ -205,6 +206,7 @@ bool AOApplication::append_to_file(QString p_text, QString p_file,
   if (f_log.open(QIODevice::WriteOnly | QIODevice::Append)) {
     QTextStream out(&f_log);
 
+    out.setCodec("UTF-8");
     out << "\r\n" << p_text;
 
     f_log.flush();
@@ -226,7 +228,7 @@ void AOApplication::write_to_serverlist_txt(QString p_line)
   }
 
   QTextStream out(&serverlist_txt);
-
+  out.setCodec("UTF-8");
   out << "\r\n" << p_line;
 
   serverlist_txt.close();
