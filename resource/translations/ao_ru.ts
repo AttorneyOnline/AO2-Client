@@ -189,7 +189,7 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="125"/>
         <source>If ticked, themes will be allowed to have animated elements.</source>
-        <translation>Разрешить темам использовать анимированные элементы.</translation
+        <translation>Разрешить темам использовать анимированные элементы.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="144"/>
