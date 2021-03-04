@@ -58,7 +58,7 @@ void AOEvidenceButton::set_image(QString p_image)
 void AOEvidenceButton::set_theme_image(QString p_image)
 {
   QString theme_image_path = ao_app->get_theme_path(p_image);
-  QString default_image_path = ao_app->get_default_theme_path(p_image);
+  QString default_image_path = ao_app->get_theme_path(p_image, ao_app->default_theme);
 
   QString final_image_path;
 

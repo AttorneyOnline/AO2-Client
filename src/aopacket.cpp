@@ -12,25 +12,34 @@ QString AOPacket::to_string(bool encoded)
 {
   QStringList contents = m_contents;
   if (encoded)
-    contents.replaceInStrings("#", "<num>")
-      .replaceInStrings("%", "<percent>")
-      .replaceInStrings("$", "<dollar>")
-      .replaceInStrings("&", "<and>");
+    escape(contents);
   return m_header + "#" + contents.join("#") + "#%";
 }
 
 void AOPacket::net_encode()
 {
-  m_contents.replaceInStrings("#", "<num>")
-      .replaceInStrings("%", "<percent>")
-      .replaceInStrings("$", "<dollar>")
-      .replaceInStrings("&", "<and>");
+  escape(m_contents);
 }
 
 void AOPacket::net_decode()
 {
-  m_contents.replaceInStrings("<num>", "#")
+  unescape(m_contents);
+}
+
+void AOPacket::escape(QStringList &contents)
+{
+  contents.replaceInStrings("#", "<num>")
+    .replaceInStrings("%", "<percent>")
+    .replaceInStrings("$", "<dollar>")
+    .replaceInStrings("&", "<and>");
+
+}
+
+void AOPacket::unescape(QStringList &contents)
+{
+  contents.replaceInStrings("<num>", "#")
     .replaceInStrings("<percent>", "%")
     .replaceInStrings("<dollar>", "$")
     .replaceInStrings("<and>", "&");
+
 }

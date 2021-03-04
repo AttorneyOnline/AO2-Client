@@ -23,6 +23,12 @@ int main(int argc, char *argv[])
 
   AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
 
+  QFontDatabase fontDatabase;
+  QDirIterator it(main_app.get_base_path() + "fonts",
+                  QDirIterator::Subdirectories);
+  while (it.hasNext())
+    fontDatabase.addApplicationFont(it.next());
+
   QSettings *configini = main_app.configini;
 
   QPluginLoader apngPlugin("qapng");

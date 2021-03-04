@@ -131,7 +131,7 @@ void NetworkManager::on_srv_lookup()
       qDebug() << "Connecting to " << record.target() << ":" << record.port();
 #endif
       ms_socket->connectToHost(record.target(), record.port());
-      QTime timer;
+      QElapsedTimer timer;
       timer.start();
       do {
         ao_app->processEvents();

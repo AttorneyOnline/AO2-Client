@@ -96,7 +96,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
       BASS_ChannelLock(oldstream, false);
     }
 
-    if (effect_flags & FADE_OUT) {
+    if ((effect_flags & FADE_OUT) && m_volume[channel] > 0) {
       // Fade out the other sample and stop it (due to -1)
       BASS_ChannelSlideAttribute(oldstream, BASS_ATTRIB_VOL | BASS_SLIDE_LOG,
                                  -1, 4000);
@@ -149,6 +149,8 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
 
 void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
 {
+  UNUSED(handle);
+  UNUSED(data);
   QWORD loop_start = *(static_cast<unsigned *>(user));
   BASS_ChannelLock(channel, true);
   BASS_ChannelSetPosition(channel, loop_start, BASS_POS_BYTE);
@@ -157,7 +159,6 @@ void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
 
 void AOMusicPlayer::set_looping(bool toggle, int channel)
 {
-  qDebug() << "Setting looping for channel" << channel << "to" << toggle;
   m_looping = toggle;
   if (!m_looping) {
     if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)

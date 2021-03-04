@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.8.5.0
+VERSION = 2.9.0.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -18,6 +18,9 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 
 # Uncomment for verbose network logging
 # DEFINES += DEBUG_NETWORK
+
+# Uncomment for building with debug symbols
+# CONFIG += debug
 
 # Uncomment to enable Discord Rich Presence
 # DEFINES += DISCORD

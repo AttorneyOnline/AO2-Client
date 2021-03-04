@@ -1,0 +1,170 @@
+name: build
+
+on: push
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Catch2
+      shell: bash
+      run: |
+        curl -L https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz -o catch2.tar.gz
+        tar xvf catch2.tar.gz
+        cd Catch2-2.13.4
+        cmake -Bbuild -H. -DBUILD_TESTING=OFF
+        cmake --build build/ --target install
+
+    - name: Fetch external libs
+      run: |
+        # QtApng
+        curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-msvc2017_64-5.14.1.zip -o apng.zip
+        unzip apng.zip
+
+        # discord-rpc
+        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
+        unzip discord_rpc_win.zip
+        cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib
+
+        # BASS
+        curl http://www.un4seen.com/files/bass24.zip -o bass.zip
+        unzip bass.zip
+        cp ./c/x64/bass.lib ./lib
+
+        # BASS Opus
+        curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp ./c/x64/bassopus.lib ./lib
+
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1
+      with:
+        path: ../Qt
+        key: ${{ runner.os }}-qt5
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE --target Attorney_Online
+
+    - name: Deploy
+      working-directory: ${{github.workspace}}/build/Release
+      shell: bash
+      run: |
+        windeployqt .
+        cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
+        cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
+        cp ../../x64/bass.dll .
+        cp ../../x64/bassopus.dll .
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Attorney_Online-x64
+        path: ${{github.workspace}}/build/Release/
+
+  # linux:
+  #   # The CMake configure and build commands are platform agnostic and should work equally
+  #   # well on Windows or Mac.  You can convert this to a matrix build if you need
+  #   # cross-platform coverage.
+  #   # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+  #   runs-on: ubuntu-20.04
+
+  #   steps:
+  #   - uses: actions/checkout@v2
+
+  #   - name: Install catch2
+  #     run: |
+  #       curl -L https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz -o catch2.tar.gz
+  #       tar xvf catch2.tar.gz
+  #       cd Catch2-2.13.4
+  #       cmake -Bbuild -H. -DBUILD_TESTING=OFF
+  #       sudo cmake --build build/ --target install
+
+  #   - name: Fetch external libs
+  #     run: |
+  #       # Download
+  #       curl http://www.un4seen.com/files/bass24-linux.zip -o bass_linux.zip
+  #       curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus_linux.zip
+  #       curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
+  #       # Extract
+  #       unzip bass_linux.zip
+  #       unzip bassopus_linux.zip
+  #       unzip discord_rpc_linux.zip
+  #       # Copy
+  #       cp x64/libbass.so lib
+  #       cp x64/libbassopus.so lib
+  #       cp discord-rpc/linux-dynamic/lib/libdiscord-rpc.so lib
+
+  #   - name: Install Qt5
+  #     run: sudo apt update -y && sudo apt install -y qt5-default
+
+  #   - name: Install QtApng
+  #     run: |
+  #       git clone https://github.com/Skycoder42/QtApng
+  #       cd QtApng
+  #       qmake
+  #       make
+  #       sudo make install
+
+  #   - name: Create Build Environment
+  #     # Some projects don't allow in-source building, so create a separate build directory
+  #     # We'll use this as our working directory for all subsequent commands
+  #     run: cmake -E make_directory ${{github.workspace}}/build
+
+  #   - name: Configure CMake
+  #     # Use a bash shell so we can use the same syntax for environment variable
+  #     # access regardless of the host operating system
+  #     shell: bash
+  #     env:
+  #       CC: gcc-10
+  #       CXX: g++-10
+  #     working-directory: ${{github.workspace}}/build
+  #     # Note the current convention is to use the -S and -B options here to specify source
+  #     # and build directories, but this is only available with CMake 3.13 and higher.
+  #     # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+  #     run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+  #   - name: Build
+  #     working-directory: ${{github.workspace}}/build
+  #     shell: bash
+  #     # Execute the build.  You can specify a specific target with "--target <NAME>"
+  #     run: cmake --build . --config $BUILD_TYPE --target Attorney_Online
+
+  #   - name: Strip
+  #     working-directory: ${{github.workspace}}/build
+  #     shell: bash
+  #     run: strip -s Attorney_Online
+
+  #   - name: Compress
+  #     working-directory: ${{github.workspace}}/build
+  #     shell: bash
+  #     run: tar czvf Attorney_Online-linux-x86_64.tgz Attorney_Online
+
+  #   - name: Upload Artifact
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: Attorney_Online
+  #       path: ${{github.workspace}}/build/Attorney_Online-linux-x86_64.tgz

@@ -5,17 +5,16 @@
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
-#include "aocharmovie.h"
+#include "aoclocklabel.h"
 #include "aoemotebutton.h"
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
+#include "aolayer.h"
 #include "aolineedit.h"
-#include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
-#include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
 #include "aotextedit.h"
@@ -57,7 +56,7 @@
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
-//#include <QRandomGenerator>
+#include <QElapsedTimer>
 
 #include <algorithm>
 #include <stack>
@@ -122,6 +121,9 @@ public:
 
   void character_loading_finished();
 
+  //
+  void set_courtroom_size();
+
   // sets position of widgets based on theme ini files
   void set_widgets();
 
@@ -141,15 +143,15 @@ public:
   void set_fonts(QString p_char = "");
 
   // sets dropdown menu stylesheet
-  void set_dropdown(QWidget *widget);
+  void set_stylesheet(QWidget *widget);
 
   // helper funciton that call above function on the relevant widgets
-  void set_dropdowns();
+  void set_stylesheets();
 
   void set_window_title(QString p_title);
 
-  // reads theme inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+  // reads theme and sets size and pos based on the identifier (using p_misc if provided)
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc="");
 
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
@@ -224,11 +226,13 @@ public:
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList p_contents);
 
-  // Log the message contents and information such as evidence presenting etc. into the log file
-  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
-
-  // Display the message contents and information such as evidence presenting etc. in the IC logs
-  void display_log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0);
+  enum LogMode {
+    IO_ONLY,
+    DISPLAY_ONLY,
+    DISPLAY_AND_IO
+  };
+  // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0, LogMode f_log_mode=IO_ONLY);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
@@ -264,7 +268,8 @@ public:
   QString filter_ic_text(QString p_text, bool colorize = false, int pos = -1,
                          int default_color = 0);
 
-  void log_ic_text(QString p_name, QString p_showname, QString p_message, QString p_action="", int p_color=0);
+  void log_ic_text(QString p_name, QString p_showname, QString p_message,
+                   QString p_action = "", int p_color = 0);
 
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
@@ -296,11 +301,18 @@ public:
 
   void check_connection_received();
 
+  void start_clock(int id);
+  void start_clock(int id, qint64 msecs);
+  void set_clock(int id, qint64 msecs);
+  void pause_clock(int id);
+  void stop_clock(int id);
+  void set_clock_visibility(int id, bool visible);
+
+  qint64 pong();
   // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
   ~Courtroom();
-
 private:
   AOApplication *ao_app;
 
@@ -324,7 +336,8 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {5, 10, 25, 40, 50, 70, 90};
+  int text_crawl = 40;
+  double message_display_mult[7] = {0, 0.25, 0.65, 1, 1.25, 1.75, 2.25};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
@@ -349,14 +362,20 @@ private:
   QVector<QString> arup_locks;
 
   QVector<chatlogpiece> ic_chatlog_history;
+  QString last_ic_message = "";
 
   QQueue<QStringList> chatmessage_queue;
 
-  // triggers ping_server() every 60 seconds
+  // triggers ping_server() every 45 seconds
   QTimer *keepalive_timer;
 
   // determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
+
+  // count up timer to check how long it took for us to get a response from ping_server()
+  QElapsedTimer ping_timer;
+  bool is_pinging = false;
+
   // int chat_tick_interval = 60;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
@@ -379,7 +398,8 @@ private:
   // True, if log should display colors.
   bool log_colors = true;
 
-  // True, if the log should display the message like name<br>text instead of name: text
+  // True, if the log should display the message like name<br>text instead of
+  // name: text
   bool log_newline = false;
 
   // True, if the log should include RP actions like interjections, showing evidence, etc.
@@ -407,16 +427,21 @@ private:
   const int time_mod = 40;
 
   // the amount of time non-animated objection/hold it/takethat images stay
-  // onscreen for in ms
-  const int shout_stay_time = 724;
+  // onscreen for in ms, and the maximum amount of time any interjections are
+  // allowed to play
+  const int shout_static_time = 724;
+  const int shout_max_time = 1500;
 
   // the amount of time non-animated guilty/not guilty images stay onscreen for
-  // in ms
-  const int verdict_stay_time = 3000;
+  // in ms, and the maximum amount of time g/ng images are allowed to play
+  const int verdict_static_time = 3000;
+  const int verdict_max_time = 4000;
 
   // the amount of time non-animated witness testimony/cross-examination images
-  // stay onscreen for in ms
-  const int wtce_stay_time = 1500;
+  // stay onscreen for in ms, and the maximum time any wt/ce image is allowed to
+  // play
+  const int wtce_static_time = 1500;
+  const int wtce_max_time = 4000;
 
   // characters we consider punctuation
   const QString punctuation_chars = ".,?!:;";
@@ -440,7 +465,7 @@ private:
   bool is_muted = false;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
-  // noniterrupting preanim
+  // noniterrupting preanim, 5 = (c) animation
   int anim_state = 3;
 
   // whether or not current color is a talking one
@@ -480,7 +505,7 @@ private:
   QVector<QColor> default_color_rgb_list;
 
   // Get a color index from an arbitrary misc config
-  void gen_char_rgb_list(QString p_char);
+  void gen_char_rgb_list(QString p_misc);
   QVector<QColor> char_color_rgb_list;
 
   // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
@@ -511,6 +536,7 @@ private:
 
   // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
+  bool c_played = false; // whether we've played a (c)-style postanimation yet
 
   // have we already presented evidence for this message?
   bool evidence_presented = false;
@@ -550,10 +576,6 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  // is set to true if the bg folder contains defensedesk.png,
-  // prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
-
   // whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
@@ -578,21 +600,20 @@ private:
   AOImage *ui_background;
 
   QWidget *ui_viewport;
-  AOScene *ui_vp_background;
-  AOMovie *ui_vp_speedlines;
-  AOCharMovie *ui_vp_player_char;
-  AOCharMovie *ui_vp_sideplayer_char;
-  AOScene *ui_vp_desk;
-  AOScene *ui_vp_legacy_desk;
+  BackgroundLayer *ui_vp_background;
+  SplashLayer *ui_vp_speedlines;
+  CharLayer *ui_vp_player_char;
+  CharLayer *ui_vp_sideplayer_char;
+  BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   QLabel *ui_vp_showname;
-  AOMovie *ui_vp_chat_arrow;
+  InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  AOMovie *ui_vp_effect;
-  AOMovie *ui_vp_testimony;
-  AOMovie *ui_vp_wtce;
-  AOMovie *ui_vp_objection;
+  SplashLayer *ui_vp_testimony;
+  SplashLayer *ui_vp_wtce;
+  EffectLayer *ui_vp_effect;
+  SplashLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -604,7 +625,12 @@ private:
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
-  AOMovie *ui_music_display;
+  InterfaceLayer *ui_music_display;
+
+  StickerLayer *ui_vp_sticker;
+
+  static const int max_clocks = 5;
+  AOClockLabel *ui_clock[max_clocks];
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
@@ -629,6 +655,7 @@ private:
 
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
+  AOButton *ui_pos_remove;
 
   QComboBox *ui_iniswap_dropdown;
   AOButton *ui_iniswap_remove;
@@ -714,6 +741,9 @@ private:
 
   AOImage *ui_char_select_background;
 
+  // pretty list of characters
+  QTreeWidget *ui_char_list;
+
   // abstract widget to hold char buttons
   QWidget *ui_char_buttons;
 
@@ -755,6 +785,7 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
+  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
@@ -766,6 +797,7 @@ public slots:
 
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
+  void on_reload_theme_clicked();
 
 private slots:
   void start_chat_ticking();
@@ -790,7 +822,7 @@ private slots:
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
-  void music_stop();
+  void music_stop(bool no_effects = false);
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
@@ -802,6 +834,8 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
+  void on_pos_dropdown_changed(QString p_text);
+  void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);
   void set_iniswap_dropdown();
@@ -875,7 +909,6 @@ private slots:
   void on_guilty_clicked();
 
   void on_change_character_clicked();
-  void on_reload_theme_clicked();
   void on_call_mod_clicked();
   void on_settings_clicked();
   void on_announce_casing_clicked();
@@ -907,6 +940,7 @@ private slots:
 
   void on_back_to_lobby_clicked();
 
+  void on_char_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
   void on_char_search_changed();
