@@ -627,7 +627,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (type == 0 || type == 1)
     {
-      if (f_contents.size() < 2)
+      if (f_contents.size() < 3)
         goto end;
 
       // The time as displayed on the clock, in milliseconds.
