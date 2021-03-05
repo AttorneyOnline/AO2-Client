@@ -155,32 +155,32 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="91"/>
         <source>Subtheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Podmotyw:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="93"/>
         <source>Sets a &apos;subtheme&apos;, which will stack on top of the current theme and replace anything it can.Keep it at &apos;server&apos; to let the server decide. Keep it at &apos;default&apos; to keep it unchanging.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawia &apos;podmotyw&apos;, który będzie dodatkiem dla obecnego motywu i będzie zastępywać wszystko to co może. Ustaw na &apos;server&apos;, aby serwer decydował za ciebie. Ustaw na &apos;default&apos;, aby nie zmieniał się.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="114"/>
         <source>Reload Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Odśwież Motyw</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="116"/>
         <source>Refresh the theme and update all of the ui elements to match.</source>
-        <translation type="unfinished">Odśwież motyw i uaktualnij wszystkie elementy UI, aby dopasować.</translation>
+        <translation>Odśwież motyw i uaktualnij wszystkie elementy interfejsu, aby dopasować.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="123"/>
         <source>Animated Theme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Animowany Motyw:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="125"/>
         <source>If ticked, themes will be allowed to have animated elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeśli zaznaczone, motywy będą mogły zawierać animowane elementy.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="144"/>
@@ -321,32 +321,32 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="159"/>
         <source>The amount of message lines the IC chatlog will keep before deleting older message lines. A value of 0 or below counts as &apos;infinite&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ilość wiadomości, jakie dziennik IC będzie pokazywał zanim usunie starsze wiadomości. Wartość 0 lub niżej, liczy się jako &apos;nieskończone&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="228"/>
         <source>Minimum amount of time (in miliseconds) an IC message must stay on screen before the next IC message is shown, acting as a &apos;queue&apos;. Set to 0 to disable this behavior.</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimalna ilość czasu (w milisekundach), w której wiadomość IC musi pozostać na ekranie, zanim kolejna zostanie wyświetlona, działa niczym &apos;kolejka&apos;. Ustaw na 0, aby wyłączyć tą funkcję.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="266"/>
         <source>Text crawl:</source>
-        <translation type="unfinished"></translation>
+        <translation>Czołganie się tekstu:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="267"/>
         <source>Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ilość czasu (w milisekundach), spędzona dla każdej litery, gdy tekst IC jest wyświetlany.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="280"/>
         <source>Chat Rate Limit:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ograniczenie Szybkości Czatu:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="281"/>
         <source>Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message.</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimalna ilość czasu (w milisekundach), która musi minąć zanim następne naciśnięcie klawiszu Enter wyśle twoją wiadomość IC.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="364"/>
@@ -446,32 +446,32 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="490"/>
         <source>Stickers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Naklejki:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="492"/>
         <source>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</source>
-        <translation type="unfinished"></translation>
+        <translation>Włącz to, aby pozwolić postaciom zdefiniować ich własne naklejki (unikatowe obrazki, które pojawią się nad oknem czatu, niczym awatary lub ksywki).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="503"/>
         <source>Continuous Playback:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieustanne Odtwarzanie:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="505"/>
         <source>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Od tego zależy, czy animacje będą odtwarzać się od punktu wyjścia. Wyłączenie tego, może zmniejszyć spowolnienia.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="515"/>
         <source>Stop Music w/ Category:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zatrzymaj Muzykę z Kategorią:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="517"/>
         <source>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zatrzymaj muzykę podczas dwukrotnego kliknięcia w kategorię. Jeśli jest to wyłączone, użyj menu pod prawym przyciskiem, aby zatrzymać muzykę.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="533"/>
@@ -572,7 +572,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="707"/>
         <source>If true, AO2 will ask the server to stop music when you use &apos;Objection!&apos; </source>
-        <translation type="unfinished"></translation>
+        <translation>Jeśli zaznaczone, gra zapyta serwer by przerwać muzykę, kiedy ktoś się sprzeciwi. </translation>
     </message>
     <message>
         <source>If true, AO2 will stop the music for you when you or someone else does &apos;Objection!&apos;.</source>
@@ -879,7 +879,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="732"/>
         <source>Reset your character&apos;s supplementary background to its default.</source>
-        <translation type="unfinished"></translation>
+        <translation>Resetuje twoje pomocnicze tło postaci do domyślnej wartości.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="742"/>
@@ -941,7 +941,7 @@ Edytuj poprzez wciśnięcie Enter po wpisaniu tekstu, [X] aby usunąć. Zapisuje
     <message>
         <location filename="../../src/courtroom.cpp" line="853"/>
         <source>Refresh the theme and update all of the ui elements to match.</source>
-        <translation>Odśwież motyw i uaktualnij wszystkie elementy UI, aby dopasować.</translation>
+        <translation>Odśwież motyw i uaktualnij wszystkie elementy interfejsu, aby dopasować.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="859"/>
@@ -1097,7 +1097,7 @@ Możesz również zaznaczyć część twojej obecnie pisanej wiadomości i uży�
         <location filename="../../src/courtroom.cpp" line="3699"/>
         <location filename="../../src/courtroom.cpp" line="3743"/>
         <source>[STREAM] %1</source>
-        <translation type="unfinished"></translation>
+        <translation>[STREAM] %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3701"/>
@@ -1643,13 +1643,13 @@ Opis:
         <location filename="../../src/demoserver.cpp" line="38"/>
         <location filename="../../src/demoserver.cpp" line="158"/>
         <source>Load Demo</source>
-        <translation type="unfinished"></translation>
+        <translation>Wczytaj Demo</translation>
     </message>
     <message>
         <location filename="../../src/demoserver.cpp" line="38"/>
         <location filename="../../src/demoserver.cpp" line="158"/>
         <source>Demo Files (*.demo)</source>
-        <translation type="unfinished"></translation>
+        <translation>Pliki Demo (*.demo)</translation>
     </message>
 </context>
 <context>
@@ -1704,7 +1704,7 @@ Czy pobrałeś wszystkie zasoby poprawnie z tiny.cc/getao, włączając duży fo
     <message>
         <location filename="../../src/lobby.cpp" line="348"/>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator.&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Crystalwarrior, Iamgoofball, in1tiate&lt;p&gt;&lt;b&gt;Client development:&lt;/b&gt;&lt;br&gt;Cents02, windrammer, skyedeving&lt;p&gt;&lt;b&gt;QA testing:&lt;/b&gt;&lt;br&gt;CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, Veritas, Wiso&lt;p&gt;&lt;b&gt;Translations:&lt;/b&gt;&lt;br&gt;k-emiko (Русский), Pyraq (Polski), scatterflower (日本語), vintprox (Русский), windrammer (Español, Português)&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); Rue (website); Draxirch (UI design); Lewdton and Argoneus (tsuserver); Fiercy, Noevain, Cronnicossy, and FanatSors (AO1); server hosts, game masters, case makers, content creators, and the whole AO2 community!&lt;p&gt;The Attorney Online networked visual novel project is copyright (c) 2016-2021 Attorney Online developers. Open-source licenses apply. All other assets are the property of their respective owners.&lt;p&gt;Running on Qt version %2 with the BASS audio engine.&lt;br&gt;APNG plugin loaded: %3&lt;p&gt;Built on %4</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;Symulator dramy sądowej&lt;p&gt;&lt;b&gt;Kod źródłowy:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Główny rozwój:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Crystalwarrior, Iamgoofball, in1tiate&lt;p&gt;&lt;b&gt;Rozwój Klienta:&lt;/b&gt;&lt;br&gt;Cents02, windrammer, skyedeving&lt;p&gt;&lt;b&gt;Testowanie QA:&lt;/b&gt;&lt;br&gt;CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, Robotic Overlord, Shadowlions (inaczej Shali), Sierra, SomeGuy, Veritas, Wiso&lt;p&gt;&lt;b&gt;Translacje:&lt;/b&gt;&lt;br&gt;k-emiko (Русский), Pyraq (Polski), scatterflower (日本語), vintprox (Русский), windrammer (Español, Português)&lt;p&gt;&lt;b&gt;Szczególne podziękowania:&lt;/b&gt;&lt;br&gt;CrazyJC (dyrektor wydania 2.8) i MaximumVolty (promocja wydania 2.8); Remy, Hibiki, court-records.net (sprite&apos;y); Qubrick (webAO); Rue (strona internetowa); Draxirch (design interfejsu); Lewdton i Argoneus (tsuserver); Fiercy, Noevain, Cronnicossy oraz FanatSors (AO1); hostom serwerów, mistrzom gier, twórcom rozpraw, twórcom kontentu, i dla całej społeczności AO2!&lt;p&gt;Attorney Online sieciowy projekt wizualnej powieści ma prawa autorskie (c) 2016-2021 Attorney Online developerzy. Dotyczy licencji open-source. Wszystkie inne własności należą do ich odpowiednich właścicieli.&lt;p&gt;Działa na wersji Qt %2 z silnikiem audio BASS.&lt;br&gt;Plugin APNG załadowany: %3&lt;p&gt;Zbudowany na %4</translation>
     </message>
     <message>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Crystalwarrior, Iamgoofball&lt;p&gt;&lt;b&gt;Client development:&lt;/b&gt;&lt;br&gt;Cents02, in1tiate, raidensnake, windrammer&lt;p&gt;&lt;b&gt;QA testing:&lt;/b&gt;&lt;br&gt;CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, Veritas, Wiso&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); Rue (website); Draxirch (UI design); Lewdton and Argoneus (tsuserver); Fiercy, Noevain, Cronnicossy, and FanatSors (AO1); server hosts, game masters, case makers, content creators, and the whole AO2 community!&lt;p&gt;The Attorney Online networked visual novel project is copyright (c) 2016-2020 Attorney Online developers. Open-source licenses apply. All other assets are the property of their respective owners.&lt;p&gt;Running on Qt version %2 with the BASS audio engine.&lt;br&gt;APNG plugin loaded: %3&lt;p&gt;Built on %4</source>
