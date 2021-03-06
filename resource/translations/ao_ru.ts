@@ -162,32 +162,34 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="91"/>
         <source>Subtheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Подтема:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="93"/>
         <source>Sets a &apos;subtheme&apos;, which will stack on top of the current theme and replace anything it can.Keep it at &apos;server&apos; to let the server decide. Keep it at &apos;default&apos; to keep it unchanging.</source>
-        <translation type="unfinished"></translation>
+        <translation>Определяет подтему, которая ставится поверх текущей темы и заменяет все, что может.
+Выберите &quot;сервер&quot;, чтобы оставить выбор за сервером.
+Выберите &quot;по умолчанию&quot;, чтобы она не менялась.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="114"/>
         <source>Reload Theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Перезагрузить тему</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="116"/>
         <source>Refresh the theme and update all of the ui elements to match.</source>
-        <translation type="unfinished">Перезагрузить тему и обновить все элементы интерфейса.</translation>
+        <translation>Перезагрузить тему и обновить все элементы интерфейса.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="123"/>
         <source>Animated Theme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Анимированные темы:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="125"/>
         <source>If ticked, themes will be allowed to have animated elements.</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить темам использовать анимированные элементы.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="144"/>
@@ -213,7 +215,9 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="159"/>
         <source>The amount of message lines the IC chatlog will keep before deleting older message lines. A value of 0 or below counts as &apos;infinite&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное количество строк сообщений, сохраняемых в игровом чате. 
+При превышении лимита старые строки будут удаляться.
+Поставьте 0 или отрицательное значение, чтобы снять ограничение.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="173"/>
@@ -266,7 +270,7 @@ Reason: </source>
         <location filename="../../src/aooptionsdialog.cpp" line="228"/>
         <source>Minimum amount of time (in miliseconds) an IC message must stay on screen before the next IC message is shown, acting as a &apos;queue&apos;. Set to 0 to disable this behavior.</source>
         <translation>Минимальное время (в миллисекундах), которое сообщение игрового чата должно отображаться перед показом следующего, образуя очередь.
-Поставьте &quot;0&quot; для отключения очереди.</translation>
+Поставьте 0 для отключения очереди.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="242"/>
@@ -292,17 +296,17 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="266"/>
         <source>Text crawl:</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость вывода:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="267"/>
         <source>Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Время задержки (в миллисекундах) после показа каждой буквы в игровом чате.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="280"/>
         <source>Chat Rate Limit:</source>
-        <translation>Максимальная частота отправки:</translation>
+        <translation>Частота отправки:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="281"/>
@@ -451,32 +455,36 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="490"/>
         <source>Stickers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Стикеры:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="492"/>
         <source>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить персонажам задавать собственные стикеры
+(уникальные изображения, отображающиеся поверх подложки;
+как аватарки или пользовательские имена).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="503"/>
         <source>Continuous Playback:</source>
-        <translation type="unfinished"></translation>
+        <translation>Непрерывное воспроизведение:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="505"/>
         <source>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Продолжать воспроизведение анимации с того места, где она остановилась.
+Отключение этой опции может помочь ускорить работу приложения.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="515"/>
         <source>Stop Music w/ Category:</source>
-        <translation type="unfinished"></translation>
+        <translation>Останавливать музыку категориями:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="517"/>
         <source>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</source>
-        <translation type="unfinished"></translation>
+        <translation>Останавливать музыку по двойному клику на названии категории.
+Если эта опция отключена, воспользуйтесь контекстным меню, чтобы остановить музыку.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="533"/>
@@ -576,7 +584,7 @@ Reason: </source>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="707"/>
         <source>If true, AO2 will ask the server to stop music when you use &apos;Objection!&apos; </source>
-        <translation type="unfinished"></translation>
+        <translation>Клиент будет просить сервер останавливать музыку, когда вы протестуете.</translation>
     </message>
     <message>
         <source>If true, AO2 will stop the music for you when you or someone else does &apos;Objection!&apos;.</source>
@@ -873,7 +881,7 @@ Cases you can load: %1</source>
     <message>
         <location filename="../../src/courtroom.cpp" line="732"/>
         <source>Reset your character&apos;s supplementary background to its default.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сбросить фон вашего персонажа.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="742"/>
@@ -957,7 +965,7 @@ Edit by typing and pressing Enter, [X] to remove. This saves to your base/iniswa
     <message>
         <location filename="../../src/courtroom.cpp" line="877"/>
         <source>Switch between Areas and Music lists</source>
-        <translation>Переключиться между списками музыки и локаций</translation>
+        <translation>Переключиться между списками музыки и локаций.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="882"/>
@@ -1096,7 +1104,7 @@ You can also select a part of your currently typed message and use the dropdown 
         <location filename="../../src/courtroom.cpp" line="3699"/>
         <location filename="../../src/courtroom.cpp" line="3743"/>
         <source>[STREAM] %1</source>
-        <translation type="unfinished"></translation>
+        <translation>[ТРАНСЛЯЦИЯ] %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3701"/>
@@ -1168,7 +1176,7 @@ You can also select a part of your currently typed message and use the dropdown 
     <message>
         <location filename="../../src/courtroom.cpp" line="710"/>
         <source>Oops, you&apos;re muted!</source>
-        <translation>Вам запретили отправлять сообщения!</translation>
+        <translation>Вам запретили отправлять сообщения.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="721"/>
