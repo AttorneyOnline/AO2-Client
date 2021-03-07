@@ -620,7 +620,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="749"/>
         <source>If checked, you will get alerts about case announcements.</source>
-        <translation>Jeżel jest toi zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw.</translation>
+        <translation>Jeżel jest to zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="764"/>
