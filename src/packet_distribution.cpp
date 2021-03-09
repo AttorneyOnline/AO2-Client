@@ -199,6 +199,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     additive_enabled = false;
     effects_enabled = false;
     expanded_desk_mods_enabled = false;
+    auth_packet_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -229,6 +230,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         y_offset_enabled = true;
     if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
       expanded_desk_mods_enabled = true;
+    if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
+      auth_packet_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
@@ -682,6 +685,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Reload theme request
     if (f_contents.size() > 1 && f_contents.at(1) == "1")
       w_courtroom->on_reload_theme_clicked();
+  }
+  // Auth packet
+  else if (header == "AUTH") {
+    if (!courtroom_constructed || !auth_packet_enabled)
+      goto end;
+    int authenticated = f_contents.at(0).toInt();
+
+    w_courtroom->on_authentication_state_received(authenticated);
   }
 
 end:

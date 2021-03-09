@@ -798,6 +798,7 @@ public slots:
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
   void on_reload_theme_clicked();
+  void on_authentication_state_received(bool p_state);
 
 private slots:
   void start_chat_ticking();
