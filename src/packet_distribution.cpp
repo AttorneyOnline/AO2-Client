@@ -688,7 +688,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   // Auth packet
   else if (header == "AUTH") {
-    if (!courtroom_constructed || !auth_packet_enabled)
+    if (!courtroom_constructed || !auth_packet_enabled || f_contents.size() < 1)
       goto end;
     int authenticated = f_contents.at(0).toInt();
 

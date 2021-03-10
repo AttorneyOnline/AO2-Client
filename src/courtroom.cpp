@@ -1635,9 +1635,8 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
         ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini")
             .name();
   if (!ao_app->auth_packet_enabled && p_message == "Logged in as a moderator.") {
-    ui_guard->show();
-    append_server_chatmessage(
-        tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
+    // Emulate successful authentication
+    on_authentication_state_received(1);
   }
 
 
