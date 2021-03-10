@@ -27,7 +27,7 @@ Sprawdź swoje połączenie internetowe oraz zaporę ogniową i spróbuj ponowni
         <source>Outdated version! Your version: %1
 Please go to aceattorneyonline.com to update.</source>
         <translation>Nieaktualna wersja! Twoja wersja: %1
-Udaj się do aceattorneyonline.com, aby zaktualizować.</translation>
+Udaj się do aceattorneyonline.com, aby ją zaktualizować.</translation>
     </message>
     <message>
         <source>You have been exiled from AO.
@@ -44,7 +44,7 @@ Have a nice day.</source>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="292"/>
         <source>Loading</source>
-        <translation>Ładowanie</translation>
+        <translation>Wczytywanie</translation>
     </message>
     <message>
         <source>Loading evidence:
@@ -56,14 +56,14 @@ Have a nice day.</source>
         <location filename="../../src/packet_distribution.cpp" line="379"/>
         <source>Loading music:
 %1/%2</source>
-        <translation>Ładowanie muzyki:
+        <translation>Wczytywanie muzyki:
 %1/%2</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="351"/>
         <source>Loading chars:
 %1/%2</source>
-        <translation>Ładowanie postaci:
+        <translation>Wczytywanie postaci:
 %1/%2</translation>
     </message>
     <message>
@@ -180,7 +180,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="125"/>
         <source>If ticked, themes will be allowed to have animated elements.</source>
-        <translation>Jeśli zaznaczone, motywy będą mogły zawierać animowane elementy.</translation>
+        <translation>Jeśli jest to zaznaczone, motywy będą mogły zawierać animowane elementy.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="144"/>
@@ -190,7 +190,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="146"/>
         <source>If ticked, new messages will appear at the bottom (like the OOC chatlog). The traditional (AO1) behaviour is equivalent to this being unticked.</source>
-        <translation>Jeżeli zaznaczone, nowe wiadomości zaczną się pojawiać na dole (tak jak na czacie OOC). Tradycyjne (AO1) zachowanie jest równoważne do tego bycia odznaczonym.</translation>
+        <translation>Jeżeli jest to zaznaczone, nowe wiadomości zaczną się pojawiać na dole (tak jak na czacie OOC). Tradycyjne (AO1) zachowanie jest równoważne do tego bycia odznaczonym.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="158"/>
@@ -204,12 +204,12 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="173"/>
         <source>Log newline:</source>
-        <translation>Oddzielenia w dzienniku:</translation>
+        <translation>Odstępy w dzienniku:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="175"/>
         <source>If ticked, new messages will appear separated, with the message coming on the next line after the name. When unticked, it displays it as &apos;name: message&apos;.</source>
-        <translation>Jeśli zaznaczone, nowe wiadomości będą pojawiać się oddzielone, z wiadomością w kolejnym wierszu po nicku. Jeżeli odznaczone, będzie się pokazywać w formacie &apos;nick: wiadomość&quot;.</translation>
+        <translation>Jeśli jest to zaznaczone, nowe wiadomości będą pojawiać się oddzielone, z wiadomością w kolejnym wierszu po nicku. Jeżeli odznaczone, będzie się pokazywać w formacie &apos;nick: wiadomość&quot;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="187"/>
@@ -229,7 +229,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="204"/>
         <source>If ticked, log will contain a timestamp in UTC before the name.</source>
-        <translation>Jeżeli zaznaczone, dziennik będzie pokazywać datę w UTC przed nickiem.</translation>
+        <translation>Jeżeli jest to zaznaczone, dziennik będzie pokazywać datę w UTC przed nickiem.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="214"/>
@@ -239,7 +239,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="216"/>
         <source>If ticked, log will show IC actions such as shouting and presenting evidence.</source>
-        <translation>Jeśli zaznaczone, dziennik będzie pokazywać akcje IC takie jak krzyki i prezentowanie dowodów.</translation>
+        <translation>Jeśli jest to zaznaczone, dziennik będzie pokazywać akcje IC takie jak krzyki i prezentowanie dowodów.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="227"/>
@@ -258,7 +258,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="244"/>
         <source>If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time).</source>
-        <translation>Jeżeli zaznaczone, dziennik pokaże wiadomości jako odebrane, podczas gdy okno będzie analizować kolejkę (Czas Pozostania Tekstu).</translation>
+        <translation>Jeżeli jest to zaznaczone, dziennik pokaże wiadomości jako odebrane, podczas gdy okno będzie analizować kolejkę (Czas Pozostania Tekstu).</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="254"/>
@@ -381,7 +381,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="401"/>
         <source>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</source>
-        <translation>Zezwala na efekty ekranowe. Wyłącz to, jeśli przejmujesz się lub masz problemy z światłoczułością oraz/lub z napadami padaczkowymi.</translation>
+        <translation>Zezwala na efekty ekranu. Wyłącz to, jeśli przejmujesz się lub masz problemy z światłoczułością oraz/lub z napadami padaczkowymi.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="412"/>
@@ -456,7 +456,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="503"/>
         <source>Continuous Playback:</source>
-        <translation>Nieustanne Odtwarzanie:</translation>
+        <translation>Nieprzerwane Odtwarzanie:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="505"/>
@@ -466,7 +466,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="515"/>
         <source>Stop Music w/ Category:</source>
-        <translation>Zatrzymaj Muzykę z Kategorią:</translation>
+        <translation>Zatrzymaj Muzykę Kategorią:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="517"/>
@@ -552,7 +552,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="682"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
-        <translation>Jeżeli zaznaczone, gra zagra dźwięk blip za każdym razem spacja &apos;jest mówiona&apos;.</translation>
+        <translation>Jeżeli jest to zaznaczone, gra zagra dźwięk blip za każdym razem spacja &apos;jest mówiona&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="693"/>
@@ -562,7 +562,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="694"/>
         <source>If true, the game will allow looping sound effects to play on preanimations.</source>
-        <translation>Jeśli zaznaczone, gra zezwoli na pętlące się efekty dźwiękowe (SFX) na odtwarzanie podczas animacji.</translation>
+        <translation>Jeśli jest to zaznaczone, gra zezwoli na pętlące się efekty dźwiękowe (SFX) na odtwarzanie podczas animacji.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="705"/>
@@ -572,7 +572,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="707"/>
         <source>If true, AO2 will ask the server to stop music when you use &apos;Objection!&apos; </source>
-        <translation>Jeśli zaznaczone, gra zapyta serwer by przerwać muzykę, kiedy ktoś się sprzeciwi. </translation>
+        <translation>Jeśli jest to zaznaczone, gra zapyta serwer by przerwać muzykę, kiedy ktoś się sprzeciwi. </translation>
     </message>
     <message>
         <source>If true, AO2 will stop the music for you when you or someone else does &apos;Objection!&apos;.</source>
@@ -581,12 +581,12 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="866"/>
         <source>Automatic Logging:</source>
-        <translation>Auto Logowanie:</translation>
+        <translation>Auto-Zapisywanie:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="868"/>
         <source>If checked, all logs will be automatically written in the /logs folder.</source>
-        <translation>Jeśli zaznaczone, dziennik będzie automatycznie zapisywany w twoim folderze /logs.</translation>
+        <translation>Jeśli jest to zaznaczone, dziennik będzie automatycznie zapisywany w twoim folderze /logs.</translation>
     </message>
     <message>
         <source>If true, the game will stop music when someone objects, like in the actual games.</source>
@@ -620,7 +620,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="749"/>
         <source>If checked, you will get alerts about case announcements.</source>
-        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw.</translation>
+        <translation>Jeżel jest to zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="764"/>
@@ -630,7 +630,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="765"/>
         <source>If checked, you will get alerts about case announcements if a defense spot is open.</source>
-        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce obrony jest otwarte.</translation>
+        <translation>Jeśli jest to zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce obrony jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="778"/>
@@ -640,7 +640,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="780"/>
         <source>If checked, you will get alerts about case announcements if a prosecutor spot is open.</source>
-        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce prokuratora jest otwarte.</translation>
+        <translation>Jeśli jest to zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce prokuratora jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="793"/>
@@ -650,7 +650,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="794"/>
         <source>If checked, you will get alerts about case announcements if the judge spot is open.</source>
-        <translation>Jeśli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce sędzi jest otwarte.</translation>
+        <translation>Jeśli jest to zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce sędzi jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="807"/>
@@ -660,7 +660,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="808"/>
         <source>If checked, you will get alerts about case announcements if a juror spot is open.</source>
-        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce ławnika jest otwarte.</translation>
+        <translation>Jeżeli jest to zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce ławnika jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="821"/>
@@ -670,7 +670,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="823"/>
         <source>If checked, you will get alerts about case announcements if a stenographer spot is open.</source>
-        <translation>Jeżeli zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce stenografa jest otwarte.</translation>
+        <translation>Jeżeli jest to zaznaczone, dostaniesz komunikaty o ogłoszeniach rozpraw, jeśli miejsce stenografa jest otwarte.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="836"/>
@@ -680,7 +680,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="838"/>
         <source>If checked, you will appear amongst the potential CMs on the server.</source>
-        <translation>Jeśli zaznaczone, pojawisz się wśród potencjalnych zarządców rozpraw (CM) na serwerze.</translation>
+        <translation>Jeśli jest to zaznaczone, pojawisz się wśród potencjalnych zarządców rozpraw (CM) na serwerze.</translation>
     </message>
     <message>
         <source>Witness:</source>
@@ -780,7 +780,7 @@ Powód: %1</translation>
         <location filename="../../src/courtroom.cpp" line="228"/>
         <location filename="../../src/courtroom.cpp" line="868"/>
         <source>Casing</source>
-        <translation>Rozprawa</translation>
+        <translation>Rozprawy</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="233"/>
@@ -879,7 +879,7 @@ Rozprawy które możesz załadować: %1</translation>
     <message>
         <location filename="../../src/courtroom.cpp" line="732"/>
         <source>Reset your character&apos;s supplementary background to its default.</source>
-        <translation>Resetuje twoje pomocnicze tło postaci do domyślnej wartości.</translation>
+        <translation>Zresetuj twoje pomocnicze tło postaci do domyślnej wartości.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="742"/>
@@ -961,12 +961,12 @@ Edytuj poprzez wciśnięcie Enter po wpisaniu tekstu, [X] aby usunąć. Zapisuje
     <message>
         <location filename="../../src/courtroom.cpp" line="877"/>
         <source>Switch between Areas and Music lists</source>
-        <translation>Przełącz pomiędzy listami Obszarów i Muzyki</translation>
+        <translation>Przełączaj pomiędzy listami Obszarów i Muzyki</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="882"/>
         <source>Play a single-shot animation as defined by the emote when checked.</source>
-        <translation>Odegraj pojedyńczą animację, jak zdefiniowano przez emotkę, gdy zaznaczone.</translation>
+        <translation>Odegraj pojedyńczą animację, jak zdefiniowano przez emotkę, gdy jest to zaznaczone.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="885"/>
@@ -976,17 +976,17 @@ Edytuj poprzez wciśnięcie Enter po wpisaniu tekstu, [X] aby usunąć. Zapisuje
     <message>
         <location filename="../../src/courtroom.cpp" line="903"/>
         <source>Mirror your character&apos;s emotes when checked.</source>
-        <translation>Odzwierciedlij emotki twojej postaci, gdy zaznaczone.</translation>
+        <translation>Odbij lustrzanie emotki twojej postaci, gdy jest to zaznaczone.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="907"/>
         <source>Add text to your last spoken message when checked.</source>
-        <translation>Dodaj tekst do twojej ostatniej wiadomości, gdy zaznaczone.</translation>
+        <translation>Dodaj tekst do twojej ostatniej wiadomości, gdy jest to zaznaczone.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="911"/>
         <source>Do not listen to mod calls when checked, preventing them from playing sounds or focusing attention on the window.</source>
-        <translation>Nie słuchaj wezwań moda, gdy zaznaczone, zapobiegając grania dźwięków oraz skupiania uwagi na okienko.</translation>
+        <translation>Gdy jest to zaznaczone, nie odgrywa dźwięku i wyłącza efekt migającego okienka, gdy ktoś wezwie moderatora.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="915"/>
@@ -998,7 +998,7 @@ Edytuj poprzez wciśnięcie Enter po wpisaniu tekstu, [X] aby usunąć. Zapisuje
     <message>
         <location filename="../../src/courtroom.cpp" line="920"/>
         <source>Display customized shownames for all users when checked.</source>
-        <translation>Wyświetl niestandardowe ksywki dla wszystkich użytkowników, gdy zaznaczone.</translation>
+        <translation>Wyświetl niestandardowe ksywki dla wszystkich użytkowników, gdy jest to zaznaczone.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="923"/>
@@ -1015,12 +1015,12 @@ Aby stworzyć coś takiego, folder twojej postaci musi zawierać niestandardowe 
     <message>
         <location filename="../../src/courtroom.cpp" line="934"/>
         <source>Play realization sound and animation in the viewport on the next spoken message when checked.</source>
-        <translation>Zagraj dźwięk realizacji i animację w oknie podczas następnej wiadomości, gdy zaznaczone.</translation>
+        <translation>Zagraj dźwięk realizacji i animację w oknie podczas następnej wiadomości, gdy jest to zaznaczone.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="940"/>
         <source>Shake the screen on next spoken message when checked.</source>
-        <translation>Wstrząśnij ekranem podczas następnej wiadomości, gdy zaznaczone.</translation>
+        <translation>Wstrząśnij ekranem podczas następnej wiadomości, gdy jest to zaznaczone.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="946"/>
@@ -1077,7 +1077,7 @@ Możesz również zaznaczyć część twojej obecnie pisanej wiadomości i uży�
         <location filename="../../src/courtroom.cpp" line="2098"/>
         <location filename="../../src/courtroom.cpp" line="2992"/>
         <source>shouts</source>
-        <translation>krzyki</translation>
+        <translation>krzyknął/ęła</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="2111"/>
@@ -1276,7 +1276,7 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/courtroom.cpp" line="1632"/>
         <source>You were granted the Disable Modcalls button.</source>
-        <translation>Zostałeś obdarzonym przyciskiem Wyłącz Wezwania Moda.</translation>
+        <translation>Zostałeś/aś obdarzonym/a przyciskiem Wyłącz Wezwania Moda.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="1632"/>
@@ -1296,7 +1296,7 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/courtroom.cpp" line="3882"/>
         <source>You opened the settings menu.</source>
-        <translation>Otworzyłeś ustawienia.</translation>
+        <translation>Otworzyłeś/aś ustawienia.</translation>
     </message>
     <message>
         <source>You will now pair up with </source>
@@ -1309,7 +1309,7 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/courtroom.cpp" line="3903"/>
         <source>You are no longer paired with anyone.</source>
-        <translation>Nie jesteś już w parze z nikim.</translation>
+        <translation>Nie jesteś już w parze.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3908"/>
@@ -1348,12 +1348,12 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/courtroom.cpp" line="3965"/>
         <source>You switched your music and area list.</source>
-        <translation>Przełączyłeś swoją listę obszarów i muzyki.</translation>
+        <translation>Przełączyłeś/aś swoją listę obszarów i muzyki.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3972"/>
         <source>You have forcefully enabled features that the server may not support. You may not be able to talk IC, or worse, because of this.</source>
-        <translation>Włączyłeś funkcje, które ten serwer może nie wspierać. Możliwe, że nie będziesz mógł rozmawiać na czacie IC lub gorzej przez to.</translation>
+        <translation>Włączyłeś/aś funkcje, które ten serwer może nie wspierać. Możliwe, że nie będziesz mógł/mogła rozmawiać na czacie IC lub gorzej przez to.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="3986"/>
@@ -1368,7 +1368,7 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/courtroom.cpp" line="4000"/>
         <source>Couldn&apos;t open chatlog.txt to write into.</source>
-        <translation>Nie można było otworzyć chatlog.txt, aby pisać w nim.</translation>
+        <translation>Nie można było otworzyć chatlog.txt, aby móc w nim pisać.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="4013"/>
@@ -1396,7 +1396,7 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/courtroom.cpp" line="4124"/>
         <source>You don&apos;t have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it&apos;s likely that you somehow deleted it.</source>
-        <translation>Nie masz folderu `base/cases/`! Został zrobiony tylko dla ciebie, ale widząc, że ZOSTAŁ zrobiony tylko dla ciebie, prawdopodobnie jakoś usunąłeś go.</translation>
+        <translation>Nie masz folderu `base/cases/`! Został zrobiony tylko dla ciebie, ale widząc, że ZOSTAŁ zrobiony tylko dla ciebie, prawdopodobnie jakoś usunąłeś/usunęłaś go.</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="4139"/>
@@ -1441,12 +1441,12 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/courtroom.cpp" line="4710"/>
         <source>Fade Out Previous</source>
-        <translation>Zanikaj poprzednie</translation>
+        <translation>Wyciszaj poprzednie</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="4716"/>
         <source>Fade In</source>
-        <translation>Rozjaśnij</translation>
+        <translation>Stopniowe podgłoszenie</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="4722"/>
@@ -1491,7 +1491,7 @@ kategorię char.ini [Options], effects = &apos;miscname&apos; gdzie się odnosi 
     <message>
         <location filename="../../src/evidence.cpp" line="17"/>
         <source>Present this piece of evidence to everyone on your next spoken message</source>
-        <translation>Zaprezentujesz ten dowód dla każdego podczas twojej następnej wiadomości</translation>
+        <translation>Zaprezentujesz ten dowód każdemu podczas twojej następnej wiadomości</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="24"/>
@@ -1538,12 +1538,12 @@ Zostaniesz zawiadomiony, jeśli są jakieś niezapisane zmiany.</translation>
     <message>
         <location filename="../../src/evidence.cpp" line="145"/>
         <source>Switch evidence to private inventory.</source>
-        <translation>Przełącz dowody do prywatnego ekwipunku.</translation>
+        <translation>Przełącz ekran dowodów do prywatnego ekwipunku.</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="149"/>
         <source>Switch evidence to global inventory.</source>
-        <translation>Przełącz dowody do globalnego ekwipunku.</translation>
+        <translation>Przełącz ekran dowodów do globalnego ekwipunku.</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="156"/>
@@ -1593,7 +1593,7 @@ Opis:
     <message>
         <location filename="../../src/evidence.cpp" line="477"/>
         <source>Add new evidence...</source>
-        <translation>Dodaj nowe dowody...</translation>
+        <translation>Dodaj nowy dowód...</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="556"/>
@@ -1618,7 +1618,7 @@ Opis:
     <message>
         <location filename="../../src/evidence.cpp" line="660"/>
         <source>&quot;%1&quot; has been transferred.</source>
-        <translation>&quot;%1&quot; został przeniesiony.</translation>
+        <translation>&quot;%1&quot; został przeniesiony/a.</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="723"/>
