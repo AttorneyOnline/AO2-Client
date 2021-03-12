@@ -28,10 +28,6 @@ BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
-ForegroundLayer::ForegroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
-{
-}
 CharLayer::CharLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
@@ -40,7 +36,7 @@ EffectLayer::EffectLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
-InterjectionLayer::InterjectionLayer(QWidget *p_parent, AOApplication *p_ao_app)
+SplashLayer::SplashLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
@@ -48,13 +44,12 @@ InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
-
 StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
     : AOLayer(p_parent, p_ao_app)
 {
 }
 
-QString AOLayer::find_image(QList<QString> p_list)
+QString AOLayer::find_image(QStringList p_list)
 {
   QString image_path;
   for (QString path : p_list) {
@@ -80,20 +75,25 @@ QPixmap AOLayer::get_pixmap(QImage image)
   else
     f_pixmap = QPixmap::fromImage(image);
   //    auto aspect_ratio = Qt::KeepAspectRatio;
-  if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
-    transform_mode = Qt::SmoothTransformation;
-  if (stretch)
-    f_pixmap = f_pixmap.scaled(f_w, f_h);
-  else
-    f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
-  this->resize(f_pixmap.size());
-
+  if (!f_pixmap.isNull()) {
+    if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
+      transform_mode = Qt::SmoothTransformation;
+    if (stretch)
+      f_pixmap = f_pixmap.scaled(f_w, f_h);
+    else
+      f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
+    this->resize(f_pixmap.size());
+  }
   return f_pixmap;
 }
 
 void AOLayer::set_frame(QPixmap f_pixmap)
 {
   this->setPixmap(f_pixmap);
+  this->center_pixmap(f_pixmap);
+}
+
+void AOLayer::center_pixmap(QPixmap f_pixmap) {
   QLabel::move(
       x + (f_w - f_pixmap.width()) / 2,
       y + (f_h - f_pixmap.height())); // Always center horizontally, always put
@@ -123,6 +123,16 @@ void AOLayer::move(int ax, int ay)
   QLabel::move(x, y);
 }
 
+void AOLayer::move_and_center(int ax, int ay)
+{
+  x = ax;
+  y = ay;
+  if (movie_frames.isEmpty()) // safeguard
+    QLabel::move(x,y);
+  else
+    center_pixmap(movie_frames[0]); // just use the first frame since dimensions are all that matter
+}
+
 void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
@@ -131,29 +141,10 @@ void BackgroundLayer::load_image(QString p_filename)
   transform_mode =
       ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
   stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
+#ifdef DEBUG_MOVIE
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
+#endif
   start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename)));
-}
-
-void ForegroundLayer::load_image(QString p_filename, QString p_charname)
-{
-  play_once = false;
-  cull_image = false;
-  miscname = ao_app->get_char_shouts(p_charname);
-  qDebug() << "[ForegroundLayer] FG loaded: " << p_filename;
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, p_filename)), // first check the character folder
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + miscname + "/" +
-          p_filename)), // then check our theme's misc directory
-      ao_app->get_image_suffix(ao_app->get_misc_path(
-          miscname, p_filename)), // then check our global misc folder
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path(p_filename)), // then check the user's theme
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          p_filename))}; // and finally check the default theme
-  start_playback(find_image(pathlist));
 }
 
 void CharLayer::load_image(QString p_filename, QString p_charname,
@@ -199,10 +190,12 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
     play_once = true;
     preanim_timer->start(duration * tick_ms);
   }
+#ifdef DEBUG_MOVIE
   qDebug() << "[CharLayer] anim loaded: prefix " << prefix << " filename "
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
-  QList<QString> pathlist = {
+#endif
+  QStringList pathlist = {
       ao_app->get_image_suffix(ao_app->get_character_path(
           p_charname, prefix + current_emote)), // Default path
       ao_app->get_image_suffix(ao_app->get_character_path(
@@ -214,45 +207,16 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           current_emote)), // Just use the non-prefixed image, animated or not
       ao_app->get_image_suffix(
           ao_app->get_theme_path("placeholder")), // Theme placeholder path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          "placeholder"))}; // Default theme placeholder path
-  this->start_playback(find_image(pathlist));
+      ao_app->get_image_suffix(ao_app->get_theme_path(
+          "placeholder", ao_app->default_theme))}; // Default theme placeholder path
+  start_playback(find_image(pathlist));
 }
 
-void InterjectionLayer::load_image(QString p_filename, QString p_charname,
+void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
-  continuous = false;
-  force_continuous = true;
-  play_once = true;
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, p_filename)), // Character folder
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + p_miscname + "/" + p_filename)), // Theme misc path
-      ao_app->get_image_suffix(
-          ao_app->get_misc_path(p_miscname, p_filename)), // Misc path
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path(p_filename)), // Theme path
-      ao_app->get_image_suffix(
-          ao_app->get_default_theme_path(p_filename)), // Default theme path
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path("placeholder")), // Placeholder path
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          "placeholder")), // Default placeholder path
-  };
-  QString final_image = find_image(pathlist);
-  if (final_image == ao_app->get_theme_path("custom.png") ||
-      final_image == ao_app->get_default_theme_path("custom.png") ||
-      final_image == ao_app->get_theme_path("witnesstestimony.png") ||
-      final_image == ao_app->get_default_theme_path("witnesstestimony.png") ||
-      final_image == ao_app->get_theme_path("crossexamination.png") ||
-      final_image == ao_app->get_default_theme_path("crossexamination.png")) 
-    // stupid exceptions because themes are stupid
-    final_image = find_image(
-        {ao_app->get_image_suffix(ao_app->get_theme_path("placeholder")),
-         ao_app->get_image_suffix(ao_app->get_default_theme_path("placeholder"))});
+  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
   start_playback(final_image);
 }
 
@@ -269,37 +233,19 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
-  transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "misc/" + p_miscname + "/" +
-          p_filename)), // first check our theme's misc directory
-      ao_app->get_image_suffix(ao_app->get_misc_path(
-          p_miscname, p_filename)), // then check our global misc folder
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          p_filename)), // then check the user's theme for a default image
-      ao_app->get_image_suffix(ao_app->get_default_theme_path(
-          p_filename))}; // and finally check the default theme
-  start_playback(find_image(pathlist));
+  stretch = true;
+  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  start_playback(final_image);
 }
 
 void StickerLayer::load_image(QString p_charname)
 {
-  QString miscname = ao_app->get_char_shouts(p_charname);
-  transform_mode = ao_app->get_misc_scaling(miscname);
-  QList<QString> pathlist = {
-      ao_app->get_image_suffix(ao_app->get_base_path() + "misc/" +
-                                miscname + "/sticker/" + p_charname), // Misc path
-      ao_app->get_image_suffix(ao_app->get_custom_theme_path(miscname, "sticker/" + p_charname)), // Custom theme path
-      ao_app->get_image_suffix(ao_app->get_theme_path("sticker/" + p_charname)), // Theme path
-      ao_app->get_image_suffix(
-          ao_app->get_default_theme_path("sticker/" + p_charname)), // Default theme path
-      ao_app->get_image_suffix(
-          ao_app->get_character_path(p_charname, "sticker")), // Character folder
-      ao_app->get_image_suffix(
-          ao_app->get_character_path(p_charname, "showname")), // Scuffed DRO way
-  };
-  start_playback(find_image(pathlist));
+  QString p_miscname;
+  if (ao_app->is_customchat_enabled())
+    p_miscname = ao_app->get_chat(p_charname);
+  transform_mode = ao_app->get_misc_scaling(p_miscname);
+  QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  start_playback(final_image);
 }
 
 void CharLayer::start_playback(QString p_image)
@@ -314,6 +260,16 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
+  this->show();
+
+  if (!ao_app->is_continuous_enabled()) {
+    continuous = false;
+    force_continuous = true;
+  }
+
+  if ((last_path == p_image) && (!force_continuous))
+    return;
+
 #ifdef DEBUG_MOVIE
   actual_time.restart();
 #endif
@@ -321,10 +277,6 @@ void AOLayer::start_playback(QString p_image)
   freeze();
   movie_frames.clear();
   movie_delays.clear();
-
-  if (!file_exists(p_image))
-    return;
-
   QString scaling_override =
       ao_app->read_design_ini("scaling", p_image + ".ini");
   if (scaling_override != "")
@@ -334,29 +286,27 @@ void AOLayer::start_playback(QString p_image)
   if (stretch_override != "")
     stretch = stretch_override.startsWith("true");
 
+#ifdef DEBUG_MOVIE
   qDebug() << "stretch:" << stretch << "filename:" << p_image;
+#endif
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
-  if ((last_path == p_image) && (!force_continuous))
-    continuous = true;
-  else if ((last_path != p_image) && !force_continuous)
-    continuous = false;
   if (!continuous)
     frame = 0;
-  force_continuous = false;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
   if (((continuous) && (max_frames != last_max_frames)) || max_frames == 0) {
     frame = 0;
     continuous = false;
   }
-  // CANTFIX: this causes a slight hitch
+  // CANTFIX: this causes a hitch
   // The correct way of doing this would be to use QImageReader::jumpToImage()
   // and populate missing data in the movie ticker when it's needed. This is
-  // unforunately completely impossible, because QImageReader::jumpToImage() is
+  // unfortunately completely impossible, because QImageReader::jumpToImage() is
   // not implemented in any image format AO2 is equipped to use. Instead, the
   // default behavior is used - that is, absolutely nothing.
+  // This is why continuous playback can be toggled off.
   if (continuous) {
     for (int i = frame; i--;) {
       if (i <= -1)
@@ -365,16 +315,13 @@ void AOLayer::start_playback(QString p_image)
       int l_delay = m_reader.nextImageDelay();
       movie_frames.append(l_pixmap);
       movie_delays.append(l_delay);
-      // qDebug() << "appending delay of " << l_delay;
     }
   }
-  // qDebug() << "CONT: " << continuous << " MAX: " << max_frames
-  //         << " LAST MAX: " << last_max_frames << " FRAME: " << frame;
+  last_path = p_image;
   QPixmap f_pixmap = this->get_pixmap(m_reader.read());
   int f_delay = m_reader.nextImageDelay();
 
   this->set_frame(f_pixmap);
-  this->show();
   if (max_frames > 1) {
     movie_frames.append(f_pixmap);
     movie_delays.append(f_delay);
@@ -429,6 +376,8 @@ void AOLayer::set_max_duration(int p_max_duration)
 void CharLayer::load_effects()
 {
   movie_effects.clear();
+  if (max_frames <= 1)
+    return;
   movie_effects.resize(max_frames);
   for (int e_frame = 0; e_frame < max_frames; ++e_frame) {
     QString effect = ao_app->get_screenshake_frame(m_char, m_emote, e_frame);
@@ -451,6 +400,8 @@ void CharLayer::load_effects()
 void CharLayer::load_network_effects()
 {
   movie_effects.clear();
+  if (max_frames <= 1)
+    return;
   movie_effects.resize(max_frames);
   // Order is important!!!
   QStringList effects_list = {"shake", "flash", "sfx^"};
@@ -485,8 +436,10 @@ void CharLayer::load_network_effects()
           if (effect == "sfx^") // Currently the only frame result that feeds us
                                 // data, let's yank it in.
             effect += f_data;
+#ifdef DEBUG_MOVIE
           qDebug() << effect << f_data << "frame" << f_frame << "for"
                    << m_emote;
+#endif
           movie_effects[f_frame].append(effect);
         }
       }
@@ -496,6 +449,10 @@ void CharLayer::load_network_effects()
 
 void CharLayer::play_frame_effect(int p_frame)
 {
+  if (p_frame >= movie_effects.size()) {
+    qDebug() << "W: Attempted to play a frame effect bigger than the size of movie_effects";
+    return;
+  }
   if (p_frame < max_frames) {
     foreach (QString effect, movie_effects[p_frame]) {
       if (effect == "shake") {
@@ -529,6 +486,7 @@ void AOLayer::stop()
   // do we want a frozen gif to display
   this->freeze();
   this->hide();
+  shfx_timer->stop();
 }
 
 void AOLayer::freeze()
@@ -536,7 +494,16 @@ void AOLayer::freeze()
   // aT nO pOiNt Do We WaNt A fRoZeN gIf To DiSpLaY
   ticker->stop();
   preanim_timer->stop();
-  shfx_timer->stop();
+}
+
+void AOLayer::kill()
+{
+  // used for when we want to ensure a file is loaded anew
+  this->stop();
+  this->clear();
+  movie_frames.clear();
+  movie_delays.clear();
+  last_path = "";
 }
 
 void CharLayer::movie_ticker()
@@ -548,7 +515,7 @@ void CharLayer::movie_ticker()
 void AOLayer::movie_ticker()
 {
   ++frame;
-  if ((frame >= max_frames) && (max_frames > 1)) {
+  if (frame >= max_frames) {
     if (play_once) {
       if (cull_image)
         this->stop();

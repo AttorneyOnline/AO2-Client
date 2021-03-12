@@ -8,9 +8,12 @@
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
-  p_packet->net_decode();
-
   QString header = p_packet->get_header();
+
+  // Some packets need to handle decode/encode separately
+  if (header != "SC") {
+    p_packet->net_decode();
+  }
   QStringList f_contents = p_packet->get_contents();
 
 #ifdef DEBUG_NETWORK
@@ -336,6 +339,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       QStringList sub_elements = f_contents.at(n_element).split("&");
 
+      AOPacket::unescape(sub_elements);
+
       char_type f_char;
       f_char.name = sub_elements.at(0);
       if (sub_elements.size() >= 2)
@@ -460,6 +465,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed) {
+      qDebug() << f_contents;
       if (f_contents.size() >=
           2) // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
@@ -491,8 +497,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->enter_courtroom();
 
-    if (courtroom_constructed)
+    if (courtroom_constructed) {
+      w_courtroom->set_courtroom_size();
       w_courtroom->update_character(f_contents.at(2).toInt());
+    }
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
@@ -622,7 +630,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (type == 0 || type == 1)
     {
-      if (f_contents.size() < 2)
+      if (f_contents.size() < 3)
         goto end;
 
       // The time as displayed on the clock, in milliseconds.
@@ -660,6 +668,23 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     qDebug() << "ping:" << ping_time;
     if (ping_time != -1)
       latency = ping_time;
+  }
+  // Subtheme packet
+  else if (header == "ST") {
+    if (!courtroom_constructed)
+      goto end;
+    // Subtheme reserved as argument 0
+    subtheme = f_contents.at(0);
+
+    // Check if we have subthemes set to "server"
+    QString p_st = configini->value("subtheme").value<QString>();
+    if (p_st.toLower() != "server")
+      // We don't. Simply acknowledge the subtheme sent by the server, but don't do anything else.
+      return;
+
+    // Reload theme request
+    if (f_contents.size() > 1 && f_contents.at(1) == "1")
+      w_courtroom->on_reload_theme_clicked();
   }
 
 end:

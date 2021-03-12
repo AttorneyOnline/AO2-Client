@@ -8,6 +8,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QFormLayout>
@@ -23,6 +24,9 @@
 
 #include <QDirIterator>
 #include <QTextStream>
+
+class Lobby;
+class Courtroom;
 
 class AOOptionsDialog : public QDialog {
   Q_OBJECT
@@ -41,6 +45,11 @@ private:
   QFormLayout *ui_gameplay_form;
   QLabel *ui_theme_label;
   QComboBox *ui_theme_combobox;
+  QLabel *ui_subtheme_label;
+  QComboBox *ui_subtheme_combobox;
+  QPushButton *ui_theme_reload_button;
+  QLabel *ui_animated_theme_lbl;
+  QCheckBox *ui_animated_theme_cb;
   QFrame *ui_theme_log_divider;
   QLabel *ui_downwards_lbl;
   QCheckBox *ui_downwards_cb;
@@ -58,6 +67,8 @@ private:
   QCheckBox *ui_desync_logs_cb;
   QLabel *ui_instant_objection_lbl;
   QCheckBox *ui_instant_objection_cb;
+  QLabel *ui_text_crawl_lbl;
+  QSpinBox *ui_text_crawl_spinbox;
   QLabel *ui_chat_ratelimit_lbl;
   QSpinBox *ui_chat_ratelimit_spinbox;
   QLabel *ui_log_ic_actions_lbl;
@@ -96,6 +107,15 @@ private:
 
   QLabel *ui_customchat_lbl;
   QCheckBox *ui_customchat_cb;
+
+  QLabel *ui_sticker_lbl;
+  QCheckBox *ui_sticker_cb;
+
+  QLabel *ui_continuous_lbl;
+  QCheckBox *ui_continuous_cb;
+
+  QLabel *ui_category_stop_lbl;
+  QCheckBox *ui_category_stop_cb;
 
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
@@ -151,12 +171,16 @@ private:
   QCheckBox *ui_log_cb;
 
   bool needs_default_audiodev();
+  void update_values();
 
 signals:
 
 public slots:
   void save_pressed();
   void discard_pressed();
+  void button_clicked(QAbstractButton *button);
+  void on_reload_theme_clicked();
+  void theme_changed(int i);
 };
 
 #endif // AOOPTIONSDIALOG_H

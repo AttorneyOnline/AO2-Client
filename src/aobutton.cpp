@@ -7,32 +7,42 @@ AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
     : QPushButton(parent)
 {
   ao_app = p_ao_app;
+  movie = new QMovie(this);
+  connect(movie, &QMovie::frameChanged, [=]{
+    this->setIcon(movie->currentPixmap().scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    this->setIconSize(QSize(this->width(), this->height()));
+  });
 }
 
 AOButton::~AOButton() {}
 
-void AOButton::set_image(QString p_image)
+void AOButton::set_image(QString p_path, QString p_misc)
 {
-  QString image_path =
-      ao_app->get_static_image_suffix(ao_app->get_theme_path(p_image));
-  QString default_image_path =
-      ao_app->get_static_image_suffix(ao_app->get_default_theme_path(p_image));
-
-  if (file_exists(image_path)) {
-    this->setText("");
-    this->setStyleSheet("QPushButton { border-image: url(\"" + image_path +
-                        "\") 0 0 0 0 stretch stretch; }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
-  }
-  else if (file_exists(default_image_path)) {
-    this->setText("");
-    this->setStyleSheet("QPushButton { border-image: url(\"" +
-                        default_image_path +
-                        "\"); }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
-  }
+  movie->stop();
+  QString p_image;
+  // Check if the user wants animated themes
+  if (ao_app->get_animated_theme())
+    // We want an animated image
+    p_image = ao_app->get_image(p_path, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_misc);
   else
-    return;
+    // Grab a static variant of the image
+    p_image = ao_app->get_image_path(ao_app->get_asset_paths(p_path, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_misc), true);
+  if (!file_exists(p_image)) {
+      this->setIcon(QIcon());
+      this->setIconSize(this->size());
+      this->setStyleSheet("");
+      return;
+  }
+  this->setText("");
+  this->setStyleSheet("QPushButton { background-color: transparent; border: 0px }");
+  movie->setFileName(p_image);
+  // We double-check if the user wants animated themes, so even if an animated image slipped through,
+  // we still set it static
+  if (ao_app->get_animated_theme() && movie->frameCount() > 1) {
+    movie->start();
+  }
+  else {
+    this->setIcon(QPixmap(p_image).scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    this->setIconSize(this->size());
+  }
 }

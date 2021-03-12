@@ -18,8 +18,6 @@ void Courtroom::construct_char_select()
   ui_char_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_char_list->hideColumn(1);
   ui_char_list->setDropIndicatorShown(true);
-  set_size_and_pos(ui_char_list, "char_list");
-
 
   ui_char_buttons = new QWidget(ui_char_select_background);
 
@@ -40,21 +38,12 @@ void Courtroom::construct_char_select()
 
   ui_char_search = new QLineEdit(ui_char_select_background);
   ui_char_search->setPlaceholderText(tr("Search"));
-  ui_char_search->setFocus();
-  set_size_and_pos(ui_char_search, "char_search");
 
   ui_char_passworded = new QCheckBox(ui_char_select_background);
   ui_char_passworded->setText(tr("Passworded"));
-  set_size_and_pos(ui_char_passworded, "char_passworded");
 
   ui_char_taken = new QCheckBox(ui_char_select_background);
   ui_char_taken->setText(tr("Taken"));
-  set_size_and_pos(ui_char_taken, "char_taken");
-
-  ui_char_taken->setChecked(true);
-  ui_char_passworded->setChecked(true);
-
-  set_size_and_pos(ui_char_buttons, "char_buttons");
 
   connect(ui_char_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
           this, SLOT(on_char_list_double_clicked(QTreeWidgetItem *, int)));
@@ -76,8 +65,6 @@ void Courtroom::construct_char_select()
   connect(ui_char_taken, SIGNAL(stateChanged(int)), this,
           SLOT(on_char_taken_clicked()));
 
-  truncate_label_text(ui_char_taken, "char_taken");
-  truncate_label_text(ui_char_passworded, "char_passworded");
 }
 
 void Courtroom::set_char_select()
@@ -94,9 +81,21 @@ void Courtroom::set_char_select()
   }
   else
     this->setFixedSize(f_charselect.width, f_charselect.height);
-
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
   ui_char_select_background->set_image("charselect_background");
+
+  ui_char_search->setFocus();
+  set_size_and_pos(ui_char_search, "char_search");
+  set_size_and_pos(ui_char_list, "char_list");
+  set_size_and_pos(ui_char_passworded, "char_passworded");
+  set_size_and_pos(ui_char_taken, "char_taken");
+  set_size_and_pos(ui_char_buttons, "char_buttons");
+
+  ui_char_taken->setChecked(true);
+  ui_char_passworded->setChecked(true);
+
+  truncate_label_text(ui_char_taken, "char_taken");
+  truncate_label_text(ui_char_passworded, "char_passworded");
 
   filter_character_list();
 
@@ -176,8 +175,11 @@ void Courtroom::char_clicked(int n_char)
         new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" +
                      QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
-  else
+  else {
     update_character(n_char);
+    enter_courtroom();
+    set_courtroom_size();
+  }
 
   if (n_char != -1)
     ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
@@ -251,7 +253,7 @@ void Courtroom::character_loading_finished()
     // create the character tree item
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
     treeItem->setText(0, char_list.at(n).name);
-    treeItem->setIcon(0, QIcon(ao_app->get_static_image_suffix(
+    treeItem->setIcon(0, QIcon(ao_app->get_image_suffix(
       ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
     treeItem->setText(1, QString::number(n));
     // category logic

@@ -131,9 +131,7 @@ public:
   // implementation in path_functions.cpp
   QString get_base_path();
   QString get_data_path();
-  QString get_theme_path(QString p_file);
-  QString get_default_theme_path(QString p_file);
-  QString get_custom_theme_path(QString p_theme, QString p_file);
+  QString get_theme_path(QString p_file, QString p_theme="");
   QString get_character_path(QString p_char, QString p_file);
   QString get_misc_path(QString p_misc, QString p_file);
   QString get_sounds_path(QString p_file);
@@ -141,6 +139,14 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
+  QStringList get_asset_paths(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_asset_path(QStringList pathlist);
+  QString get_image_path(QStringList pathlist, bool static_image=false);
+  QString get_sfx_path(QStringList pathlist);
+  QString get_config_value(QString p_identifier, QString p_config, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="");
+  QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
   QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for reading and writing files //////
@@ -223,12 +229,26 @@ public:
   // for settings.
   bool is_customchat_enabled();
 
+  // Returns the value of characer sticker (avatar) setting
+  bool is_sticker_enabled();
+
+  // Returns the value of whether continuous playback should be used
+  // from the config.ini.
+  bool is_continuous_enabled();
+
+  // Returns the value of whether stopping music by double clicking category should be used
+  // from the config.ini.
+  bool is_category_stop_enabled();
+
   // Returns the value of the maximum amount of lines the IC chatlog
   // may contain, from config.ini.
   int get_max_log_size();
 
   // Current wait time between messages for the queue system
   int stay_time();
+
+  // Returns the letter display speed during text crawl in in-character messages
+  int get_text_crawl();
 
   // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
   int get_chat_ratelimit();
@@ -292,14 +312,11 @@ public:
 
   // Returns the dimensions of widget with specified identifier from p_file
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file,
-                                       QString p_char = "");
+                                       QString p_misc = "");
 
   // Returns the value to you
   QString get_design_element(QString p_identifier, QString p_file,
-                             QString p_char = "");
-
-  // Returns the name of the font with p_identifier from p_file
-  QString get_font_name(QString p_identifier, QString p_file);
+                             QString p_misc = "");
 
   // Returns the value of font_size with p_identifier from p_file
   int get_font_size(QString p_identifier, QString p_file);
@@ -313,19 +330,15 @@ public:
   // Returns the color from the misc folder.
   QColor get_chat_color(QString p_identifier, QString p_chat);
 
-  // Returns the sfx with p_identifier from sounds.ini in the current theme path
-  QString get_sfx(QString p_identifier, QString p_misc="default");
+  // Returns the sfx with p_identifier from courtroom_sounds.ini in the current theme path
+  QString get_court_sfx(QString p_identifier, QString p_misc="");
 
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(QString sound_to_check);
 
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
   // PNG.
-  QString get_image_suffix(QString path_to_check);
-
-  // If this image is static and non-animated, return the supported static image
-  // formats. Currently only PNG.
-  QString get_static_image_suffix(QString path_to_check);
+  QString get_image_suffix(QString path_to_check, bool static_image=false);
 
   // Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line,
@@ -362,9 +375,6 @@ public:
   // Returns the value of chat font size from the specific p_char's ini file
   int get_chat_size(QString p_char);
 
-  // Returns the value of shouts from the specified p_char's ini file
-  QString get_char_shouts(QString p_char);
-
   // Returns the preanim duration of p_char's p_emote
   int get_preanim_duration(QString p_char, QString p_emote);
 
@@ -374,10 +384,6 @@ public:
 
   // Not in use
   int get_text_delay(QString p_char, QString p_emote);
-
-  // Get the effects folder referenced by the char.ini, read it and return the
-  // list of filenames in a string
-  QStringList get_theme_effects();
 
   // Get the theme's effects folder, read it and return the list of filenames in
   // a string
@@ -478,6 +484,18 @@ public:
   // Get if automatic logging is enabled
   bool get_auto_logging_enabled();
 
+  // Get the subtheme from settings
+  QString get_subtheme();
+
+  // Get if the theme is animated
+  bool get_animated_theme();
+
+  // Currently defined subtheme
+  QString subtheme;
+
+  QString default_theme = "default";
+  QString current_theme = default_theme;
+
   // The file name of the log file in base/logs.
   QString log_filename;
 
@@ -494,8 +512,6 @@ private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 9;
   const int MINOR_VERSION = 0;
-
-  QString current_theme = "default";
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;

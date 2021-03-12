@@ -10,6 +10,27 @@
 
 class AOApplication;
 
+// "Brief" explanation of what the hell this is:
+//
+// AOLayer handles all animations both inside and outside
+// the viewport. It was originally devised as a layering
+// system, but turned into a full refactor of the existing
+// animation code. 
+//
+// AOLayer has six subclasses, all of which differ mainly in
+// how they handle path resolution.
+//
+//  - BackgroundLayer: self-explanatory, handles files found in base/background
+//  - CharLayer: handles all the "wonderful" quirks of character path resolution 
+//  - SplashLayer: handles elements that can either be provided by a misc/ directory
+//    or by the theme - speedlines, shouts, WT/CE, et cetera
+//  - EffectLayer: this is basically a dummy layer since effects do their own wonky
+//    path resolution in a different file
+//  - InterfaceLayer: handles UI elements like the chat arrow and the music display
+//  - StickerLayer: Crystalwarrior really wanted this. Handles "stickers," whatever those are.
+//
+// For questions comments or concerns, bother someone else
+
 class AOLayer : public QLabel {
   Q_OBJECT
 
@@ -24,6 +45,11 @@ public:
   bool play_once = false; // Whether to loop this animation or not
   bool cull_image = true; // if we're done playing this animation, should we
                           // hide it? also controls durational culling
+  // Are we loading this from the same frame we left off on? 
+  bool continuous = false;
+  // Whether or not to forcibly bypass the simple check done by start_playback
+  // and use the existent value of continuous instead
+  bool force_continuous = false;
   Qt::TransformationMode transform_mode = Qt::FastTransformation; // transformation mode to use for this image
   bool stretch = false; // Should we stretch/squash this image to fill the screen?
 
@@ -38,6 +64,9 @@ public:
   // Stop the movie, clearing the image
   void stop();
 
+  // Stop the movie and clear all vectors
+  void kill();
+
   // Set the m_flipped variable to true/false
   void set_flipped(bool p_flipped) { m_flipped = p_flipped; }
 
@@ -46,6 +75,9 @@ public:
 
   // Move the label itself around
   void move(int ax, int ay);
+
+  // Move the label and center it
+  void move_and_center(int ax, int ay);
 
   // This is somewhat pointless now as there's no "QMovie" object to resize, aka
   // no "combo" to speak of
@@ -56,7 +88,7 @@ public:
 
   // iterate through a list of paths and return the first entry that exists. if
   // none exist, return NULL (safe because we check again for existence later)
-  QString find_image(QList<QString> p_list);
+  QString find_image(QStringList p_list);
 
 protected:
   AOApplication *ao_app;
@@ -72,7 +104,7 @@ protected:
   QElapsedTimer actual_time;
 
   // Usually used to turn seconds into milliseconds such as for [Time] tag in
-  // char.ini
+  // char.ini (which is no longer used)
   const int tick_ms = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's
@@ -91,12 +123,6 @@ protected:
   int speed = 100;
 
   bool m_flipped = false;
-  // Are we loading this from the same frame we left off on? TODO: actually make
-  // this work
-  bool continuous = false;
-  // Whether or not to forcibly bypass the simple check done by start_playback
-  // and use the existent value of continuous instead
-  bool force_continuous = false;
 
   int duration = 0;
 
@@ -112,6 +138,8 @@ protected:
 
   // Set the movie's frame to provided pixmap
   void set_frame(QPixmap f_pixmap);
+  // Center the QLabel in the viewport based on the dimensions of f_pixmap
+  void center_pixmap(QPixmap f_pixmap);
 
 signals:
   void done();
@@ -127,14 +155,6 @@ class BackgroundLayer : public AOLayer {
 public:
   BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename);
-};
-
-class ForegroundLayer : public AOLayer {
-  Q_OBJECT
-public:
-  ForegroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
-  QString miscname; //'misc' folder to search. we fetch this based on p_charname below
-  void load_image(QString p_filename, QString p_charname);
 };
 
 class CharLayer : public AOLayer {
@@ -191,10 +211,10 @@ signals:
   void play_sfx(QString sfx);
 };
 
-class InterjectionLayer : public AOLayer {
+class SplashLayer : public AOLayer {
   Q_OBJECT
 public:
-  InterjectionLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  SplashLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, QString p_charname, QString p_miscname);
 };
 

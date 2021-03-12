@@ -121,6 +121,9 @@ public:
 
   void character_loading_finished();
 
+  //
+  void set_courtroom_size();
+
   // sets position of widgets based on theme ini files
   void set_widgets();
 
@@ -140,18 +143,15 @@ public:
   void set_fonts(QString p_char = "");
 
   // sets dropdown menu stylesheet
-  void set_dropdown(QWidget *widget);
+  void set_stylesheet(QWidget *widget);
 
   // helper funciton that call above function on the relevant widgets
-  void set_dropdowns();
+  void set_stylesheets();
 
   void set_window_title(QString p_title);
 
-  // reads theme inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-
-  // reads theme and char inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_char);
+  // reads theme and sets size and pos based on the identifier (using p_misc if provided)
+  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc="");
 
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
@@ -336,7 +336,8 @@ private:
   bool message_is_centered = false;
 
   int current_display_speed = 3;
-  int message_display_speed[7] = {5, 10, 25, 40, 50, 70, 90};
+  int text_crawl = 40;
+  double message_display_mult[7] = {0, 0.25, 0.65, 1, 1.25, 1.75, 2.25};
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
@@ -504,7 +505,7 @@ private:
   QVector<QColor> default_color_rgb_list;
 
   // Get a color index from an arbitrary misc config
-  void gen_char_rgb_list(QString p_char);
+  void gen_char_rgb_list(QString p_misc);
   QVector<QColor> char_color_rgb_list;
 
   // Misc we used for the last message, and the one we're using now. Used to avoid loading assets when it's not needed
@@ -575,10 +576,6 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  // is set to true if the bg folder contains defensedesk.png,
-  // prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
-
   // whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
@@ -604,7 +601,7 @@ private:
 
   QWidget *ui_viewport;
   BackgroundLayer *ui_vp_background;
-  ForegroundLayer *ui_vp_speedlines;
+  SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
   ForegroundLayer *ui_vp_player_char_overlay;
   CharLayer *ui_vp_sideplayer_char;
@@ -615,10 +612,10 @@ private:
   QLabel *ui_vp_showname;
   InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
+  SplashLayer *ui_vp_testimony;
+  SplashLayer *ui_vp_wtce;
   EffectLayer *ui_vp_effect;
-  InterfaceLayer *ui_vp_testimony;
-  InterjectionLayer *ui_vp_wtce;
-  InterjectionLayer *ui_vp_objection;
+  SplashLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -660,6 +657,7 @@ private:
 
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
+  AOButton *ui_pos_remove;
 
   QComboBox *ui_iniswap_dropdown;
   AOButton *ui_iniswap_remove;
@@ -801,6 +799,7 @@ public slots:
 
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
+  void on_reload_theme_clicked();
 
 private slots:
   void start_chat_ticking();
@@ -825,7 +824,7 @@ private slots:
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
-  void music_stop();
+  void music_stop(bool no_effects = false);
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void select_emote(int p_id);
@@ -837,6 +836,8 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
+  void on_pos_dropdown_changed(QString p_text);
+  void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);
   void set_iniswap_dropdown();
@@ -910,7 +911,6 @@ private slots:
   void on_guilty_clicked();
 
   void on_change_character_clicked();
-  void on_reload_theme_clicked();
   void on_call_mod_clicked();
   void on_settings_clicked();
   void on_announce_casing_clicked();
