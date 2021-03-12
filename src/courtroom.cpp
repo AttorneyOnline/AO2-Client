@@ -46,9 +46,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
-  ui_vp_player_char_overlay = new ForegroundLayer(ui_viewport, ao_app);
+  ui_vp_player_char_overlay = new SplashLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
-  ui_vp_sideplayer_char_overlay = new ForegroundLayer(ui_viewport, ao_app);
+  ui_vp_sideplayer_char_overlay = new SplashLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char->hide();
   ui_vp_sideplayer_char_overlay->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
@@ -2349,7 +2349,7 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
       ui_vp_sideplayer_char->load_image(filename, m_chatmessage[OTHER_NAME],
                                             0, false);
       if (ao_app->char_overlays_enabled)
-        ui_vp_sideplayer_char_overlay->load_image(m_chatmessage[OTHER_OVERLAY], m_chatmessage[OTHER_NAME]);
+        ui_vp_sideplayer_char_overlay->load_image(m_chatmessage[OTHER_OVERLAY], m_chatmessage[OTHER_NAME], "");
       }
     }
 }
@@ -3161,7 +3161,7 @@ void Courtroom::play_preanim(bool immediate)
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
   if (ao_app->char_overlays_enabled)
-    ui_vp_player_char_overlay->load_image(m_chatmessage[PRE_OVERLAY], f_char);
+    ui_vp_player_char_overlay->load_image(m_chatmessage[PRE_OVERLAY], f_char, "");
   
 
   switch(m_chatmessage[DESK_MOD].toInt()) {
@@ -3330,7 +3330,7 @@ void Courtroom::chat_tick()
       ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
                                     false);
       if (ao_app->char_overlays_enabled)
-        ui_vp_player_char_overlay->load_image(m_chatmessage[OVERLAY], m_chatmessage[CHAR_NAME]);
+        ui_vp_player_char_overlay->load_image(m_chatmessage[OVERLAY], m_chatmessage[CHAR_NAME], "");
     }
     QString f_char;
     QString f_custom_theme;

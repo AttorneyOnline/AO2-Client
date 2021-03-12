@@ -451,7 +451,7 @@ private:
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 30;
+  static const int MS_MAXIMUM = 32;
   QString m_chatmessage[MS_MAXIMUM];
 
   QString previous_ic_message = "";
@@ -603,9 +603,9 @@ private:
   BackgroundLayer *ui_vp_background;
   SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
-  ForegroundLayer *ui_vp_player_char_overlay;
+  SplashLayer *ui_vp_player_char_overlay;
   CharLayer *ui_vp_sideplayer_char;
-  ForegroundLayer *ui_vp_sideplayer_char_overlay;
+  SplashLayer *ui_vp_sideplayer_char_overlay;
   BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;

@@ -414,6 +414,12 @@ public:
   // Returns the preanimation name of p_char's p_emote
   QString get_pre_emote(QString p_char, int p_emote);
 
+  // Returns the pre-overlay for p_char's p_emote
+  QString get_pre_emote_overlay (QString p_char, int p_emote);
+
+  // Returns the pre-overlay for p_char's p_emote
+  QString get_emote_overlay (QString p_char, int p_emote);
+
   // Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
 

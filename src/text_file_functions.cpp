@@ -762,11 +762,11 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
 
 QString AOApplication::get_pre_emote_overlay (QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Overlays")
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Overlays");
 
   QStringList result_contents = f_result.split("#");
 
-  if (result_contents.size() < 4) {
+  if (result_contents.size() < 2) {
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "";
   }
@@ -775,11 +775,11 @@ QString AOApplication::get_pre_emote_overlay (QString p_char, int p_emote)
 
 QString AOApplication::get_emote_overlay (QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Overlays")
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Overlays");
 
   QStringList result_contents = f_result.split("#");
 
-  if (result_contents.size() < 4) {
+  if (result_contents.size() < 2) {
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "";
   }
