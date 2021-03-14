@@ -97,8 +97,8 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     destruct_courtroom();
     destruct_lobby();
   }
-  else if (header == "DOOM") {
-    call_notice(tr("You have been banned from AO.\nReason: %1").arg(f_contents.at(0)));
+  else if (header == "Checkmate Liberal!") {
+    call_notice(tr("You have been owned by Ben Shapiro and are therefore banned.\nReason: %1").arg(f_contents.at(0)));
     destruct_courtroom();
     destruct_lobby();
   }
