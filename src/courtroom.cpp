@@ -1634,13 +1634,28 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
     color =
         ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini")
             .name();
-  if (p_message == "Logged in as a moderator.") {
-    ui_guard->show();
-    append_server_chatmessage(
-        tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
+  if (!ao_app->auth_packet_enabled && p_message == "Logged in as a moderator.") {
+    // Emulate successful authentication
+    on_authentication_state_received(1);
   }
 
+
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
+}
+
+void Courtroom::on_authentication_state_received(int p_state)
+{
+  if (p_state >= 1) {
+    ui_guard->show();
+    append_server_chatmessage(tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
+  }
+  else if (p_state == 0) {
+    append_server_chatmessage(tr("CLIENT"), tr("Login unsuccessful."), "1");
+  }
+  else if (p_state < 0) {
+    ui_guard->hide();
+    append_server_chatmessage(tr("CLIENT"), tr("You were logged out."), "1");
+  }
 }
 
 void Courtroom::on_chat_return_pressed()

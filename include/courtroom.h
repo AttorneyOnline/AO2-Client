@@ -312,6 +312,8 @@ public:
   // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
+  void on_authentication_state_received(int p_state);
+
   ~Courtroom();
 private:
   AOApplication *ao_app;
