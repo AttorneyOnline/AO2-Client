@@ -55,7 +55,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 void AOEvidenceDisplay::reset()
 {
   sfx_player->stop();
-  evidence_movie->stop();
+  evidence_movie->kill();
   evidence_icon->hide();
   this->clear();
 }
