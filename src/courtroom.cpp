@@ -5458,7 +5458,7 @@ void Courtroom::set_clock(int id, qint64 msecs)
   }
 }
 
-// Used by demo playback to adjust for max_wait skpis
+// Used by demo playback to adjust for max_wait skips
 void Courtroom::skip_clocks(qint64 msecs)
 {
   // Loop through all the timers
