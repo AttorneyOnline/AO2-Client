@@ -17,6 +17,8 @@ public:
   void set(qint64 msecs, bool update_text = false);
   void pause();
   void stop();
+  void skip(qint64 msecs);
+  bool active();
 
 protected:
   void timerEvent(QTimerEvent *event) override;

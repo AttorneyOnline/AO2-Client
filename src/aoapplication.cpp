@@ -49,6 +49,8 @@ void AOApplication::construct_lobby()
   if (demo_server)
       demo_server->deleteLater();
   demo_server = new DemoServer();
+  QObject::connect(demo_server, SIGNAL(skip_timers(qint64)),
+                   SLOT(skip_timers(qint64)));
 
   w_lobby->show();
 }
@@ -169,6 +171,12 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
                     "please try again."));
     }
   }
+}
+
+void AOApplication::skip_timers(qint64 msecs)
+{
+  if (courtroom_constructed)
+    w_courtroom->skip_clocks(msecs);
 }
 
 void AOApplication::call_settings_menu()
