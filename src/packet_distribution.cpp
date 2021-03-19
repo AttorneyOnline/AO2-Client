@@ -555,6 +555,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
 
       w_courtroom->set_evidence_list(f_evi_list);
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "ARUP") {
@@ -659,6 +660,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_clock_visibility(id, true);
     else if (type == 3)
       w_courtroom->set_clock_visibility(id, false);
+    append_to_demofile(p_packet->to_string(true));
   }
   else if (header == "CHECK") {
     if (!courtroom_constructed)
