@@ -212,11 +212,35 @@ void DemoServer::handle_packet(AOPacket packet)
         }
         else if (contents[1].startsWith("/min_wait"))
         {
-            client_sock->write("CT#DEMO#min_wait is deprecated. Use the client Settings for minimum wait instead!");
+          QStringList args = contents[1].split(" ");
+          if (args.size() > 1)
+          {
+            bool ok;
+            int p_min_wait = args.at(1).toInt(&ok);
+            if (ok)
+            {
+              if (p_min_wait < 0)
+                p_min_wait = -1;
+              min_wait = p_min_wait;
+              client_sock->write("CT#DEMO#Setting min_wait to ");
+              client_sock->write(QString::number(min_wait).toUtf8());
+              client_sock->write(" milliseconds.#1#%");
+            }
+            else
+            {
+              client_sock->write("CT#DEMO#Not a valid integer!#1#%");
+            }
+          }
+          else
+          {
+            client_sock->write("CT#DEMO#Current min_wait is ");
+            client_sock->write(QString::number(min_wait).toUtf8());
+            client_sock->write(" milliseconds.#1#%");
+          }
         }
         else if (contents[1].startsWith("/help"))
         {
-            client_sock->write("CT#DEMO#Available commands:\nload, play, pause, max_wait, help#1#%");
+            client_sock->write("CT#DEMO#Available commands:\nload, play, pause, max_wait, min_wait, help#1#%");
         }
     }
 }
