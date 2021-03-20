@@ -110,11 +110,11 @@ void AOApplication::append_to_demofile(QString packet_string)
     if (get_auto_logging_enabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
+        append_to_file(packet_string, path, true);
         if (!demo_timer.isValid())
             demo_timer.start();
         else
             append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
-        append_to_file(packet_string, path, true);
     }
 }
 
