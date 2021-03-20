@@ -260,9 +260,6 @@ void DemoServer::playback()
         int duration = wait_packet.get_contents().at(0).toInt();
         if (max_wait != -1 && duration + elapsed_time > max_wait)
           duration = qMax(0, max_wait - elapsed_time);
-        // We use elapsed_time to make sure that the packet we're using min_wait on is "priority" (e.g. IC)
-        if (elapsed_time == 0 && min_wait != -1 && duration < min_wait)
-          duration = min_wait;
         elapsed_time += duration;
         timer->start(duration);
     }
