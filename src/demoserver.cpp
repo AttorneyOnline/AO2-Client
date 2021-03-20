@@ -287,6 +287,9 @@ void DemoServer::playback()
           // Skip the difference on the timers
           emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
         }
+        // We use elapsed_time to make sure that the packet we're using min_wait on is "priority" (e.g. IC)
+        if (elapsed_time == 0 && min_wait != -1 && duration < min_wait)
+          duration = min_wait;
         elapsed_time += duration;
         timer->start(duration);
     }
