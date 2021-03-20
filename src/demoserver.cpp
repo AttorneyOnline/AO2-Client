@@ -254,6 +254,7 @@ void DemoServer::load_demo(QString filename)
     demo_data.clear();
     p_path = filename;
     QTextStream demo_stream(&demo_file);
+    demo_stream.setCodec("UTF-8");
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
         if (!line.endsWith("%")) {
