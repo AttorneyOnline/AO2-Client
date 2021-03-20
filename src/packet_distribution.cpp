@@ -555,6 +555,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
 
       w_courtroom->set_evidence_list(f_evi_list);
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "ARUP") {
