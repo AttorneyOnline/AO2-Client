@@ -2422,8 +2422,8 @@ void Courtroom::handle_ic_message()
   display_character();
 
   // Reset the pair character
-  ui_vp_sideplayer_char->stop();
-  ui_vp_sideplayer_char->move(0, 0);
+  ui_vp_sideplayer_char->kill();
+  ui_vp_sideplayer_char->move_and_center(0, 0);
 
   // If the emote_mod is not zooming
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
@@ -2714,6 +2714,11 @@ void Courtroom::handle_ic_speaking()
     else
       filename = "defense_speedlines";
     ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+  }
+
+  if (ao_app->char_overlays_enabled && m_chatmessage[OVERLAY] != "") {
+    ui_vp_player_char_overlay->set_play_once(false);
+    ui_vp_player_char_overlay->load_image(m_chatmessage[OVERLAY], m_chatmessage[CHAR_NAME], "");
   }
 
   // Check if this is a talking color (white text, etc.)
@@ -3313,10 +3318,7 @@ void Courtroom::start_chat_ticking()
   text_state = 1;
 
   c_played = false;
-  if (ao_app->char_overlays_enabled && m_chatmessage[OVERLAY] != "") {
-    ui_vp_player_char_overlay->set_play_once(false);
-    ui_vp_player_char_overlay->load_image(m_chatmessage[OVERLAY], m_chatmessage[CHAR_NAME], "");
-  }
+
 }
 
 void Courtroom::chat_tick()
