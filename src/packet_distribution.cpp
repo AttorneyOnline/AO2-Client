@@ -110,16 +110,17 @@ void AOApplication::append_to_demofile(QString packet_string)
     if (get_auto_logging_enabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
-        append_to_file(packet_string, path, true);
         if (!demo_timer.isValid())
             demo_timer.start();
         else
             append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
+        append_to_file(packet_string, path, true);
     }
 }
 
 void AOApplication::server_packet_received(AOPacket *p_packet)
 {
+  QStringList f_contents_encoded = p_packet->get_contents();
   p_packet->net_decode();
 
   QString header = p_packet->get_header();
@@ -199,6 +200,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     additive_enabled = false;
     effects_enabled = false;
     expanded_desk_mods_enabled = false;
+    auth_packet_enabled = false;
     char_overlays_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
@@ -230,6 +232,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         y_offset_enabled = true;
     if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
       expanded_desk_mods_enabled = true;
+    if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
+      auth_packet_enabled = true;
     if (f_packet.contains("char_overlays", Qt::CaseInsensitive))
         char_overlays_enabled = true;
   }
@@ -540,11 +544,15 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed) {
       QVector<evi_type> f_evi_list;
 
-      for (QString f_string : f_contents) {
+      for (QString f_string : f_contents_encoded) {
         QStringList sub_contents = f_string.split("&");
 
         if (sub_contents.size() < 3)
           continue;
+
+        // decoding has to be done here instead of on reception
+        // because this packet uses & as a delimiter for some reason
+        AOPacket::unescape(sub_contents);
 
         evi_type f_evi;
         f_evi.name = sub_contents.at(0);
@@ -555,6 +563,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
 
       w_courtroom->set_evidence_list(f_evi_list);
+      append_to_demofile(p_packet->to_string(true));
     }
   }
   else if (header == "ARUP") {
@@ -659,6 +668,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_clock_visibility(id, true);
     else if (type == 3)
       w_courtroom->set_clock_visibility(id, false);
+    append_to_demofile(p_packet->to_string(true));
   }
   else if (header == "CHECK") {
     if (!courtroom_constructed)
@@ -685,6 +695,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Reload theme request
     if (f_contents.size() > 1 && f_contents.at(1) == "1")
       w_courtroom->on_reload_theme_clicked();
+  }
+  // Auth packet
+  else if (header == "AUTH") {
+    if (!courtroom_constructed || !auth_packet_enabled || f_contents.size() < 1)
+      goto end;
+    int authenticated = f_contents.at(0).toInt();
+
+    w_courtroom->on_authentication_state_received(authenticated);
   }
 
 end:
@@ -713,11 +731,9 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
     p_packet->net_encode();
 
   QString f_packet = p_packet->to_string();
-
 #ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
 #endif
-
   net_manager->ship_server_packet(f_packet);
 
   delete p_packet;

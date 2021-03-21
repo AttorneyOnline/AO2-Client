@@ -43,6 +43,17 @@ void AOClockLabel::stop()
   timer.stop();
 }
 
+void AOClockLabel::skip(qint64 msecs)
+{
+  qint64 ms_left = QDateTime::currentDateTime().msecsTo(target_time);
+  this->set(ms_left - msecs, true);
+}
+
+bool AOClockLabel::active()
+{
+  return timer.isActive();
+}
+
 void AOClockLabel::timerEvent(QTimerEvent *event)
 {
   if (event->timerId() == timer.timerId()) {

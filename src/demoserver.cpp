@@ -212,35 +212,11 @@ void DemoServer::handle_packet(AOPacket packet)
         }
         else if (contents[1].startsWith("/min_wait"))
         {
-          QStringList args = contents[1].split(" ");
-          if (args.size() > 1)
-          {
-            bool ok;
-            int p_min_wait = args.at(1).toInt(&ok);
-            if (ok)
-            {
-              if (p_min_wait < 0)
-                p_min_wait = -1;
-              min_wait = p_min_wait;
-              client_sock->write("CT#DEMO#Setting min_wait to ");
-              client_sock->write(QString::number(min_wait).toUtf8());
-              client_sock->write(" milliseconds.#1#%");
-            }
-            else
-            {
-              client_sock->write("CT#DEMO#Not a valid integer!#1#%");
-            }
-          }
-          else
-          {
-            client_sock->write("CT#DEMO#Current min_wait is ");
-            client_sock->write(QString::number(min_wait).toUtf8());
-            client_sock->write(" milliseconds.#1#%");
-          }
+            client_sock->write("CT#DEMO#min_wait is deprecated. Use the client Settings for minimum wait instead!");
         }
         else if (contents[1].startsWith("/help"))
         {
-            client_sock->write("CT#DEMO#Available commands:\nload, play, pause, max_wait, min_wait, help#1#%");
+            client_sock->write("CT#DEMO#Available commands:\nload, play, pause, max_wait, help#1#%");
         }
     }
 }
@@ -254,6 +230,7 @@ void DemoServer::load_demo(QString filename)
     demo_data.clear();
     p_path = filename;
     QTextStream demo_stream(&demo_file);
+    demo_stream.setCodec("UTF-8");
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
         if (!line.endsWith("%")) {
@@ -282,11 +259,11 @@ void DemoServer::playback()
         AOPacket wait_packet = AOPacket(current_packet);
 
         int duration = wait_packet.get_contents().at(0).toInt();
-        if (max_wait != -1 && duration + elapsed_time > max_wait)
+        if (max_wait != -1 && duration + elapsed_time > max_wait) {
           duration = qMax(0, max_wait - elapsed_time);
-        // We use elapsed_time to make sure that the packet we're using min_wait on is "priority" (e.g. IC)
-        if (elapsed_time == 0 && min_wait != -1 && duration < min_wait)
-          duration = min_wait;
+          // Skip the difference on the timers
+          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+        }
         elapsed_time += duration;
         timer->start(duration);
     }
