@@ -549,10 +549,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
         // decoding has to be done here instead of on reception
         // because this packet uses & as a delimiter for some reason
-        sub_contents.replaceInStrings("<num>", "#")
-                    .replaceInStrings("<percent>", "%")
-                    .replaceInStrings("<dollar>", "$")
-                    .replaceInStrings("<and>", "&");
+        AOPacket::unescape(sub_contents);
 
         evi_type f_evi;
         f_evi.name = sub_contents.at(0);
@@ -730,9 +727,9 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
     p_packet->net_encode();
 
   QString f_packet = p_packet->to_string();
-
+#ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
-
+#endif
   net_manager->ship_server_packet(f_packet);
 
   delete p_packet;
