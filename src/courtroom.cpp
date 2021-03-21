@@ -1246,10 +1246,10 @@ void Courtroom::set_background(QString p_background, bool display)
   if (display) {
     ui_vp_speedlines->hide();
     ui_vp_player_char->stop();
-    ui_vp_player_char_overlay->stop();
+    ui_vp_player_char_overlay->kill();
 
     ui_vp_sideplayer_char->stop();
-    ui_vp_sideplayer_char_overlay->stop();
+    ui_vp_sideplayer_char_overlay->kill();
 
     ui_vp_effect->stop();
     ui_vp_message->hide();
@@ -1907,14 +1907,13 @@ void Courtroom::on_chat_return_pressed()
       ui_effects_dropdown->blockSignals(false);
       effect = "";
     }
+  }
   if (ao_app->char_overlays_enabled) {
     QString pre_overlay = ao_app->get_pre_emote_overlay(current_char, current_emote);
     QString overlay = ao_app->get_emote_overlay(current_char, current_emote);
     packet_contents.append(pre_overlay);
     packet_contents.append(overlay);
   }
-  }
-
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -2256,7 +2255,7 @@ void Courtroom::display_character()
   // Stop all previously playing animations, effects etc.
   ui_vp_speedlines->hide();
   ui_vp_player_char->stop();
-  ui_vp_player_char_overlay->stop();
+  ui_vp_player_char_overlay->kill();
   ui_vp_effect->stop();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
@@ -2306,7 +2305,7 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
     if (ok && charid > -1) {
       // Show the pair character
       ui_vp_sideplayer_char->show();
-      ui_vp_sideplayer_char_overlay->show();
+      //ui_vp_sideplayer_char_overlay->show();
       // Obtain the offsets, splitting it up by & char
       QStringList offsets = other_offset.split("&");
       int offset_x;
@@ -3175,7 +3174,7 @@ void Courtroom::play_preanim(bool immediate)
   ui_vp_player_char->set_static_duration(preanim_duration);
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
-  if (ao_app->char_overlays_enabled)
+  if (ao_app->char_overlays_enabled && m_chatmessage[PRE_OVERLAY] != "")
     ui_vp_player_char_overlay->load_image(m_chatmessage[PRE_OVERLAY], f_char, "");
   
 
@@ -3220,7 +3219,7 @@ void Courtroom::preanim_done()
       break;
     case 5:
       ui_vp_sideplayer_char->hide();
-      ui_vp_sideplayer_char_overlay->hide();
+      ui_vp_sideplayer_char_overlay->kill();
       ui_vp_player_char->move_and_center(0, 0);
       ui_vp_player_char_overlay->move_and_center(0, 0);
       [[fallthrough]];
@@ -3309,6 +3308,8 @@ void Courtroom::start_chat_ticking()
   text_state = 1;
 
   c_played = false;
+  if (ao_app->char_overlays_enabled && m_chatmessage[OVERLAY] != "")
+    ui_vp_player_char_overlay->load_image(m_chatmessage[OVERLAY], m_chatmessage[CHAR_NAME], "");
 }
 
 void Courtroom::chat_tick()
@@ -3344,8 +3345,6 @@ void Courtroom::chat_tick()
       }
       ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
                                     false);
-      if (ao_app->char_overlays_enabled)
-        ui_vp_player_char_overlay->load_image(m_chatmessage[OVERLAY], m_chatmessage[CHAR_NAME], "");
     }
     QString f_char;
     QString f_custom_theme;
