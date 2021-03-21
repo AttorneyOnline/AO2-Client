@@ -46,10 +46,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
-  ui_vp_player_char_overlay = new SplashLayer(ui_viewport, ao_app);
+  ui_vp_player_char_overlay = new SplashLayer(ui_vp_player_char, ao_app);
   ui_vp_player_char_overlay->set_play_once(false);
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
-  ui_vp_sideplayer_char_overlay = new SplashLayer(ui_viewport, ao_app);
+  ui_vp_sideplayer_char_overlay = new SplashLayer(ui_vp_sideplayer_char, ao_app);
   ui_vp_sideplayer_char_overlay->set_play_once(false);
   ui_vp_sideplayer_char->hide();
   ui_vp_sideplayer_char_overlay->hide();
@@ -552,15 +552,16 @@ void Courtroom::set_widgets()
 
   ui_vp_player_char->move_and_center(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_player_char_overlay->move_and_center(0,0);
   ui_vp_player_char_overlay->combo_resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_player_char_overlay->move_and_center(0,0);
 
   ui_vp_sideplayer_char->move_and_center(0, 0);
   ui_vp_sideplayer_char->combo_resize(ui_viewport->width(),
                                       ui_viewport->height());
-  ui_vp_sideplayer_char_overlay->move_and_center(0, 0);
   ui_vp_sideplayer_char_overlay->combo_resize(ui_viewport->width(),
                                       ui_viewport->height());
+  ui_vp_sideplayer_char_overlay->move_and_center(0,0);
+
 
 
   // the AO2 desk element
@@ -2257,7 +2258,6 @@ void Courtroom::display_character()
   // Stop all previously playing animations, effects etc.
   ui_vp_speedlines->hide();
   ui_vp_player_char->stop();
-  ui_vp_player_char_overlay->kill();
   ui_vp_effect->stop();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->loop_clear();
@@ -2325,8 +2325,6 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
       }
       // Move pair character according to the offsets
       ui_vp_sideplayer_char->move(ui_viewport->width() * offset_x / 100,
-                                  ui_viewport->height() * offset_y / 100);
-      ui_vp_sideplayer_char_overlay->move(ui_viewport->width() * offset_x / 100,
                                   ui_viewport->height() * offset_y / 100);
 
       // Split the charid according to the ^ to determine if we have "ordering" info
@@ -2460,8 +2458,8 @@ void Courtroom::do_screenshake()
       screenshake_animation_group->duration());
   screenshake_animation_group->clear();
 
-  QList<QWidget *> affected_list = {ui_vp_background, ui_vp_player_char, ui_vp_player_char_overlay,
-                                    ui_vp_sideplayer_char, ui_vp_sideplayer_char_overlay, ui_vp_chatbox};
+  QList<QWidget *> affected_list = {ui_vp_background, ui_vp_player_char,
+                                    ui_vp_sideplayer_char, ui_vp_chatbox};
 
   // I would prefer if this was its own "shake" function to be honest.
   foreach (QWidget *ui_element, affected_list) {
@@ -3191,7 +3189,6 @@ void Courtroom::play_preanim(bool immediate)
       ui_vp_sideplayer_char->hide();
       ui_vp_sideplayer_char_overlay->kill();
       ui_vp_player_char->move_and_center(0, 0);
-      ui_vp_player_char_overlay->move_and_center(0, 0);
       [[fallthrough]];
     case 2:
       set_scene("0", m_chatmessage[SIDE]);
@@ -3231,7 +3228,6 @@ void Courtroom::preanim_done()
       ui_vp_sideplayer_char->hide();
       ui_vp_sideplayer_char_overlay->kill();
       ui_vp_player_char->move_and_center(0, 0);
-      ui_vp_player_char_overlay->move_and_center(0, 0);
       [[fallthrough]];
     case 3:
       set_scene("0", m_chatmessage[SIDE]);
@@ -3682,7 +3678,6 @@ void Courtroom::set_self_offset(QString p_list) {
     else 
       self_offset_v = self_offsets[1].toInt();
     ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
-    ui_vp_player_char_overlay->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 }
 
 void Courtroom::set_ip_list(QString p_list)
