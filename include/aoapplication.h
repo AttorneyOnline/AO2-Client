@@ -518,7 +518,6 @@ private:
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);
-  void skip_timers(qint64 msecs);
 
 public slots:
   void server_disconnected();
