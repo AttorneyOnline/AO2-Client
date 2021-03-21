@@ -120,6 +120,7 @@ void AOApplication::append_to_demofile(QString packet_string)
 
 void AOApplication::server_packet_received(AOPacket *p_packet)
 {
+  QStringList f_contents_encoded = p_packet->get_contents();
   p_packet->net_decode();
 
   QString header = p_packet->get_header();
@@ -540,11 +541,15 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed) {
       QVector<evi_type> f_evi_list;
 
-      for (QString f_string : f_contents) {
+      for (QString f_string : f_contents_encoded) {
         QStringList sub_contents = f_string.split("&");
 
         if (sub_contents.size() < 3)
           continue;
+
+        // decoding has to be done here instead of on reception
+        // because this packet uses & as a delimiter for some reason
+        AOPacket::unescape(sub_contents);
 
         evi_type f_evi;
         f_evi.name = sub_contents.at(0);
@@ -723,11 +728,9 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
     p_packet->net_encode();
 
   QString f_packet = p_packet->to_string();
-
 #ifdef DEBUG_NETWORK
     qDebug() << "S:" << f_packet;
 #endif
-
   net_manager->ship_server_packet(f_packet);
 
   delete p_packet;
