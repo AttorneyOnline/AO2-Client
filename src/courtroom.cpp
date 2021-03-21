@@ -3677,6 +3677,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (f_contents.size() < 2)
     return;
 
+  bool ok, ok2, ok3; //CharID,Channel, Effect
   bool looping = false; // No loop due to outdated server using serverside looping
   int channel = 0; // Channel 0 is 'master music', other for ambient
   int effect_flags = 0; // No effects by default - vanilla functionality
@@ -3690,18 +3691,25 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
   f_song_clear = f_song_clear.right(f_song_clear.length() - (f_song_clear.lastIndexOf("/") + 1));
 
-  int n_char = f_contents.at(1).toInt();
+  int n_char = f_contents.at(1).toInt(&ok);
+  if (!ok)
+    return;
 
   if (p_contents->length() > 3 && p_contents->at(3) == "1")
     looping = true;
 
-  if (p_contents->length() > 4) // eyyy we want to change this song's CHANNEL huh
-    channel = p_contents->at(4).toInt(); // let the music player handle it if
-                                         // it's bigger than the channel list
-
-  if (p_contents->length() > 5) { // Flags provided to us by server such as Fade
-                                  // In, Fade Out, Sync Pos etc.
-    effect_flags = p_contents->at(5).toInt();
+  if (p_contents->length() > 4) {
+    // eyyy we want to change this song's CHANNEL huh
+    // let the music player handle it if it's bigger than the channel list
+    channel = p_contents->at(4).toInt(&ok2);
+    if (!ok2)
+      return;
+  }
+  if (p_contents->length() > 5) {
+    // Flags provided to us by server such as Fade In, Fade Out, Sync Pos etc.
+    effect_flags = p_contents->at(5).toInt(&ok3);
+    if (!ok3)
+      return;
   }
 
   bool is_stop = (f_song == "~stop.mp3");
@@ -3726,7 +3734,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
 
   music_player->play(f_song, channel, looping, effect_flags);
-  if(is_stop) {
+  if (is_stop) {
     ui_music_name->setText(tr("None"));
   }
   else if (channel == 0) {
