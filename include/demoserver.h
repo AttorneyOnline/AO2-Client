@@ -48,7 +48,7 @@ public slots:
     void start_server();
 
 signals:
-
+    void skip_timers(qint64 msecs);
 };
 
 #endif // DEMOSERVER_H

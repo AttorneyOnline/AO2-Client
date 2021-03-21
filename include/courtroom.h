@@ -307,6 +307,7 @@ public:
   void pause_clock(int id);
   void stop_clock(int id);
   void set_clock_visibility(int id, bool visible);
+  void skip_clocks(qint64 msecs);
 
   qint64 pong();
   // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string

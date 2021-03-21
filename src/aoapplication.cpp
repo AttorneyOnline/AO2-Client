@@ -48,7 +48,7 @@ void AOApplication::construct_lobby()
 
   if (demo_server)
       demo_server->deleteLater();
-  demo_server = new DemoServer();
+  demo_server = new DemoServer(this);
 
   w_lobby->show();
 }
@@ -79,6 +79,14 @@ void AOApplication::construct_courtroom()
   int x = (geometry.width() - w_courtroom->width()) / 2;
   int y = (geometry.height() - w_courtroom->height()) / 2;
   w_courtroom->move(x, y);
+
+  if (demo_server != nullptr) {
+    QObject::connect(demo_server, &DemoServer::skip_timers,
+                     w_courtroom, &Courtroom::skip_clocks);
+  }
+  else {
+    qDebug() << "W: demo server did not exist during courtroom construction";
+  }
 }
 
 void AOApplication::destruct_courtroom()

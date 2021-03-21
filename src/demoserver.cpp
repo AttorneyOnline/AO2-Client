@@ -259,8 +259,11 @@ void DemoServer::playback()
         AOPacket wait_packet = AOPacket(current_packet);
 
         int duration = wait_packet.get_contents().at(0).toInt();
-        if (max_wait != -1 && duration + elapsed_time > max_wait)
+        if (max_wait != -1 && duration + elapsed_time > max_wait) {
           duration = qMax(0, max_wait - elapsed_time);
+          // Skip the difference on the timers
+          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+        }
         elapsed_time += duration;
         timer->start(duration);
     }

@@ -5446,7 +5446,7 @@ void Courtroom::start_clock(int id, qint64 msecs)
 {
   if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
-    ui_clock[id]->start(static_cast<int>(msecs));
+    ui_clock[id]->start(msecs);
   }
 }
 
@@ -5454,7 +5454,18 @@ void Courtroom::set_clock(int id, qint64 msecs)
 {
   if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
-    ui_clock[id]->set(static_cast<int>(msecs), true);
+    ui_clock[id]->set(msecs, true);
+  }
+}
+
+// Used by demo playback to adjust for max_wait skips
+void Courtroom::skip_clocks(qint64 msecs)
+{
+  // Loop through all the timers
+  for (int i = 0; i < max_clocks; i++) {
+    // Only skip time on active clocks
+    if (ui_clock[i]->active())
+      ui_clock[i]->skip(msecs);
   }
 }
 
