@@ -3231,6 +3231,10 @@ void Courtroom::start_chat_ticking()
       ui_vp_chatbox->show();
       ui_vp_message->show();
     }
+    // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
+    int delay = ao_app->stay_time();
+    if (delay > 0 && !text_queue_timer->isActive())
+      text_queue_timer->start(delay);
     return;
   }
 
