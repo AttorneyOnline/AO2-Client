@@ -1247,7 +1247,7 @@ void Courtroom::set_background(QString p_background, bool display)
 
     // Clear the message queue
     text_queue_timer->stop();
-    chatmessage_queue.clear();
+    skip_chatmessage_queue();
 
     text_state = 2;
     anim_state = 3;
@@ -1961,8 +1961,10 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
     is_objection = objection_mod >= 1 && objection_mod <= 5;
     // If this is an objection, nuke the queue
-    if (is_objection)
-      chatmessage_queue.clear();
+    if (is_objection) {
+      text_queue_timer->stop();
+      skip_chatmessage_queue();
+    }
   }
 
   // Record the log I/O, log files should be accurate.
@@ -2006,6 +2008,19 @@ void Courtroom::chatmessage_dequeue()
     text_queue_timer->stop();
 
   unpack_chatmessage(chatmessage_queue.dequeue());
+}
+
+void Courtroom::skip_chatmessage_queue()
+{
+  if (ao_app->is_desyncrhonized_logs_enabled()) {
+    chatmessage_queue.clear();
+    return;
+  }
+
+  while (!chatmessage_queue.isEmpty()) {
+    QStringList p_contents = chatmessage_queue.dequeue();
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY);
+  }
 }
 
 void Courtroom::unpack_chatmessage(QStringList p_contents)
