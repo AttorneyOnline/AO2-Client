@@ -3677,7 +3677,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (f_contents.size() < 2)
     return;
 
-  bool ok, ok2, ok3; //CharID,Channel, Effect
+  bool ok; // Used for charID, channel, effect check
   bool looping = false; // No loop due to outdated server using serverside looping
   int channel = 0; // Channel 0 is 'master music', other for ambient
   int effect_flags = 0; // No effects by default - vanilla functionality
@@ -3701,19 +3701,19 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (p_contents->length() > 4) {
     // eyyy we want to change this song's CHANNEL huh
     // let the music player handle it if it's bigger than the channel list
-    channel = p_contents->at(4).toInt(&ok2);
-    if (!ok2)
+    channel = p_contents->at(4).toInt(&ok);
+    if (!ok)
       return;
   }
   if (p_contents->length() > 5) {
     // Flags provided to us by server such as Fade In, Fade Out, Sync Pos etc.
-    effect_flags = p_contents->at(5).toInt(&ok3);
-    if (!ok3)
+    effect_flags = p_contents->at(5).toInt(&ok);
+    if (!ok)
       return;
   }
 
   bool is_stop = (f_song == "~stop.mp3");
-  if (!(n_char < 0) && !(n_char >= char_list.size())) {
+  if (n_char > 0 && n_char < char_list.size()) {
     QString str_char = char_list.at(n_char).name;
     QString str_show = ao_app->get_showname(str_char);
     if (p_contents->length() > 2) {
