@@ -45,6 +45,7 @@ public:
   bool play_once = false; // Whether to loop this animation or not
   bool cull_image = true; // if we're done playing this animation, should we
                           // hide it? also controls durational culling
+  bool center = true;     // Should we center this?
   // Are we loading this from the same frame we left off on? 
   bool continuous = false;
   // Whether or not to forcibly bypass the simple check done by start_playback

@@ -90,7 +90,8 @@ QPixmap AOLayer::get_pixmap(QImage image)
 void AOLayer::set_frame(QPixmap f_pixmap)
 {
   this->setPixmap(f_pixmap);
-  this->center_pixmap(f_pixmap);
+  if (center)
+    this->center_pixmap(f_pixmap);
 }
 
 void AOLayer::center_pixmap(QPixmap f_pixmap) {

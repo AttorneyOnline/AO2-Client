@@ -48,9 +48,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_player_char_overlay = new SplashLayer(ui_vp_player_char, ao_app);
   ui_vp_player_char_overlay->set_play_once(false);
+  ui_vp_player_char_overlay->center = false;
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char_overlay = new SplashLayer(ui_vp_sideplayer_char, ao_app);
   ui_vp_sideplayer_char_overlay->set_play_once(false);
+  ui_vp_sideplayer_char_overlay->center = false;
   ui_vp_sideplayer_char->hide();
   ui_vp_sideplayer_char_overlay->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
@@ -550,18 +552,15 @@ void Courtroom::set_widgets()
   ui_vp_speedlines->move_and_center(0, 0);
   ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_vp_player_char->move_and_center(0, 0);
+  ui_vp_player_char->move(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_player_char_overlay->combo_resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_player_char_overlay->move_and_center(0,0);
+  ui_vp_player_char_overlay->combo_resize(ui_vp_player_char->width(), ui_vp_player_char->height());
 
-  ui_vp_sideplayer_char->move_and_center(0, 0);
+  ui_vp_sideplayer_char->move(0, 0);
   ui_vp_sideplayer_char->combo_resize(ui_viewport->width(),
                                       ui_viewport->height());
-  ui_vp_sideplayer_char_overlay->combo_resize(ui_viewport->width(),
-                                      ui_viewport->height());
-  ui_vp_sideplayer_char_overlay->move_and_center(0,0);
-
+  ui_vp_sideplayer_char_overlay->combo_resize(ui_vp_sideplayer_char->width(),
+                                      ui_vp_sideplayer_char->height());
 
 
   // the AO2 desk element
@@ -3179,7 +3178,7 @@ void Courtroom::play_preanim(bool immediate)
   ui_vp_player_char->set_static_duration(preanim_duration);
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
-  if (ao_app->char_overlays_enabled && m_chatmessage[PRE_OVERLAY] != "") {
+  if (ao_app->char_overlays_enabled && m_chatmessage[PRE_OVERLAY] != "") {\
     ui_vp_player_char_overlay->set_play_once(true);
     ui_vp_player_char_overlay->load_image(m_chatmessage[PRE_OVERLAY], f_char, "");
   }
