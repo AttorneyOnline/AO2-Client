@@ -4,11 +4,12 @@
 
 #include <QBitmap>
 
-AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
+AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static) : QLabel(parent)
 {
   m_parent = parent;
   ao_app = p_ao_app;
   movie = new QMovie();
+  is_static = make_static;
   connect(movie, &QMovie::frameChanged, [=]{
     QPixmap f_pixmap = movie->currentPixmap();
     f_pixmap =
@@ -23,7 +24,7 @@ AOImage::~AOImage() {}
 bool AOImage::set_image(QString p_path, QString p_misc)
 {
   // Check if the user wants animated themes
-  if (ao_app->get_animated_theme())
+  if (!is_static && ao_app->get_animated_theme())
     // We want an animated image
     p_path = ao_app->get_image(p_path, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_misc);
   else
