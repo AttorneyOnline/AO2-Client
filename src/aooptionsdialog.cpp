@@ -909,7 +909,7 @@ void AOOptionsDialog::update_values() {
   ui_log_newline_cb->setChecked(ao_app->get_log_newline());
   ui_log_timestamp_cb->setChecked(ao_app->get_log_timestamp());
   ui_log_ic_actions_cb->setChecked(ao_app->get_log_ic_actions());
-  ui_desync_logs_cb->setChecked(ao_app->get_log_timestamp());
+  ui_desync_logs_cb->setChecked(ao_app->is_desyncrhonized_logs_enabled());
   ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
   ui_showname_cb->setChecked(ao_app->get_showname_enabled_by_default());
   ui_discord_cb->setChecked(ao_app->is_discord_enabled());
