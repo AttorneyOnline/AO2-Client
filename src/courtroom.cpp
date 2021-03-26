@@ -3681,6 +3681,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   bool looping = false; // No loop due to outdated server using serverside looping
   int channel = 0; // Channel 0 is 'master music', other for ambient
   int effect_flags = 0; // No effects by default - vanilla functionality
+  QUrl s_link; // 2.9.2 Packet Extension - Optional Streaming
 
   QString f_song = f_contents.at(0);
   QString f_song_clear = f_song.left(f_song.lastIndexOf("."));
@@ -3712,6 +3713,13 @@ void Courtroom::handle_song(QStringList *p_contents)
       return;
   }
 
+  if (p_contents->length() > 6) {
+    s_link = QUrl::fromPercentEncoding(p_contents->at(6).toUtf8());
+  }
+
+  if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) == false && !(f_song.startsWith("http")))
+    f_song = s_link.toString();
+
   bool is_stop = (f_song == "~stop.mp3");
   if (n_char > 0 && n_char < char_list.size()) {
     QString str_char = char_list.at(n_char).name;
@@ -3733,7 +3741,6 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
   }
 
-  music_player->play(f_song, channel, looping, effect_flags);
   if (is_stop) {
     ui_music_name->setText(tr("None"));
   }
@@ -3745,6 +3752,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     else
       ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
   }
+  music_player->play(f_song, channel, looping, effect_flags);
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)
