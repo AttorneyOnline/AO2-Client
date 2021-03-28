@@ -4802,7 +4802,7 @@ void Courtroom::music_random()
                              QTreeWidgetItemIterator::NotHidden |
                                  QTreeWidgetItemIterator::NoChildren);
   while (*it) {
-    if ((*it)->parent()->isExpanded()) {
+    if (!(*it)->parent() || (*it)->parent()->isExpanded()) { // add top level songs and songs in expanded categories
       clist += (*it);
     }
     ++it;
