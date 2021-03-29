@@ -233,8 +233,9 @@ void DemoServer::load_demo(QString filename)
     demo_stream.setCodec("UTF-8");
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
-        if (!line.endsWith("%")) {
+        while (!line.endsWith("%")) {
           line += "\n";
+          line += demo_stream.readLine();
         }
         demo_data.enqueue(line);
         line = demo_stream.readLine();

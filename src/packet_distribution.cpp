@@ -542,7 +542,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       QVector<evi_type> f_evi_list;
 
       for (QString f_string : f_contents_encoded) {
-        QStringList sub_contents = f_string.split("&");
+        QStringList sub_contents;
+        if (f_contents_encoded.contains("&"))
+          sub_contents = f_string.split("&");
+        else
+          sub_contents = f_string.split("<and>"); // demos incorrectly encode the separator so we have to account for that
 
         if (sub_contents.size() < 3)
           continue;
