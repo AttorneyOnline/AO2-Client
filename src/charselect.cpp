@@ -168,7 +168,7 @@ void Courtroom::char_clicked(int n_char)
     }
   }
 
-  if (n_char != m_cid) {
+  if (n_char != m_cid || n_char == -1) {
     ao_app->send_server_packet(
         new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(
