@@ -1990,15 +1990,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
 
 void Courtroom::chatmessage_dequeue()
 {
-  // Chat stopped being processed, indicate that the user can post their message now.
-  QString f_custom_theme;
-  if (ao_app->is_customchat_enabled()) {
-    QString f_char = m_chatmessage[CHAR_NAME];
-    f_custom_theme = ao_app->get_chat(f_char);
-  }
-  ui_vp_chat_arrow->transform_mode = ao_app->get_misc_scaling(f_custom_theme);
-  ui_vp_chat_arrow->load_image("chat_arrow", f_custom_theme);
-
   // Nothing to parse in the queue
   if (chatmessage_queue.isEmpty())
     return;
