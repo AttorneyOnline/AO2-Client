@@ -171,17 +171,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   initialize_emotes();
 
   ui_pos_dropdown = new QComboBox(this);
+  ui_pos_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_pos_remove = new AOButton(this, ao_app);
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_iniswap_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_iniswap_remove = new AOButton(this, ao_app);
 
   ui_sfx_dropdown = new QComboBox(this);
   ui_sfx_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_sfx_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_sfx_remove = new AOButton(this, ao_app);
 
   ui_effects_dropdown = new QComboBox(this);
+  ui_effects_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_effects_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
 
   ui_defense_bar = new AOImage(this, ao_app);
