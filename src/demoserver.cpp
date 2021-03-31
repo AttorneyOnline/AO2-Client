@@ -218,7 +218,6 @@ void DemoServer::handle_packet(AOPacket packet)
               client_sock->write(QString::number(max_wait).toUtf8());
               packet = " " + tr("milliseconds.") + "#1#%";
               client_sock->write(packet.toUtf8());
-            }
           }
         }
         else if (contents[1].startsWith("/min_wait"))
