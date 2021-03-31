@@ -3713,7 +3713,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
 
   bool is_stop = (f_song == "~stop.mp3");
-  if (n_char > 0 && n_char < char_list.size()) {
+  if (n_char >= 0 && n_char < char_list.size()) {
     QString str_char = char_list.at(n_char).name;
     QString str_show = ao_app->get_showname(str_char);
     if (p_contents->length() > 2) {
