@@ -2557,19 +2557,6 @@ void Courtroom::initialize_chatbox()
     if (!ui_vp_chatbox->set_image("chat", p_misc))
       ui_vp_chatbox->set_image("chatbox", p_misc);
 
-    // This should probably be called only if any change from the last chat
-    // arrow was actually detected.
-    pos_size_type design_ini_result = ao_app->get_element_dimensions(
-        "chat_arrow", "courtroom_design.ini", p_misc);
-    if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-      qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
-      ui_vp_chat_arrow->hide();
-    }
-    else {
-      ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
-      ui_vp_chat_arrow->combo_resize(design_ini_result.width,
-                                      design_ini_result.height);
-    }
 
     // Remember to set the showname font before the font metrics check.
     set_font(ui_vp_showname, "", "showname", customchar);
@@ -2623,6 +2610,20 @@ void Courtroom::initialize_chatbox()
     else {
       ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
     }
+  }
+
+  // This should probably be called only if any change from the last chat
+  // arrow was actually detected.
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(
+      "chat_arrow", "courtroom_design.ini", p_misc);
+  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
+    qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+    ui_vp_chat_arrow->hide();
+  }
+  else {
+    ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
+    ui_vp_chat_arrow->combo_resize(design_ini_result.width,
+                                    design_ini_result.height);
   }
 
   QString font_name;
