@@ -174,13 +174,8 @@ void Courtroom::char_clicked(int n_char)
     ao_app->send_server_packet(
         new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" +
                      QString::number(n_char) + "#" + get_hdid() + "#%"));
-    if (n_char == -1) {
-      update_character(n_char);
-      enter_courtroom();
-      set_courtroom_size();
-    }
   }
-  else {
+  if (n_char == m_cid || n_char == -1) {
     update_character(n_char);
     enter_courtroom();
     set_courtroom_size();
