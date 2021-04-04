@@ -243,33 +243,31 @@ QVector<server_type> AOApplication::read_serverlist_txt()
 
   serverlist_txt.setFileName(serverlist_txt_path);
 
-  if (!serverlist_txt.open(QIODevice::ReadOnly)) {
-    return f_server_list;
-  }
+  if (serverlist_txt.open(QIODevice::ReadOnly)) {
+      QTextStream in(&serverlist_txt);
 
-  QTextStream in(&serverlist_txt);
+      while (!in.atEnd()) {
+        QString line = in.readLine();
+        server_type f_server;
+        QStringList line_contents = line.split(":");
 
-  while (!in.atEnd()) {
-    QString line = in.readLine();
-    server_type f_server;
-    QStringList line_contents = line.split(":");
+        if (line_contents.size() < 3)
+          continue;
 
-    if (line_contents.size() < 3)
-      continue;
+        f_server.ip = line_contents.at(0);
+        f_server.port = line_contents.at(1).toInt();
+        f_server.name = line_contents.at(2);
+        f_server.desc = "";
 
-    f_server.ip = line_contents.at(0);
-    f_server.port = line_contents.at(1).toInt();
-    f_server.name = line_contents.at(2);
-    f_server.desc = "";
-
-    f_server_list.append(f_server);
+        f_server_list.append(f_server);
+      }
   }
 
   server_type demo_server;
   demo_server.ip = "127.0.0.1";
   demo_server.port = 99999;
-  demo_server.name = "Demo playback";
-  demo_server.desc = "Play back demos you have previously recorded";
+  demo_server.name = tr("Demo playback");
+  demo_server.desc = tr("Play back demos you have previously recorded");
   f_server_list.append(demo_server);
 
   return f_server_list;

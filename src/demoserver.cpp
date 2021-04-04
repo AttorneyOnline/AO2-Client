@@ -150,7 +150,8 @@ void DemoServer::handle_packet(AOPacket packet)
     }
     else if (header == "CC") {
         client_sock->write("PV#0#CID#-1#%");
-        client_sock->write("CT#DEMO#Demo file loaded. Send /play or > in OOC to begin playback.#1#%");
+        QString packet = "CT#DEMO#" + tr("Demo file loaded. Send /play or > in OOC to begin playback.") + "#1#%";
+        client_sock->write(packet.toUtf8());
     }
     else if (header == "CT") {
         if (contents[1].startsWith("/load"))
@@ -159,14 +160,16 @@ void DemoServer::handle_packet(AOPacket packet)
           if (path.isEmpty())
             return;
           load_demo(path);
-          client_sock->write("CT#DEMO#Demo file loaded. Send /play or > in OOC to begin playback.#1#%");
+          QString packet = "CT#DEMO#" + tr("Demo file loaded. Send /play or > in OOC to begin playback.") + "#1#%";
+          client_sock->write(packet.toUtf8());
         }
         else if (contents[1].startsWith("/play") || contents[1] == ">")
         {
           if (timer->interval() != 0 && !timer->isActive())
           {
             timer->start();
-            client_sock->write("CT#DEMO#Resuming playback.#1#%");
+            QString packet = "CT#DEMO#" + tr("Resuming playback.") + "#1#%";
+            client_sock->write(packet.toUtf8());
           }
           else
           {
@@ -180,7 +183,8 @@ void DemoServer::handle_packet(AOPacket packet)
           int timeleft = timer->remainingTime();
           timer->stop();
           timer->setInterval(timeleft);
-          client_sock->write("CT#DEMO#Pausing playback.#1#%");
+          QString packet = "CT#DEMO#" + tr("Pausing playback.") + "#1#%";
+          client_sock->write(packet.toUtf8());
         }
         else if (contents[1].startsWith("/max_wait"))
         {
@@ -194,29 +198,37 @@ void DemoServer::handle_packet(AOPacket packet)
               if (p_max_wait < 0)
                 p_max_wait = -1;
               max_wait = p_max_wait;
-              client_sock->write("CT#DEMO#Setting max_wait to ");
+              QString packet = "CT#DEMO#" + tr("Setting max_wait to") + " ";
+              client_sock->write(packet.toUtf8());
               client_sock->write(QString::number(max_wait).toUtf8());
-              client_sock->write(" milliseconds.#1#%");
+              packet = " " + tr("milliseconds.") + "#1#%";
+              client_sock->write(packet.toUtf8());
             }
             else
             {
-              client_sock->write("CT#DEMO#Not a valid integer!#1#%");
+              QString packet = "CT#DEMO#" + tr("Not a valid integer!") + "#1#%";
+              client_sock->write(packet.toUtf8());
             }
           }
           else
           {
-            client_sock->write("CT#DEMO#Current max_wait is ");
-            client_sock->write(QString::number(max_wait).toUtf8());
-            client_sock->write(" milliseconds.#1#%");
+
+              QString packet = "CT#DEMO#" + tr("Current max_wait is") + " ";
+              client_sock->write(packet.toUtf8());
+              client_sock->write(QString::number(max_wait).toUtf8());
+              packet = " " + tr("milliseconds.") + "#1#%";
+              client_sock->write(packet.toUtf8());
           }
         }
         else if (contents[1].startsWith("/min_wait"))
         {
-            client_sock->write("CT#DEMO#min_wait is deprecated. Use the client Settings for minimum wait instead!");
+            QString packet = "CT#DEMO#" + tr("min_wait is deprecated. Use the client Settings for minimum wait instead!") + "#1#%";
+            client_sock->write(packet.toUtf8());
         }
         else if (contents[1].startsWith("/help"))
         {
-            client_sock->write("CT#DEMO#Available commands:\nload, play, pause, max_wait, help#1#%");
+            QString packet = "CT#DEMO#" + tr("Available commands:\nload, play, pause, max_wait, help") + "#1#%";
+            client_sock->write(packet.toUtf8());
         }
     }
 }
@@ -233,8 +245,9 @@ void DemoServer::load_demo(QString filename)
     demo_stream.setCodec("UTF-8");
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
-        if (!line.endsWith("%")) {
+        while (!line.endsWith("%")) {
           line += "\n";
+          line += demo_stream.readLine();
         }
         demo_data.enqueue(line);
         line = demo_stream.readLine();
@@ -264,12 +277,16 @@ void DemoServer::playback()
           // Skip the difference on the timers
           emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
         }
+        else if (timer->interval() != 0 && duration + elapsed_time > timer->interval()) {
+            duration = qMax(0, timer->interval() - elapsed_time);
+            emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+        }
         elapsed_time += duration;
         timer->start(duration);
     }
-    else
-    {
-      client_sock->write("CT#DEMO#Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.#1#%");
+    else {
+      QString end_packet = "CT#DEMO#" + tr("Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.") + "#1#%";
+      client_sock->write(end_packet.toUtf8());
       timer->setInterval(0);
     }
 }

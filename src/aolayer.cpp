@@ -156,7 +156,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   transform_mode = ao_app->get_scaling(
       ao_app->get_emote_property(p_charname, p_filename, "scaling"));
   stretch = ao_app->get_emote_property(p_charname, p_filename, "stretch")
-                .startsWith(true);
+                .startsWith("true");
   if ((p_charname == last_char) &&
       ((p_filename == last_emote) ||
        (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&

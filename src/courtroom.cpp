@@ -171,17 +171,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   initialize_emotes();
 
   ui_pos_dropdown = new QComboBox(this);
+  ui_pos_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_pos_remove = new AOButton(this, ao_app);
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_iniswap_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_iniswap_remove = new AOButton(this, ao_app);
 
   ui_sfx_dropdown = new QComboBox(this);
   ui_sfx_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_sfx_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_sfx_remove = new AOButton(this, ao_app);
 
   ui_effects_dropdown = new QComboBox(this);
+  ui_effects_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_effects_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
 
   ui_defense_bar = new AOImage(this, ao_app);
@@ -1247,7 +1251,7 @@ void Courtroom::set_background(QString p_background, bool display)
 
     // Clear the message queue
     text_queue_timer->stop();
-    chatmessage_queue.clear();
+    skip_chatmessage_queue();
 
     text_state = 2;
     anim_state = 3;
@@ -1961,8 +1965,10 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
     is_objection = objection_mod >= 1 && objection_mod <= 5;
     // If this is an objection, nuke the queue
-    if (is_objection)
-      chatmessage_queue.clear();
+    if (is_objection) {
+      text_queue_timer->stop();
+      skip_chatmessage_queue();
+    }
   }
 
   // Record the log I/O, log files should be accurate.
@@ -1988,15 +1994,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
 
 void Courtroom::chatmessage_dequeue()
 {
-  // Chat stopped being processed, indicate that the user can post their message now.
-  QString f_custom_theme;
-  if (ao_app->is_customchat_enabled()) {
-    QString f_char = m_chatmessage[CHAR_NAME];
-    f_custom_theme = ao_app->get_chat(f_char);
-  }
-  ui_vp_chat_arrow->transform_mode = ao_app->get_misc_scaling(f_custom_theme);
-  ui_vp_chat_arrow->load_image("chat_arrow", f_custom_theme);
-
   // Nothing to parse in the queue
   if (chatmessage_queue.isEmpty())
     return;
@@ -2006,6 +2003,19 @@ void Courtroom::chatmessage_dequeue()
     text_queue_timer->stop();
 
   unpack_chatmessage(chatmessage_queue.dequeue());
+}
+
+void Courtroom::skip_chatmessage_queue()
+{
+  if (ao_app->is_desyncrhonized_logs_enabled()) {
+    chatmessage_queue.clear();
+    return;
+  }
+
+  while (!chatmessage_queue.isEmpty()) {
+    QStringList p_contents = chatmessage_queue.dequeue();
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY);
+  }
 }
 
 void Courtroom::unpack_chatmessage(QStringList p_contents)
@@ -2542,19 +2552,6 @@ void Courtroom::initialize_chatbox()
     if (!ui_vp_chatbox->set_image("chat", p_misc))
       ui_vp_chatbox->set_image("chatbox", p_misc);
 
-    // This should probably be called only if any change from the last chat
-    // arrow was actually detected.
-    pos_size_type design_ini_result = ao_app->get_element_dimensions(
-        "chat_arrow", "courtroom_design.ini", p_misc);
-    if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-      qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
-      ui_vp_chat_arrow->hide();
-    }
-    else {
-      ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
-      ui_vp_chat_arrow->combo_resize(design_ini_result.width,
-                                      design_ini_result.height);
-    }
 
     // Remember to set the showname font before the font metrics check.
     set_font(ui_vp_showname, "", "showname", customchar);
@@ -2608,6 +2605,20 @@ void Courtroom::initialize_chatbox()
     else {
       ui_vp_showname->resize(default_width.width, ui_vp_showname->height());
     }
+  }
+
+  // This should probably be called only if any change from the last chat
+  // arrow was actually detected.
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(
+      "chat_arrow", "courtroom_design.ini", p_misc);
+  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
+    qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+    ui_vp_chat_arrow->hide();
+  }
+  else {
+    ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
+    ui_vp_chat_arrow->combo_resize(design_ini_result.width,
+                                    design_ini_result.height);
   }
 
   QString font_name;
@@ -3231,6 +3242,10 @@ void Courtroom::start_chat_ticking()
       ui_vp_chatbox->show();
       ui_vp_message->show();
     }
+    // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
+    int delay = ao_app->stay_time();
+    if (delay > 0 && !text_queue_timer->isActive())
+      text_queue_timer->start(delay);
     return;
   }
 
@@ -4767,7 +4782,7 @@ void Courtroom::music_random()
                              QTreeWidgetItemIterator::NotHidden |
                                  QTreeWidgetItemIterator::NoChildren);
   while (*it) {
-    if ((*it)->parent()->isExpanded()) {
+    if (!(*it)->parent() || (*it)->parent()->isExpanded()) { // add top level songs and songs in expanded categories
       clist += (*it);
     }
     ++it;

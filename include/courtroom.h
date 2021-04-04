@@ -226,6 +226,9 @@ public:
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList p_contents);
 
+  // Skip the current queue, adding all the queue messages to the logs if desynchronized logs are disabled
+  void skip_chatmessage_queue();
+
   enum LogMode {
     IO_ONLY,
     DISPLAY_ONLY,
