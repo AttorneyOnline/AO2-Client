@@ -8,15 +8,18 @@ AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static) : Q
 {
   m_parent = parent;
   ao_app = p_ao_app;
-  movie = new QMovie();
   is_static = make_static;
-  connect(movie, &QMovie::frameChanged, [=]{
-    QPixmap f_pixmap = movie->currentPixmap();
-    f_pixmap =
-        f_pixmap.scaled(this->size(), Qt::IgnoreAspectRatio);
-    this->setPixmap(f_pixmap);
-    this->setMask(f_pixmap.mask());
-  });
+  if (!is_static) // Only create the QMovie if we're non-static
+  {
+    movie = new QMovie();
+    connect(movie, &QMovie::frameChanged, [=]{
+      QPixmap f_pixmap = movie->currentPixmap();
+      f_pixmap =
+          f_pixmap.scaled(this->size(), Qt::IgnoreAspectRatio);
+      this->setPixmap(f_pixmap);
+      this->setMask(f_pixmap.mask());
+    });
+  }
 }
 
 AOImage::~AOImage() {}
@@ -36,12 +39,14 @@ bool AOImage::set_image(QString p_path, QString p_misc)
     return false;
   }
   path = p_path;
-  movie->stop();
-  movie->setFileName(path);
-  if (ao_app->get_animated_theme() && movie->frameCount() > 1) {
-    movie->start();
+  if (!is_static) {
+    movie->stop();
+    movie->setFileName(path);
+    if (ao_app->get_animated_theme() && movie->frameCount() > 1) {
+      movie->start();
+    }
   }
-  else {
+  if (is_static || !ao_app->get_animated_theme() || movie->frameCount() <= 1) {
     QPixmap f_pixmap(path);
 
     f_pixmap =
