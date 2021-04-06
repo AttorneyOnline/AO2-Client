@@ -1645,6 +1645,11 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
 
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
+
+  if (ao_app->get_auto_logging_enabled() && !ao_app->log_filename.isEmpty()) {
+    QString full = "[OOC][" + QDateTime::currentDateTime().toUTC().toString() + "] " + p_name + ": " + p_message;
+    ao_app->append_to_file(full, ao_app->log_filename, true);
+  }
 }
 
 void Courtroom::on_authentication_state_received(int p_state)
@@ -2971,7 +2976,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
   chatlogpiece log_entry(p_name, p_showname, p_message, p_action, p_color);
   ic_chatlog_history.append(log_entry);
   if (ao_app->get_auto_logging_enabled() && !ao_app->log_filename.isEmpty())
-    ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
+    ao_app->append_to_file("[IC]" + log_entry.get_full(), ao_app->log_filename, true);
 
   while (ic_chatlog_history.size() > log_maximum_blocks &&
          log_maximum_blocks > 0) {
