@@ -4217,9 +4217,6 @@ void Courtroom::on_ooc_return_pressed()
     ui_ooc_chat_message->clear();
     return;
   }
-  else if (ooc_message.startsWith("/crash")) {
-      abort();
-  }
 
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
