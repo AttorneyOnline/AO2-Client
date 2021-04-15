@@ -3891,14 +3891,8 @@ void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
 {
   if (ui_casing->isChecked()) {
     ui_server_chatlog->append(msg);
-    if ((ao_app->get_casing_defence_enabled() && def) ||
-        (ao_app->get_casing_prosecution_enabled() && pro) ||
-        (ao_app->get_casing_judge_enabled() && jud) ||
-        (ao_app->get_casing_juror_enabled() && jur) ||
-        (ao_app->get_casing_steno_enabled() && steno)) {
-      modcall_player->play(ao_app->get_court_sfx("case_call"));
-      ao_app->alert(this);
-    }
+    modcall_player->play(ao_app->get_court_sfx("case_call"));
+    ao_app->alert(this);
   }
 }
 
