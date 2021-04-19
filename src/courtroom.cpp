@@ -5258,6 +5258,7 @@ void Courtroom::on_reload_theme_clicked()
   set_widgets();
   update_character(m_cid);
   enter_courtroom();
+  gen_char_rgb_list(ao_app->get_chat(current_char));
 
   anim_state = 4;
   text_state = 3;
