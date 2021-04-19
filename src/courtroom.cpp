@@ -4014,7 +4014,7 @@ void Courtroom::on_ooc_return_pressed()
     ao_app->cccc_ic_support_enabled = true;
     ao_app->arup_enabled = true;
     ao_app->modcall_reason_enabled = true;
-    on__clicked();
+    on_reload_theme_clicked();
     ui_ooc_chat_message->clear();
     return;
   }
