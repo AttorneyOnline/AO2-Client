@@ -3361,21 +3361,8 @@ void Courtroom::chat_tick()
 
   // Alignment characters
   if (tick_pos < 2) {
-    if (f_rest.startsWith("~~")) {
-      tick_pos = f_rest.indexOf("~~");
-      f_rest.remove(tick_pos, 2);
+    if (f_rest.startsWith("~~") || f_rest.startsWith("~>") || f_rest.startsWith("<>"))
       tick_pos += 2;
-    }
-    else if (f_rest.startsWith("~>")) {
-      tick_pos = f_rest.indexOf("~>");
-      f_rest.remove(tick_pos, 2);
-      tick_pos += 2;
-    }
-    else if (f_rest.startsWith("<>")) {
-      tick_pos = f_rest.indexOf("<>");
-      f_rest.remove(tick_pos, 2);
-      tick_pos += 2;
-    }
   }
   f_rest.remove(0, tick_pos);
   QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
