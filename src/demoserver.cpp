@@ -220,6 +220,12 @@ void DemoServer::handle_packet(AOPacket packet)
               client_sock->write(packet.toUtf8());
           }
         }
+        else if (contents[1].startsWith("/reload"))
+        {
+            load_demo(p_path);
+            QString packet = "CT#DEMO#" + tr("Current demo file reloaded. Send /play or > in OOC to begin playback.") + "#1#%";
+            client_sock->write(packet.toUtf8());
+        }
         else if (contents[1].startsWith("/min_wait"))
         {
             QString packet = "CT#DEMO#" + tr("min_wait is deprecated. Use the client Settings for minimum wait instead!") + "#1#%";
@@ -227,7 +233,7 @@ void DemoServer::handle_packet(AOPacket packet)
         }
         else if (contents[1].startsWith("/help"))
         {
-            QString packet = "CT#DEMO#" + tr("Available commands:\nload, play, pause, max_wait, help") + "#1#%";
+            QString packet = "CT#DEMO#" + tr("Available commands:\nload, reload, play, pause, max_wait, help") + "#1#%";
             client_sock->write(packet.toUtf8());
         }
     }
