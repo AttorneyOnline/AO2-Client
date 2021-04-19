@@ -2229,6 +2229,7 @@ bool Courtroom::handle_objection()
         filename, m_chatmessage[CHAR_NAME],
         ao_app->get_chat(m_chatmessage[CHAR_NAME]));
     sfx_player->clear(); // Objection played! Cut all sfx.
+    ui_vp_player_char->set_play_once(true);
     return true;
   }
   if (m_chatmessage[EMOTE] != "")
@@ -3252,6 +3253,10 @@ void Courtroom::start_chat_ticking()
       // Cool behavior
       ui_vp_chatbox->show();
       ui_vp_message->show();
+    }
+    else {
+      ui_vp_chatbox->hide();
+      ui_vp_message->hide();
     }
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
     int delay = ao_app->stay_time();
