@@ -2236,8 +2236,10 @@ bool Courtroom::handle_objection()
         filename, m_chatmessage[CHAR_NAME],
         ao_app->get_chat(m_chatmessage[CHAR_NAME]));
     sfx_player->clear(); // Objection played! Cut all sfx.
+    ui_vp_player_char->set_play_once(true);
     return true;
   }
+  if (m_chatmessage[EMOTE] != "")
     display_character();
   return false;
 }
@@ -2396,22 +2398,31 @@ void Courtroom::handle_ic_message()
   // Update the chatbox information
   initialize_chatbox();
 
-  // Display our own character
-  display_character();
-
-  // Reset the pair character
-  ui_vp_sideplayer_char->stop();
-  ui_vp_sideplayer_char->move(0, 0);
-
-  // If the emote_mod is not zooming
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-  if (emote_mod != 5 && emote_mod != 6) {
-    // Display the pair character
-    display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
-  }
+  bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
+  if (m_chatmessage[EMOTE] != "") {
+    // Display our own character
+    display_character();
 
-  // Parse the emote_mod part of the chat message
-  handle_emote_mod(m_chatmessage[EMOTE_MOD].toInt(), m_chatmessage[IMMEDIATE].toInt() == 1);
+    // Reset the pair character
+    ui_vp_sideplayer_char->stop();
+    ui_vp_sideplayer_char->move(0, 0);
+
+    // If the emote_mod is not zooming
+    if (emote_mod != 5 && emote_mod != 6) {
+      // Display the pair character
+      display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
+    }
+
+    // Parse the emote_mod part of the chat message
+    handle_emote_mod(emote_mod, immediate);
+  }
+  else
+  {
+    start_chat_ticking();
+    if (emote_mod == 1 || emote_mod == 2 || emote_mod == 6 || immediate)
+      play_sfx();
+  }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
   if (!ao_app->is_instant_objection_enabled() && chatmessage_queue.size() > 0)
@@ -3250,6 +3261,10 @@ void Courtroom::start_chat_ticking()
       ui_vp_chatbox->show();
       ui_vp_message->show();
     }
+    else {
+      ui_vp_chatbox->hide();
+      ui_vp_message->hide();
+    }
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
     int delay = ao_app->stay_time();
     if (delay > 0 && !text_queue_timer->isActive())
@@ -3307,26 +3322,31 @@ void Courtroom::chat_tick()
 
   if (tick_pos >= f_message.size()) {
     text_state = 2;
-    if (anim_state < 3) {
-      QStringList c_paths = {
-        ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)" + m_chatmessage[EMOTE])),
-        ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)/" + m_chatmessage[EMOTE]))
-        };
-      // if there is a (c) animation for this emote and we haven't played it already
-      if (file_exists(ui_vp_player_char->find_image(c_paths)) &&(!c_played)) {
-        anim_state = 5;
-        ui_vp_player_char->set_play_once(true);
-        filename = "(c)" + m_chatmessage[EMOTE];
-        c_played = true;
+    // Check if we're a narrator msg
+    if (m_chatmessage[EMOTE] != "") {
+      if (anim_state < 3) {
+        QStringList c_paths = {
+          ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)" + m_chatmessage[EMOTE])),
+          ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)/" + m_chatmessage[EMOTE]))
+          };
+        // if there is a (c) animation for this emote and we haven't played it already
+        if (file_exists(ui_vp_player_char->find_image(c_paths)) &&(!c_played)) {
+          anim_state = 5;
+          ui_vp_player_char->set_play_once(true);
+          filename = "(c)" + m_chatmessage[EMOTE];
+          c_played = true;
+        }
+        else {
+          anim_state = 3;
+          ui_vp_player_char->set_play_once(false);
+          filename = "(a)" + m_chatmessage[EMOTE];
+        }
+        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
+                                        false);
       }
-      else {
-        anim_state = 3;
-        ui_vp_player_char->set_play_once(false);
-        filename = "(a)" + m_chatmessage[EMOTE];
-      }
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
-                                    false);
     }
+    else // We're a narrator msg
+      anim_state = 3;
     QString f_char;
     QString f_custom_theme;
     if (ao_app->is_customchat_enabled()) {
@@ -3514,28 +3534,30 @@ void Courtroom::chat_tick()
       msg_delay = qMin(max_delay, msg_delay * punctuation_modifier);
     }
 
-    // If this color is talking
-    if (color_is_talking && anim_state != 2 &&
-        anim_state <
-            4) // Set it to talking as we're not on that already (though we have
-               // to avoid interrupting a non-interrupted preanim)
-    {
-      ui_vp_player_char->stop();
-      ui_vp_player_char->set_play_once(false);
-      filename = "(b)" + m_chatmessage[EMOTE];
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
-                                    false);
-      anim_state = 2;
-    }
-    else if (!color_is_talking && anim_state < 3 &&
-             anim_state != 3) // Set it to idle as we're not on that already
-    {
-      ui_vp_player_char->stop();
-      ui_vp_player_char->set_play_once(false);
-      filename = "(a)" + m_chatmessage[EMOTE];
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
-                                    false);
-      anim_state = 3;
+    if (m_chatmessage[EMOTE] != "") {
+      // If this color is talking
+      if (color_is_talking && anim_state != 2 &&
+          anim_state <
+          4) // Set it to talking as we're not on that already (though we have
+        // to avoid interrupting a non-interrupted preanim)
+      {
+        ui_vp_player_char->stop();
+        ui_vp_player_char->set_play_once(false);
+        filename = "(b)" + m_chatmessage[EMOTE];
+        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
+                                      false);
+        anim_state = 2;
+      }
+      else if (!color_is_talking && anim_state < 3 &&
+               anim_state != 3) // Set it to idle as we're not on that already
+      {
+        ui_vp_player_char->stop();
+        ui_vp_player_char->set_play_once(false);
+        filename = "(a)" + m_chatmessage[EMOTE];
+        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
+                                      false);
+        anim_state = 3;
+      }
     }
     // Continue ticking
     chat_tick_timer->start(msg_delay);
