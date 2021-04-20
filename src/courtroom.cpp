@@ -1984,7 +1984,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (SHOWNAME < p_contents.size())
     showname = p_contents[SHOWNAME];
 
-  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[TEXT_COLOR].toInt(), log_mode);
+  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode);
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
 
@@ -2018,7 +2018,7 @@ void Courtroom::skip_chatmessage_queue()
 
   while (!chatmessage_queue.isEmpty()) {
     QStringList p_contents = chatmessage_queue.dequeue();
-    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY);
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY);
   }
 }
 
@@ -2041,7 +2041,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
 
   if (!ao_app->is_desyncrhonized_logs_enabled()) {
     // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
-    log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY);
+    log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY);
   }
 
   // Process the callwords for this message
@@ -2060,7 +2060,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     handle_ic_message();
 }
 
-void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, int f_color, LogMode f_log_mode)
+void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, QString f_char, QString f_objection_mod, int f_evi_id, int f_color, LogMode f_log_mode)
 {
   // Display name will use the showname
   QString f_displayname = f_showname;
@@ -2081,16 +2081,15 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     // Check if a custom objection is in use
     int objection_mod = 0;
     QString custom_objection = "";
-    if (m_chatmessage[OBJECTION_MOD].contains("4&")) {
+    if (f_objection_mod.contains("4&")) {
       objection_mod = 4;
-      custom_objection = m_chatmessage[OBJECTION_MOD].split(
+      custom_objection = f_objection_mod.split(
           "4&")[1]; // takes the name of custom objection.
     }
     else {
-      objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
+      objection_mod = f_objection_mod.toInt();
     }
 
-    QString f_char = m_chatmessage[CHAR_NAME];
     QString f_custom_theme = ao_app->get_chat(f_char);
     if (objection_mod <= 4 && objection_mod >= 1) {
       QString shout_message;
@@ -2137,8 +2136,6 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       }
     }
 
-    // Obtain evidence ID we're trying to work with
-    int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
     // If the evidence ID is in the valid range
     if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
       // Obtain the evidence name
