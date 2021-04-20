@@ -978,9 +978,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
 
-  ui_selector->set_image("char_selector");
-  ui_selector->hide();
-
   set_size_and_pos(ui_back_to_lobby, "back_to_lobby");
   ui_back_to_lobby->setText(tr("Back to Lobby"));
   ui_back_to_lobby->setToolTip(tr("Return back to the server list."));

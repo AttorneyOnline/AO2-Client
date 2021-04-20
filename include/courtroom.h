@@ -755,7 +755,6 @@ private:
 
   QVector<AOCharButton *> ui_char_button_list;
   QVector<AOCharButton *> ui_char_button_list_filtered;
-  AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
 

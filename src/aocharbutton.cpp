@@ -15,19 +15,19 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
   this->resize(60, 60);
   this->move(x_pos, y_pos);
 
-  ui_taken = new AOImage(this, ao_app);
+  ui_taken = new AOImage(this, ao_app, true);
   ui_taken->resize(60, 60);
   ui_taken->set_image("char_taken");
   ui_taken->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken->hide();
 
-  ui_passworded = new AOImage(this, ao_app);
+  ui_passworded = new AOImage(this, ao_app, true);
   ui_passworded->resize(60, 60);
   ui_passworded->set_image("char_passworded");
   ui_passworded->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_passworded->hide();
 
-  ui_selector = new AOImage(parent, ao_app);
+  ui_selector = new AOImage(parent, ao_app, true);
   ui_selector->resize(62, 62);
   ui_selector->move(x_pos - 1, y_pos - 1);
   ui_selector->set_image("char_selector");
