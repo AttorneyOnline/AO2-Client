@@ -264,22 +264,26 @@ void DemoServer::playback()
     if (current_packet.startsWith("MS#"))
       elapsed_time = 0;
 
-    while (!current_packet.startsWith("wait") && !demo_data.isEmpty()) {
+    while (!current_packet.startsWith("wait#")) {
         client_sock->write(current_packet.toUtf8());
+        if (demo_data.isEmpty())
+          break;
         current_packet = demo_data.dequeue();
     }
     if (!demo_data.isEmpty()) {
         AOPacket wait_packet = AOPacket(current_packet);
 
         int duration = wait_packet.get_contents().at(0).toInt();
-        if (max_wait != -1 && duration + elapsed_time > max_wait) {
-          duration = qMax(0, max_wait - elapsed_time);
-          // Skip the difference on the timers
-          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
-        }
-        else if (timer->interval() != 0 && duration + elapsed_time > timer->interval()) {
-            duration = qMax(0, timer->interval() - elapsed_time);
+        if (max_wait != -1) {
+          if (duration + elapsed_time > max_wait) {
+            duration = qMax(0, max_wait - elapsed_time);
+            // Skip the difference on the timers
             emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+          }
+          else if (timer->interval() != 0 && duration + elapsed_time > timer->interval()) {
+              duration = qMax(0, timer->interval() - elapsed_time);
+              emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+          }
         }
         elapsed_time += duration;
         timer->start(duration);
