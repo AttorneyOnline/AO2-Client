@@ -1669,7 +1669,7 @@ void Courtroom::on_chat_return_pressed()
   if (is_muted)
     return;
 
-  if ((anim_state < 3 || text_state < 2) && objection_state == 0)
+  if (text_state < 2 && objection_state == 0)
     return;
 
   ui_ic_chat_message->blockSignals(true);
@@ -2188,8 +2188,6 @@ bool Courtroom::handle_objection()
     objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   }
 
-
-
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
     ui_vp_objection->set_static_duration(shout_static_time);
@@ -2525,7 +2523,6 @@ void Courtroom::initialize_chatbox()
   if (f_charid >= 0 && f_charid < char_list.size() &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
     QString real_name = char_list.at(f_charid).name;
-  ui_vp_player_char->set_static_duration(0);
     QString f_showname = ao_app->get_showname(real_name);
 
     ui_vp_showname->setText(f_showname);
@@ -2673,8 +2670,6 @@ void Courtroom::display_evidence_image()
 
 void Courtroom::handle_ic_speaking()
 {
-  // Display the evidence
-  display_evidence_image();
   QString side = m_chatmessage[SIDE];
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // emote_mod 5 is zoom and emote_mod 6 is zoom w/ preanim.
@@ -3184,6 +3179,9 @@ void Courtroom::play_preanim(bool immediate)
 
 void Courtroom::preanim_done()
 {
+  // Currently, someone's talking over us mid-preanim...
+  if (anim_state != 1 && anim_state != 4)
+    return;
   anim_state = 1;
   switch(m_chatmessage[DESK_MOD].toInt()) {
     case 4:
@@ -3212,6 +3210,9 @@ void Courtroom::start_chat_ticking()
   // can be called by two logic paths
   if (text_state != 0)
     return;
+
+  // Display the evidence
+  display_evidence_image();
 
   if (m_chatmessage[EFFECTS] != "") {
     QStringList fx_list = m_chatmessage[EFFECTS].split("|");
@@ -5243,8 +5244,6 @@ void Courtroom::on_reload_theme_clicked()
   enter_courtroom();
   gen_char_rgb_list(ao_app->get_chat(current_char));
 
-  anim_state = 4;
-  text_state = 3;
   objection_custom = "";
 
   // to update status on the background
