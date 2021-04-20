@@ -308,7 +308,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
-      this->write_to_file("Joined server " + server_name + " on address " +
+      this->write_to_file("Joined server " + server_name + " hosted on address " +
                               server_address + " on " +
                               QDateTime::currentDateTime().toUTC().toString(),
                           log_filename, true);
