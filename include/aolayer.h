@@ -52,6 +52,7 @@ public:
   bool force_continuous = false;
   Qt::TransformationMode transform_mode = Qt::FastTransformation; // transformation mode to use for this image
   bool stretch = false; // Should we stretch/squash this image to fill the screen?
+  bool masked = true; // Set a mask to the dimensions of the widget?
 
   // Set the movie's image to provided paths, preparing for playback.
   void start_playback(QString p_image);

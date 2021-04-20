@@ -46,7 +46,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_player_char->masked = false;
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_sideplayer_char->masked = false;
   ui_vp_sideplayer_char->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
 
