@@ -25,23 +25,23 @@ jobs:
     - name: Fetch external libs
       run: |
         # QtApng
-        curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-msvc2017_64-5.14.1.zip -o apng.zip
+        curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-msvc2017-5.14.1.zip -o apng.zip
         unzip apng.zip
 
         # discord-rpc
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
         unzip discord_rpc_win.zip
-        cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib
+        cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./lib
 
         # BASS
         curl http://www.un4seen.com/files/bass24.zip -o bass.zip
         unzip bass.zip
-        cp ./c/x64/bass.lib ./lib
+        cp ./c/bass.lib ./lib
 
         # BASS Opus
         curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
         unzip bassopus.zip
-        cp ./c/x64/bassopus.lib ./lib
+        cp ./c/bassopus.lib ./lib
 
     - name: Cache Qt
       id: cache-qt
