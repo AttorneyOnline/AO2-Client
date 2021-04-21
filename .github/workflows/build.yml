@@ -73,15 +73,15 @@ jobs:
       shell: bash
       run: |
         windeployqt .
-        cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
-        cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
-        cp ../../x64/bass.dll .
-        cp ../../x64/bassopus.dll .
+        cp ../../msvc2017/plugins/imageformats/qapng.dll ./imageformats/
+        cp ../../discord-rpc/win32-dynamic/bin/discord-rpc.dll .
+        cp ../../bass.dll .
+        cp ../../bassopus.dll .
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: Attorney_Online-x64
+        name: Attorney_Online-x32
         path: ${{github.workspace}}/build/Release/
 
   # linux:
