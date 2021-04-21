@@ -54,6 +54,7 @@ jobs:
       uses: jurplel/install-qt-action@v2
       with:
         version: '5.14.1'
+        arch: win32_mingw73
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
