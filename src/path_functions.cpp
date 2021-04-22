@@ -105,7 +105,6 @@ QString AOApplication::get_evidence_path(QString p_file)
 QStringList AOApplication::get_asset_paths(QString p_element, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc, QString p_character, QString p_placeholder)
 {
     QStringList pathlist;
-    pathlist += p_element; // The path by itself
     if (p_character != "")
       pathlist += get_character_path(p_character, p_element); // Character folder
     if (p_misc != "" && p_theme != "" && p_subtheme != "")
@@ -120,6 +119,7 @@ QStringList AOApplication::get_asset_paths(QString p_element, QString p_theme, Q
       pathlist += get_theme_path(p_element, p_theme); // Theme path
     if (p_default_theme != "")
       pathlist += get_theme_path(p_element, p_default_theme); // Default theme path
+    pathlist += p_element; // The path by itself
     if (p_placeholder != "" && p_theme != "")
       pathlist += get_theme_path(p_placeholder, p_theme); // Placeholder path
     if (p_placeholder != "" && p_default_theme != "")
