@@ -197,7 +197,6 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << " continuous: " << continuous;
 #endif
   QStringList pathlist = {
-      current_emote, // The path by itself
       ao_app->get_character_path(
           p_charname, prefix + current_emote), // Default path
       ao_app->get_character_path(
@@ -207,6 +206,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
       ao_app->get_character_path(
           p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
+      current_emote, // The path by itself after the above fail
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
