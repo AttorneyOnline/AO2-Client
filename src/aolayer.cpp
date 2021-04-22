@@ -197,20 +197,20 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << " continuous: " << continuous;
 #endif
   QStringList pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, prefix + current_emote)), // Default path
-      ao_app->get_image_suffix(ao_app->get_character_path(
+      current_emote, // The path by itself
+      ao_app->get_character_path(
+          p_charname, prefix + current_emote), // Default path
+      ao_app->get_character_path(
           p_charname,
-          prefix + "/" + current_emote)), // Path check if it's categorized
+          prefix + "/" + current_emote), // Path check if it's categorized
                                           // into a folder
-      ao_app->get_image_suffix(ao_app->get_character_path(
+      ao_app->get_character_path(
           p_charname,
-          current_emote)), // Just use the non-prefixed image, animated or not
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path("placeholder")), // Theme placeholder path
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "placeholder", ao_app->default_theme))}; // Default theme placeholder path
-  start_playback(find_image(pathlist));
+          current_emote), // Just use the non-prefixed image, animated or not
+      ao_app->get_theme_path("placeholder"), // Theme placeholder path
+      ao_app->get_theme_path(
+          "placeholder", ao_app->default_theme)}; // Default theme placeholder path
+  start_playback(ao_app->get_image_path(pathlist));
 }
 
 void SplashLayer::load_image(QString p_filename, QString p_charname,
