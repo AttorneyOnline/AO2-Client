@@ -41,6 +41,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   modcall_player->set_volume(50);
 
   ui_background = new AOImage(this, ao_app);
+  ui_background->setObjectName("ui_background");
 
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
