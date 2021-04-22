@@ -43,6 +43,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_background = new AOImage(this, ao_app);
 
   ui_viewport = new QWidget(this);
+  ui_viewport->setObjectName("viewport");
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
@@ -58,7 +59,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_evidence_display = new AOEvidenceDisplay(ui_viewport, ao_app);
 
   ui_vp_chatbox = new AOImage(this, ao_app);
+  ui_vp_chatbox->setObjectName("chatbox");
   ui_vp_showname = new QLabel(ui_vp_chatbox);
+  ui_vp_showname->setObjectName("showname");
   ui_vp_showname->setAlignment(Qt::AlignLeft);
   ui_vp_chat_arrow = new InterfaceLayer(this, ao_app);
   ui_vp_chat_arrow->set_play_once(false);
@@ -68,6 +71,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
+  ui_vp_message->setObjectName("message");
 
   ui_vp_testimony = new SplashLayer(this, ao_app);
   ui_vp_testimony->set_play_once(false);
@@ -85,6 +89,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
+  ui_ic_chatlog->setObjectName("ic_chatlog");
 
   log_maximum_blocks = ao_app->get_max_log_size();
   log_goes_downwards = ao_app->get_log_goes_downwards();
@@ -97,10 +102,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ms_chatlog->setReadOnly(true);
   ui_ms_chatlog->setOpenExternalLinks(true);
   ui_ms_chatlog->hide();
+  ui_ms_chatlog->setObjectName("ms_chatlog");
 
   ui_server_chatlog = new AOTextArea(this);
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
+  ui_server_chatlog->setObjectName("server_chatlog");
 
   ui_area_list = new QTreeWidget(this);
   ui_area_list->setColumnCount(2);
@@ -109,6 +116,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_area_list->header()->setStretchLastSection(false);
   ui_area_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_area_list->hide();
+  ui_area_list->setObjectName("area_list");
 
   ui_music_list = new QTreeWidget(this);
   ui_music_list->setColumnCount(2);
@@ -118,7 +126,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_music_list->setUniformRowHeights(true);
-  
+  ui_music_list->setObjectName("music_list");
 
   ui_music_display = new InterfaceLayer(this, ao_app);
   ui_music_display->set_play_once(false);
@@ -133,16 +141,19 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     ui_clock[i] = new AOClockLabel(this);
     ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui_clock[i]->hide();
+    ui_clock[i]->setObjectName("clock_" + QString::number(i));
   }
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
+  ui_ic_chat_name->setObjectName("ic_chat_name");
 
   ui_ic_chat_message = new AOLineEdit(this);
   ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message"));
   ui_ic_chat_message->preserve_selection(true);
+  ui_ic_chat_message->setObjectName("ic_chat_message");
   //  ui_ic_chat_message->setValidator(new QRegExpValidator(QRegExp("^\\S+(?:
   //  \\S+)*$"), ui_ic_chat_message));
   // todo: filter out \n from showing up as that commonly breaks the chatlog and
@@ -157,18 +168,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
+  ui_ooc_chat_message->setObjectName("ooc_chat_message");
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText(tr("Name"));
   ui_ooc_chat_name->setMaxLength(30);
   ui_ooc_chat_name->setText(p_ao_app->get_default_username());
+  ui_ooc_chat_name->setObjectName("ooc_chat_name");
 
   // ui_area_password = new QLineEdit(this);
   // ui_area_password->setFrame(false);
   ui_music_search = new QLineEdit(this);
   ui_music_search->setFrame(false);
   ui_music_search->setPlaceholderText(tr("Search"));
+  ui_music_search->setObjectName("music_search");
 
   initialize_emotes();
 
@@ -612,8 +626,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
-  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ Log goes down ▼"
-                                                       : "▲ Log goes up ▲");
+  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼" + tr("Log goes down") + "▼"
+                                                       : "▲" + tr("Log goes up") + "▲");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
   ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
@@ -5123,7 +5137,7 @@ void Courtroom::set_text_color_dropdown()
     color_row_to_number.append(c);
   }
   for (int c = 0; c < max_colors; ++c) {
-    QColor color = ao_app->get_chat_color("c" + QString::number(c), "default");
+    QColor color = ao_app->get_chat_color("c" + QString::number(c), "");
     default_color_rgb_list.append(color);
   }
 }
