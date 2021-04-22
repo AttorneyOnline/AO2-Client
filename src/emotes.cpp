@@ -5,11 +5,15 @@
 void Courtroom::initialize_emotes()
 {
   ui_emotes = new QWidget(this);
+  ui_emotes->setObjectName("ui_emotes");
 
   ui_emote_left = new AOButton(this, ao_app);
+  ui_emote_left->setObjectName("ui_emote_left");
   ui_emote_right = new AOButton(this, ao_app);
+  ui_emote_right->setObjectName("ui_emote_right");
 
   ui_emote_dropdown = new QComboBox(this);
+  ui_emote_dropdown->setObjectName("ui_emote_dropdown");
 
   connect(ui_emote_left, SIGNAL(clicked()), this,
           SLOT(on_emote_left_clicked()));

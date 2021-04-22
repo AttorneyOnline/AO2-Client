@@ -43,53 +43,64 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_background = new AOImage(this, ao_app);
 
   ui_viewport = new QWidget(this);
-  ui_viewport->setObjectName("viewport");
+  ui_viewport->setObjectName("ui_viewport");
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
+  ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
+  ui_vp_speedlines->setObjectName("ui_vp_speedlines");
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_sideplayer_char->setObjectName("ui_vp_sideplayer_char");
   ui_vp_sideplayer_char->masked = false;
   ui_vp_sideplayer_char->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
+  ui_vp_desk->setObjectName("ui_vp_desk");
 
   ui_vp_effect = new EffectLayer(this, ao_app);
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_vp_effect->setObjectName("ui_vp_effect");
 
   ui_vp_evidence_display = new AOEvidenceDisplay(ui_viewport, ao_app);
+  ui_vp_evidence_display->setObjectName("ui_vp_evidence_display");
 
   ui_vp_chatbox = new AOImage(this, ao_app);
-  ui_vp_chatbox->setObjectName("chatbox");
+  ui_vp_chatbox->setObjectName("ui_vp_chatbox");
   ui_vp_showname = new QLabel(ui_vp_chatbox);
-  ui_vp_showname->setObjectName("showname");
+  ui_vp_showname->setObjectName("ui_vp_showname");
   ui_vp_showname->setAlignment(Qt::AlignLeft);
   ui_vp_chat_arrow = new InterfaceLayer(this, ao_app);
   ui_vp_chat_arrow->set_play_once(false);
+  ui_vp_chat_arrow->setObjectName("ui_vp_chat_arrow");
 
   ui_vp_message = new QTextEdit(this);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
-  ui_vp_message->setObjectName("message");
+  ui_vp_message->setObjectName("ui_vp_message");
 
   ui_vp_testimony = new SplashLayer(this, ao_app);
   ui_vp_testimony->set_play_once(false);
   ui_vp_testimony->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_vp_testimony->setObjectName("ui_vp_testimony");
   ui_vp_wtce = new SplashLayer(this, ao_app);
   ui_vp_wtce->set_play_once(true);
   ui_vp_wtce->continuous = false;
   ui_vp_wtce->force_continuous = true;
   ui_vp_wtce->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_vp_wtce->setObjectName("ui_vp_wtce");
   ui_vp_objection = new SplashLayer(this, ao_app);
   ui_vp_objection->set_play_once(true);
   ui_vp_objection->continuous = false;
   ui_vp_objection->force_continuous = true;
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_vp_objection->setObjectName("ui_vp_objection");
 
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
-  ui_ic_chatlog->setObjectName("ic_chatlog");
+  ui_ic_chatlog->setObjectName("ui_ic_chatlog");
 
   log_maximum_blocks = ao_app->get_max_log_size();
   log_goes_downwards = ao_app->get_log_goes_downwards();
@@ -102,12 +113,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ms_chatlog->setReadOnly(true);
   ui_ms_chatlog->setOpenExternalLinks(true);
   ui_ms_chatlog->hide();
-  ui_ms_chatlog->setObjectName("ms_chatlog");
+  ui_ms_chatlog->setObjectName("ui_ms_chatlog");
 
   ui_server_chatlog = new AOTextArea(this);
   ui_server_chatlog->setReadOnly(true);
   ui_server_chatlog->setOpenExternalLinks(true);
-  ui_server_chatlog->setObjectName("server_chatlog");
+  ui_server_chatlog->setObjectName("ui_server_chatlog");
 
   ui_area_list = new QTreeWidget(this);
   ui_area_list->setColumnCount(2);
@@ -116,7 +127,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_area_list->header()->setStretchLastSection(false);
   ui_area_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_area_list->hide();
-  ui_area_list->setObjectName("area_list");
+  ui_area_list->setObjectName("ui_area_list");
 
   ui_music_list = new QTreeWidget(this);
   ui_music_list->setColumnCount(2);
@@ -126,180 +137,258 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_music_list->setUniformRowHeights(true);
-  ui_music_list->setObjectName("music_list");
+  ui_music_list->setObjectName("ui_music_list");
 
   ui_music_display = new InterfaceLayer(this, ao_app);
   ui_music_display->set_play_once(false);
   ui_music_display->transform_mode = Qt::SmoothTransformation;
   ui_music_display->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_music_display->setObjectName("ui_music_display");
 
   ui_music_name = new ScrollText(ui_music_display);
   ui_music_name->setText(tr("None"));
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_music_name->setObjectName("ui_music_name");
   
   for (int i = 0; i < max_clocks; i++) {
     ui_clock[i] = new AOClockLabel(this);
     ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui_clock[i]->hide();
-    ui_clock[i]->setObjectName("clock_" + QString::number(i));
+    ui_clock[i]->setObjectName("ui_clock" + QString::number(i));
   }
 
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
-  ui_ic_chat_name->setObjectName("ic_chat_name");
+  ui_ic_chat_name->setObjectName("ui_ic_chat_name");
 
   ui_ic_chat_message = new AOLineEdit(this);
   ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message"));
   ui_ic_chat_message->preserve_selection(true);
-  ui_ic_chat_message->setObjectName("ic_chat_message");
-  //  ui_ic_chat_message->setValidator(new QRegExpValidator(QRegExp("^\\S+(?:
-  //  \\S+)*$"), ui_ic_chat_message));
-  // todo: filter out \n from showing up as that commonly breaks the chatlog and
-  // can be spammed to hell
+  ui_ic_chat_message->setObjectName("ui_ic_chat_message");
 
   ui_vp_sticker = new StickerLayer(ui_viewport, ao_app);
   ui_vp_sticker->set_play_once(false);
   ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_vp_sticker->setObjectName("ui_vp_sticker");
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
+  ui_muted->setObjectName("ui_muted");
 
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
-  ui_ooc_chat_message->setObjectName("ooc_chat_message");
+  ui_ooc_chat_message->setObjectName("ui_ooc_chat_message");
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText(tr("Name"));
   ui_ooc_chat_name->setMaxLength(30);
   ui_ooc_chat_name->setText(p_ao_app->get_default_username());
-  ui_ooc_chat_name->setObjectName("ooc_chat_name");
+  ui_ooc_chat_name->setObjectName("ui_ooc_chat_name");
 
   // ui_area_password = new QLineEdit(this);
   // ui_area_password->setFrame(false);
   ui_music_search = new QLineEdit(this);
   ui_music_search->setFrame(false);
   ui_music_search->setPlaceholderText(tr("Search"));
-  ui_music_search->setObjectName("music_search");
+  ui_music_search->setObjectName("ui_music_search");
 
   initialize_emotes();
 
   ui_pos_dropdown = new QComboBox(this);
   ui_pos_dropdown->view()->setTextElideMode(Qt::ElideLeft);
+  ui_pos_dropdown->setObjectName("ui_pos_dropdown");
+
   ui_pos_remove = new AOButton(this, ao_app);
+  ui_pos_remove->setObjectName("ui_pos_remove");
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_iniswap_dropdown->view()->setTextElideMode(Qt::ElideLeft);
+  ui_iniswap_dropdown->setObjectName("ui_iniswap_dropdown");
+
   ui_iniswap_remove = new AOButton(this, ao_app);
+  ui_iniswap_remove->setObjectName("ui_iniswap_remove");
 
   ui_sfx_dropdown = new QComboBox(this);
   ui_sfx_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_sfx_dropdown->view()->setTextElideMode(Qt::ElideLeft);
+  ui_sfx_dropdown->setObjectName("ui_sfx_dropdown");
+
   ui_sfx_remove = new AOButton(this, ao_app);
+  ui_sfx_remove->setObjectName("ui_sfx_remove");
 
   ui_effects_dropdown = new QComboBox(this);
   ui_effects_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_effects_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_effects_dropdown->setObjectName("ui_effects_dropdown");
 
   ui_defense_bar = new AOImage(this, ao_app);
+  ui_defense_bar->setObjectName("ui_defense_bar");
+
   ui_prosecution_bar = new AOImage(this, ao_app);
+  ui_prosecution_bar->setObjectName("ui_prosecution_bar");
 
   ui_music_label = new QLabel(this);
+  ui_music_label->setObjectName("ui_music_label");
+
   ui_sfx_label = new QLabel(this);
+  ui_sfx_label->setObjectName("ui_sfx_label");
+
   ui_blip_label = new QLabel(this);
+  ui_blip_label->setObjectName("ui_blip_label");
 
   ui_hold_it = new AOButton(this, ao_app);
+  ui_hold_it->setObjectName("ui_hold_it");
+
   ui_objection = new AOButton(this, ao_app);
+  ui_objection->setObjectName("ui_objection");
+
   ui_take_that = new AOButton(this, ao_app);
+  ui_take_that->setObjectName("ui_take_that");
 
   ui_ooc_toggle = new AOButton(this, ao_app);
+  ui_ooc_toggle->setObjectName("ui_ooc_toggle");
+
   ui_witness_testimony = new AOButton(this, ao_app);
+  ui_witness_testimony->setObjectName("ui_witness_testimony");
+
   ui_cross_examination = new AOButton(this, ao_app);
+  ui_cross_examination->setObjectName("ui_cross_examination");
+
   ui_guilty = new AOButton(this, ao_app);
+  ui_guilty->setObjectName("ui_guilty");
+
   ui_not_guilty = new AOButton(this, ao_app);
+  ui_not_guilty->setObjectName("ui_not_guilty");
 
   ui_change_character = new AOButton(this, ao_app);
+  ui_change_character->setObjectName("ui_change_character");
+
   ui_reload_theme = new AOButton(this, ao_app);
+  ui_reload_theme->setObjectName("ui_reload_theme");
+
   ui_call_mod = new AOButton(this, ao_app);
+  ui_call_mod->setObjectName("ui_call_mod");
+
   ui_settings = new AOButton(this, ao_app);
+  ui_settings->setObjectName("ui_settings");
+
   ui_announce_casing = new AOButton(this, ao_app);
+  ui_announce_casing->setObjectName("ui_announce_casing");
+
   ui_switch_area_music = new AOButton(this, ao_app);
+  ui_switch_area_music->setObjectName("ui_switch_area_music");
 
   ui_pre = new QCheckBox(this);
   ui_pre->setText(tr("Pre"));
+  ui_pre->setObjectName("ui_pre");
 
   ui_flip = new QCheckBox(this);
   ui_flip->setText(tr("Flip"));
   ui_flip->hide();
+  ui_flip->setObjectName("ui_flip");
 
   ui_guard = new QCheckBox(this);
   ui_guard->setText(tr("Guard"));
   ui_guard->hide();
+  ui_guard->setObjectName("ui_guard");
 
   ui_additive = new QCheckBox(this);
   ui_additive->setText(tr("Additive"));
   ui_additive->hide();
+  ui_additive->setObjectName("ui_additive");
 
   ui_casing = new QCheckBox(this);
   ui_casing->setChecked(ao_app->get_casing_enabled());
   ui_casing->setText(tr("Casing"));
   ui_casing->hide();
+  ui_casing->setObjectName("ui_casing");
 
   ui_showname_enable = new QCheckBox(this);
   ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
   ui_showname_enable->setText(tr("Shownames"));
+  ui_showname_enable->setObjectName("ui_showname_enable");
 
   ui_immediate = new QCheckBox(this);
   ui_immediate->setText(tr("Immediate"));
   ui_immediate->hide();
+  ui_immediate->setObjectName("ui_immediate");
 
   ui_custom_objection = new AOButton(this, ao_app);
   ui_custom_objection->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_custom_objection->setObjectName("ui_custom_objection");
+
   custom_obj_menu = new QMenu(this);
+  custom_obj_menu->setObjectName("ui_custom_obj_menu");
+
   ui_realization = new AOButton(this, ao_app);
+  ui_realization->setObjectName("ui_realization");
+
   ui_screenshake = new AOButton(this, ao_app);
+  ui_screenshake->setObjectName("ui_screenshake");
+
   ui_mute = new AOButton(this, ao_app);
+  ui_mute->setObjectName("ui_mute");
 
   ui_defense_plus = new AOButton(this, ao_app);
+  ui_defense_plus->setObjectName("ui_defense_plus");
+
   ui_defense_minus = new AOButton(this, ao_app);
+  ui_defense_minus->setObjectName("ui_defense_minus");
 
   ui_prosecution_plus = new AOButton(this, ao_app);
+  ui_prosecution_plus->setObjectName("ui_prosecution_plus");
+
   ui_prosecution_minus = new AOButton(this, ao_app);
+  ui_prosecution_minus->setObjectName("ui_prosecution_minus");
 
   ui_text_color = new QComboBox(this);
+  ui_text_color->setObjectName("ui_text_color");
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
   ui_music_slider->setValue(ao_app->get_default_music());
+  ui_music_slider->setObjectName("ui_music_slider");
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
   ui_sfx_slider->setValue(ao_app->get_default_sfx());
+  ui_sfx_slider->setObjectName("ui_sfx_slider");
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
   ui_blip_slider->setValue(ao_app->get_default_blip());
+  ui_blip_slider->setObjectName("ui_blip_slider");
 
   ui_mute_list = new QListWidget(this);
+  ui_mute_list->setObjectName("ui_mute_list");
 
   ui_pair_list = new QListWidget(this);
+  ui_pair_list->setObjectName("ui_pair_list");
+
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100, 100);
   ui_pair_offset_spinbox->setSuffix(tr("% x offset"));
+  ui_pair_offset_spinbox->setObjectName("ui_pair_offset_spinbox");
+
   ui_pair_vert_offset_spinbox = new QSpinBox(this);
   ui_pair_vert_offset_spinbox->setRange(-100, 100);
   ui_pair_vert_offset_spinbox->setSuffix(tr("% y offset"));
+  ui_pair_vert_offset_spinbox->setObjectName("ui_pair_vert_offset_spinbox");
 
   ui_pair_order_dropdown = new QComboBox(this);
   ui_pair_order_dropdown->addItem(tr("To front"));
   ui_pair_order_dropdown->addItem(tr("To behind"));
+  ui_pair_order_dropdown->setObjectName("ui_pair_order_dropdown");
 
   ui_pair_button = new AOButton(this, ao_app);
+  ui_pair_button->setObjectName("ui_pair_button");
 
   ui_evidence_button = new AOButton(this, ao_app);
+  ui_evidence_button->setObjectName("ui_evidence_button");
 
   initialize_evidence();
 
