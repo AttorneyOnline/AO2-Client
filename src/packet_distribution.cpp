@@ -705,7 +705,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     w_courtroom->on_authentication_state_received(authenticated);
   }
-  else if (header == "JUD") {
+  else if (header == "JD") {
     if (!courtroom_constructed || f_contents.size() < 1)
       goto end;
     bool is_on = f_contents.at(0) == "1";
