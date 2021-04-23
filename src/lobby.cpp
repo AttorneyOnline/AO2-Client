@@ -12,50 +12,68 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
+  //
   this->setWindowTitle(tr("Attorney Online 2"));
   this->setWindowIcon(QIcon(":/logo.png"));
   this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
   ui_background = new AOImage(this, ao_app);
+  ui_background->setObjectName("ui_background");
   ui_public_servers = new AOButton(this, ao_app);
+  ui_public_servers->setObjectName("ui_public_servers");
   ui_favorites = new AOButton(this, ao_app);
+  ui_favorites->setObjectName("ui_favorites");
   ui_refresh = new AOButton(this, ao_app);
+  ui_refresh->setObjectName("ui_refresh");
   ui_add_to_fav = new AOButton(this, ao_app);
+  ui_add_to_fav->setObjectName("ui_add_to_fav");
   ui_connect = new AOButton(this, ao_app);
+  ui_connect->setObjectName("ui_connect");
   ui_version = new QLabel(this);
+  ui_version->setObjectName("ui_version");
   ui_about = new AOButton(this, ao_app);
+  ui_about->setObjectName("ui_about");
   ui_settings = new AOButton(this, ao_app);
+  ui_settings->setObjectName("ui_settings");
 
   ui_server_list = new QTreeWidget(this);
-  ui_server_list->setHeaderLabels({"#", "Name"}); //, "Players"});
+  ui_server_list->setHeaderLabels({"#", "Name"});
   ui_server_list->setTextElideMode(Qt::ElideNone);
   ui_server_list->header()->setMinimumSectionSize(24);
   ui_server_list->header()->setSectionsMovable(false);
   ui_server_list->setColumnWidth(0, 0);
   ui_server_list->setIndentation(0);
-//  ui_server_list->hideColumn(0);
-//  ui_server_list->setHeaderHidden(true);
+  ui_server_list->setObjectName("ui_server_list");
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);
   ui_server_search->setPlaceholderText(tr("Search"));
+  ui_server_search->setObjectName("ui_server_search");
 
   ui_player_count = new QLabel(this);
+  ui_player_count->setObjectName("ui_player_count");
   ui_description = new AOTextArea(this);
   ui_description->setOpenExternalLinks(true);
+  ui_description->setObjectName("ui_description");
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
+  ui_chatbox->setObjectName("ui_chatbox");
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText(tr("Name"));
   ui_chatname->setText(ao_app->get_ooc_name());
+  ui_chatname->setObjectName("ui_chatname");
   ui_chatmessage = new QLineEdit(this);
+  ui_chatmessage->setObjectName("ui_chatmessage");
   ui_loading_background = new AOImage(this, ao_app);
+  ui_loading_background->setObjectName("ui_loading_background");
   ui_loading_text = new QTextEdit(ui_loading_background);
+  ui_loading_text->setObjectName("ui_loading_text");
   ui_progress_bar = new QProgressBar(ui_loading_background);
   ui_progress_bar->setMinimum(0);
   ui_progress_bar->setMaximum(100);
-  ui_progress_bar->setStyleSheet("QProgressBar{ color: white; }");
+  ui_progress_bar->setObjectName("ui_progress_bar");
   ui_cancel = new AOButton(ui_loading_background, ao_app);
+  ui_cancel->setObjectName("ui_cancel");
 
   connect(ui_public_servers, SIGNAL(clicked()), this,
           SLOT(on_public_servers_clicked()));
