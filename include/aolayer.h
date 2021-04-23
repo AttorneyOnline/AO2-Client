@@ -104,10 +104,6 @@ protected:
 
   QElapsedTimer actual_time;
 
-  // Usually used to turn seconds into milliseconds such as for [Time] tag in
-  // char.ini (which is no longer used)
-  const int tick_ms = 60;
-
   // These are the X and Y values before they are fixed based on the sprite's
   // width.
   int x = 0;

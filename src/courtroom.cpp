@@ -3223,16 +3223,9 @@ void Courtroom::play_preanim(bool immediate)
   QString f_preanim = m_chatmessage[PRE_EMOTE];
   // all time values in char.inis are multiplied by a constant(time_mod) to get
   // the actual time
-  int ao2_duration = ao_app->get_ao2_preanim_duration(f_char, f_preanim);
+  int preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
   int stay_time = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * time_mod;
-
-  int preanim_duration;
-
-  if (ao2_duration < 0)
-    preanim_duration = ao_app->get_preanim_duration(f_char, f_preanim);
-  else
-    preanim_duration = ao2_duration;
 
   sfx_delay_timer->start(sfx_delay);
   QString anim_to_find =
@@ -3245,15 +3238,6 @@ void Courtroom::play_preanim(bool immediate)
     preanim_done();
     qDebug() << "W: could not find " + anim_to_find;
     return;
-  }
-  else {
-    QImageReader s_reader(anim_to_find);
-    int image_count = s_reader.imageCount();
-    if (image_count <= 1) {
-      preanim_done();
-      qDebug() << "W: tried to play static preanim " + anim_to_find;
-      return;
-    }
   }
   ui_vp_player_char->set_static_duration(preanim_duration);
   ui_vp_player_char->set_play_once(true);
@@ -3276,16 +3260,15 @@ void Courtroom::play_preanim(bool immediate)
       break;
   }
 
-  if (immediate)
+  if (immediate) {
     anim_state = 4;
-  else
-    anim_state = 1;
-
-  if (stay_time >= 0)
-    text_delay_timer->start(stay_time);
-
-  if (immediate)
     handle_ic_speaking();
+  }
+  else {
+    anim_state = 1;
+    if (stay_time >= 0)
+      text_delay_timer->start(stay_time);
+  }
 }
 
 void Courtroom::preanim_done()
@@ -3317,6 +3300,7 @@ void Courtroom::preanim_done()
 
 void Courtroom::start_chat_ticking()
 {
+  text_delay_timer->stop();
   // we need to ensure that the text isn't already ticking because this function
   // can be called by two logic paths
   if (text_state != 0)
