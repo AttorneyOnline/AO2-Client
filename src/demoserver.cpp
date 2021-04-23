@@ -270,6 +270,8 @@ void DemoServer::load_demo(QString filename)
       QQueue <QString> p_demo_data;
       switch (ret) {
         case QMessageBox::Yes:
+          qDebug() << "Making a backup of the broken demo...";
+          QFile::copy(filename, filename + ".backup");
           while (!demo_data.isEmpty()) {
             QString current_packet = demo_data.dequeue();
             if (!current_packet.startsWith("SC#") && current_packet.startsWith("wait#")) {
