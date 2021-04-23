@@ -277,6 +277,7 @@ QString AOApplication::read_design_ini(QString p_identifier,
                                        QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   QVariant value = settings.value(p_identifier);
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
@@ -521,6 +522,7 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
   QSettings settings(get_character_path(p_char, "char.ini"),
                      QSettings::IniFormat);
   settings.beginGroup(target_tag);
+  settings.setIniCodec("UTF-8");
   QString value = settings.value(p_search_line).value<QString>();
   settings.endGroup();
   return value;
@@ -541,6 +543,7 @@ QStringList AOApplication::read_ini_tags(QString p_path, QString target_tag)
 {
   QStringList r_values;
   QSettings settings(p_path, QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   if (!target_tag.isEmpty())
     settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
