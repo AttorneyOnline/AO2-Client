@@ -238,6 +238,7 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
 
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
+  last_path = "";
   stretch = true;
   QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
