@@ -2067,11 +2067,6 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if (f_char_id != -1) {
     // Grab the char.ini showname
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
-    // If custom serversided shownames are not enabled
-    if (!ui_showname_enable->isChecked()) {
-      // Set the display name to the char.ini showname
-      f_displayname = f_showname;
-    }
   }
   // If display name is just whitespace, use the char.ini showname.
   if (f_displayname.trimmed().isEmpty())
@@ -2171,6 +2166,8 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       append_ic_text(f_message, f_displayname, "",f_color);
       break;
   }
+  if (!ui_showname_enable->isChecked())
+      regenerate_ic_chatlog();
 }
 
 bool Courtroom::handle_objection()

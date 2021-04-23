@@ -277,6 +277,7 @@ QString AOApplication::read_design_ini(QString p_identifier,
                                        QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   QVariant value = settings.value(p_identifier);
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
@@ -435,7 +436,7 @@ QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
   // New Chadly method
   QString value = get_config_value(p_identifier, "chat_config.ini", current_theme, get_subtheme(), default_theme, p_chat);
   if (!value.isEmpty())
-    return value.toLatin1();
+    return value.toUtf8();
 
   // Backwards ass compatibility
   QStringList backwards_paths{get_theme_path("misc/" + p_chat + "/config.ini"),
@@ -446,7 +447,7 @@ QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
   for (const QString &p : backwards_paths) {
     QString value = read_design_ini(p_identifier, p);
     if (!value.isEmpty()) {
-      return value.toLatin1();
+      return value.toUtf8();
     }
   }
 
@@ -521,6 +522,7 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
   QSettings settings(get_character_path(p_char, "char.ini"),
                      QSettings::IniFormat);
   settings.beginGroup(target_tag);
+  settings.setIniCodec("UTF-8");
   QString value = settings.value(p_search_line).value<QString>();
   settings.endGroup();
   return value;
@@ -541,6 +543,7 @@ QStringList AOApplication::read_ini_tags(QString p_path, QString target_tag)
 {
   QStringList r_values;
   QSettings settings(p_path, QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   if (!target_tag.isEmpty())
     settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
