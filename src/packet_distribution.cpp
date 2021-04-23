@@ -698,9 +698,19 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "AUTH") {
     if (!courtroom_constructed || !auth_packet_enabled || f_contents.size() < 1)
       goto end;
-    int authenticated = f_contents.at(0).toInt();
+    bool ok;
+    int authenticated = f_contents.at(0).toInt(&ok);
+    if (!ok)
+      goto end;
 
     w_courtroom->on_authentication_state_received(authenticated);
+  }
+  else if (header == "JD") {
+    if (!courtroom_constructed || f_contents.size() < 1)
+      goto end;
+    bool is_on = f_contents.at(0) == "1";
+
+    w_courtroom->toggle_judge_buttons(is_on);
   }
 
 end:
