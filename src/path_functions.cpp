@@ -173,6 +173,7 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
         p = get_case_sensitive_path(p);
         if (file_exists(p)) {
             QSettings settings(p, QSettings::IniFormat);
+            settings.setIniCodec("UTF-8");
             QVariant value = settings.value(p_identifier);
             if (value.type() == QVariant::StringList) {
 //              qDebug() << "got" << p << "is a string list, returning" << value.toStringList().join(",");
