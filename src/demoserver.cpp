@@ -252,6 +252,56 @@ void DemoServer::load_demo(QString filename)
         demo_data.enqueue(line);
         line = demo_stream.readLine();
     }
+    demo_file.flush();
+    demo_file.close();
+
+    // No-shenanigans 2.9.0 demo file with the dreaded demo desync bug detected https://github.com/AttorneyOnline/AO2-Client/pull/496
+    // If we don't start with the SC packet this means user-edited weirdo shenanigans. Don't screw around with those.
+    if (demo_data.head().startsWith("SC#") && demo_data.last().startsWith("wait#")) {
+      qDebug() << "Loaded a broken pre-2.9.1 demo file, with the wait desync issue!";
+      QMessageBox *msgBox = new QMessageBox;
+      msgBox->setAttribute(Qt::WA_DeleteOnClose);
+      msgBox->setTextFormat(Qt::RichText);
+      msgBox->setText("This appears to be a <b>broken</b> pre-2.9.1 demo file with the <a href=https://github.com/AttorneyOnline/AO2-Client/pull/496>wait desync issue</a>!<br>Do you want to correct this file? <i>If you refuse, this demo will be desynchronized!</i>");
+      msgBox->setWindowTitle("Pre-2.9.1 demo detected!");
+      msgBox->setStandardButtons(QMessageBox::NoButton);
+      QTimer::singleShot(2000, msgBox, std::bind(&QMessageBox::setStandardButtons,msgBox,QMessageBox::Yes|QMessageBox::No));
+      int ret = msgBox->exec();
+      QQueue <QString> p_demo_data;
+      switch (ret) {
+        case QMessageBox::Yes:
+          qDebug() << "Making a backup of the broken demo...";
+          QFile::copy(filename, filename + ".backup");
+          while (!demo_data.isEmpty()) {
+            QString current_packet = demo_data.dequeue();
+            // TODO: faster way of doing this, maybe with QtConcurrent's MapReduce methods?
+            if (!current_packet.startsWith("SC#") && current_packet.startsWith("wait#")) {
+              p_demo_data.insert(qMax(1, p_demo_data.size()-1), current_packet);
+              continue;
+            }
+            p_demo_data.enqueue(current_packet);
+          }
+          if (demo_file.open(QIODevice::WriteOnly | QIODevice::Text |
+                         QIODevice::Truncate)) {
+            QTextStream out(&demo_file);
+            out.setCodec("UTF-8");
+            out << p_demo_data.dequeue();
+            for (QString line : p_demo_data) {
+              out << "\n" << line;
+            }
+            demo_file.flush();
+            demo_file.close();
+          }
+          load_demo(filename);
+          break;
+        case QMessageBox::No:
+          // No was clicked
+          break;
+        default:
+          // should never be reached
+          break;
+      }
+    }
 }
 
 void DemoServer::playback()
