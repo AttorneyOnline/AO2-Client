@@ -318,6 +318,9 @@ public:
 
   void on_authentication_state_received(int p_state);
 
+  int get_jud() { return is_jud; }
+  void set_jud(int jud) { is_jud = qMax(-1, qMin(jud, 1)); }
+
   ~Courtroom();
 private:
   AOApplication *ao_app;
@@ -469,6 +472,8 @@ private:
   // QVector<int> muted_cids;
 
   bool is_muted = false;
+
+  int is_jud = -1;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
   // noniterrupting preanim, 5 = (c) animation

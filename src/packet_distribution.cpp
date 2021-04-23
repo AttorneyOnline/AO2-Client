@@ -708,9 +708,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "JD") {
     if (!courtroom_constructed || f_contents.size() < 1)
       goto end;
-    bool is_on = f_contents.at(0) == "1";
-
-    w_courtroom->toggle_judge_buttons(is_on);
+    bool ok;
+    int judnum = f_contents.at(0).toInt(&ok);
+    if (!ok)
+      goto end;
+    w_courtroom->set_jud(judnum);
+    if (w_courtroom->get_jud() > -1) // If we receive JD -1, it means the server asks us to fall back to client-side judge buttons behavior
+      w_courtroom->toggle_judge_buttons(w_courtroom->get_jud() == 1);
   }
 
 end:
