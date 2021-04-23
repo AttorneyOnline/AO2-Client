@@ -162,13 +162,7 @@ void DemoServer::handle_packet(AOPacket packet)
           load_demo(path);
           QString packet = "CT#DEMO#" + tr("Demo file loaded. Send /play or > in OOC to begin playback.") + "#1#%";
           client_sock->write(packet.toUtf8());
-          // Reset evidence list
-          client_sock->write("LE##%");
-          reset_all_timers();
-          // Set the BG to default (also breaks up the message queue)
-          client_sock->write("BN#default#wit#%");
-          // Stop the wait packet timer
-          timer->stop();
+          reset_state();
         }
         else if (contents[1].startsWith("/play") || contents[1] == ">")
         {
@@ -232,13 +226,7 @@ void DemoServer::handle_packet(AOPacket packet)
             load_demo(p_path);
             QString packet = "CT#DEMO#" + tr("Current demo file reloaded. Send /play or > in OOC to begin playback.") + "#1#%";
             client_sock->write(packet.toUtf8());
-            // Reset evidence list
-            client_sock->write("LE##%");
-            reset_all_timers();
-            // Set the BG to default (also breaks up the message queue)
-            client_sock->write("BN#default#wit#%");
-            // Stop the wait packet timer
-            timer->stop();
+            reset_state();
         }
         else if (contents[1].startsWith("/min_wait"))
         {
@@ -327,8 +315,12 @@ void DemoServer::load_demo(QString filename)
     }
 }
 
-void DemoServer::reset_all_timers()
+void DemoServer::reset_state()
 {
+    // Reset evidence list
+    client_sock->write("LE##%");
+
+    // Reset timers
     client_sock->write("TI#0#3#0#%");
     client_sock->write("TI#0#1#0#%");
     client_sock->write("TI#1#1#0#%");
@@ -339,6 +331,12 @@ void DemoServer::reset_all_timers()
     client_sock->write("TI#3#3#0#%");
     client_sock->write("TI#4#1#0#%");
     client_sock->write("TI#4#3#0#%");
+
+    // Set the BG to default (also breaks up the message queue)
+    client_sock->write("BN#default#wit#%");
+
+    // Stop the wait packet timer
+    timer->stop();
 }
 
 void DemoServer::playback()
