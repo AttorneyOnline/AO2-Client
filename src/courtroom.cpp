@@ -4318,6 +4318,9 @@ void Courtroom::on_pos_remove_clicked()
   ui_pos_dropdown->blockSignals(true);
   QString default_side = ao_app->get_char_side(current_char);
 
+  if (ao_app->get_pos_is_judge(default_side))
+      toggle_judge_buttons(false);
+
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
     if (pos == default_side) {
