@@ -278,7 +278,6 @@ QString AOApplication::read_design_ini(QString p_identifier,
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
   settings.setIniCodec("UTF-8");
-  // FIXME: we can't do the above because it makes the character "?" invisible in IC chat. Why
   QVariant value = settings.value(p_identifier);
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
