@@ -493,6 +493,9 @@ public:
   // Get if the theme is animated
   bool get_animated_theme();
 
+  // Get the default scaling method
+  QString get_default_scaling();
+
   // Currently defined subtheme
   QString subtheme;
 

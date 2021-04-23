@@ -290,6 +290,9 @@ QString AOApplication::read_design_ini(QString p_identifier,
 
 Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 {
+  if (p_scaling.isEmpty())
+    p_scaling = get_default_scaling();
+
   if (p_scaling == "smooth")
     return Qt::SmoothTransformation;
   return Qt::FastTransformation;
@@ -1097,4 +1100,9 @@ bool AOApplication::get_animated_theme()
   QString result =
       configini->value("animated_theme", "true").value<QString>();
   return result.startsWith("true");
+}
+
+QString AOApplication::get_default_scaling()
+{
+  return configini->value("default_scaling", "fast").value<QString>();
 }

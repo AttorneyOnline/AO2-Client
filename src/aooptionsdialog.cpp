@@ -382,6 +382,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                               ui_language_combobox);
 
   row += 1;
+  ui_scaling_label = new QLabel(ui_form_layout_widget);
+  ui_scaling_label->setText(tr("Scaling:"));
+  ui_scaling_label->setToolTip(
+        tr("Sets the default scaling method, if there is not one already defined "
+           "specifically for the character."));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_scaling_label);
+
+  ui_scaling_combobox = new QComboBox(ui_form_layout_widget);
+  // Corresponds with Qt::TransformationMode enum. Please don't change the order.
+  ui_scaling_combobox->addItem(tr("Pixel"), "fast");
+  ui_scaling_combobox->addItem(tr("Smooth"), "smooth");
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_scaling_combobox);
+
+  row += 1;
   ui_shake_lbl = new QLabel(ui_form_layout_widget);
   ui_shake_lbl->setText(tr("Allow Screenshake:"));
   ui_shake_lbl->setToolTip(
@@ -896,6 +910,9 @@ void AOOptionsDialog::update_values() {
       break;
     }
   }
+  Qt::TransformationMode scaling = ao_app->get_scaling(ao_app->get_default_scaling());
+  ui_scaling_combobox->setCurrentIndex(scaling);
+
   // Let's fill the callwords text edit with the already present callwords.
   ui_callwords_textbox->document()->clear();
   foreach (QString callword, ao_app->get_call_words()) {
@@ -973,6 +990,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("master", ui_ms_textbox->text());
   configini->setValue("discord", ui_discord_cb->isChecked());
   configini->setValue("language", ui_language_combobox->currentText().left(2));
+  configini->setValue("default_scaling", ui_scaling_combobox->currentData());
   configini->setValue("shake", ui_shake_cb->isChecked());
   configini->setValue("effects", ui_effects_cb->isChecked());
   configini->setValue("framenetwork", ui_framenetwork_cb->isChecked());
