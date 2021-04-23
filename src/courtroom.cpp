@@ -716,8 +716,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
-  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼" + tr("Log goes down") + "▼"
-                                                       : "▲" + tr("Log goes up") + "▲");
+  ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ " + tr("Log goes down") + " ▼"
+                                                       : "▲ " + tr("Log goes up") + " ▲");
 
   set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
   ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
