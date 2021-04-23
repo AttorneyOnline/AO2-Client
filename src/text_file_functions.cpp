@@ -442,8 +442,8 @@ QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
   QStringList backwards_paths{get_theme_path("misc/" + p_chat + "/config.ini"),
                     get_base_path() + "misc/" + p_chat +
                         "/config.ini",
-                    get_base_path() + "misc/default/config.ini",
-                    get_theme_path("misc/default/config.ini")};
+                    get_theme_path("misc/default/config.ini"),
+                    get_base_path() + "misc/default/config.ini"};
   for (const QString &p : backwards_paths) {
     QString value = read_design_ini(p_identifier, p);
     if (!value.isEmpty()) {
