@@ -477,7 +477,7 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 {
   QString value = get_config_value(p_identifier, "courtroom_sounds.ini", current_theme, get_subtheme(), default_theme, p_misc);
   if (!value.isEmpty())
-    return value.toLatin1();
+    return value.toUtf8();
   return "";
 }
 
