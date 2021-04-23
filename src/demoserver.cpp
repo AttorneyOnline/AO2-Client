@@ -274,6 +274,7 @@ void DemoServer::load_demo(QString filename)
           QFile::copy(filename, filename + ".backup");
           while (!demo_data.isEmpty()) {
             QString current_packet = demo_data.dequeue();
+            // TODO: faster way of doing this, maybe with QtConcurrent's MapReduce methods?
             if (!current_packet.startsWith("SC#") && current_packet.startsWith("wait#")) {
               p_demo_data.insert(qMax(1, p_demo_data.size()-1), current_packet);
               continue;
