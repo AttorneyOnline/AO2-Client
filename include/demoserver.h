@@ -10,6 +10,7 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QFileDialog>
+#include <QMessageBox>
 
 class DemoServer : public QObject
 {

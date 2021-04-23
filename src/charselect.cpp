@@ -21,10 +21,6 @@ void Courtroom::construct_char_select()
 
   ui_char_buttons = new QWidget(ui_char_select_background);
 
-  ui_selector = new AOImage(ui_char_select_background, ao_app);
-  ui_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_selector->resize(62, 62);
-
   ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
 
   ui_char_password = new QLineEdit(ui_char_select_background);

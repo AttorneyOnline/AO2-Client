@@ -98,9 +98,10 @@ void AOLayer::center_pixmap(QPixmap f_pixmap) {
       x + (f_w - f_pixmap.width()) / 2,
       y + (f_h - f_pixmap.height())); // Always center horizontally, always put
                                       // at the bottom vertically
-  this->setMask(
-      QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
-              f_h)); // make sure we don't escape the area we've been given
+  if (masked)
+      this->setMask(
+          QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
+                  f_h)); // make sure we don't escape the area we've been given
 }
 
 void AOLayer::combo_resize(int w, int h)
@@ -196,20 +197,20 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << " continuous: " << continuous;
 #endif
   QStringList pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, prefix + current_emote)), // Default path
-      ao_app->get_image_suffix(ao_app->get_character_path(
+      ao_app->get_character_path(
+          p_charname, prefix + current_emote), // Default path
+      ao_app->get_character_path(
           p_charname,
-          prefix + "/" + current_emote)), // Path check if it's categorized
+          prefix + "/" + current_emote), // Path check if it's categorized
                                           // into a folder
-      ao_app->get_image_suffix(ao_app->get_character_path(
+      ao_app->get_character_path(
           p_charname,
-          current_emote)), // Just use the non-prefixed image, animated or not
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path("placeholder")), // Theme placeholder path
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "placeholder", ao_app->default_theme))}; // Default theme placeholder path
-  start_playback(find_image(pathlist));
+          current_emote), // Just use the non-prefixed image, animated or not
+      current_emote, // The path by itself after the above fail
+      ao_app->get_theme_path("placeholder"), // Theme placeholder path
+      ao_app->get_theme_path(
+          "placeholder", ao_app->default_theme)}; // Default theme placeholder path
+  start_playback(ao_app->get_image_path(pathlist));
 }
 
 void SplashLayer::load_image(QString p_filename, QString p_charname,
