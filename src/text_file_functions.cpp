@@ -896,6 +896,19 @@ QString AOApplication::get_custom_realization(QString p_char)
   return get_sfx_suffix(get_sounds_path(f_result));
 }
 
+bool AOApplication::get_pos_is_judge(QString p_pos)
+{
+  if (p_pos == "jud") // hardcoded garbage
+      return true;
+  QStringList positions = read_design_ini("judges", get_background_path("design.ini")).split(",");
+  for (QString str : positions)
+      str = str.trimmed();
+  if (positions.contains(p_pos.trimmed()))
+      return true;
+  else
+      return false;
+}
+
 bool AOApplication::get_blank_blip()
 {
   QString result = configini->value("blank_blip", "false").value<QString>();
