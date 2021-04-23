@@ -1387,10 +1387,7 @@ void Courtroom::set_side(QString p_side)
     ui_pos_remove->show();
   }
 
-  toggle_judge_buttons(false);
-
-  if (ao_app->get_pos_is_judge(f_side)) // true if the pos is listed in "judges" in design.ini
-    toggle_judge_buttons(true);
+  toggle_judge_buttons(ao_app->get_pos_is_judge(f_side)); // true if the pos is listed in "judges" in design.ini, or we got a judge buttons packet from the server
 
   // Block the signals to prevent setCurrentIndex from triggering a pos
   // change
@@ -3967,6 +3964,8 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 
 void Courtroom::toggle_judge_buttons(bool is_on)
 {
+  if (is_jud > -1)
+    is_on = is_jud == 1; // Server-sided override
   if (is_on) {
     ui_witness_testimony->show();
     ui_cross_examination->show();
@@ -4419,8 +4418,7 @@ void Courtroom::on_pos_remove_clicked()
   ui_pos_dropdown->blockSignals(true);
   QString default_side = ao_app->get_char_side(current_char);
 
-  if (ao_app->get_pos_is_judge(default_side))
-      toggle_judge_buttons(false);
+  toggle_judge_buttons(ao_app->get_pos_is_judge(default_side));
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
