@@ -164,17 +164,7 @@ void DemoServer::handle_packet(AOPacket packet)
           client_sock->write(packet.toUtf8());
           // Reset evidence list
           client_sock->write("LE##%");
-          // Reset timers
-          client_sock->write("TI#0#3#0#%");
-          client_sock->write("TI#0#1#0#%");
-          client_sock->write("TI#1#1#0#%");
-          client_sock->write("TI#1#3#0#%");
-          client_sock->write("TI#2#1#0#%");
-          client_sock->write("TI#2#3#0#%");
-          client_sock->write("TI#3#1#0#%");
-          client_sock->write("TI#3#3#0#%");
-          client_sock->write("TI#4#1#0#%");
-          client_sock->write("TI#4#3#0#%");
+          reset_all_timers();
           // Set the BG to default (also breaks up the message queue)
           client_sock->write("BN#default#wit#%");
           // Stop the wait packet timer
@@ -244,17 +234,7 @@ void DemoServer::handle_packet(AOPacket packet)
             client_sock->write(packet.toUtf8());
             // Reset evidence list
             client_sock->write("LE##%");
-            // Reset timers
-            client_sock->write("TI#0#3#0#%");
-            client_sock->write("TI#0#1#0#%");
-            client_sock->write("TI#1#1#0#%");
-            client_sock->write("TI#1#3#0#%");
-            client_sock->write("TI#2#1#0#%");
-            client_sock->write("TI#2#3#0#%");
-            client_sock->write("TI#3#1#0#%");
-            client_sock->write("TI#3#3#0#%");
-            client_sock->write("TI#4#1#0#%");
-            client_sock->write("TI#4#3#0#%");
+            reset_all_timers();
             // Set the BG to default (also breaks up the message queue)
             client_sock->write("BN#default#wit#%");
             // Stop the wait packet timer
@@ -295,6 +275,20 @@ void DemoServer::load_demo(QString filename)
         demo_data.enqueue(line);
         line = demo_stream.readLine();
     }
+}
+
+void DemoServer::reset_all_timers()
+{
+    client_sock->write("TI#0#3#0#%");
+    client_sock->write("TI#0#1#0#%");
+    client_sock->write("TI#1#1#0#%");
+    client_sock->write("TI#1#3#0#%");
+    client_sock->write("TI#2#1#0#%");
+    client_sock->write("TI#2#3#0#%");
+    client_sock->write("TI#3#1#0#%");
+    client_sock->write("TI#3#3#0#%");
+    client_sock->write("TI#4#1#0#%");
+    client_sock->write("TI#4#3#0#%");
 }
 
 void DemoServer::playback()

@@ -24,6 +24,7 @@ public:
 private:
     void handle_packet(AOPacket packet);
     void load_demo(QString filename);
+    void reset_all_timers();
 
     QTcpServer* tcp_server;
     QTcpSocket* client_sock = nullptr;
