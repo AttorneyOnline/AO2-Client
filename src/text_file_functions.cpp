@@ -899,7 +899,7 @@ QString AOApplication::get_custom_realization(QString p_char)
 bool AOApplication::get_pos_is_judge(QString p_pos)
 {
   QStringList positions = read_design_ini("judges", get_background_path("design.ini")).split(",");
-  if (positions == {""})
+  if (positions.size() == 1 && positions[0] == "")
       return p_pos == "jud"; //Hardcoded BS only if we have no judges= defined
   for (QString str : positions)
       str = str.trimmed();
