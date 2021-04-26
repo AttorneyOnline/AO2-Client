@@ -848,7 +848,7 @@ QStringList AOApplication::get_effects(QString p_char)
 {
   QString p_misc = read_char_ini(p_char, "effects", "Options");
   QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  QString p_misc_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
   QStringList effects;
 
   QStringList lines = read_file(p_path).split("\n");
