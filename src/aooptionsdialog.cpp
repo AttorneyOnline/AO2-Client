@@ -325,6 +325,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_showname_cb);
 
+  row +=1;
+  ui_default_showname_lbl = new QLabel(ui_form_layout_widget);
+  ui_default_showname_lbl->setText(tr("Default showname:"));
+  ui_default_showname_lbl->setToolTip(
+              tr("Your showname will be automatically set to this value "
+                 "when you join a server."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_default_showname_lbl);
+
+  ui_default_showname_textbox = new QLineEdit(ui_form_layout_widget);
+  ui_default_showname_textbox->setMaxLength(30);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_default_showname_textbox);
+
   row += 1;
   ui_net_divider = new QFrame(ui_form_layout_widget);
   ui_net_divider->setFrameShape(QFrame::HLine);
@@ -961,6 +975,7 @@ void AOOptionsDialog::update_values() {
   ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
+  ui_default_showname_textbox->setText(ao_app->get_default_showname());
 }
 
 void AOOptionsDialog::save_pressed()
@@ -987,6 +1002,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("chat_ratelimit", ui_chat_ratelimit_spinbox->value());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
+  configini->setValue("default_showname", ui_default_showname_textbox->text());
   configini->setValue("master", ui_ms_textbox->text());
   configini->setValue("discord", ui_discord_cb->isChecked());
   configini->setValue("language", ui_language_combobox->currentText().left(2));

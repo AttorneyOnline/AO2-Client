@@ -161,6 +161,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
+  ui_ic_chat_name->setText(p_ao_app->get_default_showname());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
 
   ui_ic_chat_message = new AOLineEdit(this);
