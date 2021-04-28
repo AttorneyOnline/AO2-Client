@@ -391,6 +391,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_evidence_button = new AOButton(this, ao_app);
   ui_evidence_button->setObjectName("ui_evidence_button");
 
+  ui_login_button = new AOButton(this, ao_app);
+  ui_login_button->setText(tr("Login"));
+  ui_login_button->setObjectName("ui_login_button");
+
   initialize_evidence();
 
   construct_char_select();
@@ -543,6 +547,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_evidence_button, SIGNAL(clicked()), this,
           SLOT(on_evidence_button_clicked()));
+
+  connect(ui_login_button, SIGNAL(clicked()), this,
+          SLOT(on_login_clicked()));
 
   set_widgets();
 
@@ -1099,6 +1106,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_spectator, "spectator");
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
                               "interact with the in-character screen."));
+
+  set_size_and_pos(ui_login_button, "login_button");
+  ui_login_button->setToolTip(tr("Login as moderator"));
 
   // QCheckBox
   truncate_label_text(ui_guard, "guard");
@@ -5496,6 +5506,24 @@ void Courtroom::on_switch_area_music_clicked()
     ui_area_list->hide();
     ui_music_list->show();
   }
+}
+
+void Courtroom::on_login_clicked()
+{
+    LoginDialog* loginDialog = new LoginDialog;
+
+    connect(loginDialog, SIGNAL(sendLogin(QString&,QString&)), this,
+            SLOT(send_login_packet(QString&,QString&)));
+    loginDialog->exec();
+    ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::send_login_packet(QString& username, QString& password)
+{
+    QStringList packet_contents;
+    packet_contents.append(username);
+    packet_contents.append(password);
+    ao_app->send_server_packet(new AOPacket("AUTH#" + username + "#" + password + "#%"));
 }
 
 void Courtroom::ping_server()

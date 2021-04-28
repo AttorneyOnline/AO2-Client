@@ -20,7 +20,7 @@
 #include "aotextedit.h"
 #include "chatlogpiece.h"
 #include "datatypes.h"
-#include "debug_functions.h"
+#include "dialog_functions.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
@@ -769,6 +769,8 @@ private:
   QCheckBox *ui_char_passworded;
   QCheckBox *ui_char_taken;
 
+  AOButton *ui_login_button;
+
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
@@ -803,6 +805,8 @@ public slots:
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
   void on_reload_theme_clicked();
+
+  void send_login_packet(QString& username, QString& password);
 
 private slots:
   void start_chat_ticking();
@@ -955,6 +959,8 @@ private slots:
   void on_spectator_clicked();
 
   void on_switch_area_music_clicked();
+
+  void on_login_clicked();
 
   void on_casing_clicked();
 

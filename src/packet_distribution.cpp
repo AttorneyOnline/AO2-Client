@@ -1,7 +1,7 @@
 #include "aoapplication.h"
 
 #include "courtroom.h"
-#include "debug_functions.h"
+#include "dialog_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"

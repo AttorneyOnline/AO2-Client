@@ -1,7 +1,7 @@
 #include "networkmanager.h"
 
 #include "datatypes.h"
-#include "debug_functions.h"
+#include "dialog_functions.h"
 #include "lobby.h"
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)

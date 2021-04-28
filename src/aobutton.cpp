@@ -1,6 +1,6 @@
 #include "aobutton.h"
 
-#include "debug_functions.h"
+#include "dialog_functions.h"
 #include "file_functions.h"
 
 AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)

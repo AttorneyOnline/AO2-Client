@@ -2,7 +2,7 @@
 
 #include "aoapplication.h"
 #include "aosfxplayer.h"
-#include "debug_functions.h"
+#include "dialog_functions.h"
 #include "demoserver.h"
 #include "networkmanager.h"
 
