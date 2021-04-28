@@ -5523,7 +5523,7 @@ void Courtroom::send_login_packet(QString& username, QString& password)
     QStringList packet_contents;
     packet_contents.append(username);
     packet_contents.append(password);
-    ao_app->send_server_packet(new AOPacket("AUTH#" + username + "#" + password + "#%"));
+    ao_app->send_server_packet(new AOPacket("AUTH", packet_contents));
 }
 
 void Courtroom::ping_server()
