@@ -41,7 +41,7 @@ LoginDialog::LoginDialog(bool username_enabled, QWidget *parent):QDialog(parent)
 {
     enable_username = username_enabled;
     setupUi();
-    setWindowTitle(QCoreApplication::translate("dialog_functions", "Login"));
+    setWindowTitle(tr("Login"));
     setModal(true);
 }
 
@@ -52,7 +52,7 @@ void LoginDialog::setupUi()
     if (enable_username) {
         editUsername = new QLineEdit(this);
         labelUsername = new QLabel(this);
-        labelUsername->setText(QCoreApplication::translate("dialog_functions", "Username"));
+        labelUsername->setText(tr("Username"));
         labelUsername->setBuddy(editUsername);
         formGridLayout->addWidget(labelUsername, 0, 0);
         formGridLayout->addWidget(editUsername, 0, 1);
@@ -61,14 +61,14 @@ void LoginDialog::setupUi()
     editPassword = new QLineEdit(this);
     editPassword->setEchoMode(QLineEdit::Password);
     labelPassword = new QLabel(this);
-    labelPassword->setText(QCoreApplication::translate("dialog_functions", "Password"));
+    labelPassword->setText(tr("Password"));
     labelPassword->setBuddy(editPassword);
 
     buttons = new QDialogButtonBox(this);
     buttons->addButton(QDialogButtonBox::Ok);
     buttons->addButton(QDialogButtonBox::Cancel);
-    buttons->button(QDialogButtonBox::Ok)->setText(QCoreApplication::translate("dialog_functions", "Login"));
-    buttons->button(QDialogButtonBox::Cancel)->setText(QCoreApplication::translate("dialog_functions", "Cancel"));
+    buttons->button(QDialogButtonBox::Ok)->setText(tr("Login"));
+    buttons->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     connect(buttons->button(QDialogButtonBox::Cancel),
             SIGNAL(clicked()), this, SLOT(close()));
