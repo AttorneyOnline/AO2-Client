@@ -112,6 +112,12 @@ QString AOApplication::get_default_username()
     return result;
 }
 
+QString AOApplication::get_default_showname()
+{
+    QString result = configini->value("default_showname", "").value<QString>();
+    return result;
+}
+
 QString AOApplication::get_audio_output_device()
 {
   QString result =
