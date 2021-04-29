@@ -18,11 +18,10 @@ class LoginDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LoginDialog(QWidget *parent = 0);
-    void setUsername(QString& username);
-    void setPassword(QString& password);
+    explicit LoginDialog(bool username_enabled, QWidget *parent = 0);
 
 private:
+    bool enable_username;
     QLabel *labelUsername;
     QLineEdit *editUsername;
     QLabel *labelPassword;

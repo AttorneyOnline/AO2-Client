@@ -88,6 +88,8 @@ public:
   bool y_offset_enabled = false;
   bool expanded_desk_mods_enabled = false;
   bool auth_packet_enabled = false;
+  bool login_dialog_enabled = false;
+  bool username_auth_enabled = false;
 
   ///////////////loading info///////////////////
 

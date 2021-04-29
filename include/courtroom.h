@@ -57,6 +57,7 @@
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
 #include <QElapsedTimer>
+#include <QMessageAuthenticationCode>
 
 #include <algorithm>
 #include <stack>
@@ -317,6 +318,10 @@ public:
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
   void on_authentication_state_received(int p_state);
+
+  void on_login_response(QString challenge, QString salt);
+
+  bool awaiting_cr = false;
 
   ~Courtroom();
 private:
@@ -771,6 +776,8 @@ private:
 
   AOButton *ui_login_button;
 
+  QString stored_password;
+
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
@@ -806,7 +813,7 @@ public slots:
                    bool steno);
   void on_reload_theme_clicked();
 
-  void send_login_packet(QString& username, QString& password);
+  void send_login_request(QString& username, QString& password);
 
 private slots:
   void start_chat_ticking();
@@ -968,6 +975,7 @@ private slots:
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
+
 };
 
 #endif // COURTROOM_H

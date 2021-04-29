@@ -5,6 +5,7 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+#include <QRandomGenerator64>
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)
 {
@@ -202,6 +203,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     effects_enabled = false;
     expanded_desk_mods_enabled = false;
     auth_packet_enabled = false;
+    login_dialog_enabled = false;
+    username_auth_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -234,6 +237,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_enabled = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_enabled = true;
+    if (f_packet.contains("login_dialog", Qt::CaseInsensitive))
+        login_dialog_enabled = true;
+    if (f_packet.contains("username_auth", Qt::CaseInsensitive))
+        username_auth_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
@@ -701,6 +708,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int authenticated = f_contents.at(0).toInt();
 
     w_courtroom->on_authentication_state_received(authenticated);
+  }
+
+  //Pre-login aknowledgement
+  else if (header == "CR") {
+      if (!courtroom_constructed || !auth_packet_enabled || !(f_contents.size() == 2) || w_courtroom->awaiting_cr == false)
+        goto end;
+
+      w_courtroom->on_login_response(f_contents.at(0), f_contents.at(1)); //Challenge, salt
   }
 
 end:

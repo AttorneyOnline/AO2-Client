@@ -37,8 +37,9 @@ void call_notice(QString p_message)
 
 }
 
-LoginDialog::LoginDialog(QWidget *parent):QDialog(parent)
+LoginDialog::LoginDialog(bool username_enabled, QWidget *parent):QDialog(parent)
 {
+    enable_username = username_enabled;
     setupUi();
     setWindowTitle(QCoreApplication::translate("dialog_functions", "Login"));
     setModal(true);
@@ -47,14 +48,19 @@ LoginDialog::LoginDialog(QWidget *parent):QDialog(parent)
 void LoginDialog::setupUi()
 {
     QGridLayout *formGridLayout = new QGridLayout(this);
-    editUsername = new QLineEdit(this);
+
+    if (enable_username) {
+        editUsername = new QLineEdit(this);
+        labelUsername = new QLabel(this);
+        labelUsername->setText(QCoreApplication::translate("dialog_functions", "Username"));
+        labelUsername->setBuddy(editUsername);
+        formGridLayout->addWidget(labelUsername, 0, 0);
+        formGridLayout->addWidget(editUsername, 0, 1);
+    }
+
     editPassword = new QLineEdit(this);
     editPassword->setEchoMode(QLineEdit::Password);
-
-    labelUsername = new QLabel(this);
     labelPassword = new QLabel(this);
-    labelUsername->setText(QCoreApplication::translate("dialog_functions", "Username"));
-    labelUsername->setBuddy(editUsername);
     labelPassword->setText(QCoreApplication::translate("dialog_functions", "Password"));
     labelPassword->setBuddy(editPassword);
 
@@ -68,28 +74,17 @@ void LoginDialog::setupUi()
             SIGNAL(clicked()), this, SLOT(close()));
     connect(buttons->button(QDialogButtonBox::Ok),
             SIGNAL(clicked()), this, SLOT(slotSendLogin()));
-    formGridLayout->addWidget(labelUsername, 0, 0);
-    formGridLayout->addWidget(editUsername, 0, 1);
     formGridLayout->addWidget(labelPassword, 1, 0);
     formGridLayout->addWidget(editPassword, 1, 1);
     formGridLayout->addWidget(buttons, 2, 0, 1, 2);
     setLayout(formGridLayout);
 }
 
-void LoginDialog::setUsername(QString &username)
-{
-    editUsername->setText(username);
-    editPassword->setFocus();
-}
-
-void LoginDialog::setPassword(QString &password)
-{
-    editPassword->setText(password);
-}
-
 void LoginDialog::slotSendLogin()
 {
-    QString username = editUsername->text();
+    QString username;
+    if (enable_username)
+        username = editUsername->text();
     QString password = editPassword->text();
     emit sendLogin(username, password);
     close();
