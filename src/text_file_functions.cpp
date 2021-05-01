@@ -112,6 +112,12 @@ QString AOApplication::get_default_username()
     return result;
 }
 
+QString AOApplication::get_default_showname()
+{
+    QString result = configini->value("default_showname", "").value<QString>();
+    return result;
+}
+
 QString AOApplication::get_audio_output_device()
 {
   QString result =
@@ -277,6 +283,7 @@ QString AOApplication::read_design_ini(QString p_identifier,
                                        QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   QVariant value = settings.value(p_identifier);
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
@@ -289,6 +296,9 @@ QString AOApplication::read_design_ini(QString p_identifier,
 
 Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 {
+  if (p_scaling.isEmpty())
+    p_scaling = get_default_scaling();
+
   if (p_scaling == "smooth")
     return Qt::SmoothTransformation;
   return Qt::FastTransformation;
@@ -435,18 +445,18 @@ QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
   // New Chadly method
   QString value = get_config_value(p_identifier, "chat_config.ini", current_theme, get_subtheme(), default_theme, p_chat);
   if (!value.isEmpty())
-    return value.toLatin1();
+    return value.toUtf8();
 
   // Backwards ass compatibility
   QStringList backwards_paths{get_theme_path("misc/" + p_chat + "/config.ini"),
                     get_base_path() + "misc/" + p_chat +
                         "/config.ini",
-                    get_base_path() + "misc/default/config.ini",
-                    get_theme_path("misc/default/config.ini")};
+                    get_theme_path("misc/default/config.ini"),
+                    get_base_path() + "misc/default/config.ini"};
   for (const QString &p : backwards_paths) {
     QString value = read_design_ini(p_identifier, p);
     if (!value.isEmpty()) {
-      return value.toLatin1();
+      return value.toUtf8();
     }
   }
 
@@ -476,7 +486,7 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 {
   QString value = get_config_value(p_identifier, "courtroom_sounds.ini", current_theme, get_subtheme(), default_theme, p_misc);
   if (!value.isEmpty())
-    return value.toLatin1();
+    return value.toUtf8();
   return "";
 }
 
@@ -521,6 +531,7 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
   QSettings settings(get_character_path(p_char, "char.ini"),
                      QSettings::IniFormat);
   settings.beginGroup(target_tag);
+  settings.setIniCodec("UTF-8");
   QString value = settings.value(p_search_line).value<QString>();
   settings.endGroup();
   return value;
@@ -541,6 +552,7 @@ QStringList AOApplication::read_ini_tags(QString p_path, QString target_tag)
 {
   QStringList r_values;
   QSettings settings(p_path, QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   if (!target_tag.isEmpty())
     settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
@@ -660,15 +672,6 @@ int AOApplication::get_chat_size(QString p_char)
 int AOApplication::get_preanim_duration(QString p_char, QString p_emote)
 {
   QString f_result = read_char_ini(p_char, p_emote, "Time");
-
-  if (f_result == "")
-    return -1;
-  return f_result.toInt();
-}
-
-int AOApplication::get_ao2_preanim_duration(QString p_char, QString p_emote)
-{
-  QString f_result = read_char_ini(p_char, "%" + p_emote, "Time");
 
   if (f_result == "")
     return -1;
@@ -842,7 +845,7 @@ QStringList AOApplication::get_effects(QString p_char)
 {
   QString p_misc = read_char_ini(p_char, "effects", "Options");
   QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  QString p_misc_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
   QStringList effects;
 
   QStringList lines = read_file(p_path).split("\n");
@@ -1081,4 +1084,9 @@ bool AOApplication::get_animated_theme()
   QString result =
       configini->value("animated_theme", "true").value<QString>();
   return result.startsWith("true");
+}
+
+QString AOApplication::get_default_scaling()
+{
+  return configini->value("default_scaling", "fast").value<QString>();
 }

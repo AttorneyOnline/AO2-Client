@@ -308,7 +308,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
-      this->write_to_file("Joined server " + server_name + " on address " +
+      this->write_to_file("Joined server " + server_name + " hosted on address " +
                               server_address + " on " +
                               QDateTime::currentDateTime().toUTC().toString(),
                           log_filename, true);
@@ -616,7 +616,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->mod_called(f_contents.at(0));
   }
   else if (header == "CASEA") {
-    if (courtroom_constructed && f_contents.size() > 6)
+    if (courtroom_constructed && f_contents.size() >= 6)
       w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1",
                                f_contents.at(2) == "1", f_contents.at(3) == "1",
                                f_contents.at(4) == "1",

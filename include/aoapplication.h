@@ -278,6 +278,9 @@ public:
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();
 
+  //Returns the showname the user may have set in config.ini.
+  QString get_default_showname();
+
   // Returns the list of words in callwords.ini
   QStringList get_call_words();
 
@@ -377,10 +380,6 @@ public:
 
   // Returns the preanim duration of p_char's p_emote
   int get_preanim_duration(QString p_char, QString p_emote);
-
-  // Same as above, but only returns if it has a % in front(refer to Preanims
-  // section in the manual)
-  int get_ao2_preanim_duration(QString p_char, QString p_emote);
 
   // Not in use
   int get_text_delay(QString p_char, QString p_emote);
@@ -489,6 +488,9 @@ public:
 
   // Get if the theme is animated
   bool get_animated_theme();
+
+  // Get the default scaling method
+  QString get_default_scaling();
 
   // Currently defined subtheme
   QString subtheme;
