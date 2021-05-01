@@ -13,12 +13,12 @@ AOMusicPlayer::~AOMusicPlayer()
   }
 }
 
-void AOMusicPlayer::play(QString p_song, int channel, bool loop,
+int AOMusicPlayer::play(QString p_song, int channel, bool loop,
                          int effect_flags)
 {
   channel = channel % m_channelmax;
   if (channel < 0) // wtf?
-    return;
+    return 18;
   QString f_path = ao_app->get_music_path(p_song);
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE |
@@ -125,6 +125,7 @@ void AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   this->set_looping(loop, channel); // Have to do this here due to any
                                     // crossfading-related changes, etc.
+  return BASS_ErrorGetCode();
 }
 
 void AOMusicPlayer::stop(int channel)
@@ -146,6 +147,7 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
     BASS_ChannelSetAttribute(m_stream_list[channel], BASS_ATTRIB_VOL, volume);
   }
 }
+
 
 void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
 {
