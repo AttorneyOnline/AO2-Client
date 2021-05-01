@@ -3786,8 +3786,9 @@ void Courtroom::handle_song(QStringList *p_contents)
 {
   QStringList f_contents = *p_contents;
 
-  if (f_contents.size() < 2)
+  if (f_contents.size() < 2) {
     return;
+  }
 
   bool ok; // Used for charID, channel, effect check
   bool looping = false; // No loop due to outdated server using serverside looping
@@ -3805,11 +3806,13 @@ void Courtroom::handle_song(QStringList *p_contents)
   f_song_clear = f_song_clear.right(f_song_clear.length() - (f_song_clear.lastIndexOf("/") + 1));
 
   int n_char = f_contents.at(1).toInt(&ok);
-  if (!ok)
+  if (!ok) {
     return;
+  }
 
-  if (p_contents->length() > 3 && p_contents->at(3) == "1")
+  if (p_contents->length() > 3 && p_contents->at(3) == "1") {
     looping = true;
+  }
 
   if (p_contents->length() > 4) {
     // eyyy we want to change this song's CHANNEL huh
@@ -3829,8 +3832,9 @@ void Courtroom::handle_song(QStringList *p_contents)
     s_link = QUrl::fromPercentEncoding(p_contents->at(6).toUtf8());
   }
 
-  if (!file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !(f_song.startsWith("http")) && f_song != "~stop.mp3")
+  if (!file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !(f_song.startsWith("http")) && f_song != "~stop.mp3") {
     f_song = s_link.toString();
+  }
 
   bool is_stop = (f_song == "~stop.mp3");
   if (n_char > 0 && n_char < char_list.size()) {
@@ -3861,15 +3865,16 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
 
   if (error_code == 5) { // Cheap hack to see if file missing
-      ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
-      return;
+    ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+    return;
   }
 
-  if (!f_song.startsWith("http"))
-      ui_music_name->setText(f_song_clear);
-
-  if (f_song.startsWith("http"))
+  if (f_song.startsWith("http")) {
     ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
+  }
+  else {
+    ui_music_name->setText(f_song_clear);
+  }
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)
