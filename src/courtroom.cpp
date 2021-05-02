@@ -3864,7 +3864,7 @@ void Courtroom::handle_song(QStringList *p_contents)
     return;
   }
 
-  if (error_code == 5) { // Cheap hack to see if file missing
+  if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
     ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
     return;
   }
