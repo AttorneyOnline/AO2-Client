@@ -1283,7 +1283,7 @@ void Courtroom::set_side(QString p_side)
     ui_pos_remove->show();
   }
 
-  toggle_judge_buttons(ao_app->get_pos_is_judge(f_side)); // true if the pos is listed in "judges" in design.ini, or we got a judge buttons packet from the server
+  set_judge_buttons();
 
   // Block the signals to prevent setCurrentIndex from triggering a pos
   // change

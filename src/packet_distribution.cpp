@@ -715,6 +715,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->set_jud(judnum);
     if (w_courtroom->get_jud() > -1) // If we receive JD -1, it means the server asks us to fall back to client-side judge buttons behavior
       w_courtroom->toggle_judge_buttons(w_courtroom->get_jud() == 1);
+    else
+      w_courtroom->set_judge_buttons(); // client side judge behavior
   }
 
 end:

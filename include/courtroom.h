@@ -320,6 +320,7 @@ public:
 
   int get_jud() { return is_jud; }
   void set_jud(int jud) { is_jud = qMax(-1, qMin(jud, 1)); }
+  void set_judge_buttons() { toggle_judge_buttons(ao_app->get_pos_is_judge(current_side)); }
 
   ~Courtroom();
 private:
