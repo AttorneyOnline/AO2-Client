@@ -318,8 +318,8 @@ public:
 
   void on_authentication_state_received(int p_state);
 
-  int get_jud() { return is_jud; }
-  void set_jud(int jud) { is_jud = qMax(-1, qMin(jud, 1)); }
+  int get_judge_state() { return judge_state; }
+  void set_judge_state(int new_state) { judge_state = qMax(-1, qMin(new_state, 1)); }
   void set_judge_buttons() { toggle_judge_buttons(ao_app->get_pos_is_judge(current_side)); }
 
   ~Courtroom();
@@ -474,7 +474,7 @@ private:
 
   bool is_muted = false;
 
-  int is_jud = -1;
+  int judge_state = -1;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
   // noniterrupting preanim, 5 = (c) animation
