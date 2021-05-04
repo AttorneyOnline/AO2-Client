@@ -3824,6 +3824,11 @@ void Courtroom::handle_song(QStringList *p_contents)
       return;
   }
 
+  if(!file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http")
+          && f_song != "~stop.mp3" && ao_app->asset_url != NULL) {
+      f_song = (ao_app->asset_url + "sounds/music/" + f_song).toLower();
+  }
+
   bool is_stop = (f_song == "~stop.mp3");
   if (n_char >= 0 && n_char < char_list.size()) {
     QString str_char = char_list.at(n_char).name;
@@ -3845,17 +3850,26 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
   }
 
-  music_player->play(f_song, channel, looping, effect_flags);
+  int error_code = music_player->play(f_song, channel, looping, effect_flags);
+
   if (is_stop) {
     ui_music_name->setText(tr("None"));
+    return;
   }
-  else if (channel == 0) {
-    if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http"))
-      ui_music_name->setText(f_song_clear);
-    else if (f_song.startsWith("http"))
-      ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
-    else
-      ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+
+  if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
+    ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+    return;
+  }
+
+  if (f_song.startsWith("http") && channel == 0) {
+    ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
+    return;
+  }
+
+  if (channel == 0){
+    ui_music_name->setText(f_song_clear);
+    return;
   }
 }
 
