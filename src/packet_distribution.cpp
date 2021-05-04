@@ -703,6 +703,16 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->on_authentication_state_received(authenticated);
   }
 
+ //AssetURL Packet
+  else if (header == "ASS") {
+    if (f_contents.size() > 1) { // This can never be more than one link.
+      goto end;
+    }
+    QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
+    if (t_asset_url.isValid())
+    asset_url = t_asset_url.toString();
+  }
+
 end:
 
   delete p_packet;
