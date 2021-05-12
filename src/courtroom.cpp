@@ -3825,7 +3825,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
 
   if(!file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http")
-          && f_song != "~stop.mp3" && ao_app->asset_url != NULL) {
+          && f_song != "~stop.mp3" && !ao_app->asset_url.isEmpty()) {
       f_song = (ao_app->asset_url + "sounds/music/" + f_song).toLower();
   }
 
