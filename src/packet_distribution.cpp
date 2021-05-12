@@ -705,7 +705,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
  //AssetURL Packet
   else if (header == "ASS") {
-    if (f_contents.size() > 1 || f_contents.size() == 0) { // This can never be more than one link.
+    if (f_contents.size() != 1) {
       goto end;
     }
     QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
