@@ -868,10 +868,13 @@ QString AOApplication::get_effect(QString effect, QString p_char,
   if (p_folder == "")
     p_folder = read_char_ini(p_char, "effects", "Options");
 
-  QString p_path = get_image("effects/" + effect, current_theme, get_subtheme(), default_theme, p_folder);
+  QString p_path = get_image("effects/" + effect, current_theme, get_subtheme(), default_theme, "");
+  QString p_misc_path = get_image(effect, current_theme, get_subtheme(), default_theme, p_folder);
 
-  if (!file_exists(p_path))
+  if (!file_exists(p_misc_path) && !file_exists(p_path))
     return "";
+  else if (file_exists(p_misc_path))
+    return p_misc_path;
   return p_path;
 }
 
@@ -884,7 +887,9 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
   else
     f_property = fx_name + "_" + p_property;
 
-  QString f_result = get_config_value(f_property, "effects/effects.ini", current_theme, get_subtheme(), default_theme, read_char_ini(p_char, "effects", "Options"));
+  QString f_result = get_config_value(f_property, "effects.ini", current_theme, get_subtheme(), default_theme, read_char_ini(p_char, "effects", "Options"));
+  if (f_result == "")
+      f_result = get_config_value(f_property, "effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
   if (fx_name == "realization" && p_property == "sound") {
     f_result = get_custom_realization(p_char);
   }
