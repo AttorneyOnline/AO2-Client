@@ -39,8 +39,6 @@ QString AOApplication::get_base_path()
   return base_path;
 }
 
-QString AOApplication::get_data_path() { return get_base_path() + "data/"; }
-
 QString AOApplication::get_theme_path(QString p_file, QString p_theme)
 {
   if (p_theme == "")

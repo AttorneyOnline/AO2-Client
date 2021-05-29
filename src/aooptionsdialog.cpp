@@ -4,6 +4,8 @@
 #include "lobby.h"
 #include "bass.h"
 
+#include <QFileDialog>
+
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
 {
@@ -874,7 +876,75 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_log_cb);
 
+  // Assets tab
+  ui_assets_tab = new QWidget(this);
+  ui_assets_tab_layout = new QVBoxLayout(ui_assets_tab);
+  ui_assets_tab->setLayout(ui_assets_tab_layout);
+  ui_settings_tabs->addTab(ui_assets_tab, tr("Assets"));
+
+  ui_asset_lbl = new QLabel(ui_assets_tab);
+  ui_asset_lbl->setText(
+        tr("Add or remove base folders for use by assets. "
+           "Base folders will be searched in the order provided."));
+  ui_asset_lbl->setWordWrap(true);
+  ui_assets_tab_layout->addWidget(ui_asset_lbl);
+
+  ui_mount_list = new QListWidget(ui_assets_tab);
+  ui_assets_tab_layout->addWidget(ui_mount_list);
+
+  ui_mount_buttons_layout = new QGridLayout(ui_assets_tab);
+  ui_assets_tab_layout->addLayout(ui_mount_buttons_layout);
+
+  QSizePolicy stretch_btns(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+  stretch_btns.setHorizontalStretch(4);
+
+  ui_mount_add = new QPushButton(tr("Add…"), ui_assets_tab);
+  ui_mount_add->setSizePolicy(stretch_btns);
+  ui_mount_buttons_layout->addWidget(ui_mount_add, 0, 0, 1, 1);
+  connect(ui_mount_add, &QPushButton::clicked, this, [this] {
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
+                                                    QApplication::applicationDirPath(),
+                                                    QFileDialog::ShowDirsOnly);
+    if (dir.isEmpty())
+      return;
+    ui_mount_list->addItem(dir);
+  });
+
+  ui_mount_remove = new QPushButton(tr("Remove"), ui_assets_tab);
+  ui_mount_remove->setSizePolicy(stretch_btns);
+  ui_mount_remove->setEnabled(false);
+  ui_mount_buttons_layout->addWidget(ui_mount_remove, 0, 1, 1, 1);
+  connect(ui_mount_remove, &QPushButton::clicked, this, [=] {
+    auto selected = ui_mount_list->selectedItems();
+    if (selected.isEmpty())
+      return;
+    ui_mount_list->removeItemWidget(selected[0]);
+  });
+
+  auto *mount_buttons_spacer = new QSpacerItem(40, 20, QSizePolicy::Expanding,
+                                               QSizePolicy::Minimum);
+  ui_mount_buttons_layout->addItem(mount_buttons_spacer, 0, 2, 1, 1);
+
+  ui_mount_up = new QPushButton(tr("↑"), ui_assets_tab);
+  ui_mount_up->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+  ui_mount_up->setMaximumWidth(40);
+  ui_mount_up->setEnabled(false);
+  ui_mount_buttons_layout->addWidget(ui_mount_up, 0, 3, 1, 1);
+  connect(ui_mount_up, &QPushButton::clicked, this, [=] {
+    auto selected = ui_mount_list->selectedItems();
+    if (selected.isEmpty())
+      return;
+    ui_mount_list->setEditTriggers()
+  });
+
+  ui_mount_down = new QPushButton(tr("↓"), ui_assets_tab);
+  ui_mount_down->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+  ui_mount_down->setMaximumWidth(40);
+  ui_mount_down->setEnabled(false);
+  ui_mount_buttons_layout->addWidget(ui_mount_down, 0, 4, 1, 1);
+
   update_values();
+
   // When we're done, we should continue the updates!
   setUpdatesEnabled(true);
 }
@@ -944,6 +1014,11 @@ void AOOptionsDialog::update_values() {
   ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
+
+  auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
+                                           .arg(ao_app->get_base_path()));
+  defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
+  ui_mount_list->addItem(defaultMount);
 }
 
 void AOOptionsDialog::save_pressed()

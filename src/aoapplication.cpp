@@ -18,7 +18,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   discord = new AttorneyOnline::Discord();
   QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
                    SLOT(ms_connect_finished(bool, bool)));
-  qApp->setStyleSheet("QFrame {background-color:transparent;} QAbstractItemView {background-color: transparent; color: black;}; QLineEdit {background-color:transparent;}");
+  // qApp->setStyleSheet("QFrame {background-color:transparent;} QAbstractItemView {background-color: transparent; color: black;}; QLineEdit {background-color:transparent;}");
 }
 
 AOApplication::~AOApplication()

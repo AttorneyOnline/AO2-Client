@@ -130,7 +130,6 @@ public:
 
   // implementation in path_functions.cpp
   QString get_base_path();
-  QString get_data_path();
   QString get_theme_path(QString p_file, QString p_theme="");
   QString get_character_path(QString p_char, QString p_file);
   QString get_misc_path(QString p_misc, QString p_file);
