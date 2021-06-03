@@ -3789,6 +3789,11 @@ void Courtroom::handle_song(QStringList *p_contents)
   if (f_contents.size() < 2)
     return;
 
+  bool ok; // Used for charID, channel, effect check
+  bool looping = false; // No loop due to outdated server using serverside looping
+  int channel = 0; // Channel 0 is 'master music', other for ambient
+  int effect_flags = 0; // No effects by default - vanilla functionality
+
   QString f_song = f_contents.at(0);
   QString f_song_clear = f_song.left(f_song.lastIndexOf("."));
   if (f_song.startsWith("http")) {
@@ -3796,69 +3801,43 @@ void Courtroom::handle_song(QStringList *p_contents)
     QString f_song_decoded = QUrl::fromPercentEncoding(f_song_bytearray);
     f_song_clear = f_song_decoded.left(f_song_decoded.lastIndexOf("."));
   }
-  f_song_clear = f_song_clear.right(f_song_clear.length() -
-                                    (f_song_clear.lastIndexOf("/") + 1));
-  int n_char = f_contents.at(1).toInt();
+  f_song_clear = f_song_clear.right(f_song_clear.length() - (f_song_clear.lastIndexOf("/") + 1));
 
-  // Assume the song doesn't loop unless told otherwise (due to most outdated
-  // servers handling looping through serverside)
-  bool looping = false;
-  // Channel 0 is the 'master music', other channels would commonly be used for
-  // ambience
-  int channel = 0;
-  // No effects assumed by default - vanilla functionality
-  int effect_flags = 0;
+  int n_char = f_contents.at(1).toInt(&ok);
+  if (!ok)
+    return;
 
-  if (n_char < 0 || n_char >= char_list.size()) {
-    int channel = 0;
-    if (p_contents->length() > 3 && p_contents->at(3) == "1")
-      looping = true;
+  if (p_contents->length() > 3 && p_contents->at(3) == "1")
+    looping = true;
 
-    if (p_contents->length() >
-        4) // eyyy we want to change this song's CHANNEL huh
-      channel = p_contents->at(4).toInt(); // let the music player handle it if
-                                           // it's bigger than the channel list
-
-    if (p_contents->length() > 5) // Flags provided to us by server such as Fade
-                                  // In, Fade Out, Sync Pos etc.
-    {
-      effect_flags = p_contents->at(5).toInt();
-    }
-    music_player->play(f_song, channel, looping, effect_flags);
-    if (f_song == "~stop.mp3")
-      ui_music_name->setText(tr("None"));
-    else if (channel == 0) {
-      if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http"))
-        ui_music_name->setText(f_song_clear);
-      else if (f_song.startsWith("http"))
-        ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
-      else
-        ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
-    }
+  if (p_contents->length() > 4) {
+    // eyyy we want to change this song's CHANNEL huh
+    // let the music player handle it if it's bigger than the channel list
+    channel = p_contents->at(4).toInt(&ok);
+    if (!ok)
+      return;
   }
-  else {
+  if (p_contents->length() > 5) {
+    // Flags provided to us by server such as Fade In, Fade Out, Sync Pos etc.
+    effect_flags = p_contents->at(5).toInt(&ok);
+    if (!ok)
+      return;
+  }
+
+  if(!file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http")
+          && f_song != "~stop.mp3" && !ao_app->asset_url.isEmpty()) {
+      f_song = (ao_app->asset_url + "sounds/music/" + f_song).toLower();
+  }
+
+  bool is_stop = (f_song == "~stop.mp3");
+  if (n_char >= 0 && n_char < char_list.size()) {
     QString str_char = char_list.at(n_char).name;
     QString str_show = ao_app->get_showname(str_char);
-
     if (p_contents->length() > 2) {
       if (p_contents->at(2) != "") {
         str_show = p_contents->at(2);
       }
     }
-    if (p_contents->length() > 3 && p_contents->at(3) == "1") {
-      looping = true;
-    }
-    if (p_contents->length() >
-        4) // eyyy we want to change this song's CHANNEL huh
-      channel = p_contents->at(4).toInt(); // let the music player handle it if
-                                           // it's bigger than the channel list
-
-    if (p_contents->length() > 5) // Flags provided to us by server such as Fade
-                                  // In, Fade Out, Sync Pos etc.
-    {
-      effect_flags = p_contents->at(5).toInt();
-    }
-    bool is_stop = f_song == "~stop.mp3";
     if (!mute_map.value(n_char)) {
       if (is_stop) {
         log_ic_text(str_char, str_show, "", tr("has stopped the music"));
@@ -3868,18 +3847,29 @@ void Courtroom::handle_song(QStringList *p_contents)
         log_ic_text(str_char, str_show, f_song, tr("has played a song"));
         append_ic_text(f_song_clear, str_show, tr("has played a song"));
       }
-      music_player->play(f_song, channel, looping, effect_flags);
-      if (is_stop)
-        ui_music_name->setText(tr("None"));
-      else if (channel == 0) {
-        if (file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http"))
-          ui_music_name->setText(f_song_clear);
-        else if (f_song.startsWith("http"))
-          ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
-        else
-          ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
-      }
     }
+  }
+
+  int error_code = music_player->play(f_song, channel, looping, effect_flags);
+
+  if (is_stop) {
+    ui_music_name->setText(tr("None"));
+    return;
+  }
+
+  if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
+    ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
+    return;
+  }
+
+  if (f_song.startsWith("http") && channel == 0) {
+    ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
+    return;
+  }
+
+  if (channel == 0){
+    ui_music_name->setText(f_song_clear);
+    return;
   }
 }
 

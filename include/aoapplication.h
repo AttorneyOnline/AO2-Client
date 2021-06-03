@@ -501,6 +501,16 @@ public:
   // The file name of the log file in base/logs.
   QString log_filename;
 
+  /**
+   * @brief A QString of an URL that defines the content repository
+   *        send by the server.
+   *
+   * @details Introduced in Version 2.9.2.
+   *        Addresses the issue of contenturl devlivery for WebAO
+   *        without relying on someone adding the link manually.
+   */
+  QString asset_url;
+
   void initBASS();
   static void load_bass_opus_plugin();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
