@@ -124,6 +124,11 @@ QStringList AOApplication::get_call_words()
   return get_list_file(get_base_path() + "callwords.ini");
 }
 
+QStringList AOApplication::get_list_file(VPath path)
+{
+  return get_list_file(get_real_path(path));
+}
+
 QStringList AOApplication::get_list_file(QString p_file)
 {
   QStringList return_value;
@@ -273,6 +278,12 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   f_server_list.append(demo_server);
 
   return f_server_list;
+}
+
+QString AOApplication::read_design_ini(QString p_identifier,
+                                       VPath p_design_path)
+{
+  return read_design_ini(p_identifier, get_real_path(p_design_path));
 }
 
 QString AOApplication::read_design_ini(QString p_identifier,
@@ -440,12 +451,14 @@ QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
     return value.toLatin1();
 
   // Backwards ass compatibility
-  QStringList backwards_paths{get_theme_path("misc/" + p_chat + "/config.ini"),
-                    get_base_path() + "misc/" + p_chat +
-                        "/config.ini",
-                    get_base_path() + "misc/default/config.ini",
-                    get_theme_path("misc/default/config.ini")};
-  for (const QString &p : backwards_paths) {
+  QVector<VPath> backwards_paths {
+    get_theme_path("misc/" + p_chat + "/config.ini"),
+    VPath("misc/" + p_chat + "/config.ini"),
+    VPath("misc/default/config.ini"),
+    get_theme_path("misc/default/config.ini")
+  };
+
+  for (const VPath &p : backwards_paths) {
     QString value = read_design_ini(p_identifier, p);
     if (!value.isEmpty()) {
       return value.toLatin1();
@@ -482,36 +495,32 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
   return "";
 }
 
-QString AOApplication::get_sfx_suffix(QString sound_to_check)
-{
-  if (file_exists(sound_to_check))
-    return sound_to_check;
-  if (file_exists(sound_to_check + ".opus"))
-    return sound_to_check + ".opus";
-  if (file_exists(sound_to_check + ".ogg"))
-    return sound_to_check + ".ogg";
-  if (file_exists(sound_to_check + ".mp3"))
-    return sound_to_check + ".mp3";
-  if (file_exists(sound_to_check + ".mp4"))
-    return sound_to_check + ".mp4";
-  return sound_to_check + ".wav";
+QString AOApplication::get_suffix(VPath path_to_check, QStringList suffixes) {
+  for (const QString &suffix : suffixes) {
+    QString path = get_real_path(VPath(path_to_check.toQString() + suffix));
+    if (!path.isEmpty())
+      return path;
+  }
+
+  return QString();
 }
 
-QString AOApplication::get_image_suffix(QString path_to_check, bool static_image)
+QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  if (file_exists(path_to_check))
-    return path_to_check;
+  return get_suffix(sound_to_check, { "", ".opus", ".ogg", ".mp3", ".wav" });
+}
+
+QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
+{
+  QStringList suffixes { "" };
   // A better method would to actually use AOImageReader and see if these images have more than 1 frame.
   // However, that might not be performant.
   if (!static_image) {
-    if (file_exists(path_to_check + ".webp"))
-      return path_to_check + ".webp";
-    if (file_exists(path_to_check + ".apng"))
-      return path_to_check + ".apng";
-    if (file_exists(path_to_check + ".gif"))
-      return path_to_check + ".gif";
+    suffixes.append({ ".webp", ".apng", ".gif" });
   }
-  return path_to_check + ".png";
+  suffixes.append(".png");
+
+  return get_suffix(path_to_check, suffixes);
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and
@@ -520,7 +529,7 @@ QString AOApplication::get_image_suffix(QString path_to_check, bool static_image
 QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
                                      QString target_tag)
 {
-  QSettings settings(get_character_path(p_char, "char.ini"),
+  QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
   settings.beginGroup(target_tag);
   QString value = settings.value(p_search_line).value<QString>();
@@ -531,7 +540,7 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
 void AOApplication::set_char_ini(QString p_char, QString value,
                                  QString p_search_line, QString target_tag)
 {
-  QSettings settings(get_character_path(p_char, "char.ini"),
+  QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
   settings.beginGroup(target_tag);
   settings.setValue(p_search_line, value);
@@ -539,10 +548,10 @@ void AOApplication::set_char_ini(QString p_char, QString value,
 }
 
 // returns all the values of target_tag
-QStringList AOApplication::read_ini_tags(QString p_path, QString target_tag)
+QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
 {
   QStringList r_values;
-  QSettings settings(p_path, QSettings::IniFormat);
+  QSettings settings(get_real_path(p_path), QSettings::IniFormat);
   if (!target_tag.isEmpty())
     settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
@@ -1083,4 +1092,9 @@ bool AOApplication::get_animated_theme()
   QString result =
       configini->value("animated_theme", "true").value<QString>();
   return result.startsWith("true");
+}
+
+QStringList AOApplication::get_mount_paths()
+{
+  return configini->value("mount_paths").value<QStringList>();
 }

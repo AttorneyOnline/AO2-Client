@@ -35,7 +35,8 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
     gif_name = "evidence_appear_right";
   }
 
-  QString f_evidence_path = ao_app->get_evidence_path(p_evidence_image);
+  QString f_evidence_path = ao_app->get_real_path(
+        ao_app->get_evidence_path(p_evidence_image));
   QPixmap f_pixmap(f_evidence_path);
 
   pos_size_type icon_dimensions =

@@ -501,7 +501,7 @@ void Courtroom::set_widgets()
 {
   QString filename = "courtroom_design.ini";
   // Update the default theme from the courtroom_design.ini, if it's not defined it will be 'default'.
-  QSettings settings(ao_app->get_theme_path(filename, ao_app->current_theme), QSettings::IniFormat);
+  QSettings settings(ao_app->get_real_path(ao_app->get_theme_path(filename, ao_app->current_theme)), QSettings::IniFormat);
   ao_app->default_theme = settings.value("default_theme", "default").toString();
 
   set_fonts();
@@ -1384,11 +1384,11 @@ void Courtroom::update_character(int p_cid)
       custom_obj_menu->setDefaultAction(action);
       objection_custom = "";
     }
-    if (dir_exists(
-            ao_app->get_character_path(current_char, "custom_objections"))) {
-      ui_custom_objection->show();
-      QDir directory(
+    QString custom_objection_dir = ao_app->get_real_path(
           ao_app->get_character_path(current_char, "custom_objections"));
+    if (dir_exists(custom_objection_dir)) {
+      ui_custom_objection->show();
+      QDir directory(custom_objection_dir);
       QStringList custom_obj = directory.entryList(QStringList() << "*.png"
                                                                  << "*.gif"
                                                                  << "*.apng"
@@ -1523,7 +1523,7 @@ void Courtroom::list_music()
     treeItem->setText(0, i_song_listname);
     treeItem->setText(1, i_song);
 
-    QString song_path = ao_app->get_music_path(i_song);
+    QString song_path = ao_app->get_real_path(ao_app->get_music_path(i_song));
 
     if (file_exists(song_path))
       treeItem->setBackground(0, found_brush);
@@ -4333,8 +4333,9 @@ void Courtroom::set_iniswap_dropdown()
     ui_iniswap_remove->hide();
     return;
   }
-  QStringList iniswaps = ao_app->get_list_file(
-      ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) + ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
+  QStringList iniswaps =
+      ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
+      ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
   iniswaps.removeDuplicates();
   iniswaps.prepend(char_list.at(m_cid).name);
   if (iniswaps.size() <= 0) {
@@ -4390,7 +4391,8 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
 
   menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
-  if (file_exists(ao_app->get_character_path(current_char, "char.ini")))
+  if (file_exists(ao_app->get_real_path(
+                    ao_app->get_character_path(current_char, "char.ini"))))
     menu->addAction(QString("Edit " + current_char + "/char.ini"), this,
                     SLOT(on_iniswap_edit_requested()));
   if (ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()) !=
@@ -4401,7 +4403,7 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
 }
 void Courtroom::on_iniswap_edit_requested()
 {
-  QString p_path = ao_app->get_character_path(current_char, "char.ini");
+  QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char.ini"));
   if (!file_exists(p_path))
     return;
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
@@ -4478,7 +4480,8 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 
   menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
-  if (file_exists(ao_app->get_character_path(current_char, "soundlist.ini")))
+  if (file_exists(ao_app->get_real_path(
+                    ao_app->get_character_path(current_char, "soundlist.ini"))))
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
   else
@@ -4491,10 +4494,10 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 
 void Courtroom::on_sfx_edit_requested()
 {
-  QString p_path = ao_app->get_character_path(current_char, "soundlist.ini");
+  QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"));
   if (!file_exists(p_path)) {
     p_path = ao_app->get_base_path() + "soundlist.ini";
-    }
+  }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
@@ -4527,12 +4530,11 @@ void Courtroom::set_effects_dropdown()
 
   // ICON-MAKING HELL
   QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
-  QString custom_path =
-      ao_app->get_base_path() + "misc/" + p_effect + "/icons/";
-  QString theme_path = ao_app->get_theme_path("effects/icons/");
-  QString default_path = ao_app->get_theme_path("effects/icons/", "default");
+  VPath custom_path("misc/" + p_effect + "/icons/");
+  VPath theme_path = ao_app->get_theme_path("effects/icons/");
+  VPath default_path = ao_app->get_theme_path("effects/icons/", "default");
   for (int i = 0; i < ui_effects_dropdown->count(); ++i) {
-    QString entry = ui_effects_dropdown->itemText(i);
+    VPath entry = VPath(ui_effects_dropdown->itemText(i));
     QString iconpath = ao_app->get_image_suffix(custom_path + entry);
     if (!file_exists(iconpath)) {
       iconpath = ao_app->get_image_suffix(theme_path + entry);
@@ -4566,9 +4568,9 @@ void Courtroom::on_effects_context_menu_requested(const QPoint &pos)
 }
 void Courtroom::on_effects_edit_requested()
 {
-  QString p_path = ao_app->get_theme_path("effects/");
+  QString p_path = ao_app->get_real_path(ao_app->get_theme_path("effects/"));
   if (!dir_exists(p_path)) {
-    p_path = ao_app->get_theme_path("effects/", "default");
+    p_path = ao_app->get_real_path(ao_app->get_theme_path("effects/", "default"));
     if (!dir_exists(p_path)) {
       return;
     }
@@ -4578,7 +4580,7 @@ void Courtroom::on_effects_edit_requested()
 void Courtroom::on_character_effects_edit_requested()
 {
   QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
-  QString p_path = ao_app->get_base_path() + "misc/" + p_effect + "/";
+  QString p_path = ao_app->get_real_path(VPath("misc/" + p_effect + "/"));
   if (!dir_exists(p_path))
     return;
 

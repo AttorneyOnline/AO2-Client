@@ -14,7 +14,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // Setting up the basics.
   setWindowFlag(Qt::WindowCloseButtonHint);
   setWindowTitle(tr("Settings"));
-  resize(400, 408);
+  resize(450, 408);
 
   ui_settings_buttons = new QDialogButtonBox(this);
 
@@ -907,7 +907,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                                                     QFileDialog::ShowDirsOnly);
     if (dir.isEmpty())
       return;
-    ui_mount_list->addItem(dir);
+    QListWidgetItem *dir_item = new QListWidgetItem(dir);
+    ui_mount_list->addItem(dir_item);
+    ui_mount_list->setCurrentItem(dir_item);
+
+    // quick hack to update buttons
+    emit ui_mount_list->itemSelectionChanged();
   });
 
   ui_mount_remove = new QPushButton(tr("Remove"), ui_assets_tab);
@@ -918,7 +923,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
-    ui_mount_list->removeItemWidget(selected[0]);
+    delete selected[0];
+    emit ui_mount_list->itemSelectionChanged();
+    asset_cache_dirty = true;
   });
 
   auto *mount_buttons_spacer = new QSpacerItem(40, 20, QSizePolicy::Expanding,
@@ -934,7 +941,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
-    ui_mount_list->setEditTriggers()
+    auto *item = selected[0];
+    int row = ui_mount_list->row(item);
+    ui_mount_list->takeItem(row);
+    int new_row = qMax(1, row - 1);
+    ui_mount_list->insertItem(new_row, item);
+    ui_mount_list->setCurrentRow(new_row);
+    asset_cache_dirty = true;
   });
 
   ui_mount_down = new QPushButton(tr("↓"), ui_assets_tab);
@@ -942,6 +955,49 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_down->setMaximumWidth(40);
   ui_mount_down->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_down, 0, 4, 1, 1);
+  connect(ui_mount_down, &QPushButton::clicked, this, [=] {
+    auto selected = ui_mount_list->selectedItems();
+    if (selected.isEmpty())
+      return;
+    auto *item = selected[0];
+    int row = ui_mount_list->row(item);
+    ui_mount_list->takeItem(row);
+    int new_row = qMin(ui_mount_list->count() + 1, row + 1);
+    ui_mount_list->insertItem(new_row, item);
+    ui_mount_list->setCurrentRow(new_row);
+    asset_cache_dirty = true;
+  });
+
+  auto *mount_buttons_spacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding,
+                                                 QSizePolicy::Minimum);
+  ui_mount_buttons_layout->addItem(mount_buttons_spacer_2, 0, 5, 1, 1);
+
+  ui_mount_clear_cache = new QPushButton(tr("Clear Cache"), ui_assets_tab);
+  ui_mount_clear_cache->setToolTip(tr("Clears the lookup cache for assets. "
+  "Use this when you have added an asset that takes precedence over another "
+  "existing asset."));
+  ui_mount_buttons_layout->addWidget(ui_mount_clear_cache, 0, 6, 1, 1);
+  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [=] {
+    asset_cache_dirty = true;
+    ui_mount_clear_cache->setEnabled(false);
+  });
+
+  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [=] {
+    auto selected_items = ui_mount_list->selectedItems();
+    bool row_selected = !ui_mount_list->selectedItems().isEmpty();
+    ui_mount_remove->setEnabled(row_selected);
+    ui_mount_up->setEnabled(row_selected);
+    ui_mount_down->setEnabled(row_selected);
+
+    if (!row_selected)
+      return;
+
+    int row = ui_mount_list->row(selected_items[0]);
+    if (row <= 1)
+      ui_mount_up->setEnabled(false);
+    if (row >= ui_mount_list->count() - 1)
+      ui_mount_down->setEnabled(false);
+  });
 
   update_values();
 
@@ -1019,6 +1075,7 @@ void AOOptionsDialog::update_values() {
                                            .arg(ao_app->get_base_path()));
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
   ui_mount_list->addItem(defaultMount);
+  ui_mount_list->addItems(ao_app->get_mount_paths());
 }
 
 void AOOptionsDialog::save_pressed()
@@ -1091,8 +1148,16 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
 
+  QStringList mountPaths;
+  for (int i = 1; i < ui_mount_list->count(); i++)
+    mountPaths.append(ui_mount_list->item(i)->text());
+  configini->setValue("mount_paths", mountPaths);
+
   if (audioChanged)
     ao_app->initBASS();
+
+  if (asset_cache_dirty)
+    ao_app->invalidate_lookup_cache();
 
   callwordsini->close();
 

@@ -2,6 +2,9 @@
 
 bool file_exists(QString file_path)
 {
+  if (file_path.isEmpty())
+    return false;
+
   QFileInfo check_file(file_path);
 
   return check_file.exists() && check_file.isFile();

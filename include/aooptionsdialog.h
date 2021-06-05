@@ -180,6 +180,9 @@ private:
   QPushButton *ui_mount_remove;
   QPushButton *ui_mount_up;
   QPushButton *ui_mount_down;
+  QPushButton *ui_mount_clear_cache;
+
+  bool asset_cache_dirty = false;
 
   bool needs_default_audiodev();
   void update_values();

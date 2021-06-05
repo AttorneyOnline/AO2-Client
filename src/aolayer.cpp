@@ -137,7 +137,7 @@ void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
   cull_image = false;
-  QString design_path = ao_app->get_background_path("design.ini");
+  VPath design_path = ao_app->get_background_path("design.ini");
   transform_mode =
       ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
   stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
