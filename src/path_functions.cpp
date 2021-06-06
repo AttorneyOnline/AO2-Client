@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QRegExp>
 #include <QStandardPaths>
+#include <QStringBuilder>
 
 #ifdef BASE_OVERRIDE
 #include "base_override.h"
@@ -195,6 +196,7 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
   if (exists(p_file))
     return p_file;
 
+
   QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
 
   // second, does it exist in the new parent dir?
@@ -204,12 +206,22 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
   // last resort, dirlist parent dir and find case insensitive match
   QRegExp file_rx =
       QRegExp(file_basename, Qt::CaseInsensitive, QRegExp::FixedString);
-  QStringList files = QDir(file_parent_dir).entryList();
 
-  int result = files.indexOf(file_rx);
+  static QHash<uint, QString> listing_cache;
+  static QHash<uint, bool> listing_exist_cache;
 
-  if (result != -1)
-    return file_parent_dir + "/" + files.at(result);
+  if (!listing_exist_cache.contains(qHash(file_parent_dir))) {
+    QStringList files = QDir(file_parent_dir).entryList();
+    for (const QString &file : files) {
+      listing_cache.insert(qHash(file_parent_dir % QChar('/') % file.toLower()), file);
+    }
+    listing_exist_cache.insert(qHash(file_parent_dir), true);
+  }
+  QString found_file = listing_cache.value(qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
+
+  if (!found_file.isEmpty()) {
+    return file_parent_dir + "/" + found_file;
+  }
 
   // if nothing is found, let the caller handle the missing file
   return file_parent_dir + "/" + file_basename;
