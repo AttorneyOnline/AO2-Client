@@ -495,32 +495,21 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
   return "";
 }
 
-QString AOApplication::get_suffix(VPath path_to_check, QStringList suffixes) {
-  for (const QString &suffix : suffixes) {
-    QString path = get_real_path(VPath(path_to_check.toQString() + suffix));
-    if (!path.isEmpty())
-      return path;
-  }
-
-  return QString();
-}
-
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  return get_suffix(sound_to_check, { "", ".opus", ".ogg", ".mp3", ".wav" });
+  return get_real_suffixed_path(sound_to_check,
+                                { "", ".opus", ".ogg", ".mp3", ".wav" });
 }
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
 {
   QStringList suffixes { "" };
-  // A better method would to actually use AOImageReader and see if these images have more than 1 frame.
-  // However, that might not be performant.
   if (!static_image) {
     suffixes.append({ ".webp", ".apng", ".gif" });
   }
   suffixes.append(".png");
 
-  return get_suffix(path_to_check, suffixes);
+  return get_real_suffixed_path(path_to_check, suffixes);
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and

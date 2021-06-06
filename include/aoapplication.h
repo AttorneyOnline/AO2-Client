@@ -167,6 +167,7 @@ public:
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
   QString get_case_sensitive_path(QString p_file);
   QString get_real_path(const VPath &vpath);
+  QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
   void invalidate_lookup_cache();
 
   ////// Functions for reading and writing files //////
@@ -354,9 +355,6 @@ public:
 
   // Returns the sfx with p_identifier from courtroom_sounds.ini in the current theme path
   QString get_court_sfx(QString p_identifier, QString p_misc="");
-
-  // Find the correct suffix for a given file
-  QString get_suffix(VPath file_to_check, QStringList suffixes);
 
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(VPath sound_to_check);

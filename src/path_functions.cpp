@@ -246,6 +246,39 @@ QString AOApplication::get_real_path(const VPath &vpath) {
   return QString();
 }
 
+// Special case of get_real_path where multiple suffixes need to be tried
+// on each mount path.
+QString AOApplication::get_real_suffixed_path(const VPath &vpath,
+                                              const QStringList &suffixes) {
+  // Try cache first
+  QString phys_path = asset_lookup_cache.value(vpath);
+  if (!phys_path.isEmpty() && exists(phys_path)) {
+    return phys_path;
+  }
+
+  // Cache miss; try each suffix on all known mount paths
+  QStringList bases = get_mount_paths();
+  bases.push_front(get_base_path());
+
+  for (const QString &base : bases) {
+    for (const QString &suffix : suffixes) {
+      QDir baseDir(base);
+      const QString path = baseDir.absoluteFilePath(vpath.toQString() + suffix);
+      if (!path.startsWith(baseDir.absolutePath())) {
+        qWarning() << "invalid path" << path << "(path is outside vfs)";
+        break;
+      }
+      if (exists(get_case_sensitive_path(path))) {
+        asset_lookup_cache.insert(vpath, path);
+        return path;
+      }
+    }
+  }
+
+  // File or directory not found
+  return QString();
+}
+
 void AOApplication::invalidate_lookup_cache() {
   asset_lookup_cache.clear();
 }
