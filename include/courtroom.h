@@ -588,6 +588,9 @@ private:
   QString current_background = "default";
   QString current_side = "";
 
+  QString last_music_search = "";
+  QString last_area_search = "";
+
   QBrush free_brush;
   QBrush lfp_brush;
   QBrush casing_brush;
