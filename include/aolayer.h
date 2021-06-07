@@ -53,6 +53,7 @@ public:
   bool force_continuous = false;
   Qt::TransformationMode transform_mode = Qt::FastTransformation; // transformation mode to use for this image
   bool stretch = false; // Should we stretch/squash this image to fill the screen?
+  bool masked = true; // Set a mask to the dimensions of the widget?
 
   // Set the movie's image to provided paths, preparing for playback.
   void start_playback(QString p_image);
@@ -103,10 +104,6 @@ protected:
   QImageReader m_reader;
 
   QElapsedTimer actual_time;
-
-  // Usually used to turn seconds into milliseconds such as for [Time] tag in
-  // char.ini (which is no longer used)
-  const int tick_ms = 60;
 
   // These are the X and Y values before they are fixed based on the sprite's
   // width.

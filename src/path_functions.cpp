@@ -91,7 +91,6 @@ VPath AOApplication::get_evidence_path(QString p_file)
 QVector<VPath> AOApplication::get_asset_paths(QString p_element, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc, QString p_character, QString p_placeholder)
 {
     QVector<VPath> pathlist;
-    pathlist += VPath(p_element); // The path by itself
     if (p_character != "")
       pathlist += get_character_path(p_character, p_element); // Character folder
     if (p_misc != "" && p_theme != "" && p_subtheme != "")
@@ -106,6 +105,7 @@ QVector<VPath> AOApplication::get_asset_paths(QString p_element, QString p_theme
       pathlist += get_theme_path(p_element, p_theme); // Theme path
     if (p_default_theme != "")
       pathlist += get_theme_path(p_element, p_default_theme); // Default theme path
+    pathlist += VPath(p_element); // The path by itself
     if (p_placeholder != "" && p_theme != "")
       pathlist += get_theme_path(p_placeholder, p_theme); // Placeholder path
     if (p_placeholder != "" && p_default_theme != "")
@@ -154,6 +154,7 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
         path = get_real_path(p);
         if (!path.isEmpty()) {
             QSettings settings(path, QSettings::IniFormat);
+            settings.setIniCodec("UTF-8");
             QVariant value = settings.value(p_identifier);
             if (value.type() == QVariant::StringList) {
 //              qDebug() << "got" << p << "is a string list, returning" << value.toStringList().join(",");

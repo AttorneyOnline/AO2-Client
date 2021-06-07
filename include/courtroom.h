@@ -226,13 +226,16 @@ public:
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList p_contents);
 
+  // Skip the current queue, adding all the queue messages to the logs if desynchronized logs are disabled
+  void skip_chatmessage_queue();
+
   enum LogMode {
     IO_ONLY,
     DISPLAY_ONLY,
     DISPLAY_AND_IO
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
-  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0, LogMode f_log_mode=IO_ONLY);
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
@@ -752,7 +755,6 @@ private:
 
   QVector<AOCharButton *> ui_char_button_list;
   QVector<AOCharButton *> ui_char_button_list_filtered;
-  AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
 

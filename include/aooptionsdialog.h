@@ -79,6 +79,8 @@ private:
   QLabel *ui_username_lbl;
   QLabel *ui_showname_lbl;
   QCheckBox *ui_showname_cb;
+  QLabel *ui_default_showname_lbl;
+  QLineEdit *ui_default_showname_textbox;
   QFrame *ui_net_divider;
   QLabel *ui_ms_lbl;
   QLineEdit *ui_ms_textbox;
@@ -86,6 +88,8 @@ private:
   QCheckBox *ui_discord_cb;
   QLabel *ui_language_label;
   QComboBox *ui_language_combobox;
+  QLabel *ui_scaling_label;
+  QComboBox *ui_scaling_combobox;
 
   QLabel *ui_shake_lbl;
   QCheckBox *ui_shake_cb;

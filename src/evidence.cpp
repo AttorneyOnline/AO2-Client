@@ -3,47 +3,64 @@
 void Courtroom::initialize_evidence()
 {
   ui_evidence = new AOImage(this, ao_app);
+  ui_evidence->setObjectName("ui_evidence");
 
   // ui_evidence_name = new QLabel(ui_evidence);
   ui_evidence_name = new AOLineEdit(ui_evidence);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFrame(false);
+  ui_evidence_name->setObjectName("ui_evidence_name");
 
   ui_evidence_buttons = new QWidget(ui_evidence);
+  ui_evidence_buttons->setObjectName("ui_evidence_buttons");
 
   ui_evidence_left = new AOButton(ui_evidence, ao_app);
+  ui_evidence_left->setObjectName("ui_evidence_left");
   ui_evidence_right = new AOButton(ui_evidence, ao_app);
+  ui_evidence_right->setObjectName("ui_evidence_right");
   ui_evidence_present = new AOButton(ui_evidence, ao_app);
   ui_evidence_present->setToolTip(tr("Present this piece of evidence to "
                                      "everyone on your next spoken message"));
+  ui_evidence_present->setObjectName("ui_evidence_present");
 
   ui_evidence_switch = new AOButton(ui_evidence, ao_app);
+  ui_evidence_switch->setObjectName("ui_evidence_switch");
   ui_evidence_transfer = new AOButton(ui_evidence, ao_app);
+  ui_evidence_transfer->setObjectName("ui_evidence_transfer");
 
   ui_evidence_save = new AOButton(ui_evidence, ao_app);
   ui_evidence_save->setToolTip(tr("Save evidence to an .ini file."));
+  ui_evidence_save->setObjectName("ui_evidence_save");
   ui_evidence_load = new AOButton(ui_evidence, ao_app);
   ui_evidence_load->setToolTip(tr("Load evidence from an .ini file."));
+  ui_evidence_load->setObjectName("ui_evidence_load");
 
   ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
+  ui_evidence_overlay->setObjectName("ui_evidence_overlay");
 
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_delete->setToolTip(tr("Destroy this piece of evidence"));
+  ui_evidence_delete->setObjectName("ui_evidence_delete");
   ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name->setObjectName("ui_evidence_image_name");
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_button->setText(tr("Choose.."));
+  ui_evidence_image_button->setObjectName("ui_evidence_image_button");
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_x->setToolTip(
       tr("Close the evidence display/editing overlay.\n"
          "You will be prompted if there's any unsaved changes."));
+  ui_evidence_x->setObjectName("ui_evidence_x");
   ui_evidence_ok = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_ok->setToolTip(tr("Save any changes made to this piece of "
                                 "evidence and send them to server."));
+  ui_evidence_ok->setObjectName("ui_evidence_ok");
 
   ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
   ui_evidence_description->setFrameStyle(QFrame::NoFrame);
   ui_evidence_description->setToolTip(
       tr("Double-click to edit. Press [X] to update your changes."));
+  ui_evidence_description->setObjectName("ui_evidence_description");
 
   connect(ui_evidence_name, SIGNAL(returnPressed()), this,
           SLOT(on_evidence_name_edited()));

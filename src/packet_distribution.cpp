@@ -121,6 +121,7 @@ void AOApplication::append_to_demofile(QString packet_string)
 void AOApplication::server_packet_received(AOPacket *p_packet)
 {
   QStringList f_contents_encoded = p_packet->get_contents();
+  QString f_packet_encoded = p_packet->to_string();
   p_packet->net_decode();
 
   QString header = p_packet->get_header();
@@ -182,7 +183,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_courtroom->append_server_chatmessage(f_contents.at(0),
                                                f_contents.at(1), "0");
 
-      append_to_demofile(p_packet->to_string(true));
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "FL") {
@@ -307,7 +308,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
-      this->write_to_file("Joined server " + server_name + " on address " +
+      this->write_to_file("Joined server " + server_name + " hosted on address " +
                               server_address + " on " +
                               QDateTime::currentDateTime().toUTC().toString(),
                           log_filename, true);
@@ -368,7 +369,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     send_server_packet(new AOPacket("RM#%"));
-    append_to_demofile(p_packet->to_string(true));
+    append_to_demofile(f_packet_encoded);
   }
   else if (header == "SM") {
     if (!courtroom_constructed || courtroom_loaded)
@@ -471,7 +472,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           2) // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
       w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
-      append_to_demofile(p_packet->to_string(true));
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "SP") {
@@ -481,7 +482,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed) // We were sent a "set position" packet
     {
       w_courtroom->set_side(f_contents.at(0));
-      append_to_demofile(p_packet->to_string(true));
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "SD") // Send pos dropdown
@@ -507,14 +508,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->chatmessage_enqueue(p_packet->get_contents());
-      append_to_demofile(p_packet->to_string(true));
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->handle_song(&p_packet->get_contents());
-      append_to_demofile(p_packet->to_string(true));
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "RT") {
@@ -525,7 +526,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           w_courtroom->handle_wtce(f_contents.at(0), 0);
         else if (f_contents.size() == 2) {
           w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
-        append_to_demofile(p_packet->to_string(true));
+        append_to_demofile(f_packet_encoded);
       }
     }
   }
@@ -534,7 +535,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     {
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
-      append_to_demofile(p_packet->to_string(true));
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "LE") {
@@ -560,7 +561,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
 
       w_courtroom->set_evidence_list(f_evi_list);
-      append_to_demofile(p_packet->to_string(true));
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "ARUP") {
@@ -615,7 +616,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->mod_called(f_contents.at(0));
   }
   else if (header == "CASEA") {
-    if (courtroom_constructed && f_contents.size() > 6)
+    if (courtroom_constructed && f_contents.size() >= 6)
       w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1",
                                f_contents.at(2) == "1", f_contents.at(3) == "1",
                                f_contents.at(4) == "1",
@@ -665,7 +666,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_clock_visibility(id, true);
     else if (type == 3)
       w_courtroom->set_clock_visibility(id, false);
-    append_to_demofile(p_packet->to_string(true));
+    append_to_demofile(f_packet_encoded);
   }
   else if (header == "CHECK") {
     if (!courtroom_constructed)
@@ -700,6 +701,16 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int authenticated = f_contents.at(0).toInt();
 
     w_courtroom->on_authentication_state_received(authenticated);
+  }
+
+ //AssetURL Packet
+  else if (header == "ASS") {
+    if (f_contents.size() > 1 || f_contents.size() == 0) { // This can never be more than one link.
+      goto end;
+    }
+    QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
+    if (t_asset_url.isValid())
+    asset_url = t_asset_url.toString();
   }
 
 end:

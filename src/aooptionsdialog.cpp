@@ -334,6 +334,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_showname_cb);
 
+  row +=1;
+  ui_default_showname_lbl = new QLabel(ui_form_layout_widget);
+  ui_default_showname_lbl->setText(tr("Default showname:"));
+  ui_default_showname_lbl->setToolTip(
+              tr("Your showname will be automatically set to this value "
+                 "when you join a server."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_default_showname_lbl);
+
+  ui_default_showname_textbox = new QLineEdit(ui_form_layout_widget);
+  ui_default_showname_textbox->setMaxLength(30);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_default_showname_textbox);
+
   row += 1;
   ui_net_divider = new QFrame(ui_form_layout_widget);
   ui_net_divider->setFrameShape(QFrame::HLine);
@@ -389,6 +403,20 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_language_combobox->addItem("ru - Русский");
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole,
                               ui_language_combobox);
+
+  row += 1;
+  ui_scaling_label = new QLabel(ui_form_layout_widget);
+  ui_scaling_label->setText(tr("Scaling:"));
+  ui_scaling_label->setToolTip(
+        tr("Sets the default scaling method, if there is not one already defined "
+           "specifically for the character."));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_scaling_label);
+
+  ui_scaling_combobox = new QComboBox(ui_form_layout_widget);
+  // Corresponds with Qt::TransformationMode enum. Please don't change the order.
+  ui_scaling_combobox->addItem(tr("Pixel"), "fast");
+  ui_scaling_combobox->addItem(tr("Smooth"), "smooth");
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_scaling_combobox);
 
   row += 1;
   ui_shake_lbl = new QLabel(ui_form_layout_widget);
@@ -1029,6 +1057,9 @@ void AOOptionsDialog::update_values() {
       break;
     }
   }
+  Qt::TransformationMode scaling = ao_app->get_scaling(ao_app->get_default_scaling());
+  ui_scaling_combobox->setCurrentIndex(scaling);
+
   // Let's fill the callwords text edit with the already present callwords.
   ui_callwords_textbox->document()->clear();
   foreach (QString callword, ao_app->get_call_words()) {
@@ -1042,7 +1073,7 @@ void AOOptionsDialog::update_values() {
   ui_log_newline_cb->setChecked(ao_app->get_log_newline());
   ui_log_timestamp_cb->setChecked(ao_app->get_log_timestamp());
   ui_log_ic_actions_cb->setChecked(ao_app->get_log_ic_actions());
-  ui_desync_logs_cb->setChecked(ao_app->get_log_timestamp());
+  ui_desync_logs_cb->setChecked(ao_app->is_desyncrhonized_logs_enabled());
   ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
   ui_showname_cb->setChecked(ao_app->get_showname_enabled_by_default());
   ui_discord_cb->setChecked(ao_app->is_discord_enabled());
@@ -1077,6 +1108,7 @@ void AOOptionsDialog::update_values() {
   ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
+  ui_default_showname_textbox->setText(ao_app->get_default_showname());
 
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
@@ -1109,9 +1141,11 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("chat_ratelimit", ui_chat_ratelimit_spinbox->value());
   configini->setValue("default_username", ui_username_textbox->text());
   configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
+  configini->setValue("default_showname", ui_default_showname_textbox->text());
   configini->setValue("master", ui_ms_textbox->text());
   configini->setValue("discord", ui_discord_cb->isChecked());
   configini->setValue("language", ui_language_combobox->currentText().left(2));
+  configini->setValue("default_scaling", ui_scaling_combobox->currentData());
   configini->setValue("shake", ui_shake_cb->isChecked());
   configini->setValue("effects", ui_effects_cb->isChecked());
   configini->setValue("framenetwork", ui_framenetwork_cb->isChecked());

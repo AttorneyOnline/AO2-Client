@@ -10,6 +10,7 @@ void Courtroom::construct_char_select()
   this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
   ui_char_select_background = new AOImage(this, ao_app);
+  ui_char_select_background->setObjectName("ui_char_select_background");
 
   ui_char_list = new QTreeWidget(ui_char_select_background);
   ui_char_list->setColumnCount(2);
@@ -18,32 +19,38 @@ void Courtroom::construct_char_select()
   ui_char_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui_char_list->hideColumn(1);
   ui_char_list->setDropIndicatorShown(true);
+  ui_char_list->setObjectName("ui_char_list");
 
   ui_char_buttons = new QWidget(ui_char_select_background);
-
-  ui_selector = new AOImage(ui_char_select_background, ao_app);
-  ui_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_selector->resize(62, 62);
+  ui_char_buttons->setObjectName("ui_char_buttons");
 
   ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
+  ui_back_to_lobby->setObjectName("ui_back_to_lobby");
 
   ui_char_password = new QLineEdit(ui_char_select_background);
   ui_char_password->setPlaceholderText(tr("Password"));
+  ui_char_password->setObjectName("ui_char_password");
 
   ui_char_select_left = new AOButton(ui_char_select_background, ao_app);
+  ui_char_select_left->setObjectName("ui_char_select_left");
   ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
+  ui_char_select_right->setObjectName("ui_char_select_right");
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
   ui_spectator->setText(tr("Spectator"));
+  ui_spectator->setObjectName("ui_spectator");
 
   ui_char_search = new QLineEdit(ui_char_select_background);
   ui_char_search->setPlaceholderText(tr("Search"));
+  ui_char_search->setObjectName("ui_char_search");
 
   ui_char_passworded = new QCheckBox(ui_char_select_background);
   ui_char_passworded->setText(tr("Passworded"));
+  ui_char_passworded->setObjectName("ui_char_passworded");
 
   ui_char_taken = new QCheckBox(ui_char_select_background);
   ui_char_taken->setText(tr("Taken"));
+  ui_char_taken->setObjectName("ui_char_taken");
 
   connect(ui_char_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
           this, SLOT(on_char_list_double_clicked(QTreeWidgetItem *, int)));
@@ -168,14 +175,14 @@ void Courtroom::char_clicked(int n_char)
     }
   }
 
-  if (n_char != m_cid) {
+  if (n_char != m_cid || n_char == -1) {
     ao_app->send_server_packet(
         new AOPacket("PW#" + ui_char_password->text() + "#%"));
     ao_app->send_server_packet(
         new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" +
                      QString::number(n_char) + "#" + get_hdid() + "#%"));
   }
-  else {
+  if (n_char == m_cid || n_char == -1) {
     update_character(n_char);
     enter_courtroom();
     set_courtroom_size();

@@ -98,9 +98,10 @@ void AOLayer::center_pixmap(QPixmap f_pixmap) {
       x + (f_w - f_pixmap.width()) / 2,
       y + (f_h - f_pixmap.height())); // Always center horizontally, always put
                                       // at the bottom vertically
-  this->setMask(
-      QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
-              f_h)); // make sure we don't escape the area we've been given
+  if (masked)
+      this->setMask(
+          QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
+                  f_h)); // make sure we don't escape the area we've been given
 }
 
 void AOLayer::combo_resize(int w, int h)
@@ -145,6 +146,7 @@ void BackgroundLayer::load_image(QString p_filename)
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
 #endif
   start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename)));
+  play();
 }
 
 void CharLayer::load_image(QString p_filename, QString p_charname,
@@ -156,7 +158,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   transform_mode = ao_app->get_scaling(
       ao_app->get_emote_property(p_charname, p_filename, "scaling"));
   stretch = ao_app->get_emote_property(p_charname, p_filename, "stretch")
-                .startsWith(true);
+                .startsWith("true");
   if ((p_charname == last_char) &&
       ((p_filename == last_emote) ||
        (p_filename.mid(3, -1) == last_emote.mid(3, -1))) &&
@@ -188,28 +190,29 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
     }
     is_preanim = true;
     play_once = true;
-    preanim_timer->start(duration * tick_ms);
+    preanim_timer->start(duration);
   }
 #ifdef DEBUG_MOVIE
   qDebug() << "[CharLayer] anim loaded: prefix " << prefix << " filename "
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
 #endif
-  QStringList pathlist = {
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_charname, prefix + current_emote)), // Default path
-      ao_app->get_image_suffix(ao_app->get_character_path(
+  QVector<VPath> pathlist {
+      ao_app->get_character_path(
+          p_charname, prefix + current_emote), // Default path
+      ao_app->get_character_path(
           p_charname,
-          prefix + "/" + current_emote)), // Path check if it's categorized
+          prefix + "/" + current_emote), // Path check if it's categorized
                                           // into a folder
-      ao_app->get_image_suffix(ao_app->get_character_path(
+      ao_app->get_character_path(
           p_charname,
-          current_emote)), // Just use the non-prefixed image, animated or not
-      ao_app->get_image_suffix(
-          ao_app->get_theme_path("placeholder")), // Theme placeholder path
-      ao_app->get_image_suffix(ao_app->get_theme_path(
-          "placeholder", ao_app->default_theme))}; // Default theme placeholder path
-  start_playback(find_image(pathlist));
+          current_emote), // Just use the non-prefixed image, animated or not
+      VPath(current_emote), // The path by itself after the above fail
+      ao_app->get_theme_path("placeholder"), // Theme placeholder path
+      ao_app->get_theme_path(
+          "placeholder", ao_app->default_theme)}; // Default theme placeholder path
+  start_playback(ao_app->get_image_path(pathlist));
+  play();
 }
 
 void SplashLayer::load_image(QString p_filename, QString p_charname,
@@ -218,6 +221,7 @@ void SplashLayer::load_image(QString p_filename, QString p_charname,
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
   start_playback(final_image);
+  play();
 }
 
 void EffectLayer::load_image(QString p_filename, bool p_looping)
@@ -229,13 +233,16 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
   continuous = false;
   force_continuous = true;
   start_playback(p_filename); // handled in its own file before we see it
+  play();
 }
 
 void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
+  last_path = "";
   stretch = true;
   QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
+  play();
 }
 
 void StickerLayer::load_image(QString p_charname)
@@ -246,6 +253,7 @@ void StickerLayer::load_image(QString p_charname)
   transform_mode = ao_app->get_misc_scaling(p_miscname);
   QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
+  play();
 }
 
 void CharLayer::start_playback(QString p_image)
@@ -256,6 +264,7 @@ void CharLayer::start_playback(QString p_image)
     load_network_effects();
   else // Use default ini FX
     load_effects();
+  play();
 }
 
 void AOLayer::start_playback(QString p_image)
@@ -274,7 +283,7 @@ void AOLayer::start_playback(QString p_image)
   actual_time.restart();
 #endif
   this->clear();
-  freeze();
+  this->freeze();
   movie_frames.clear();
   movie_delays.clear();
   QString scaling_override =
@@ -328,14 +337,12 @@ void AOLayer::start_playback(QString p_image)
   }
   else if (max_frames <= 1) {
     duration = static_duration;
-    play_once = false;
 #ifdef DEBUG_MOVIE
     qDebug() << "max_frames is <= 1, using static duration";
 #endif
   }
   if (duration > 0 && cull_image == true)
     shfx_timer->start(duration);
-  play();
 #ifdef DEBUG_MOVIE
   qDebug() << max_frames << "Setting image to " << image_path
            << "Time taken to process image:" << actual_time.elapsed();
@@ -346,6 +353,12 @@ void AOLayer::start_playback(QString p_image)
 
 void CharLayer::play()
 {
+  if (max_frames <= 1) {
+    if (play_once) {
+      preanim_timer->start(qMax(0, duration));
+    }
+    return;
+  }
   play_frame_effect(frame);
   AOLayer::play();
 }
@@ -353,8 +366,12 @@ void CharLayer::play()
 void AOLayer::play()
 {
   if (max_frames <= 1) {
-    if (play_once)
-      ticker->start(tick_ms);
+    if (play_once) {
+      if (duration > 0)
+        ticker->start(duration);
+      else
+        preanim_done();
+    }
     else
       this->freeze();
   }
