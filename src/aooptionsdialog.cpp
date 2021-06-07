@@ -75,12 +75,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
   // Fill the combobox with the names of the themes.
-  QDirIterator it(ao_app->get_base_path() + "themes", QDir::Dirs,
-                  QDirIterator::NoIteratorFlags);
-  while (it.hasNext()) {
-    QString actualname = QDir(it.next()).dirName();
-    if (actualname != "." && actualname != "..")
-      ui_theme_combobox->addItem(actualname);
+  QSet<QString> themes;
+  QStringList bases = ao_app->get_mount_paths();
+  bases.push_front(ao_app->get_base_path());
+  for (const QString &base : bases) {
+    QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
+                    QDirIterator::NoIteratorFlags);
+    while (it.hasNext()) {
+      QString actualname = QDir(it.next()).dirName();
+      if (!themes.contains(actualname)) {
+        ui_theme_combobox->addItem(actualname);
+        themes.insert(actualname);
+      }
+    }
   }
 
   QObject::connect(ui_theme_combobox, SIGNAL(currentIndexChanged(int)), this,
