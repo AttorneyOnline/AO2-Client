@@ -4343,6 +4343,7 @@ void Courtroom::on_music_search_edited(QString p_text)
       (*it)->setHidden(p_text != "");
       ++it;
     }
+    last_music_search = p_text;
   }
 
   if (!ui_area_list->isHidden()) {
@@ -4351,6 +4352,7 @@ void Courtroom::on_music_search_edited(QString p_text)
       (*ait)->setHidden(p_text != "");
       ++ait;
     }
+    last_area_search = p_text;
   }
 
   if (p_text != "") {
@@ -5461,16 +5463,20 @@ void Courtroom::on_evidence_button_clicked()
 
 void Courtroom::on_switch_area_music_clicked()
 {
-  ui_music_search->setText("");
-  on_music_search_edited(ui_music_search->text());
   if (ui_area_list->isHidden()) {
     ui_area_list->show();
     ui_music_list->hide();
+    last_music_search = ui_music_search->text();
+    ui_music_search->setText(last_area_search);
   }
   else {
     ui_area_list->hide();
     ui_music_list->show();
+    last_area_search = ui_music_search->text();
+    ui_music_search->setText(last_music_search);
   }
+  on_music_search_edited(ui_music_search->text());
+
 }
 
 void Courtroom::ping_server()
