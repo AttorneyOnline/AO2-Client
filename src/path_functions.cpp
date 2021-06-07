@@ -150,7 +150,8 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
 {
     QString path;
 //    qDebug() << "got request for" << p_identifier << "in" << p_config;
-    for (const VPath &p : get_asset_paths(p_config, p_theme, p_subtheme, p_default_theme, p_misc)) {
+    const auto paths = get_asset_paths(p_config, p_theme, p_subtheme, p_default_theme, p_misc);
+    for (const VPath &p : paths) {
         path = get_real_path(p);
         if (!path.isEmpty()) {
             QSettings settings(path, QSettings::IniFormat);
