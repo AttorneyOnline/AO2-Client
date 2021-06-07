@@ -242,12 +242,13 @@ QString AOApplication::get_real_path(const VPath &vpath) {
 
   for (const QString &base : bases) {
     QDir baseDir(base);
-    const QString path = baseDir.absoluteFilePath(vpath.toQString());
+    QString path = baseDir.absoluteFilePath(vpath.toQString());
     if (!path.startsWith(baseDir.absolutePath())) {
       qWarning() << "invalid path" << path << "(path is outside vfs)";
       break;
     }
-    if (exists(get_case_sensitive_path(path))) {
+    path = get_case_sensitive_path(path);
+    if (exists(path)) {
       asset_lookup_cache.insert(qHash(vpath), path);
       return path;
     }
@@ -274,12 +275,13 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
   for (const QString &base : bases) {
     for (const QString &suffix : suffixes) {
       QDir baseDir(base);
-      const QString path = baseDir.absoluteFilePath(vpath.toQString() + suffix);
+      QString path = baseDir.absoluteFilePath(vpath.toQString() + suffix);
       if (!path.startsWith(baseDir.absolutePath())) {
         qWarning() << "invalid path" << path << "(path is outside vfs)";
         break;
       }
-      if (exists(get_case_sensitive_path(path))) {
+      path = get_case_sensitive_path(path);
+      if (exists(path)) {
         asset_lookup_cache.insert(qHash(vpath), path);
         return path;
       }
