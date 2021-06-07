@@ -204,9 +204,6 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
     return file_parent_dir + "/" + file_basename;
 
   // last resort, dirlist parent dir and find case insensitive match
-  QRegExp file_rx =
-      QRegExp(file_basename, Qt::CaseInsensitive, QRegExp::FixedString);
-
   static QHash<uint, QString> listing_cache;
   static QHash<uint, bool> listing_exist_cache;
 
@@ -217,7 +214,8 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
     }
     listing_exist_cache.insert(qHash(file_parent_dir), true);
   }
-  QString found_file = listing_cache.value(qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
+  QString found_file = listing_cache.value(
+        qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
 
   if (!found_file.isEmpty()) {
     return file_parent_dir + "/" + found_file;
@@ -232,7 +230,7 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 
 QString AOApplication::get_real_path(const VPath &vpath) {
   // Try cache first
-  QString phys_path = asset_lookup_cache.value(vpath);
+  QString phys_path = asset_lookup_cache.value(qHash(vpath));
   if (!phys_path.isEmpty() && exists(phys_path)) {
     return phys_path;
   }
@@ -249,7 +247,7 @@ QString AOApplication::get_real_path(const VPath &vpath) {
       break;
     }
     if (exists(get_case_sensitive_path(path))) {
-      asset_lookup_cache.insert(vpath, path);
+      asset_lookup_cache.insert(qHash(vpath), path);
       return path;
     }
   }
@@ -263,7 +261,7 @@ QString AOApplication::get_real_path(const VPath &vpath) {
 QString AOApplication::get_real_suffixed_path(const VPath &vpath,
                                               const QStringList &suffixes) {
   // Try cache first
-  QString phys_path = asset_lookup_cache.value(vpath);
+  QString phys_path = asset_lookup_cache.value(qHash(vpath));
   if (!phys_path.isEmpty() && exists(phys_path)) {
     return phys_path;
   }
@@ -281,7 +279,7 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
         break;
       }
       if (exists(get_case_sensitive_path(path))) {
-        asset_lookup_cache.insert(vpath, path);
+        asset_lookup_cache.insert(qHash(vpath), path);
         return path;
       }
     }

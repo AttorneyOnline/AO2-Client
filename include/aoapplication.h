@@ -51,7 +51,7 @@ public:
   }
 };
 
-inline uint qHash(const VPath &key, uint seed)
+inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
 {
   return qHash(key.toQString(), seed);
 }
@@ -541,7 +541,7 @@ private:
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
-  QHash<VPath, QString> asset_lookup_cache;
+  QHash<uint, QString> asset_lookup_cache;
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);
