@@ -405,10 +405,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         }
       }
 
-      for (int area_n = 0; area_n < areas; area_n++) {
-        w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
-      }
-
       int total_loading_size =
           char_list_size * 2 + evidence_list_size + music_list_size;
       int loading_value = int(
@@ -416,6 +412,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
            static_cast<double>(total_loading_size)) *
           100);
       w_lobby->set_loading_value(loading_value);
+    }
+
+    for (int area_n = 0; area_n < areas; area_n++) {
+      w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
     }
 
     send_server_packet(new AOPacket("RD#%"));
