@@ -1222,6 +1222,12 @@ void Courtroom::set_stylesheet(QWidget *widget)
 void Courtroom::set_stylesheets()
 {
   set_stylesheet(this);
+  this->setStyleSheet(
+    "QFrame { background-color:transparent; } "
+    "QAbstractItemView { background-color: transparent; color: black; } "
+    "QLineEdit { background-color:transparent; }"
+    + this->styleSheet()
+  );
 }
 
 void Courtroom::set_window_title(QString p_title)
