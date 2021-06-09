@@ -84,7 +84,7 @@ private:
   QProgressBar *ui_progress_bar;
   AOButton *ui_cancel;
 
-  int last_index;
+  int last_index = -1;
 
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
