@@ -554,6 +554,8 @@ private:
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
   QHash<uint, QString> asset_lookup_cache;
+  QHash<uint, QString> dir_listing_cache;
+  QSet<uint> dir_listing_exist_cache;
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);

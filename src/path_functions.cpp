@@ -206,17 +206,15 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
     return file_parent_dir + "/" + file_basename;
 
   // last resort, dirlist parent dir and find case insensitive match
-  static QHash<uint, QString> listing_cache;
-  static QHash<uint, bool> listing_exist_cache;
 
-  if (!listing_exist_cache.contains(qHash(file_parent_dir))) {
+  if (!dir_listing_exist_cache.contains(qHash(file_parent_dir))) {
     QStringList files = QDir(file_parent_dir).entryList();
     for (const QString &file : files) {
-      listing_cache.insert(qHash(file_parent_dir % QChar('/') % file.toLower()), file);
+      dir_listing_cache.insert(qHash(file_parent_dir % QChar('/') % file.toLower()), file);
     }
-    listing_exist_cache.insert(qHash(file_parent_dir), true);
+    dir_listing_exist_cache.insert(qHash(file_parent_dir));
   }
-  QString found_file = listing_cache.value(
+  QString found_file = dir_listing_cache.value(
         qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
 
   if (!found_file.isEmpty()) {
@@ -295,4 +293,6 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
 
 void AOApplication::invalidate_lookup_cache() {
   asset_lookup_cache.clear();
+  dir_listing_cache.clear();
+  dir_listing_exist_cache.clear();
 }
