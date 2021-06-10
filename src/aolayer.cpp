@@ -138,7 +138,7 @@ void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
   cull_image = false;
-  QString design_path = ao_app->get_background_path("design.ini");
+  VPath design_path = ao_app->get_background_path("design.ini");
   transform_mode =
       ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
   stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
@@ -197,7 +197,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
 #endif
-  QStringList pathlist = {
+  QVector<VPath> pathlist {
       ao_app->get_character_path(
           p_charname, prefix + current_emote), // Default path
       ao_app->get_character_path(
@@ -207,7 +207,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
       ao_app->get_character_path(
           p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
-      current_emote, // The path by itself after the above fail
+      VPath(current_emote), // The path by itself after the above fail
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path

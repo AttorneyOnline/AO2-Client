@@ -19,7 +19,7 @@ int AOMusicPlayer::play(QString p_song, int channel, bool loop,
   channel = channel % m_channelmax;
   if (channel < 0) // wtf?
     return BASS_ERROR_NOCHAN;
-  QString f_path = ao_app->get_music_path(p_song);
+  QString f_path = ao_app->get_real_path(ao_app->get_music_path(p_song));
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE |
                        BASS_UNICODE | BASS_ASYNCFILE;

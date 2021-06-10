@@ -37,6 +37,25 @@ class NetworkManager;
 class Lobby;
 class Courtroom;
 
+class VPath : QString {
+  using QString::QString;
+
+public:
+  explicit VPath(const QString &str) : QString(str) {}
+  inline QString const &toQString() const { return *this; }
+  inline bool operator==(const VPath &str) const {
+    return this->toQString() == str.toQString();
+  }
+  inline VPath operator+(const VPath &str) const {
+    return VPath(this->toQString() + str.toQString());
+  }
+};
+
+inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
+{
+  return qHash(key.toQString(), seed);
+}
+
 class AOApplication : public QApplication {
   Q_OBJECT
 
@@ -130,24 +149,26 @@ public:
 
   // implementation in path_functions.cpp
   QString get_base_path();
-  QString get_data_path();
-  QString get_theme_path(QString p_file, QString p_theme="");
-  QString get_character_path(QString p_char, QString p_file);
-  QString get_misc_path(QString p_misc, QString p_file);
-  QString get_sounds_path(QString p_file);
-  QString get_music_path(QString p_song);
-  QString get_background_path(QString p_file);
-  QString get_default_background_path(QString p_file);
-  QString get_evidence_path(QString p_file);
-  QStringList get_asset_paths(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
-  QString get_asset_path(QStringList pathlist);
-  QString get_image_path(QStringList pathlist, bool static_image=false);
-  QString get_sfx_path(QStringList pathlist);
+  VPath get_theme_path(QString p_file, QString p_theme="");
+  VPath get_character_path(QString p_char, QString p_file);
+  VPath get_misc_path(QString p_misc, QString p_file);
+  VPath get_sounds_path(QString p_file);
+  VPath get_music_path(QString p_song);
+  VPath get_background_path(QString p_file);
+  VPath get_default_background_path(QString p_file);
+  VPath get_evidence_path(QString p_file);
+  QVector<VPath> get_asset_paths(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_asset_path(QVector<VPath> pathlist);
+  QString get_image_path(QVector<VPath> pathlist, bool static_image=false);
+  QString get_sfx_path(QVector<VPath> pathlist);
   QString get_config_value(QString p_identifier, QString p_config, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="");
   QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
-  QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="", bool static_image=false);
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
   QString get_case_sensitive_path(QString p_file);
+  QString get_real_path(const VPath &vpath);
+  QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
+  void invalidate_lookup_cache();
 
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
@@ -285,6 +306,7 @@ public:
   QStringList get_call_words();
 
   // returns all of the file's lines in a QStringList
+  QStringList get_list_file(VPath path);
   QStringList get_list_file(QString p_file);
 
   // Process a file and return its text as a QString
@@ -308,6 +330,7 @@ public:
   QVector<server_type> read_serverlist_txt();
 
   // Returns the value of p_identifier in the design.ini file in p_design_path
+  QString read_design_ini(QString p_identifier, VPath p_design_path);
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
   // Returns the coordinates of widget with p_identifier from p_file
@@ -337,18 +360,18 @@ public:
   QString get_court_sfx(QString p_identifier, QString p_misc="");
 
   // Figure out if we can opus this or if we should fall back to wav
-  QString get_sfx_suffix(QString sound_to_check);
+  QString get_sfx_suffix(VPath sound_to_check);
 
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
   // PNG.
-  QString get_image_suffix(QString path_to_check, bool static_image=false);
+  QString get_image_suffix(VPath path_to_check, bool static_image=false);
 
   // Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line,
                         QString target_tag);
 
   // Returns a QStringList of all key=value definitions on a given tag.
-  QStringList read_ini_tags(QString p_file, QString target_tag = "");
+  QStringList read_ini_tags(VPath p_file, QString target_tag = "");
 
   // Sets the char.ini p_search_line key under tag target_tag to value.
   void set_char_ini(QString p_char, QString value, QString p_search_line,
@@ -492,6 +515,9 @@ public:
   // Get the default scaling method
   QString get_default_scaling();
 
+  // Get a list of custom mount paths
+  QStringList get_mount_paths();
+
   // Currently defined subtheme
   QString subtheme;
 
@@ -527,6 +553,9 @@ private:
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
+  QHash<uint, QString> asset_lookup_cache;
+  QHash<uint, QString> dir_listing_cache;
+  QSet<uint> dir_listing_exist_cache;
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);

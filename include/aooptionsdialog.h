@@ -23,6 +23,7 @@
 #include <QtWidgets/QWidget>
 
 #include <QDirIterator>
+#include <QListWidget>
 #include <QTextStream>
 
 class Lobby;
@@ -173,6 +174,19 @@ private:
   QLineEdit *ui_casing_cm_cases_textbox;
   QLabel *ui_log_lbl;
   QCheckBox *ui_log_cb;
+
+  QWidget *ui_assets_tab;
+  QVBoxLayout *ui_assets_tab_layout;
+  QGridLayout *ui_mount_buttons_layout;
+  QLabel *ui_asset_lbl;
+  QListWidget *ui_mount_list;
+  QPushButton *ui_mount_add;
+  QPushButton *ui_mount_remove;
+  QPushButton *ui_mount_up;
+  QPushButton *ui_mount_down;
+  QPushButton *ui_mount_clear_cache;
+
+  bool asset_cache_dirty = false;
 
   bool needs_default_audiodev();
   void update_values();

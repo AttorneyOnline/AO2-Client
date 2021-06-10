@@ -164,8 +164,8 @@ void Courtroom::char_clicked(int n_char)
 {
   if (n_char != -1)
   {
-    QString char_ini_path =
-        ao_app->get_character_path(char_list.at(n_char).name, "char.ini");
+    QString char_ini_path = ao_app->get_real_path(
+          ao_app->get_character_path(char_list.at(n_char).name, "char.ini"));
 
     qDebug() << "char_ini_path" << char_ini_path;
 

@@ -32,7 +32,7 @@ AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app,
 
 void AOEvidenceButton::set_image(QString p_image)
 {
-  QString image_path = ao_app->get_evidence_path(p_image);
+  QString image_path = ao_app->get_real_path(ao_app->get_evidence_path(p_image));
   if (file_exists(p_image)) {
     this->setText("");
     this->setStyleSheet(
@@ -57,8 +57,10 @@ void AOEvidenceButton::set_image(QString p_image)
 
 void AOEvidenceButton::set_theme_image(QString p_image)
 {
-  QString theme_image_path = ao_app->get_theme_path(p_image);
-  QString default_image_path = ao_app->get_theme_path(p_image, ao_app->default_theme);
+  QString theme_image_path = ao_app->get_real_path(
+        ao_app->get_theme_path(p_image));
+  QString default_image_path = ao_app->get_real_path(
+        ao_app->get_theme_path(p_image, ao_app->default_theme));
 
   QString final_image_path;
 
