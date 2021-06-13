@@ -137,6 +137,7 @@ public:
   void set_favorite_list();
   QVector<server_type> &get_favorite_list() { return favorite_list; }
   void add_favorite_server(int p_server);
+  void remove_favorite_server(int p_server);
 
   void set_server_list();
   QVector<server_type> &get_server_list() { return server_list; }
@@ -325,6 +326,9 @@ public:
 
   // Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
+
+  // Removes all instances of the argument string from serverlist.txt
+  void delete_from_serverlist_txt(QString p_line);
 
   // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();

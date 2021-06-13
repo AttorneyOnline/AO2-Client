@@ -44,6 +44,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list->setColumnWidth(0, 0);
   ui_server_list->setIndentation(0);
   ui_server_list->setObjectName("ui_server_list");
+  ui_server_list->setContextMenuPolicy(Qt::CustomContextMenu);
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);
@@ -92,11 +93,14 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           SLOT(on_server_list_clicked(QTreeWidgetItem *, int)));
   connect(ui_server_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
           this, SLOT(on_server_list_doubleclicked(QTreeWidgetItem *, int)));
+  connect(ui_server_list, SIGNAL(customContextMenuRequested(QPoint)),
+          this, SLOT(on_server_list_context_menu_requested(QPoint)));
   connect(ui_server_search, SIGNAL(textChanged(QString)), this,
           SLOT(on_server_search_edited(QString)));
   connect(ui_chatmessage, SIGNAL(returnPressed()), this,
           SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
+
 
   ui_connect->setEnabled(false);
 
@@ -564,5 +568,31 @@ void Lobby::set_player_count(int players_online, int max_players)
 }
 
 void Lobby::enable_connect_button() { ui_connect->setEnabled(true); }
+
+void Lobby::on_server_list_context_menu_requested(const QPoint & pos )
+{
+  if (public_servers_selected)
+    return;
+
+  QAction *newAct = new QAction(tr("&Remove"), this);
+  newAct->setStatusTip(tr("new sth"));
+  connect(newAct, SIGNAL(triggered()), this, SLOT(remove_favorite()));
+
+
+  QMenu menu(this);
+  menu.addAction(newAct);
+
+  menu.exec( ui_server_list->mapToGlobal(pos) );
+}
+
+void Lobby::remove_favorite() {
+  if (!public_servers_selected) {
+    int selection = get_selected_server();
+    if (selection > -1) {
+      ao_app->remove_favorite_server(selection);
+      list_favorites();
+    }
+  }
+}
 
 Lobby::~Lobby() {}

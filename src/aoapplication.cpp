@@ -138,6 +138,27 @@ void AOApplication::add_favorite_server(int p_server)
   write_to_serverlist_txt(server_line);
 }
 
+void AOApplication::remove_favorite_server(int p_server)
+{
+  if (p_server < 0 || p_server >= favorite_list.size())
+    return;
+
+  server_type fav_server = favorite_list.at(p_server);
+
+  QString str_port = QString::number(fav_server.port);
+
+  if (fav_server.ip == "127.0.0.1" && str_port == "99999") {
+    call_error(tr("You cannot remove the demo server!"));
+    return;
+  }
+
+  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
+
+  favorite_list.remove(p_server);
+
+  delete_from_serverlist_txt(server_line);
+}
+
 void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {

@@ -245,6 +245,28 @@ void AOApplication::write_to_serverlist_txt(QString p_line)
   serverlist_txt.close();
 }
 
+void AOApplication::delete_from_serverlist_txt(QString p_line)
+{
+  QFile serverlist_txt;
+  QString serverlist_txt_path = get_base_path() + "serverlist.txt";
+
+  serverlist_txt.setFileName(serverlist_txt_path);
+  if(serverlist_txt.open(QIODevice::ReadWrite | QIODevice::Text))
+  {
+      QString s;
+      QTextStream t(&serverlist_txt);
+      while(!t.atEnd())
+      {
+          QString line = t.readLine();
+          if(!line.contains(p_line))
+              s.append(line + "\n");
+      }
+      serverlist_txt.resize(0);
+      t << s;
+      serverlist_txt.close();
+  }
+}
+
 QVector<server_type> AOApplication::read_serverlist_txt()
 {
   QVector<server_type> f_server_list;
