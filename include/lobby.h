@@ -30,6 +30,8 @@ public:
   void set_widgets();
   void list_servers();
   void list_favorites();
+  void get_motd();
+  void check_for_updates();
   void append_chatmessage(QString f_name, QString f_message);
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);

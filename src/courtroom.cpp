@@ -4307,8 +4307,9 @@ void Courtroom::on_ooc_return_pressed()
 
   if (server_ooc)
     ao_app->send_server_packet(f_packet);
-  else
-    ao_app->send_ms_packet(f_packet);
+  else {
+    // ao_app->send_ms_packet(f_packet);
+  }
 
   ui_ooc_chat_message->clear();
 

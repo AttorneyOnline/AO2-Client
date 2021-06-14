@@ -67,8 +67,8 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "AO2CHECK") {
-    send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
-    send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
+//    send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
+//    send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
 
     if (f_contents.size() < 1)
       goto end;
@@ -714,21 +714,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
 
 end:
-
-  delete p_packet;
-}
-
-void AOApplication::send_ms_packet(AOPacket *p_packet)
-{
-  p_packet->net_encode();
-
-  QString f_packet = p_packet->to_string();
-
-  net_manager->ship_ms_packet(f_packet);
-
-#ifdef DEBUG_NETWORK
-  qDebug() << "S(ms):" << f_packet;
-#endif
 
   delete p_packet;
 }

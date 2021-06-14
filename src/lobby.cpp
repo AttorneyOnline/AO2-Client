@@ -101,6 +101,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_connect->setEnabled(false);
 
   list_servers();
+  get_motd();
+  check_for_updates();
 
   set_widgets();
 }
@@ -324,9 +326,13 @@ void Lobby::on_refresh_released()
 {
   ui_refresh->set_image("refresh");
 
-  AOPacket *f_packet = new AOPacket("ALL#%");
-
-  ao_app->send_ms_packet(f_packet);
+  if (public_servers_selected) {
+    ao_app->net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
+    get_motd();
+  } else {
+    ao_app->set_favorite_list();
+    list_favorites();
+  }
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -492,9 +498,10 @@ void Lobby::on_chatfield_return_pressed()
   QString f_header = "CT";
   QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
 
-  AOPacket *f_packet = new AOPacket(f_header, f_contents);
+  append_chatmessage("", "Stubbed lmao");
 
-  ao_app->send_ms_packet(f_packet);
+//  AOPacket *f_packet = new AOPacket(f_header, f_contents);
+//  ao_app->send_ms_packet(f_packet);
 
   ui_chatmessage->clear();
 }
@@ -535,6 +542,34 @@ void Lobby::list_favorites()
     i++;
   }
   ui_server_list->setSortingEnabled(true);
+}
+
+void Lobby::get_motd()
+{
+  ao_app->net_manager->request_document(MSDocumentType::Motd,
+                                        [this](QString document) {
+    if (document.isEmpty())
+      document = tr("Couldn't get the message of the day.");
+    bool isHtml = document.startsWith("<!DOCTYPE", Qt::CaseInsensitive)
+        || document.startsWith("<html>", Qt::CaseInsensitive);
+    if (isHtml) {
+      ui_chatbox->setHtml(document);
+    } else {
+      ui_chatbox->setMarkdown(document);
+    }
+  });
+}
+
+void Lobby::check_for_updates()
+{
+  ao_app->net_manager->request_document(MSDocumentType::ClientVersion,
+                                        [this](QString version) {
+    const QString current_version = ao_app->get_version_string();
+    if (!version.isEmpty() && version != current_version) {
+      ui_version->setText(tr("Version: %1 (!)").arg(current_version));
+      ui_version->setToolTip(tr("New version available: %1").arg(version));
+    }
+  });
 }
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)

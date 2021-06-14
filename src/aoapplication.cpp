@@ -16,8 +16,6 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
-  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
-                   SLOT(ms_connect_finished(bool, bool)));
   qApp->setStyleSheet("QFrame {background-color:transparent;} QAbstractItemView {background-color: transparent; color: black;}; QLineEdit {background-color:transparent;}");
 }
 
@@ -153,6 +151,7 @@ void AOApplication::loading_cancelled()
   w_lobby->hide_loading_overlay();
 }
 
+/*
 void AOApplication::ms_connect_finished(bool connected, bool will_retry)
 {
   if (connected) {
@@ -179,6 +178,7 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
     }
   }
 }
+*/
 
 void AOApplication::call_settings_menu()
 {

@@ -3,6 +3,7 @@
 #include "courtroom.h"
 #include "lobby.h"
 #include "bass.h"
+#include "networkmanager.h"
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
@@ -902,7 +903,23 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_log_cb);
 
+  // privacy policy.
+  ui_privacy_tab = new QWidget(this);
+  ui_settings_tabs->addTab(ui_privacy_tab, tr("Privacy"));
+
+  ui_privacy_layout = new QVBoxLayout(ui_privacy_tab);
+  ui_privacy_layout->setContentsMargins(0, 0, 0, 0);
+
+  ui_privacy_policy = new QTextBrowser(ui_privacy_tab);
+  QSizePolicy privacySizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  sizePolicy.setHorizontalStretch(0);
+  sizePolicy.setVerticalStretch(0);
+  ui_privacy_policy->setSizePolicy(privacySizePolicy);
+  ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
+  ui_privacy_layout->addWidget(ui_privacy_policy);
+
   update_values();
+
   // When we're done, we should continue the updates!
   setUpdatesEnabled(true);
 }
@@ -976,6 +993,18 @@ void AOOptionsDialog::update_values() {
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
+
+  ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
+    if (document.isEmpty())
+      document = tr("Couldn't get the privacy policy.");
+    bool isHtml = document.startsWith("<!DOCTYPE", Qt::CaseInsensitive)
+        || document.startsWith("<html>", Qt::CaseInsensitive);
+    if (isHtml) {
+      ui_privacy_policy->setHtml(document);
+    } else {
+      ui_privacy_policy->setMarkdown(document);
+    }
+  });
 }
 
 void AOOptionsDialog::save_pressed()

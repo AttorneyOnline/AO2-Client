@@ -1,27 +1,22 @@
 #ifndef NETWORKMANAGER_H
 #define NETWORKMANAGER_H
 
-// Qt for Android has stubbed QDnsLookup. This is not documented in any part of
-// their wiki. This prevents SRV lookup/failover behavior from functioning.
-// https://bugreports.qt.io/browse/QTBUG-56143
-#ifndef ANDROID
-#define MS_FAILOVER_SUPPORTED
-#endif
-
-//#define LOCAL_MS
-
-#ifdef LOCAL_MS
-#undef MS_FAILOVER_SUPPORTED
-#endif
-
 #include "aoapplication.h"
 #include "aopacket.h"
 
 #include <QDnsLookup>
+#include <QNetworkAccessManager>
 #include <QTcpSocket>
 #include <QTime>
 #include <QTimer>
+
 #include <cstring>
+
+enum MSDocumentType {
+  PrivacyPolicy,
+  Motd,
+  ClientVersion
+};
 
 class NetworkManager : public QObject {
   Q_OBJECT
@@ -31,53 +26,37 @@ public:
   ~NetworkManager();
 
   AOApplication *ao_app;
-  QTcpSocket *ms_socket;
+  QNetworkAccessManager *http;
   QTcpSocket *server_socket;
-  QDnsLookup *ms_dns;
-  QTimer *ms_reconnect_timer;
 
-  const QString ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
-#ifdef LOCAL_MS
-  QString ms_nosrv_hostname = "localhost";
-#else
-  QString ms_nosrv_hostname = "master.aceattorneyonline.com";
-#endif
+  QString ms_baseurl = "https://ms3.oldmud0.workers.dev";
 
-  const quint16 ms_port = 27016;
-  const int timeout_milliseconds = 2000;
-
-  // in seconds
-  const int ms_reconnect_delay = 7;
-
-  bool ms_partial_packet = false;
-  QString ms_temp_packet = "";
+  const int timeout_milliseconds = 5000;
 
   bool partial_packet = false;
   QString temp_packet = "";
 
   unsigned int s_decryptor = 5;
 
-  void connect_to_master();
-  void connect_to_master_nosrv();
   void connect_to_server(server_type p_server);
 
 public slots:
-  void ship_ms_packet(QString p_packet);
+  void get_server_list(const std::function<void()> &cb);
   void ship_server_packet(QString p_packet);
+  void handle_server_packet();
 
-signals:
-  void ms_connect_finished(bool success, bool will_retry);
+  void request_document(MSDocumentType document_type,
+                        const std::function<void(QString)> &cb);
+private slots:
+  void heartbeat_playing();
+  void ms_request_finished(QNetworkReply *reply,
+                           const std::function<void()> &cb);
 
 private:
-  void perform_srv_lookup();
-
-private slots:
-  void on_srv_lookup();
-  void handle_ms_packet();
-  void handle_server_packet();
-  void on_ms_nosrv_connect_success();
-  void on_ms_socket_error(QAbstractSocket::SocketError error);
-  void retry_ms_connect();
+  QString get_user_agent() const {
+    return QStringLiteral("AttorneyOnline/%1 (Desktop)")
+        .arg(ao_app->get_version_string());
+  }
 };
 
 #endif // NETWORKMANAGER_H

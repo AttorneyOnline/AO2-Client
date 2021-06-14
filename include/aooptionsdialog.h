@@ -23,6 +23,7 @@
 #include <QtWidgets/QWidget>
 
 #include <QDirIterator>
+#include <QTextBrowser>
 #include <QTextStream>
 
 class Lobby;
@@ -173,6 +174,10 @@ private:
   QLineEdit *ui_casing_cm_cases_textbox;
   QLabel *ui_log_lbl;
   QCheckBox *ui_log_cb;
+
+  QWidget *ui_privacy_tab;
+  QVBoxLayout *ui_privacy_layout;
+  QTextBrowser *ui_privacy_policy;
 
   bool needs_default_audiodev();
   void update_values();

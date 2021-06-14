@@ -61,7 +61,6 @@ public:
   void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);
 
-  void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
   void call_settings_menu();
@@ -119,7 +118,7 @@ public:
   QVector<server_type> &get_favorite_list() { return favorite_list; }
   void add_favorite_server(int p_server);
 
-  void set_server_list();
+  void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
 
   // reads the theme from config.ini and sets it accordingly
@@ -527,9 +526,6 @@ private:
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
-
-private slots:
-  void ms_connect_finished(bool connected, bool will_retry);
 
 public slots:
   void server_disconnected();
