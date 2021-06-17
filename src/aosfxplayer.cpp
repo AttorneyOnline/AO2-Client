@@ -48,7 +48,7 @@ void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
 
   BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
   int f_bass_error = BASS_ErrorGetCode();
-  if (f_bass_error == BASS_ERROR_DEVICE) {
+  if (f_bass_error == BASS_ERROR_DEVICE) { // never happens, who wrote this???
     ao_app->doBASSreset();
     BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
   }

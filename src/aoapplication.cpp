@@ -194,6 +194,7 @@ void AOApplication::call_announce_menu(Courtroom *court)
 }
 
 // Callback for when BASS device is lost
+// Only actually used for music syncs
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
                                        DWORD data, void *user)
 {
@@ -213,6 +214,7 @@ void AOApplication::doBASSreset()
 
 void AOApplication::initBASS()
 {
+  BASS_SetConfig(BASS_CONFIG_DEV_DEFAULT, 1);
   BASS_Free();
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.
