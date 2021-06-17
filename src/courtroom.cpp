@@ -4029,10 +4029,28 @@ void Courtroom::on_ooc_return_pressed()
       }
     }
     else {
-      append_server_chatmessage("CLIENT",
-                                tr("Are you sure you typed that well? The char "
-                                   "ID could not be recognised."),
-                                "1");
+      int whom = 0;
+      bool matched = false;
+      for (char_type chara : char_list) {
+        if (chara.name.toLower() == ooc_message.toLower()) {
+          matched = true;
+          break;
+        }
+        whom++;
+      }
+      if (matched) {
+        other_charid = whom;
+        QString msg = tr("You will now pair up with %1 if they also choose "
+                         "your character in return.")
+                          .arg(char_list.at(whom).name);
+        append_server_chatmessage("CLIENT", msg, "1");
+      }
+      else {
+        append_server_chatmessage("CLIENT",
+                                  tr("Are you sure you typed that well? The char "
+                                     "ID/name could not be recognised."),
+                                  "1");
+      }
     }
     return;
   }
