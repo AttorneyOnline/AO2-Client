@@ -635,92 +635,92 @@ void Courtroom::initBASS()
   load_bass_opus_plugin();
 }
 
+
+void Courtroom::on_load_layout_triggered() {
+    QString filename = QFileDialog::getOpenFileName(this, tr("Load Layout File"),
+                                                    ao_app->get_base_path(),
+                                                    tr("Layout Data (*.dat)"));
+    QFileInfo fileInfo(filename);
+    if (filename.isEmpty() || !fileInfo.exists())
+        return;
+
+    if (!loadLayout(filename))
+        QMessageBox::warning(this, tr("Layout Error"),
+                             tr("There was an error loading the layout file. It may be corrupted."));
+}
+
+bool Courtroom::loadLayout(const QString &filename) {
+    QSettings file(filename, QSettings::IniFormat);
+
+    file.beginGroup("windows");
+    QStringList windowEntries = file.childKeys();
+    for (const QString &entry : windowEntries) {
+        auto child = findChild<QWidget *>(entry);
+        if (!child)
+            continue;
+        child->setVisible(file.value(entry).toBool());
+    }
+    file.endGroup();
+
+    if (file.status() != QSettings::NoError) {
+        return false;
+    }
+
+    auto state = file.value("state").toByteArray();
+    if (!windowWidget->restoreState(state)) {
+        return false;
+    }
+
+    return true;
+}
+
+void Courtroom::on_save_layout_triggered() {
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save Layout File"),
+                                                    ao_app->get_base_path(),
+                                                    tr("Layout Data (*.dat)"));
+    if (filename.isEmpty())
+        return;
+
+    if (!saveLayout(filename))
+        QMessageBox::warning(this, tr("Layout Error"),
+                             tr("There was an error writing to the layout file."));
+}
+
+bool Courtroom::saveLayout(const QString &filename) {
+    QSettings file(filename, QSettings::IniFormat);
+    for (const QWidget *widget : windows) {
+        file.setValue("windows/" + widget->objectName(), widget->isVisible());
+    }
+    file.setValue("state", windowWidget->saveState());
+    file.sync();
+
+    if (file.status() != QSettings::NoError) {
+        return false;
+    }
+
+    return true;
+}
+
+void Courtroom::autosaveLayout() {
+    saveLayout(ao_app->get_base_path() + LAYOUT_AUTOSAVE_FILE);
+}
+
+void Courtroom::closeEvent(QCloseEvent *event) {
+    QWidget::closeEvent(event);
+    if (!event->isAccepted())
+        return;
+
+    autosaveLayout();
+    disconnect(client.get(), &Client::connectionLost,
+               this, &Courtroom::onDisconnect);
+    ao_app->openLobby();
+}
+
 #if (defined (_WIN32) || defined (_WIN64))
 void Courtroom::load_bass_opus_plugin()
 {
   BASS_PluginLoad("bassopus.dll", 0);
 }
-
-void Courtroom::on_load_layout_triggered() {
-  QString filename = QFileDialog::getOpenFileName(this, tr("Load Layout File"),
-                                                  ao_app->get_base_path(),
-                                                  tr("Layout Data (*.dat)"));
-  QFileInfo fileInfo(filename);
-  if (filename.isEmpty() || !fileInfo.exists())
-    return;
-
-  if (!loadLayout(filename))
-    QMessageBox::warning(this, tr("Layout Error"),
-                         tr("There was an error loading the layout file. It may be corrupted."));
-}
-
-bool Courtroom::loadLayout(const QString &filename) {
-  QSettings file(filename, QSettings::IniFormat);
-
-  file.beginGroup("windows");
-  QStringList windowEntries = file.childKeys();
-  for (const QString &entry : windowEntries) {
-    auto child = findChild<QWidget *>(entry);
-    if (!child)
-      continue;
-    child->setVisible(file.value(entry).toBool());
-  }
-  file.endGroup();
-
-  if (file.status() != QSettings::NoError) {
-    return false;
-  }
-
-  auto state = file.value("state").toByteArray();
-  if (!windowWidget->restoreState(state)) {
-    return false;
-  }
-
-  return true;
-}
-
-void Courtroom::on_save_layout_triggered() {
-  QString filename = QFileDialog::getSaveFileName(this, tr("Save Layout File"),
-                                                  ao_app->get_base_path(),
-                                                  tr("Layout Data (*.dat)"));
-  if (filename.isEmpty())
-    return;
-
-  if (!saveLayout(filename))
-    QMessageBox::warning(this, tr("Layout Error"),
-                         tr("There was an error writing to the layout file."));
-}
-
-bool Courtroom::saveLayout(const QString &filename) {
-  QSettings file(filename, QSettings::IniFormat);
-  for (const QWidget *widget : windows) {
-    file.setValue("windows/" + widget->objectName(), widget->isVisible());
-  }
-  file.setValue("state", windowWidget->saveState());
-  file.sync();
-
-  if (file.status() != QSettings::NoError) {
-    return false;
-  }
-
-  return true;
-}
-
-void Courtroom::autosaveLayout() {
-  saveLayout(ao_app->get_base_path() + LAYOUT_AUTOSAVE_FILE);
-}
-
-void Courtroom::closeEvent(QCloseEvent *event) {
-  QWidget::closeEvent(event);
-  if (!event->isAccepted())
-    return;
-
-  autosaveLayout();
-  disconnect(client.get(), &Client::connectionLost,
-             this, &Courtroom::onDisconnect);
-  ao_app->openLobby();
-}
-
 #elif (defined (LINUX) || defined (__linux__))
 void Courtroom::load_bass_opus_plugin()
 {

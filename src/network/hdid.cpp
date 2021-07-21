@@ -2,12 +2,10 @@
 
 #include <QUuid>
 
-namespace AttorneyOnline {
-
 #if (defined (_WIN32) || defined (_WIN64))
 #include <windows.h>
 
-QString hdid()
+QString AttorneyOnline::hdid()
 {
   DWORD dwVolSerial;
   BOOL bIsRetrieved;
@@ -25,7 +23,7 @@ QString hdid()
 #include <QFile>
 #include <QTextStream>
 
-QString hdid()
+QString AttorneyOnline::hdid()
 {
   QFile fstab_file("/etc/fstab");
   if (!fstab_file.open(QIODevice::ReadOnly))
@@ -53,5 +51,3 @@ QString hdid()
 #error This operating system is unsupported for hardware functions.
 
 #endif
-
-} // namespace AttorneyOnline
