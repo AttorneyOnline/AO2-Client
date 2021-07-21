@@ -1,4 +1,4 @@
-#include "widgets/AOPairDialog.h"
+#include "widgets/aopairdialog.h"
 
 #include <QAbstractButton>
 #include <QUiLoader>

@@ -29,10 +29,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "(Clang|GNU)")
         "${CMAKE_CXX_FLAGS} "
         "-Os -ffunction-sections -fdata-sections -fvisibility=hidden -Wl,--gc-sections"
     )
-    string(CONCAT CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} "
-        "--enable-stdcall-fixup"
-    )
+    if (CMAKE_CXX_COMPILER_ID MATCHES "(GNU)")
+        string(CONCAT CMAKE_EXE_LINKER_FLAGS
+            "${CMAKE_EXE_LINKER_FLAGS} "
+            "--enable-stdcall-fixup"
+        )
+    endif()
 endif()
 
 # TODO add RC file for win32 icon

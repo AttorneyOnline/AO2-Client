@@ -1,6 +1,8 @@
 #include "network/hdid.h"
 
 #include <QUuid>
+#include <QFile>
+#include <QTextStream>
 
 namespace AttorneyOnline {
 
@@ -22,9 +24,6 @@ QString hdid()
 }
 
 #elif (defined (LINUX) || defined (__linux__))
-#include <QFile>
-#include <QTextStream>
-
 QString hdid()
 {
   QFile fstab_file("/etc/fstab");

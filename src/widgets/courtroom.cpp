@@ -640,6 +640,14 @@ void Courtroom::load_bass_opus_plugin()
 {
   BASS_PluginLoad("bassopus.dll", 0);
 }
+#elif (defined (LINUX) || defined (__linux__))
+void Courtroom::load_bass_opus_plugin()
+{
+  BASS_PluginLoad("libbassopus.so", 0);
+}
+#else
+#error This operating system is unsupported for bass plugins.
+#endif
 
 void Courtroom::on_load_layout_triggered() {
   QString filename = QFileDialog::getOpenFileName(this, tr("Load Layout File"),
@@ -720,12 +728,3 @@ void Courtroom::closeEvent(QCloseEvent *event) {
              this, &Courtroom::onDisconnect);
   ao_app->openLobby();
 }
-
-#elif (defined (LINUX) || defined (__linux__))
-void Courtroom::load_bass_opus_plugin()
-{
-  BASS_PluginLoad("libbassopus.so", 0);
-}
-#else
-#error This operating system is unsupported for bass plugins.
-#endif
