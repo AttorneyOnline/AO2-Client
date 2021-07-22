@@ -264,7 +264,10 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
   // Try cache first
   QString phys_path = asset_lookup_cache.value(qHash(vpath));
   if (!phys_path.isEmpty() && exists(phys_path)) {
-    return phys_path;
+    for (const QString &suffix : suffixes) { // make sure cached asset is the right type
+      if (phys_path.endsWith(suffix, Qt::CaseInsensitive))
+        return phys_path;
+    }
   }
 
   // Cache miss; try each suffix on all known mount paths
