@@ -506,7 +506,7 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
   return get_real_suffixed_path(sound_to_check,
-                                { "", ".opus", ".ogg", ".mp3", ".wav" });
+                                {".opus", ".ogg", ".mp3", ".wav" });
 }
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
