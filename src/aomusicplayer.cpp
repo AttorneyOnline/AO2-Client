@@ -150,8 +150,8 @@ void AOMusicPlayer::set_volume(int p_value, int channel)
 
 void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
 {
-  UNUSED(handle);
-  UNUSED(data);
+  Q_UNUSED(handle);
+  Q_UNUSED(data);
   QWORD loop_start = *(static_cast<unsigned *>(user));
   BASS_ChannelLock(channel, true);
   BASS_ChannelSetPosition(channel, loop_start, BASS_POS_BYTE);
