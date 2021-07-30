@@ -1,8 +1,6 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#define UNUSED(x) (void)(x)
-
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"

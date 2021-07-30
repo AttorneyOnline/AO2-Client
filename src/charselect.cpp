@@ -147,7 +147,7 @@ void Courtroom::set_char_select_page()
 
 void Courtroom::on_char_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
-  UNUSED(column);
+  Q_UNUSED(column);
   int cid = p_item->text(1).toInt();
   if (cid == -1 && !p_item->isExpanded()) {
     p_item->setExpanded(true);

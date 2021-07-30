@@ -4584,7 +4584,7 @@ void Courtroom::set_sfx_dropdown()
 
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
-  UNUSED(p_index);
+  Q_UNUSED(p_index);
   ui_ic_chat_message->setFocus();
   ui_sfx_remove->hide();
   custom_sfx = "";
@@ -4964,7 +4964,7 @@ void Courtroom::music_stop(bool no_effects)
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0; // The metadata
-  UNUSED(column); // so gcc shuts up
+  Q_UNUSED(column); // so gcc shuts up
   QString p_area = p_item->text(0);
 
   QStringList packet_contents;
