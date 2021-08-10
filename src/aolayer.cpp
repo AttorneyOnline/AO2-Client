@@ -52,7 +52,7 @@ StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
 QString AOLayer::find_image(QStringList p_list)
 {
   QString image_path;
-  for (QString path : p_list) {
+  for (const QString &path : p_list) {
 #ifdef DEBUG_MOVIE
     qDebug() << "checking path " << path;
 #endif
@@ -286,6 +286,7 @@ void AOLayer::start_playback(QString p_image)
   this->freeze();
   movie_frames.clear();
   movie_delays.clear();
+  frameskip = false;
   QString scaling_override =
       ao_app->read_design_ini("scaling", p_image + ".ini");
   if (scaling_override != "")
@@ -301,12 +302,15 @@ void AOLayer::start_playback(QString p_image)
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
-  if (!continuous)
+  if (!continuous) {
     frame = 0;
+    real_frame = 0;
+  }
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
   if (((continuous) && (max_frames != last_max_frames)) || max_frames == 0) {
     frame = 0;
+    real_frame = 0;
     continuous = false;
   }
   // CANTFIX: this causes a hitch
@@ -330,6 +334,12 @@ void AOLayer::start_playback(QString p_image)
   QPixmap f_pixmap = this->get_pixmap(m_reader.read());
   int f_delay = m_reader.nextImageDelay();
 
+  if (max_frames >= 90 && f_delay <= 33 && ao_app->is_frameskip_enabled()) {
+      frameskip = true;
+      f_delay = f_delay * 2;
+      max_frames = max_frames / 2;
+  }
+
   this->set_frame(f_pixmap);
   if (max_frames > 1) {
     movie_frames.append(f_pixmap);
@@ -344,7 +354,7 @@ void AOLayer::start_playback(QString p_image)
   if (duration > 0 && cull_image == true)
     shfx_timer->start(duration);
 #ifdef DEBUG_MOVIE
-  qDebug() << max_frames << "Setting image to " << image_path
+  qDebug() << max_frames << "Setting image to " << p_image
            << "Time taken to process image:" << actual_time.elapsed();
 
   actual_time.restart();
@@ -393,10 +403,13 @@ void AOLayer::set_max_duration(int p_max_duration)
 void CharLayer::load_effects()
 {
   movie_effects.clear();
-  if (max_frames <= 1)
+  int e_max_frames = max_frames;
+  if (frameskip)
+      e_max_frames *= 2;
+  if (e_max_frames <= 1)
     return;
-  movie_effects.resize(max_frames);
-  for (int e_frame = 0; e_frame < max_frames; ++e_frame) {
+  movie_effects.resize(e_max_frames);
+  for (int e_frame = 0; e_frame < e_max_frames; ++e_frame) {
     QString effect = ao_app->get_screenshake_frame(m_char, m_emote, e_frame);
     if (effect != "") {
       movie_effects[e_frame].append("shake");
@@ -419,7 +432,10 @@ void CharLayer::load_network_effects()
   movie_effects.clear();
   if (max_frames <= 1)
     return;
-  movie_effects.resize(max_frames);
+  int e_max_frames = max_frames;
+  if (frameskip)
+    e_max_frames *= 2;
+   movie_effects.resize(e_max_frames);
   // Order is important!!!
   QStringList effects_list = {"shake", "flash", "sfx^"};
 
@@ -442,9 +458,9 @@ void CharLayer::load_network_effects()
             1) // We might still be hanging at the emote itself (entry 0).
           continue;
         int f_frame = frame_split.at(0).toInt();
-        if (f_frame >= max_frames || f_frame < 0) {
+        if (f_frame >= e_max_frames || f_frame < 0) {
           qDebug() << "Warning: out of bounds" << effects_list[i] << "frame"
-                   << f_frame << "out of" << max_frames << "for" << m_emote;
+                   << f_frame << "out of" << e_max_frames << "for" << m_emote;
           continue;
         }
         QString f_data = frame_split.at(1);
@@ -473,14 +489,14 @@ void CharLayer::play_frame_effect(int p_frame)
   if (p_frame < max_frames) {
     foreach (QString effect, movie_effects[p_frame]) {
       if (effect == "shake") {
-        shake();
+        emit shake();
 #ifdef DEBUG_MOVIE
         qDebug() << "Attempting to play shake on frame" << frame;
 #endif
       }
 
       if (effect == "flash") {
-        flash();
+        emit flash();
 #ifdef DEBUG_MOVIE
         qDebug() << "Attempting to play flash on frame" << frame;
 #endif
@@ -488,7 +504,7 @@ void CharLayer::play_frame_effect(int p_frame)
 
       if (effect.startsWith("sfx^")) {
         QString sfx = effect.section("^", 1);
-        play_sfx(sfx);
+        emit play_sfx(sfx);
 #ifdef DEBUG_MOVIE
         qDebug() << "Attempting to play sfx" << sfx << "on frame" << frame;
 #endif
@@ -526,12 +542,19 @@ void AOLayer::kill()
 void CharLayer::movie_ticker()
 {
   AOLayer::movie_ticker();
-  play_frame_effect(frame);
+  if (frameskip) {
+      if (real_frame - 1 > 0)
+        play_frame_effect(real_frame - 1);
+      QTimer::singleShot(this->get_frame_delay(movie_delays[frame]) / 2, this, SLOT(play_real_frame_effect()));
+  }
+  else
+      play_frame_effect(frame);
 }
 
 void AOLayer::movie_ticker()
 {
   ++frame;
+  ++real_frame;
   if (frame >= max_frames) {
     if (play_once) {
       if (cull_image)
@@ -541,17 +564,26 @@ void AOLayer::movie_ticker()
       preanim_done();
       return;
     }
-    else
+    else {
       frame = 0;
+      real_frame = 0;
+    }
+  }
+  int f_delay = 0;
+  if (frameskip) {
+      m_reader.read();
+      f_delay += m_reader.nextImageDelay();
+      real_frame++;
   }
   //  qint64 difference = elapsed - movie_delays[frame];
   if (frame >= movie_frames.size()) {
     movie_frames.append(this->get_pixmap(m_reader.read()));
-    movie_delays.append(m_reader.nextImageDelay());
+    f_delay += m_reader.nextImageDelay();
+    movie_delays.append(f_delay);
   }
 
 #ifdef DEBUG_MOVIE
-  qDebug() << frame << movie_delays[frame]
+  qDebug() << frame << real_frame << movie_delays[frame]
            << "actual time taken from last frame:" << actual_time.restart();
 #endif
 
@@ -571,7 +603,7 @@ void AOLayer::preanim_done()
 {
   ticker->stop();
   preanim_timer->stop();
-  done();
+  emit done();
 }
 
 void AOLayer::shfx_timer_done()
@@ -581,5 +613,9 @@ void AOLayer::shfx_timer_done()
   qDebug() << "shfx timer signaled done";
 #endif
   // signal connected to courtroom object, let it figure out what to do
-  done();
+  emit done();
+}
+
+void CharLayer::play_real_frame_effect() {
+    play_frame_effect(real_frame);
 }

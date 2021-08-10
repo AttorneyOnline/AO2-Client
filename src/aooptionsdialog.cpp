@@ -548,6 +548,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_continuous_cb);
 
   row += 1;
+  ui_frameskip_lbl = new QLabel(ui_form_layout_widget);
+  ui_frameskip_lbl->setText(tr("Frameskip:"));
+  ui_frameskip_lbl->setToolTip(
+      tr("Whether or not to skip every other frame on long full-motion animations (>30fps, >90 frames). Turning off might cause audio desyncs."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_frameskip_lbl);
+
+  ui_frameskip_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_frameskip_cb);
+
+
+  row += 1;
   ui_category_stop_lbl = new QLabel(ui_form_layout_widget);
   ui_category_stop_lbl->setText(tr("Stop Music w/ Category:"));
   ui_category_stop_lbl->setToolTip(
@@ -1088,6 +1101,7 @@ void AOOptionsDialog::update_values() {
   ui_sticker_cb->setChecked(ao_app->is_sticker_enabled());
   ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
   ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
+  ui_frameskip_cb->setChecked(ao_app->is_frameskip_enabled());
   ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());
   ui_loopsfx_cb->setChecked(ao_app->get_looping_sfx());
   ui_objectmusic_cb->setChecked(ao_app->objection_stop_music());
@@ -1158,6 +1172,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("automatic_logging_enabled", ui_log_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());
+  configini->setValue("frameskip", ui_frameskip_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |

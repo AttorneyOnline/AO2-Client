@@ -54,6 +54,8 @@ public:
   Qt::TransformationMode transform_mode = Qt::FastTransformation; // transformation mode to use for this image
   bool stretch = false; // Should we stretch/squash this image to fill the screen?
   bool masked = true; // Set a mask to the dimensions of the widget?
+  bool frameskip = false; // Are we only playing every other frame for this animation?
+  int real_frame = 0; // The actual frame we're on. For syncing frame effects.
 
   // Set the movie's image to provided paths, preparing for playback.
   void start_playback(QString p_image);
@@ -202,6 +204,7 @@ private:
 private slots:
   void preanim_done() override; // overridden so we don't accidentally cull characters
   void movie_ticker() override; // overridden so we can play effects
+  void play_real_frame_effect(); // plays the effect for real_frame, used to sync frame effects when using frameskip
 
 signals:
   void shake();

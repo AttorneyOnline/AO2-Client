@@ -119,6 +119,9 @@ private:
   QLabel *ui_continuous_lbl;
   QCheckBox *ui_continuous_cb;
 
+  QLabel *ui_frameskip_lbl;
+  QCheckBox *ui_frameskip_cb;
+
   QLabel *ui_category_stop_lbl;
   QCheckBox *ui_category_stop_cb;
 
