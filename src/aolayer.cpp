@@ -532,7 +532,11 @@ void CharLayer::movie_ticker()
 void AOLayer::movie_ticker()
 {
   ++frame;
-  if (frame >= max_frames) {
+  QFuture<void> future;
+  if (frame >= movie_frames.size() && frame < max_frames) { // need to load the image
+      future = QtConcurrent::run(this, &AOLayer::load_next_frame);
+  }
+  else if (frame >= max_frames) {
     if (play_once) {
       if (cull_image)
         this->stop();
@@ -544,19 +548,21 @@ void AOLayer::movie_ticker()
     else
       frame = 0;
   }
-  //  qint64 difference = elapsed - movie_delays[frame];
-  if (frame >= movie_frames.size()) {
-    movie_frames.append(this->get_pixmap(m_reader.read()));
-    movie_delays.append(m_reader.nextImageDelay());
-  }
-
 #ifdef DEBUG_MOVIE
   qDebug() << frame << movie_delays[frame]
            << "actual time taken from last frame:" << actual_time.restart();
 #endif
-
+  future.waitForFinished(); // don't set the frame before we definitely have it in memory
   this->set_frame(movie_frames[frame]);
   ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
+  if (frame + 1 >= movie_frames.size() && frame + 1 < max_frames) { // load the next frame before we tick again
+      future = QtConcurrent::run(this, &AOLayer::load_next_frame);
+  }
+}
+
+void AOLayer::load_next_frame() {
+    movie_frames.append(this->get_pixmap(m_reader.read()));
+    movie_delays.append(m_reader.nextImageDelay());
 }
 
 void CharLayer::preanim_done()
