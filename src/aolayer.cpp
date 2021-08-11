@@ -320,10 +320,7 @@ void AOLayer::start_playback(QString p_image)
     for (int i = frame; i--;) {
       if (i <= -1)
         break;
-      QPixmap l_pixmap = this->get_pixmap(m_reader.read());
-      int l_delay = m_reader.nextImageDelay();
-      movie_frames.append(l_pixmap);
-      movie_delays.append(l_delay);
+      load_next_frame();
     }
   }
   last_path = p_image;

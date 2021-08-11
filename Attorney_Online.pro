@@ -19,7 +19,8 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 # Uncomment for verbose network logging
 # DEFINES += DEBUG_NETWORK
 
-DEFINES += DEBUG_MOVIE
+# Uncomment for verbose animation logging
+# DEFINES += DEBUG_MOVIE
 
 # Uncomment for building with debug symbols
 # CONFIG += debug
