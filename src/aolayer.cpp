@@ -344,7 +344,7 @@ void AOLayer::start_playback(QString p_image)
   if (duration > 0 && cull_image == true)
     shfx_timer->start(duration);
 #ifdef DEBUG_MOVIE
-  qDebug() << max_frames << "Setting image to " << image_path
+  qDebug() << max_frames << "Setting image to " << p_image
            << "Time taken to process image:" << actual_time.elapsed();
 
   actual_time.restart();
@@ -548,11 +548,11 @@ void AOLayer::movie_ticker()
     else
       frame = 0;
   }
+  future.waitForFinished(); // don't set the frame before we definitely have it in memory
 #ifdef DEBUG_MOVIE
   qDebug() << frame << movie_delays[frame]
            << "actual time taken from last frame:" << actual_time.restart();
 #endif
-  future.waitForFinished(); // don't set the frame before we definitely have it in memory
   this->set_frame(movie_frames[frame]);
   ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
   if (frame + 1 >= movie_frames.size() && frame + 1 < max_frames) { // load the next frame before we tick again
