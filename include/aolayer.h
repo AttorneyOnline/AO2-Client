@@ -140,7 +140,7 @@ protected:
   // Center the QLabel in the viewport based on the dimensions of f_pixmap
   void center_pixmap(QPixmap f_pixmap);
 
-  // Populate the frame and delay vectors. Done asynchronously.
+  // Populates the frame and delay vectors with the next frame's data.
   void load_next_frame();
 
 signals:
