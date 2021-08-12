@@ -529,8 +529,8 @@ void CharLayer::movie_ticker()
 void AOLayer::movie_ticker()
 {
   ++frame;
-  QFuture<void> future;
   if (frame >= movie_frames.size() && frame < max_frames) { // need to load the image
+      future.waitForFinished(); // Do Not want this to be running twice
       future = QtConcurrent::run(this, &AOLayer::load_next_frame);
   }
   else if (frame >= max_frames) {

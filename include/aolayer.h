@@ -143,6 +143,9 @@ protected:
   // Populates the frame and delay vectors with the next frame's data.
   void load_next_frame();
 
+  // used in load_next_frame
+  QFuture<void> future;
+
 signals:
   void done();
 
