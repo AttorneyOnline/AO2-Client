@@ -269,6 +269,9 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
+  QMutexLocker locker(&mutex);
+  if (frame_loader.isRunning())
+    exit_loop = true; // tell the loader to stop, we have a new image to load
   this->show();
 
   if (!ao_app->is_continuous_enabled()) {
@@ -276,7 +279,7 @@ void AOLayer::start_playback(QString p_image)
     force_continuous = true;
   }
 
-  if ((last_path == p_image) && (!force_continuous))
+  if (((last_path == p_image) && (!force_continuous)) || p_image == "")
     return;
 
 #ifdef DEBUG_MOVIE
@@ -296,7 +299,7 @@ void AOLayer::start_playback(QString p_image)
     stretch = stretch_override.startsWith("true");
 
 #ifdef DEBUG_MOVIE
-  qDebug() << "stretch:" << stretch << "filename:" << p_image;
+  qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
@@ -309,39 +312,22 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
-  // CANTFIX: this causes a hitch
-  // The correct way of doing this would be to use QImageReader::jumpToImage()
-  // and populate missing data in the movie ticker when it's needed. This is
-  // unfortunately completely impossible, because QImageReader::jumpToImage() is
-  // not implemented in any image format AO2 is equipped to use. Instead, the
-  // default behavior is used - that is, absolutely nothing.
-  // This is why continuous playback can be toggled off.
-  if (continuous) {
-    for (int i = frame; i--;) {
-      if (i <= -1)
-        break;
-      load_next_frame();
-    }
-  }
+  frame_loader = QtConcurrent::run(this, &AOLayer::populate_vectors);
   last_path = p_image;
-  QPixmap f_pixmap = this->get_pixmap(m_reader.read());
-  int f_delay = m_reader.nextImageDelay();
+  while (movie_frames.size() <= frame)
+    frameAdded.wait(&mutex);
+  this->set_frame(movie_frames[frame]);
 
-  this->set_frame(f_pixmap);
-  if (max_frames > 1) {
-    movie_frames.append(f_pixmap);
-    movie_delays.append(f_delay);
-  }
-  else if (max_frames <= 1) {
+  if (max_frames <= 1) {
     duration = static_duration;
 #ifdef DEBUG_MOVIE
-    qDebug() << "max_frames is <= 1, using static duration";
+    qDebug() << "[AOLayer::start_playback] max_frames is <= 1, using static duration";
 #endif
   }
   if (duration > 0 && cull_image == true)
     shfx_timer->start(duration);
 #ifdef DEBUG_MOVIE
-  qDebug() << max_frames << "Setting image to " << p_image
+  qDebug() << "[AOLayer::start_playback] Max frames:" << max_frames << "Setting image to " << p_image
            << "Time taken to process image:" << actual_time.elapsed();
 
   actual_time.restart();
@@ -372,8 +358,12 @@ void AOLayer::play()
     else
       this->freeze();
   }
-  else
+  else {
+      while (movie_delays.size() <= frame) {
+          frameAdded.wait(&mutex);
+      }
     ticker->start(this->get_frame_delay(movie_delays[frame]));
+  }
 }
 
 void AOLayer::set_play_once(bool p_play_once) { play_once = p_play_once; }
@@ -451,7 +441,7 @@ void CharLayer::load_network_effects()
                                 // data, let's yank it in.
             effect += f_data;
 #ifdef DEBUG_MOVIE
-          qDebug() << effect << f_data << "frame" << f_frame << "for"
+          qDebug() << "[CharLayer::load_network_effects]" << effect << f_data << "frame" << f_frame << "for"
                    << m_emote;
 #endif
           movie_effects[f_frame].append(effect);
@@ -472,14 +462,14 @@ void CharLayer::play_frame_effect(int p_frame)
       if (effect == "shake") {
         shake();
 #ifdef DEBUG_MOVIE
-        qDebug() << "Attempting to play shake on frame" << frame;
+        qDebug() << "[CharLayer::play_frame_effect] Attempting to play shake on frame" << frame;
 #endif
       }
 
       if (effect == "flash") {
         flash();
 #ifdef DEBUG_MOVIE
-        qDebug() << "Attempting to play flash on frame" << frame;
+        qDebug() << "[CharLayer::play_frame_effect] Attempting to play flash on frame" << frame;
 #endif
       }
 
@@ -487,7 +477,7 @@ void CharLayer::play_frame_effect(int p_frame)
         QString sfx = effect.section("^", 1);
         play_sfx(sfx);
 #ifdef DEBUG_MOVIE
-        qDebug() << "Attempting to play sfx" << sfx << "on frame" << frame;
+        qDebug() << "[CharLayer::play_frame_effect] Attempting to play sfx" << sfx << "on frame" << frame;
 #endif
       }
     }
@@ -529,11 +519,12 @@ void CharLayer::movie_ticker()
 void AOLayer::movie_ticker()
 {
   ++frame;
-  if (frame >= movie_frames.size() && frame < max_frames) { // need to load the image
-      future.waitForFinished(); // Do Not want this to be running twice
-      future = QtConcurrent::run(this, &AOLayer::load_next_frame);
+  mutex.lock();
+  while (frame >= movie_frames.size() && frame < max_frames) { // oops! our frame isn't ready yet
+      frameAdded.wait(&mutex);
   }
-  else if (frame >= max_frames) {
+  mutex.unlock();
+  if (frame >= max_frames) {
     if (play_once) {
       if (cull_image)
         this->stop();
@@ -545,21 +536,31 @@ void AOLayer::movie_ticker()
     else
       frame = 0;
   }
-  future.waitForFinished(); // don't set the frame before we definitely have it in memory
 #ifdef DEBUG_MOVIE
-  qDebug() << frame << movie_delays[frame]
-           << "actual time taken from last frame:" << actual_time.restart();
+  qDebug() << "[AOLayer::movie_ticker] Frame:" << frame << "Delay:" << movie_delays[frame]
+           << "Actual time taken from last frame:" << actual_time.restart();
 #endif
   this->set_frame(movie_frames[frame]);
   ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
-  if (frame + 1 >= movie_frames.size() && frame + 1 < max_frames) { // load the next frame before we tick again
-      future = QtConcurrent::run(this, &AOLayer::load_next_frame);
-  }
+}
+
+void AOLayer::populate_vectors() {
+    while (movie_frames.size() < max_frames && !exit_loop) {
+        load_next_frame();
+#ifdef DEBUG_MOVIE
+        qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+#endif
+    }
+    exit_loop = false;
 }
 
 void AOLayer::load_next_frame() {
+    //QMutexLocker locker(&mutex);
+    mutex.lock();
     movie_frames.append(this->get_pixmap(m_reader.read()));
     movie_delays.append(m_reader.nextImageDelay());
+    mutex.unlock();
+    frameAdded.wakeAll();
 }
 
 void CharLayer::preanim_done()
