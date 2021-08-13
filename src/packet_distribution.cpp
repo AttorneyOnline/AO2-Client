@@ -297,7 +297,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->set_window_title(window_title);
 
     w_lobby->show_loading_overlay();
-    w_lobby->set_loading_text(tr("Loading"));
+    w_lobby->set_loading_text(tr("Loading") + "...");
     w_lobby->set_loading_value(0);
 
     AOPacket *f_packet;
