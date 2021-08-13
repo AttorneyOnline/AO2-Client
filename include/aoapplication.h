@@ -31,6 +31,11 @@
 
 #include <QElapsedTimer>
 
+#include <QFuture>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QMutex>
+#include <QWaitCondition>
+
 class NetworkManager;
 class Lobby;
 class Courtroom;
@@ -77,6 +82,16 @@ public:
 
   void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);
+
+  QMutex char_mutex;
+  QMutex music_mutex;
+  QWaitCondition charsLoaded;
+  QWaitCondition musicLoaded;
+  QFuture<void> char_loader;
+  QFuture<void> music_loader;
+  QElapsedTimer loading_time;
+  void load_characters(QStringList f_contents);
+  void load_music(QStringList f_contents);
 
   void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);

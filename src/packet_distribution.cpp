@@ -258,6 +258,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (char_list_size < 0 || evidence_list_size < 0 || music_list_size < 0)
       goto end;
 
+    qDebug() << "Loading started!";
+    loading_time.start();
+
     loaded_chars = 0;
     loaded_evidence = 0;
     loaded_music = 0;
@@ -338,35 +341,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
-    for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
-      QStringList sub_elements = f_contents.at(n_element).split("&");
-
-      AOPacket::unescape(sub_elements);
-
-      char_type f_char;
-      f_char.name = sub_elements.at(0);
-      if (sub_elements.size() >= 2)
-        f_char.description = sub_elements.at(1);
-
-      // temporary. the CharsCheck packet sets this properly
-      f_char.taken = false;
-
-      ++loaded_chars;
-
-      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
-                                    .arg(QString::number(loaded_chars))
-                                    .arg(QString::number(char_list_size)));
-
-      w_courtroom->append_char(f_char);
-
-      int total_loading_size =
-          char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(
-          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-           static_cast<double>(total_loading_size)) *
-          100);
-      w_lobby->set_loading_value(loading_value);
-    }
+    char_loader = QtConcurrent::run(this, &AOApplication::load_characters, f_contents);
 
     send_server_packet(new AOPacket("RM#%"));
     append_to_demofile(f_packet_encoded);
@@ -375,48 +350,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed || courtroom_loaded)
       goto end;
 
-    bool musics_time = false;
-    int areas = 0;
-
-    for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
-      ++loaded_music;
-
-      w_lobby->set_loading_text(tr("Loading music:\n%1/%2")
-                                    .arg(QString::number(loaded_music))
-                                    .arg(QString::number(music_list_size)));
-
-      if (musics_time) {
-        w_courtroom->append_music(f_contents.at(n_element));
-      }
-      else {
-        if (f_contents.at(n_element).endsWith(".wav") ||
-            f_contents.at(n_element).endsWith(".mp3") ||
-            f_contents.at(n_element).endsWith(".mp4") ||
-            f_contents.at(n_element).endsWith(".ogg") ||
-            f_contents.at(n_element).endsWith(".opus")) {
-          musics_time = true;
-          w_courtroom->fix_last_area();
-          w_courtroom->append_music(f_contents.at(n_element));
-          areas--;
-        }
-        else {
-          w_courtroom->append_area(f_contents.at(n_element));
-          areas++;
-        }
-      }
-
-      int total_loading_size =
-          char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(
-          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-           static_cast<double>(total_loading_size)) *
-          100);
-      w_lobby->set_loading_value(loading_value);
-    }
-
-    for (int area_n = 0; area_n < areas; area_n++) {
-      w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
-    }
+    music_loader = QtConcurrent::run(this, &AOApplication::load_music, f_contents);
 
     send_server_packet(new AOPacket("RD#%"));
   }
@@ -455,10 +389,23 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (lobby_constructed)
       w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
 
+    char_mutex.lock();
+    if (char_loader.isRunning())
+        charsLoaded.wait(&char_mutex);
+    char_mutex.unlock();
+
+
+    music_mutex.lock();
+    if (music_loader.isRunning())
+        musicLoaded.wait(&char_mutex);
+    music_mutex.unlock();
+
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 
     courtroom_loaded = true;
+
+    qDebug() << "Loading complete. Load time" << loading_time.elapsed() << "ms";
 
     destruct_lobby();
   }
@@ -745,4 +692,87 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
   net_manager->ship_server_packet(f_packet);
 
   delete p_packet;
+}
+
+void AOApplication::load_characters(QStringList f_contents) {
+    char_mutex.lock();
+    for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
+      QStringList sub_elements = f_contents.at(n_element).split("&");
+
+      AOPacket::unescape(sub_elements);
+
+      char_type f_char;
+      f_char.name = sub_elements.at(0);
+      if (sub_elements.size() >= 2)
+        f_char.description = sub_elements.at(1);
+
+      // temporary. the CharsCheck packet sets this properly
+      f_char.taken = false;
+
+      ++loaded_chars;
+
+      //w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
+      //                              .arg(QString::number(loaded_chars))
+      //                              .arg(QString::number(char_list_size)));
+
+      w_courtroom->append_char(f_char);
+
+      //int total_loading_size =
+      //    char_list_size * 2 + evidence_list_size + music_list_size;
+      //int loading_value = int(
+      //    ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
+      //     static_cast<double>(total_loading_size)) *
+      //    100);
+      //w_lobby->set_loading_value(loading_value);
+    }
+    char_mutex.unlock();
+    charsLoaded.wakeAll();
+}
+
+void AOApplication::load_music(QStringList f_contents) {
+    music_mutex.lock();
+    bool musics_time = false;
+    int areas = 0;
+
+    for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
+      ++loaded_music;
+
+      //w_lobby->set_loading_text(tr("Loading music:\n%1/%2")
+      //                              .arg(QString::number(loaded_music))
+      //                              .arg(QString::number(music_list_size)));
+
+      if (musics_time) {
+        w_courtroom->append_music(f_contents.at(n_element));
+      }
+      else {
+        if (f_contents.at(n_element).endsWith(".wav") ||
+            f_contents.at(n_element).endsWith(".mp3") ||
+            f_contents.at(n_element).endsWith(".mp4") ||
+            f_contents.at(n_element).endsWith(".ogg") ||
+            f_contents.at(n_element).endsWith(".opus")) {
+          musics_time = true;
+          w_courtroom->fix_last_area();
+          w_courtroom->append_music(f_contents.at(n_element));
+          areas--;
+        }
+        else {
+          w_courtroom->append_area(f_contents.at(n_element));
+          areas++;
+        }
+      }
+
+      int total_loading_size =
+          char_list_size * 2 + evidence_list_size + music_list_size;
+      int loading_value = int(
+          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
+           static_cast<double>(total_loading_size)) *
+          100);
+      w_lobby->set_loading_value(loading_value);
+    }
+
+    for (int area_n = 0; area_n < areas; area_n++) {
+      w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
+    }
+    music_mutex.unlock();
+    musicLoaded.wakeAll();
 }
