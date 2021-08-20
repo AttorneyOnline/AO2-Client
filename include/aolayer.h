@@ -8,6 +8,8 @@
 #include <QTimer>
 #include <QBitmap>
 #include <QtConcurrent/QtConcurrentRun>
+#include <QMutex>
+#include <QWaitCondition>
 
 class AOApplication;
 class VPath;
@@ -140,11 +142,17 @@ protected:
   // Center the QLabel in the viewport based on the dimensions of f_pixmap
   void center_pixmap(QPixmap f_pixmap);
 
-  // Populates the frame and delay vectors with the next frame's data.
-  void load_next_frame();
+private:
+  // Populates the frame and delay vectors.
+  void populate_vectors();
 
-  // used in load_next_frame
-  QFuture<void> future;
+  // used in populate_vectors
+  void load_next_frame();
+  bool exit_loop; //awful solution but i'm not fucking using QThread
+  QFuture<void> frame_loader;
+  QMutex mutex;
+  QWaitCondition frameAdded;
+
 
 signals:
   void done();
@@ -243,4 +251,5 @@ public:
   StickerLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_charname);
 };
+
 #endif // AOLAYER_H
