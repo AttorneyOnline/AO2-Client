@@ -304,11 +304,12 @@ void AOLayer::start_playback(QString p_image)
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
-  if (!continuous)
-    frame = 0;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
-  if (((continuous) && (max_frames != last_max_frames)) || max_frames == 0 || frame >= max_frames) {
+  if (!continuous
+          || ((continuous) && (max_frames != last_max_frames))
+          || max_frames == 0
+          || frame >= max_frames) {
     frame = 0;
     continuous = false;
   }
