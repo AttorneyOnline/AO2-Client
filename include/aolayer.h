@@ -10,6 +10,8 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QGraphicsEffect>
+#include <QPropertyAnimation>
 
 class AOApplication;
 class VPath;
@@ -95,6 +97,8 @@ public:
   // none exist, return NULL (safe because we check again for existence later)
   QString find_image(QStringList p_list);
 
+  void fade(bool in, int duration);
+
 protected:
   AOApplication *ao_app;
   QVector<QPixmap> movie_frames;
@@ -161,6 +165,9 @@ protected slots:
   virtual void preanim_done();
   void shfx_timer_done();
   virtual void movie_ticker();
+
+private slots:
+  void hide_image();
 };
 
 class BackgroundLayer : public AOLayer {

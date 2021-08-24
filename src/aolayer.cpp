@@ -587,3 +587,20 @@ void AOLayer::shfx_timer_done()
   // signal connected to courtroom object, let it figure out what to do
   done();
 }
+
+void AOLayer::hide_image() {this->hide();}
+
+void AOLayer::fade(bool in, int duration)
+{
+    QGraphicsOpacityEffect* fade = new QGraphicsOpacityEffect(this);
+    this->setGraphicsEffect(fade);
+    QPropertyAnimation* fade_anim = new QPropertyAnimation(fade, "opacity");
+    fade_anim->setDuration(duration);
+    fade_anim->setStartValue(in ? 0 : 1);
+    fade_anim->setEndValue(in ? 1 : 0);
+    fade_anim->setEasingCurve(in ? QEasingCurve::InBack : QEasingCurve::OutBack);
+    fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
+    if (!in)
+        connect(fade_anim, SIGNAL(finished()), this, SLOT(hide_widget()));
+}
+

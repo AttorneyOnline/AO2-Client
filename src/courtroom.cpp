@@ -45,6 +45,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
+  ui_vp_void = new QLabel(ui_viewport);
+  ui_vp_void->setStyleSheet("QLabel {background-color:black}");
+  ui_vp_void->hide();
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
@@ -649,6 +652,9 @@ void Courtroom::set_widgets()
   // Once again, if the theme can't display it, set_move_and_pos will catch
   // them.
   ui_settings->show();
+
+  ui_vp_void->move(0, 0);
+  ui_vp_void->resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -4000,6 +4006,15 @@ void Courtroom::on_ooc_return_pressed()
     else {
       toggle_judge_buttons(false);
     }
+  }
+  else if (ooc_message.startsWith("/fade")) {
+      if (ooc_message == "/fadeout") {
+          ui_vp_player_char->fade(false, 1500);
+      }
+      else if (ooc_message == "/fadein") {
+          ui_vp_player_char->fade(true, 1500);
+      }
+      return;
   }
   else if (ooc_message.startsWith("/settings")) {
     ui_ooc_chat_message->clear();
