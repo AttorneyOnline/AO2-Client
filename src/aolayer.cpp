@@ -605,7 +605,7 @@ void AOLayer::fade(bool in, int duration)
     fade_anim->setEndValue(in ? 1 : 0);
     fade_anim->setEasingCurve(QEasingCurve::Linear);
     fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
-    connect(fade_anim, SIGNAL(finished()), this, SLOT(in ? fadein_finished() : fadeout_finished()));
+    connect(fade_anim, SIGNAL(finished()), this, SLOT(in?fadein_finished():fadeout_finished()));
 
 }
 
