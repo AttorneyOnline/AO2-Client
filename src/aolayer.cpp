@@ -588,7 +588,12 @@ void AOLayer::shfx_timer_done()
   done();
 }
 
-void AOLayer::hide_image() {this->hide();}
+void AOLayer::invert() {
+    const QPixmap* pixmap = this->pixmap();
+    QImage* image = new QImage(pixmap->toImage());
+    image->invertPixels(QImage::InvertRgb);
+    this->setPixmap(QPixmap::fromImage(*image));
+}
 
 void AOLayer::fade(bool in, int duration)
 {
@@ -598,9 +603,15 @@ void AOLayer::fade(bool in, int duration)
     fade_anim->setDuration(duration);
     fade_anim->setStartValue(in ? 0 : 1);
     fade_anim->setEndValue(in ? 1 : 0);
-    fade_anim->setEasingCurve(in ? QEasingCurve::InBack : QEasingCurve::OutBack);
+    fade_anim->setEasingCurve(QEasingCurve::Linear);
     fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
-    if (!in)
-        connect(fade_anim, SIGNAL(finished()), this, SLOT(hide_widget()));
+    connect(fade_anim, SIGNAL(finished()), this, SLOT(in ? fadein_finished() : fadeout_finished()));
+
 }
+
+void AOLayer::fadeout_finished() {}
+
+void AOLayer::fadein_finished() {}
+
+void BackgroundLayer::fadein_finished() {emit hide_void();}
 

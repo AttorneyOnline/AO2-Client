@@ -401,6 +401,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
+  connect(ui_vp_background, SIGNAL(hide_void()), ui_vp_void, SLOT(hide()));
+
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_effect, SIGNAL(done()), this, SLOT(effect_done()));
   connect(ui_vp_wtce, SIGNAL(done()), this, SLOT(effect_done()));
@@ -4007,12 +4009,20 @@ void Courtroom::on_ooc_return_pressed()
       toggle_judge_buttons(false);
     }
   }
+  // DEBUG FADE COMMANDS, REMOVE THESE B4 PUSHING
   else if (ooc_message.startsWith("/fade")) {
       if (ooc_message == "/fadeout") {
-          ui_vp_player_char->fade(false, 1500);
+          ui_vp_player_char->fade(false, 700);
       }
       else if (ooc_message == "/fadein") {
-          ui_vp_player_char->fade(true, 1500);
+          ui_vp_player_char->fade(true, 700);
+      }
+      else if (ooc_message == "/fadebgout") {
+          ui_vp_void->show();
+          ui_vp_background->fade(false, 700);
+      }
+      else if (ooc_message == "/fadebgin") {
+          ui_vp_background->fade(true, 700);
       }
       return;
   }

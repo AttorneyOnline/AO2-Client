@@ -99,6 +99,8 @@ public:
 
   void fade(bool in, int duration);
 
+  void invert();
+
 protected:
   AOApplication *ao_app;
   QVector<QPixmap> movie_frames;
@@ -165,9 +167,8 @@ protected slots:
   virtual void preanim_done();
   void shfx_timer_done();
   virtual void movie_ticker();
-
-private slots:
-  void hide_image();
+  virtual void fadeout_finished();
+  virtual void fadein_finished();
 };
 
 class BackgroundLayer : public AOLayer {
@@ -175,6 +176,10 @@ class BackgroundLayer : public AOLayer {
 public:
   BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename);
+signals:
+  void hide_void();
+protected:
+  void fadein_finished() override; // overridden to send the courtroom a signal to hide the void element
 };
 
 class CharLayer : public AOLayer {
