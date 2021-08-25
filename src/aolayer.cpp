@@ -304,11 +304,12 @@ void AOLayer::start_playback(QString p_image)
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
-  if (!continuous)
-    frame = 0;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
-  if (((continuous) && (max_frames != last_max_frames)) || max_frames == 0) {
+  if (!continuous
+          || ((continuous) && (max_frames != last_max_frames))
+          || max_frames == 0
+          || frame >= max_frames) {
     frame = 0;
     continuous = false;
   }
@@ -519,11 +520,6 @@ void CharLayer::movie_ticker()
 void AOLayer::movie_ticker()
 {
   ++frame;
-  mutex.lock();
-  while (frame >= movie_frames.size() && frame < max_frames) { // oops! our frame isn't ready yet
-      frameAdded.wait(&mutex);
-  }
-  mutex.unlock();
   if (frame >= max_frames) {
     if (play_once) {
       if (cull_image)
@@ -536,6 +532,11 @@ void AOLayer::movie_ticker()
     else
       frame = 0;
   }
+  mutex.lock();
+  while (frame >= movie_frames.size() && frame < max_frames) { // oops! our frame isn't ready yet
+      frameAdded.wait(&mutex);
+  }
+  mutex.unlock();
 #ifdef DEBUG_MOVIE
   qDebug() << "[AOLayer::movie_ticker] Frame:" << frame << "Delay:" << movie_delays[frame]
            << "Actual time taken from last frame:" << actual_time.restart();
