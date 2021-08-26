@@ -6,7 +6,9 @@ void Courtroom::initialize_evidence()
   ui_evidence->setObjectName("ui_evidence");
 
   // ui_evidence_name = new QLabel(ui_evidence);
-  ui_evidence_name = new AOLineEdit(ui_evidence);
+  ui_evidence_name = new QLineEdit(ui_evidence);
+  ui_evidence_name_filter = new AOLineEditFilter();
+  ui_evidence_name->installEventFilter(ui_evidence_name_filter);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFrame(false);
   ui_evidence_name->setObjectName("ui_evidence_name");
@@ -41,7 +43,9 @@ void Courtroom::initialize_evidence()
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_delete->setToolTip(tr("Destroy this piece of evidence"));
   ui_evidence_delete->setObjectName("ui_evidence_delete");
-  ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name = new QLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name_filter = new AOLineEditFilter();
+  ui_evidence_image_name->installEventFilter(ui_evidence_image_name_filter);
   ui_evidence_image_name->setObjectName("ui_evidence_image_name");
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_button->setText(tr("Choose.."));
@@ -56,7 +60,9 @@ void Courtroom::initialize_evidence()
                                 "evidence and send them to server."));
   ui_evidence_ok->setObjectName("ui_evidence_ok");
 
-  ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
+  ui_evidence_description = new QPlainTextEdit(ui_evidence_overlay);
+  ui_evidence_description_filter = new AOTextEditFilter();
+  ui_evidence_description->viewport()->installEventFilter(ui_evidence_description_filter); // this fucking sucks dude
   ui_evidence_description->setFrameStyle(QFrame::NoFrame);
   ui_evidence_description->setToolTip(
       tr("Double-click to edit. Press [X] to update your changes."));
@@ -64,7 +70,7 @@ void Courtroom::initialize_evidence()
 
   connect(ui_evidence_name, SIGNAL(returnPressed()), this,
           SLOT(on_evidence_name_edited()));
-  connect(ui_evidence_name, SIGNAL(double_clicked()), this,
+  connect(ui_evidence_name_filter, SIGNAL(double_clicked()), this,
           SLOT(on_evidence_name_double_clicked()));
   connect(ui_evidence_left, SIGNAL(clicked()), this,
           SLOT(on_evidence_left_clicked()));
@@ -85,7 +91,7 @@ void Courtroom::initialize_evidence()
           SLOT(on_evidence_delete_clicked()));
   connect(ui_evidence_image_name, SIGNAL(returnPressed()), this,
           SLOT(on_evidence_image_name_edited()));
-  connect(ui_evidence_image_name, SIGNAL(double_clicked()), this,
+  connect(ui_evidence_image_name_filter, SIGNAL(double_clicked()), this,
           SLOT(on_evidence_image_name_double_clicked()));
   connect(ui_evidence_image_button, SIGNAL(clicked()), this,
           SLOT(on_evidence_image_button_clicked()));

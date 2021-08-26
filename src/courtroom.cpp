@@ -164,10 +164,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setText(p_ao_app->get_default_showname());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
 
-  ui_ic_chat_message = new AOLineEdit(this);
+  ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message"));
-  ui_ic_chat_message->preserve_selection(true);
+  ui_ic_chat_message_filter = new AOLineEditFilter();
+  ui_ic_chat_message_filter->preserve_selection = true;
+  ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
   ui_ic_chat_message->setObjectName("ui_ic_chat_message");
 
   ui_vp_sticker = new StickerLayer(ui_viewport, ao_app);
