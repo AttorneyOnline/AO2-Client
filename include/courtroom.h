@@ -748,8 +748,9 @@ private:
   AOButton *ui_evidence_transfer;
   AOButton *ui_evidence_save;
   AOButton *ui_evidence_load;
+  AOButton *ui_evidence_edit;
   QPlainTextEdit *ui_evidence_description;
-  AOTextEditFilter *ui_evidence_description_filter;
+
 
   AOImage *ui_char_select_background;
 
@@ -876,6 +877,7 @@ private slots:
   void on_evidence_image_button_clicked();
   void on_evidence_clicked(int p_id);
   void on_evidence_double_clicked(int p_id);
+  void on_evidence_edit_clicked();
 
   void on_evidence_hover(int p_id, bool p_state);
 
@@ -931,8 +933,6 @@ private slots:
 
   void on_showname_enable_clicked();
 
-  void on_evidence_name_double_clicked();
-  void on_evidence_image_name_double_clicked();
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();

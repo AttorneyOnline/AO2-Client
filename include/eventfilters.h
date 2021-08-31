@@ -2,28 +2,7 @@
 #define EVENTFILTERS_H
 
 #include <QEvent>
-#include <QPlainTextEdit>
 #include <QLineEdit>
-
-class AOTextEditFilter : public QObject
-{
-    Q_OBJECT
-
-protected:
-    // QPlainTextEdit's viewport is its own object and it receives mouse events instead of the main object
-    // so we are actually intercepting events meant for the viewport and working w/ its parent (the object we want) instead
-    //
-    // this took too long to figure out. QPlainTextEdit more like QPainTextEdit
-    bool eventFilter(QObject *obj, QEvent *event) override {
-        if (event->type() == QEvent::MouseButtonDblClick && obj->parent() != nullptr) {
-            QPlainTextEdit *textEdit = qobject_cast<QPlainTextEdit *>(obj->parent());
-            if (textEdit != nullptr)
-                textEdit->setReadOnly(false);
-            return true;
-        }
-        return false;
-    }
-};
 
 class AOLineEditFilter : public QObject
 {
@@ -34,11 +13,7 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QLineEdit *lineEdit = qobject_cast<QLineEdit *>(obj);
-        if (event->type() == QEvent::MouseButtonDblClick) { // double click
-            emit double_clicked();
-            return true;
-        }
-        else if (event->type() == QEvent::FocusOut && lineEdit != nullptr && preserve_selection) { // lost focus
+       if (event->type() == QEvent::FocusOut && lineEdit != nullptr && preserve_selection) { // lost focus
             int start = lineEdit->selectionStart();
           #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
             int len = lineEdit->selectionLength();
