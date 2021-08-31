@@ -6,7 +6,9 @@ void Courtroom::initialize_evidence()
   ui_evidence->setObjectName("ui_evidence");
 
   // ui_evidence_name = new QLabel(ui_evidence);
-  ui_evidence_name = new AOLineEdit(ui_evidence);
+  ui_evidence_name = new QLineEdit(ui_evidence);
+  ui_evidence_name_filter = new AOLineEditFilter();
+  ui_evidence_name->installEventFilter(ui_evidence_name_filter);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFrame(false);
   ui_evidence_name->setObjectName("ui_evidence_name");
@@ -41,11 +43,14 @@ void Courtroom::initialize_evidence()
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_delete->setToolTip(tr("Destroy this piece of evidence"));
   ui_evidence_delete->setObjectName("ui_evidence_delete");
-  ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name = new QLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name_filter = new AOLineEditFilter();
+  ui_evidence_image_name->installEventFilter(ui_evidence_image_name_filter);
   ui_evidence_image_name->setObjectName("ui_evidence_image_name");
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_button->setText(tr("Choose.."));
   ui_evidence_image_button->setObjectName("ui_evidence_image_button");
+  ui_evidence_image_button->setDisabled(true);
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_x->setToolTip(
       tr("Close the evidence display/editing overlay.\n"
@@ -56,16 +61,18 @@ void Courtroom::initialize_evidence()
                                 "evidence and send them to server."));
   ui_evidence_ok->setObjectName("ui_evidence_ok");
 
-  ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
+  ui_evidence_description = new QPlainTextEdit(ui_evidence_overlay);
   ui_evidence_description->setFrameStyle(QFrame::NoFrame);
   ui_evidence_description->setToolTip(
-      tr("Double-click to edit. Press [X] to update your changes."));
+      tr("Click the pencil icon to edit. Press [X] to update your changes."));
   ui_evidence_description->setObjectName("ui_evidence_description");
+
+  ui_evidence_edit = new AOButton(ui_evidence_overlay, ao_app);
+  ui_evidence_edit->setToolTip(tr("Edit this piece of evidence."));
+  ui_evidence_edit->setObjectName("ui_evidence_edit");
 
   connect(ui_evidence_name, SIGNAL(returnPressed()), this,
           SLOT(on_evidence_name_edited()));
-  connect(ui_evidence_name, SIGNAL(double_clicked()), this,
-          SLOT(on_evidence_name_double_clicked()));
   connect(ui_evidence_left, SIGNAL(clicked()), this,
           SLOT(on_evidence_left_clicked()));
   connect(ui_evidence_right, SIGNAL(clicked()), this,
@@ -85,8 +92,6 @@ void Courtroom::initialize_evidence()
           SLOT(on_evidence_delete_clicked()));
   connect(ui_evidence_image_name, SIGNAL(returnPressed()), this,
           SLOT(on_evidence_image_name_edited()));
-  connect(ui_evidence_image_name, SIGNAL(double_clicked()), this,
-          SLOT(on_evidence_image_name_double_clicked()));
   connect(ui_evidence_image_button, SIGNAL(clicked()), this,
           SLOT(on_evidence_image_button_clicked()));
   connect(ui_evidence_x, SIGNAL(clicked()), this,
@@ -100,6 +105,7 @@ void Courtroom::initialize_evidence()
           SLOT(on_evidence_edited()));
   connect(ui_evidence_description, SIGNAL(textChanged()), this,
           SLOT(on_evidence_edited()));
+  connect(ui_evidence_edit, SIGNAL(clicked()), this, SLOT(on_evidence_edit_clicked()));
 
   ui_evidence->hide();
 }
@@ -155,6 +161,9 @@ void Courtroom::refresh_evidence()
 
   set_size_and_pos(ui_evidence_ok, "evidence_ok");
   ui_evidence_ok->set_image("evidence_ok");
+
+  set_size_and_pos(ui_evidence_edit, "evidence_edit");
+  ui_evidence_edit->set_image("evidence_edit");
 
   set_size_and_pos(ui_evidence_switch, "evidence_switch");
   if (current_evidence_global) {
@@ -368,24 +377,8 @@ void Courtroom::set_evidence_page()
 
 void Courtroom::on_evidence_name_edited()
 {
-  ui_evidence_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
-}
-
-void Courtroom::on_evidence_name_double_clicked()
-{
-  if (ui_evidence_overlay->isVisible()) {
-    ui_evidence_name->setReadOnly(false);
-  }
-  else {
-    ui_evidence_name->setReadOnly(true);
-  }
-}
-
-void Courtroom::on_evidence_image_name_double_clicked()
-{
-  ui_evidence_image_name->setReadOnly(false);
 }
 
 void Courtroom::on_evidence_image_name_edited()
@@ -469,14 +462,14 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_description->clear();
   ui_evidence_description->appendPlainText(f_evi.description);
   ui_evidence_description->setReadOnly(true);
-  ui_evidence_description->setToolTip(tr("Double-click to edit..."));
+  ui_evidence_description->setToolTip(tr("Click the pencil to edit..."));
 
   ui_evidence_name->setText(f_evi.name);
   ui_evidence_name->setReadOnly(true);
-  ui_evidence_name->setToolTip(tr("Double-click to edit..."));
+  ui_evidence_name->setToolTip(tr("Click the pencil to edit..."));
   ui_evidence_image_name->setText(f_evi.image);
   ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_name->setToolTip(tr("Double-click to edit..."));
+  ui_evidence_image_name->setToolTip(tr("Click the pencil to edit..."));
 
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
@@ -598,6 +591,8 @@ void Courtroom::on_evidence_ok_clicked()
   ui_evidence_name->setReadOnly(true);
   ui_evidence_description->setReadOnly(true);
   ui_evidence_image_name->setReadOnly(true);
+  ui_evidence_edit->show();
+  ui_evidence_image_button->setDisabled(true);
   if (current_evidence < local_evidence_list.size()) {
     evi_type f_evi = local_evidence_list.at(current_evidence);
     if (current_evidence_global) {
@@ -680,6 +675,22 @@ void Courtroom::on_evidence_transfer_clicked()
   msgBox->exec();
 }
 
+void Courtroom::on_evidence_edit_clicked()
+{
+    if (!ui_evidence_overlay->isVisible())
+        return;
+    if (!ui_evidence_edit->isHidden()) {
+        ui_evidence_name->setReadOnly(false);
+        ui_evidence_image_name->setReadOnly(false);
+        ui_evidence_description->setReadOnly(false);
+        ui_evidence_image_button->setDisabled(false);
+        ui_evidence_edit->hide();
+    }
+    else {
+        return;
+    }
+}
+
 void Courtroom::on_evidence_edited()
 {
   if (current_evidence >=
@@ -704,6 +715,8 @@ void Courtroom::evidence_close()
   ui_evidence_name->setToolTip("");
   ui_evidence_image_name->setReadOnly(true);
   ui_evidence_image_name->setToolTip("");
+  ui_evidence_edit->show();
+  ui_evidence_image_button->setDisabled(true);
   ui_evidence_overlay->hide();
   ui_ic_chat_message->setFocus();
 }

@@ -52,7 +52,7 @@ StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
 QString AOLayer::find_image(QStringList p_list)
 {
   QString image_path;
-  for (QString path : p_list) {
+  for (const QString &path : p_list) {
 #ifdef DEBUG_MOVIE
     qDebug() << "checking path " << path;
 #endif
@@ -461,14 +461,14 @@ void CharLayer::play_frame_effect(int p_frame)
   if (p_frame < max_frames) {
     foreach (QString effect, movie_effects[p_frame]) {
       if (effect == "shake") {
-        shake();
+        emit shake();
 #ifdef DEBUG_MOVIE
         qDebug() << "[CharLayer::play_frame_effect] Attempting to play shake on frame" << frame;
 #endif
       }
 
       if (effect == "flash") {
-        flash();
+        emit flash();
 #ifdef DEBUG_MOVIE
         qDebug() << "[CharLayer::play_frame_effect] Attempting to play flash on frame" << frame;
 #endif
@@ -476,7 +476,7 @@ void CharLayer::play_frame_effect(int p_frame)
 
       if (effect.startsWith("sfx^")) {
         QString sfx = effect.section("^", 1);
-        play_sfx(sfx);
+        emit play_sfx(sfx);
 #ifdef DEBUG_MOVIE
         qDebug() << "[CharLayer::play_frame_effect] Attempting to play sfx" << sfx << "on frame" << frame;
 #endif
@@ -576,7 +576,7 @@ void AOLayer::preanim_done()
 {
   ticker->stop();
   preanim_timer->stop();
-  done();
+  emit done();
 }
 
 void AOLayer::shfx_timer_done()
@@ -586,5 +586,5 @@ void AOLayer::shfx_timer_done()
   qDebug() << "shfx timer signaled done";
 #endif
   // signal connected to courtroom object, let it figure out what to do
-  done();
+  emit done();
 }

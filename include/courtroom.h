@@ -11,13 +11,11 @@
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
 #include "aolayer.h"
-#include "aolineedit.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
-#include "aotextedit.h"
 #include "chatlogpiece.h"
 #include "datatypes.h"
 #include "debug_functions.h"
@@ -25,6 +23,7 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "scrolltext.h"
+#include "eventfilters.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -648,7 +647,8 @@ private:
 
   QComboBox *ui_pair_order_dropdown;
 
-  AOLineEdit *ui_ic_chat_message;
+  QLineEdit *ui_ic_chat_message;
+  AOLineEditFilter *ui_ic_chat_message_filter;
   QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
@@ -730,7 +730,8 @@ private:
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
-  AOLineEdit *ui_evidence_name;
+  QLineEdit *ui_evidence_name;
+  AOLineEditFilter *ui_evidence_name_filter;
   QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton *> ui_evidence_list;
   AOButton *ui_evidence_left;
@@ -738,7 +739,8 @@ private:
   AOButton *ui_evidence_present;
   AOImage *ui_evidence_overlay;
   AOButton *ui_evidence_delete;
-  AOLineEdit *ui_evidence_image_name;
+  QLineEdit *ui_evidence_image_name;
+  AOLineEditFilter *ui_evidence_image_name_filter;
   AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
   AOButton *ui_evidence_ok;
@@ -746,7 +748,9 @@ private:
   AOButton *ui_evidence_transfer;
   AOButton *ui_evidence_save;
   AOButton *ui_evidence_load;
-  AOTextEdit *ui_evidence_description;
+  AOButton *ui_evidence_edit;
+  QPlainTextEdit *ui_evidence_description;
+
 
   AOImage *ui_char_select_background;
 
@@ -873,6 +877,7 @@ private slots:
   void on_evidence_image_button_clicked();
   void on_evidence_clicked(int p_id);
   void on_evidence_double_clicked(int p_id);
+  void on_evidence_edit_clicked();
 
   void on_evidence_hover(int p_id, bool p_state);
 
@@ -928,8 +933,6 @@ private slots:
 
   void on_showname_enable_clicked();
 
-  void on_evidence_name_double_clicked();
-  void on_evidence_image_name_double_clicked();
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();
