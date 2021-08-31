@@ -34,8 +34,10 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QLineEdit *lineEdit = qobject_cast<QLineEdit *>(obj);
-        if (event->type() == QEvent::MouseButtonDblClick) // double click
+        if (event->type() == QEvent::MouseButtonDblClick) { // double click
             emit double_clicked();
+            return true;
+        }
         else if (event->type() == QEvent::FocusOut && lineEdit != nullptr && preserve_selection) { // lost focus
             int start = lineEdit->selectionStart();
           #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
