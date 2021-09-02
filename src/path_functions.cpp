@@ -253,6 +253,12 @@ QString AOApplication::get_real_path(const VPath &vpath) {
     }
   }
 
+  // Not found in mount paths; check if the file is remote
+  QString remotePath = vpath.toQString();
+  if (remotePath.startsWith("http")) {
+      return remotePath;
+  }
+
   // File or directory not found
   return QString();
 }
