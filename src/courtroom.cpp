@@ -4010,52 +4010,6 @@ void Courtroom::on_ooc_return_pressed()
                               "1");
     return;
   }
-  else if (ooc_message.startsWith("/pair")) {
-    ui_ooc_chat_message->clear();
-    ooc_message.remove(0, 6);
-
-    bool ok;
-    int whom = ooc_message.toInt(&ok);
-    if (ok) {
-      if (whom > -1) {
-        other_charid = whom;
-        QString msg = tr("You will now pair up with %1 if they also choose "
-                         "your character in return.")
-                          .arg(char_list.at(whom).name);
-        append_server_chatmessage("CLIENT", msg, "1");
-      }
-      else {
-        other_charid = -1;
-        append_server_chatmessage(
-            "CLIENT", tr("You are no longer paired with anyone."), "1");
-      }
-    }
-    else {
-      int whom = 0;
-      bool matched = false;
-      for (char_type chara : char_list) {
-        if (chara.name.toLower() == ooc_message.toLower()) {
-          matched = true;
-          break;
-        }
-        whom++;
-      }
-      if (matched) {
-        other_charid = whom;
-        QString msg = tr("You will now pair up with %1 if they also choose "
-                         "your character in return.")
-                          .arg(char_list.at(whom).name);
-        append_server_chatmessage("CLIENT", msg, "1");
-      }
-      else {
-        append_server_chatmessage("CLIENT",
-                                  tr("Are you sure you typed that well? The char "
-                                     "ID/name could not be recognised."),
-                                  "1");
-      }
-    }
-    return;
-  }
   else if (ooc_message.startsWith("/offset")) {
     ui_ooc_chat_message->clear();
     ooc_message.remove(0, 8);
