@@ -219,6 +219,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
 
   row += 1;
+  ui_log_timestamp_format_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
+
+  ui_log_timestamp_format_textbox = new QLineEdit(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_textbox);
+
+  connect(ui_log_timestamp_format_textbox, SIGNAL(textEdited(QString)), this, SLOT(on_timestamp_format_edited()));
+
+
+
+  row += 1;
   ui_log_ic_actions_lbl = new QLabel(ui_form_layout_widget);
   ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
   ui_log_ic_actions_lbl->setToolTip(
@@ -230,19 +243,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
   
-
-  row += 1;
-  ui_log_timestamp_format_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format (") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()) + "):");
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
-
-  ui_log_timestamp_format_textbox = new QLineEdit(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_textbox);
-
-  connect(ui_log_timestamp_format_textbox, SIGNAL(textEdited(QString)), this, SLOT(on_timestamp_format_edited()));
-
-
   row += 1;
   ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
   ui_stay_time_lbl->setText(tr("Text Stay Time:"));
@@ -1274,7 +1274,7 @@ void AOOptionsDialog::theme_changed(int i) {
 
 }
 
-void AOOptionsDialog::on_timestamp_format_edited() { ui_log_timestamp_format_lbl->setText(tr("Log timestamp format (") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_textbox->text()) + "):"); }
+void AOOptionsDialog::on_timestamp_format_edited() { ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_textbox->text())); }
 
 #if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needs_default_audiodev() { return true; }
