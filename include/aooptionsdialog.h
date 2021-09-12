@@ -63,7 +63,7 @@ private:
   QLabel *ui_log_timestamp_lbl;
   QCheckBox *ui_log_timestamp_cb;
   QLabel *ui_log_timestamp_format_lbl;
-  QLineEdit *ui_log_timestamp_format_textbox;
+  QComboBox *ui_log_timestamp_format_combobox;
   QLabel *ui_stay_time_lbl;
   QSpinBox *ui_stay_time_spinbox;
   QLabel *ui_desync_logs_lbl;
@@ -200,6 +200,7 @@ public slots:
   void discard_pressed();
   void button_clicked(QAbstractButton *button);
   void on_timestamp_format_edited();
+  void timestamp_cb_changed(int state);
   void on_reload_theme_clicked();
   void theme_changed(int i);
 };

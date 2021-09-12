@@ -216,6 +216,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
 
+  connect(ui_log_timestamp_cb, SIGNAL(stateChanged(int)), this, SLOT(timestamp_cb_changed(int)));
+
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
 
   row += 1;
@@ -223,13 +225,27 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
 
-  ui_log_timestamp_format_textbox = new QLineEdit(ui_form_layout_widget);
+  ui_log_timestamp_format_combobox = new QComboBox(ui_form_layout_widget);
+  ui_log_timestamp_format_combobox->setEditable(true);
 
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_textbox);
+  QString l_current_format = ao_app->get_log_timestamp_format();
 
-  connect(ui_log_timestamp_format_textbox, SIGNAL(textEdited(QString)), this, SLOT(on_timestamp_format_edited()));
+  ui_log_timestamp_format_combobox->addItem(l_current_format);
+  if (l_current_format != "h:mm:ss AP")
+    ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
+  if (l_current_format != "hh:mm:ss")
+    ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
+  if (l_current_format != "h:mm AP")
+    ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
+  if (l_current_format != "hh:mm")
+    ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
 
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
 
+  connect(ui_log_timestamp_format_combobox, SIGNAL(currentTextChanged(QString)), this, SLOT(on_timestamp_format_edited()));
+
+  if(!ao_app->get_log_timestamp())
+      ui_log_timestamp_format_combobox->setDisabled(true);
 
   row += 1;
   ui_log_ic_actions_lbl = new QLabel(ui_form_layout_widget);
@@ -1084,7 +1100,7 @@ void AOOptionsDialog::update_values() {
   ui_downwards_cb->setChecked(ao_app->get_log_goes_downwards());
   ui_log_newline_cb->setChecked(ao_app->get_log_newline());
   ui_log_timestamp_cb->setChecked(ao_app->get_log_timestamp());
-  ui_log_timestamp_format_textbox->setText(ao_app->get_log_timestamp_format());
+  ui_log_timestamp_format_combobox->setCurrentText(ao_app->get_log_timestamp_format());
   ui_log_ic_actions_cb->setChecked(ao_app->get_log_ic_actions());
   ui_desync_logs_cb->setChecked(ao_app->is_desyncrhonized_logs_enabled());
   ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
@@ -1146,7 +1162,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("log_newline", ui_log_newline_cb->isChecked());
   configini->setValue("log_margin", ui_log_margin_spinbox->value());
   configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
-  configini->setValue("log_timestamp_format", ui_log_timestamp_format_textbox->text());
+  configini->setValue("log_timestamp_format", ui_log_timestamp_format_combobox->currentText());
   configini->setValue("log_ic_actions", ui_log_ic_actions_cb->isChecked());
   configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
   configini->setValue("stay_time", ui_stay_time_spinbox->value());
@@ -1274,7 +1290,9 @@ void AOOptionsDialog::theme_changed(int i) {
 
 }
 
-void AOOptionsDialog::on_timestamp_format_edited() { ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_textbox->text())); }
+void AOOptionsDialog::on_timestamp_format_edited() { ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_combobox->currentText())); }
+
+void AOOptionsDialog::timestamp_cb_changed(int state) { ui_log_timestamp_format_combobox->setDisabled(state == 0); }
 
 #if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needs_default_audiodev() { return true; }
