@@ -145,8 +145,13 @@ void BackgroundLayer::load_image(QString p_filename)
 #ifdef DEBUG_MOVIE
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
 #endif
-  start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename)));
-  play();
+  QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
+  if (file_exists(final_path)) {
+    start_playback(final_path);
+    play();
+  }
+  else
+      this->kill();
 }
 
 void CharLayer::load_image(QString p_filename, QString p_charname,
@@ -179,15 +184,16 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   last_emote = current_emote;
   last_prefix = prefix;
   is_preanim = p_is_preanim;
-  if ((p_filename.left(3) == "(a)") || (p_filename.left(3) == "(b)")) {
-    prefix = p_filename.left(3);
+  if ((p_filename.left(3) == "(a)") || (p_filename.left(3) == "(b)")) { // if we are playing an idle or talking animation
+    prefix = p_filename.left(3); // separate the prefix from the emote name
     current_emote = p_filename.mid(3, -1);
   }
-  else if ((duration > 0) || (p_filename.left(3) == "(c)")) {
-    if (p_filename.left(3) == "(c)") {
-      prefix = "(c)";
+  else if ((duration > 0) || (p_filename.left(3) == "(c)")) { // else if we are playing a preanim or postanim
+    if (p_filename.left(3) == "(c)") { // if we are playing a postanim
+      prefix = "(c)"; // separate the prefix from the emote name
       current_emote = p_filename.mid(3, -1);
     }
+    // pre/postanim specific flags
     is_preanim = true;
     play_once = true;
     preanim_timer->start(duration);
@@ -197,7 +203,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
 #endif
-  QVector<VPath> pathlist {
+  QVector<VPath> pathlist { // cursed character path resolution vector
       ao_app->get_character_path(
           p_charname, prefix + current_emote), // Default path
       ao_app->get_character_path(
@@ -232,7 +238,7 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
     play_once = true;
   continuous = false;
   force_continuous = true;
-  start_playback(p_filename); // handled in its own file before we see it
+  start_playback(p_filename); // path resolution is handled by the caller for EffectLayer objects
   play();
 }
 
@@ -315,8 +321,8 @@ void AOLayer::start_playback(QString p_image)
   }
   frame_loader = QtConcurrent::run(this, &AOLayer::populate_vectors);
   last_path = p_image;
-  while (movie_frames.size() <= frame)
-    frameAdded.wait(&mutex);
+  while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
+    frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
   this->set_frame(movie_frames[frame]);
 
   if (max_frames <= 1) {
@@ -534,7 +540,7 @@ void AOLayer::movie_ticker()
   }
   mutex.lock();
   while (frame >= movie_frames.size() && frame < max_frames) { // oops! our frame isn't ready yet
-      frameAdded.wait(&mutex);
+      frameAdded.wait(&mutex); // wait for a new frame to be added, then check again
   }
   mutex.unlock();
 #ifdef DEBUG_MOVIE
