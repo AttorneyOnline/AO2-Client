@@ -146,12 +146,8 @@ void BackgroundLayer::load_image(QString p_filename)
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
 #endif
   QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
-  if (file_exists(final_path)) {
-    start_playback(final_path);
-    play();
-  }
-  else
-      this->kill();
+  start_playback(final_path);
+  play();
 }
 
 void CharLayer::load_image(QString p_filename, QString p_charname,
@@ -275,6 +271,10 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
+  if (p_image == "") {// image wasn't found by the path resolution function
+    this->kill();
+    return;
+  }
   QMutexLocker locker(&mutex);
   if (frame_loader.isRunning())
     exit_loop = true; // tell the loader to stop, we have a new image to load
