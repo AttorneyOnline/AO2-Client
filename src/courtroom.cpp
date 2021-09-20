@@ -150,7 +150,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_name->setText(tr("None"));
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_music_name->setObjectName("ui_music_name");
-  
+
   for (int i = 0; i < max_clocks; i++) {
     ui_clock[i] = new AOClockLabel(this);
     ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -769,7 +769,7 @@ void Courtroom::set_widgets()
     ui_music_list->resetIndentation();
   else
     ui_music_list->setIndentation(music_list_indentation.toInt());
-  
+
   QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
   if (music_list_animated == "1")
     ui_music_list->setAnimated(true);
@@ -1669,7 +1669,7 @@ void Courtroom::list_areas()
   int n_listed_areas = 0;
 
   for (int n_area = 0; n_area < area_list.size(); ++n_area) {
-    QString i_area = "";    
+    QString i_area = "";
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled) {
@@ -2265,7 +2265,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if ((f_log_mode != IO_ONLY) && // if we're not in I/O only mode,
       f_message.isEmpty() &&  // our current message is a blankpost,
       !ic_chatlog_history.isEmpty() && // the chat log isn't empty,
-      last_ic_message == f_displayname + ":" && // the chat log's last message is a blank post, and 
+      last_ic_message == f_displayname + ":" && // the chat log's last message is a blank post, and
       last_ic_message.mid(0, last_ic_message.lastIndexOf(":")) == f_displayname) // the blankpost's showname is the same as ours
     return; // Skip adding message
   switch (f_log_mode) {
@@ -2333,7 +2333,7 @@ bool Courtroom::handle_objection()
             "custom", m_chatmessage[CHAR_NAME],
             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
-	  break;
+      break;
       m_chatmessage[EMOTE_MOD] = 1;
     }
     ui_vp_objection->load_image(
@@ -3443,7 +3443,7 @@ void Courtroom::chat_tick()
     }
     ui_vp_chat_arrow->transform_mode = ao_app->get_misc_scaling(f_custom_theme);
     ui_vp_chat_arrow->load_image("chat_arrow", f_custom_theme); // Chat stopped being processed, indicate that.
-	  QString f_message_filtered = filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
+      QString f_message_filtered = filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     for (int c = 0; c < max_colors; ++c) {
       additive_previous = additive_previous.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
       f_message_filtered = f_message_filtered.replace("$c" + QString::number(c), char_color_rgb_list.at(c).name(QColor::HexRgb));
@@ -3748,7 +3748,7 @@ void Courtroom::set_self_offset(QString p_list) {
     int self_offset_v;
     if (self_offsets.length() <= 1)
       self_offset_v = 0;
-    else 
+    else
       self_offset_v = self_offsets[1].toInt();
     ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 }
@@ -3995,127 +3995,7 @@ void Courtroom::on_ooc_return_pressed()
 {
   QString ooc_message = ui_ooc_chat_message->text();
 
-  if (ooc_message.startsWith("/pos")) {
-    if (ooc_message == "/pos jud") {
-      toggle_judge_buttons(true);
-    }
-    else {
-      toggle_judge_buttons(false);
-    }
-  }
-  else if (ooc_message.startsWith("/settings")) {
-    ui_ooc_chat_message->clear();
-    ao_app->call_settings_menu();
-    append_server_chatmessage("CLIENT", tr("You opened the settings menu."),
-                              "1");
-    return;
-  }
-  else if (ooc_message.startsWith("/offset")) {
-    ui_ooc_chat_message->clear();
-    ooc_message.remove(0, 8);
-
-    bool ok;
-    int off = ooc_message.toInt(&ok);
-    if (ok) {
-      if (off >= -100 && off <= 100) {
-        char_offset = off;
-        QString msg =
-            tr("You have set your offset to %1%%.").arg(QString::number(off));
-        append_server_chatmessage("CLIENT", msg, "1");
-      }
-      else {
-        append_server_chatmessage(
-            "CLIENT", tr("Your offset must be between -100% and 100%!"), "1");
-      }
-    }
-    else {
-      append_server_chatmessage("CLIENT",
-                                tr("That offset does not look like one."), "1");
-    }
-    return;
-  }
-  else if (ooc_message.startsWith("/voffset")) {
-    ui_ooc_chat_message->clear();
-    ooc_message.remove(0, 8);
-
-    bool ok;
-    int off = ooc_message.toInt(&ok);
-    if (ok) {
-      if (off >= -100 && off <= 100) {
-        char_vert_offset = off;
-        QString msg = tr("You have set your vertical offset to %1%%.")
-                          .arg(QString::number(off));
-        append_server_chatmessage("CLIENT", msg, "1");
-      }
-      else {
-        append_server_chatmessage(
-            "CLIENT",
-            tr("Your vertical offset must be between -100% and 100%!"), "1");
-      }
-    }
-    else {
-      append_server_chatmessage(
-          "CLIENT", tr("That vertical offset does not look like one."), "1");
-    }
-    return;
-  }
-  else if (ooc_message.startsWith("/switch_am")) {
-    append_server_chatmessage(
-        "CLIENT", tr("You switched your music and area list."), "1");
-    on_switch_area_music_clicked();
-    ui_ooc_chat_message->clear();
-    return;
-  }
-  else if (ooc_message.startsWith("/enable_blocks")) {
-    append_server_chatmessage("CLIENT",
-                              tr("You have forcefully enabled features that "
-                                 "the server may not support. You may not be "
-                                 "able to talk IC, or worse, because of this."),
-                              "1");
-    ao_app->cccc_ic_support_enabled = true;
-    ao_app->arup_enabled = true;
-    ao_app->modcall_reason_enabled = true;
-    on_reload_theme_clicked();
-    ui_ooc_chat_message->clear();
-    return;
-  }
-  else if (ooc_message.startsWith("/non_int_pre")) {
-    if (ui_immediate->isChecked())
-      append_server_chatmessage(
-          "CLIENT", tr("Your pre-animations interrupt again."), "1");
-    else
-      append_server_chatmessage(
-          "CLIENT", tr("Your pre-animations will not interrupt text."), "1");
-    ui_immediate->setChecked(!ui_immediate->isChecked());
-    ui_ooc_chat_message->clear();
-    return;
-  }
-  else if (ooc_message.startsWith("/save_chatlog")) {
-    QFile file("chatlog.txt");
-
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text |
-                   QIODevice::Truncate)) {
-      append_server_chatmessage(
-          "CLIENT", tr("Couldn't open chatlog.txt to write into."), "1");
-      ui_ooc_chat_message->clear();
-      return;
-    }
-
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-
-    foreach (chatlogpiece item, ic_chatlog_history) {
-      out << item.get_full() << '\n';
-    }
-
-    file.close();
-
-    append_server_chatmessage("CLIENT", tr("The IC chatlog has been saved."),
-                              "1");
-    ui_ooc_chat_message->clear();
-    return;
-  }
-  else if (ooc_message.startsWith("/load_case")) {
+  if (ooc_message.startsWith("/load_case")) {
     QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
 
     QDir casefolder("base/cases");
