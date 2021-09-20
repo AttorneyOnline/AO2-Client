@@ -230,15 +230,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   QString l_current_format = ao_app->get_log_timestamp_format();
 
-  ui_log_timestamp_format_combobox->addItem(l_current_format);
-  if (l_current_format != "h:mm:ss AP")
-    ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
-  if (l_current_format != "hh:mm:ss")
-    ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
-  if (l_current_format != "h:mm AP")
-    ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
-  if (l_current_format != "hh:mm")
-    ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
+  ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
+  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
+  ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
 
