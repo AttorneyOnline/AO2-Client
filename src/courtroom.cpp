@@ -109,6 +109,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_newline = ao_app->get_log_newline();
   log_margin = ao_app->get_log_margin();
   log_timestamp = ao_app->get_log_timestamp();
+  log_timestamp_format = ao_app->get_log_timestamp_format();
 
   ui_ms_chatlog = new AOTextArea(this);
   ui_ms_chatlog->setReadOnly(true);
@@ -708,12 +709,14 @@ void Courtroom::set_widgets()
                     log_colors != ao_app->is_colorlog_enabled() ||
                     log_newline != ao_app->get_log_newline() ||
                     log_margin != ao_app->get_log_margin() ||
-                    log_timestamp != ao_app->get_log_timestamp();
+                    log_timestamp != ao_app->get_log_timestamp() ||
+                    log_timestamp_format != ao_app->get_log_timestamp_format();
   log_goes_downwards = ao_app->get_log_goes_downwards();
   log_colors = ao_app->is_colorlog_enabled();
   log_newline = ao_app->get_log_newline();
   log_margin = ao_app->get_log_margin();
   log_timestamp = ao_app->get_log_timestamp();
+  log_timestamp_format = ao_app->get_log_timestamp_format();
   if (regenerate)
     regenerate_ic_chatlog();
 
@@ -3127,7 +3130,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   if (log_timestamp) {
     if (timestamp.isValid()) {
       ui_ic_chatlog->textCursor().insertText(
-        "[" + timestamp.toString("h:mm:ss AP") + "] ", normal);
+        "[" + timestamp.toString(log_timestamp_format) + "] ", normal);
     } else {
       qDebug() << "could not insert invalid timestamp";
     }

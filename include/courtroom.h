@@ -416,6 +416,9 @@ private:
   // True, if the log should have a timestamp.
   bool log_timestamp = false;
 
+  // format string for aforementioned log timestamp
+  QString log_timestamp_format;
+
   // How long in miliseconds should the objection wait before appearing.
   int objection_threshold = 1500;
 

@@ -285,6 +285,9 @@ public:
   // Returns whether the log should have a timestamp.
   bool get_log_timestamp();
 
+  // Returns the format string for the log timestamp
+  QString get_log_timestamp_format();
+
   // Returns whether to log IC actions.
   bool get_log_ic_actions();
 
