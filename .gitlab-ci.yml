@@ -37,6 +37,9 @@ build linux x86_64:
     - curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
     - unzip bass.zip
     - cp x64/libbass.so ../lib
+    - curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
+    - unzip bassmidi.zip
+    - cp x64/libbassmidi.so ../lib
     - curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
     - unzip bassopus.zip
     - cp x64/libbassopus.so ../lib
