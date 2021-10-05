@@ -3,6 +3,7 @@
 #include "file_functions.h"
 
 #include "bass.h"
+#include "bassmidi.h"
 #include "bassopus.h"
 
 #include "aoapplication.h"

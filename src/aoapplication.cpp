@@ -259,3 +259,22 @@ void AOApplication::load_bass_opus_plugin()
 #else
 #error This operating system is unsupported for BASS plugins.
 #endif
+
+#if (defined(_WIN32) || defined(_WIN64))
+void AOApplication::load_bass_midi_plugin()
+{
+  BASS_PluginLoad("bassmidi.dll", 0);
+}
+#elif (defined(LINUX) || defined(__linux__))
+void AOApplication::load_bass_midi_plugin()
+{
+  BASS_PluginLoad("libbassmidi.so", 0);
+}
+#elif defined __APPLE__
+void AOApplication::load_bass_midi_plugin()
+{
+  BASS_PluginLoad("libbassmidi.dylib", 0);
+}
+#else
+#error This operating system is unsupported for BASS plugins.
+#endif

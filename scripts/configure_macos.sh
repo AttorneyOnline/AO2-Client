@@ -13,6 +13,7 @@ cd ${ROOT_DIR}
 LIB_TARGET="../../lib"
 BASS_LINK="http://uk.un4seen.com/files/bass24-osx.zip"
 BASSOPUS_LINK="http://www.un4seen.com/files/bassopus24-osx.zip"
+BASSMIDI_LINK="https://www.un4seen.com/files/bassmidi24.zip"
 DISCORD_RPC_LINK="https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip"
 APNG_LINK="https://github.com/Skycoder42/QtApng/releases/download/1.1.2-2/qtapng_clang_64_5.13.0.tar.xz"
 
@@ -29,6 +30,10 @@ cp libbass.dylib ${LIB_TARGET}
 curl -Ls ${BASSOPUS_LINK} -o bassopus.zip
 unzip -qq bassopus.zip
 cp libbassopus.dylib ${LIB_TARGET}
+
+curl -Ls ${BASSMIDI_LINK} -o bassmidi.zip
+unzip -qq bassmidi.zip
+cp libbassmidi.dylib ${LIB_TARGET}
 
 curl -Ls ${DISCORD_RPC_LINK} -o discord_rpc.zip
 unzip -qq discord_rpc.zip
