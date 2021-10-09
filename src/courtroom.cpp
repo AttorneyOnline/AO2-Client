@@ -2451,6 +2451,7 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
 
       // Play the other pair character's idle animation
       QString filename = "(a)" + m_chatmessage[OTHER_EMOTE];
+      ui_vp_sideplayer_char->set_play_once(false);
       ui_vp_sideplayer_char->load_image(filename, m_chatmessage[OTHER_NAME],
                                             0, false);
       }
