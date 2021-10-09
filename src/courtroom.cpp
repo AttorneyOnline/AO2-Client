@@ -3286,7 +3286,7 @@ void Courtroom::play_preanim(bool immediate)
 void Courtroom::preanim_done()
 {
   // Currently, someone's talking over us mid-preanim...
-  if (anim_state != 1 && anim_state != 4)
+  if (anim_state != 1 && anim_state != 4 && anim_state != 5)
     return;
   anim_state = 1;
   switch(m_chatmessage[DESK_MOD].toInt()) {
