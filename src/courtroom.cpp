@@ -3995,8 +3995,19 @@ void Courtroom::on_ooc_return_pressed()
 {
   QString ooc_message = ui_ooc_chat_message->text();
 
+  //We ignore it when the server is compatible with 2.8
+  //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
+  if (ooc_message.startsWith("/pos") & !ao_app->effects_enabled) {
+    if (ooc_message == "/pos jud") {
+      toggle_judge_buttons(true);
+    }
+    else {
+      toggle_judge_buttons(false);
+    }
+  }
+
   if (ooc_message.startsWith("/load_case")) {
-    QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
+    QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
 
     QDir casefolder("base/cases");
     if (!casefolder.exists()) {
@@ -4094,7 +4105,7 @@ void Courtroom::on_ooc_return_pressed()
     return;
   }
   else if (ooc_message.startsWith("/save_case")) {
-    QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
+    QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
 
     QDir casefolder("base/cases");
     if (!casefolder.exists()) {
