@@ -4011,8 +4011,11 @@ void Courtroom::on_ooc_return_pressed()
   }
 
   if (ooc_message.startsWith("/load_case")) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
+#else
     QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
-
+#endif
     QDir casefolder("base/cases");
     if (!casefolder.exists()) {
       QDir::current().mkdir("base/" + casefolder.dirName());
@@ -4109,8 +4112,11 @@ void Courtroom::on_ooc_return_pressed()
     return;
   }
   else if (ooc_message.startsWith("/save_case")) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
+#else
     QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
-
+#endif
     QDir casefolder("base/cases");
     if (!casefolder.exists()) {
       QDir::current().mkdir("base/" + casefolder.dirName());
