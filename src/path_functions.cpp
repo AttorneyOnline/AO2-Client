@@ -293,6 +293,10 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
         asset_lookup_cache.insert(qHash(vpath), path);
         return path;
       }
+      if (path.contains("emotions/button")) {
+        //Button creation should not run into the void.
+        return path + ".png";
+      }
     }
   }
 
