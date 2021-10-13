@@ -265,8 +265,8 @@ QString AOApplication::get_real_path(const VPath &vpath) {
 
 // Special case of get_real_path where multiple suffixes need to be tried
 // on each mount path.
-QString AOApplication::get_real_suffixed_path(const VPath &vpath,
-                                              const QStringList &suffixes) {
+QString AOApplication::get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes,
+                                              const VPathOverwrite &overwrite) {
   // Try cache first
   QString phys_path = asset_lookup_cache.value(qHash(vpath));
   if (!phys_path.isEmpty() && exists(phys_path)) {
@@ -293,9 +293,13 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
         asset_lookup_cache.insert(qHash(vpath), path);
         return path;
       }
+
+      if (overwrite == AOApplication::VPathOverwrite::EMOTE_BUTTON) {
+        //Button creation should not run into the void.
+        return path + ".png";
+      }
     }
   }
-
   // File or directory not found
   return QString();
 }

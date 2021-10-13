@@ -515,7 +515,8 @@ QString AOApplication::get_sfx_suffix(VPath sound_to_check)
                                 {".opus", ".ogg", ".mp3", ".wav" });
 }
 
-QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
+QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image,
+                                        const AOApplication::VPathOverwrite &overwrite)
 {
   QStringList suffixes { "" };
   if (!static_image) {
@@ -523,7 +524,7 @@ QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
   }
   suffixes.append(".png");
 
-  return get_real_suffixed_path(path_to_check, suffixes);
+  return get_real_suffixed_path(path_to_check, suffixes, overwrite);
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and

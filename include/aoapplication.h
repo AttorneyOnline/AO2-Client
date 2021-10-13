@@ -145,6 +145,13 @@ public:
   // Returns the character the player has currently selected
   QString get_current_char();
 
+  // Overwrite flags for VPath lookups.
+  enum class VPathOverwrite {
+    NONE,
+    EMOTE_BUTTON
+  };
+  Q_ENUM(VPathOverwrite);
+
   // implementation in path_functions.cpp
   QString get_base_path();
   VPath get_theme_path(QString p_file, QString p_theme="");
@@ -165,7 +172,8 @@ public:
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
   QString get_case_sensitive_path(QString p_file);
   QString get_real_path(const VPath &vpath);
-  QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
+  QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes,
+                                 const VPathOverwrite &overwrite = VPathOverwrite::NONE);
   void invalidate_lookup_cache();
 
   ////// Functions for reading and writing files //////
@@ -365,7 +373,7 @@ public:
 
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
   // PNG.
-  QString get_image_suffix(VPath path_to_check, bool static_image=false);
+  QString get_image_suffix(VPath path_to_check, bool static_image=false, const VPathOverwrite &overwrite = AOApplication::VPathOverwrite::NONE);
 
   // Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line,
