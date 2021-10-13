@@ -62,9 +62,9 @@ void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
   QString emotion_number = QString::number(p_emote + 1);
   QString image_path =
       ao_app->get_image_suffix(ao_app->get_character_path(
-          p_char, "emotions/button" + emotion_number + suffix), true);
+          p_char, "emotions/button" + emotion_number + suffix));
 
   this->set_image(image_path, ao_app->get_emote_comment(p_char, p_emote));
 }
 
-void AOEmoteButton::on_clicked() { emit emote_clicked(m_id); }
+void AOEmoteButton::on_clicked() { emote_clicked(m_id); }
