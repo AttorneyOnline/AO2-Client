@@ -298,7 +298,8 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath, const QStringL
         //Checking if the opposite button exists.
         //Then return path to generate a button from it.
         if (exists(path.replace("_on","_off"))) {
-          return path.replace("_off","_on");
+          asset_lookup_cache.insert(qHash(vpath), path.replace("_off","_on"));
+          return path;
         }
       }
     }
