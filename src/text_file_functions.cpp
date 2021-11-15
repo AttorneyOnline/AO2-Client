@@ -517,7 +517,7 @@ QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
 {
-  QStringList suffixes { "" };
+  QStringList suffixes {};
   if (!static_image) {
     suffixes.append({ ".webp", ".apng", ".gif" });
   }
