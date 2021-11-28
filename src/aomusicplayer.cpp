@@ -31,12 +31,17 @@ int AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   DWORD newstream;
   if (f_path.startsWith("http")) {
-    if (f_path.endsWith(".opus"))
-      newstream = BASS_OPUS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
+    if (ao_app->streaming_enabled()){
+    //No streaming if its disabled.
+      if (f_path.endsWith(".opus"))
+        newstream = BASS_OPUS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
+      else
+        newstream = BASS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
+    }
     else
-      newstream = BASS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
-
-  } else {
+      return 0;
+  }
+  else {
     if (f_path.endsWith(".opus"))
       newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
     else

@@ -193,6 +193,12 @@ public:
   // Returns true if stop music on objection is enabled in the config.ini
   bool objection_stop_music();
 
+  //Returns true if streaming is enabled in the config.ini
+  bool streaming_enabled();
+
+  //Returns true if musiclist fallback streaming is enabled in the config.ini
+  bool streaming_fallback_enabled();
+
   // Returns the value of default_music in config.ini
   int get_default_music();
 

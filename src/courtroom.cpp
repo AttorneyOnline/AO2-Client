@@ -3836,9 +3836,14 @@ void Courtroom::handle_song(QStringList *p_contents)
       return;
   }
 
+  //Meatgrinder noises.
   if(!file_exists(ao_app->get_sfx_suffix(ao_app->get_music_path(f_song))) && !f_song.startsWith("http")
           && f_song != "~stop.mp3" && !ao_app->asset_url.isEmpty()) {
+      if (ao_app->streaming_enabled() && ao_app->streaming_fallback_enabled())
       f_song = (ao_app->asset_url + "sounds/music/" + f_song).toLower();
+      else
+        //File not found and streaming not an option. Nothing to do here, keep current song playing!
+        return;
   }
 
   bool is_stop = (f_song == "~stop.mp3");
@@ -3863,6 +3868,9 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
 
   int error_code = music_player->play(f_song, channel, looping, effect_flags);
+
+  if (error_code == 0)
+      return;
 
   if (is_stop) {
     ui_music_name->setText(tr("None"));

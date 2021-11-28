@@ -152,6 +152,10 @@ private:
   QCheckBox *ui_loopsfx_cb;
   QLabel *ui_objectmusic_lbl;
   QCheckBox *ui_objectmusic_cb;
+  QLabel *ui_streaming_lbl;
+  QCheckBox * ui_streaming_cb;
+  QLabel *ui_fallbackstreaming_lbl;
+  QCheckBox *ui_fallbackstreaming_cb;
   QDialogButtonBox *ui_settings_buttons;
 
   QWidget *ui_casing_tab;
