@@ -3866,7 +3866,8 @@ void Courtroom::handle_song(QStringList *p_contents)
 
   QFuture<QString> future = QtConcurrent::run(music_player,&AOMusicPlayer::play, f_song, channel, looping, effect_flags);
   music_watcher.setFuture(future);
-  ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
+  if (channel == 0)
+    ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
 }
 
 void Courtroom::update_ui_music_name()
@@ -3874,7 +3875,6 @@ void Courtroom::update_ui_music_name()
     QString result = music_watcher.result();
     if (result.isEmpty())
       return;
-    else
     ui_music_name->setText(result);
 }
 
