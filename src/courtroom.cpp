@@ -27,6 +27,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
+  connect(&music_watcher, &QFutureWatcher<QString>::finished,
+          this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(this, ao_app);
   sfx_player->set_volume(0);
@@ -3862,27 +3864,18 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
   }
 
-  int error_code = music_player->play(f_song, channel, looping, effect_flags);
+  QFuture<QString> future = QtConcurrent::run(music_player,&AOMusicPlayer::play, f_song, channel, looping, effect_flags);
+  music_watcher.setFuture(future);
+  ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
+}
 
-  if (is_stop) {
-    ui_music_name->setText(tr("None"));
-    return;
-  }
-
-  if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
-    ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
-    return;
-  }
-
-  if (f_song.startsWith("http") && channel == 0) {
-    ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
-    return;
-  }
-
-  if (channel == 0){
-    ui_music_name->setText(f_song_clear);
-    return;
-  }
+void Courtroom::update_ui_music_name()
+{
+    QString result = music_watcher.result();
+    if (result.isEmpty())
+      return;
+    else
+    ui_music_name->setText(result);
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)

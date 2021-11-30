@@ -57,6 +57,9 @@
 #include <QTextCharFormat>
 #include <QElapsedTimer>
 
+#include <QFutureWatcher>
+#include <QFuture>
+
 #include <algorithm>
 #include <stack>
 
@@ -602,6 +605,7 @@ private:
   QBrush locked_brush;
 
   AOMusicPlayer *music_player;
+  QFutureWatcher<QString> music_watcher;
   AOSfxPlayer *sfx_player;
   AOSfxPlayer *objection_player;
   AOBlipPlayer *blip_player;
@@ -813,6 +817,9 @@ public slots:
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
   void on_reload_theme_clicked();
+
+  //updates the UI label with the currently playing song once future has finished.
+  void update_ui_music_name();
 
 private slots:
   void start_chat_ticking();

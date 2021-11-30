@@ -9,6 +9,7 @@
 
 #include <QDebug>
 #include <QWidget>
+#include <QObject>
 #include <string.h>
 
 class AOMusicPlayer {
@@ -25,7 +26,7 @@ public:
   int loop_end[4] = {0, 0, 0, 0};
 
 public slots:
-  int play(QString p_song, int channel = 0, bool loop = false,
+  QString play(QString p_song, int channel = 0, bool loop = false,
             int effect_flags = 0);
   void stop(int channel = 0);
 
