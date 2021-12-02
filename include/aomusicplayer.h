@@ -9,7 +9,6 @@
 
 #include <QDebug>
 #include <QWidget>
-#include <QObject>
 #include <string.h>
 
 class AOMusicPlayer {

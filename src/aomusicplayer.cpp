@@ -145,7 +145,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   if (channel == 0)
     return p_song_clear;
 
- return "";
+  return "";
 }
 
 void AOMusicPlayer::stop(int channel)
