@@ -4443,8 +4443,10 @@ void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
   Q_UNUSED(p_index);
   ui_ic_chat_message->setFocus();
-  ui_sfx_remove->hide();
-  custom_sfx = "";
+  if (p_index == 0) {
+      ui_sfx_remove->hide();
+      custom_sfx = "";
+  }
 }
 
 void Courtroom::on_sfx_dropdown_custom(QString p_sfx)
