@@ -35,13 +35,13 @@ build linux x86_64:
     - mkdir bass
     - cd bass
     - curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
-    - unzip bass.zip
+    - unzip -o bass.zip
     - cp x64/libbass.so ../lib
     - curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
-    - unzip bassmidi.zip
+    - unzip -o bassmidi.zip
     - cp x64/libbassmidi.so ../lib
     - curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
-    - unzip bassopus.zip
+    - unzip -o bassopus.zip
     - cp x64/libbassopus.so ../lib
     - cd ..
 
@@ -49,7 +49,7 @@ build linux x86_64:
     - mkdir discord-rpc
     - cd discord-rpc
     - curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
-    - unzip discord_rpc_linux.zip
+    - unzip -o discord_rpc_linux.zip
     - cp discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ../lib
     - cd ..
 
@@ -102,13 +102,13 @@ build windows i686:
     - mkdir bass
     - cd bass
     - curl http://www.un4seen.com/files/bass24.zip -o bass.zip
-    - unzip bass.zip
+    - unzip -o bass.zip
     - cp bass.dll ../lib
     - curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
-    - unzip bassmidi.zip
+    - unzip -o bassmidi.zip
     - cp bassmidi.dll ../lib
     - curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
-    - unzip bassopus.zip
+    - unzip -o bassopus.zip
     - cp bassopus.dll ../lib
     - cd ..
 
