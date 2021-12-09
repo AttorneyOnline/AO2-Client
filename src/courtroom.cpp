@@ -4441,7 +4441,6 @@ void Courtroom::set_sfx_dropdown()
 
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
-  Q_UNUSED(p_index);
   ui_ic_chat_message->setFocus();
   if (p_index == 0) {
       ui_sfx_remove->hide();
