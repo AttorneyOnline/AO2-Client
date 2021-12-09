@@ -57,7 +57,6 @@
 #include <QTextCharFormat>
 #include <QElapsedTimer>
 
-#include <QFutureWatcher>
 #include <QFuture>
 
 #include <algorithm>
@@ -605,7 +604,6 @@ private:
   QBrush locked_brush;
 
   AOMusicPlayer *music_player;
-  QFutureWatcher<QString> music_watcher;
   AOSfxPlayer *sfx_player;
   AOSfxPlayer *objection_player;
   AOBlipPlayer *blip_player;

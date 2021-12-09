@@ -27,7 +27,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
-  connect(&music_watcher, &QFutureWatcher<QString>::finished,
+  //Cringe connect trough pointer.
+  connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished,
           this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(this, ao_app);
@@ -3865,14 +3866,17 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
 
   QFuture<QString> future = QtConcurrent::run(music_player,&AOMusicPlayer::play, f_song, channel, looping, effect_flags);
-  music_watcher.setFuture(future);
-  if (channel == 0)
+  if (channel == 0) {
+    //Current song UI only displays the song playing, not other channels.
+    //Any other music playing is irrelevant.
+    music_player->music_watcher.setFuture(future);
     ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
+  }
 }
 
 void Courtroom::update_ui_music_name()
 {
-    QString result = music_watcher.result();
+    QString result = music_player->music_watcher.result();
     if (result.isEmpty())
       return;
     ui_music_name->setText(result);

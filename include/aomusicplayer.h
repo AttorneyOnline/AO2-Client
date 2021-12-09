@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QWidget>
 #include <string.h>
+#include <QFuture>
+#include <QFutureWatcher>
 
 class AOMusicPlayer {
 public:
@@ -23,6 +25,8 @@ public:
   // These have to be public for the stupid sync thing
   int loop_start[4] = {0, 0, 0, 0};
   int loop_end[4] = {0, 0, 0, 0};
+
+  QFutureWatcher<QString> music_watcher;
 
 public slots:
   QString play(QString p_song, int channel = 0, bool loop = false,
