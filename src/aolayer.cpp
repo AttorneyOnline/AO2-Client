@@ -12,16 +12,16 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   shfx_timer = new QTimer(this);
   shfx_timer->setTimerType(Qt::PreciseTimer);
   shfx_timer->setSingleShot(true);
-  connect(shfx_timer, SIGNAL(timeout()), this, SLOT(shfx_timer_done()));
+  connect(shfx_timer, &QTimer::timeout, this, &AOLayer::shfx_timer_done);
 
   ticker = new QTimer(this);
   ticker->setTimerType(Qt::PreciseTimer);
   ticker->setSingleShot(false);
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
+  connect(ticker, &QTimer::timeout, this, &AOLayer::movie_ticker);
 
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
-  connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
+  connect(preanim_timer, &QTimer::timeout, this, &AOLayer::preanim_done);
 }
 
 BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)

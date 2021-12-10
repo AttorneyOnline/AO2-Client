@@ -7,7 +7,7 @@ chatlogpiece::chatlogpiece()
   message = tr("UNKNOWN");
   color = 0;
   action = "";
-  datetime = QDateTime::currentDateTime().toUTC();
+  datetime = QDateTime::currentDateTimeUtc();
 }
 
 chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
@@ -18,7 +18,7 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
   message = p_message;
   action = p_action;
   color = p_color;
-  datetime = QDateTime::currentDateTime().toUTC();
+  datetime = QDateTime::currentDateTimeUtc();
 }
 
 chatlogpiece::chatlogpiece(QString p_name, QString p_showname,

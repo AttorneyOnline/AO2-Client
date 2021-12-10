@@ -29,12 +29,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                                           QDialogButtonBox::Save |
                                           QDialogButtonBox::RestoreDefaults);
 
-  QObject::connect(ui_settings_buttons, SIGNAL(accepted()), this,
-                   SLOT(save_pressed()));
-  QObject::connect(ui_settings_buttons, SIGNAL(rejected()), this,
-                   SLOT(discard_pressed()));
-  QObject::connect(ui_settings_buttons, SIGNAL(clicked(QAbstractButton*)), this,
-                   SLOT(button_clicked(QAbstractButton*)));
+  connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
+                   &AOOptionsDialog::save_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::rejected, this,
+                   &AOOptionsDialog::discard_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
+                   &AOOptionsDialog::button_clicked);
 
   // We'll stop updates so that the window won't flicker while it's being made.
   setUpdatesEnabled(false);
@@ -90,8 +90,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     }
   }
 
-  QObject::connect(ui_theme_combobox, SIGNAL(currentIndexChanged(int)), this,
-                   SLOT(theme_changed(int)));
+  connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+                   &AOOptionsDialog::theme_changed);
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
 
   row += 1;
@@ -124,8 +124,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_theme_reload_button->setToolTip(
       tr("Refresh the theme and update all of the ui elements to match."));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
-  QObject::connect(ui_theme_reload_button, SIGNAL(clicked()), this,
-          SLOT(on_reload_theme_clicked()));
+  connect(ui_theme_reload_button, &QPushButton::clicked, this,
+          &AOOptionsDialog::on_reload_theme_clicked);
 
   row += 1;
   ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);
@@ -216,7 +216,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
 
-  connect(ui_log_timestamp_cb, SIGNAL(stateChanged(int)), this, SLOT(timestamp_cb_changed(int)));
+  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
 
@@ -238,7 +238,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
 
-  connect(ui_log_timestamp_format_combobox, SIGNAL(currentTextChanged(QString)), this, SLOT(on_timestamp_format_edited()));
+  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
   if(!ao_app->get_log_timestamp())
       ui_log_timestamp_format_combobox->setDisabled(true);

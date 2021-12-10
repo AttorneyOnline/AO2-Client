@@ -16,8 +16,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
-  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
-                   SLOT(ms_connect_finished(bool, bool)));
+  connect(net_manager, &NetworkManager::ms_connect_finished,
+          this, &AOApplication::ms_connect_finished);
 
   asset_lookup_cache.reserve(2048);
 }
