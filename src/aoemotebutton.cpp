@@ -11,7 +11,7 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app,
   this->move(p_x, p_y);
   this->resize(p_w, p_h);
 
-  connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
+  connect(this, &AOEmoteButton::clicked, this, &AOEmoteButton::on_clicked);
 }
 
 void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
@@ -67,4 +67,4 @@ void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
   this->set_image(image_path, ao_app->get_emote_comment(p_char, p_emote));
 }
 
-void AOEmoteButton::on_clicked() { emote_clicked(m_id); }
+void AOEmoteButton::on_clicked() { emit emote_clicked(m_id); }

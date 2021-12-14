@@ -97,7 +97,7 @@ void DemoServer::recv_data()
     QStringList packet_list =
         in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
-    for (QString packet : packet_list) {
+    for (const QString &packet : packet_list) {
         AOPacket ao_packet(packet);
         handle_packet(ao_packet);
     }
@@ -297,7 +297,7 @@ void DemoServer::load_demo(QString filename)
             QTextStream out(&demo_file);
             out.setCodec("UTF-8");
             out << p_demo_data.dequeue();
-            for (QString line : p_demo_data) {
+            for (const QString &line : qAsConst(p_demo_data)) {
               out << "\n" << line;
             }
             demo_file.flush();
