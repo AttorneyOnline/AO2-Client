@@ -45,11 +45,17 @@ void NetworkManager::connect_to_master()
 
 void NetworkManager::connect_to_master_nosrv()
 {
-  connect(ms_socket, &QTcpSocket::errorOccurred, this,
-                   &NetworkManager::on_ms_socket_error);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+  connect(ms_socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+          this, &NetworkManager::on_ms_socket_error);
+#else
+  connect(ms_socket, &QTcpSocket::errorOccurred,
+          this, &NetworkManager::on_ms_socket_error);
+#endif
 
-  connect(ms_socket, &QTcpSocket::connected, this,
-                   &NetworkManager::on_ms_nosrv_connect_success);
+  connect(ms_socket, &QTcpSocket::connected,
+          this, &NetworkManager::on_ms_nosrv_connect_success);
+
   ms_socket->connectToHost(ms_nosrv_hostname, ms_port);
 }
 
@@ -155,9 +161,13 @@ void NetworkManager::on_srv_lookup()
       if (connected) {
         // Connect a one-shot signal in case the master server disconnects
         // randomly
-        connect(
-            ms_socket, &QTcpSocket::errorOccurred, this,
-            &NetworkManager::on_ms_socket_error);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        connect(ms_socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+                this, &NetworkManager::on_ms_socket_error);
+#else
+        connect(ms_socket, &QTcpSocket::errorOccurred,
+                this, &NetworkManager::on_ms_socket_error);
+#endif
         break;
       }
       else {
@@ -182,8 +192,13 @@ void NetworkManager::on_ms_nosrv_connect_success()
   disconnect(ms_socket, &QTcpSocket::connected, this,
                       &NetworkManager::on_ms_nosrv_connect_success);
 
-  connect(ms_socket, &QTcpSocket::errorOccurred, this,
-                   &NetworkManager::on_ms_socket_error);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+  connect(ms_socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+          this, &NetworkManager::on_ms_socket_error);
+#else
+  connect(ms_socket, &QTcpSocket::errorOccurred,
+          this, &NetworkManager::on_ms_socket_error);
+#endif
 }
 
 void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
@@ -193,8 +208,13 @@ void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
 
   // Disconnect the one-shot signal - this way, failover connect attempts
   // don't trigger a full retry
-  disconnect(ms_socket, &QTcpSocket::errorOccurred, this,
-                      &NetworkManager::on_ms_socket_error);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+  disconnect(ms_socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+             this, &NetworkManager::on_ms_socket_error);
+#else
+  disconnect(ms_socket, &QTcpSocket::errorOccurred,
+             this, &NetworkManager::on_ms_socket_error);
+#endif
 
   emit ms_connect_finished(false, true);
 
