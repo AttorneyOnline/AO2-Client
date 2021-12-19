@@ -5,6 +5,8 @@
 #include "bass.h"
 #include "networkmanager.h"
 
+#include <QFileDialog>
+
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
 {
@@ -13,7 +15,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // Setting up the basics.
   setWindowFlag(Qt::WindowCloseButtonHint);
   setWindowTitle(tr("Settings"));
-  resize(400, 408);
+  resize(450, 408);
 
   ui_settings_buttons = new QDialogButtonBox(this);
 
@@ -28,12 +30,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                                           QDialogButtonBox::Save |
                                           QDialogButtonBox::RestoreDefaults);
 
-  QObject::connect(ui_settings_buttons, SIGNAL(accepted()), this,
-                   SLOT(save_pressed()));
-  QObject::connect(ui_settings_buttons, SIGNAL(rejected()), this,
-                   SLOT(discard_pressed()));
-  QObject::connect(ui_settings_buttons, SIGNAL(clicked(QAbstractButton*)), this,
-                   SLOT(button_clicked(QAbstractButton*)));
+  connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
+                   &AOOptionsDialog::save_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::rejected, this,
+                   &AOOptionsDialog::discard_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
+                   &AOOptionsDialog::button_clicked);
 
   // We'll stop updates so that the window won't flicker while it's being made.
   setUpdatesEnabled(false);
@@ -74,16 +76,23 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
   // Fill the combobox with the names of the themes.
-  QDirIterator it(ao_app->get_base_path() + "themes", QDir::Dirs,
-                  QDirIterator::NoIteratorFlags);
-  while (it.hasNext()) {
-    QString actualname = QDir(it.next()).dirName();
-    if (actualname != "." && actualname != "..")
-      ui_theme_combobox->addItem(actualname);
+  QSet<QString> themes;
+  QStringList bases = ao_app->get_mount_paths();
+  bases.push_front(ao_app->get_base_path());
+  for (const QString &base : bases) {
+    QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
+                    QDirIterator::NoIteratorFlags);
+    while (it.hasNext()) {
+      QString actualname = QDir(it.next()).dirName();
+      if (!themes.contains(actualname)) {
+        ui_theme_combobox->addItem(actualname);
+        themes.insert(actualname);
+      }
+    }
   }
 
-  QObject::connect(ui_theme_combobox, SIGNAL(currentIndexChanged(int)), this,
-                   SLOT(theme_changed(int)));
+  connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+                   &AOOptionsDialog::theme_changed);
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
 
   row += 1;
@@ -116,8 +125,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_theme_reload_button->setToolTip(
       tr("Refresh the theme and update all of the ui elements to match."));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
-  QObject::connect(ui_theme_reload_button, SIGNAL(clicked()), this,
-          SLOT(on_reload_theme_clicked()));
+  connect(ui_theme_reload_button, &QPushButton::clicked, this,
+          &AOOptionsDialog::on_reload_theme_clicked);
 
   row += 1;
   ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);
@@ -208,7 +217,32 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
 
+  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
+
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
+
+  row += 1;
+  ui_log_timestamp_format_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
+
+  ui_log_timestamp_format_combobox = new QComboBox(ui_form_layout_widget);
+  ui_log_timestamp_format_combobox->setEditable(true);
+
+  QString l_current_format = ao_app->get_log_timestamp_format();
+
+  ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
+  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
+  ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
+
+  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
+
+  if(!ao_app->get_log_timestamp())
+      ui_log_timestamp_format_combobox->setDisabled(true);
 
   row += 1;
   ui_log_ic_actions_lbl = new QLabel(ui_form_layout_widget);
@@ -222,7 +256,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
   
-
   row += 1;
   ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
   ui_stay_time_lbl->setText(tr("Text Stay Time:"));
@@ -903,7 +936,130 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_log_cb);
 
-  // privacy policy.
+  // Assets tab
+  ui_assets_tab = new QWidget(this);
+  ui_assets_tab_layout = new QVBoxLayout(ui_assets_tab);
+  ui_assets_tab->setLayout(ui_assets_tab_layout);
+  ui_settings_tabs->addTab(ui_assets_tab, tr("Assets"));
+
+  ui_asset_lbl = new QLabel(ui_assets_tab);
+  ui_asset_lbl->setText(
+        tr("Add or remove base folders for use by assets. "
+           "Base folders will be searched in the order provided."));
+  ui_asset_lbl->setWordWrap(true);
+  ui_assets_tab_layout->addWidget(ui_asset_lbl);
+
+  ui_mount_list = new QListWidget(ui_assets_tab);
+  ui_assets_tab_layout->addWidget(ui_mount_list);
+
+  ui_mount_buttons_layout = new QGridLayout(ui_assets_tab);
+  ui_assets_tab_layout->addLayout(ui_mount_buttons_layout);
+
+  QSizePolicy stretch_btns(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+  stretch_btns.setHorizontalStretch(4);
+
+  ui_mount_add = new QPushButton(tr("Add…"), ui_assets_tab);
+  ui_mount_add->setSizePolicy(stretch_btns);
+  ui_mount_buttons_layout->addWidget(ui_mount_add, 0, 0, 1, 1);
+  connect(ui_mount_add, &QPushButton::clicked, this, [this] {
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
+                                                    QApplication::applicationDirPath(),
+                                                    QFileDialog::ShowDirsOnly);
+    if (dir.isEmpty())
+      return;
+    QListWidgetItem *dir_item = new QListWidgetItem(dir);
+    ui_mount_list->addItem(dir_item);
+    ui_mount_list->setCurrentItem(dir_item);
+
+    // quick hack to update buttons
+    emit ui_mount_list->itemSelectionChanged();
+  });
+
+  ui_mount_remove = new QPushButton(tr("Remove"), ui_assets_tab);
+  ui_mount_remove->setSizePolicy(stretch_btns);
+  ui_mount_remove->setEnabled(false);
+  ui_mount_buttons_layout->addWidget(ui_mount_remove, 0, 1, 1, 1);
+  connect(ui_mount_remove, &QPushButton::clicked, this, [=] {
+    auto selected = ui_mount_list->selectedItems();
+    if (selected.isEmpty())
+      return;
+    delete selected[0];
+    emit ui_mount_list->itemSelectionChanged();
+    asset_cache_dirty = true;
+  });
+
+  auto *mount_buttons_spacer = new QSpacerItem(40, 20, QSizePolicy::Expanding,
+                                               QSizePolicy::Minimum);
+  ui_mount_buttons_layout->addItem(mount_buttons_spacer, 0, 2, 1, 1);
+
+  ui_mount_up = new QPushButton(tr("↑"), ui_assets_tab);
+  ui_mount_up->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+  ui_mount_up->setMaximumWidth(40);
+  ui_mount_up->setEnabled(false);
+  ui_mount_buttons_layout->addWidget(ui_mount_up, 0, 3, 1, 1);
+  connect(ui_mount_up, &QPushButton::clicked, this, [=] {
+    auto selected = ui_mount_list->selectedItems();
+    if (selected.isEmpty())
+      return;
+    auto *item = selected[0];
+    int row = ui_mount_list->row(item);
+    ui_mount_list->takeItem(row);
+    int new_row = qMax(1, row - 1);
+    ui_mount_list->insertItem(new_row, item);
+    ui_mount_list->setCurrentRow(new_row);
+    asset_cache_dirty = true;
+  });
+
+  ui_mount_down = new QPushButton(tr("↓"), ui_assets_tab);
+  ui_mount_down->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+  ui_mount_down->setMaximumWidth(40);
+  ui_mount_down->setEnabled(false);
+  ui_mount_buttons_layout->addWidget(ui_mount_down, 0, 4, 1, 1);
+  connect(ui_mount_down, &QPushButton::clicked, this, [=] {
+    auto selected = ui_mount_list->selectedItems();
+    if (selected.isEmpty())
+      return;
+    auto *item = selected[0];
+    int row = ui_mount_list->row(item);
+    ui_mount_list->takeItem(row);
+    int new_row = qMin(ui_mount_list->count() + 1, row + 1);
+    ui_mount_list->insertItem(new_row, item);
+    ui_mount_list->setCurrentRow(new_row);
+    asset_cache_dirty = true;
+  });
+
+  auto *mount_buttons_spacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding,
+                                                 QSizePolicy::Minimum);
+  ui_mount_buttons_layout->addItem(mount_buttons_spacer_2, 0, 5, 1, 1);
+
+  ui_mount_clear_cache = new QPushButton(tr("Clear Cache"), ui_assets_tab);
+  ui_mount_clear_cache->setToolTip(tr("Clears the lookup cache for assets. "
+  "Use this when you have added an asset that takes precedence over another "
+  "existing asset."));
+  ui_mount_buttons_layout->addWidget(ui_mount_clear_cache, 0, 6, 1, 1);
+  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [=] {
+    asset_cache_dirty = true;
+    ui_mount_clear_cache->setEnabled(false);
+  });
+
+  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [=] {
+    auto selected_items = ui_mount_list->selectedItems();
+    bool row_selected = !ui_mount_list->selectedItems().isEmpty();
+    ui_mount_remove->setEnabled(row_selected);
+    ui_mount_up->setEnabled(row_selected);
+    ui_mount_down->setEnabled(row_selected);
+
+    if (!row_selected)
+      return;
+
+    int row = ui_mount_list->row(selected_items[0]);
+    if (row <= 1)
+      ui_mount_up->setEnabled(false);
+    if (row >= ui_mount_list->count() - 1)
+      ui_mount_down->setEnabled(false);
+  });
+
+  // Privacy tab
   ui_privacy_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_privacy_tab, tr("Privacy"));
 
@@ -965,6 +1121,7 @@ void AOOptionsDialog::update_values() {
   ui_downwards_cb->setChecked(ao_app->get_log_goes_downwards());
   ui_log_newline_cb->setChecked(ao_app->get_log_newline());
   ui_log_timestamp_cb->setChecked(ao_app->get_log_timestamp());
+  ui_log_timestamp_format_combobox->setCurrentText(ao_app->get_log_timestamp_format());
   ui_log_ic_actions_cb->setChecked(ao_app->get_log_ic_actions());
   ui_desync_logs_cb->setChecked(ao_app->is_desyncrhonized_logs_enabled());
   ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
@@ -1002,6 +1159,13 @@ void AOOptionsDialog::update_values() {
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
+
+  auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
+                                           .arg(ao_app->get_base_path()));
+  defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
+  ui_mount_list->addItem(defaultMount);
+  ui_mount_list->addItems(ao_app->get_mount_paths());
+
   ui_privacy_optout_cb->setChecked(ao_app->get_player_count_optout());
 
   ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
@@ -1028,6 +1192,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("log_newline", ui_log_newline_cb->isChecked());
   configini->setValue("log_margin", ui_log_margin_spinbox->value());
   configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
+  configini->setValue("log_timestamp_format", ui_log_timestamp_format_combobox->currentText());
   configini->setValue("log_ic_actions", ui_log_ic_actions_cb->isChecked());
   configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
   configini->setValue("stay_time", ui_stay_time_spinbox->value());
@@ -1083,8 +1248,15 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
-
   configini->setValue("player_count_optout", ui_privacy_optout_cb->isChecked());
+
+  QStringList mountPaths;
+  for (int i = 1; i < ui_mount_list->count(); i++)
+    mountPaths.append(ui_mount_list->item(i)->text());
+  configini->setValue("mount_paths", mountPaths);
+
+  if (asset_cache_dirty)
+    ao_app->invalidate_lookup_cache();
 
   if (audioChanged)
     ao_app->initBASS();
@@ -1146,6 +1318,10 @@ void AOOptionsDialog::theme_changed(int i) {
   }
 
 }
+
+void AOOptionsDialog::on_timestamp_format_edited() { ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_combobox->currentText())); }
+
+void AOOptionsDialog::timestamp_cb_changed(int state) { ui_log_timestamp_format_combobox->setDisabled(state == 0); }
 
 #if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needs_default_audiodev() { return true; }

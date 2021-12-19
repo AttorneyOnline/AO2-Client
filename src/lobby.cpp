@@ -75,28 +75,28 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_cancel = new AOButton(ui_loading_background, ao_app);
   ui_cancel->setObjectName("ui_cancel");
 
-  connect(ui_public_servers, SIGNAL(clicked()), this,
-          SLOT(on_public_servers_clicked()));
-  connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
-  connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
-  connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
-  connect(ui_add_to_fav, SIGNAL(pressed()), this,
-          SLOT(on_add_to_fav_pressed()));
-  connect(ui_add_to_fav, SIGNAL(released()), this,
-          SLOT(on_add_to_fav_released()));
-  connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
-  connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
-  connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
-  connect(ui_settings, SIGNAL(clicked()), this, SLOT(on_settings_clicked()));
-  connect(ui_server_list, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this,
-          SLOT(on_server_list_clicked(QTreeWidgetItem *, int)));
-  connect(ui_server_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
-          this, SLOT(on_server_list_doubleclicked(QTreeWidgetItem *, int)));
-  connect(ui_server_search, SIGNAL(textChanged(QString)), this,
-          SLOT(on_server_search_edited(QString)));
-  connect(ui_chatmessage, SIGNAL(returnPressed()), this,
-          SLOT(on_chatfield_return_pressed()));
-  connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
+  connect(ui_public_servers, &AOButton::clicked, this,
+          &Lobby::on_public_servers_clicked);
+  connect(ui_favorites, &AOButton::clicked, this, &Lobby::on_favorites_clicked);
+  connect(ui_refresh, &AOButton::pressed, this, &Lobby::on_refresh_pressed);
+  connect(ui_refresh, &AOButton::released, this, &Lobby::on_refresh_released);
+  connect(ui_add_to_fav, &AOButton::pressed, this,
+          &Lobby::on_add_to_fav_pressed);
+  connect(ui_add_to_fav, &AOButton::released, this,
+          &Lobby::on_add_to_fav_released);
+  connect(ui_connect, &AOButton::pressed, this, &Lobby::on_connect_pressed);
+  connect(ui_connect, &AOButton::released, this, &Lobby::on_connect_released);
+  connect(ui_about, &AOButton::clicked, this, &Lobby::on_about_clicked);
+  connect(ui_settings, &AOButton::clicked, this, &Lobby::on_settings_clicked);
+  connect(ui_server_list, &QTreeWidget::itemClicked, this,
+          &Lobby::on_server_list_clicked);
+  connect(ui_server_list, &QTreeWidget::itemDoubleClicked,
+          this, &Lobby::on_server_list_doubleclicked);
+  connect(ui_server_search, &QLineEdit::textChanged, this,
+          &Lobby::on_server_search_edited);
+  connect(ui_chatmessage, &QLineEdit::returnPressed, this,
+          &Lobby::on_chatfield_return_pressed);
+  connect(ui_cancel, &AOButton::clicked, ao_app, &AOApplication::loading_cancelled);
 
   ui_connect->setEnabled(false);
 
@@ -237,6 +237,12 @@ void Lobby::set_stylesheet(QWidget *widget)
 void Lobby::set_stylesheets()
 {
   set_stylesheet(this);
+  this->setStyleSheet(
+    "QFrame { background-color:transparent; } "
+    "QAbstractItemView { background-color: transparent; color: black; } "
+    "QLineEdit { background-color:transparent; }"
+    + this->styleSheet()
+  );
 }
 
 void Lobby::set_font(QWidget *widget, QString p_identifier)
@@ -510,7 +516,7 @@ void Lobby::list_servers()
   ui_server_search->setText("");
 
   int i = 0;
-  for (server_type i_server : ao_app->get_server_list()) {
+  for (const server_type &i_server : qAsConst(ao_app->get_server_list())) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
@@ -526,7 +532,7 @@ void Lobby::list_favorites()
   ui_server_list->clear();
 
   int i = 0;
-  for (server_type i_server : ao_app->get_favorite_list()) {
+  for (const server_type &i_server : qAsConst(ao_app->get_favorite_list())) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
@@ -573,9 +579,9 @@ void Lobby::append_error(QString f_message)
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = tr("Online: %1/%2")
-                         .arg(QString::number(players_online))
-                         .arg(QString::number(max_players));
+  QString f_string = tr("Online: %1/%2").arg(
+              QString::number(players_online),
+              QString::number(max_players));
   ui_player_count->setText(f_string);
 }
 

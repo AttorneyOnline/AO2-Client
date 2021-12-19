@@ -12,16 +12,16 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   shfx_timer = new QTimer(this);
   shfx_timer->setTimerType(Qt::PreciseTimer);
   shfx_timer->setSingleShot(true);
-  connect(shfx_timer, SIGNAL(timeout()), this, SLOT(shfx_timer_done()));
+  connect(shfx_timer, &QTimer::timeout, this, &AOLayer::shfx_timer_done);
 
   ticker = new QTimer(this);
   ticker->setTimerType(Qt::PreciseTimer);
   ticker->setSingleShot(false);
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
+  connect(ticker, &QTimer::timeout, this, &AOLayer::movie_ticker);
 
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
-  connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
+  connect(preanim_timer, &QTimer::timeout, this, &AOLayer::preanim_done);
 }
 
 BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
@@ -52,7 +52,7 @@ StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
 QString AOLayer::find_image(QStringList p_list)
 {
   QString image_path;
-  for (QString path : p_list) {
+  for (const QString &path : p_list) {
 #ifdef DEBUG_MOVIE
     qDebug() << "checking path " << path;
 #endif
@@ -138,14 +138,15 @@ void BackgroundLayer::load_image(QString p_filename)
 {
   play_once = false;
   cull_image = false;
-  QString design_path = ao_app->get_background_path("design.ini");
+  VPath design_path = ao_app->get_background_path("design.ini");
   transform_mode =
       ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
   stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
 #ifdef DEBUG_MOVIE
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
 #endif
-  start_playback(ao_app->get_image_suffix(ao_app->get_background_path(p_filename)));
+  QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
+  start_playback(final_path);
   play();
 }
 
@@ -179,15 +180,16 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
   last_emote = current_emote;
   last_prefix = prefix;
   is_preanim = p_is_preanim;
-  if ((p_filename.left(3) == "(a)") || (p_filename.left(3) == "(b)")) {
-    prefix = p_filename.left(3);
+  if ((p_filename.left(3) == "(a)") || (p_filename.left(3) == "(b)")) { // if we are playing an idle or talking animation
+    prefix = p_filename.left(3); // separate the prefix from the emote name
     current_emote = p_filename.mid(3, -1);
   }
-  else if ((duration > 0) || (p_filename.left(3) == "(c)")) {
-    if (p_filename.left(3) == "(c)") {
-      prefix = "(c)";
+  else if ((duration > 0) || (p_filename.left(3) == "(c)")) { // else if we are playing a preanim or postanim
+    if (p_filename.left(3) == "(c)") { // if we are playing a postanim
+      prefix = "(c)"; // separate the prefix from the emote name
       current_emote = p_filename.mid(3, -1);
     }
+    // pre/postanim specific flags
     is_preanim = true;
     play_once = true;
     preanim_timer->start(duration);
@@ -197,7 +199,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
            << current_emote << " from character: " << p_charname
            << " continuous: " << continuous;
 #endif
-  QStringList pathlist = {
+  QVector<VPath> pathlist { // cursed character path resolution vector
       ao_app->get_character_path(
           p_charname, prefix + current_emote), // Default path
       ao_app->get_character_path(
@@ -207,7 +209,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
       ao_app->get_character_path(
           p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
-      current_emote, // The path by itself after the above fail
+      VPath(current_emote), // The path by itself after the above fail
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
@@ -232,7 +234,7 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
     play_once = true;
   continuous = false;
   force_continuous = true;
-  start_playback(p_filename); // handled in its own file before we see it
+  start_playback(p_filename); // path resolution is handled by the caller for EffectLayer objects
   play();
 }
 
@@ -269,6 +271,13 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
+  if (p_image == "") {// image wasn't found by the path resolution function
+    this->kill();
+    return;
+  }
+  QMutexLocker locker(&mutex);
+  if (frame_loader.isRunning())
+    exit_loop = true; // tell the loader to stop, we have a new image to load
   this->show();
 
   if (!ao_app->is_continuous_enabled()) {
@@ -276,7 +285,7 @@ void AOLayer::start_playback(QString p_image)
     force_continuous = true;
   }
 
-  if ((last_path == p_image) && (!force_continuous))
+  if (((last_path == p_image) && (!force_continuous)) || p_image == "")
     return;
 
 #ifdef DEBUG_MOVIE
@@ -296,55 +305,36 @@ void AOLayer::start_playback(QString p_image)
     stretch = stretch_override.startsWith("true");
 
 #ifdef DEBUG_MOVIE
-  qDebug() << "stretch:" << stretch << "filename:" << p_image;
+  qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
   if (m_reader.loopCount() == 0)
     play_once = true;
-  if (!continuous)
-    frame = 0;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
-  if (((continuous) && (max_frames != last_max_frames)) || max_frames == 0) {
+  if (!continuous
+          || ((continuous) && (max_frames != last_max_frames))
+          || max_frames == 0
+          || frame >= max_frames) {
     frame = 0;
     continuous = false;
   }
-  // CANTFIX: this causes a hitch
-  // The correct way of doing this would be to use QImageReader::jumpToImage()
-  // and populate missing data in the movie ticker when it's needed. This is
-  // unfortunately completely impossible, because QImageReader::jumpToImage() is
-  // not implemented in any image format AO2 is equipped to use. Instead, the
-  // default behavior is used - that is, absolutely nothing.
-  // This is why continuous playback can be toggled off.
-  if (continuous) {
-    for (int i = frame; i--;) {
-      if (i <= -1)
-        break;
-      QPixmap l_pixmap = this->get_pixmap(m_reader.read());
-      int l_delay = m_reader.nextImageDelay();
-      movie_frames.append(l_pixmap);
-      movie_delays.append(l_delay);
-    }
-  }
+  frame_loader = QtConcurrent::run(this, &AOLayer::populate_vectors);
   last_path = p_image;
-  QPixmap f_pixmap = this->get_pixmap(m_reader.read());
-  int f_delay = m_reader.nextImageDelay();
+  while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
+    frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
+  this->set_frame(movie_frames[frame]);
 
-  this->set_frame(f_pixmap);
-  if (max_frames > 1) {
-    movie_frames.append(f_pixmap);
-    movie_delays.append(f_delay);
-  }
-  else if (max_frames <= 1) {
+  if (max_frames <= 1) {
     duration = static_duration;
 #ifdef DEBUG_MOVIE
-    qDebug() << "max_frames is <= 1, using static duration";
+    qDebug() << "[AOLayer::start_playback] max_frames is <= 1, using static duration";
 #endif
   }
   if (duration > 0 && cull_image == true)
     shfx_timer->start(duration);
 #ifdef DEBUG_MOVIE
-  qDebug() << max_frames << "Setting image to " << image_path
+  qDebug() << "[AOLayer::start_playback] Max frames:" << max_frames << "Setting image to " << p_image
            << "Time taken to process image:" << actual_time.elapsed();
 
   actual_time.restart();
@@ -375,8 +365,12 @@ void AOLayer::play()
     else
       this->freeze();
   }
-  else
+  else {
+      while (movie_delays.size() <= frame) {
+          frameAdded.wait(&mutex);
+      }
     ticker->start(this->get_frame_delay(movie_delays[frame]));
+  }
 }
 
 void AOLayer::set_play_once(bool p_play_once) { play_once = p_play_once; }
@@ -454,7 +448,7 @@ void CharLayer::load_network_effects()
                                 // data, let's yank it in.
             effect += f_data;
 #ifdef DEBUG_MOVIE
-          qDebug() << effect << f_data << "frame" << f_frame << "for"
+          qDebug() << "[CharLayer::load_network_effects]" << effect << f_data << "frame" << f_frame << "for"
                    << m_emote;
 #endif
           movie_effects[f_frame].append(effect);
@@ -473,24 +467,24 @@ void CharLayer::play_frame_effect(int p_frame)
   if (p_frame < max_frames) {
     foreach (QString effect, movie_effects[p_frame]) {
       if (effect == "shake") {
-        shake();
+        emit shake();
 #ifdef DEBUG_MOVIE
-        qDebug() << "Attempting to play shake on frame" << frame;
+        qDebug() << "[CharLayer::play_frame_effect] Attempting to play shake on frame" << frame;
 #endif
       }
 
       if (effect == "flash") {
-        flash();
+        emit flash();
 #ifdef DEBUG_MOVIE
-        qDebug() << "Attempting to play flash on frame" << frame;
+        qDebug() << "[CharLayer::play_frame_effect] Attempting to play flash on frame" << frame;
 #endif
       }
 
       if (effect.startsWith("sfx^")) {
         QString sfx = effect.section("^", 1);
-        play_sfx(sfx);
+        emit play_sfx(sfx);
 #ifdef DEBUG_MOVIE
-        qDebug() << "Attempting to play sfx" << sfx << "on frame" << frame;
+        qDebug() << "[CharLayer::play_frame_effect] Attempting to play sfx" << sfx << "on frame" << frame;
 #endif
       }
     }
@@ -544,19 +538,36 @@ void AOLayer::movie_ticker()
     else
       frame = 0;
   }
-  //  qint64 difference = elapsed - movie_delays[frame];
-  if (frame >= movie_frames.size()) {
-    movie_frames.append(this->get_pixmap(m_reader.read()));
-    movie_delays.append(m_reader.nextImageDelay());
+  mutex.lock();
+  while (frame >= movie_frames.size() && frame < max_frames) { // oops! our frame isn't ready yet
+      frameAdded.wait(&mutex); // wait for a new frame to be added, then check again
   }
-
+  mutex.unlock();
 #ifdef DEBUG_MOVIE
-  qDebug() << frame << movie_delays[frame]
-           << "actual time taken from last frame:" << actual_time.restart();
+  qDebug() << "[AOLayer::movie_ticker] Frame:" << frame << "Delay:" << movie_delays[frame]
+           << "Actual time taken from last frame:" << actual_time.restart();
 #endif
-
   this->set_frame(movie_frames[frame]);
   ticker->setInterval(this->get_frame_delay(movie_delays[frame]));
+}
+
+void AOLayer::populate_vectors() {
+    while (movie_frames.size() < max_frames && !exit_loop) {
+        load_next_frame();
+#ifdef DEBUG_MOVIE
+        qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+#endif
+    }
+    exit_loop = false;
+}
+
+void AOLayer::load_next_frame() {
+    //QMutexLocker locker(&mutex);
+    mutex.lock();
+    movie_frames.append(this->get_pixmap(m_reader.read()));
+    movie_delays.append(m_reader.nextImageDelay());
+    mutex.unlock();
+    frameAdded.wakeAll();
 }
 
 void CharLayer::preanim_done()
@@ -571,7 +582,7 @@ void AOLayer::preanim_done()
 {
   ticker->stop();
   preanim_timer->stop();
-  done();
+  emit done();
 }
 
 void AOLayer::shfx_timer_done()
@@ -581,5 +592,5 @@ void AOLayer::shfx_timer_done()
   qDebug() << "shfx timer signaled done";
 #endif
   // signal connected to courtroom object, let it figure out what to do
-  done();
+  emit done();
 }

@@ -1,4 +1,5 @@
 #include <QCoreApplication>
+#include <QElapsedTimer>
 #include <QMessageBox>
 #include <QTimer>
 #include <functional>

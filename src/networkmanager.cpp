@@ -16,10 +16,10 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
 
-  connect(server_socket, SIGNAL(readyRead()), this,
-                   SLOT(handle_server_packet()));
-  connect(server_socket, SIGNAL(disconnected()), ao_app,
-                   SLOT(server_disconnected()));
+  connect(server_socket, &QTcpSocket::readyRead, this,
+          &NetworkManager::handle_server_packet);
+  connect(server_socket, &QTcpSocket::disconnected, ao_app,
+          &AOApplication::server_disconnected);
 
   QString master_config =
       ao_app->configini->value("master", "").value<QString>();

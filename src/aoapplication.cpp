@@ -17,6 +17,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
   qApp->setStyleSheet("QFrame {background-color:transparent;} QAbstractItemView {background-color: transparent; color: black;}; QLineEdit {background-color:transparent;}");
+
+  asset_lookup_cache.reserve(2048);
 }
 
 AOApplication::~AOApplication()
@@ -164,13 +166,14 @@ void AOApplication::call_announce_menu(Courtroom *court)
 }
 
 // Callback for when BASS device is lost
+// Only actually used for music syncs
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
                                        DWORD data, void *user)
 {
-  UNUSED(handle);
-  UNUSED(channel);
-  UNUSED(data);
-  UNUSED(user);
+  Q_UNUSED(handle);
+  Q_UNUSED(channel);
+  Q_UNUSED(data);
+  Q_UNUSED(user);
   doBASSreset();
 }
 
@@ -183,6 +186,7 @@ void AOApplication::doBASSreset()
 
 void AOApplication::initBASS()
 {
+  BASS_SetConfig(BASS_CONFIG_DEV_DEFAULT, 1);
   BASS_Free();
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.

@@ -15,13 +15,13 @@ void Courtroom::initialize_emotes()
   ui_emote_dropdown = new QComboBox(this);
   ui_emote_dropdown->setObjectName("ui_emote_dropdown");
 
-  connect(ui_emote_left, SIGNAL(clicked()), this,
-          SLOT(on_emote_left_clicked()));
-  connect(ui_emote_right, SIGNAL(clicked()), this,
-          SLOT(on_emote_right_clicked()));
+  connect(ui_emote_left, &AOButton::clicked, this,
+          &Courtroom::on_emote_left_clicked);
+  connect(ui_emote_right, &AOButton::clicked, this,
+          &Courtroom::on_emote_right_clicked);
 
-  connect(ui_emote_dropdown, SIGNAL(activated(int)), this,
-          SLOT(on_emote_dropdown_changed(int)));
+  connect(ui_emote_dropdown, QOverload<int>::of(&QComboBox::activated), this,
+          &Courtroom::on_emote_dropdown_changed);
 }
 
 void Courtroom::refresh_emotes()
@@ -74,8 +74,8 @@ void Courtroom::refresh_emotes()
 
     f_emote->set_id(n);
 
-    connect(f_emote, SIGNAL(emote_clicked(int)), this,
-            SLOT(on_emote_clicked(int)));
+    connect(f_emote, &AOEmoteButton::emote_clicked, this,
+            &Courtroom::on_emote_clicked);
 
     ++x_mod_count;
 
@@ -96,7 +96,7 @@ void Courtroom::set_emote_page()
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  for (AOEmoteButton *i_button : ui_emote_list) {
+  for (AOEmoteButton *i_button : qAsConst(ui_emote_list)) {
     i_button->hide();
   }
 

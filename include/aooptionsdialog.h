@@ -23,6 +23,7 @@
 #include <QtWidgets/QWidget>
 
 #include <QDirIterator>
+#include <QListWidget>
 #include <QTextBrowser>
 #include <QTextStream>
 
@@ -62,6 +63,8 @@ private:
   QSpinBox *ui_log_margin_spinbox;
   QLabel *ui_log_timestamp_lbl;
   QCheckBox *ui_log_timestamp_cb;
+  QLabel *ui_log_timestamp_format_lbl;
+  QComboBox *ui_log_timestamp_format_combobox;
   QLabel *ui_stay_time_lbl;
   QSpinBox *ui_stay_time_spinbox;
   QLabel *ui_desync_logs_lbl;
@@ -175,11 +178,24 @@ private:
   QLabel *ui_log_lbl;
   QCheckBox *ui_log_cb;
 
+  QWidget *ui_assets_tab;
+  QVBoxLayout *ui_assets_tab_layout;
+  QGridLayout *ui_mount_buttons_layout;
+  QLabel *ui_asset_lbl;
+  QListWidget *ui_mount_list;
+  QPushButton *ui_mount_add;
+  QPushButton *ui_mount_remove;
+  QPushButton *ui_mount_up;
+  QPushButton *ui_mount_down;
+  QPushButton *ui_mount_clear_cache;
+
   QWidget *ui_privacy_tab;
   QVBoxLayout *ui_privacy_layout;
   QCheckBox *ui_privacy_optout_cb;
   QFrame *ui_privacy_separator;
   QTextBrowser *ui_privacy_policy;
+
+  bool asset_cache_dirty = false;
 
   bool needs_default_audiodev();
   void update_values();
@@ -190,6 +206,8 @@ public slots:
   void save_pressed();
   void discard_pressed();
   void button_clicked(QAbstractButton *button);
+  void on_timestamp_format_edited();
+  void timestamp_cb_changed(int state);
   void on_reload_theme_clicked();
   void theme_changed(int i);
 };
