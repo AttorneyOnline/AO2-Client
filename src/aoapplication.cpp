@@ -16,7 +16,6 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
-  qApp->setStyleSheet("QFrame {background-color:transparent;} QAbstractItemView {background-color: transparent; color: black;}; QLineEdit {background-color:transparent;}");
 
   asset_lookup_cache.reserve(2048);
 }

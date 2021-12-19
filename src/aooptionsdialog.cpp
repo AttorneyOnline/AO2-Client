@@ -1255,11 +1255,11 @@ void AOOptionsDialog::save_pressed()
     mountPaths.append(ui_mount_list->item(i)->text());
   configini->setValue("mount_paths", mountPaths);
 
-  if (asset_cache_dirty)
-    ao_app->invalidate_lookup_cache();
-
   if (audioChanged)
     ao_app->initBASS();
+
+  if (asset_cache_dirty)
+    ao_app->invalidate_lookup_cache();
 
   // We most probably pressed "Restore defaults" at some point. Since we're saving our settings, remove the temporary file.
   if (QFile::exists(ao_app->get_base_path() + "config.temp"))
