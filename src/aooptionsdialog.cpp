@@ -1005,15 +1005,10 @@ void AOOptionsDialog::update_values() {
   ui_privacy_optout_cb->setChecked(ao_app->get_player_count_optout());
 
   ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
-    if (document.isEmpty())
+    if (document.isEmpty()) {
       document = tr("Couldn't get the privacy policy.");
-    bool isHtml = document.startsWith("<!DOCTYPE", Qt::CaseInsensitive)
-        || document.startsWith("<html>", Qt::CaseInsensitive);
-    if (isHtml) {
-      ui_privacy_policy->setHtml(document);
-    } else {
-      ui_privacy_policy->setMarkdown(document);
     }
+    ui_privacy_policy->setHtml(document);
   });
 }
 
