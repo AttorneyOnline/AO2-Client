@@ -491,6 +491,9 @@ public:
   // Get the default scaling method
   QString get_default_scaling();
 
+  // Get whether to opt out of player count metrics sent to the master server
+  bool get_player_count_optout();
+
   // Currently defined subtheme
   QString subtheme;
 

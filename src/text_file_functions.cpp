@@ -1095,3 +1095,9 @@ QString AOApplication::get_default_scaling()
 {
   return configini->value("default_scaling", "fast").value<QString>();
 }
+
+bool AOApplication::get_player_count_optout()
+{
+  return configini->value("player_count_optout", "false").value<QString>()
+      .startsWith("true");
+}

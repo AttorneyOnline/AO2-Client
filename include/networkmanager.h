@@ -28,10 +28,12 @@ public:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
   QTcpSocket *server_socket;
+  QTimer *heartbeat_timer;
 
-  QString ms_baseurl = "https://ms3.oldmud0.workers.dev";
+  QString ms_baseurl = "https://servers.aceattorneyonline.com";
 
   const int timeout_milliseconds = 5000;
+  const int heartbeat_interval = 60 * 5;
 
   bool partial_packet = false;
   QString temp_packet = "";
@@ -47,8 +49,8 @@ public slots:
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);
+  void send_heartbeat();
 private slots:
-  void heartbeat_playing();
   void ms_request_finished(QNetworkReply *reply,
                            const std::function<void()> &cb);
 

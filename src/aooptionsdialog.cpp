@@ -908,7 +908,16 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_settings_tabs->addTab(ui_privacy_tab, tr("Privacy"));
 
   ui_privacy_layout = new QVBoxLayout(ui_privacy_tab);
-  ui_privacy_layout->setContentsMargins(0, 0, 0, 0);
+
+  ui_privacy_optout_cb = new QCheckBox(ui_privacy_tab);
+  ui_privacy_optout_cb->setText(tr("Do not include me in public player counts"));
+  ui_privacy_layout->addWidget(ui_privacy_optout_cb);
+
+  ui_privacy_separator = new QFrame(ui_privacy_tab);
+  ui_privacy_separator->setObjectName(QString::fromUtf8("line"));
+  ui_privacy_separator->setFrameShape(QFrame::HLine);
+  ui_privacy_separator->setFrameShadow(QFrame::Sunken);
+  ui_privacy_layout->addWidget(ui_privacy_separator);
 
   ui_privacy_policy = new QTextBrowser(ui_privacy_tab);
   QSizePolicy privacySizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -993,6 +1002,7 @@ void AOOptionsDialog::update_values() {
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
+  ui_privacy_optout_cb->setChecked(ao_app->get_player_count_optout());
 
   ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
     if (document.isEmpty())
@@ -1079,10 +1089,10 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
 
+  configini->setValue("player_count_optout", ui_privacy_optout_cb->isChecked());
+
   if (audioChanged)
     ao_app->initBASS();
-
-  callwordsini->close();
 
   // We most probably pressed "Restore defaults" at some point. Since we're saving our settings, remove the temporary file.
   if (QFile::exists(ao_app->get_base_path() + "config.temp"))

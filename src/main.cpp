@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 
   main_app.construct_lobby();
   main_app.net_manager->get_server_list(std::bind(&Lobby::list_servers, main_app.w_lobby));
+  main_app.net_manager->send_heartbeat();
   main_app.w_lobby->show();
   return main_app.exec();
 }

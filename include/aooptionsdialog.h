@@ -177,6 +177,8 @@ private:
 
   QWidget *ui_privacy_tab;
   QVBoxLayout *ui_privacy_layout;
+  QCheckBox *ui_privacy_optout_cb;
+  QFrame *ui_privacy_separator;
   QTextBrowser *ui_privacy_policy;
 
   bool needs_default_audiodev();
