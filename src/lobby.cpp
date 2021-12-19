@@ -548,15 +548,10 @@ void Lobby::get_motd()
 {
   ao_app->net_manager->request_document(MSDocumentType::Motd,
                                         [this](QString document) {
-    if (document.isEmpty())
+    if (document.isEmpty()) {
       document = tr("Couldn't get the message of the day.");
-    bool isHtml = document.startsWith("<!DOCTYPE", Qt::CaseInsensitive)
-        || document.startsWith("<html>", Qt::CaseInsensitive);
-    if (isHtml) {
-      ui_chatbox->setHtml(document);
-    } else {
-      ui_chatbox->setMarkdown(document);
     }
+    ui_chatbox->setHtml(document);
   });
 }
 
