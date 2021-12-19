@@ -36,7 +36,6 @@ void NetworkManager::get_server_list(const std::function<void()> &cb)
 {
   QNetworkRequest req(QUrl(ms_baseurl + "/servers"));
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
-  req.setTransferTimeout(timeout_milliseconds);
 
   QNetworkReply *reply = http->get(req);
   connect(reply, &QNetworkReply::finished,
@@ -84,7 +83,6 @@ void NetworkManager::send_heartbeat()
 
   QNetworkRequest req(QUrl(ms_baseurl + "/playing"));
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
-  req.setTransferTimeout(timeout_milliseconds);
 
   http->post(req, QByteArray());
 }
@@ -109,7 +107,6 @@ void NetworkManager::request_document(MSDocumentType document_type,
     language = QLocale::system().name();
 
   req.setRawHeader("Accept-Language", language.toUtf8());
-  req.setTransferTimeout(5000);
 
   qDebug().noquote().nospace()
       << "Getting " << endpoint << ", Accept-Language: " << language;
@@ -160,7 +157,7 @@ void NetworkManager::handle_server_packet()
     }
   }
 
-  const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
+  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
 
   for (const QString &packet : packet_list) {
     AOPacket *f_packet = new AOPacket(packet);

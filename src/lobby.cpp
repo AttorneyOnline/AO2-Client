@@ -495,14 +495,6 @@ void Lobby::on_chatfield_return_pressed()
   if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
     return;
 
-  QString f_header = "CT";
-  QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
-
-  append_chatmessage("", "Stubbed lmao");
-
-//  AOPacket *f_packet = new AOPacket(f_header, f_contents);
-//  ao_app->send_ms_packet(f_packet);
-
   ui_chatmessage->clear();
 }
 

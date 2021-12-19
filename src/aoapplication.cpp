@@ -151,35 +151,6 @@ void AOApplication::loading_cancelled()
   w_lobby->hide_loading_overlay();
 }
 
-/*
-void AOApplication::ms_connect_finished(bool connected, bool will_retry)
-{
-  if (connected) {
-    AOPacket *f_packet = new AOPacket("ALL#%");
-    send_ms_packet(f_packet);
-  }
-  else {
-    if (will_retry) {
-      if (lobby_constructed)
-        w_lobby->append_error(
-            tr("Error connecting to master server. Will try again in %1 "
-               "seconds.")
-                .arg(QString::number(net_manager->ms_reconnect_delay)));
-    }
-    else {
-      call_error(tr("There was an error connecting to the master server.\n"
-                    "We deploy multiple master servers to mitigate any "
-                    "possible downtime, "
-                    "but the client appears to have exhausted all possible "
-                    "methods of finding "
-                    "and connecting to one.\n"
-                    "Please check your Internet connection and firewall, and "
-                    "please try again."));
-    }
-  }
-}
-*/
-
 void AOApplication::call_settings_menu()
 {
   AOOptionsDialog settings(nullptr, this);

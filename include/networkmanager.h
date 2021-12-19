@@ -32,7 +32,6 @@ public:
 
   QString ms_baseurl = "https://servers.aceattorneyonline.com";
 
-  const int timeout_milliseconds = 5000;
   const int heartbeat_interval = 60 * 5;
 
   bool partial_packet = false;

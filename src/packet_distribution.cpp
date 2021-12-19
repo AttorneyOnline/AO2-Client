@@ -67,9 +67,6 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "AO2CHECK") {
-//    send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
-//    send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
-
     if (f_contents.size() < 1)
       goto end;
 
