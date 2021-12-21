@@ -40,9 +40,8 @@ Have a nice day.</source>
 Schönen Urlaub.</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="271"/>
         <source>Attorney Online</source>
-        <translation>Attorney Online</translation>
+        <translation type="vanished">Attorney Online</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="297"/>
@@ -68,6 +67,11 @@ Schönen Urlaub.</translation>
 %1/%2</source>
         <translation>Lade Charaktere:
 %1/%2</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="271"/>
+        <source>Attorney Online %1</source>
+        <translation>Attorney Online %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="596"/>
@@ -1976,9 +1980,13 @@ load, reload, play, pause, max_wait, help</source>
 <context>
     <name>Lobby</name>
     <message>
-        <location filename="../../src/lobby.cpp" line="17"/>
         <source>Attorney Online </source>
-        <translation>Attorney Online</translation>
+        <translation type="vanished">Attorney Online</translation>
+    </message>
+    <message>
+        <location filename="../../src/lobby.cpp" line="17"/>
+        <source>Attorney Online %1</source>
+        <translation>Attorney Online %1</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="51"/>

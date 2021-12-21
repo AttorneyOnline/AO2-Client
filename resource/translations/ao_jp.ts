@@ -27,9 +27,8 @@ Please go to aceattorneyonline.com to update.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="271"/>
         <source>Attorney Online</source>
-        <translation>逆転裁判オンライン</translation>
+        <translation type="vanished">逆転裁判オンライン</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="297"/>
@@ -52,6 +51,11 @@ Please go to aceattorneyonline.com to update.</source>
         <source>Loading chars:
 %1/%2</source>
         <translation>キャラがロード中: %1/%2</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="271"/>
+        <source>Attorney Online %1</source>
+        <translation>逆転裁判オンライン %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="596"/>
@@ -1662,9 +1666,13 @@ load, reload, play, pause, max_wait, help</source>
 <context>
     <name>Lobby</name>
     <message>
-        <location filename="../../src/lobby.cpp" line="17"/>
         <source>Attorney Online </source>
-        <translation>逆転裁判オンライン </translation>
+        <translation type="vanished">逆転裁判オンライン </translation>
+    </message>
+    <message>
+        <location filename="../../src/lobby.cpp" line="17"/>
+        <source>Attorney Online %1</source>
+        <translation>逆転裁判オンライン %1</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="51"/>

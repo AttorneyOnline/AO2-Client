@@ -14,7 +14,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
 
   //
-  this->setWindowTitle(tr("Attorney Online ") + ao_app->applicationVersion());
+  this->setWindowTitle(tr("Attorney Online %1").arg(ao_app->applicationVersion()));
   this->setWindowIcon(QIcon(":/logo.png"));
   this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 

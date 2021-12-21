@@ -27,11 +27,6 @@ Please go to aceattorneyonline.com to update.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="271"/>
-        <source>Attorney Online</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/packet_distribution.cpp" line="297"/>
         <source>Loading</source>
         <translation type="unfinished"></translation>
@@ -46,6 +41,11 @@ Please go to aceattorneyonline.com to update.</source>
         <location filename="../../src/packet_distribution.cpp" line="356"/>
         <source>Loading chars:
 %1/%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="271"/>
+        <source>Attorney Online %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1595,7 +1595,7 @@ load, reload, play, pause, max_wait, help</source>
     <name>Lobby</name>
     <message>
         <location filename="../../src/lobby.cpp" line="17"/>
-        <source>Attorney Online </source>
+        <source>Attorney Online %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

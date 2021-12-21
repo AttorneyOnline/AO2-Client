@@ -34,11 +34,6 @@ Have a nice day.</source>
 Tenha um bom dia.</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="271"/>
-        <source>Attorney Online</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../../src/packet_distribution.cpp" line="297"/>
         <source>Loading</source>
         <translation>Carregando</translation>
@@ -55,6 +50,11 @@ Tenha um bom dia.</translation>
 %1/%2</source>
         <translation type="vanished">Carregando evidências:
 %1/%2</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="271"/>
+        <source>Attorney Online %1</source>
+        <translation>Attorney Online %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="384"/>
@@ -1857,8 +1857,8 @@ load, reload, play, pause, max_wait, help</source>
     <name>Lobby</name>
     <message>
         <location filename="../../src/lobby.cpp" line="17"/>
-        <source>Attorney Online </source>
-        <translation></translation>
+        <source>Attorney Online %1</source>
+        <translation>Attorney Online %1</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="51"/>

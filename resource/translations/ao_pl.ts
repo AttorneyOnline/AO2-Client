@@ -36,12 +36,6 @@ Have a nice day.</source>
 Życzymy miłego dnia.</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="271"/>
-        <source>Attorney Online</source>
-        <translatorcomment>Prawnik w Internecie</translatorcomment>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../../src/packet_distribution.cpp" line="297"/>
         <source>Loading</source>
         <translation>Wczytywanie</translation>
@@ -65,6 +59,11 @@ Have a nice day.</source>
 %1/%2</source>
         <translation>Wczytywanie postaci:
 %1/%2</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="271"/>
+        <source>Attorney Online %1</source>
+        <translation>Attorney Online %1</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="596"/>
@@ -1829,8 +1828,8 @@ load, reload, play, pause, max_wait, help</translation>
     <name>Lobby</name>
     <message>
         <location filename="../../src/lobby.cpp" line="17"/>
-        <source>Attorney Online </source>
-        <translation></translation>
+        <source>Attorney Online %1</source>
+        <translation>Attorney Online %1</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="51"/>
