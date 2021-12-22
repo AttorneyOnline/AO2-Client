@@ -3290,6 +3290,22 @@ void Courtroom::preanim_done()
   if (anim_state != 1 && anim_state != 4 && anim_state != 5)
     return;
   anim_state = 1;
+
+  handle_ic_speaking();
+}
+
+void Courtroom::start_chat_ticking()
+{
+  text_delay_timer->stop();
+  // we need to ensure that the text isn't already ticking because this function
+  // can be called by two logic paths
+  if (text_state != 0)
+    return;
+
+  // Display the evidence
+  display_evidence_image();
+
+  // handle expanded desk mods
   switch(m_chatmessage[DESK_MOD].toInt()) {
     case 4:
       set_self_offset(m_chatmessage[SELF_OFFSET]);
@@ -3308,19 +3324,6 @@ void Courtroom::preanim_done()
       set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
       break;
   }
-  handle_ic_speaking();
-}
-
-void Courtroom::start_chat_ticking()
-{
-  text_delay_timer->stop();
-  // we need to ensure that the text isn't already ticking because this function
-  // can be called by two logic paths
-  if (text_state != 0)
-    return;
-
-  // Display the evidence
-  display_evidence_image();
 
   if (m_chatmessage[EFFECTS] != "") {
     QStringList fx_list = m_chatmessage[EFFECTS].split("|");
