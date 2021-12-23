@@ -107,7 +107,7 @@ end:
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
-    if (get_auto_logging_enabled() && !log_filename.isEmpty())
+    if (get_demo_logging_enabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         if (!demo_timer.isValid())
@@ -304,7 +304,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_auto_logging_enabled() && server_name != "Demo playback") {
+    if (AOApplication::get_demo_logging_enabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
