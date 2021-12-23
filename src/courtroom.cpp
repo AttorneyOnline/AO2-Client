@@ -1787,9 +1787,6 @@ void Courtroom::on_chat_return_pressed()
   if (is_muted)
     return;
 
-  if (text_state < 2 && objection_state == 0)
-    return;
-
   ui_ic_chat_message->blockSignals(true);
   QTimer::singleShot(ao_app->get_chat_ratelimit(), this,
                      [=] { ui_ic_chat_message->blockSignals(false); });
