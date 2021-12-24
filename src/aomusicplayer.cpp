@@ -139,7 +139,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   int error_code = BASS_ErrorGetCode();
 
   if (is_stop) {
-    return "None";
+    return QObject::tr("None");
   }
   if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
     return QObject::tr("[MISSING] %1").arg(p_song_clear);
