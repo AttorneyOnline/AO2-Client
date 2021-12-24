@@ -44,11 +44,11 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
       newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
   }
 
-  if(invoking_future.isCanceled() && channel == 0){
-      //Target future has changed. This stream has become irrelevant.
-      //So even if the stream manages to finish after the latest one, we don't run
-      //into order issues.
-      return QString{};
+  if (invoking_future.isCanceled() && channel == 0) {
+      // Target future has changed. This stream has become irrelevant.
+      // So even if the stream manages to finish after the latest one, we don't run
+      // into order issues.
+      return QString();
   }
 
   if (ao_app->get_audio_output_device() != "default")

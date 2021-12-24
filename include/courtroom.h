@@ -816,7 +816,6 @@ public slots:
                    bool steno);
   void on_reload_theme_clicked();
 
-  //updates the UI label with the currently playing song once future has finished.
   void update_ui_music_name();
 
 private slots:
