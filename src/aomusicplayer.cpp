@@ -43,6 +43,8 @@ int AOMusicPlayer::play(QString p_song, int channel, bool loop,
       newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
     else if (f_path.endsWith(".mid"))
       newstream = BASS_MIDI_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags, 1);
+    else if (f_path.endsWith(".mo3") || f_path.endsWith(".xm") || f_path.endsWith(".mod") || f_path.endsWith(".s3m") || f_path.endsWith(".it") || f_path.endsWith(".mtm") || f_path.endsWith(".umx") )
+      newstream = BASS_MusicLoad(FALSE,f_path.utf16(), 0, 0, flags, 1);
     else
       newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
   }
