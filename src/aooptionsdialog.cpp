@@ -583,6 +583,28 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
 
+  //Check whether mass logging is enabled
+  row += 1;
+  ui_log_text_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_text_lbl->setText(tr("Log to Text Files:"));
+  ui_log_text_lbl->setToolTip(
+      tr("Text logs of gameplay will be automatically written in the /logs folder."));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_text_lbl);
+
+  ui_log_text_cb = new QCheckBox(ui_form_layout_widget);
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_text_cb);
+
+  row += 1;
+  ui_log_demo_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_demo_lbl->setText(tr("Log to Demo Files:"));
+  ui_log_demo_lbl->setToolTip(
+      tr("Gameplay will be automatically recorded as demos in the /logs folder."));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_demo_lbl);
+
+  ui_log_demo_cb = new QCheckBox(ui_form_layout_widget);
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_demo_cb);
+
+  // Finish gameplay tab
   QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
@@ -921,19 +943,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole,
                               ui_casing_cm_cases_textbox);
-  //Check whether mass logging is enabled
-  row += 1;
-  ui_log_lbl = new QLabel(ui_casing_widget);
-  ui_log_lbl->setText(tr("Automatic Logging:"));
-  ui_log_lbl->setToolTip(
-      tr("If checked, all logs will be automatically written in the "
-         "/logs folder."));
-
-  ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_log_lbl);
-
-  ui_log_cb = new QCheckBox(ui_casing_widget);
-
-  ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_log_cb);
 
   // Assets tab
   ui_assets_tab = new QWidget(this);
@@ -1123,7 +1132,8 @@ void AOOptionsDialog::update_values() {
   ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
   ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
   ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
-  ui_log_cb->setChecked(ao_app->get_auto_logging_enabled());
+  ui_log_text_cb->setChecked(ao_app->get_text_logging_enabled());
+  ui_log_demo_cb->setChecked(ao_app->get_demo_logging_enabled());
   ui_length_spinbox->setValue(ao_app->get_max_log_size());
   ui_log_margin_spinbox->setValue(ao_app->get_log_margin());
   ui_stay_time_spinbox->setValue(ao_app->stay_time());
@@ -1181,7 +1191,8 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("stickypres", ui_stickypres_cb->isChecked());
   configini->setValue("customchat", ui_customchat_cb->isChecked());
   configini->setValue("sticker", ui_sticker_cb->isChecked());
-  configini->setValue("automatic_logging_enabled", ui_log_cb->isChecked());
+  configini->setValue("automatic_logging_enabled", ui_log_text_cb->isChecked());
+  configini->setValue("demo_logging_enabled", ui_log_demo_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");

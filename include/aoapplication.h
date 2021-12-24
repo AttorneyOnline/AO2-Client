@@ -504,8 +504,11 @@ public:
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
-  // Get if automatic logging is enabled
-  bool get_auto_logging_enabled();
+  // Get if text file logging is enabled
+  bool get_text_logging_enabled();
+
+  // Get if demo logging is enabled
+  bool get_demo_logging_enabled();
 
   // Get the subtheme from settings
   QString get_subtheme();

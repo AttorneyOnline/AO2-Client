@@ -1067,10 +1067,17 @@ QString AOApplication::get_casing_can_host_cases()
   return result;
 }
 
-bool AOApplication::get_auto_logging_enabled()
+bool AOApplication::get_text_logging_enabled()
 {
   QString result =
       configini->value("automatic_logging_enabled", "true").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::get_demo_logging_enabled()
+{
+  QString result =
+      configini->value("demo_logging_enabled", "true").value<QString>();
   return result.startsWith("true");
 }
 
