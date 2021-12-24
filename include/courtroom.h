@@ -57,6 +57,8 @@
 #include <QTextCharFormat>
 #include <QElapsedTimer>
 
+#include <QFuture>
+
 #include <algorithm>
 #include <stack>
 
@@ -813,6 +815,8 @@ public slots:
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
   void on_reload_theme_clicked();
+
+  void update_ui_music_name();
 
 private slots:
   void start_chat_ticking();

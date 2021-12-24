@@ -27,6 +27,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
+  connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished,
+          this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(this, ao_app);
   sfx_player->set_volume(0);
@@ -3807,13 +3809,8 @@ void Courtroom::handle_song(QStringList *p_contents)
   int effect_flags = 0; // No effects by default - vanilla functionality
 
   QString f_song = f_contents.at(0);
-  QString f_song_clear = f_song.left(f_song.lastIndexOf("."));
-  if (f_song.startsWith("http")) {
-    QByteArray f_song_bytearray = f_song.toUtf8();
-    QString f_song_decoded = QUrl::fromPercentEncoding(f_song_bytearray);
-    f_song_clear = f_song_decoded.left(f_song_decoded.lastIndexOf("."));
-  }
-  f_song_clear = f_song_clear.right(f_song_clear.length() - (f_song_clear.lastIndexOf("/") + 1));
+  QString f_song_clear = QUrl(f_song).fileName();
+  f_song_clear = f_song_clear.left(f_song_clear.lastIndexOf('.'));
 
   int n_char = f_contents.at(1).toInt(&ok);
   if (!ok)
@@ -3862,27 +3859,25 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
   }
 
-  int error_code = music_player->play(f_song, channel, looping, effect_flags);
-
-  if (is_stop) {
-    ui_music_name->setText(tr("None"));
-    return;
+  QFuture<QString> future = QtConcurrent::run(music_player, &AOMusicPlayer::play, f_song, channel,
+                                              looping, effect_flags);
+  if (channel == 0) {
+    // Current song UI only displays the song playing, not other channels.
+    // Any other music playing is irrelevant.
+    if (music_player->music_watcher.isRunning()) {
+        music_player->music_watcher.cancel();
+    }
+    music_player->music_watcher.setFuture(future);
+    ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
   }
+}
 
-  if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
-    ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
-    return;
-  }
-
-  if (f_song.startsWith("http") && channel == 0) {
-    ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
-    return;
-  }
-
-  if (channel == 0){
-    ui_music_name->setText(f_song_clear);
-    return;
-  }
+void Courtroom::update_ui_music_name()
+{
+    QString result = music_player->music_watcher.result();
+    if (result.isEmpty())
+      return;
+    ui_music_name->setText(result);
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)
