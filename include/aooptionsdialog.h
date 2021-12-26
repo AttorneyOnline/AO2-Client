@@ -130,6 +130,9 @@ private:
   QLabel *ui_log_demo_lbl;
   QCheckBox *ui_log_demo_cb;
 
+  QLabel *ui_ini_upgrade_lbl;
+  QCheckBox * ui_ini_upgrade_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;

@@ -327,6 +327,9 @@ public:
   // Appends the argument string to serverlist.txt
   void write_to_serverlist_txt(QString p_line);
 
+  // Upgrades ini by removing old key and insert a new one
+  void update_ini_key(QString old_key, QString new_key, QString p_value, QString p_char);
+
   // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
 
@@ -509,6 +512,9 @@ public:
 
   // Get if demo logging is enabled
   bool get_demo_logging_enabled();
+
+  // Get if ini upgrade is enabled
+  bool get_ini_upgrade_enabled();
 
   // Get the subtheme from settings
   QString get_subtheme();

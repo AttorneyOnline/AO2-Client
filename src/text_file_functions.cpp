@@ -251,6 +251,16 @@ void AOApplication::write_to_serverlist_txt(QString p_line)
   serverlist_txt.close();
 }
 
+void AOApplication::update_ini_key(QString old_key, QString new_key,
+                                   QString p_value, QString p_char)
+{
+    qInfo() << "Upgrading character (char.ini) option " << old_key << " of " << p_char;
+    QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
+                       QSettings::IniFormat);
+    settings.setValue("Options/" + new_key, p_value);
+    settings.remove("Options/" + old_key);
+}
+
 QVector<server_type> AOApplication::read_serverlist_txt()
 {
   QVector<server_type> f_server_list;
@@ -603,9 +613,21 @@ QString AOApplication::get_blips(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "blips", "Options");
 
-  if (f_result == "") {
+  if (f_result.isEmpty()) {
     qWarning() << "Could not find blips option in character (char.ini) of " << p_char;
-    f_result = "male";
+    f_result = read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
+    if (!f_result.isEmpty()) {
+      qWarning() << "Character (char.ini) is using the depricated option 'gender'.";
+      if (get_ini_upgrade_enabled()) {
+        update_ini_key("gender","blips",f_result,p_char);
+      }
+    }
+    else {
+      f_result = "male";
+      if (get_ini_upgrade_enabled()) {
+        update_ini_key("gender","blips",f_result,p_char);
+      }
+    }
   }
 
   if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result)))) {
@@ -1076,6 +1098,13 @@ bool AOApplication::get_demo_logging_enabled()
 {
   QString result =
       configini->value("demo_logging_enabled", "true").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::get_ini_upgrade_enabled()
+{
+  QString result =
+      configini->value("ini_upgrade_enabled", "true").value<QString>();
   return result.startsWith("true");
 }
 
