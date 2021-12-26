@@ -608,12 +608,11 @@ QString AOApplication::get_blips(QString p_char)
     f_result = "male";
   }
 
-  if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
-    if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))
-      return "../blips/" + f_result; // Return the cool kids variant
-
-    return "sfx-blip" + f_result; // Return legacy variant
+  if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result)))) {
+    return "../blips/" + f_result; // Return the cool kids version
   }
+
+  qWarning() << "Could not find blips in /sounds/blips/ for " << p_char;
   return f_result;
 }
 
