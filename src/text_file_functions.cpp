@@ -604,9 +604,8 @@ QString AOApplication::get_blips(QString p_char)
   QString f_result = read_char_ini(p_char, "blips", "Options");
 
   if (f_result == "") {
-    f_result = read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
-    if (f_result == "")
-      f_result = "male";
+    qWarning() << "Could not find blips option in character (char.ini) of " << p_char;
+    f_result = "male";
   }
 
   if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
