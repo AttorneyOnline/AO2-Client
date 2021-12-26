@@ -82,7 +82,7 @@ void Courtroom::set_char_select()
       ao_app->get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0) {
-    qDebug() << "W: did not find char_select width or height in "
+    qWarning() << "did not find char_select width or height in "
                 "courtroom_design.ini!";
     this->setFixedSize(714, 668);
   }

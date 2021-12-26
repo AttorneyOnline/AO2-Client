@@ -116,7 +116,7 @@ void Lobby::set_widgets()
   pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
 
   if (f_lobby.width < 0 || f_lobby.height < 0) {
-    qDebug() << "W: did not find lobby width or height in " << filename;
+    qWarning() << "did not find lobby width or height in " << filename;
 
     // Most common symptom of bad config files and missing assets.
     call_notice(
@@ -205,7 +205,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
       ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find " << p_identifier << " in " << filename;
+    qWarning() << "could not find " << p_identifier << " in " << filename;
     p_widget->hide();
   }
   else {

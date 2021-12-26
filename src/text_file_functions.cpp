@@ -167,7 +167,7 @@ QString AOApplication::read_file(QString filename)
   QFile f_log(filename);
 
   if (!f_log.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    qDebug() << "Couldn't open" << filename;
+    qWarning() << "Couldn't open" << filename;
     return "";
   }
 
@@ -699,7 +699,7 @@ QString AOApplication::get_emote_comment(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    qWarning() << "misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
   return result_contents.at(0);
@@ -713,7 +713,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    qWarning() << "misformatted char.ini: " << p_char << ", " << p_emote;
     return "";
   }
   return result_contents.at(1);
@@ -727,7 +727,7 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    qWarning() << "misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
   return result_contents.at(2);
@@ -741,7 +741,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", "
+    qWarning() << "misformatted char.ini: " << p_char << ", "
              << QString::number(p_emote);
     return 0;
   }
