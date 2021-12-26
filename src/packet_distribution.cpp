@@ -467,10 +467,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed) {
-      qDebug() << f_contents;
-      if (f_contents.size() >=
-          2) // We have a pos included in the background packet!
+      if (f_contents.size() >= 2) {
+        // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
+      }
       w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
       append_to_demofile(f_packet_encoded);
     }
@@ -643,7 +643,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       // The time as displayed on the clock, in milliseconds.
       // If the number received is negative, stop the timer.
       qint64 timer_value = f_contents.at(2).toLongLong();
-      qDebug() << "timer:" << timer_value;
       if (timer_value > 0)
       {
         if (type == 0)

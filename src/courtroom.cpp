@@ -560,7 +560,7 @@ void Courtroom::set_courtroom_size()
       ao_app->get_element_dimensions("courtroom", filename);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0) {
-    qDebug() << "W: did not find courtroom width or height in " << filename;
+    qWarning() << "did not find courtroom width or height in " << filename;
 
     this->setFixedSize(714, 668);
   }
@@ -679,7 +679,7 @@ void Courtroom::set_widgets()
       ao_app->get_element_dimensions("chat_arrow", "courtroom_design.ini");
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+    qWarning() << "could not find \"chat_arrow\" in courtroom_design.ini";
     ui_vp_chat_arrow->hide();
   }
   else {
@@ -786,7 +786,7 @@ void Courtroom::set_widgets()
       ao_app->get_element_dimensions("music_display", "courtroom_design.ini");
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"music_display\" in courtroom_design.ini";
+    qWarning() << "could not find \"music_display\" in courtroom_design.ini";
     ui_music_display->hide();
   }
   else {
@@ -1248,7 +1248,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
       ao_app->get_element_dimensions(p_identifier, filename, p_misc);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
+    qWarning() << "could not find" << p_identifier << "in" << filename;
     p_widget->hide();
   }
   else {
@@ -1260,8 +1260,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
 void Courtroom::set_taken(int n_char, bool p_taken)
 {
   if (n_char >= char_list.size()) {
-    qDebug()
-        << "W: set_taken attempted to set an index bigger than char_list size";
+    qWarning() << "set_taken attempted to set an index bigger than char_list size";
     return;
   }
 
@@ -1282,7 +1281,7 @@ QPoint Courtroom::get_theme_pos(QString p_identifier)
       ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
+    qWarning() << "could not find" << p_identifier << "in" << filename;
     return QPoint(0, 0);
   }
   else {
@@ -1757,7 +1756,6 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
     // Emulate successful authentication
     on_authentication_state_received(1);
   }
-
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
 
@@ -2492,7 +2490,7 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     break;
   default:
     // This should never happen, but if it does anyway, yell in the console about it.
-    qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
+    qWarning() << "invalid emote mod: " << QString::number(emote_mod);
   }
 }
 
@@ -2732,7 +2730,7 @@ void Courtroom::initialize_chatbox()
   pos_size_type design_ini_result = ao_app->get_element_dimensions(
       "chat_arrow", "courtroom_design.ini", p_misc);
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+    qWarning() << "could not find \"chat_arrow\" in courtroom_design.ini";
     ui_vp_chat_arrow->hide();
   }
   else {
@@ -3130,7 +3128,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
       ui_ic_chatlog->textCursor().insertText(
         "[" + timestamp.toString(log_timestamp_format) + "] ", normal);
     } else {
-      qDebug() << "could not insert invalid timestamp";
+      qCritical() << "could not insert invalid timestamp" << timestamp;
     }
   }
 
@@ -3246,7 +3244,7 @@ void Courtroom::play_preanim(bool immediate)
     else
       anim_state = 1;
     preanim_done();
-    qDebug() << "W: could not find " + anim_to_find;
+    qWarning() << "could not find preanim" << f_preanim << "for character" << f_char;
     return;
   }
   ui_vp_player_char->set_static_duration(preanim_duration);
@@ -4623,7 +4621,7 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
   }
 
   if (f_cid < 0 || f_cid >= char_list.size()) {
-    qDebug() << "W: " << real_char << " not present in char_list";
+    qWarning() << "" << real_char << " not present in char_list";
     return;
   }
 
@@ -4657,7 +4655,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   }
 
   if (f_cid < -2 || f_cid >= char_list.size()) {
-    qDebug() << "W: " << real_char << " not present in char_list";
+    qWarning() << "" << real_char << " not present in char_list";
     return;
   }
 
@@ -5104,7 +5102,7 @@ void Courtroom::on_text_color_changed(int p_color)
     int c = color_row_to_number.at(p_color);
     QString markdown_start = color_markdown_start_list.at(c);
     if (markdown_start.isEmpty()) {
-      qDebug() << "W: Color list dropdown selected a non-existent markdown "
+      qWarning() << "Color list dropdown selected a non-existent markdown "
                   "start character";
       return;
     }
@@ -5491,7 +5489,7 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
   if (p_checkbox == nullptr &&
       p_label ==
           nullptr) { // i.e. the given p_widget isn't a QLabel or a QCheckBox
-    qWarning() << "W: Tried to truncate an unsupported widget:" << p_identifier;
+    qWarning() << "Tried to truncate an unsupported widget:" << p_identifier;
     return;
   }
   // translate the text for the widget we're working with so we truncate the right string
@@ -5512,14 +5510,12 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
       p_widget->fontMetrics().boundingRect(label_text_tr).width(); // pixel width of our translated text
   if (!p_widget->toolTip().startsWith(label_text_tr)) // don't want to append this multiple times
     p_widget->setToolTip(label_text_tr + "\n" + p_widget->toolTip());
-  // qInfo() << "I: Width of label text: " << label_px_width << "px. Theme's
-  // width: " << label_theme_width << "px.";
 
   // we can't do much with a 0-width widget, and there's no need to truncate if
   // the theme gives us enough space
   if (label_theme_width <= 0 || label_px_width < label_theme_width) {
-    qInfo() << "I: Truncation aborted for label text " << label_text_tr
-            << ", either theme width <= 0 or label width < theme width.";
+    qDebug().nospace() << "Truncation aborted for label text " << label_text_tr
+                       << ", either theme width <= 0 or label width < theme width.";
     return;
   }
 
@@ -5528,8 +5524,6 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
   while (truncated_px_width > label_theme_width && truncated_label != "…") {
     truncated_label.chop(2);
     truncated_label.append("…");
-    // qInfo() << "I: Attempted to truncate label to string: " <<
-    // truncated_label;
     truncated_px_width =
         p_widget->fontMetrics().boundingRect(truncated_label).width();
   }
@@ -5537,7 +5531,7 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     // Safeguard against edge case where label text is shorter in px than '…',
     // causing an infinite loop. Additionally, having just an ellipse for a
     // label looks strange, so we don't set the new label.
-    qWarning() << "W: Potential infinite loop prevented: Label text "
+    qWarning() << "Potential infinite loop prevented: Label text "
                << label_text_tr
                << "truncated to '…', so truncation was aborted.";
     return;
@@ -5546,9 +5540,9 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     p_label->setText(truncated_label);
   else if (p_checkbox != nullptr)
     p_checkbox->setText(truncated_label);
-  qInfo() << "I: Truncated label text from " << label_text_tr << " ("
-          << label_px_width << "px ) to " << truncated_label << " ("
-          << truncated_px_width << "px )";
+  qDebug().nospace() << "Truncated label text from " << label_text_tr << " ("
+                     << label_px_width << "px) to " << truncated_label << " ("
+                     << truncated_px_width << "px)";
 }
 
 Courtroom::~Courtroom()

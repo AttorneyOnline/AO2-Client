@@ -164,15 +164,16 @@ void Courtroom::char_clicked(int n_char)
 {
   if (n_char != -1)
   {
+    QString char_name = char_list.at(n_char).name;
     QString char_ini_path = ao_app->get_real_path(
-          ao_app->get_character_path(char_list.at(n_char).name, "char.ini"));
-
-    qDebug() << "char_ini_path" << char_ini_path;
+          ao_app->get_character_path(char_name, "char.ini"));
 
     if (!file_exists(char_ini_path)) {
-      call_error("Could not find " + char_ini_path);
+      call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
       return;
     }
+
+    qDebug() << "Found char.ini for" << char_name << "at" << char_ini_path;
   }
 
   if (n_char != m_cid || n_char == -1) {
