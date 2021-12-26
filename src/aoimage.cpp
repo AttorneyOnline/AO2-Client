@@ -30,7 +30,7 @@ bool AOImage::set_image(QString p_image, QString p_misc)
                              ao_app->default_theme, p_misc, "", "", is_static || !ao_app->get_animated_theme());
 
   if (!file_exists(p_image)) {
-    qDebug() << "Warning: Image" << p_image << "not found! Can't set!";
+    qWarning() << "Image" << p_image << "not found! Can't set!";
     return false;
   }
   path = p_image;

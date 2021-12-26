@@ -149,8 +149,8 @@ void NetworkManager::on_srv_lookup()
                  ms_socket->state() != QAbstractSocket::HostLookupState &&
                  ms_socket->error() != -1) {
           qDebug() << ms_socket->error();
-          qWarning() << "Error connecting to master server:"
-                     << ms_socket->errorString();
+          qCritical() << "Error connecting to master server:"
+                      << ms_socket->errorString();
           ms_socket->abort();
           ms_socket->close();
           break;

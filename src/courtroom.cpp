@@ -113,11 +113,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_timestamp = ao_app->get_log_timestamp();
   log_timestamp_format = ao_app->get_log_timestamp_format();
 
-  ui_ms_chatlog = new AOTextArea(this);
-  ui_ms_chatlog->setReadOnly(true);
-  ui_ms_chatlog->setOpenExternalLinks(true);
-  ui_ms_chatlog->hide();
-  ui_ms_chatlog->setObjectName("ui_ms_chatlog");
+  ui_debug_log = new AOTextArea(this);
+  ui_debug_log->setReadOnly(true);
+  ui_debug_log->setOpenExternalLinks(true);
+  ui_debug_log->hide();
+  ui_debug_log->setObjectName("ui_debug_log");
+  connect(ao_app, &AOApplication::qt_log_message,
+          this, &Courtroom::debug_message_handler);
 
   ui_server_chatlog = new AOTextArea(this);
   ui_server_chatlog->setReadOnly(true);
@@ -562,7 +564,7 @@ void Courtroom::set_courtroom_size()
       ao_app->get_element_dimensions("courtroom", filename);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0) {
-    qDebug() << "W: did not find courtroom width or height in " << filename;
+    qWarning() << "did not find courtroom width or height in " << filename;
 
     this->setFixedSize(714, 668);
   }
@@ -681,7 +683,7 @@ void Courtroom::set_widgets()
       ao_app->get_element_dimensions("chat_arrow", "courtroom_design.ini");
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+    qWarning() << "could not find \"chat_arrow\" in courtroom_design.ini";
     ui_vp_chat_arrow->hide();
   }
   else {
@@ -727,8 +729,9 @@ void Courtroom::set_widgets()
   ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ " + tr("Log goes down") + " ▼"
                                                        : "▲ " + tr("Log goes up") + " ▲");
 
-  set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
-  ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
+  set_size_and_pos(ui_debug_log, "ms_chatlog"); // Old name
+  set_size_and_pos(ui_debug_log, "debug_log"); // New name
+  ui_debug_log->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
   ui_server_chatlog->setFrameShape(QFrame::NoFrame);
@@ -788,7 +791,7 @@ void Courtroom::set_widgets()
       ao_app->get_element_dimensions("music_display", "courtroom_design.ini");
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"music_display\" in courtroom_design.ini";
+    qWarning() << "could not find \"music_display\" in courtroom_design.ini";
     ui_music_display->hide();
   }
   else {
@@ -1141,7 +1144,7 @@ void Courtroom::set_fonts(QString p_char)
   set_font(ui_vp_showname, "", "showname", p_char);
   set_font(ui_vp_message, "", "message", p_char);
   set_font(ui_ic_chatlog, "", "ic_chatlog", p_char);
-  set_font(ui_ms_chatlog, "", "ms_chatlog", p_char);
+  set_font(ui_debug_log, "", "debug_log", p_char);
   set_font(ui_server_chatlog, "", "server_chatlog", p_char);
   set_font(ui_music_list, "", "music_list", p_char);
   set_font(ui_area_list, "", "area_list", p_char);
@@ -1250,7 +1253,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
       ao_app->get_element_dimensions(p_identifier, filename, p_misc);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
+    qWarning() << "could not find \"" << p_identifier << "\" in " << filename;
     p_widget->hide();
   }
   else {
@@ -1284,7 +1287,7 @@ QPoint Courtroom::get_theme_pos(QString p_identifier)
       ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
+    qWarning() << "could not find \"" << p_identifier << "\" in " << filename;
     return QPoint(0, 0);
   }
   else {
@@ -1735,12 +1738,27 @@ void Courtroom::list_areas()
   }
 }
 
-void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
+void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &context,
+                                      const QString &msg)
 {
-  ui_ms_chatlog->append_chatmessage(
-      f_name, f_message,
-      ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini")
-          .name());
+  const QMap<QtMsgType, QString> colors = {
+    {QtDebugMsg, "debug"},
+    {QtInfoMsg, "info"},
+    {QtWarningMsg, "warn"},
+    {QtCriticalMsg, "critical"},
+    {QtFatalMsg, "fatal"}
+  };
+  const QString color_id = QString("debug_log_%1_color").arg(colors.value(type, "info"));
+  ui_debug_log->append_chatmessage(
+      QString(), qFormatLogMessage(type, context, msg),
+      QString(), ao_app->get_color(color_id, "courtroom_fonts.ini").name());
+}
+
+void Courtroom::append_debug_message(QString f_message)
+{
+  ui_debug_log->append_chatmessage(
+      QString(), f_message,
+      ao_app->get_color("debug_log_color", "courtroom_fonts.ini").name());
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
@@ -1759,7 +1777,6 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
     // Emulate successful authentication
     on_authentication_state_received(1);
   }
-
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
 
@@ -2494,7 +2511,7 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     break;
   default:
     // This should never happen, but if it does anyway, yell in the console about it.
-    qDebug() << "W: invalid emote mod: " << QString::number(emote_mod);
+    qWarning() << "invalid emote mod: " << QString::number(emote_mod);
   }
 }
 
@@ -2734,7 +2751,7 @@ void Courtroom::initialize_chatbox()
   pos_size_type design_ini_result = ao_app->get_element_dimensions(
       "chat_arrow", "courtroom_design.ini", p_misc);
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find \"chat_arrow\" in courtroom_design.ini";
+    qWarning() << "could not find \"chat_arrow\" in courtroom_design.ini";
     ui_vp_chat_arrow->hide();
   }
   else {
@@ -3248,7 +3265,7 @@ void Courtroom::play_preanim(bool immediate)
     else
       anim_state = 1;
     preanim_done();
-    qDebug() << "W: could not find " + anim_to_find;
+    qWarning() << "could not find " + anim_to_find;
     return;
   }
   ui_vp_player_char->set_static_duration(preanim_duration);
@@ -4194,14 +4211,14 @@ void Courtroom::on_ooc_return_pressed()
 void Courtroom::on_ooc_toggle_clicked()
 {
   if (server_ooc) {
-    ui_ms_chatlog->show();
+    ui_debug_log->show();
     ui_server_chatlog->hide();
-    ui_ooc_toggle->setText(tr("Master"));
+    ui_ooc_toggle->setText(tr("Debug"));
 
     server_ooc = false;
   }
   else {
-    ui_ms_chatlog->hide();
+    ui_debug_log->hide();
     ui_server_chatlog->show();
     ui_ooc_toggle->setText(tr("Server"));
 
@@ -4619,7 +4636,7 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
   }
 
   if (f_cid < 0 || f_cid >= char_list.size()) {
-    qDebug() << "W: " << real_char << " not present in char_list";
+    qWarning() << "" << real_char << " not present in char_list";
     return;
   }
 
@@ -4653,7 +4670,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   }
 
   if (f_cid < -2 || f_cid >= char_list.size()) {
-    qDebug() << "W: " << real_char << " not present in char_list";
+    qWarning() << "" << real_char << " not present in char_list";
     return;
   }
 
@@ -5100,7 +5117,7 @@ void Courtroom::on_text_color_changed(int p_color)
     int c = color_row_to_number.at(p_color);
     QString markdown_start = color_markdown_start_list.at(c);
     if (markdown_start.isEmpty()) {
-      qDebug() << "W: Color list dropdown selected a non-existent markdown "
+      qWarning() << "Color list dropdown selected a non-existent markdown "
                   "start character";
       return;
     }
