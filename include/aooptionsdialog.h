@@ -125,6 +125,12 @@ private:
   QLabel *ui_category_stop_lbl;
   QCheckBox *ui_category_stop_cb;
 
+  QLabel *ui_log_text_lbl;
+  QCheckBox *ui_log_text_cb;
+
+  QLabel *ui_log_demo_lbl;
+  QCheckBox *ui_log_demo_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;
@@ -175,8 +181,6 @@ private:
   QCheckBox *ui_casing_cm_cb;
   QLabel *ui_casing_cm_cases_lbl;
   QLineEdit *ui_casing_cm_cases_textbox;
-  QLabel *ui_log_lbl;
-  QCheckBox *ui_log_cb;
 
   QWidget *ui_assets_tab;
   QVBoxLayout *ui_assets_tab_layout;

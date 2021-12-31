@@ -29,7 +29,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       QStringList sub_contents = i_string.split("&");
 
       if (sub_contents.size() < 4) {
-        qDebug() << "W: malformed packet";
+        qWarning() << "malformed packet";
         continue;
       }
 
@@ -63,7 +63,8 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       w_lobby->append_chatmessage(f_name, f_message);
     }
     if (courtroom_constructed && courtroom_loaded) {
-      w_courtroom->append_ms_chatmessage(f_name, f_message);
+      w_courtroom->append_server_chatmessage(tr("[Global] %1").arg(f_name),
+                                             f_message, "0");
     }
   }
   else if (header == "AO2CHECK") {
@@ -104,7 +105,7 @@ end:
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
-    if (get_auto_logging_enabled() && !log_filename.isEmpty())
+    if (get_demo_logging_enabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         if (!demo_timer.isValid())
@@ -265,7 +266,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    window_title = tr("Attorney Online 2");
+    window_title = tr("Attorney Online %1").arg(applicationVersion());
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -301,7 +302,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_auto_logging_enabled() && server_name != "Demo playback") {
+    if (AOApplication::get_demo_logging_enabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
@@ -450,7 +451,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (lobby_constructed)
-      w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
+      w_courtroom->append_server_chatmessage(tr("[Global log]"),
+                                             w_lobby->get_chatlog(), "0");
 
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();

@@ -13,12 +13,13 @@ AOMusicPlayer::~AOMusicPlayer()
   }
 }
 
-int AOMusicPlayer::play(QString p_song, int channel, bool loop,
+QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
                          int effect_flags)
 {
+  QFuture<QString> invoking_future = music_watcher.future();
   channel = channel % m_channelmax;
   if (channel < 0) // wtf?
-    return BASS_ERROR_NOCHAN;
+    return "[ERROR] Invalid Channel";
   QString f_path = ao_app->get_real_path(ao_app->get_music_path(p_song));
 
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE |
@@ -43,6 +44,14 @@ int AOMusicPlayer::play(QString p_song, int channel, bool loop,
       newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
   }
 
+  int error_code = BASS_ErrorGetCode();
+
+  if (invoking_future.isCanceled() && channel == 0) {
+      // Target future has changed. This stream has become irrelevant.
+      // So even if the stream manages to finish after the latest one, we don't run
+      // into order issues.
+      return QString();
+  }
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
@@ -109,7 +118,7 @@ int AOMusicPlayer::play(QString p_song, int channel, bool loop,
     BASS_ChannelStop(m_stream_list[channel]);
 
   m_stream_list[channel] = newstream;
-  BASS_ChannelPlay(m_stream_list[channel], false);
+  BASS_ChannelPlay(newstream, false);
   if (effect_flags & FADE_IN) {
     // Fade in our sample
     BASS_ChannelSetAttribute(newstream, BASS_ATTRIB_VOL, 0);
@@ -120,12 +129,32 @@ int AOMusicPlayer::play(QString p_song, int channel, bool loop,
   else
     this->set_volume(m_volume[channel], channel);
 
-  BASS_ChannelSetSync(m_stream_list[channel], BASS_SYNC_DEV_FAIL, 0,
+  BASS_ChannelSetSync(newstream, BASS_SYNC_DEV_FAIL, 0,
                       ao_app->BASSreset, 0);
 
   this->set_looping(loop, channel); // Have to do this here due to any
                                     // crossfading-related changes, etc.
-  return BASS_ErrorGetCode();
+
+  bool is_stop = (p_song == "~stop.mp3");
+  QString p_song_clear = QUrl(p_song).fileName();
+  p_song_clear = p_song_clear.left(p_song_clear.lastIndexOf('.'));
+
+  if (is_stop) {
+    return QObject::tr("None");
+  }
+
+  if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
+    return QObject::tr("[MISSING] %1").arg(p_song_clear);
+  }
+
+  if (p_song.startsWith("http") && channel == 0) {
+    return QObject::tr("[STREAM] %1").arg(p_song_clear);
+  }
+
+  if (channel == 0)
+    return p_song_clear;
+
+  return "";
 }
 
 void AOMusicPlayer::stop(int channel)

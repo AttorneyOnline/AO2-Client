@@ -8,6 +8,15 @@
 #include "aocaseannouncerdialog.h"
 #include "aooptionsdialog.h"
 
+static QtMessageHandler original_message_handler;
+static AOApplication *message_handler_context;
+void message_handler(QtMsgType type, const QMessageLogContext &context,
+                     const QString &msg)
+{
+  emit message_handler_context->qt_log_message(type, context, msg);
+  original_message_handler(type, context, msg);
+}
+
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   // Create the QSettings class that points to the config.ini.
@@ -18,6 +27,9 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   discord = new AttorneyOnline::Discord();
 
   asset_lookup_cache.reserve(2048);
+
+  message_handler_context = this;
+  original_message_handler = qInstallMessageHandler(message_handler);
 }
 
 AOApplication::~AOApplication()
@@ -26,12 +38,13 @@ AOApplication::~AOApplication()
   destruct_courtroom();
   delete discord;
   delete configini;
+  qInstallMessageHandler(original_message_handler);
 }
 
 void AOApplication::construct_lobby()
 {
   if (lobby_constructed) {
-    qDebug() << "W: lobby was attempted constructed when it already exists";
+    qWarning() << "lobby was attempted constructed when it already exists";
     return;
   }
 
@@ -56,7 +69,7 @@ void AOApplication::construct_lobby()
 void AOApplication::destruct_lobby()
 {
   if (!lobby_constructed) {
-    qDebug() << "W: lobby was attempted destructed when it did not exist";
+    qWarning() << "lobby was attempted destructed when it did not exist";
     return;
   }
 
@@ -68,7 +81,7 @@ void AOApplication::destruct_lobby()
 void AOApplication::construct_courtroom()
 {
   if (courtroom_constructed) {
-    qDebug() << "W: courtroom was attempted constructed when it already exists";
+    qWarning() << "courtroom was attempted constructed when it already exists";
     return;
   }
 
@@ -85,14 +98,14 @@ void AOApplication::construct_courtroom()
                      w_courtroom, &Courtroom::skip_clocks);
   }
   else {
-    qDebug() << "W: demo server did not exist during courtroom construction";
+    qWarning() << "demo server did not exist during courtroom construction";
   }
 }
 
 void AOApplication::destruct_courtroom()
 {
   if (!courtroom_constructed) {
-    qDebug() << "W: courtroom was attempted destructed when it did not exist";
+    qWarning() << "courtroom was attempted destructed when it did not exist";
     return;
   }
 
@@ -203,7 +216,7 @@ void AOApplication::initBASS()
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);
         load_bass_opus_plugin();
-        qDebug() << info.name << "was set as the default audio output device.";
+        qInfo() << info.name << "was set as the default audio output device.";
         return;
       }
     }
