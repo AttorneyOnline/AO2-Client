@@ -205,7 +205,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
       ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qWarning() << "could not find " << p_identifier << " in " << filename;
+    qWarning() << "could not find" << p_identifier << "in" << filename;
     p_widget->hide();
   }
   else {

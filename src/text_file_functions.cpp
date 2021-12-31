@@ -164,11 +164,14 @@ QStringList AOApplication::get_list_file(QString p_file)
 
 QString AOApplication::read_file(QString filename)
 {
+  if (filename.isEmpty())
+    return QString();
+
   QFile f_log(filename);
 
   if (!f_log.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    qWarning() << "Couldn't open" << filename;
-    return "";
+    qWarning() << "Couldn't open" << filename << "for reading";
+    return QString();
   }
 
   QTextStream in(&f_log);

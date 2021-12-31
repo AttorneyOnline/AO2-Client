@@ -201,7 +201,6 @@ void Courtroom::on_emote_left_clicked()
 
 void Courtroom::on_emote_right_clicked()
 {
-  qDebug() << "emote right clicked";
   ++current_emote_page;
 
   set_emote_page();
