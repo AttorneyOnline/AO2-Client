@@ -567,6 +567,10 @@ private slots:
 public slots:
   void server_disconnected();
   void loading_cancelled();
+
+signals:
+  void qt_log_message(QtMsgType type, const QMessageLogContext &context,
+                      const QString &msg);
 };
 
 #endif // AOAPPLICATION_H

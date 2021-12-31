@@ -57,6 +57,8 @@
 #include <QTextCharFormat>
 #include <QElapsedTimer>
 
+#include <QFuture>
+
 #include <algorithm>
 #include <stack>
 
@@ -214,8 +216,12 @@ public:
   void list_music();
   void list_areas();
 
-  // these are for OOC chat
-  void append_ms_chatmessage(QString f_name, QString f_message);
+  // Debug log (formerly master server chat log)
+  void debug_message_handler(QtMsgType type, const QMessageLogContext &context,
+                             const QString &msg);
+  void append_debug_message(QString f_message);
+
+  // OOC chat log
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
@@ -628,7 +634,7 @@ private:
 
   QTextEdit *ui_ic_chatlog;
 
-  AOTextArea *ui_ms_chatlog;
+  AOTextArea *ui_debug_log;
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
@@ -813,6 +819,8 @@ public slots:
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
   void on_reload_theme_clicked();
+
+  void update_ui_music_name();
 
 private slots:
   void start_chat_ticking();

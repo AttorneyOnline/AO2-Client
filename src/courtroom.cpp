@@ -27,6 +27,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   music_player = new AOMusicPlayer(this, ao_app);
   music_player->set_volume(0);
+  connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished,
+          this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(this, ao_app);
   sfx_player->set_volume(0);
@@ -111,11 +113,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_timestamp = ao_app->get_log_timestamp();
   log_timestamp_format = ao_app->get_log_timestamp_format();
 
-  ui_ms_chatlog = new AOTextArea(this);
-  ui_ms_chatlog->setReadOnly(true);
-  ui_ms_chatlog->setOpenExternalLinks(true);
-  ui_ms_chatlog->hide();
-  ui_ms_chatlog->setObjectName("ui_ms_chatlog");
+  ui_debug_log = new AOTextArea(this);
+  ui_debug_log->setReadOnly(true);
+  ui_debug_log->setOpenExternalLinks(true);
+  ui_debug_log->hide();
+  ui_debug_log->setObjectName("ui_debug_log");
+  connect(ao_app, &AOApplication::qt_log_message,
+          this, &Courtroom::debug_message_handler);
 
   ui_server_chatlog = new AOTextArea(this);
   ui_server_chatlog->setReadOnly(true);
@@ -725,8 +729,9 @@ void Courtroom::set_widgets()
   ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ " + tr("Log goes down") + " ▼"
                                                        : "▲ " + tr("Log goes up") + " ▲");
 
-  set_size_and_pos(ui_ms_chatlog, "ms_chatlog");
-  ui_ms_chatlog->setFrameShape(QFrame::NoFrame);
+  set_size_and_pos(ui_debug_log, "ms_chatlog"); // Old name
+  set_size_and_pos(ui_debug_log, "debug_log"); // New name
+  ui_debug_log->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
   ui_server_chatlog->setFrameShape(QFrame::NoFrame);
@@ -1139,7 +1144,7 @@ void Courtroom::set_fonts(QString p_char)
   set_font(ui_vp_showname, "", "showname", p_char);
   set_font(ui_vp_message, "", "message", p_char);
   set_font(ui_ic_chatlog, "", "ic_chatlog", p_char);
-  set_font(ui_ms_chatlog, "", "ms_chatlog", p_char);
+  set_font(ui_debug_log, "", "debug_log", p_char);
   set_font(ui_server_chatlog, "", "server_chatlog", p_char);
   set_font(ui_music_list, "", "music_list", p_char);
   set_font(ui_area_list, "", "area_list", p_char);
@@ -1732,12 +1737,27 @@ void Courtroom::list_areas()
   }
 }
 
-void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
+void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &context,
+                                      const QString &msg)
 {
-  ui_ms_chatlog->append_chatmessage(
-      f_name, f_message,
-      ao_app->get_color("ms_chatlog_sender_color", "courtroom_fonts.ini")
-          .name());
+  const QMap<QtMsgType, QString> colors = {
+    {QtDebugMsg, "debug"},
+    {QtInfoMsg, "info"},
+    {QtWarningMsg, "warn"},
+    {QtCriticalMsg, "critical"},
+    {QtFatalMsg, "fatal"}
+  };
+  const QString color_id = QString("debug_log_%1_color").arg(colors.value(type, "info"));
+  ui_debug_log->append_chatmessage(
+      QString(), qFormatLogMessage(type, context, msg),
+      QString(), ao_app->get_color(color_id, "courtroom_fonts.ini").name());
+}
+
+void Courtroom::append_debug_message(QString f_message)
+{
+  ui_debug_log->append_chatmessage(
+      QString(), f_message,
+      ao_app->get_color("debug_log_color", "courtroom_fonts.ini").name());
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
@@ -3805,13 +3825,8 @@ void Courtroom::handle_song(QStringList *p_contents)
   int effect_flags = 0; // No effects by default - vanilla functionality
 
   QString f_song = f_contents.at(0);
-  QString f_song_clear = f_song.left(f_song.lastIndexOf("."));
-  if (f_song.startsWith("http")) {
-    QByteArray f_song_bytearray = f_song.toUtf8();
-    QString f_song_decoded = QUrl::fromPercentEncoding(f_song_bytearray);
-    f_song_clear = f_song_decoded.left(f_song_decoded.lastIndexOf("."));
-  }
-  f_song_clear = f_song_clear.right(f_song_clear.length() - (f_song_clear.lastIndexOf("/") + 1));
+  QString f_song_clear = QUrl(f_song).fileName();
+  f_song_clear = f_song_clear.left(f_song_clear.lastIndexOf('.'));
 
   int n_char = f_contents.at(1).toInt(&ok);
   if (!ok)
@@ -3860,27 +3875,25 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
   }
 
-  int error_code = music_player->play(f_song, channel, looping, effect_flags);
-
-  if (is_stop) {
-    ui_music_name->setText(tr("None"));
-    return;
+  QFuture<QString> future = QtConcurrent::run(music_player, &AOMusicPlayer::play, f_song, channel,
+                                              looping, effect_flags);
+  if (channel == 0) {
+    // Current song UI only displays the song playing, not other channels.
+    // Any other music playing is irrelevant.
+    if (music_player->music_watcher.isRunning()) {
+        music_player->music_watcher.cancel();
+    }
+    music_player->music_watcher.setFuture(future);
+    ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
   }
+}
 
-  if (error_code == BASS_ERROR_HANDLE) { // Cheap hack to see if file missing
-    ui_music_name->setText(tr("[MISSING] %1").arg(f_song_clear));
-    return;
-  }
-
-  if (f_song.startsWith("http") && channel == 0) {
-    ui_music_name->setText(tr("[STREAM] %1").arg(f_song_clear));
-    return;
-  }
-
-  if (channel == 0){
-    ui_music_name->setText(f_song_clear);
-    return;
-  }
+void Courtroom::update_ui_music_name()
+{
+    QString result = music_player->music_watcher.result();
+    if (result.isEmpty())
+      return;
+    ui_music_name->setText(result);
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)
@@ -4197,14 +4210,14 @@ void Courtroom::on_ooc_return_pressed()
 void Courtroom::on_ooc_toggle_clicked()
 {
   if (server_ooc) {
-    ui_ms_chatlog->show();
+    ui_debug_log->show();
     ui_server_chatlog->hide();
-    ui_ooc_toggle->setText(tr("Master"));
+    ui_ooc_toggle->setText(tr("Debug"));
 
     server_ooc = false;
   }
   else {
-    ui_ms_chatlog->hide();
+    ui_debug_log->hide();
     ui_server_chatlog->show();
     ui_ooc_toggle->setText(tr("Server"));
 
@@ -4439,10 +4452,11 @@ void Courtroom::set_sfx_dropdown()
 
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
-  Q_UNUSED(p_index);
   ui_ic_chat_message->setFocus();
-  ui_sfx_remove->hide();
-  custom_sfx = "";
+  if (p_index == 0) {
+      ui_sfx_remove->hide();
+      custom_sfx = "";
+  }
 }
 
 void Courtroom::on_sfx_dropdown_custom(QString p_sfx)

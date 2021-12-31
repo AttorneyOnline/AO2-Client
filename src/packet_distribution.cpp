@@ -29,7 +29,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       QStringList sub_contents = i_string.split("&");
 
       if (sub_contents.size() < 4) {
-        qDebug() << "W: malformed packet";
+        qWarning() << "malformed packet";
         continue;
       }
 
@@ -63,7 +63,8 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       w_lobby->append_chatmessage(f_name, f_message);
     }
     if (courtroom_constructed && courtroom_loaded) {
-      w_courtroom->append_ms_chatmessage(f_name, f_message);
+      w_courtroom->append_server_chatmessage(tr("[Global] %1").arg(f_name),
+                                             f_message, "0");
     }
   }
   else if (header == "AO2CHECK") {
@@ -453,7 +454,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (lobby_constructed)
-      w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
+      w_courtroom->append_server_chatmessage(tr("[Global log]"),
+                                             w_lobby->get_chatlog(), "0");
 
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();

@@ -437,7 +437,7 @@ void CharLayer::load_network_effects()
           continue;
         int f_frame = frame_split.at(0).toInt();
         if (f_frame >= max_frames || f_frame < 0) {
-          qDebug() << "Warning: out of bounds" << effects_list[i] << "frame"
+          qWarning() << "out of bounds" << effects_list[i] << "frame"
                    << f_frame << "out of" << max_frames << "for" << m_emote;
           continue;
         }
@@ -461,7 +461,7 @@ void CharLayer::load_network_effects()
 void CharLayer::play_frame_effect(int p_frame)
 {
   if (p_frame >= movie_effects.size()) {
-    qDebug() << "W: Attempted to play a frame effect bigger than the size of movie_effects";
+    qWarning() << "Attempted to play a frame effect bigger than the size of movie_effects";
     return;
   }
   if (p_frame < max_frames) {
