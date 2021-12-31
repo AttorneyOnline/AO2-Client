@@ -23,14 +23,14 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   QString master_config =
       ao_app->configini->value("master", "").value<QString>();
-  if (!master_config.isEmpty())
+  if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
+    qInfo() << "using alternate master server" << master_config;
     ms_baseurl = master_config;
+  }
 
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
 }
-
-NetworkManager::~NetworkManager() {}
 
 void NetworkManager::get_server_list(const std::function<void()> &cb)
 {
@@ -120,7 +120,8 @@ void NetworkManager::request_document(MSDocumentType document_type,
           << "Failed to get " << endpoint << " (" << reply->errorString() << ") "
           << "(http status " << http_status << ")";
       content = QString();
-    } cb(content);
+    }
+    cb(content);
     reply->deleteLater();
   });
 }
@@ -129,6 +130,9 @@ void NetworkManager::connect_to_server(server_type p_server)
 {
   server_socket->close();
   server_socket->abort();
+
+  qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
+                              << p_server.port;
 
   server_socket->connectToHost(p_server.ip, p_server.port);
 }

@@ -382,10 +382,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   row += 1;
   ui_ms_lbl = new QLabel(ui_form_layout_widget);
-  ui_ms_lbl->setText(tr("Backup MS:"));
+  ui_ms_lbl->setText(tr("Alternate Server List:"));
   ui_ms_lbl->setToolTip(
-      tr("If the built-in server lookups fail, the game will try the "
-         "address given here and use it as a backup master server address."));
+      tr("Overrides the base URL to retrieve server information from."));
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_ms_lbl);
 

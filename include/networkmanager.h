@@ -22,15 +22,16 @@ class NetworkManager : public QObject {
   Q_OBJECT
 
 public:
-  NetworkManager(AOApplication *parent);
-  ~NetworkManager();
+  explicit NetworkManager(AOApplication *parent);
+  ~NetworkManager() = default;
 
   AOApplication *ao_app;
   QNetworkAccessManager *http;
   QTcpSocket *server_socket;
   QTimer *heartbeat_timer;
 
-  QString ms_baseurl = "https://servers.aceattorneyonline.com";
+  const QString DEFAULT_MS_BASEURL = "https://servers.aceattorneyonline.com";
+  QString ms_baseurl = DEFAULT_MS_BASEURL;
 
   const int heartbeat_interval = 60 * 5;
 
