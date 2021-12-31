@@ -75,7 +75,6 @@ public:
   void construct_courtroom();
   void destruct_courtroom();
 
-  void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);
 
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
