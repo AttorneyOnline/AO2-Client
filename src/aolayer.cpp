@@ -4,6 +4,8 @@
 #include "file_functions.h"
 #include "misc_functions.h"
 
+static QThreadPool *thread_pool;
+
 AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
@@ -22,6 +24,11 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
   connect(preanim_timer, &QTimer::timeout, this, &AOLayer::preanim_done);
+
+  if (!thread_pool) {
+    thread_pool = new QThreadPool(p_ao_app);
+    thread_pool->setMaxThreadCount(8);
+  }
 }
 
 BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
@@ -319,7 +326,7 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
-  frame_loader = QtConcurrent::run(this, &AOLayer::populate_vectors);
+  frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
   last_path = p_image;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
@@ -538,11 +545,11 @@ void AOLayer::movie_ticker()
     else
       frame = 0;
   }
-  mutex.lock();
-  while (frame >= movie_frames.size() && frame < max_frames) { // oops! our frame isn't ready yet
+  {
+    QMutexLocker locker(&mutex);
+    while (frame >= movie_frames.size() && frame < max_frames) // oops! our frame isn't ready yet
       frameAdded.wait(&mutex); // wait for a new frame to be added, then check again
   }
-  mutex.unlock();
 #ifdef DEBUG_MOVIE
   qDebug() << "[AOLayer::movie_ticker] Frame:" << frame << "Delay:" << movie_delays[frame]
            << "Actual time taken from last frame:" << actual_time.restart();
@@ -552,7 +559,7 @@ void AOLayer::movie_ticker()
 }
 
 void AOLayer::populate_vectors() {
-    while (movie_frames.size() < max_frames && !exit_loop) {
+    while (!exit_loop && movie_frames.size() < max_frames) {
         load_next_frame();
 #ifdef DEBUG_MOVIE
         qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
@@ -562,12 +569,12 @@ void AOLayer::populate_vectors() {
 }
 
 void AOLayer::load_next_frame() {
-    //QMutexLocker locker(&mutex);
-    mutex.lock();
+  {
+    QMutexLocker locker(&mutex);
     movie_frames.append(this->get_pixmap(m_reader.read()));
     movie_delays.append(m_reader.nextImageDelay());
-    mutex.unlock();
-    frameAdded.wakeAll();
+  }
+  frameAdded.wakeAll();
 }
 
 void CharLayer::preanim_done()
