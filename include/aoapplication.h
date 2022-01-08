@@ -75,10 +75,8 @@ public:
   void construct_courtroom();
   void destruct_courtroom();
 
-  void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);
 
-  void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
   void call_settings_menu();
@@ -136,7 +134,7 @@ public:
   QVector<server_type> &get_favorite_list() { return favorite_list; }
   void add_favorite_server(int p_server);
 
-  void set_server_list();
+  void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
 
   // reads the theme from config.ini and sets it accordingly
@@ -522,6 +520,9 @@ public:
   // Get a list of custom mount paths
   QStringList get_mount_paths();
 
+  // Get whether to opt out of player count metrics sent to the master server
+  bool get_player_count_optout();
+
   // Currently defined subtheme
   QString subtheme;
 
@@ -560,9 +561,6 @@ private:
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
-
-private slots:
-  void ms_connect_finished(bool connected, bool will_retry);
 
 public slots:
   void server_disconnected();

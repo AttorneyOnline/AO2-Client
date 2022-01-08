@@ -1114,3 +1114,9 @@ QStringList AOApplication::get_mount_paths()
 {
   return configini->value("mount_paths").value<QStringList>();
 }
+
+bool AOApplication::get_player_count_optout()
+{
+  return configini->value("player_count_optout", "false").value<QString>()
+      .startsWith("true");
+}

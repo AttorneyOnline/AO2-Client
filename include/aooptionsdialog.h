@@ -24,6 +24,7 @@
 
 #include <QDirIterator>
 #include <QListWidget>
+#include <QTextBrowser>
 #include <QTextStream>
 
 class Lobby;
@@ -191,6 +192,12 @@ private:
   QPushButton *ui_mount_up;
   QPushButton *ui_mount_down;
   QPushButton *ui_mount_clear_cache;
+
+  QWidget *ui_privacy_tab;
+  QVBoxLayout *ui_privacy_layout;
+  QCheckBox *ui_privacy_optout_cb;
+  QFrame *ui_privacy_separator;
+  QTextBrowser *ui_privacy_policy;
 
   bool asset_cache_dirty = false;
 

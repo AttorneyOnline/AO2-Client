@@ -59,12 +59,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatbox->setObjectName("ui_chatbox");
-  ui_chatname = new QLineEdit(this);
-  ui_chatname->setPlaceholderText(tr("Name"));
-  ui_chatname->setText(ao_app->get_ooc_name());
-  ui_chatname->setObjectName("ui_chatname");
-  ui_chatmessage = new QLineEdit(this);
-  ui_chatmessage->setObjectName("ui_chatmessage");
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_background->setObjectName("ui_loading_background");
   ui_loading_text = new QTextEdit(ui_loading_background);
@@ -95,13 +89,13 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           this, &Lobby::on_server_list_doubleclicked);
   connect(ui_server_search, &QLineEdit::textChanged, this,
           &Lobby::on_server_search_edited);
-  connect(ui_chatmessage, &QLineEdit::returnPressed, this,
-          &Lobby::on_chatfield_return_pressed);
   connect(ui_cancel, &AOButton::clicked, ao_app, &AOApplication::loading_cancelled);
 
   ui_connect->setEnabled(false);
 
   list_servers();
+  get_motd();
+  check_for_updates();
 
   set_widgets();
 }
@@ -156,7 +150,7 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText(tr("Settings"));
-  ui_settings->set_image("settings");
+  ui_settings->set_image("lobby_settings");
   ui_settings->setToolTip(
       tr("Allows you to change various aspects of the client."));
 
@@ -172,10 +166,6 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
-
-  set_size_and_pos(ui_chatname, "chatname");
-
-  set_size_and_pos(ui_chatmessage, "chatmessage");
 
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground");
@@ -219,8 +209,6 @@ void Lobby::set_fonts()
   set_font(ui_player_count, "player_count");
   set_font(ui_description, "description");
   set_font(ui_chatbox, "chatbox");
-  set_font(ui_chatname, "chatname");
-  set_font(ui_chatmessage, "chatmessage");
   set_font(ui_loading_text, "loading_text");
   set_font(ui_server_list, "server_list");
 }
@@ -331,9 +319,13 @@ void Lobby::on_refresh_released()
 {
   ui_refresh->set_image("refresh");
 
-  AOPacket *f_packet = new AOPacket("ALL#%");
-
-  ao_app->send_ms_packet(f_packet);
+  if (public_servers_selected) {
+    ao_app->net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
+    get_motd();
+  } else {
+    ao_app->set_favorite_list();
+    list_favorites();
+  }
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -490,22 +482,6 @@ void Lobby::on_server_search_edited(QString p_text)
   }
 }
 
-void Lobby::on_chatfield_return_pressed()
-{
-  // no you can't send empty messages
-  if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
-    return;
-
-  QString f_header = "CT";
-  QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
-
-  AOPacket *f_packet = new AOPacket(f_header, f_contents);
-
-  ao_app->send_ms_packet(f_packet);
-
-  ui_chatmessage->clear();
-}
-
 void Lobby::list_servers()
 {
   public_servers_selected = true;
@@ -542,6 +518,29 @@ void Lobby::list_favorites()
     i++;
   }
   ui_server_list->setSortingEnabled(true);
+}
+
+void Lobby::get_motd()
+{
+  ao_app->net_manager->request_document(MSDocumentType::Motd,
+                                        [this](QString document) {
+    if (document.isEmpty()) {
+      document = tr("Couldn't get the message of the day.");
+    }
+    ui_chatbox->setHtml(document);
+  });
+}
+
+void Lobby::check_for_updates()
+{
+  ao_app->net_manager->request_document(MSDocumentType::ClientVersion,
+                                        [this](QString version) {
+    const QString current_version = ao_app->get_version_string();
+    if (!version.isEmpty() && version != current_version) {
+      ui_version->setText(tr("Version: %1 (!)").arg(current_version));
+      ui_version->setToolTip(tr("New version available: %1").arg(version));
+    }
+  });
 }
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
