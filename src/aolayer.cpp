@@ -241,6 +241,8 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
     play_once = true;
   continuous = false;
   force_continuous = true;
+  cull_image = false;
+
   start_playback(p_filename); // path resolution is handled by the caller for EffectLayer objects
   play();
 }
@@ -315,10 +317,10 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
-  if (m_reader.loopCount() == 0)
-    play_once = true;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
+  if (m_reader.loopCount() == 0 && max_frames > 1)
+    play_once = true;
   if (!continuous
           || ((continuous) && (max_frames != last_max_frames))
           || max_frames == 0
