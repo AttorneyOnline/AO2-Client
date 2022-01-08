@@ -284,9 +284,11 @@ void AOLayer::start_playback(QString p_image)
     this->kill();
     return;
   }
-  QMutexLocker locker(&mutex);
+
   if (frame_loader.isRunning())
     exit_loop = true; // tell the loader to stop, we have a new image to load
+
+  QMutexLocker locker(&mutex);
   this->show();
 
   if (!ao_app->is_continuous_enabled()) {
@@ -561,13 +563,20 @@ void AOLayer::movie_ticker()
 }
 
 void AOLayer::populate_vectors() {
-    while (!exit_loop && movie_frames.size() < max_frames) {
-        load_next_frame();
 #ifdef DEBUG_MOVIE
-        qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+  qDebug() << "[AOLayer::populate_vectors] Started thread";
 #endif
-    }
-    exit_loop = false;
+  while (!exit_loop && movie_frames.size() < max_frames) {
+    load_next_frame();
+#ifdef DEBUG_MOVIE
+    qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+#endif
+  }
+#ifdef DEBUG_MOVIE
+  if (exit_loop)
+    qDebug() << "[AOLayer::populate_vectors] Exit requested";
+#endif
+  exit_loop = false;
 }
 
 void AOLayer::load_next_frame() {
