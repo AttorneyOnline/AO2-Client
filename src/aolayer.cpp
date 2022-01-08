@@ -241,6 +241,8 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
     play_once = true;
   continuous = false;
   force_continuous = true;
+  cull_image = false;
+
   start_playback(p_filename); // path resolution is handled by the caller for EffectLayer objects
   play();
 }
@@ -282,9 +284,11 @@ void AOLayer::start_playback(QString p_image)
     this->kill();
     return;
   }
-  QMutexLocker locker(&mutex);
+
   if (frame_loader.isRunning())
     exit_loop = true; // tell the loader to stop, we have a new image to load
+
+  QMutexLocker locker(&mutex);
   this->show();
 
   if (!ao_app->is_continuous_enabled()) {
@@ -315,10 +319,10 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
-  if (m_reader.loopCount() == 0)
-    play_once = true;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
+  if (m_reader.loopCount() == 0 && max_frames > 1)
+    play_once = true;
   if (!continuous
           || ((continuous) && (max_frames != last_max_frames))
           || max_frames == 0
@@ -559,13 +563,20 @@ void AOLayer::movie_ticker()
 }
 
 void AOLayer::populate_vectors() {
-    while (!exit_loop && movie_frames.size() < max_frames) {
-        load_next_frame();
 #ifdef DEBUG_MOVIE
-        qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+  qDebug() << "[AOLayer::populate_vectors] Started thread";
 #endif
-    }
-    exit_loop = false;
+  while (!exit_loop && movie_frames.size() < max_frames) {
+    load_next_frame();
+#ifdef DEBUG_MOVIE
+    qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+#endif
+  }
+#ifdef DEBUG_MOVIE
+  if (exit_loop)
+    qDebug() << "[AOLayer::populate_vectors] Exit requested";
+#endif
+  exit_loop = false;
 }
 
 void AOLayer::load_next_frame() {
