@@ -1377,8 +1377,6 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_objection->stop();
     chat_tick_timer->stop();
     ui_vp_evidence_display->reset();
-    ui_vp_background->kill();
-    ui_vp_desk->kill();
     QString f_side = current_side;
     if (current_side == "")
       f_side = ao_app->get_char_side(current_char);
