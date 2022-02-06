@@ -21,7 +21,7 @@ void DemoServer::start_server()
         return;
     }
     this->port = tcp_server->serverPort();
-    qDebug() << "Server started";
+    qInfo() << "Demo server started at port" << port;
     server_started = true;
 }
 
@@ -63,7 +63,7 @@ void DemoServer::accept_connection()
 
     if (client_sock) {
         // Client is already connected...
-        qDebug() << "Multiple connections to demo server disallowed.";
+        qWarning() << "Multiple connections to demo server disallowed.";
         QTcpSocket* temp_socket = tcp_server->nextPendingConnection();
         connect(temp_socket, &QAbstractSocket::disconnected, temp_socket, &QObject::deleteLater);
         temp_socket->disconnectFromHost();
@@ -97,7 +97,7 @@ void DemoServer::recv_data()
     QStringList packet_list =
         in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
-    for (QString packet : packet_list) {
+    for (const QString &packet : packet_list) {
         AOPacket ao_packet(packet);
         handle_packet(ao_packet);
     }
@@ -269,7 +269,7 @@ void DemoServer::load_demo(QString filename)
     // No-shenanigans 2.9.0 demo file with the dreaded demo desync bug detected https://github.com/AttorneyOnline/AO2-Client/pull/496
     // If we don't start with the SC packet this means user-edited weirdo shenanigans. Don't screw around with those.
     if (demo_data.head().startsWith("SC#") && demo_data.last().startsWith("wait#")) {
-      qDebug() << "Loaded a broken pre-2.9.1 demo file, with the wait desync issue!";
+      qInfo() << "Loaded a broken pre-2.9.1 demo file, with the wait desync issue!";
       QMessageBox *msgBox = new QMessageBox;
       msgBox->setAttribute(Qt::WA_DeleteOnClose);
       msgBox->setTextFormat(Qt::RichText);
@@ -281,7 +281,7 @@ void DemoServer::load_demo(QString filename)
       QQueue <QString> p_demo_data;
       switch (ret) {
         case QMessageBox::Yes:
-          qDebug() << "Making a backup of the broken demo...";
+          qInfo() << "Making a backup of the broken demo...";
           QFile::copy(filename, filename + ".backup");
           while (!demo_data.isEmpty()) {
             QString current_packet = demo_data.dequeue();
@@ -297,7 +297,7 @@ void DemoServer::load_demo(QString filename)
             QTextStream out(&demo_file);
             out.setCodec("UTF-8");
             out << p_demo_data.dequeue();
-            for (QString line : p_demo_data) {
+            for (const QString &line : qAsConst(p_demo_data)) {
               out << "\n" << line;
             }
             demo_file.flush();

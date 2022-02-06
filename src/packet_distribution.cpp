@@ -6,108 +6,9 @@
 #include "lobby.h"
 #include "networkmanager.h"
 
-void AOApplication::ms_packet_received(AOPacket *p_packet)
-{
-  QString header = p_packet->get_header();
-
-  // Some packets need to handle decode/encode separately
-  if (header != "SC") {
-    p_packet->net_decode();
-  }
-  QStringList f_contents = p_packet->get_contents();
-
-#ifdef DEBUG_NETWORK
-  if (header != "CHECK")
-    qDebug() << "R(ms):" << p_packet->to_string();
-#endif
-
-  if (header == "ALL") {
-    server_list.clear();
-
-    for (QString i_string : p_packet->get_contents()) {
-      server_type f_server;
-      QStringList sub_contents = i_string.split("&");
-
-      if (sub_contents.size() < 4) {
-        qDebug() << "W: malformed packet";
-        continue;
-      }
-
-      f_server.name = sub_contents.at(0);
-      f_server.desc = sub_contents.at(1);
-      f_server.ip = sub_contents.at(2);
-      f_server.port = sub_contents.at(3).toInt();
-
-      server_list.append(f_server);
-    }
-
-    if (lobby_constructed) {
-      w_lobby->list_servers();
-    }
-  }
-  else if (header == "CT") {
-    QString f_name, f_message;
-
-    if (f_contents.size() == 1) {
-      f_name = "";
-      f_message = f_contents.at(0);
-    }
-    else if (f_contents.size() >= 2) {
-      f_name = f_contents.at(0);
-      f_message = f_contents.at(1);
-    }
-    else
-      goto end;
-
-    if (lobby_constructed) {
-      w_lobby->append_chatmessage(f_name, f_message);
-    }
-    if (courtroom_constructed && courtroom_loaded) {
-      w_courtroom->append_ms_chatmessage(f_name, f_message);
-    }
-  }
-  else if (header == "AO2CHECK") {
-    send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
-    send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
-
-    if (f_contents.size() < 1)
-      goto end;
-
-    QStringList version_contents = f_contents.at(0).split(".");
-
-    if (version_contents.size() < 3)
-      goto end;
-
-    int f_release = version_contents.at(0).toInt();
-    int f_major = version_contents.at(1).toInt();
-    int f_minor = version_contents.at(2).toInt();
-
-    if (get_release() > f_release)
-      goto end;
-    else if (get_release() == f_release) {
-      if (get_major_version() > f_major)
-        goto end;
-      else if (get_major_version() == f_major) {
-        if (get_minor_version() >= f_minor)
-          goto end;
-      }
-    }
-
-    call_notice(tr("Outdated version! Your version: %1\n"
-                   "Please go to aceattorneyonline.com to update.")
-                    .arg(get_version_string()));
-    destruct_courtroom();
-    destruct_lobby();
-  }
-
-end:
-
-  delete p_packet;
-}
-
 void AOApplication::append_to_demofile(QString packet_string)
 {
-    if (get_auto_logging_enabled() && !log_filename.isEmpty())
+    if (get_demo_logging_enabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         if (!demo_timer.isValid())
@@ -268,7 +169,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    window_title = tr("Attorney Online 2");
+    window_title = tr("Attorney Online %1").arg(applicationVersion());
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -304,7 +205,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_auto_logging_enabled() && server_name != "Demo playback") {
+    if (AOApplication::get_demo_logging_enabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
@@ -453,7 +354,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (lobby_constructed)
-      w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
+      w_courtroom->append_server_chatmessage(tr("[Global log]"),
+                                             w_lobby->get_chatlog(), "0");
 
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();
@@ -467,10 +369,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     if (courtroom_constructed) {
-      qDebug() << f_contents;
-      if (f_contents.size() >=
-          2) // We have a pos included in the background packet!
+      if (f_contents.size() >= 2) {
+        // We have a pos included in the background packet!
         w_courtroom->set_side(f_contents.at(1));
+      }
       w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
       append_to_demofile(f_packet_encoded);
     }
@@ -643,7 +545,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       // The time as displayed on the clock, in milliseconds.
       // If the number received is negative, stop the timer.
       qint64 timer_value = f_contents.at(2).toLongLong();
-      qDebug() << "timer:" << timer_value;
       if (timer_value > 0)
       {
         if (type == 0)
@@ -714,21 +615,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
 
 end:
-
-  delete p_packet;
-}
-
-void AOApplication::send_ms_packet(AOPacket *p_packet)
-{
-  p_packet->net_encode();
-
-  QString f_packet = p_packet->to_string();
-
-  net_manager->ship_ms_packet(f_packet);
-
-#ifdef DEBUG_NETWORK
-  qDebug() << "S(ms):" << f_packet;
-#endif
 
   delete p_packet;
 }

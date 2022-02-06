@@ -3,6 +3,7 @@
 #include "courtroom.h"
 #include "lobby.h"
 #include "bass.h"
+#include "networkmanager.h"
 
 #include <QFileDialog>
 
@@ -29,12 +30,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                                           QDialogButtonBox::Save |
                                           QDialogButtonBox::RestoreDefaults);
 
-  QObject::connect(ui_settings_buttons, SIGNAL(accepted()), this,
-                   SLOT(save_pressed()));
-  QObject::connect(ui_settings_buttons, SIGNAL(rejected()), this,
-                   SLOT(discard_pressed()));
-  QObject::connect(ui_settings_buttons, SIGNAL(clicked(QAbstractButton*)), this,
-                   SLOT(button_clicked(QAbstractButton*)));
+  connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
+                   &AOOptionsDialog::save_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::rejected, this,
+                   &AOOptionsDialog::discard_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
+                   &AOOptionsDialog::button_clicked);
 
   // We'll stop updates so that the window won't flicker while it's being made.
   setUpdatesEnabled(false);
@@ -90,8 +91,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     }
   }
 
-  QObject::connect(ui_theme_combobox, SIGNAL(currentIndexChanged(int)), this,
-                   SLOT(theme_changed(int)));
+  connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+                   &AOOptionsDialog::theme_changed);
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
 
   row += 1;
@@ -124,8 +125,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_theme_reload_button->setToolTip(
       tr("Refresh the theme and update all of the ui elements to match."));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
-  QObject::connect(ui_theme_reload_button, SIGNAL(clicked()), this,
-          SLOT(on_reload_theme_clicked()));
+  connect(ui_theme_reload_button, &QPushButton::clicked, this,
+          &AOOptionsDialog::on_reload_theme_clicked);
 
   row += 1;
   ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);
@@ -216,7 +217,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
 
-  connect(ui_log_timestamp_cb, SIGNAL(stateChanged(int)), this, SLOT(timestamp_cb_changed(int)));
+  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
 
@@ -238,7 +239,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
 
-  connect(ui_log_timestamp_format_combobox, SIGNAL(currentTextChanged(QString)), this, SLOT(on_timestamp_format_edited()));
+  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
   if(!ao_app->get_log_timestamp())
       ui_log_timestamp_format_combobox->setDisabled(true);
@@ -381,10 +382,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   row += 1;
   ui_ms_lbl = new QLabel(ui_form_layout_widget);
-  ui_ms_lbl->setText(tr("Backup MS:"));
+  ui_ms_lbl->setText(tr("Alternate Server List:"));
   ui_ms_lbl->setToolTip(
-      tr("If the built-in server lookups fail, the game will try the "
-         "address given here and use it as a backup master server address."));
+      tr("Overrides the base URL to retrieve server information from."));
 
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_ms_lbl);
 
@@ -583,6 +583,28 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
 
+  //Check whether mass logging is enabled
+  row += 1;
+  ui_log_text_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_text_lbl->setText(tr("Log to Text Files:"));
+  ui_log_text_lbl->setToolTip(
+      tr("Text logs of gameplay will be automatically written in the /logs folder."));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_text_lbl);
+
+  ui_log_text_cb = new QCheckBox(ui_form_layout_widget);
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_text_cb);
+
+  row += 1;
+  ui_log_demo_lbl = new QLabel(ui_form_layout_widget);
+  ui_log_demo_lbl->setText(tr("Log to Demo Files:"));
+  ui_log_demo_lbl->setToolTip(
+      tr("Gameplay will be automatically recorded as demos in the /logs folder."));
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_demo_lbl);
+
+  ui_log_demo_cb = new QCheckBox(ui_form_layout_widget);
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_demo_cb);
+
+  // Finish gameplay tab
   QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
@@ -921,19 +943,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_casing_layout->setWidget(row, QFormLayout::FieldRole,
                               ui_casing_cm_cases_textbox);
-  //Check whether mass logging is enabled
-  row += 1;
-  ui_log_lbl = new QLabel(ui_casing_widget);
-  ui_log_lbl->setText(tr("Automatic Logging:"));
-  ui_log_lbl->setToolTip(
-      tr("If checked, all logs will be automatically written in the "
-         "/logs folder."));
-
-  ui_casing_layout->setWidget(row, QFormLayout::LabelRole, ui_log_lbl);
-
-  ui_log_cb = new QCheckBox(ui_casing_widget);
-
-  ui_casing_layout->setWidget(row, QFormLayout::FieldRole, ui_log_cb);
 
   // Assets tab
   ui_assets_tab = new QWidget(this);
@@ -1058,6 +1067,30 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       ui_mount_down->setEnabled(false);
   });
 
+  // Privacy tab
+  ui_privacy_tab = new QWidget(this);
+  ui_settings_tabs->addTab(ui_privacy_tab, tr("Privacy"));
+
+  ui_privacy_layout = new QVBoxLayout(ui_privacy_tab);
+
+  ui_privacy_optout_cb = new QCheckBox(ui_privacy_tab);
+  ui_privacy_optout_cb->setText(tr("Do not include me in public player counts"));
+  ui_privacy_layout->addWidget(ui_privacy_optout_cb);
+
+  ui_privacy_separator = new QFrame(ui_privacy_tab);
+  ui_privacy_separator->setObjectName(QString::fromUtf8("line"));
+  ui_privacy_separator->setFrameShape(QFrame::HLine);
+  ui_privacy_separator->setFrameShadow(QFrame::Sunken);
+  ui_privacy_layout->addWidget(ui_privacy_separator);
+
+  ui_privacy_policy = new QTextBrowser(ui_privacy_tab);
+  QSizePolicy privacySizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  sizePolicy.setHorizontalStretch(0);
+  sizePolicy.setVerticalStretch(0);
+  ui_privacy_policy->setSizePolicy(privacySizePolicy);
+  ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
+  ui_privacy_layout->addWidget(ui_privacy_policy);
+
   update_values();
 
   // When we're done, we should continue the updates!
@@ -1123,7 +1156,8 @@ void AOOptionsDialog::update_values() {
   ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
   ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
   ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
-  ui_log_cb->setChecked(ao_app->get_auto_logging_enabled());
+  ui_log_text_cb->setChecked(ao_app->get_text_logging_enabled());
+  ui_log_demo_cb->setChecked(ao_app->get_demo_logging_enabled());
   ui_length_spinbox->setValue(ao_app->get_max_log_size());
   ui_log_margin_spinbox->setValue(ao_app->get_log_margin());
   ui_stay_time_spinbox->setValue(ao_app->stay_time());
@@ -1140,6 +1174,15 @@ void AOOptionsDialog::update_values() {
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
   ui_mount_list->addItem(defaultMount);
   ui_mount_list->addItems(ao_app->get_mount_paths());
+
+  ui_privacy_optout_cb->setChecked(ao_app->get_player_count_optout());
+
+  ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
+    if (document.isEmpty()) {
+      document = tr("Couldn't get the privacy policy.");
+    }
+    ui_privacy_policy->setHtml(document);
+  });
 }
 
 void AOOptionsDialog::save_pressed()
@@ -1181,7 +1224,8 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("stickypres", ui_stickypres_cb->isChecked());
   configini->setValue("customchat", ui_customchat_cb->isChecked());
   configini->setValue("sticker", ui_sticker_cb->isChecked());
-  configini->setValue("automatic_logging_enabled", ui_log_cb->isChecked());
+  configini->setValue("automatic_logging_enabled", ui_log_text_cb->isChecked());
+  configini->setValue("demo_logging_enabled", ui_log_demo_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
@@ -1214,6 +1258,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
   configini->setValue("casing_can_host_cases",
                       ui_casing_cm_cases_textbox->text());
+  configini->setValue("player_count_optout", ui_privacy_optout_cb->isChecked());
 
   QStringList mountPaths;
   for (int i = 1; i < ui_mount_list->count(); i++)
@@ -1225,8 +1270,6 @@ void AOOptionsDialog::save_pressed()
 
   if (asset_cache_dirty)
     ao_app->invalidate_lookup_cache();
-
-  callwordsini->close();
 
   // We most probably pressed "Restore defaults" at some point. Since we're saving our settings, remove the temporary file.
   if (QFile::exists(ao_app->get_base_path() + "config.temp"))

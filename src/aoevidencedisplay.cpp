@@ -13,7 +13,7 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
 
   evidence_movie = new InterfaceLayer(this, ao_app);
 
-  connect(evidence_movie, SIGNAL(done()), this, SLOT(show_done()));
+  connect(evidence_movie, &InterfaceLayer::done, this, &AOEvidenceDisplay::show_done);
 }
 
 void AOEvidenceDisplay::show_evidence(QString p_evidence_image,

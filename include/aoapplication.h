@@ -76,10 +76,8 @@ public:
   void construct_courtroom();
   void destruct_courtroom();
 
-  void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);
 
-  void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
   void call_settings_menu();
@@ -137,7 +135,7 @@ public:
   QVector<server_type> &get_favorite_list() { return favorite_list; }
   void add_favorite_server(int p_server);
 
-  void set_server_list();
+  void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
 
   // reads the theme from config.ini and sets it accordingly
@@ -505,8 +503,11 @@ public:
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
-  // Get if automatic logging is enabled
-  bool get_auto_logging_enabled();
+  // Get if text file logging is enabled
+  bool get_text_logging_enabled();
+
+  // Get if demo logging is enabled
+  bool get_demo_logging_enabled();
 
   // Get the subtheme from settings
   QString get_subtheme();
@@ -519,6 +520,9 @@ public:
 
   // Get a list of custom mount paths
   QStringList get_mount_paths();
+
+  // Get whether to opt out of player count metrics sent to the master server
+  bool get_player_count_optout();
 
   // Currently defined subtheme
   QString subtheme;
@@ -560,12 +564,13 @@ private:
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
 
-private slots:
-  void ms_connect_finished(bool connected, bool will_retry);
-
 public slots:
   void server_disconnected();
   void loading_cancelled();
+
+signals:
+  void qt_log_message(QtMsgType type, const QMessageLogContext &context,
+                      const QString &msg);
 };
 
 #endif // AOAPPLICATION_H

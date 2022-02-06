@@ -4,6 +4,8 @@
 #include "file_functions.h"
 #include "misc_functions.h"
 
+static QThreadPool *thread_pool;
+
 AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
@@ -12,16 +14,21 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   shfx_timer = new QTimer(this);
   shfx_timer->setTimerType(Qt::PreciseTimer);
   shfx_timer->setSingleShot(true);
-  connect(shfx_timer, SIGNAL(timeout()), this, SLOT(shfx_timer_done()));
+  connect(shfx_timer, &QTimer::timeout, this, &AOLayer::shfx_timer_done);
 
   ticker = new QTimer(this);
   ticker->setTimerType(Qt::PreciseTimer);
   ticker->setSingleShot(false);
-  connect(ticker, SIGNAL(timeout()), this, SLOT(movie_ticker()));
+  connect(ticker, &QTimer::timeout, this, &AOLayer::movie_ticker);
 
   preanim_timer = new QTimer(this);
   preanim_timer->setSingleShot(true);
-  connect(preanim_timer, SIGNAL(timeout()), this, SLOT(preanim_done()));
+  connect(preanim_timer, &QTimer::timeout, this, &AOLayer::preanim_done);
+
+  if (!thread_pool) {
+    thread_pool = new QThreadPool(p_ao_app);
+    thread_pool->setMaxThreadCount(8);
+  }
 }
 
 BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
@@ -146,6 +153,12 @@ void BackgroundLayer::load_image(QString p_filename)
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
 #endif
   QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
+
+  if (final_path == last_path) {
+    // Don't restart background if background is unchanged
+    return;
+  }
+
   start_playback(final_path);
   play();
 }
@@ -234,6 +247,8 @@ void EffectLayer::load_image(QString p_filename, bool p_looping)
     play_once = true;
   continuous = false;
   force_continuous = true;
+  cull_image = false;
+
   start_playback(p_filename); // path resolution is handled by the caller for EffectLayer objects
   play();
 }
@@ -275,9 +290,11 @@ void AOLayer::start_playback(QString p_image)
     this->kill();
     return;
   }
-  QMutexLocker locker(&mutex);
+
   if (frame_loader.isRunning())
     exit_loop = true; // tell the loader to stop, we have a new image to load
+
+  QMutexLocker locker(&mutex);
   this->show();
 
   if (!ao_app->is_continuous_enabled()) {
@@ -308,10 +325,10 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
-  if (m_reader.loopCount() == 0)
-    play_once = true;
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
+  if (m_reader.loopCount() == 0 && max_frames > 1)
+    play_once = true;
   if (!continuous
           || ((continuous) && (max_frames != last_max_frames))
           || max_frames == 0
@@ -319,7 +336,7 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
-  frame_loader = QtConcurrent::run(this, &AOLayer::populate_vectors);
+  frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
   last_path = p_image;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
@@ -437,7 +454,7 @@ void CharLayer::load_network_effects()
           continue;
         int f_frame = frame_split.at(0).toInt();
         if (f_frame >= max_frames || f_frame < 0) {
-          qDebug() << "Warning: out of bounds" << effects_list[i] << "frame"
+          qWarning() << "out of bounds" << effects_list[i] << "frame"
                    << f_frame << "out of" << max_frames << "for" << m_emote;
           continue;
         }
@@ -461,7 +478,7 @@ void CharLayer::load_network_effects()
 void CharLayer::play_frame_effect(int p_frame)
 {
   if (p_frame >= movie_effects.size()) {
-    qDebug() << "W: Attempted to play a frame effect bigger than the size of movie_effects";
+    qWarning() << "Attempted to play a frame effect bigger than the size of movie_effects";
     return;
   }
   if (p_frame < max_frames) {
@@ -538,11 +555,11 @@ void AOLayer::movie_ticker()
     else
       frame = 0;
   }
-  mutex.lock();
-  while (frame >= movie_frames.size() && frame < max_frames) { // oops! our frame isn't ready yet
+  {
+    QMutexLocker locker(&mutex);
+    while (frame >= movie_frames.size() && frame < max_frames) // oops! our frame isn't ready yet
       frameAdded.wait(&mutex); // wait for a new frame to be added, then check again
   }
-  mutex.unlock();
 #ifdef DEBUG_MOVIE
   qDebug() << "[AOLayer::movie_ticker] Frame:" << frame << "Delay:" << movie_delays[frame]
            << "Actual time taken from last frame:" << actual_time.restart();
@@ -552,22 +569,29 @@ void AOLayer::movie_ticker()
 }
 
 void AOLayer::populate_vectors() {
-    while (movie_frames.size() < max_frames && !exit_loop) {
-        load_next_frame();
 #ifdef DEBUG_MOVIE
-        qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+  qDebug() << "[AOLayer::populate_vectors] Started thread";
 #endif
-    }
-    exit_loop = false;
+  while (!exit_loop && movie_frames.size() < max_frames) {
+    load_next_frame();
+#ifdef DEBUG_MOVIE
+    qDebug() << "[AOLayer::populate_vectors] Loaded frame" << movie_frames.size();
+#endif
+  }
+#ifdef DEBUG_MOVIE
+  if (exit_loop)
+    qDebug() << "[AOLayer::populate_vectors] Exit requested";
+#endif
+  exit_loop = false;
 }
 
 void AOLayer::load_next_frame() {
-    //QMutexLocker locker(&mutex);
-    mutex.lock();
+  {
+    QMutexLocker locker(&mutex);
     movie_frames.append(this->get_pixmap(m_reader.read()));
     movie_delays.append(m_reader.nextImageDelay());
-    mutex.unlock();
-    frameAdded.wakeAll();
+  }
+  frameAdded.wakeAll();
 }
 
 void CharLayer::preanim_done()
