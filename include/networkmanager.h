@@ -4,7 +4,6 @@
 #include "aoapplication.h"
 #include "aopacket.h"
 
-#include <QDnsLookup>
 #include <QNetworkAccessManager>
 #include <QTcpSocket>
 #include <QTime>
