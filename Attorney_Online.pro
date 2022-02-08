@@ -66,6 +66,8 @@ android:DISTFILES += \
     android/gradlew.bat \
     android/res/values/libs.xml
 
+android:QT += androidextras
+
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 ANDROID_EXTRA_LIBS = $$PWD/lib/libbass.so $$PWD/lib/libbassopus.so $$PWD/lib/libcrypto_1_1.so $$PWD/lib/libssl_1_1.so
