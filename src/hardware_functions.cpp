@@ -3,7 +3,24 @@
 #include <QDebug>
 #include <QtGlobal>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#if defined ANDROID
+#include <QAndroidJniObject>
+#endif
+
+
+
+#if defined ANDROID
+QString get_hdid()
+{
+    QAndroidJniObject myID = QAndroidJniObject::fromString("android_id");
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative", "activity", "()Landroid/app/Activity;");
+    QAndroidJniObject appctx = activity.callObjectMethod("getApplicationContext","()Landroid/content/Context;");
+    QAndroidJniObject contentR = appctx.callObjectMethod("getContentResolver", "()Landroid/content/ContentResolver;");
+    QAndroidJniObject result = QAndroidJniObject::callStaticObjectMethod("android/provider/Settings$Secure","getString", "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;",contentR.object<jobject>(), myID.object<jstring>());
+    QString androidID = result.toString();
+    return androidID;
+}
+#elif QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
