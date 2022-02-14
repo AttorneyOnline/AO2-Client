@@ -614,6 +614,16 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     asset_url = t_asset_url.toString();
   }
 
+  //Server description packet
+  else if (header == "SDESC") {
+    if (f_contents.size() > 1 || f_contents.size() == 0) {
+          goto end;
+      }
+    if (!courtroom_constructed && lobby_constructed) {
+        w_lobby->set_server_description(f_contents.at(0));
+    }
+  }
+
 end:
 
   delete p_packet;

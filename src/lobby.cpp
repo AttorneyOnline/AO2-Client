@@ -563,6 +563,11 @@ void Lobby::set_player_count(int players_online, int max_players)
   ui_player_count->setText(f_string);
 }
 
+void Lobby::set_server_description(const QString& server_description)
+{
+    ui_description->append_linked(server_description);
+}
+
 void Lobby::enable_connect_button() { ui_connect->setEnabled(true); }
 
 Lobby::~Lobby() {}
