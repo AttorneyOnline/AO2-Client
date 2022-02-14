@@ -143,6 +143,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_lobby->set_player_count(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
 
+    if (f_contents.size() >= 3) {
+        w_lobby->set_server_description(f_contents.at(2));
+    }
+
     if (w_lobby->doubleclicked) {
         send_server_packet(new AOPacket("askchaa#%"));
         w_lobby->doubleclicked = false;
@@ -612,16 +616,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
     if (t_asset_url.isValid())
     asset_url = t_asset_url.toString();
-  }
-
-  //Server description packet
-  else if (header == "SDESC") {
-    if (f_contents.size() > 1 || f_contents.size() == 0) {
-          goto end;
-      }
-    if (!courtroom_constructed && lobby_constructed) {
-        w_lobby->set_server_description(f_contents.at(0));
-    }
   }
 
 end:
