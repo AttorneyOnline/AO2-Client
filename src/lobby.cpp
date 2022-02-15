@@ -431,8 +431,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
       f_server = ao_app->get_favorite_list().at(n_server);
     }
 
-    ui_description->clear();
-    ui_description->append_linked(f_server.desc);
+    set_server_description(f_server.desc);
 
     ui_description->moveCursor(QTextCursor::Start);
     ui_description->ensureCursorVisible();
@@ -561,6 +560,12 @@ void Lobby::set_player_count(int players_online, int max_players)
               QString::number(players_online),
               QString::number(max_players));
   ui_player_count->setText(f_string);
+}
+
+void Lobby::set_server_description(const QString& server_description)
+{
+    ui_description->clear();
+    ui_description->append_linked(server_description);
 }
 
 void Lobby::enable_connect_button() { ui_connect->setEnabled(true); }

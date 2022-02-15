@@ -35,6 +35,7 @@ public:
   void append_chatmessage(QString f_name, QString f_message);
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
+  void set_server_description(const QString& server_description);
   void set_stylesheet(QWidget *widget);
   void set_stylesheets();
   void set_fonts();
