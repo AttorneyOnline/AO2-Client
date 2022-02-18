@@ -10,13 +10,11 @@ aoevidencebutton.cpp
 aoevidencedisplay.cpp
 aoimage.cpp
 aolayer.cpp
-aolineedit.cpp
 aomusicplayer.cpp
 aooptionsdialog.cpp
 aopacket.cpp
 aosfxplayer.cpp
 aotextarea.cpp
-aotextedit.cpp
 charselect.cpp
 chatlogpiece.cpp
 courtroom.cpp

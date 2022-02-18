@@ -10,6 +10,7 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QFileDialog>
+#include <QMessageBox>
 
 class DemoServer : public QObject
 {
@@ -24,6 +25,7 @@ public:
 private:
     void handle_packet(AOPacket packet);
     void load_demo(QString filename);
+    void reset_state();
 
     QTcpServer* tcp_server;
     QTcpSocket* client_sock = nullptr;

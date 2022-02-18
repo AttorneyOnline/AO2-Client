@@ -11,13 +11,11 @@
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
 #include "aolayer.h"
-#include "aolineedit.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
-#include "aotextedit.h"
 #include "chatlogpiece.h"
 #include "datatypes.h"
 #include "debug_functions.h"
@@ -25,6 +23,7 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "scrolltext.h"
+#include "eventfilters.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -57,6 +56,8 @@
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
 #include <QElapsedTimer>
+
+#include <QFuture>
 
 #include <algorithm>
 #include <stack>
@@ -215,8 +216,12 @@ public:
   void list_music();
   void list_areas();
 
-  // these are for OOC chat
-  void append_ms_chatmessage(QString f_name, QString f_message);
+  // Debug log (formerly master server chat log)
+  void debug_message_handler(QtMsgType type, const QMessageLogContext &context,
+                             const QString &msg);
+  void append_debug_message(QString f_message);
+
+  // OOC chat log
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
@@ -226,13 +231,16 @@ public:
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
   void unpack_chatmessage(QStringList p_contents);
 
+  // Skip the current queue, adding all the queue messages to the logs if desynchronized logs are disabled
+  void skip_chatmessage_queue();
+
   enum LogMode {
     IO_ONLY,
     DISPLAY_ONLY,
     DISPLAY_AND_IO
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
-  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", int f_color = 0, LogMode f_log_mode=IO_ONLY);
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
@@ -414,6 +422,9 @@ private:
   // True, if the log should have a timestamp.
   bool log_timestamp = false;
 
+  // format string for aforementioned log timestamp
+  QString log_timestamp_format;
+
   // How long in miliseconds should the objection wait before appearing.
   int objection_threshold = 1500;
 
@@ -585,6 +596,9 @@ private:
   QString current_background = "default";
   QString current_side = "";
 
+  QString last_music_search = "";
+  QString last_area_search = "";
+
   QBrush free_brush;
   QBrush lfp_brush;
   QBrush casing_brush;
@@ -622,7 +636,7 @@ private:
 
   QTextEdit *ui_ic_chatlog;
 
-  AOTextArea *ui_ms_chatlog;
+  AOTextArea *ui_debug_log;
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
@@ -644,7 +658,8 @@ private:
 
   QComboBox *ui_pair_order_dropdown;
 
-  AOLineEdit *ui_ic_chat_message;
+  QLineEdit *ui_ic_chat_message;
+  AOLineEditFilter *ui_ic_chat_message_filter;
   QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
@@ -726,7 +741,8 @@ private:
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
-  AOLineEdit *ui_evidence_name;
+  QLineEdit *ui_evidence_name;
+  AOLineEditFilter *ui_evidence_name_filter;
   QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton *> ui_evidence_list;
   AOButton *ui_evidence_left;
@@ -734,7 +750,8 @@ private:
   AOButton *ui_evidence_present;
   AOImage *ui_evidence_overlay;
   AOButton *ui_evidence_delete;
-  AOLineEdit *ui_evidence_image_name;
+  QLineEdit *ui_evidence_image_name;
+  AOLineEditFilter *ui_evidence_image_name_filter;
   AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
   AOButton *ui_evidence_ok;
@@ -742,7 +759,9 @@ private:
   AOButton *ui_evidence_transfer;
   AOButton *ui_evidence_save;
   AOButton *ui_evidence_load;
-  AOTextEdit *ui_evidence_description;
+  AOButton *ui_evidence_edit;
+  QPlainTextEdit *ui_evidence_description;
+
 
   AOImage *ui_char_select_background;
 
@@ -754,7 +773,6 @@ private:
 
   QVector<AOCharButton *> ui_char_button_list;
   QVector<AOCharButton *> ui_char_button_list_filtered;
-  AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
 
@@ -803,6 +821,8 @@ public slots:
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
   void on_reload_theme_clicked();
+
+  void update_ui_music_name();
 
 private slots:
   void start_chat_ticking();
@@ -870,6 +890,7 @@ private slots:
   void on_evidence_image_button_clicked();
   void on_evidence_clicked(int p_id);
   void on_evidence_double_clicked(int p_id);
+  void on_evidence_edit_clicked();
 
   void on_evidence_hover(int p_id, bool p_state);
 
@@ -925,8 +946,6 @@ private slots:
 
   void on_showname_enable_clicked();
 
-  void on_evidence_name_double_clicked();
-  void on_evidence_image_name_double_clicked();
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();

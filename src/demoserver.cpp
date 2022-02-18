@@ -21,7 +21,7 @@ void DemoServer::start_server()
         return;
     }
     this->port = tcp_server->serverPort();
-    qDebug() << "Server started";
+    qInfo() << "Demo server started at port" << port;
     server_started = true;
 }
 
@@ -63,7 +63,7 @@ void DemoServer::accept_connection()
 
     if (client_sock) {
         // Client is already connected...
-        qDebug() << "Multiple connections to demo server disallowed.";
+        qWarning() << "Multiple connections to demo server disallowed.";
         QTcpSocket* temp_socket = tcp_server->nextPendingConnection();
         connect(temp_socket, &QAbstractSocket::disconnected, temp_socket, &QObject::deleteLater);
         temp_socket->disconnectFromHost();
@@ -97,7 +97,7 @@ void DemoServer::recv_data()
     QStringList packet_list =
         in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
-    for (QString packet : packet_list) {
+    for (const QString &packet : packet_list) {
         AOPacket ao_packet(packet);
         handle_packet(ao_packet);
     }
@@ -150,7 +150,8 @@ void DemoServer::handle_packet(AOPacket packet)
     }
     else if (header == "CC") {
         client_sock->write("PV#0#CID#-1#%");
-        client_sock->write("CT#DEMO#Demo file loaded. Send /play or > in OOC to begin playback.#1#%");
+        QString packet = "CT#DEMO#" + tr("Demo file loaded. Send /play or > in OOC to begin playback.") + "#1#%";
+        client_sock->write(packet.toUtf8());
     }
     else if (header == "CT") {
         if (contents[1].startsWith("/load"))
@@ -159,14 +160,17 @@ void DemoServer::handle_packet(AOPacket packet)
           if (path.isEmpty())
             return;
           load_demo(path);
-          client_sock->write("CT#DEMO#Demo file loaded. Send /play or > in OOC to begin playback.#1#%");
+          QString packet = "CT#DEMO#" + tr("Demo file loaded. Send /play or > in OOC to begin playback.") + "#1#%";
+          client_sock->write(packet.toUtf8());
+          reset_state();
         }
         else if (contents[1].startsWith("/play") || contents[1] == ">")
         {
           if (timer->interval() != 0 && !timer->isActive())
           {
             timer->start();
-            client_sock->write("CT#DEMO#Resuming playback.#1#%");
+            QString packet = "CT#DEMO#" + tr("Resuming playback.") + "#1#%";
+            client_sock->write(packet.toUtf8());
           }
           else
           {
@@ -180,7 +184,8 @@ void DemoServer::handle_packet(AOPacket packet)
           int timeleft = timer->remainingTime();
           timer->stop();
           timer->setInterval(timeleft);
-          client_sock->write("CT#DEMO#Pausing playback.#1#%");
+          QString packet = "CT#DEMO#" + tr("Pausing playback.") + "#1#%";
+          client_sock->write(packet.toUtf8());
         }
         else if (contents[1].startsWith("/max_wait"))
         {
@@ -194,29 +199,44 @@ void DemoServer::handle_packet(AOPacket packet)
               if (p_max_wait < 0)
                 p_max_wait = -1;
               max_wait = p_max_wait;
-              client_sock->write("CT#DEMO#Setting max_wait to ");
+              QString packet = "CT#DEMO#" + tr("Setting max_wait to") + " ";
+              client_sock->write(packet.toUtf8());
               client_sock->write(QString::number(max_wait).toUtf8());
-              client_sock->write(" milliseconds.#1#%");
+              packet = " " + tr("milliseconds.") + "#1#%";
+              client_sock->write(packet.toUtf8());
             }
             else
             {
-              client_sock->write("CT#DEMO#Not a valid integer!#1#%");
+              QString packet = "CT#DEMO#" + tr("Not a valid integer!") + "#1#%";
+              client_sock->write(packet.toUtf8());
             }
           }
           else
           {
-            client_sock->write("CT#DEMO#Current max_wait is ");
-            client_sock->write(QString::number(max_wait).toUtf8());
-            client_sock->write(" milliseconds.#1#%");
+
+              QString packet = "CT#DEMO#" + tr("Current max_wait is") + " ";
+              client_sock->write(packet.toUtf8());
+              client_sock->write(QString::number(max_wait).toUtf8());
+              packet = " " + tr("milliseconds.") + "#1#%";
+              client_sock->write(packet.toUtf8());
           }
+        }
+        else if (contents[1].startsWith("/reload"))
+        {
+            load_demo(p_path);
+            QString packet = "CT#DEMO#" + tr("Current demo file reloaded. Send /play or > in OOC to begin playback.") + "#1#%";
+            client_sock->write(packet.toUtf8());
+            reset_state();
         }
         else if (contents[1].startsWith("/min_wait"))
         {
-            client_sock->write("CT#DEMO#min_wait is deprecated. Use the client Settings for minimum wait instead!");
+            QString packet = "CT#DEMO#" + tr("min_wait is deprecated. Use the client Settings for minimum wait instead!") + "#1#%";
+            client_sock->write(packet.toUtf8());
         }
         else if (contents[1].startsWith("/help"))
         {
-            client_sock->write("CT#DEMO#Available commands:\nload, play, pause, max_wait, help#1#%");
+            QString packet = "CT#DEMO#" + tr("Available commands:\nload, reload, play, pause, max_wait, help") + "#1#%";
+            client_sock->write(packet.toUtf8());
         }
     }
 }
@@ -227,18 +247,96 @@ void DemoServer::load_demo(QString filename)
     demo_file.open(QIODevice::ReadOnly);
     if (!demo_file.isOpen())
         return;
+    // Clear demo data
     demo_data.clear();
+    // Set the demo filepath
     p_path = filename;
+    // Process the demo file
     QTextStream demo_stream(&demo_file);
     demo_stream.setCodec("UTF-8");
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
-        if (!line.endsWith("%")) {
+        while (!line.endsWith("%")) {
           line += "\n";
+          line += demo_stream.readLine();
         }
         demo_data.enqueue(line);
         line = demo_stream.readLine();
     }
+    demo_file.flush();
+    demo_file.close();
+
+    // No-shenanigans 2.9.0 demo file with the dreaded demo desync bug detected https://github.com/AttorneyOnline/AO2-Client/pull/496
+    // If we don't start with the SC packet this means user-edited weirdo shenanigans. Don't screw around with those.
+    if (demo_data.head().startsWith("SC#") && demo_data.last().startsWith("wait#")) {
+      qInfo() << "Loaded a broken pre-2.9.1 demo file, with the wait desync issue!";
+      QMessageBox *msgBox = new QMessageBox;
+      msgBox->setAttribute(Qt::WA_DeleteOnClose);
+      msgBox->setTextFormat(Qt::RichText);
+      msgBox->setText("This appears to be a <b>broken</b> pre-2.9.1 demo file with the <a href=https://github.com/AttorneyOnline/AO2-Client/pull/496>wait desync issue</a>!<br>Do you want to correct this file? <i>If you refuse, this demo will be desynchronized!</i>");
+      msgBox->setWindowTitle("Pre-2.9.1 demo detected!");
+      msgBox->setStandardButtons(QMessageBox::NoButton);
+      QTimer::singleShot(2000, msgBox, std::bind(&QMessageBox::setStandardButtons,msgBox,QMessageBox::Yes|QMessageBox::No));
+      int ret = msgBox->exec();
+      QQueue <QString> p_demo_data;
+      switch (ret) {
+        case QMessageBox::Yes:
+          qInfo() << "Making a backup of the broken demo...";
+          QFile::copy(filename, filename + ".backup");
+          while (!demo_data.isEmpty()) {
+            QString current_packet = demo_data.dequeue();
+            // TODO: faster way of doing this, maybe with QtConcurrent's MapReduce methods?
+            if (!current_packet.startsWith("SC#") && current_packet.startsWith("wait#")) {
+              p_demo_data.insert(qMax(1, p_demo_data.size()-1), current_packet);
+              continue;
+            }
+            p_demo_data.enqueue(current_packet);
+          }
+          if (demo_file.open(QIODevice::WriteOnly | QIODevice::Text |
+                         QIODevice::Truncate)) {
+            QTextStream out(&demo_file);
+            out.setCodec("UTF-8");
+            out << p_demo_data.dequeue();
+            for (const QString &line : qAsConst(p_demo_data)) {
+              out << "\n" << line;
+            }
+            demo_file.flush();
+            demo_file.close();
+          }
+          load_demo(filename);
+          break;
+        case QMessageBox::No:
+          // No was clicked
+          break;
+        default:
+          // should never be reached
+          break;
+      }
+    }
+}
+
+void DemoServer::reset_state()
+{
+    // Reset evidence list
+    client_sock->write("LE##%");
+
+    // Reset timers
+    client_sock->write("TI#0#3#0#%");
+    client_sock->write("TI#0#1#0#%");
+    client_sock->write("TI#1#1#0#%");
+    client_sock->write("TI#1#3#0#%");
+    client_sock->write("TI#2#1#0#%");
+    client_sock->write("TI#2#3#0#%");
+    client_sock->write("TI#3#1#0#%");
+    client_sock->write("TI#3#3#0#%");
+    client_sock->write("TI#4#1#0#%");
+    client_sock->write("TI#4#3#0#%");
+
+    // Set the BG to default (also breaks up the message queue)
+    client_sock->write("BN#default#wit#%");
+
+    // Stop the wait packet timer
+    timer->stop();
 }
 
 void DemoServer::playback()
@@ -251,25 +349,33 @@ void DemoServer::playback()
     if (current_packet.startsWith("MS#"))
       elapsed_time = 0;
 
-    while (!current_packet.startsWith("wait") && !demo_data.isEmpty()) {
+    while (!current_packet.startsWith("wait#")) {
         client_sock->write(current_packet.toUtf8());
+        if (demo_data.isEmpty())
+          break;
         current_packet = demo_data.dequeue();
     }
     if (!demo_data.isEmpty()) {
         AOPacket wait_packet = AOPacket(current_packet);
 
         int duration = wait_packet.get_contents().at(0).toInt();
-        if (max_wait != -1 && duration + elapsed_time > max_wait) {
-          duration = qMax(0, max_wait - elapsed_time);
-          // Skip the difference on the timers
-          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+        if (max_wait != -1) {
+          if (duration + elapsed_time > max_wait) {
+            duration = qMax(0, max_wait - elapsed_time);
+            // Skip the difference on the timers
+            emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+          }
+          else if (timer->interval() != 0 && duration + elapsed_time > timer->interval()) {
+              duration = qMax(0, timer->interval() - elapsed_time);
+              emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+          }
         }
         elapsed_time += duration;
         timer->start(duration);
     }
-    else
-    {
-      client_sock->write("CT#DEMO#Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.#1#%");
+    else {
+      QString end_packet = "CT#DEMO#" + tr("Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.") + "#1#%";
+      client_sock->write(end_packet.toUtf8());
       timer->setInterval(0);
     }
 }

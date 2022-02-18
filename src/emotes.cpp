@@ -5,19 +5,23 @@
 void Courtroom::initialize_emotes()
 {
   ui_emotes = new QWidget(this);
+  ui_emotes->setObjectName("ui_emotes");
 
   ui_emote_left = new AOButton(this, ao_app);
+  ui_emote_left->setObjectName("ui_emote_left");
   ui_emote_right = new AOButton(this, ao_app);
+  ui_emote_right->setObjectName("ui_emote_right");
 
   ui_emote_dropdown = new QComboBox(this);
+  ui_emote_dropdown->setObjectName("ui_emote_dropdown");
 
-  connect(ui_emote_left, SIGNAL(clicked()), this,
-          SLOT(on_emote_left_clicked()));
-  connect(ui_emote_right, SIGNAL(clicked()), this,
-          SLOT(on_emote_right_clicked()));
+  connect(ui_emote_left, &AOButton::clicked, this,
+          &Courtroom::on_emote_left_clicked);
+  connect(ui_emote_right, &AOButton::clicked, this,
+          &Courtroom::on_emote_right_clicked);
 
-  connect(ui_emote_dropdown, SIGNAL(activated(int)), this,
-          SLOT(on_emote_dropdown_changed(int)));
+  connect(ui_emote_dropdown, QOverload<int>::of(&QComboBox::activated), this,
+          &Courtroom::on_emote_dropdown_changed);
 }
 
 void Courtroom::refresh_emotes()
@@ -70,8 +74,8 @@ void Courtroom::refresh_emotes()
 
     f_emote->set_id(n);
 
-    connect(f_emote, SIGNAL(emote_clicked(int)), this,
-            SLOT(on_emote_clicked(int)));
+    connect(f_emote, &AOEmoteButton::emote_clicked, this,
+            &Courtroom::on_emote_clicked);
 
     ++x_mod_count;
 
@@ -92,7 +96,7 @@ void Courtroom::set_emote_page()
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  for (AOEmoteButton *i_button : ui_emote_list) {
+  for (AOEmoteButton *i_button : qAsConst(ui_emote_list)) {
     i_button->hide();
   }
 
@@ -122,9 +126,9 @@ void Courtroom::set_emote_page()
     AOEmoteButton *f_emote = ui_emote_list.at(n_emote);
 
     if (n_real_emote == current_emote)
-      f_emote->set_char_image(current_char, n_real_emote, "_on");
+      f_emote->set_char_image(current_char, n_real_emote, true);
     else
-      f_emote->set_char_image(current_char, n_real_emote, "_off");
+      f_emote->set_char_image(current_char, n_real_emote, false);
 
     f_emote->show();
     f_emote->setToolTip(QString::number(n_real_emote + 1) + ": " +
@@ -154,7 +158,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
     ui_emote_list.at(current_emote % max_emotes_on_page)
-        ->set_char_image(current_char, current_emote, "_off");
+        ->set_char_image(current_char, current_emote, false);
 
   int old_emote = current_emote;
 
@@ -162,7 +166,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
     ui_emote_list.at(current_emote % max_emotes_on_page)
-        ->set_char_image(current_char, current_emote, "_on");
+        ->set_char_image(current_char, current_emote, true);
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -197,7 +201,6 @@ void Courtroom::on_emote_left_clicked()
 
 void Courtroom::on_emote_right_clicked()
 {
-  qDebug() << "emote right clicked";
   ++current_emote_page;
 
   set_emote_page();
