@@ -2054,7 +2054,7 @@ void Courtroom::reset_ui()
   ui_screenshake->set_image("screenshake");
   ui_evidence_present->set_image("present");
 
-  if (ui_pre->isChecked() && !ao_app->is_stickysounds_enabled()) {
+  if (!ao_app->is_stickysounds_enabled()) {
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
     custom_sfx = "";
@@ -2497,6 +2497,7 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     // If immediate is not ticked on...
     if (!p_immediate)
     {
+      play_sfx();
       // Skip preanim.
       handle_ic_speaking();
     }
@@ -2541,8 +2542,7 @@ void Courtroom::handle_ic_message()
   else
   {
     start_chat_ticking();
-    if (emote_mod == 1 || emote_mod == 2 || emote_mod == 6 || immediate)
-      play_sfx();
+    play_sfx();
   }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
