@@ -1865,8 +1865,6 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_side);
 
-  packet_contents.append(get_char_sfx());
-
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
   // needed or else legacy won't understand what we're saying
@@ -1889,6 +1887,12 @@ void Courtroom::on_chat_return_pressed()
       f_emote_mod = 5;
   }
 
+  // If our sound list is on "Default", it will play a preanim sfx associated with that char's emote only when pre is checked.
+  // Otherwise, the sfx will always be played.
+  if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0 || f_emote_mod == 1 || f_emote_mod == 2 || f_emote_mod == 6)
+    packet_contents.append(get_char_sfx());
+  else
+    packet_contents.append("1");
   packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
@@ -2542,7 +2546,8 @@ void Courtroom::handle_ic_message()
   else
   {
     start_chat_ticking();
-    play_sfx();
+    if (emote_mod == 1 || emote_mod == 2 || emote_mod == 6 || immediate)
+      play_sfx();
   }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
@@ -4597,8 +4602,9 @@ QString Courtroom::get_char_sfx()
   if (!custom_sfx.isEmpty())
     return custom_sfx;
   int index = ui_sfx_dropdown->currentIndex();
-  if (index == 0) // Default
+  if (index == 0) { // Default
     return ao_app->get_sfx_name(current_char, current_emote);
+  }
   if (index == 1) // Nothing
     return "1";
   QString sfx = sound_list[index-2].split("=")[0].trimmed();
