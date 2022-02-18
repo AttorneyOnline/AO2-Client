@@ -544,8 +544,7 @@ public:
   QString asset_url;
 
   void initBASS();
-  static void load_bass_opus_plugin();
-  static void load_bass_midi_plugin();
+  static void load_bass_plugins();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
   static void doBASSreset();
