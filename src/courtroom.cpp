@@ -3873,17 +3873,16 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
   }
 
-  QFuture<QString> future = QtConcurrent::run(music_player, &AOMusicPlayer::play, f_song, channel,
-                                              looping, effect_flags);
   if (channel == 0) {
     // Current song UI only displays the song playing, not other channels.
     // Any other music playing is irrelevant.
     if (music_player->music_watcher.isRunning()) {
         music_player->music_watcher.cancel();
     }
-    music_player->music_watcher.setFuture(future);
     ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
   }
+  music_player->music_watcher.setFuture(QtConcurrent::run(music_player, &AOMusicPlayer::play, f_song, channel,
+                                                          looping, effect_flags));
 }
 
 void Courtroom::update_ui_music_name()
