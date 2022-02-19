@@ -684,7 +684,6 @@ void Courtroom::evidence_close()
   ui_evidence_description->setReadOnly(true);
   ui_evidence_name->setReadOnly(true);
   ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_button->setDisabled(true);
   ui_evidence_overlay->hide();
   ui_ic_chat_message->setFocus();
 }
