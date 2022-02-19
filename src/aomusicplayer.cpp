@@ -20,8 +20,6 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   channel = channel % m_channelmax;
   if (channel < 0) // wtf?
     return "[ERROR] Invalid Channel";
-  QString f_path = ao_app->get_real_path(ao_app->get_music_path(p_song));
-
   unsigned int flags = BASS_STREAM_PRESCAN | BASS_STREAM_AUTOFREE |
                        BASS_UNICODE | BASS_ASYNCFILE;
   unsigned int streaming_flags = BASS_STREAM_AUTOFREE;
@@ -29,7 +27,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
     flags |= BASS_SAMPLE_LOOP;
     streaming_flags |= BASS_SAMPLE_LOOP;
   }
-
+  QString f_path = p_song;
   DWORD newstream;
   if (f_path.startsWith("http")) {
     if (f_path.endsWith(".opus"))
@@ -38,6 +36,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
       newstream = BASS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
 
   } else {
+    f_path = ao_app->get_real_path(ao_app->get_music_path(p_song));
     if (f_path.endsWith(".opus"))
       newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
     else
@@ -46,7 +45,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   int error_code = BASS_ErrorGetCode();
 
-  if (invoking_future.isCanceled() && channel == 0) {
+  if (invoking_future.isCanceled()) {
       // Target future has changed. This stream has become irrelevant.
       // So even if the stream manages to finish after the latest one, we don't run
       // into order issues.
