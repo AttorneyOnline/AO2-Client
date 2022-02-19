@@ -1343,9 +1343,9 @@ void Courtroom::set_background(QString p_background, bool display)
   QStringList pos_list = {};
   for (const QString &key : default_pos.keys()) {
     if (file_exists(ao_app->get_image_suffix(
-            ao_app->get_background_path(default_pos[key]))) || // if we have pre-2.8-style positions, e.g. defenseempty.png
+            ao_app->get_background_path(default_pos[key]))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
         file_exists(
-            ao_app->get_image_suffix(ao_app->get_background_path(key)))) {  // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
+            ao_app->get_image_suffix(ao_app->get_background_path(key)))) {  // if we have pre-2.8-style positions, e.g. defenseempty.png
       pos_list.append(default_pos[key]);
     }
   }
