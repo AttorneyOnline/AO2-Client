@@ -3613,35 +3613,44 @@ void Courtroom::chat_tick()
 
     ui_vp_message->ensureCursorVisible();
 
-    // We blip every "blip rate" letters.
-    // Here's an example with blank_blip being false and blip_rate being 2:
-    // I am you
-    // ! !  ! !
-    // where ! is the blip sound
-    int b_rate = blip_rate;
-    // Earrape prevention without using timers, this method is more consistent.
-    if (msg_delay != 0 && msg_delay <= 25) {
-      // The default blip speed is 40ms, and if current msg_delay is 25ms,
-      // the formula will result in the blip rate of:
-      // 40/25 = 1.6 = 2
-      // And if it's faster than that:
-      // 40/10 = 4
-      b_rate =
-          qMax(b_rate, qRound(static_cast<float>(text_crawl) /
-                              msg_delay));
+    if (blip_rate > 0) {
+      // We blip every "blip rate" letters.
+      // Here's an example with blank_blip being false and blip_rate being 2:
+      // I am you
+      // ! !  ! !
+      // where ! is the blip sound
+      int b_rate = blip_rate;
+      // Earrape prevention without using timers, this method is more consistent.
+      if (msg_delay != 0 && msg_delay <= 25) {
+        // The default blip speed is 40ms, and if current msg_delay is 25ms,
+        // the formula will result in the blip rate of:
+        // 40/25 = 1.6 = 2
+        // And if it's faster than that:
+        // 40/10 = 4
+        b_rate =
+            qMax(b_rate, qRound(static_cast<float>(text_crawl) /
+                                msg_delay));
+      }
+      if (blip_ticker % b_rate == 0) {
+        // ignoring white space unless blank_blip is enabled.
+        if (!formatting_char && (f_character != ' ' || blank_blip)) {
+          blip_player->blip_tick();
+          ++blip_ticker;
+        }
+      }
+      else {
+        // Don't fully ignore whitespace still, keep ticking until
+        // we reached the need to play a blip sound - we also just
+        // need to wait for a letter to play it on.
+        ++blip_ticker;
+      }
     }
-    if (blip_ticker % b_rate == 0) {
-      // ignoring white space unless blank_blip is enabled.
+    else if (blip_ticker < 1) {
+      // Just blip once
       if (!formatting_char && (f_character != ' ' || blank_blip)) {
         blip_player->blip_tick();
         ++blip_ticker;
       }
-    }
-    else {
-      // Don't fully ignore whitespace still, keep ticking until
-      // we reached the need to play a blip sound - we also just
-      // need to wait for a letter to play it on.
-      ++blip_ticker;
     }
 
     // Punctuation delayer, only kicks in on speed ticks less than }}

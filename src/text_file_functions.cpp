@@ -10,8 +10,8 @@ int AOApplication::read_blip_rate()
 {
   int result = configini->value("blip_rate", 2).toInt();
 
-  if (result < 1)
-    return 1;
+  if (result < 0)
+    return 0;
 
   return result;
 }
