@@ -1309,13 +1309,14 @@ void Courtroom::done_received()
 
   if (char_list.size() > 0)
   {
-    set_char_select_page();
+    //set_char_select_page();
     set_char_select();
   }
   else
   {
     update_character(m_cid);
     enter_courtroom();
+    set_courtroom_size();
   }
 
   set_mute_list();
