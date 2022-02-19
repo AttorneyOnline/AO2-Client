@@ -97,7 +97,7 @@ void Courtroom::initialize_evidence()
   connect(ui_evidence_name, &QLineEdit::textChanged, this,
           &Courtroom::on_evidence_edited);
   connect(ui_evidence_image_name, &QLineEdit::textChanged, this,
-          &Courtroom::on_evidence_image_name_edited);
+          &Courtroom::on_evidence_edited);
   connect(ui_evidence_description, &QPlainTextEdit::textChanged, this,
           &Courtroom::on_evidence_edited);
 
@@ -684,7 +684,6 @@ void Courtroom::evidence_close()
   ui_evidence_description->setReadOnly(true);
   ui_evidence_name->setReadOnly(true);
   ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_button->setDisabled(true);
   ui_evidence_overlay->hide();
   ui_ic_chat_message->setFocus();
 }
