@@ -3749,6 +3749,11 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
     f_background = f_side;
     f_desk_image = f_side + "_overlay";
   }
+
+  QString desk_override = ao_app->read_design_ini("overlays/" + f_background, ao_app->get_background_path("design.ini"));
+  if (desk_override != "")
+    f_desk_image = desk_override;
+
   ui_vp_background->load_image(f_background);
   ui_vp_desk->load_image(f_desk_image);
 
