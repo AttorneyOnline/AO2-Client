@@ -141,14 +141,14 @@ void Courtroom::set_emote_dropdown()
   ui_emote_dropdown->clear();
 
   int total_emotes = ao_app->get_emote_number(current_char);
-  QStringList emote_list;
 
   for (int n = 0; n < total_emotes; ++n) {
-    emote_list.append(QString::number(n + 1) + ": " +
-                      ao_app->get_emote_comment(current_char, n));
+    ui_emote_dropdown->addItem(QString::number(n + 1) + ": " +
+                               ao_app->get_emote_comment(current_char, n));
+    QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
+                                                   current_char, "emotions/button" + QString::number(n + 1) + "_off"));
+    ui_emote_dropdown->setItemIcon(n, QIcon(icon_path));
   }
-
-  ui_emote_dropdown->addItems(emote_list);
 }
 
 void Courtroom::select_emote(int p_id)

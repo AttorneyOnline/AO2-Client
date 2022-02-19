@@ -4331,6 +4331,10 @@ void Courtroom::set_iniswap_dropdown()
   QStringList iniswaps =
       ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
       ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
+
+  if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
+    iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
+
   iniswaps.removeDuplicates();
   iniswaps.prepend(char_list.at(m_cid).name);
   if (iniswaps.size() <= 0) {
@@ -4339,16 +4343,17 @@ void Courtroom::set_iniswap_dropdown()
     return;
   }
   ui_iniswap_dropdown->show();
-  ui_iniswap_dropdown->addItems(iniswaps);
-
   for (int i = 0; i < iniswaps.size(); ++i) {
+    ui_iniswap_dropdown->addItem(iniswaps.at(i));
+    QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
+                                                   iniswaps.at(i), "char_icon"));
+    ui_iniswap_dropdown->setItemIcon(i, QIcon(icon_path));
     if (iniswaps.at(i) == current_char) {
       ui_iniswap_dropdown->setCurrentIndex(i);
       if (i != 0)
         ui_iniswap_remove->show();
       else
         ui_iniswap_remove->hide();
-      break;
     }
   }
   ui_iniswap_dropdown->blockSignals(false);
@@ -4374,6 +4379,9 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
   update_character(m_cid);
+  QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
+                                                 iniswap, "char_icon"));
+  ui_iniswap_dropdown->setItemIcon(p_index, QIcon(icon_path));
   if (p_index != 0)
     ui_iniswap_remove->show();
   else
