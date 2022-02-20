@@ -3773,13 +3773,13 @@ void Courtroom::set_self_offset(QString p_list, QString p_effect) {
       self_offset_v = self_offsets[1].toInt();
     ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 
-    //If an effect is ignoring the users offset, it forces it to the default position of the viewport.
+    //If an effect is ignoring the users offset, we force it to the default position of the viewport.
     if (ao_app->get_effect_property(play_effect[0], current_char, "ignore_offset") == "true") {
       ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
       return;
     }
 
-    //Offset it not disabled, we move the effects layer to match the position of our character
+    //Offset is not disabled, we move the effects layer to match the position of our character
     //We need to add the viewport as an offset as effects are not bound to it.
     int effect_x = (ui_viewport->width() * self_offset / 100) + ui_viewport->x();
     int effect_y = (ui_viewport->height() * self_offset_v / 100) + ui_viewport->y();
@@ -4588,7 +4588,6 @@ void Courtroom::on_character_effects_edit_requested()
 
 void Courtroom::on_effects_dropdown_changed(int p_index)
 {
-
   effect = ui_effects_dropdown->itemText(p_index);
   ui_ic_chat_message->setFocus();
 }
