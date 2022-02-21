@@ -17,7 +17,7 @@ jobs:
         tar xvf catch2.tar.gz
         cd Catch2-2.13.4
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
-        cmake --build build/ --target install
+        sudo cmake --build build/ --target install
 
     - name: Install Qt5
       run: sudo apt-get install -y qtbase5-dev
