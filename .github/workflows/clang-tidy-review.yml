@@ -5,7 +5,7 @@ on: [pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
       id: review
       with:
         # CMake command to run in order to generate compile_commands.json
-        cmake_command: cmake $GITHUB_WORKSPACE -DCMAKE_EXPORT_COMPILE_COMMANDS=on
+        cmake_command: cmake ${{github.workspace}} -DCMAKE_EXPORT_COMPILE_COMMANDS=on
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
