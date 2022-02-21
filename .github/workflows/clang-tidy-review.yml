@@ -10,11 +10,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=on
+
     - uses: ZedThree/clang-tidy-review@v0.8.2
       id: review
       with:
         apt_packages: qtbase5-dev
-        cmake_command: cmake -E make_directory ${{github.workspace}}/build -DCMAKE_EXPORT_COMPILE_COMMANDS=on
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
