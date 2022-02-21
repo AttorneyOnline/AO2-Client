@@ -14,6 +14,9 @@ jobs:
 
     - uses: ZedThree/clang-tidy-review@v0.8.2
       id: review
+      with:
+        # CMake command to run in order to generate compile_commands.json
+        cmake_command: cmake . -DCMAKE_EXPORT_COMPILE_COMMANDS=on
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
