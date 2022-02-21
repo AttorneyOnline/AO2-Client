@@ -758,7 +758,6 @@ private:
   AOButton *ui_evidence_transfer;
   AOButton *ui_evidence_save;
   AOButton *ui_evidence_load;
-  AOButton *ui_evidence_edit;
   QPlainTextEdit *ui_evidence_description;
 
 
@@ -889,7 +888,6 @@ private slots:
   void on_evidence_image_button_clicked();
   void on_evidence_clicked(int p_id);
   void on_evidence_double_clicked(int p_id);
-  void on_evidence_edit_clicked();
 
   void on_evidence_hover(int p_id, bool p_state);
 
