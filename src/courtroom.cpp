@@ -2404,7 +2404,7 @@ void Courtroom::display_character()
   else
     ui_vp_player_char->set_flipped(false);
   // Move the character on the viewport according to the offsets
-  set_self_offset(m_chatmessage[SELF_OFFSET]);
+  set_self_offset(m_chatmessage[SELF_OFFSET], m_chatmessage[EFFECTS]);
 }
 
 void Courtroom::display_pair_character(QString other_charid, QString other_offset)
@@ -3321,7 +3321,7 @@ void Courtroom::start_chat_ticking()
   // handle expanded desk mods
   switch(m_chatmessage[DESK_MOD].toInt()) {
     case 4:
-      set_self_offset(m_chatmessage[SELF_OFFSET]);
+      set_self_offset(m_chatmessage[SELF_OFFSET], QString("||"));
       [[fallthrough]];
     case 2:
       set_scene("1", m_chatmessage[SIDE]);
@@ -3762,8 +3762,9 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
   }
 }
 
-void Courtroom::set_self_offset(QString p_list) {
+void Courtroom::set_self_offset(QString p_list, QString p_effect) {
     QStringList self_offsets = p_list.split("&");
+    QStringList play_effect = p_effect.split("|");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
     if (self_offsets.length() <= 1)
@@ -3771,6 +3772,18 @@ void Courtroom::set_self_offset(QString p_list) {
     else
       self_offset_v = self_offsets[1].toInt();
     ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+
+    //If an effect is ignoring the users offset, we force it to the default position of the viewport.
+    if (ao_app->get_effect_property(play_effect[0], current_char, "ignore_offset") == "true") {
+      ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
+      return;
+    }
+
+    //Offset is not disabled, we move the effects layer to match the position of our character
+    //We need to add the viewport as an offset as effects are not bound to it.
+    int effect_x = (ui_viewport->width() * self_offset / 100) + ui_viewport->x();
+    int effect_y = (ui_viewport->height() * self_offset_v / 100) + ui_viewport->y();
+    ui_vp_effect->move(effect_x, effect_y);
 }
 
 void Courtroom::set_ip_list(QString p_list)
