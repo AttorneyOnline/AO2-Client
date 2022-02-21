@@ -10,6 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install Qt5
+      run: sudo apt-get install -y qtbase5-dev
+
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
 
@@ -20,8 +23,6 @@ jobs:
 
     - uses: ZedThree/clang-tidy-review@v0.8.2
       id: review
-      with:
-        apt_packages: qtbase5-dev
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
