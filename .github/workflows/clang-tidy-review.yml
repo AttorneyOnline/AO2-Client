@@ -1,17 +1,38 @@
 name: clang-tidy-review
 
-# You can be more specific, but it currently only works on pull requests
 on: [pull_request]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  compile:
+    name: ${{matrix.buildname}}
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            buildname: 'clang-tidy'
+            triplet: x64-linux
+            compiler: clang_64
+            qt: '5.15.2'
 
     steps:
     - uses: actions/checkout@v2
+        
+    - name: Restore Qt cache
+      uses: actions/cache@v2.1.7
+      id: cache-qt
+      with:
+        path: ${{github.workspace}}/Qt/${{matrix.qt}}
+        key: ${{matrix.os}}-qt-${{matrix.qt}}-cache
 
-    - name: apt-get dependencies
-      run: sudo apt-get install -y qtbase5-dev clazy
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: ${{matrix.qt}}
+        dir: ${{github.workspace}}
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
+        aqtversion: '==1.1.2'
 
     - name: Install Catch2
       shell: bash
@@ -22,25 +43,28 @@ jobs:
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
         sudo cmake --build build/ --target install
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+    - name: Use CMake 3.20.1
+      uses: lukka/get-cmake@v3.20.1
+
+    - name: Generate compile_commands.json
+      uses: lukka/run-cmake@v3
       with:
-        version: '5.15.2'
-        cached: ${{steps.cache-qt.outputs.cache-hit}}
-
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/build
-
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{github.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=on -DENABLE_CLAZY:BOOL=ON 
+        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+        cmakeListsTxtPath: '${{github.workspace}}/CMakeLists.txt'
+        buildDirectory: '${{github.workspace}}/build'
+        cmakeAppendedArgs: >-
+          -DCMAKE_GLOBAL_AUTOGEN_TARGET=ON
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          -DENABLE_CLAZY:BOOL=ON 
+        buildWithCMakeArgs: >-
+          --target autogen
 
     - uses: ZedThree/clang-tidy-review@v0.8.2
       id: review
       with:
-        build_dir: 'build' # path is relative to checkout directory
+        build_dir: 'build'
         clang_tidy_checks: '-*,performance-*,readability-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,mpi-*,misc-*,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-init-variables'
+        apt_packages: 'pkg-config,libzip-dev,libglu1-mesa-dev,libpulse-dev'
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
