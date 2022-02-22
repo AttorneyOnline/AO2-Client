@@ -34,6 +34,7 @@ jobs:
       id: review
       with:
         build_dir: 'build' # path is relative to checkout directory
+        clang_tidy_checks: '-*,performance-*,readability-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,mpi-*,misc-*,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-init-variables'
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
