@@ -579,7 +579,7 @@ void Courtroom::set_courtroom_size()
   ui_background->set_image("courtroombackground");
 }
 
-static void Courtroom::set_mute_list()
+void Courtroom::set_mute_list()
 {
   mute_map.clear();
 
@@ -601,7 +601,7 @@ static void Courtroom::set_mute_list()
   }
 }
 
-static void Courtroom::set_pair_list()
+void Courtroom::set_pair_list()
 {
   QStringList sorted_pair_list;
 
@@ -725,9 +725,8 @@ void Courtroom::set_widgets()
   log_margin = ao_app->get_log_margin();
   log_timestamp = ao_app->get_log_timestamp();
   log_timestamp_format = ao_app->get_log_timestamp_format();
-  if (regenerate) {
+  if (regenerate)
     regenerate_ic_chatlog();
-  }
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
