@@ -20,7 +20,7 @@ jobs:
         sudo cmake --build build/ --target install
 
     - name: Install Qt5
-      run: sudo apt-get install -y qtbase5-dev
+      run: sudo apt-get install -y qtbase5-dev clazy
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
