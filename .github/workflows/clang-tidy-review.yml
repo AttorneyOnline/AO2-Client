@@ -10,6 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: apt-get dependencies
+      run: sudo apt-get install -y qtbase5-dev clazy
+
     - name: Install Catch2
       shell: bash
       run: |
@@ -19,8 +22,11 @@ jobs:
         cmake -Bbuild -H. -DBUILD_TESTING=OFF
         sudo cmake --build build/ --target install
 
-    - name: Install Qt5
-      run: sudo apt-get install -y qtbase5-dev clazy
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
