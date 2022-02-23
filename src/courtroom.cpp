@@ -2037,6 +2037,10 @@ void Courtroom::on_chat_return_pressed()
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
+  log_chatmessage(packet_contents[MESSAGE], packet_contents[CHAR_ID].toInt(),
+                  packet_contents[SHOWNAME], packet_contents[CHAR_NAME],
+                  packet_contents[OBJECTION_MOD], packet_contents[EVIDENCE_ID].toInt(),
+                  packet_contents[TEXT_COLOR].toInt(), UNDELIVERED);
 }
 
 void Courtroom::reset_ui()
@@ -2203,6 +2207,10 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if (f_displayname.trimmed().isEmpty())
     f_displayname = f_showname;
 
+  bool ghost = f_log_mode == UNDELIVERED;
+  if (!ghost && f_log_mode != IO_ONLY && f_char_id == m_cid)
+    pop_ic_ghost();
+
   if (log_ic_actions) {
     // Check if a custom objection is in use
     int objection_mod = 0;
@@ -2257,7 +2265,9 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
           log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
           [[fallthrough]];
         case DISPLAY_ONLY:
-          append_ic_text(shout_message, f_displayname, tr("shouts"));
+        case UNDELIVERED:
+          append_ic_text(shout_message, f_displayname, tr("shouts"),
+                         0, QDateTime::currentDateTime(), ghost);
           break;
       }
     }
@@ -2274,7 +2284,9 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
           log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"));
           [[fallthrough]];
         case DISPLAY_ONLY:
-          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+        case UNDELIVERED:
+          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"),
+                         0, QDateTime::currentDateTime(), ghost);
           break;
       }
     }
@@ -2294,7 +2306,9 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       log_ic_text(f_showname, f_displayname, f_message, "",f_color);
       [[fallthrough]];
     case DISPLAY_ONLY:
-      append_ic_text(f_message, f_displayname, "",f_color);
+    case UNDELIVERED:
+      append_ic_text(f_message, f_displayname, "",
+                     f_color, QDateTime::currentDateTime(), ghost);
       break;
   }
   if (!ui_showname_enable->isChecked())
@@ -3116,7 +3130,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
-                               int color, QDateTime timestamp)
+                               int color, QDateTime timestamp, bool ghost)
 {
   last_ic_message = p_name + ":" + p_text;
   QTextCharFormat bold;
@@ -3140,6 +3154,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // Only prepend with newline if log goes downwards
   if (log_goes_downwards && need_newline) {
     ui_ic_chatlog->textCursor().insertBlock(format);
+  }
+
+  if (ghost) {
+    ghost_cursors.append(ui_ic_chatlog->textCursor());
   }
 
   // Timestamp if we're doing that meme
@@ -3243,6 +3261,14 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     ui_ic_chatlog->verticalScrollBar()->setValue(
         log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : 0);
   }
+}
+
+void Courtroom::pop_ic_ghost()
+{
+  QTextCursor cursor = ghost_cursors.dequeue();
+  ui_ic_chatlog->setTextCursor(cursor);
+  cursor.select(QTextCursor::BlockUnderCursor);
+  cursor.removeSelectedText();
 }
 
 void Courtroom::play_preanim(bool immediate)

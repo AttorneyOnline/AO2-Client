@@ -237,7 +237,8 @@ public:
   enum LogMode {
     IO_ONLY,
     DISPLAY_ONLY,
-    DISPLAY_AND_IO
+    DISPLAY_AND_IO,
+    UNDELIVERED,
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
   void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY);
@@ -284,7 +285,12 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime());
+                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime(),
+                      bool ghost = false);
+
+  // clear sent messages that appear on the IC log but haven't been delivered
+  // yet to other players
+  void pop_ic_ghost();
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -462,6 +468,8 @@ private:
 
   // amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
+
+  QQueue<QTextCursor> ghost_cursors;
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
