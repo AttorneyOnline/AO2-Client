@@ -1305,7 +1305,6 @@ void Courtroom::done_received()
 
   if (char_list.size() > 0)
   {
-    //set_char_select_page();
     set_char_select();
   }
   else

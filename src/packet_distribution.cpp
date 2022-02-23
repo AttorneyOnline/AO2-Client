@@ -256,16 +256,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       // temporary. the CharsCheck packet sets this properly
       f_char.taken = false;
 
+      w_courtroom->append_char(f_char);
+
       if (!courtroom_loaded) {
         ++loaded_chars;
         w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
                                       .arg(QString::number(loaded_chars))
                                       .arg(QString::number(char_list_size)));
-      }
 
-      w_courtroom->append_char(f_char);
-
-      if (!courtroom_loaded) {
         int total_loading_size =
             char_list_size * 2 + evidence_list_size + music_list_size;
         int loading_value = int(

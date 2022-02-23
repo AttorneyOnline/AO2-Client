@@ -306,7 +306,6 @@ void Courtroom::character_loading_finished()
     }
   }
   ui_char_list->expandAll();
-//  filter_character_list();
 }
 
 void Courtroom::filter_character_list()
