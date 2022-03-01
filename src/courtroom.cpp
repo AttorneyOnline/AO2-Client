@@ -725,8 +725,9 @@ void Courtroom::set_widgets()
   log_margin = ao_app->get_log_margin();
   log_timestamp = ao_app->get_log_timestamp();
   log_timestamp_format = ao_app->get_log_timestamp_format();
-  if (regenerate)
+  if (regenerate) {
     regenerate_ic_chatlog();
+  }
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
