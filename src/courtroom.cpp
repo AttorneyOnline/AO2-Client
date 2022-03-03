@@ -1308,7 +1308,11 @@ void Courtroom::done_received()
   objection_player->set_volume(0);
   blip_player->set_volume(0);
 
-  if (char_list.size() <= 0)
+  if (char_list.size() > 0)
+  {
+    set_char_select();
+  }
+  else
   {
     update_character(m_cid);
     enter_courtroom();
