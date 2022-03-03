@@ -2211,6 +2211,8 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if (f_displayname.trimmed().isEmpty())
     f_displayname = f_showname;
 
+  bool selfname = f_char_id == m_cid;
+
   if (log_ic_actions) {
     // Check if a custom objection is in use
     int objection_mod = 0;
@@ -2259,13 +2261,13 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       }
       switch (f_log_mode) {
         case IO_ONLY:
-          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
+          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"), 0, selfname);
           break;
         case DISPLAY_AND_IO:
-          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
+          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"), 0, selfname);
           [[fallthrough]];
         case DISPLAY_ONLY:
-          append_ic_text(shout_message, f_displayname, tr("shouts"));
+          append_ic_text(shout_message, f_displayname, tr("shouts"), 0, selfname);
           break;
       }
     }
@@ -2276,13 +2278,13 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
       switch (f_log_mode) {
         case IO_ONLY:
-          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"));
+          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"), 0, selfname);
           break;
         case DISPLAY_AND_IO:
-          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"));
+          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"), 0, selfname);
           [[fallthrough]];
         case DISPLAY_ONLY:
-          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"));
+          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"), 0, selfname);
           break;
       }
     }
@@ -2296,13 +2298,13 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     return; // Skip adding message
   switch (f_log_mode) {
     case IO_ONLY:
-      log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+      log_ic_text(f_showname, f_displayname, f_message, "", f_color, selfname);
       break;
     case DISPLAY_AND_IO:
-      log_ic_text(f_showname, f_displayname, f_message, "",f_color);
+      log_ic_text(f_showname, f_displayname, f_message, "", f_color, selfname);
       [[fallthrough]];
     case DISPLAY_ONLY:
-      append_ic_text(f_message, f_displayname, "",f_color);
+      append_ic_text(f_message, f_displayname, "", f_color, selfname);
       break;
   }
   if (!ui_showname_enable->isChecked())
@@ -3111,9 +3113,9 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
 }
 
 void Courtroom::log_ic_text(QString p_name, QString p_showname,
-                            QString p_message, QString p_action, int p_color)
+                            QString p_message, QString p_action, int p_color, bool p_selfname)
 {
-  chatlogpiece log_entry(p_name, p_showname, p_message, p_action, p_color);
+  chatlogpiece log_entry(p_name, p_showname, p_message, p_action, p_color, p_selfname);
   ic_chatlog_history.append(log_entry);
   if (ao_app->get_text_logging_enabled() && !ao_app->log_filename.isEmpty())
     ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
@@ -3125,16 +3127,22 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
-                               int color, QDateTime timestamp)
+                               int color, bool selfname, QDateTime timestamp)
 {
   last_ic_message = p_name + ":" + p_text;
   QTextCharFormat bold;
   QTextCharFormat normal;
   QTextCharFormat italics;
+  QTextCharFormat own_name;
+  QTextCharFormat other_name;
   QTextBlockFormat format;
   bold.setFontWeight(QFont::Bold);
   normal.setFontWeight(QFont::Normal);
   italics.setFontItalic(true);
+  own_name.setFontWeight(QFont::Bold);
+  own_name.setForeground(ao_app->get_color("ic_chatlog_selfname_color", "courtroom_fonts.ini"));
+  other_name.setFontWeight(QFont::Bold);
+  other_name.setForeground(ao_app->get_color("ic_chatlog_showname_color", "courtroom_fonts.ini"));
   format.setTopMargin(log_margin);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
@@ -3162,7 +3170,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 
   // Format the name of the actor
-  ui_ic_chatlog->textCursor().insertText(p_name, bold);
+  QTextCharFormat name_format = selfname ? own_name : other_name;
+  ui_ic_chatlog->textCursor().insertText(p_name, name_format);
   // Special case for stopping the music
   if (p_action == tr("has stopped the music")) {
     ui_ic_chatlog->textCursor().insertText(" " + p_action + ".", normal);
@@ -3900,13 +3909,14 @@ void Courtroom::handle_song(QStringList *p_contents)
       }
     }
     if (!mute_map.value(n_char)) {
+      bool selfname = n_char == m_cid;
       if (is_stop) {
-        log_ic_text(str_char, str_show, "", tr("has stopped the music"));
-        append_ic_text("", str_show, tr("has stopped the music"));
+        log_ic_text(str_char, str_show, "", tr("has stopped the music"), 0, selfname);
+        append_ic_text("", str_show, tr("has stopped the music"), 0, selfname);
       }
       else {
-        log_ic_text(str_char, str_show, f_song, tr("has played a song"));
-        append_ic_text(f_song_clear, str_show, tr("has played a song"));
+        log_ic_text(str_char, str_show, f_song, tr("has played a song"), 0, selfname);
+        append_ic_text(f_song_clear, str_show, tr("has played a song"), 0, selfname);
       }
     }
   }
@@ -5384,7 +5394,7 @@ void Courtroom::regenerate_ic_chatlog()
     append_ic_text(message,
                    name,
                    item.get_action(), item.get_chat_color(),
-                   item.get_datetime().toLocalTime());
+                   item.get_selfname(), item.get_datetime().toLocalTime());
   }
 }
 

@@ -279,14 +279,14 @@ public:
                          int default_color = 0);
 
   void log_ic_text(QString p_name, QString p_showname, QString p_message,
-                   QString p_action = "", int p_color = 0);
+                   QString p_action = "", int p_color = 0, bool p_selfname = false);
 
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime());
+                      int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime());
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and

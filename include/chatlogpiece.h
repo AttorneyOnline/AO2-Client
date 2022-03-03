@@ -10,24 +10,26 @@ class chatlogpiece {
 public:
   chatlogpiece();
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
-               QString p_action,int color);
+               QString p_action,int color, bool selfname);
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
-               QString p_action, int color, QDateTime p_datetime);
+               QString p_action, int color, bool selfname, QDateTime p_datetime);
 
-  QString get_name();
-  QString get_showname();
-  QString get_message();
-  QString get_action();
-  QDateTime get_datetime();
-  QString get_datetime_as_string();
-  int get_chat_color();
-  QString get_full();
+  QString &get_name() const { return name; };
+  QString &get_showname() const { return showname; };
+  QString &get_message() const { return message; };
+  QString &get_action() const { return action; };
+  bool get_selfname() const { return selfname; };
+  QDateTime &get_datetime() const { return datetime; };
+  QString &get_datetime_as_string() const { return datetime.toString(); };
+  int get_chat_color() const { return color; };
+  QString &get_full() const;
 
 private:
   QString name;
   QString showname;
   QString message;
   QString action;
+  bool selfname;
   QDateTime datetime;
   int color;
 };
