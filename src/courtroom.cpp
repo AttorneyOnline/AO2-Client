@@ -725,8 +725,9 @@ void Courtroom::set_widgets()
   log_margin = ao_app->get_log_margin();
   log_timestamp = ao_app->get_log_timestamp();
   log_timestamp_format = ao_app->get_log_timestamp_format();
-  if (regenerate)
+  if (regenerate) {
     regenerate_ic_chatlog();
+  }
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog");
   ui_ic_chatlog->setFrameShape(QFrame::NoFrame);
@@ -3768,6 +3769,11 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
     f_background = f_side;
     f_desk_image = f_side + "_overlay";
   }
+
+  QString desk_override = ao_app->read_design_ini("overlays/" + f_background, ao_app->get_background_path("design.ini"));
+  if (desk_override != "")
+    f_desk_image = desk_override;
+
   ui_vp_background->load_image(f_background);
   ui_vp_desk->load_image(f_desk_image);
 
@@ -3792,18 +3798,16 @@ void Courtroom::set_self_offset(QString p_list, QString p_effect) {
       self_offset_v = self_offsets[1].toInt();
     ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 
-    int effect_x;
-    int effect_y;
-
+    //If an effect is ignoring the users offset, we force it to the default position of the viewport.
     if (ao_app->get_effect_property(play_effect[0], current_char, "ignore_offset") == "true") {
-      effect_x = (ui_viewport->width() * self_offset / 100) + ui_viewport->x();
-      effect_y = (ui_viewport->height() * self_offset_v / 100) + ui_viewport->y();
-      ui_vp_effect->move(effect_x, effect_y);
+      ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
       return;
     }
 
-    effect_x = (ui_viewport->width() * self_offset / 100) + ui_viewport->x();
-    effect_y = (ui_viewport->height() * self_offset_v / 100) + ui_viewport->y();
+    //Offset is not disabled, we move the effects layer to match the position of our character
+    //We need to add the viewport as an offset as effects are not bound to it.
+    int effect_x = (ui_viewport->width() * self_offset / 100) + ui_viewport->x();
+    int effect_y = (ui_viewport->height() * self_offset_v / 100) + ui_viewport->y();
     ui_vp_effect->move(effect_x, effect_y);
 }
 
