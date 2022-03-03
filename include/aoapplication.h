@@ -553,8 +553,8 @@ public:
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 9;
-  const int MINOR_VERSION = 1;
+  const int MAJOR_VERSION = 10;
+  const int MINOR_VERSION = 0;
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
