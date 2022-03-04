@@ -359,16 +359,17 @@ void DemoServer::playback()
         AOPacket wait_packet = AOPacket(current_packet);
 
         int duration = wait_packet.get_contents().at(0).toInt();
-        if (max_wait != -1) {
-          if (duration + elapsed_time > max_wait) {
-            duration = qMax(0, max_wait - elapsed_time);
-            // Skip the difference on the timers
-            emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
-          }
-          else if (timer->interval() != 0 && duration + elapsed_time > timer->interval()) {
-              duration = qMax(0, timer->interval() - elapsed_time);
-              emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
-          }
+        // Max wait reached
+        if (max_wait != -1 && duration + elapsed_time > max_wait) {
+          duration = qMax(0, max_wait - elapsed_time);
+          qDebug() << "Max_wait of " << max_wait << " reached. Forcing duration to " << duration << "ms";
+          // Skip the difference on the timers
+          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+        }
+        // Manual user skip, such as with >
+        else if (timer->remainingTime() > 0) {
+          qDebug() << "Timer of interval " << timer->interval() << " is being skipped. Forcing to skip " << timer->remainingTime() << "ms on TI# clocks";
+          emit skip_timers(timer->remainingTime());
         }
         elapsed_time += duration;
         timer->start(duration);
