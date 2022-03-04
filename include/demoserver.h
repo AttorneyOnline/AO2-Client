@@ -31,6 +31,7 @@ private:
     QTcpSocket* client_sock = nullptr;
     bool client_connected = false;
     bool partial_packet = false;
+    bool debug_mode = false;
     QString temp_packet = "";
     QQueue<QString> demo_data;
     QString sc_packet;

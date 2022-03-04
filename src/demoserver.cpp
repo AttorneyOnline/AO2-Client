@@ -233,9 +233,39 @@ void DemoServer::handle_packet(AOPacket packet)
             QString packet = "CT#DEMO#" + tr("min_wait is deprecated. Use the client Settings for minimum wait instead!") + "#1#%";
             client_sock->write(packet.toUtf8());
         }
+        else if (contents[1].startsWith("/debug"))
+        {
+            QStringList args = contents[1].split(" ");
+            if (args.size() > 1)
+            {
+              bool ok;
+              int toggle = args.at(1).toInt(&ok);
+              if (ok && (toggle == 0 || toggle == 1)) {
+                debug_mode = toggle == 1;
+                QString packet = "CT#DEMO#" + tr("Setting debug mode to ") + (debug_mode ? "true" : "false") + "#1#%";
+                client_sock->write(packet.toUtf8());
+                // Debug mode disabled?
+                if (!debug_mode) {
+                  // Reset the timer
+                  client_sock->write("TI#4#1#0#%");
+                  client_sock->write("TI#4#3#0#%");
+                }
+              }
+              else
+              {
+                QString packet = "CT#DEMO#" + tr("Valid values are 1 or 0!") + "#1#%";
+                client_sock->write(packet.toUtf8());
+              }
+            }
+            else
+            {
+              QString packet = "CT#DEMO#" + tr("Set debug mode using /debug 1 to enable, and /debug 0 to disable, which will use the fourth timer (TI#4) to show the remaining time until next demo line.") + "#1#%";
+              client_sock->write(packet.toUtf8());
+            }
+        }
         else if (contents[1].startsWith("/help"))
         {
-            QString packet = "CT#DEMO#" + tr("Available commands:\nload, reload, play, pause, max_wait, help") + "#1#%";
+            QString packet = "CT#DEMO#" + tr("Available commands:\nload, reload, play, pause, max_wait, debug, help") + "#1#%";
             client_sock->write(packet.toUtf8());
         }
     }
@@ -321,8 +351,8 @@ void DemoServer::reset_state()
     client_sock->write("LE##%");
 
     // Reset timers
-    client_sock->write("TI#0#3#0#%");
     client_sock->write("TI#0#1#0#%");
+    client_sock->write("TI#0#3#0#%");
     client_sock->write("TI#1#1#0#%");
     client_sock->write("TI#1#3#0#%");
     client_sock->write("TI#2#1#0#%");
@@ -373,6 +403,11 @@ void DemoServer::playback()
         }
         elapsed_time += duration;
         timer->start(duration);
+        if (debug_mode) {
+          client_sock->write("TI#4#2#%");
+          QString debug_timer = "TI#4#0#" + QString::number(duration) + "#%";
+          client_sock->write(debug_timer.toUtf8());
+        }
     }
     else {
       QString end_packet = "CT#DEMO#" + tr("Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.") + "#1#%";
