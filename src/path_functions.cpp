@@ -155,6 +155,19 @@ QString AOApplication::get_sfx_path(QVector<VPath> pathlist)
   return QString();
 }
 
+QString AOApplication::get_config_path(QString p_config, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc)
+{
+    QString path;
+    const auto paths = get_asset_paths(p_config, p_theme, p_subtheme, p_default_theme, p_misc);
+    for (const VPath &p : paths) {
+        path = get_real_path(p);
+        if (!path.isEmpty()) {
+            return path;
+        }
+    }
+    return "";
+}
+
 QString AOApplication::get_config_value(QString p_identifier, QString p_config, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc)
 {
     QString path;

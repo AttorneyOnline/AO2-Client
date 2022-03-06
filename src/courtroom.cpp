@@ -683,8 +683,7 @@ void Courtroom::set_widgets()
                                        ui_viewport->height());
 
   ui_vp_chat_arrow->move(0, 0);
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions("chat_arrow", "courtroom_design.ini");
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(settings.value("chat_arrow").toStringList());
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
     qWarning() << "could not find \"chat_arrow\" in courtroom_design.ini";

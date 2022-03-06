@@ -346,29 +346,26 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
   return return_value;
 }
 
+pos_size_type AOApplication::get_element_dimensions(QStringList list)
+{
+  QStringList default_dimensions = {"0", "0", "-1", "-1"};
+  if (list.size() < 4)
+    list = default_dimensions;
+  pos_size_type return_value;
+  return_value.x = list.at(0).toInt();
+  return_value.y = list.at(1).toInt();
+  return_value.width = list.at(2).toInt();
+  return_value.height = list.at(3).toInt();
+  return return_value;
+}
+
 pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
                                                     QString p_file,
                                                     QString p_misc)
 {
-  pos_size_type return_value;
-  return_value.x = 0;
-  return_value.y = 0;
-  return_value.width = -1;
-  return_value.height = -1;
-  QString f_result = get_design_element(p_identifier, p_file, p_misc);
-
-  QStringList sub_line_elements = f_result.split(",");
-
-  if (sub_line_elements.size() < 4)
-    return return_value;
-
-  return_value.x = sub_line_elements.at(0).toInt();
-  return_value.y = sub_line_elements.at(1).toInt();
-  return_value.width = sub_line_elements.at(2).toInt();
-  return_value.height = sub_line_elements.at(3).toInt();
-
-  return return_value;
+  return get_element_dimensions(get_design_element(p_identifier, p_file, p_misc).split(","));
 }
+
 QString AOApplication::get_design_element(QString p_identifier, QString p_file,
                                           QString p_misc)
 {

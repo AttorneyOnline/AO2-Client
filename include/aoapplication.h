@@ -157,6 +157,7 @@ public:
   QString get_asset_path(QVector<VPath> pathlist);
   QString get_image_path(QVector<VPath> pathlist, bool static_image=false);
   QString get_sfx_path(QVector<VPath> pathlist);
+  QString get_config_path(QString p_config, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="");
   QString get_config_value(QString p_identifier, QString p_config, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="");
   QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="", bool static_image=false);
@@ -335,6 +336,8 @@ public:
   // Returns the coordinates of widget with p_identifier from p_file
   QPoint get_button_spacing(QString p_identifier, QString p_file);
 
+  // Returns the dimensions of QStringList
+  pos_size_type get_element_dimensions(QStringList list);
   // Returns the dimensions of widget with specified identifier from p_file
   pos_size_type get_element_dimensions(QString p_identifier, QString p_file,
                                        QString p_misc = "");
