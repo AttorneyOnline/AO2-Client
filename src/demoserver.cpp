@@ -259,7 +259,7 @@ void DemoServer::handle_packet(AOPacket packet)
             }
             else
             {
-              QString packet = "CT#DEMO#" + tr("Set debug mode using /debug 1 to enable, and /debug 0 to disable, which will use the fourth timer (TI#4) to show the remaining time until next demo line.") + "#1#%";
+              QString packet = "CT#DEMO#" + tr("Set debug mode using /debug 1 to enable, and /debug 0 to disable, which will use the fifth timer (TI#4) to show the remaining time until next demo line.") + "#1#%";
               client_sock->write(packet.toUtf8());
             }
         }
