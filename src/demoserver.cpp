@@ -242,7 +242,7 @@ void DemoServer::handle_packet(AOPacket packet)
               int toggle = args.at(1).toInt(&ok);
               if (ok && (toggle == 0 || toggle == 1)) {
                 debug_mode = toggle == 1;
-                QString packet = "CT#DEMO#" + tr("Setting debug mode to %1").arg(debug_mode) + "#1#%";
+                QString packet = "CT#DEMO#" + tr("Setting debug mode to %1").arg(static_cast<int>(debug_mode)) + "#1#%";
                 client_sock->write(packet.toUtf8());
                 // Debug mode disabled?
                 if (!debug_mode) {
