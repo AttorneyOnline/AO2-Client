@@ -18,7 +18,7 @@ public:
   QString get_showname() { return showname; };
   QString get_message() { return message; };
   QString get_action() { return action; };
-  bool get_selfname() { return selfname; };
+  bool get_selfname() const { return selfname; };
   QDateTime get_datetime() { return datetime; };
   QString get_datetime_as_string() { return datetime.toString(); };
   int get_chat_color() { return color; };
