@@ -21,7 +21,7 @@ public:
   bool get_selfname() const { return selfname; };
   QDateTime get_datetime() { return datetime; };
   QString get_datetime_as_string() { return datetime.toString(); };
-  int get_chat_color() { return color; };
+  int get_chat_color() const { return color; };
   QString get_full();
 
 private:
