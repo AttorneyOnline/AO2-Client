@@ -1866,58 +1866,69 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(f_side);
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
-  QString f_sfx = "0";
+  QString f_sfx = "1";
 // EMOTE MOD OVERRIDES:
   // Emote_mod 2 is only used by objection check later, having it in the char.ini does nothing
-  if (f_emote_mod == 2)
-    f_emote_mod = 1;
+  if (f_emote_mod == 2) {
+    f_emote_mod = PREANIM;
+  }
   // No clue what emote_mod 3 is even supposed to be.
-  if (f_emote_mod == 3)
-    f_emote_mod = 0;
+  if (f_emote_mod == 3) {
+    f_emote_mod = IDLE;
+  }
   // Emote_mod 4 seems to be a legacy bugfix that just refers it to emote_mod 5 which is zoom emote
-  if (f_emote_mod == 4)
-    f_emote_mod = 5;
+  if (f_emote_mod == 4) {
+    f_emote_mod = ZOOM;
+  }
   // If we have "pre" on, and immediate is not checked
   if (ui_pre->isChecked() && !ui_immediate->isChecked()) {
     // Turn idle into preanim
-    if (f_emote_mod == 0)
-      f_emote_mod = 1;
+    if (f_emote_mod == IDLE) {
+      f_emote_mod = PREANIM;
+    }
     // Turn zoom into preanim zoom
-    else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
-      f_emote_mod = 6;
+    else if (f_emote_mod == ZOOM && ao_app->prezoom_enabled) {
+      f_emote_mod = PREANIM_ZOOM;
+    }
     // Play the sfx
     f_sfx = get_char_sfx();
   }
   // If we have "pre" off, or immediate is checked
   else {
     // Turn preanim into idle
-    if (f_emote_mod == 1)
-      f_emote_mod = 0;
+    if (f_emote_mod == PREANIM) {
+      f_emote_mod = IDLE;
+    }
     // Turn preanim zoom into zoom
-    else if (f_emote_mod == 6)
-      f_emote_mod = 5;
+    else if (f_emote_mod == PREANIM_ZOOM) {
+      f_emote_mod = ZOOM;
+    }
 
     // Play the sfx if pre is checked
-    if (ui_pre->isChecked())
+    if (ui_pre->isChecked()) {
       f_sfx = get_char_sfx();
+    }
   }
 
 // TODO: deprecate this garbage. See https://github.com/AttorneyOnline/AO2-Client/issues/692
   // If our objection is enabled
   if (objection_state > 0) {
     // Turn preanim zoom emote mod into non-pre
-    if (f_emote_mod == 5)
-      f_emote_mod = 6;
+    if (f_emote_mod == ZOOM) {
+      f_emote_mod = PREANIM_ZOOM;
+    }
     // Turn it into preanim objection emote mod
-    else
+    else {
       f_emote_mod = 2;
+    }
     // Play the sfx
     f_sfx = get_char_sfx();
   }
 
   // Custom sfx override via sound list dropdown.
-  if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0)
+  if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0) {
     f_sfx = get_char_sfx();
+  }
 
   packet_contents.append(f_sfx);
   packet_contents.append(QString::number(f_emote_mod));
