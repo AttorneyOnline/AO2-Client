@@ -243,6 +243,7 @@ void Courtroom::character_loading_finished()
       delete item;
     }
     ui_char_button_list.clear();
+    ui_char_list->clear();
   }
 
   // First, we'll make all the character buttons in the very beginning.
@@ -305,7 +306,6 @@ void Courtroom::character_loading_finished()
     }
   }
   ui_char_list->expandAll();
-  filter_character_list();
 }
 
 void Courtroom::filter_character_list()

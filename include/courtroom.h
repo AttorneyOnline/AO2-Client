@@ -73,6 +73,7 @@ public:
   void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
   void append_music(QString f_music) { music_list.append(f_music); }
   void append_area(QString f_area) { area_list.append(f_area); }
+  void clear_chars() { char_list.clear(); }
   void clear_music() { music_list.clear(); }
   void clear_areas() { area_list.clear(); }
 
