@@ -3614,7 +3614,7 @@ void Courtroom::chat_tick()
     // ! !  ! !
     // where ! is the blip sound
     int b_rate = blip_rate;
-    // Earrape prevention without using timers, this method is more consistent.
+    // Overwhelming blip spam prevention, this method is more consistent than timers
     if (msg_delay != 0 && msg_delay <= 25) {
       // The default blip speed is 40ms, and if current msg_delay is 25ms,
       // the formula will result in the blip rate of:
@@ -3625,7 +3625,7 @@ void Courtroom::chat_tick()
           qMax(b_rate, qRound(static_cast<float>(text_crawl) /
                               msg_delay));
     }
-    if (blip_ticker % b_rate == 0) {
+    if ((blip_rate <= 0 && blip_ticker < 1) || (b_rate > 0 && blip_ticker % b_rate == 0)) {
       // ignoring white space unless blank_blip is enabled.
       if (!formatting_char && (f_character != ' ' || blank_blip)) {
         blip_player->blip_tick();
