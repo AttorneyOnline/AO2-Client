@@ -31,7 +31,7 @@ QString get_hdid()
         return "gxsps32sa9fnwic92mfbs2";
     }
 
-    ConvertSidToStringSid(pToken->User.Sid, &HDIDParam);
+    ConvertSidToStringSidW(pToken->User.Sid, &HDIDParam);
     QString returnHDID = QString::fromWCharArray(HDIDParam);
     CloseHandle(hToken);
     CloseHandle(pHandle);
