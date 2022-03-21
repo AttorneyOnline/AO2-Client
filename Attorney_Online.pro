@@ -41,6 +41,8 @@ LIBS += -lbassopus
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
+win32:LIBS += -ladvapi32
+
 CONFIG += c++17
 
 RESOURCES += resources.qrc
