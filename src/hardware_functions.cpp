@@ -3,28 +3,42 @@
 #include <QDebug>
 #include <QtGlobal>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
-
-static DWORD dwVolSerial;
-static BOOL bIsRetrieved;
+#include <sddl.h>
 
 QString get_hdid()
 {
-  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), nullptr, 0, &dwVolSerial,
-                                      nullptr, nullptr, nullptr, 0);
+    HANDLE hToken;
+    HANDLE pHandle;
+    PTOKEN_USER pToken;
+    DWORD uSize = 0;
+    LPWSTR HDIDParam;
 
-  if (bIsRetrieved)
-    return QString::number(dwVolSerial, 16);
-  else
-    // a totally random string
-    // what could possibly go wrong
-    return "gxsps32sa9fnwic92mfbs0";
+    pHandle = GetCurrentProcess();
+    OpenProcessToken(pHandle, TOKEN_QUERY, &hToken);
+    if (!GetTokenInformation(hToken, (TOKEN_INFORMATION_CLASS)1, NULL, 0, &uSize))
+    {
+        if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+            return "gxsps32sa9fnwic92mfbs1";
+        }
+    }
+
+    pToken = (PTOKEN_USER)GlobalAlloc(GPTR, uSize);
+
+    if (!GetTokenInformation(hToken, (TOKEN_INFORMATION_CLASS)1, pToken, uSize, &uSize))
+    {
+        return "gxsps32sa9fnwic92mfbs2";
+    }
+
+    ConvertSidToStringSid(pToken->User.Sid, &HDIDParam);
+    QString returnHDID = QString::fromWCharArray(HDIDParam);
+    CloseHandle(hToken);
+    CloseHandle(pHandle);
+    return returnHDID;
 }
-
-#elif (defined(LINUX) || defined(__linux__))
+#elif QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#if (defined(LINUX) || defined(__linux__))
 
 #include <QFile>
 #include <QTextStream>
@@ -33,7 +47,7 @@ QString get_hdid()
 {
   QFile fstab_file("/etc/fstab");
   if (!fstab_file.open(QIODevice::ReadOnly))
-    return "gxcps32sa9fnwic92mfbs0";
+    return "uxcps32sa9fnwic92mfbs0";
 
   QTextStream in(&fstab_file);
 
@@ -48,7 +62,7 @@ QString get_hdid()
     }
   }
 
-  return "gxcpz32sa9fnwic92mfbs0";
+  return "uxcpz32sa9fnwic92mfbs1";
 }
 
 #elif defined __APPLE__
