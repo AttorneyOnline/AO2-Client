@@ -135,15 +135,15 @@ void NetworkManager::connect_to_server(server_type p_server)
 
   qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
                               << p_server.port;
-  QNetworkRequest req((QUrl(QString("ws://" + p_server.ip + ":" + p_server.port))));
+
+  QNetworkRequest req(QUrl("ws://" + p_server.ip + ":" + QString::number(p_server.port)));
   req.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
   server_socket->open(req);
-  qDebug() << req.url();
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)
 {
-  server_socket->sendBinaryMessage(p_packet.toUtf8());
+  server_socket->sendTextMessage(p_packet.toUtf8());
 }
 
 void NetworkManager::handle_server_packet(QString p_data)
