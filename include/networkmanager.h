@@ -6,7 +6,7 @@
 
 #include <QDnsLookup>
 #include <QNetworkAccessManager>
-#include <QTcpSocket>
+#include <QtWebSockets/QWebSocket>
 #include <QTime>
 #include <QTimer>
 
@@ -27,7 +27,7 @@ public:
 
   AOApplication *ao_app;
   QNetworkAccessManager *http;
-  QTcpSocket *server_socket;
+  QWebSocket *server_socket;
   QTimer *heartbeat_timer;
 
   const QString DEFAULT_MS_BASEURL = "https://servers.aceattorneyonline.com";
@@ -45,7 +45,7 @@ public:
 public slots:
   void get_server_list(const std::function<void()> &cb);
   void ship_server_packet(QString p_packet);
-  void handle_server_packet();
+  void handle_server_packet(QString p_data);
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);

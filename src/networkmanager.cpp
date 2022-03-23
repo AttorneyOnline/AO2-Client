@@ -12,13 +12,13 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;
 
-  server_socket = new QTcpSocket(this);
+  server_socket = new QWebSocket();
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
 
-  connect(server_socket, &QTcpSocket::readyRead, this,
+  connect(server_socket, &QWebSocket::textMessageReceived, this,
           &NetworkManager::handle_server_packet);
-  connect(server_socket, &QTcpSocket::disconnected, ao_app,
+  connect(server_socket, &QWebSocket::disconnected, ao_app,
           &AOApplication::server_disconnected);
 
   QString master_config =
@@ -60,10 +60,12 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply,
     const auto entry = entryRef.toObject();
     server_type server;
     server.ip = entry["ip"].toString();
-    server.port = entry["port"].toInt();
+    server.port = entry["ws_port"].toInt();
     server.name = entry["name"].toString();
     server.desc = entry["description"].toString(tr("No description provided."));
-    server_list.append(server);
+    if (server.port != 0) {
+        server_list.append(server);
+    }
   }
   ao_app->set_server_list(server_list);
 
@@ -133,21 +135,22 @@ void NetworkManager::connect_to_server(server_type p_server)
 
   qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
                               << p_server.port;
-
-  server_socket->connectToHost(p_server.ip, p_server.port);
+  QNetworkRequest req((QUrl(QString("ws://" + p_server.ip + ":" + p_server.port))));
+  req.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
+  server_socket->open(req);
+  qDebug() << req.url();
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)
 {
-  server_socket->write(p_packet.toUtf8());
+  server_socket->sendBinaryMessage(p_packet.toUtf8());
 }
 
-void NetworkManager::handle_server_packet()
+void NetworkManager::handle_server_packet(QString p_data)
 {
-  QByteArray buffer = server_socket->readAll();
-  QString in_data = QString::fromUtf8(buffer, buffer.size());
+  QString in_data = p_data;
 
-  if (!in_data.endsWith("%")) {
+  if (!p_data.endsWith("%")) {
     partial_packet = true;
     temp_packet += in_data;
     return;
