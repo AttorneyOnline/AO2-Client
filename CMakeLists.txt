@@ -31,7 +31,7 @@ endif()
 target_include_directories(Attorney_Online PRIVATE include)
 
 # Target Lib
-find_package(Qt5 COMPONENTS Core Gui Network Widgets Concurrent REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Network Widgets Concurrent WebSockets REQUIRED)
 target_link_directories(Attorney_Online PRIVATE lib)
 target_link_libraries(Attorney_Online PRIVATE Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets Qt5::Concurrent
     Qt5::WebSockets bass bassopus discord-rpc)
