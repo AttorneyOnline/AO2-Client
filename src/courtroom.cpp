@@ -1915,21 +1915,6 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-// TODO: deprecate this garbage. See https://github.com/AttorneyOnline/AO2-Client/issues/692
-  // If our objection is enabled
-  if (objection_state > 0) {
-    // Turn preanim zoom emote mod into non-pre
-    if (f_emote_mod == ZOOM) {
-      f_emote_mod = PREANIM_ZOOM;
-    }
-    // Turn it into preanim objection emote mod
-    else {
-      f_emote_mod = 2;
-    }
-    // Play the sfx
-    f_sfx = get_char_sfx();
-  }
-
   // Custom sfx override via sound list dropdown.
   if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0) {
     f_sfx = get_char_sfx();
