@@ -3093,7 +3093,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
         check_pos_escaped += appendage.size();
         skip = true;
       }
-      if (f_character == "s" || f_character == "f") // screenshake/flash
+      if (f_character == "s" || f_character == "f" || f_character == "p") // screenshake/flash/pause
         skip = true;
 
       parse_escape_seq = false;
@@ -3561,6 +3561,7 @@ void Courtroom::chat_tick()
   QTextBoundaryFinder tbf(QTextBoundaryFinder::Grapheme, f_rest);
   QString f_character;
   int f_char_length;
+  int msg_delay = 0;
 
   tbf.toNextBoundary();
 
@@ -3620,6 +3621,10 @@ void Courtroom::chat_tick()
       this->do_flash();
       formatting_char = true;
     }
+    if (f_character == "p")
+    {
+      formatting_char = true;
+    }
     next_character_is_not_special = false;
   }
 
@@ -3629,14 +3634,19 @@ void Courtroom::chat_tick()
   else if (current_display_speed > 6)
     current_display_speed = 6;
 
-  int msg_delay = text_crawl * message_display_mult[current_display_speed];
+  if (msg_delay == 0)
+    msg_delay = text_crawl * message_display_mult[current_display_speed];
+
   if ((msg_delay <= 0 &&
        tick_pos < f_message.size() - 1) ||
       formatting_char) {
-    chat_tick_timer->start(0); // Don't bother rendering anything out as we're
-                               // doing the SPEED. (there's latency otherwise)
+    if (f_character == "p")
+      chat_tick_timer->start(100); // wait the pause lol
+    else
+      chat_tick_timer->start(0); // Don't bother rendering anything out as we're
+                                 // doing the SPEED. (there's latency otherwise)
     if (!formatting_char || f_character == "n" || f_character == "f" ||
-        f_character == "s")
+        f_character == "s" || f_character == "p")
       real_tick_pos += f_char_length; // Adjust the tick position for the
                                       // scrollbar convenience
   }
