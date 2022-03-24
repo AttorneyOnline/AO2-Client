@@ -901,12 +901,7 @@ bool AOApplication::get_pos_is_judge(QString p_pos)
   QStringList positions = read_design_ini("judges", get_background_path("design.ini")).split(",");
   if (positions.size() == 1 && positions[0] == "")
       return p_pos == "jud"; //Hardcoded BS only if we have no judges= defined
-  for (QString str : positions)
-      str = str.trimmed();
-  if (positions.contains(p_pos.trimmed()))
-      return true;
-  else
-      return false;
+  return positions.contains(p_pos.trimmed());
 }
 
 bool AOApplication::get_blank_blip()
