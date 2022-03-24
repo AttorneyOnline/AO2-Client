@@ -191,6 +191,8 @@ void Courtroom::char_clicked(int n_char)
 
   if (n_char != -1)
     ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
+  else
+    ui_ic_chat_name->setPlaceholderText("Spectator");
 }
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
