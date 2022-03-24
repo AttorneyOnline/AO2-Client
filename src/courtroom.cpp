@@ -2581,9 +2581,8 @@ void Courtroom::handle_ic_message()
   }
   else
   {
+    play_sfx();
     start_chat_ticking();
-    if (emote_mod == PREANIM || emote_mod == PREANIM_ZOOM || immediate)
-      play_sfx();
   }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
