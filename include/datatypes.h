@@ -3,11 +3,17 @@
 
 #include <QString>
 
+enum connection_type {
+  TCP,
+  WEBSOCKETS,
+};
+
 struct server_type {
   QString name;
   QString desc;
   QString ip;
   int port;
+  connection_type socket_type;
 };
 
 struct emote_type {

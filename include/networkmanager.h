@@ -21,13 +21,17 @@ enum MSDocumentType {
 class NetworkManager : public QObject {
   Q_OBJECT
 
-public:
-  explicit NetworkManager(AOApplication *parent);
-  ~NetworkManager() = default;
-
+private:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
-  QWebSocket *server_socket;
+
+  union {
+    QWebSocket *ws;
+    QTcpSocket *tcp;
+  } server_socket;
+  connection_type active_connection_type;
+  bool connected = false;
+
   QTimer *heartbeat_timer;
 
   const QString DEFAULT_MS_BASEURL = "http://servers.aceattorneyonline.com";
@@ -40,7 +44,12 @@ public:
 
   unsigned int s_decryptor = 5;
 
+public:
+  explicit NetworkManager(AOApplication *parent);
+  ~NetworkManager() = default;
+
   void connect_to_server(server_type p_server);
+  void disconnect_from_server();
 
 public slots:
   void get_server_list(const std::function<void()> &cb);
