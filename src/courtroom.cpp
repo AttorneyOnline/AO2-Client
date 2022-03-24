@@ -3863,8 +3863,8 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 
 void Courtroom::toggle_judge_buttons(bool is_on)
 {
-  if (judge_state > -1)
-    is_on = judge_state == 1; // Server-sided override
+  if (judge_state != POS_DEPENDENT)
+    is_on = judge_state == SHOW_CONTROLS; // Server-sided override
   if (is_on) {
     ui_witness_testimony->show();
     ui_cross_examination->show();
