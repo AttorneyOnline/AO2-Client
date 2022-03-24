@@ -8,6 +8,15 @@
 #include "aocaseannouncerdialog.h"
 #include "aooptionsdialog.h"
 
+static QtMessageHandler original_message_handler;
+static AOApplication *message_handler_context;
+void message_handler(QtMsgType type, const QMessageLogContext &context,
+                     const QString &msg)
+{
+  emit message_handler_context->qt_log_message(type, context, msg);
+  original_message_handler(type, context, msg);
+}
+
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   // Create the QSettings class that points to the config.ini.
@@ -16,9 +25,14 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
-  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
-                   SLOT(ms_connect_finished(bool, bool)));
-  qApp->setStyleSheet("QFrame {background-color:transparent;} QAbstractItemView {background-color: transparent; color: black;}; QLineEdit {background-color:transparent;}");
+
+  asset_lookup_cache.reserve(2048);
+
+  message_handler_context = this;
+  original_message_handler = qInstallMessageHandler(message_handler);
+
+  setApplicationVersion(get_version_string());
+  setApplicationDisplayName(tr("Attorney Online 2"));
 }
 
 AOApplication::~AOApplication()
@@ -26,12 +40,14 @@ AOApplication::~AOApplication()
   destruct_lobby();
   destruct_courtroom();
   delete discord;
+  delete configini;
+  qInstallMessageHandler(original_message_handler);
 }
 
 void AOApplication::construct_lobby()
 {
   if (lobby_constructed) {
-    qDebug() << "W: lobby was attempted constructed when it already exists";
+    qWarning() << "lobby was attempted constructed when it already exists";
     return;
   }
 
@@ -56,7 +72,7 @@ void AOApplication::construct_lobby()
 void AOApplication::destruct_lobby()
 {
   if (!lobby_constructed) {
-    qDebug() << "W: lobby was attempted destructed when it did not exist";
+    qWarning() << "lobby was attempted destructed when it did not exist";
     return;
   }
 
@@ -68,7 +84,7 @@ void AOApplication::destruct_lobby()
 void AOApplication::construct_courtroom()
 {
   if (courtroom_constructed) {
-    qDebug() << "W: courtroom was attempted constructed when it already exists";
+    qWarning() << "courtroom was attempted constructed when it already exists";
     return;
   }
 
@@ -85,14 +101,14 @@ void AOApplication::construct_courtroom()
                      w_courtroom, &Courtroom::skip_clocks);
   }
   else {
-    qDebug() << "W: demo server did not exist during courtroom construction";
+    qWarning() << "demo server did not exist during courtroom construction";
   }
 }
 
 void AOApplication::destruct_courtroom()
 {
   if (!courtroom_constructed) {
-    qDebug() << "W: courtroom was attempted destructed when it did not exist";
+    qWarning() << "courtroom was attempted destructed when it did not exist";
     return;
   }
 
@@ -152,33 +168,6 @@ void AOApplication::loading_cancelled()
   w_lobby->hide_loading_overlay();
 }
 
-void AOApplication::ms_connect_finished(bool connected, bool will_retry)
-{
-  if (connected) {
-    AOPacket *f_packet = new AOPacket("ALL#%");
-    send_ms_packet(f_packet);
-  }
-  else {
-    if (will_retry) {
-      if (lobby_constructed)
-        w_lobby->append_error(
-            tr("Error connecting to master server. Will try again in %1 "
-               "seconds.")
-                .arg(QString::number(net_manager->ms_reconnect_delay)));
-    }
-    else {
-      call_error(tr("There was an error connecting to the master server.\n"
-                    "We deploy multiple master servers to mitigate any "
-                    "possible downtime, "
-                    "but the client appears to have exhausted all possible "
-                    "methods of finding "
-                    "and connecting to one.\n"
-                    "Please check your Internet connection and firewall, and "
-                    "please try again."));
-    }
-  }
-}
-
 void AOApplication::call_settings_menu()
 {
   AOOptionsDialog settings(nullptr, this);
@@ -192,13 +181,14 @@ void AOApplication::call_announce_menu(Courtroom *court)
 }
 
 // Callback for when BASS device is lost
+// Only actually used for music syncs
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
                                        DWORD data, void *user)
 {
-  UNUSED(handle);
-  UNUSED(channel);
-  UNUSED(data);
-  UNUSED(user);
+  Q_UNUSED(handle);
+  Q_UNUSED(channel);
+  Q_UNUSED(data);
+  Q_UNUSED(user);
   doBASSreset();
 }
 
@@ -211,6 +201,7 @@ void AOApplication::doBASSreset()
 
 void AOApplication::initBASS()
 {
+  BASS_SetConfig(BASS_CONFIG_DEV_DEFAULT, 1);
   BASS_Free();
   // Change the default audio output device to be the one the user has given
   // in his config.ini file for now.
@@ -228,7 +219,7 @@ void AOApplication::initBASS()
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);
         load_bass_opus_plugin();
-        qDebug() << info.name << "was set as the default audio output device.";
+        qInfo() << info.name << "was set as the default audio output device.";
         return;
       }
     }

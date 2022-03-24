@@ -13,7 +13,7 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
 
   evidence_movie = new InterfaceLayer(this, ao_app);
 
-  connect(evidence_movie, SIGNAL(done()), this, SLOT(show_done()));
+  connect(evidence_movie, &InterfaceLayer::done, this, &AOEvidenceDisplay::show_done);
 }
 
 void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
@@ -35,7 +35,8 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
     gif_name = "evidence_appear_right";
   }
 
-  QString f_evidence_path = ao_app->get_evidence_path(p_evidence_image);
+  QString f_evidence_path = ao_app->get_real_path(
+        ao_app->get_evidence_path(p_evidence_image));
   QPixmap f_pixmap(f_evidence_path);
 
   pos_size_type icon_dimensions =

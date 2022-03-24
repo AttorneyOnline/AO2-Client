@@ -11,13 +11,11 @@
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
 #include "aolayer.h"
-#include "aolineedit.h"
 #include "aomusicplayer.h"
 #include "aooptionsdialog.h"
 #include "aopacket.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
-#include "aotextedit.h"
 #include "chatlogpiece.h"
 #include "datatypes.h"
 #include "debug_functions.h"
@@ -25,6 +23,7 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "scrolltext.h"
+#include "eventfilters.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -58,6 +57,8 @@
 #include <QTextCharFormat>
 #include <QElapsedTimer>
 
+#include <QFuture>
+
 #include <algorithm>
 #include <stack>
 
@@ -72,6 +73,7 @@ public:
   void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
   void append_music(QString f_music) { music_list.append(f_music); }
   void append_area(QString f_area) { area_list.append(f_area); }
+  void clear_chars() { char_list.clear(); }
   void clear_music() { music_list.clear(); }
   void clear_areas() { area_list.clear(); }
 
@@ -186,7 +188,8 @@ public:
   void set_scene(QString f_desk_mod, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  void set_self_offset(QString p_list);
+  // sets ui_effects_layer according to the SELF_OFFSET, unless it is overwritten by effects.ini
+  void set_self_offset(QString p_list, QString p_effect);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -215,8 +218,12 @@ public:
   void list_music();
   void list_areas();
 
-  // these are for OOC chat
-  void append_ms_chatmessage(QString f_name, QString f_message);
+  // Debug log (formerly master server chat log)
+  void debug_message_handler(QtMsgType type, const QMessageLogContext &context,
+                             const QString &msg);
+  void append_debug_message(QString f_message);
+
+  // OOC chat log
   void append_server_chatmessage(QString p_name, QString p_message,
                                  QString p_color);
 
@@ -272,14 +279,14 @@ public:
                          int default_color = 0);
 
   void log_ic_text(QString p_name, QString p_showname, QString p_message,
-                   QString p_action = "", int p_color = 0);
+                   QString p_action = "", int p_color = 0, bool p_selfname = false);
 
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0, QDateTime timestamp = QDateTime::currentDateTime());
+                      int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime());
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -426,6 +433,9 @@ private:
 
   // True, if the log should have a timestamp.
   bool log_timestamp = false;
+
+  // format string for aforementioned log timestamp
+  QString log_timestamp_format;
 
   // How long in miliseconds should the objection wait before appearing.
   int objection_threshold = 1500;
@@ -600,6 +610,9 @@ private:
   QString current_background = "default";
   QString current_side = "";
 
+  QString last_music_search = "";
+  QString last_area_search = "";
+
   QBrush free_brush;
   QBrush lfp_brush;
   QBrush casing_brush;
@@ -635,7 +648,7 @@ private:
 
   QTextEdit *ui_ic_chatlog;
 
-  AOTextArea *ui_ms_chatlog;
+  AOTextArea *ui_debug_log;
   AOTextArea *ui_server_chatlog;
 
   QListWidget *ui_mute_list;
@@ -657,7 +670,8 @@ private:
 
   QComboBox *ui_pair_order_dropdown;
 
-  AOLineEdit *ui_ic_chat_message;
+  QLineEdit *ui_ic_chat_message;
+  AOLineEditFilter *ui_ic_chat_message_filter;
   QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
@@ -739,7 +753,8 @@ private:
 
   AOButton *ui_evidence_button;
   AOImage *ui_evidence;
-  AOLineEdit *ui_evidence_name;
+  QLineEdit *ui_evidence_name;
+  AOLineEditFilter *ui_evidence_name_filter;
   QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton *> ui_evidence_list;
   AOButton *ui_evidence_left;
@@ -747,7 +762,8 @@ private:
   AOButton *ui_evidence_present;
   AOImage *ui_evidence_overlay;
   AOButton *ui_evidence_delete;
-  AOLineEdit *ui_evidence_image_name;
+  QLineEdit *ui_evidence_image_name;
+  AOLineEditFilter *ui_evidence_image_name_filter;
   AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
   AOButton *ui_evidence_ok;
@@ -755,7 +771,8 @@ private:
   AOButton *ui_evidence_transfer;
   AOButton *ui_evidence_save;
   AOButton *ui_evidence_load;
-  AOTextEdit *ui_evidence_description;
+  QPlainTextEdit *ui_evidence_description;
+
 
   AOImage *ui_char_select_background;
 
@@ -815,6 +832,8 @@ public slots:
   void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                    bool steno);
   void on_reload_theme_clicked();
+
+  void update_ui_music_name();
 
 private slots:
   void start_chat_ticking();
@@ -937,8 +956,6 @@ private slots:
 
   void on_showname_enable_clicked();
 
-  void on_evidence_name_double_clicked();
-  void on_evidence_image_name_double_clicked();
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();

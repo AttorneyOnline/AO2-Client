@@ -10,6 +10,7 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QFileDialog>
+#include <QMessageBox>
 
 class DemoServer : public QObject
 {
@@ -24,11 +25,13 @@ public:
 private:
     void handle_packet(AOPacket packet);
     void load_demo(QString filename);
+    void reset_state();
 
     QTcpServer* tcp_server;
     QTcpSocket* client_sock = nullptr;
     bool client_connected = false;
     bool partial_packet = false;
+    bool debug_mode = false;
     QString temp_packet = "";
     QQueue<QString> demo_data;
     QString sc_packet;

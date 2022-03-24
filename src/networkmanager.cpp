@@ -4,53 +4,126 @@
 #include "debug_functions.h"
 #include "lobby.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QNetworkReply>
+
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;
 
-  ms_socket = new QTcpSocket(this);
   server_socket = new QTcpSocket(this);
+  http = new QNetworkAccessManager(this);
+  heartbeat_timer = new QTimer(this);
 
-  ms_reconnect_timer = new QTimer(this);
-  ms_reconnect_timer->setSingleShot(true);
-  QObject::connect(ms_reconnect_timer, SIGNAL(timeout()), this,
-                   SLOT(retry_ms_connect()));
-
-  QObject::connect(ms_socket, SIGNAL(readyRead()), this,
-                   SLOT(handle_ms_packet()));
-  QObject::connect(server_socket, SIGNAL(readyRead()), this,
-                   SLOT(handle_server_packet()));
-  QObject::connect(server_socket, SIGNAL(disconnected()), ao_app,
-                   SLOT(server_disconnected()));
+  connect(server_socket, &QTcpSocket::readyRead, this,
+          &NetworkManager::handle_server_packet);
+  connect(server_socket, &QTcpSocket::disconnected, ao_app,
+          &AOApplication::server_disconnected);
 
   QString master_config =
       ao_app->configini->value("master", "").value<QString>();
-  if (master_config != "")
-    ms_nosrv_hostname = master_config;
+  if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
+    qInfo() << "using alternate master server" << master_config;
+    ms_baseurl = master_config;
+  }
+
+  connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
+  heartbeat_timer->start(heartbeat_interval);
 }
 
-NetworkManager::~NetworkManager() {}
-
-void NetworkManager::connect_to_master()
+void NetworkManager::get_server_list(const std::function<void()> &cb)
 {
-  ms_socket->close();
-  ms_socket->abort();
+  QNetworkRequest req(QUrl(ms_baseurl + "/servers"));
+  req.setRawHeader("User-Agent", get_user_agent().toUtf8());
 
-#ifdef MS_FAILOVER_SUPPORTED
-  perform_srv_lookup();
-#else
-  connect_to_master_nosrv();
-#endif
+  QNetworkReply *reply = http->get(req);
+  connect(reply, &QNetworkReply::finished,
+          this, std::bind(&NetworkManager::ms_request_finished, this, reply, cb));
 }
 
-void NetworkManager::connect_to_master_nosrv()
+void NetworkManager::ms_request_finished(QNetworkReply *reply,
+                                         const std::function<void()> &cb)
 {
-  QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-                   SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
+  QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
+  if (json.isNull()) {
+    qCritical().noquote() << "Invalid JSON response from" << reply->url();
+    reply->deleteLater();
+    return;
+  }
 
-  QObject::connect(ms_socket, SIGNAL(connected()), this,
-                   SLOT(on_ms_nosrv_connect_success()));
-  ms_socket->connectToHost(ms_nosrv_hostname, ms_port);
+  qDebug().noquote() << "Got valid response from" << reply->url();
+
+  QVector<server_type> server_list;
+  const auto jsonEntries = json.array();
+  for (const auto &entryRef : jsonEntries) {
+    const auto entry = entryRef.toObject();
+    server_type server;
+    server.ip = entry["ip"].toString();
+    server.port = entry["port"].toInt();
+    server.name = entry["name"].toString();
+    server.desc = entry["description"].toString(tr("No description provided."));
+    server_list.append(server);
+  }
+  ao_app->set_server_list(server_list);
+
+  cb();
+
+  reply->deleteLater();
+}
+
+void NetworkManager::send_heartbeat()
+{
+  // Ping the server periodically to tell the MS that you've been playing
+  // within a 5 minute window, so that the the number of people playing within
+  // that time period can be counted and an accurate player count be displayed.
+  // What do I care about your personal information, I really don't want it.
+  if (ao_app->get_player_count_optout())
+    return;
+
+  QNetworkRequest req(QUrl(ms_baseurl + "/playing"));
+  req.setRawHeader("User-Agent", get_user_agent().toUtf8());
+
+  http->post(req, QByteArray());
+}
+
+void NetworkManager::request_document(MSDocumentType document_type,
+                                      const std::function<void(QString)> &cb)
+{
+  const QMap<MSDocumentType, QString> endpoints {
+    // I have to balance an evil with a good
+    { MSDocumentType::PrivacyPolicy, "/privacy" },
+    { MSDocumentType::Motd, "/motd" },
+    { MSDocumentType::ClientVersion, "/version" }
+  };
+
+  const QString &endpoint = endpoints[document_type];
+  QNetworkRequest req(QUrl(ms_baseurl + endpoint));
+  req.setRawHeader("User-Agent", get_user_agent().toUtf8());
+
+  QString language =
+      ao_app->configini->value("language").toString();
+  if (language.trimmed().isEmpty())
+    language = QLocale::system().name();
+
+  req.setRawHeader("Accept-Language", language.toUtf8());
+
+  qDebug().noquote().nospace()
+      << "Getting " << endpoint << ", Accept-Language: " << language;
+
+  QNetworkReply *reply = http->get(req);
+  connect(reply, &QNetworkReply::finished, this, [endpoint, cb, reply] {
+    QString content = QString::fromUtf8(reply->readAll());
+    int http_status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (content.isEmpty() || http_status != 200) {
+      qDebug().noquote().nospace()
+          << "Failed to get " << endpoint << " (" << reply->errorString() << ") "
+          << "(http status " << http_status << ")";
+      content = QString();
+    }
+    cb(content);
+    reply->deleteLater();
+  });
 }
 
 void NetworkManager::connect_to_server(server_type p_server)
@@ -58,155 +131,15 @@ void NetworkManager::connect_to_server(server_type p_server)
   server_socket->close();
   server_socket->abort();
 
-  server_socket->connectToHost(p_server.ip, p_server.port);
-}
+  qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
+                              << p_server.port;
 
-void NetworkManager::ship_ms_packet(QString p_packet)
-{
-  if (!ms_socket->isOpen()) {
-    retry_ms_connect();
-  }
-  else {
-    ms_socket->write(p_packet.toUtf8());
-  }
+  server_socket->connectToHost(p_server.ip, p_server.port);
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)
 {
   server_socket->write(p_packet.toUtf8());
-}
-
-void NetworkManager::handle_ms_packet()
-{
-  QByteArray buffer = ms_socket->readAll();
-  QString in_data = QString::fromUtf8(buffer, buffer.size());
-
-  if (!in_data.endsWith("%")) {
-    ms_partial_packet = true;
-    ms_temp_packet += in_data;
-    return;
-  }
-
-  else {
-    if (ms_partial_packet) {
-      in_data = ms_temp_packet + in_data;
-      ms_temp_packet = "";
-      ms_partial_packet = false;
-    }
-  }
-
-  QStringList packet_list =
-      in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
-
-  for (QString packet : packet_list) {
-    AOPacket *f_packet = new AOPacket(packet);
-
-    ao_app->ms_packet_received(f_packet);
-  }
-}
-
-void NetworkManager::perform_srv_lookup()
-{
-#ifdef MS_FAILOVER_SUPPORTED
-  ms_dns = new QDnsLookup(QDnsLookup::SRV, ms_srv_hostname, this);
-
-  connect(ms_dns, SIGNAL(finished()), this, SLOT(on_srv_lookup()));
-  ms_dns->lookup();
-#endif
-}
-
-void NetworkManager::on_srv_lookup()
-{
-#ifdef MS_FAILOVER_SUPPORTED
-  bool connected = false;
-  if (ms_dns->error() != QDnsLookup::NoError) {
-    qWarning("SRV lookup of the master server DNS failed.");
-    ms_dns->deleteLater();
-  }
-  else {
-    const auto srv_records = ms_dns->serviceRecords();
-
-    for (const QDnsServiceRecord &record : srv_records) {
-#ifdef DEBUG_NETWORK
-      qDebug() << "Connecting to " << record.target() << ":" << record.port();
-#endif
-      ms_socket->connectToHost(record.target(), record.port());
-      QElapsedTimer timer;
-      timer.start();
-      do {
-        ao_app->processEvents();
-        if (ms_socket->state() == QAbstractSocket::ConnectedState) {
-          connected = true;
-          break;
-        }
-        else if (ms_socket->state() != QAbstractSocket::ConnectingState &&
-                 ms_socket->state() != QAbstractSocket::HostLookupState &&
-                 ms_socket->error() != -1) {
-          qDebug() << ms_socket->error();
-          qWarning() << "Error connecting to master server:"
-                     << ms_socket->errorString();
-          ms_socket->abort();
-          ms_socket->close();
-          break;
-        }
-      } while (timer.elapsed() <
-               timeout_milliseconds); // Very expensive spin-wait loop - it will
-                                      // bring CPU to 100%!
-      if (connected) {
-        // Connect a one-shot signal in case the master server disconnects
-        // randomly
-        QObject::connect(
-            ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-            SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
-        break;
-      }
-      else {
-        ms_socket->abort();
-        ms_socket->close();
-      }
-    }
-  }
-
-  // Failover to non-SRV connection
-  if (!connected)
-    connect_to_master_nosrv();
-  else
-    emit ms_connect_finished(connected, false);
-#endif
-}
-
-void NetworkManager::on_ms_nosrv_connect_success()
-{
-  emit ms_connect_finished(true, false);
-
-  QObject::disconnect(ms_socket, SIGNAL(connected()), this,
-                      SLOT(on_ms_nosrv_connect_success()));
-
-  QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-                   SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
-}
-
-void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
-{
-  qWarning() << "Master server socket error:" << ms_socket->errorString() << "("
-             << error << ")";
-
-  // Disconnect the one-shot signal - this way, failover connect attempts
-  // don't trigger a full retry
-  QObject::disconnect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
-                      this,
-                      SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
-
-  emit ms_connect_finished(false, true);
-
-  ms_reconnect_timer->start(ms_reconnect_delay * 1000);
-}
-
-void NetworkManager::retry_ms_connect()
-{
-  if (!ms_reconnect_timer->isActive() &&
-      ms_socket->state() != QAbstractSocket::ConnectingState)
-    connect_to_master();
 }
 
 void NetworkManager::handle_server_packet()
@@ -228,10 +161,9 @@ void NetworkManager::handle_server_packet()
     }
   }
 
-  QStringList packet_list =
-      in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
 
-  for (QString packet : packet_list) {
+  for (const QString &packet : packet_list) {
     AOPacket *f_packet = new AOPacket(packet);
 
     ao_app->server_packet_received(f_packet);

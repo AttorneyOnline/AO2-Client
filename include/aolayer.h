@@ -7,8 +7,12 @@
 #include <QLabel>
 #include <QTimer>
 #include <QBitmap>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QMutex>
+#include <QWaitCondition>
 
 class AOApplication;
+class VPath;
 
 // "Brief" explanation of what the hell this is:
 //
@@ -104,10 +108,6 @@ protected:
 
   QElapsedTimer actual_time;
 
-  // Usually used to turn seconds into milliseconds such as for [Time] tag in
-  // char.ini (which is no longer used)
-  const int tick_ms = 60;
-
   // These are the X and Y values before they are fixed based on the sprite's
   // width.
   int x = 0;
@@ -141,6 +141,18 @@ protected:
   void set_frame(QPixmap f_pixmap);
   // Center the QLabel in the viewport based on the dimensions of f_pixmap
   void center_pixmap(QPixmap f_pixmap);
+
+private:
+  // Populates the frame and delay vectors.
+  void populate_vectors();
+
+  // used in populate_vectors
+  void load_next_frame();
+  std::atomic_bool exit_loop { false }; //awful solution but i'm not fucking using QThread
+  QFuture<void> frame_loader;
+  QMutex mutex;
+  QWaitCondition frameAdded;
+
 
 signals:
   void done();
@@ -239,4 +251,5 @@ public:
   StickerLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_charname);
 };
+
 #endif // AOLAYER_H
