@@ -7,22 +7,23 @@ chatlogpiece::chatlogpiece()
   message = tr("UNKNOWN");
   color = 0;
   action = "";
-  datetime = QDateTime::currentDateTime().toUTC();
+  datetime = QDateTime::currentDateTimeUtc();
 }
 
 chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
-                           QString p_message, QString p_action, int p_color)
+                           QString p_message, QString p_action, int p_color, bool p_selfname)
 {
   name = p_name;
   showname = p_showname;
   message = p_message;
   action = p_action;
   color = p_color;
-  datetime = QDateTime::currentDateTime().toUTC();
+  selfname = p_selfname;
+  datetime = QDateTime::currentDateTimeUtc();
 }
 
 chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
-                           QString p_message, QString p_action, int p_color,
+                           QString p_message, QString p_action, int p_color, bool p_selfname,
                            QDateTime p_datetime)
 {
   name = p_name;
@@ -30,22 +31,9 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
   message = p_message;
   action = p_action;
   color = p_color;
+  selfname = p_selfname;
   datetime = p_datetime.toUTC();
 }
-
-QString chatlogpiece::get_name() { return name; }
-
-QString chatlogpiece::get_showname() { return showname; }
-
-QString chatlogpiece::get_message() { return message; }
-
-QDateTime chatlogpiece::get_datetime() { return datetime; }
-
-QString chatlogpiece::get_action() { return action; }
-
-QString chatlogpiece::get_datetime_as_string() { return datetime.toString(); }
-
-int chatlogpiece::get_chat_color() { return color; }
 
 QString chatlogpiece::get_full()
 {

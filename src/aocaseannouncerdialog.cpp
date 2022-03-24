@@ -23,10 +23,10 @@ AOCaseAnnouncerDialog::AOCaseAnnouncerDialog(QWidget *parent,
   ui_announcer_buttons->setStandardButtons(QDialogButtonBox::Ok |
                                            QDialogButtonBox::Cancel);
 
-  QObject::connect(ui_announcer_buttons, SIGNAL(accepted()), this,
-                   SLOT(ok_pressed()));
-  QObject::connect(ui_announcer_buttons, SIGNAL(rejected()), this,
-                   SLOT(cancel_pressed()));
+  connect(ui_announcer_buttons, &QDialogButtonBox::accepted, this,
+                   &AOCaseAnnouncerDialog::ok_pressed);
+  connect(ui_announcer_buttons, &QDialogButtonBox::rejected, this,
+                   &AOCaseAnnouncerDialog::cancel_pressed);
 
   setUpdatesEnabled(false);
 

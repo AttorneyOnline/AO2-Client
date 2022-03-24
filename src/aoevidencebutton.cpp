@@ -27,12 +27,12 @@ AOEvidenceButton::AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app,
   this->resize(p_w, p_h);
   //  this->setAcceptDrops(true);
 
-  connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
+  connect(this, &AOEvidenceButton::clicked, this, &AOEvidenceButton::on_clicked);
 }
 
 void AOEvidenceButton::set_image(QString p_image)
 {
-  QString image_path = ao_app->get_evidence_path(p_image);
+  QString image_path = ao_app->get_real_path(ao_app->get_evidence_path(p_image));
   if (file_exists(p_image)) {
     this->setText("");
     this->setStyleSheet(
@@ -57,8 +57,10 @@ void AOEvidenceButton::set_image(QString p_image)
 
 void AOEvidenceButton::set_theme_image(QString p_image)
 {
-  QString theme_image_path = ao_app->get_theme_path(p_image);
-  QString default_image_path = ao_app->get_theme_path(p_image, ao_app->default_theme);
+  QString theme_image_path = ao_app->get_real_path(
+        ao_app->get_theme_path(p_image));
+  QString default_image_path = ao_app->get_real_path(
+        ao_app->get_theme_path(p_image, ao_app->default_theme));
 
   QString final_image_path;
 
@@ -78,12 +80,12 @@ void AOEvidenceButton::set_selected(bool p_selected)
     ui_selected->hide();
 }
 
-void AOEvidenceButton::on_clicked() { evidence_clicked(m_id); }
+void AOEvidenceButton::on_clicked() { emit evidence_clicked(m_id); }
 
 void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
 {
   QPushButton::mouseDoubleClickEvent(e);
-  evidence_double_clicked(m_id);
+  emit evidence_double_clicked(m_id);
 }
 
 /*
@@ -106,7 +108,7 @@ void AOEvidenceButton::enterEvent(QEvent *e)
 {
   ui_selector->show();
 
-  on_hover(m_id, true);
+  emit on_hover(m_id, true);
 
   setFlat(false);
   QPushButton::enterEvent(e);
@@ -116,6 +118,6 @@ void AOEvidenceButton::leaveEvent(QEvent *e)
 {
   ui_selector->hide();
 
-  on_hover(m_id, false);
+  emit on_hover(m_id, false);
   QPushButton::leaveEvent(e);
 }

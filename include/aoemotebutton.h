@@ -14,7 +14,7 @@ public:
                 int p_w, int p_h);
 
   void set_image(QString p_image, QString p_emote_comment);
-  void set_char_image(QString p_char, int p_emote, QString suffix);
+  void set_char_image(QString p_char, int p_emote, bool on);
 
   void set_id(int p_id) { m_id = p_id; }
   int get_id() { return m_id; }
