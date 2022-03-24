@@ -701,7 +701,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     bool ok;
     int authenticated = f_contents.at(0).toInt(&ok);
     if (!ok)
-      goto end;
+      qWarning() << "Malformed AUTH packet! Contents:" << f_contents.at(0);
 
     w_courtroom->on_authentication_state_received(authenticated);
   }
@@ -709,14 +709,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed || f_contents.size() < 1)
       goto end;
     bool ok;
-    int state = f_contents.at(0).toInt(&ok);
+    Courtroom::JudgeState state = static_cast<Courtroom::JudgeState>(f_contents.at(0).toInt(&ok));
     if (!ok)
-      goto end;
+      goto end; // ignore malformed packet
     w_courtroom->set_judge_state(state);
-    if (w_courtroom->get_judge_state() > -1) // If we receive JD -1, it means the server asks us to fall back to client-side judge buttons behavior
-      w_courtroom->toggle_judge_buttons(w_courtroom->get_judge_state() == 1);
+    if (w_courtroom->get_judge_state() != Courtroom::POS_DEPENDENT) // If we receive JD -1, it means the server asks us to fall back to client-side judge buttons behavior
+      w_courtroom->toggle_judge_buttons(w_courtroom->get_judge_state() == Courtroom::SHOW_CONTROLS);
     else
-      w_courtroom->set_judge_buttons(); // client side judge behavior
+      w_courtroom->set_judge_buttons(); // client-side judge behavior
   }
 
 end:
