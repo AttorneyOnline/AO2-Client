@@ -2535,13 +2535,15 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     // If immediate is not ticked on...
     if (!p_immediate)
     {
+      // Play the sound effect if one was sent to us
       play_sfx();
       // Skip preanim.
       handle_ic_speaking();
     }
     else
     {
-      // Emotes 0, 5 all play preanim alongside the chatbox, not waiting for the animation to finish.
+      // IDLE, ZOOM both play preanim alongside the chatbox, not waiting for the animation to finish.
+      // This behavior is a bit jank (why is emote mod affected by immediate?) but eh it functions
       play_preanim(true);
     }
     break;
