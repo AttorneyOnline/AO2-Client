@@ -4085,10 +4085,10 @@ void Courtroom::on_ooc_return_pressed()
   //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
   if (ooc_message.startsWith("/pos") & !ao_app->effects_enabled) {
     if (ooc_message == "/pos jud") {
-      show_judge_buttons(true);
+      show_judge_controls(true);
     }
     else {
-      show_judge_buttons(false);
+      show_judge_controls(false);
     }
   }
 
@@ -4365,7 +4365,7 @@ void Courtroom::on_pos_remove_clicked()
   ui_pos_dropdown->blockSignals(true);
   QString default_side = ao_app->get_char_side(current_char);
 
-  show_judge_buttons(ao_app->get_pos_is_judge(default_side));
+  show_judge_controls(ao_app->get_pos_is_judge(default_side));
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
