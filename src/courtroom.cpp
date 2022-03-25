@@ -2073,7 +2073,7 @@ void Courtroom::on_chat_return_pressed()
     QString p_effect =
         ao_app->read_char_ini(current_char, "effects", "Options");
     packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
-    if (!ao_app->is_stickyeffects_enabled()) {
+    if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, "sticky").startsWith("true")) {
       ui_effects_dropdown->blockSignals(true);
       ui_effects_dropdown->setCurrentIndex(0);
       ui_effects_dropdown->blockSignals(false);
