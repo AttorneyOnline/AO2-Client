@@ -110,8 +110,8 @@ protected:
 
   // These are the X and Y values before they are fixed based on the sprite's
   // width.
-  int x = 0;
-  int y = 0;
+  int f_x = 0;
+  int f_y = 0;
   // These are the width and height values before they are fixed based on the
   // sprite's width.
   int f_w = 0;

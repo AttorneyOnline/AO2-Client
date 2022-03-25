@@ -102,8 +102,8 @@ void AOLayer::set_frame(QPixmap f_pixmap)
 
 void AOLayer::center_pixmap(QPixmap f_pixmap) {
   QLabel::move(
-      x + (f_w - f_pixmap.width()) / 2,
-      y + (f_h - f_pixmap.height())); // Always center horizontally, always put
+      f_x + (f_w - f_pixmap.width()) / 2,
+      f_y + (f_h - f_pixmap.height())); // Always center horizontally, always put
                                       // at the bottom vertically
   if (masked)
       this->setMask(
@@ -126,17 +126,17 @@ int AOLayer::get_frame_delay(int delay)
 
 void AOLayer::move(int ax, int ay)
 {
-  x = ax;
-  y = ay;
-  QLabel::move(x, y);
+  f_x = ax;
+  f_y = ay;
+  QLabel::move(f_x, f_y);
 }
 
 void AOLayer::move_and_center(int ax, int ay)
 {
-  x = ax;
-  y = ay;
+  f_x = ax;
+  f_y = ay;
   if (movie_frames.isEmpty()) // safeguard
-    QLabel::move(x,y);
+    QLabel::move(f_x,f_y);
   else
     center_pixmap(movie_frames[0]); // just use the first frame since dimensions are all that matter
 }
