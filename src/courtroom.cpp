@@ -3162,6 +3162,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   QTextCharFormat italics;
   QTextCharFormat own_name;
   QTextCharFormat other_name;
+  QTextCharFormat timestamp_format;
+  QTextCharFormat selftimestamp_format;
   QTextBlockFormat format;
   bold.setFontWeight(QFont::Bold);
   normal.setFontWeight(QFont::Normal);
@@ -3170,6 +3172,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   own_name.setForeground(ao_app->get_color("ic_chatlog_selfname_color", "courtroom_fonts.ini"));
   other_name.setFontWeight(QFont::Bold);
   other_name.setForeground(ao_app->get_color("ic_chatlog_showname_color", "courtroom_fonts.ini"));
+  timestamp_format.setForeground(ao_app->get_color("ic_chatlog_timestamp_color", "courtroom_fonts.ini"));
+  selftimestamp_format.setForeground(ao_app->get_color("ic_chatlog_selftimestamp_color", "courtroom_fonts.ini"));
   format.setTopMargin(log_margin);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
@@ -3188,9 +3192,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Timestamp if we're doing that meme
   if (log_timestamp) {
+    // Format the timestamp
+    QTextCharFormat format = selfname ? selftimestamp_format : timestamp_format;
     if (timestamp.isValid()) {
       ui_ic_chatlog->textCursor().insertText(
-        "[" + timestamp.toString(log_timestamp_format) + "] ", normal);
+        "[" + timestamp.toString(log_timestamp_format) + "] ", format);
     } else {
       qCritical() << "could not insert invalid timestamp" << timestamp;
     }
