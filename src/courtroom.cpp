@@ -3872,15 +3872,18 @@ void Courtroom::set_scene(QString f_desk_mod, QString f_side)
   }
 }
 
-void Courtroom::set_self_offset(QString p_list) {
+void Courtroom::set_self_offset(const QString& p_list) {
     QStringList self_offsets = p_list.split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
-    if (self_offsets.length() <= 1)
+    if (self_offsets.length() <= 1) {
       self_offset_v = 0;
-    else
+    }
+    else {
       self_offset_v = self_offsets[1].toInt();
-    ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+    }
+    const int percent = 100;
+    ui_vp_player_char->move(ui_viewport->width() * self_offset / percent, ui_viewport->height() * self_offset_v / percent);
 }
 
 void Courtroom::set_ip_list(QString p_list)
