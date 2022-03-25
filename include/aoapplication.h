@@ -339,7 +339,7 @@ public:
   // Returns the dimensions of QStringList
   pos_size_type get_element_dimensions(QStringList list);
   // Returns the dimensions of widget with specified identifier from p_file
-  pos_size_type get_element_dimensions(QString p_identifier, QString p_file,
+  Q_DECL_DEPRECATED pos_size_type get_element_dimensions(QString p_identifier, QString p_file,
                                        QString p_misc = "");
 
   // Returns the value to you

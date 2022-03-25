@@ -621,9 +621,10 @@ void Courtroom::set_widgets()
   // Update the default theme from the courtroom_design.ini, if it's not defined it will be 'default'.
   QSettings settings(ao_app->get_real_path(ao_app->get_theme_path(filename, ao_app->current_theme)), QSettings::IniFormat);
   ao_app->default_theme = settings.value("default_theme", "default").toString();
+  QSettings default_settings(ao_app->get_real_path(ao_app->get_theme_path(filename, ao_app->default_theme)), QSettings::IniFormat);
 
   set_fonts();
-  set_size_and_pos(ui_viewport, "viewport");
+  set_size_and_pos(ui_viewport, ao_app->get_element_dimensions(settings.value("viewport").toStringList()));
 
   // If there is a point to it, show all CCCC features.
   // We also do this this soon so that set_size_and_pos can hide them all later,
@@ -683,15 +684,11 @@ void Courtroom::set_widgets()
                                        ui_viewport->height());
 
   ui_vp_chat_arrow->move(0, 0);
-  pos_size_type design_ini_result = ao_app->get_element_dimensions(settings.value("chat_arrow").toStringList());
 
-  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qWarning() << "could not find \"chat_arrow\" in courtroom_design.ini";
-    ui_vp_chat_arrow->hide();
-  }
-  else {
-    ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
-    ui_vp_chat_arrow->combo_resize(design_ini_result.width, design_ini_result.height);
+  set_size_and_pos(ui_vp_chat_arrow, ao_app->get_element_dimensions(settings.value("chat_arrow").toStringList()));
+  // set_size_and_poss success
+  if (ui_vp_chat_arrow->isVisible()) {
+    ui_vp_chat_arrow->move(ui_vp_chat_arrow->x() + ui_vp_chatbox->x(), ui_vp_chat_arrow->y() +ui_vp_chatbox->y());
   }
 
   // layering shenanigans with ui_vp_chatbox prevent us from doing the sensible
@@ -1263,6 +1260,18 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
   else {
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
+  }
+}
+
+void Courtroom::set_size_and_pos(QWidget *p_widget, pos_size_type size_and_pos)
+{
+  if (size_and_pos.width < 0 || size_and_pos.height < 0) {
+    qWarning() << "set_size_and_pos: Width or height below 0 for " << p_widget->objectName();
+    p_widget->hide();
+  }
+  else {
+    p_widget->move(size_and_pos.x, size_and_pos.y);
+    p_widget->resize(size_and_pos.width, size_and_pos.height);
   }
 }
 

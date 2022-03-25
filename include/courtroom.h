@@ -153,7 +153,10 @@ public:
   void set_window_title(QString p_title);
 
   // reads theme and sets size and pos based on the identifier (using p_misc if provided)
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc="");
+  Q_DECL_DEPRECATED void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc="");
+
+  // reads theme and sets size and pos based on the identifier (using p_misc if provided)
+  void set_size_and_pos(QWidget *p_widget, pos_size_type size_and_pos);
 
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
