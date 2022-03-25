@@ -4033,29 +4033,28 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
   }
 }
 
-void Courtroom::toggle_judge_buttons(bool is_on)
+void Courtroom::show_judge_controls(bool visible)
 {
-  if (judge_state != POS_DEPENDENT)
-    is_on = judge_state == SHOW_CONTROLS; // Server-sided override
-  if (is_on) {
-    ui_witness_testimony->show();
-    ui_cross_examination->show();
-    ui_guilty->show();
-    ui_not_guilty->show();
-    ui_defense_minus->show();
-    ui_defense_plus->show();
-    ui_prosecution_minus->show();
-    ui_prosecution_plus->show();
+  if (judge_state != POS_DEPENDENT) {
+    visible = judge_state == SHOW_CONTROLS; // Server-side override
   }
-  else {
-    ui_witness_testimony->hide();
-    ui_cross_examination->hide();
-    ui_guilty->hide();
-    ui_not_guilty->hide();
-    ui_defense_minus->hide();
-    ui_defense_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_prosecution_plus->hide();
+  QList<QWidget*> judge_controls =
+      {
+        ui_witness_testimony,
+        ui_cross_examination,
+        ui_guilty,
+        ui_not_guilty,
+        ui_defense_minus,
+        ui_defense_plus,
+        ui_prosecution_minus,
+        ui_prosecution_plus
+      };
+
+  for (QWidget* control : judge_controls) {
+      if (visible)
+          control->show();
+      else
+          control->hide();
   }
 }
 
@@ -4086,10 +4085,10 @@ void Courtroom::on_ooc_return_pressed()
   //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
   if (ooc_message.startsWith("/pos") & !ao_app->effects_enabled) {
     if (ooc_message == "/pos jud") {
-      toggle_judge_buttons(true);
+      show_judge_buttons(true);
     }
     else {
-      toggle_judge_buttons(false);
+      show_judge_buttons(false);
     }
   }
 
@@ -4366,7 +4365,7 @@ void Courtroom::on_pos_remove_clicked()
   ui_pos_dropdown->blockSignals(true);
   QString default_side = ao_app->get_char_side(current_char);
 
-  toggle_judge_buttons(ao_app->get_pos_is_judge(default_side));
+  show_judge_buttons(ao_app->get_pos_is_judge(default_side));
 
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
