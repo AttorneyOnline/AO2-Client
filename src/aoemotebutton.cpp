@@ -21,15 +21,18 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
   if (file_exists(p_image)) {
     this->setText("");
     this->setStyleSheet(
-        "QPushButton { border-image: url(\"" + p_image +
-        "\") 0 0 0 0 stretch stretch; }"
+        "QPushButton { border: none; }"
         "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
+    this->setIcon(QPixmap(p_image).scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    this->setIconSize(this->size());
   }
   else {
     this->setText(p_emote_comment);
     this->setStyleSheet("QPushButton { border-image: url(); }"
                         "QToolTip { background-image: url(); color: #000000; "
                         "background-color: #ffffff; border: 0px; }");
+    this->setIcon(QIcon());
+    this->setIconSize(this->size());
   }
 }
 
