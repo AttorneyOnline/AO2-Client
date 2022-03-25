@@ -2698,8 +2698,12 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
     ui_vp_effect->stackUnder(ui_vp_player_char);
   }
   else if (layer == "character") {
-    ui_vp_effect->setParent(this);
-    ui_vp_effect->stackUnder(ui_vp_chatbox);
+    ui_vp_effect->setParent(ui_viewport);
+    ui_vp_effect->stackUnder(ui_vp_desk);
+  }
+  else if (layer == "over") {
+    ui_vp_effect->setParent(ui_viewport);
+    ui_vp_effect->raise();
   }
   else { // if (layer == "chat") {
     ui_vp_effect->setParent(this);
