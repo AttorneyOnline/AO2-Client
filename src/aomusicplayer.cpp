@@ -16,7 +16,6 @@ AOMusicPlayer::~AOMusicPlayer()
 QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
                          int effect_flags)
 {
-  QFuture<QString> invoking_future = music_watcher.future();
   channel = channel % m_channelmax;
   if (channel < 0) // wtf?
     return "[ERROR] Invalid Channel";
@@ -44,13 +43,6 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   }
 
   int error_code = BASS_ErrorGetCode();
-
-  if (invoking_future.isCanceled()) {
-      // Target future has changed. This stream has become irrelevant.
-      // So even if the stream manages to finish after the latest one, we don't run
-      // into order issues.
-      return QString();
-  }
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
