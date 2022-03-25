@@ -33,7 +33,7 @@ public:
   const QString DEFAULT_MS_BASEURL = "https://servers.aceattorneyonline.com";
   QString ms_baseurl = DEFAULT_MS_BASEURL;
 
-  const int heartbeat_interval = 60 * 5;
+  const int heartbeat_interval = 60 * 5 * 1000;
 
   bool partial_packet = false;
   QString temp_packet = "";

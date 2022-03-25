@@ -240,9 +240,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
 
   else if (header == "SC") {
-    if (!courtroom_constructed || courtroom_loaded)
+    if (!courtroom_constructed)
       goto end;
-
+    w_courtroom->clear_chars();
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       QStringList sub_elements = f_contents.at(n_element).split("&");
 
@@ -256,24 +256,28 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       // temporary. the CharsCheck packet sets this properly
       f_char.taken = false;
 
-      ++loaded_chars;
-
-      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
-                                    .arg(QString::number(loaded_chars))
-                                    .arg(QString::number(char_list_size)));
-
       w_courtroom->append_char(f_char);
 
-      int total_loading_size =
-          char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(
-          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-           static_cast<double>(total_loading_size)) *
-          100);
-      w_lobby->set_loading_value(loading_value);
+      if (!courtroom_loaded) {
+        ++loaded_chars;
+        w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
+                                      .arg(QString::number(loaded_chars))
+                                      .arg(QString::number(char_list_size)));
+
+        int total_loading_size =
+            char_list_size * 2 + evidence_list_size + music_list_size;
+        int loading_value = int(
+            ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
+             static_cast<double>(total_loading_size)) *
+            100);
+        w_lobby->set_loading_value(loading_value);
+      }
     }
 
-    send_server_packet(new AOPacket("RM#%"));
+    if (!courtroom_loaded)
+      send_server_packet(new AOPacket("RM#%"));
+    else
+      w_courtroom->character_loading_finished();
     append_to_demofile(f_packet_encoded);
   }
   else if (header == "SM") {
