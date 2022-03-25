@@ -174,10 +174,12 @@ void Courtroom::select_emote(int p_id)
     ui_pre->setChecked(!ui_pre->isChecked());
   }
   else if (!ao_app->is_stickypres_enabled()) {
-    if (emote_mod == 1 || emote_mod == 4)
+    if (emote_mod == PREANIM || emote_mod == PREANIM_ZOOM) {
       ui_pre->setChecked(true);
-    else
+    }
+    else {
       ui_pre->setChecked(false);
+    }
   }
 
   ui_emote_dropdown->setCurrentIndex(current_emote);

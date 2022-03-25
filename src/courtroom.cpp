@@ -1915,21 +1915,6 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-// TODO: deprecate this garbage. See https://github.com/AttorneyOnline/AO2-Client/issues/692
-  // If our objection is enabled
-  if (objection_state > 0) {
-    // Turn preanim zoom emote mod into non-pre
-    if (f_emote_mod == ZOOM) {
-      f_emote_mod = PREANIM_ZOOM;
-    }
-    // Turn it into preanim objection emote mod
-    else {
-      f_emote_mod = 2;
-    }
-    // Play the sfx
-    f_sfx = get_char_sfx();
-  }
-
   // Custom sfx override via sound list dropdown.
   if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0) {
     f_sfx = get_char_sfx();
@@ -2399,7 +2384,7 @@ bool Courtroom::handle_objection()
             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       break;
-      m_chatmessage[EMOTE_MOD] = 1;
+      m_chatmessage[EMOTE_MOD] = PREANIM;
     }
     ui_vp_objection->load_image(
         filename, m_chatmessage[CHAR_NAME],
@@ -2523,36 +2508,42 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
 void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
 {
   // Deal with invalid emote modifiers
-  if (emote_mod != 0 && emote_mod != 1 && emote_mod != 2 && emote_mod != 5 &&
-      emote_mod != 6) {
+  if (emote_mod != IDLE && emote_mod != PREANIM && emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
     // If emote mod is 4...
-    if (emote_mod == 4)
-      emote_mod = 6; // Addresses issue with an old bug that sent the wrong
+    if (emote_mod == 4) {
+      emote_mod = PREANIM_ZOOM; // Addresses issue with an old bug that sent the wrong
                      // emote modifier for zoompre
-    else
-      emote_mod = 0; // Reset emote mod to 0
+    }
+    else if (emote_mod == 2) {
+      // Addresses the deprecated "objection preanim"
+      emote_mod = PREANIM;
+    }
+    else {
+      emote_mod = IDLE; // Reset emote mod to 0
+    }
   }
 
   // Handle the emote mod
   switch (emote_mod) {
-  case 1:
-  case 2:
-  case 6:
+  case PREANIM:
+  case PREANIM_ZOOM:
     // Emotes 1, 2 and 6 all play preanim that makes the chatbox wait for it to finish.
     play_preanim(false);
     break;
-  case 0:
-  case 5:
+  case IDLE:
+  case ZOOM:
     // If immediate is not ticked on...
     if (!p_immediate)
     {
+      // Play the sound effect if one was sent to us
       play_sfx();
       // Skip preanim.
       handle_ic_speaking();
     }
     else
     {
-      // Emotes 0, 5 all play preanim alongside the chatbox, not waiting for the animation to finish.
+      // IDLE, ZOOM both play preanim alongside the chatbox, not waiting for the animation to finish.
+      // This behavior is a bit jank (why is emote mod affected by immediate?) but eh it functions
       play_preanim(true);
     }
     break;
@@ -2580,7 +2571,7 @@ void Courtroom::handle_ic_message()
     ui_vp_sideplayer_char->move(0, 0);
 
     // If the emote_mod is not zooming
-    if (emote_mod != 5 && emote_mod != 6) {
+    if (emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
       // Display the pair character
       display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
     }
@@ -2590,9 +2581,8 @@ void Courtroom::handle_ic_message()
   }
   else
   {
+    play_sfx();
     start_chat_ticking();
-    if (emote_mod == 1 || emote_mod == 2 || emote_mod == 6 || immediate)
-      play_sfx();
   }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
@@ -2860,7 +2850,7 @@ void Courtroom::handle_ic_speaking()
   QString side = m_chatmessage[SIDE];
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // emote_mod 5 is zoom and emote_mod 6 is zoom w/ preanim.
-  if (emote_mod == 5 || emote_mod == 6) {
+  if (emote_mod == ZOOM || emote_mod == PREANIM_ZOOM) {
     // Hide the desks
     ui_vp_desk->hide();
 
@@ -3415,7 +3405,7 @@ void Courtroom::start_chat_ticking()
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); // text meme bonanza
-  if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1") {
+  if ((emote_mod == IDLE || emote_mod == ZOOM) && m_chatmessage[SCREENSHAKE] == "1") {
     this->do_screenshake();
   }
   if (m_chatmessage[MESSAGE].isEmpty()) {
