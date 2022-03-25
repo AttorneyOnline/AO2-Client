@@ -34,7 +34,6 @@ QString get_hdid()
     ConvertSidToStringSidW(pToken->User.Sid, &HDIDParam);
     QString returnHDID = QString::fromWCharArray(HDIDParam);
     CloseHandle(hToken);
-    CloseHandle(pHandle);
     return returnHDID;
 }
 #elif QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
