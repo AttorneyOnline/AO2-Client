@@ -188,8 +188,7 @@ public:
   void set_scene(QString f_desk_mod, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  // sets ui_effects_layer according to the SELF_OFFSET, unless it is overwritten by effects.ini
-  void set_self_offset(QString p_list, QString p_effect);
+  void set_self_offset(QString p_list);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
