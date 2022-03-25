@@ -17,7 +17,9 @@ AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static) : Q
       f_pixmap =
           f_pixmap.scaled(this->size(), Qt::IgnoreAspectRatio);
       this->setPixmap(f_pixmap);
-      this->setMask(f_pixmap.mask());
+      if (masked) {
+        this->setMask(f_pixmap.mask());
+      }
     });
   }
 }
@@ -49,7 +51,9 @@ bool AOImage::set_image(QString p_image, QString p_misc)
     f_pixmap =
         f_pixmap.scaled(this->size(), Qt::IgnoreAspectRatio);
     this->setPixmap(f_pixmap);
-    this->setMask(f_pixmap.mask());
+    if (masked) {
+      this->setMask(f_pixmap.mask());
+    }
   }
   return true;
 }
