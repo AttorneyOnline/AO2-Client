@@ -20,6 +20,7 @@ QString get_hdid()
     if (!GetTokenInformation(hToken, (TOKEN_INFORMATION_CLASS)1, NULL, 0, &uSize))
     {
         if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+            CloseHandle(hToken);
             return "gxsps32sa9fnwic92mfbs1";
         }
     }
@@ -28,6 +29,7 @@ QString get_hdid()
 
     if (!GetTokenInformation(hToken, (TOKEN_INFORMATION_CLASS)1, pToken, uSize, &uSize))
     {
+        CloseHandle(hToken);
         return "gxsps32sa9fnwic92mfbs2";
     }
 
