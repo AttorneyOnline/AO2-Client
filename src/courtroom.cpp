@@ -2712,16 +2712,14 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
 
   int effect_x = 0;
   int effect_y = 0;
+  // The effect is not parented to viewport, meaning we're overlaying ui elements
   if (ui_vp_effect->parentWidget() != ui_viewport) {
     //We need to add the viewport as an offset as effects are not bound to it.
     effect_x = ui_viewport->x();
     effect_y = ui_viewport->y();
   }
-  //If an effect is ignoring the users offset, we force it to the default position of the viewport.
-  if (ao_app->get_effect_property(fx_name, p_char, "ignore_offset") == "true") {
-    ui_vp_effect->move(effect_x, effect_y);
-  }
-  else {
+  // This effect respects the character offset settings
+  if (ao_app->get_effect_property(fx_name, p_char, "respect_offset") == "true") {
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
@@ -2730,11 +2728,11 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
     else
       self_offset_v = self_offsets[1].toInt();
 
-    //Offset is not disabled, we move the effects layer to match the position of our character
+    // Move the effects layer to match the position of our character
     effect_x += ui_viewport->width() * self_offset / 100;
     effect_y += ui_viewport->height() * self_offset_v / 100;
-    ui_vp_effect->move(effect_x, effect_y);
   }
+  ui_vp_effect->move(effect_x, effect_y);
 
   ui_vp_effect->set_static_duration(0);
   ui_vp_effect->set_max_duration(0);
