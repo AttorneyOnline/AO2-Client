@@ -855,14 +855,35 @@ QStringList AOApplication::get_effects(QString p_char)
   QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
   QStringList effects;
 
+  // This is horrible and due for a rethink.
+  QStringList test = {
+    "cull",
+    "layer",
+    "loop",
+    "max_duration",
+    "respect_flip",
+    "respect_offset",
+    "scaling",
+    "sticky",
+    "stretch",
+  };
+
   QStringList lines = read_file(p_path).split("\n");
   // Misc path different from default path, stack the new miscs on top of the defaults
   if (p_misc_path != p_path) {
       lines << read_file(p_misc_path).split("\n");
   }
   foreach (QString effect, lines) {
-    effect = effect.split("=")[0].trimmed().split("_")[0];
-    if (!effect.isEmpty() && !effects.contains(effect))
+    effect = effect.split("=")[0].trimmed();
+    QStringList effect_args = effect.split("_");
+    bool is_arg = false;
+    foreach (QString arg, test) {
+      if (effect.endsWith(arg)) {
+        is_arg = true;
+        break;
+      }
+    }
+    if (!is_arg && !effect.isEmpty() && !effects.contains(effect))
       effects.append(effect);
   }
 
