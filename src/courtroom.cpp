@@ -4514,7 +4514,7 @@ void Courtroom::set_sfx_dropdown()
 
   // Append default sound list after the character sound list.
   sound_list += ao_app->get_list_file(
-  ao_app->get_base_path() + "soundlist.ini");
+      ao_app->get_base_path() + "soundlist.ini");
 
   QStringList display_sounds;
   for (const QString &sound : qAsConst(sound_list)) {
@@ -4537,10 +4537,10 @@ void Courtroom::set_sfx_dropdown()
 
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
+  custom_sfx = "";
   ui_ic_chat_message->setFocus();
   if (p_index == 0) {
       ui_sfx_remove->hide();
-      custom_sfx = "";
   }
 }
 
@@ -4689,8 +4689,9 @@ QString Courtroom::get_char_sfx()
   if (index == 0) { // Default
     return ao_app->get_sfx_name(current_char, current_emote);
   }
-  if (index == 1) // Nothing
+  if (index == 1) { // Nothing
     return "1";
+  }
   QString sfx = sound_list[index-2].split("=")[0].trimmed();
   if (sfx == "")
     return "1";
