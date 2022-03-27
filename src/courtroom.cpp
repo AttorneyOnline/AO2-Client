@@ -1871,33 +1871,56 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(f_side);
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
-
-  // needed or else legacy won't understand what we're saying
-  if (objection_state > 0 && ui_pre->isChecked()) {
-    if (f_emote_mod == 4 || f_emote_mod == 5)
-      f_emote_mod = 6;
-    else
-      f_emote_mod = 2;
+  QString f_sfx = "1";
+// EMOTE MOD OVERRIDES:
+  // Emote_mod 2 is only used by objection check later, having it in the char.ini does nothing
+  if (f_emote_mod == 2) {
+    f_emote_mod = PREANIM;
   }
-  else if (ui_pre->isChecked() && !ui_immediate->isChecked()) {
-    if (f_emote_mod == 0)
-      f_emote_mod = 1;
-    else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
-      f_emote_mod = 6;
+  // No clue what emote_mod 3 is even supposed to be.
+  if (f_emote_mod == 3) {
+    f_emote_mod = IDLE;
   }
+  // Emote_mod 4 seems to be a legacy bugfix that just refers it to emote_mod 5 which is zoom emote
+  if (f_emote_mod == 4) {
+    f_emote_mod = ZOOM;
+  }
+  // If we have "pre" on, and immediate is not checked
+  if (ui_pre->isChecked() && !ui_immediate->isChecked()) {
+    // Turn idle into preanim
+    if (f_emote_mod == IDLE) {
+      f_emote_mod = PREANIM;
+    }
+    // Turn zoom into preanim zoom
+    else if (f_emote_mod == ZOOM && ao_app->prezoom_enabled) {
+      f_emote_mod = PREANIM_ZOOM;
+    }
+    // Play the sfx
+    f_sfx = get_char_sfx();
+  }
+  // If we have "pre" off, or immediate is checked
   else {
-    if (f_emote_mod == 1)
-      f_emote_mod = 0;
-    else if (f_emote_mod == 4)
-      f_emote_mod = 5;
+    // Turn preanim into idle
+    if (f_emote_mod == PREANIM) {
+      f_emote_mod = IDLE;
+    }
+    // Turn preanim zoom into zoom
+    else if (f_emote_mod == PREANIM_ZOOM) {
+      f_emote_mod = ZOOM;
+    }
+
+    // Play the sfx if pre is checked
+    if (ui_pre->isChecked()) {
+      f_sfx = get_char_sfx();
+    }
   }
 
-  // If our sound list is on "Default", it will play a preanim sfx associated with that char's emote only when pre is checked.
-  // Otherwise, the sfx will always be played.
-  if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0 || f_emote_mod == 1 || f_emote_mod == 2 || f_emote_mod == 6)
-    packet_contents.append(get_char_sfx());
-  else
-    packet_contents.append("1");
+  // Custom sfx override via sound list dropdown.
+  if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0) {
+    f_sfx = get_char_sfx();
+  }
+
+  packet_contents.append(f_sfx);
   packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
@@ -2361,7 +2384,7 @@ bool Courtroom::handle_objection()
             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       break;
-      m_chatmessage[EMOTE_MOD] = 1;
+      m_chatmessage[EMOTE_MOD] = PREANIM;
     }
     ui_vp_objection->load_image(
         filename, m_chatmessage[CHAR_NAME],
@@ -2485,36 +2508,42 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
 void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
 {
   // Deal with invalid emote modifiers
-  if (emote_mod != 0 && emote_mod != 1 && emote_mod != 2 && emote_mod != 5 &&
-      emote_mod != 6) {
+  if (emote_mod != IDLE && emote_mod != PREANIM && emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
     // If emote mod is 4...
-    if (emote_mod == 4)
-      emote_mod = 6; // Addresses issue with an old bug that sent the wrong
+    if (emote_mod == 4) {
+      emote_mod = PREANIM_ZOOM; // Addresses issue with an old bug that sent the wrong
                      // emote modifier for zoompre
-    else
-      emote_mod = 0; // Reset emote mod to 0
+    }
+    else if (emote_mod == 2) {
+      // Addresses the deprecated "objection preanim"
+      emote_mod = PREANIM;
+    }
+    else {
+      emote_mod = IDLE; // Reset emote mod to 0
+    }
   }
 
   // Handle the emote mod
   switch (emote_mod) {
-  case 1:
-  case 2:
-  case 6:
+  case PREANIM:
+  case PREANIM_ZOOM:
     // Emotes 1, 2 and 6 all play preanim that makes the chatbox wait for it to finish.
     play_preanim(false);
     break;
-  case 0:
-  case 5:
+  case IDLE:
+  case ZOOM:
     // If immediate is not ticked on...
     if (!p_immediate)
     {
+      // Play the sound effect if one was sent to us
       play_sfx();
       // Skip preanim.
       handle_ic_speaking();
     }
     else
     {
-      // Emotes 0, 5 all play preanim alongside the chatbox, not waiting for the animation to finish.
+      // IDLE, ZOOM both play preanim alongside the chatbox, not waiting for the animation to finish.
+      // This behavior is a bit jank (why is emote mod affected by immediate?) but eh it functions
       play_preanim(true);
     }
     break;
@@ -2542,7 +2571,7 @@ void Courtroom::handle_ic_message()
     ui_vp_sideplayer_char->move(0, 0);
 
     // If the emote_mod is not zooming
-    if (emote_mod != 5 && emote_mod != 6) {
+    if (emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
       // Display the pair character
       display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
     }
@@ -2552,9 +2581,8 @@ void Courtroom::handle_ic_message()
   }
   else
   {
+    play_sfx();
     start_chat_ticking();
-    if (emote_mod == 1 || emote_mod == 2 || emote_mod == 6 || immediate)
-      play_sfx();
   }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
@@ -2822,7 +2850,7 @@ void Courtroom::handle_ic_speaking()
   QString side = m_chatmessage[SIDE];
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   // emote_mod 5 is zoom and emote_mod 6 is zoom w/ preanim.
-  if (emote_mod == 5 || emote_mod == 6) {
+  if (emote_mod == ZOOM || emote_mod == PREANIM_ZOOM) {
     // Hide the desks
     ui_vp_desk->hide();
 
@@ -3134,6 +3162,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   QTextCharFormat italics;
   QTextCharFormat own_name;
   QTextCharFormat other_name;
+  QTextCharFormat timestamp_format;
+  QTextCharFormat selftimestamp_format;
   QTextBlockFormat format;
   bold.setFontWeight(QFont::Bold);
   normal.setFontWeight(QFont::Normal);
@@ -3142,6 +3172,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   own_name.setForeground(ao_app->get_color("ic_chatlog_selfname_color", "courtroom_fonts.ini"));
   other_name.setFontWeight(QFont::Bold);
   other_name.setForeground(ao_app->get_color("ic_chatlog_showname_color", "courtroom_fonts.ini"));
+  timestamp_format.setForeground(ao_app->get_color("ic_chatlog_timestamp_color", "courtroom_fonts.ini"));
+  selftimestamp_format.setForeground(ao_app->get_color("ic_chatlog_selftimestamp_color", "courtroom_fonts.ini"));
   format.setTopMargin(log_margin);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
   const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
@@ -3160,9 +3192,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Timestamp if we're doing that meme
   if (log_timestamp) {
+    // Format the timestamp
+    QTextCharFormat format = selfname ? selftimestamp_format : timestamp_format;
     if (timestamp.isValid()) {
       ui_ic_chatlog->textCursor().insertText(
-        "[" + timestamp.toString(log_timestamp_format) + "] ", normal);
+        "[" + timestamp.toString(log_timestamp_format) + "] ", format);
     } else {
       qCritical() << "could not insert invalid timestamp" << timestamp;
     }
@@ -3377,7 +3411,7 @@ void Courtroom::start_chat_ticking()
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); // text meme bonanza
-  if ((emote_mod == 0 || emote_mod == 5) && m_chatmessage[SCREENSHAKE] == "1") {
+  if ((emote_mod == IDLE || emote_mod == ZOOM) && m_chatmessage[SCREENSHAKE] == "1") {
     this->do_screenshake();
   }
   if (m_chatmessage[MESSAGE].isEmpty()) {
@@ -3632,40 +3666,25 @@ void Courtroom::chat_tick()
 
     ui_vp_message->ensureCursorVisible();
 
-    if (blip_rate > 0) {
-      // We blip every "blip rate" letters.
-      // Here's an example with blank_blip being false and blip_rate being 2:
-      // I am you
-      // ! !  ! !
-      // where ! is the blip sound
-      int b_rate = blip_rate;
-      // Earrape prevention without using timers, this method is more consistent.
-      if (msg_delay != 0 && msg_delay <= 25) {
-        // The default blip speed is 40ms, and if current msg_delay is 25ms,
-        // the formula will result in the blip rate of:
-        // 40/25 = 1.6 = 2
-        // And if it's faster than that:
-        // 40/10 = 4
-        b_rate =
-            qMax(b_rate, qRound(static_cast<float>(text_crawl) /
-                                msg_delay));
-      }
-      if (blip_ticker % b_rate == 0) {
-        // ignoring white space unless blank_blip is enabled.
-        if (!formatting_char && (f_character != ' ' || blank_blip)) {
-          blip_player->blip_tick();
-          ++blip_ticker;
-        }
-      }
-      else {
-        // Don't fully ignore whitespace still, keep ticking until
-        // we reached the need to play a blip sound - we also just
-        // need to wait for a letter to play it on.
-        ++blip_ticker;
-      }
+    // We blip every "blip rate" letters.
+    // Here's an example with blank_blip being false and blip_rate being 2:
+    // I am you
+    // ! !  ! !
+    // where ! is the blip sound
+    int b_rate = blip_rate;
+    // Overwhelming blip spam prevention, this method is more consistent than timers
+    if (msg_delay != 0 && msg_delay <= 25) {
+      // The default blip speed is 40ms, and if current msg_delay is 25ms,
+      // the formula will result in the blip rate of:
+      // 40/25 = 1.6 = 2
+      // And if it's faster than that:
+      // 40/10 = 4
+      b_rate =
+          qMax(b_rate, qRound(static_cast<float>(text_crawl) /
+                              msg_delay));
     }
-    else if (blip_ticker < 1) {
-      // Just blip once
+    if ((blip_rate <= 0 && blip_ticker < 1) || (b_rate > 0 && blip_ticker % b_rate == 0)) {
+      // ignoring white space unless blank_blip is enabled.
       if (!formatting_char && (f_character != ' ' || blank_blip)) {
         blip_player->blip_tick();
         ++blip_ticker;

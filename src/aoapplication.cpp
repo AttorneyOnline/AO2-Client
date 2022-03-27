@@ -196,7 +196,7 @@ void AOApplication::doBASSreset()
 {
   BASS_Free();
   BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-  load_bass_opus_plugin();
+  load_bass_plugins();
 }
 
 void AOApplication::initBASS()
@@ -210,7 +210,7 @@ void AOApplication::initBASS()
 
   if (get_audio_output_device() == "default") {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-    load_bass_opus_plugin();
+    load_bass_plugins();
   }
   else {
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
@@ -218,30 +218,33 @@ void AOApplication::initBASS()
         BASS_SetDevice(a);
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);
-        load_bass_opus_plugin();
+        load_bass_plugins();
         qInfo() << info.name << "was set as the default audio output device.";
         return;
       }
     }
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-    load_bass_opus_plugin();
+    load_bass_plugins();
   }
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
-void AOApplication::load_bass_opus_plugin()
+void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("bassopus.dll", 0);
-}
-#elif (defined(LINUX) || defined(__linux__))
-void AOApplication::load_bass_opus_plugin()
-{
-  BASS_PluginLoad("libbassopus.so", 0);
+  BASS_PluginLoad("bassmidi.dll", 0);
 }
 #elif defined __APPLE__
-void AOApplication::load_bass_opus_plugin()
+void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("libbassopus.dylib", 0);
+  BASS_PluginLoad("libbassmidi.dylib", 0);
+}
+#elif (defined(LINUX) || defined(__linux__))
+void AOApplication::load_bass_plugins()
+{
+  BASS_PluginLoad("libbassopus.so", 0);
+  BASS_PluginLoad("libbassmidi.so", 0);
 }
 #else
 #error This operating system is unsupported for BASS plugins.

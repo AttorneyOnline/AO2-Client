@@ -3,7 +3,7 @@ QT += core gui widgets network
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.9.1.0
+VERSION = 2.10.0.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
@@ -38,8 +38,11 @@ contains(DEFINES, DISCORD) {
 DEFINES += BASSAUDIO
 LIBS += -lbass
 LIBS += -lbassopus
+LIBS += -lbassmidi
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
+
+win32:LIBS += -ladvapi32
 
 CONFIG += c++17
 
