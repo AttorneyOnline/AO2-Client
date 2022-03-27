@@ -888,14 +888,12 @@ QString AOApplication::get_effect(QString effect, QString p_char,
 QString AOApplication::get_effect_property(QString fx_name, QString p_char,
                                            QString p_property)
 {
-  const auto paths = get_asset_paths("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  const auto misc_paths = get_asset_paths("effects.ini", current_theme, get_subtheme(), default_theme, read_char_ini(p_char, "effects", "Options"));
+  const auto paths = get_asset_paths("effects.ini", current_theme, get_subtheme(), default_theme, read_char_ini(p_char, "effects", "Options"));
   QString path;
   QString f_result;
-  for (const VPath &p : paths + misc_paths) {
+  for (const VPath &p : paths) {
     path = get_real_path(p);
     if (!path.isEmpty()) {
-      qDebug() << fx_name << path;
       QSettings settings(path, QSettings::IniFormat);
       settings.setIniCodec("UTF-8");
       QStringList char_effects = settings.childGroups();
@@ -906,7 +904,6 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
         }
         if (effect.toLower() == fx_name.toLower()) {
           f_result = settings.value(char_effects[i] + "/" + p_property).toString();
-          qDebug() << effect << f_result;
           if (!f_result.isEmpty()) {
             // Only break the loop if we get a non-empty result, continue the search otherwise
             break;
