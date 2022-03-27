@@ -3742,6 +3742,9 @@ void Courtroom::chat_tick()
         ++blip_ticker;
       }
     }
+    else {
+      ++blip_ticker;
+    }
 
     // Punctuation delayer, only kicks in on speed ticks less than }}
     if (current_display_speed > 1 && punctuation_chars.contains(f_character)) {
