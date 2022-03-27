@@ -1450,7 +1450,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   set_side(current_side);
 }
 
-void Courtroom::update_character(int p_cid)
+void Courtroom::update_character(int p_cid, QString char_name)
 {
   bool newchar = m_cid != p_cid;
 
@@ -1464,7 +1464,10 @@ void Courtroom::update_character(int p_cid)
     f_char = "";
   }
   else {
-    f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+    if (char_name.isEmpty()) {
+      char_name = char_list.at(m_cid).name;
+    }
+    f_char = ao_app->get_char_name(char_name);
 
     if (ao_app->is_discord_enabled())
       ao_app->discord->state_character(f_char.toStdString());
@@ -4435,7 +4438,6 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
   QString iniswap = ui_iniswap_dropdown->itemText(p_index);
-  ao_app->set_char_ini(char_list.at(m_cid).name, iniswap, "name", "Options");
 
   QStringList swaplist;
   QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
@@ -4450,7 +4452,7 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
-  update_character(m_cid);
+  update_character(m_cid, iniswap);
   QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
                                                  iniswap, "char_icon"));
   ui_iniswap_dropdown->setItemIcon(p_index, QIcon(icon_path));
