@@ -406,8 +406,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
 
   connect(ui_vp_objection, &SplashLayer::done, this, &Courtroom::objection_done);
-  connect(ui_vp_effect, &EffectLayer::done, this, &Courtroom::effect_done);
-  connect(ui_vp_wtce, &SplashLayer::done, this, &Courtroom::effect_done);
   connect(ui_vp_player_char, &CharLayer::done, this, &Courtroom::preanim_done);
   connect(ui_vp_player_char, &CharLayer::shake, this, &Courtroom::do_screenshake);
   connect(ui_vp_player_char, &CharLayer::flash, this, &Courtroom::do_flash);
@@ -2413,12 +2411,6 @@ bool Courtroom::handle_objection()
   return false;
 }
 
-void Courtroom::effect_done()
-{
-  ui_vp_effect->stop();
-  ui_vp_wtce->stop();
-}
-
 void Courtroom::display_character()
 {
   // Stop all previously playing animations, effects etc.
@@ -2695,6 +2687,18 @@ void Courtroom::do_effect(QString& fx_path, QString& fx_sound, QString& p_char,
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
 
+  bool looping =
+      ao_app->get_effect_property(fx_path, p_char, "loop")
+          .startsWith("true");
+
+  int max_duration =
+      ao_app->get_effect_property(fx_path, p_char, "max_duration")
+          .toInt();
+
+  bool cull =
+      ao_app->get_effect_property(fx_path, p_char, "cull")
+          .startsWith("true");
+
   // Possible values: "chat", "character", "behind"
   QString layer = ao_app->get_effect_property(fx_path, p_char, "layer").toLower();
   if (layer == "behind"){
@@ -2741,9 +2745,10 @@ void Courtroom::do_effect(QString& fx_path, QString& fx_sound, QString& p_char,
   }
   ui_vp_effect->move(effect_x, effect_y);
 
-  ui_vp_effect->set_static_duration(0);
-  ui_vp_effect->set_max_duration(0);
-  ui_vp_effect->load_image(effect, true);
+  ui_vp_effect->set_static_duration(max_duration);
+  ui_vp_effect->set_max_duration(max_duration);
+  ui_vp_effect->load_image(effect, looping);
+  ui_vp_effect->set_cull_image(cull);
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)

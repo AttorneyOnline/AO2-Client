@@ -806,7 +806,6 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
-  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
