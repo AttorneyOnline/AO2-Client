@@ -853,13 +853,13 @@ QStringList AOApplication::get_effects(QString p_char)
   QString p_misc = read_char_ini(p_char, "effects", "Options");
   QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
   QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
-  QSettings effects_config = QSettings(p_path, QSettings::IniFormat);
+  QSettings effects_config(p_path, QSettings::IniFormat);
   effects_config.setIniCodec("UTF-8");
   QStringList effects = effects_config.childGroups();
   std::sort(effects.begin(), effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
   if (p_path != p_misc_path) {
     // If misc path is different from default path, stack the new miscs on top of the defaults
-    QSettings effects_config_misc = QSettings(p_misc_path, QSettings::IniFormat);
+    QSettings effects_config_misc(p_misc_path, QSettings::IniFormat);
     effects_config_misc.setIniCodec("UTF-8");
     QStringList misc_effects = effects_config_misc.childGroups();
     std::sort(misc_effects.begin(), misc_effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
