@@ -2666,21 +2666,25 @@ void Courtroom::do_flash()
       ao_app->get_effect("realization", f_char, f_custom_theme), false);
 }
 
-void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
-                          QString p_folder)
+void Courtroom::do_effect(QString& fx_name, QString& fx_sound, QString& p_char,
+                          QString& p_folder)
 {
-  if (fx_name == "")
+  if (fx_name == "") {
     return;
+  }
   QString effect = ao_app->get_effect(fx_name, p_char, p_folder);
-  if (effect == "")
+  if (effect == "") {
     return;
+  }
 
-  if (fx_sound != "")
+  if (fx_sound != "") {
     sfx_player->play(fx_sound);
+  }
 
   // Only check if effects are disabled after playing the sound if it exists
-  if (!ao_app->is_effects_enabled())
+  if (!ao_app->is_effects_enabled()) {
     return;
+  }
   ui_vp_effect->transform_mode = ao_app->get_scaling(
       ao_app->get_effect_property(fx_name, p_char, "scaling"));
   ui_vp_effect->stretch =
@@ -2723,14 +2727,17 @@ void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
-    if (self_offsets.length() <= 1)
+    if (self_offsets.length() <= 1) {
       self_offset_v = 0;
-    else
+    }
+    else {
       self_offset_v = self_offsets[1].toInt();
+    }
 
     // Move the effects layer to match the position of our character
-    effect_x += ui_viewport->width() * self_offset / 100;
-    effect_y += ui_viewport->height() * self_offset_v / 100;
+    const int percent = 100;
+    effect_x += ui_viewport->width() * self_offset / percent;
+    effect_y += ui_viewport->height() * self_offset_v / percent;
   }
   ui_vp_effect->move(effect_x, effect_y);
 
