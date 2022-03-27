@@ -4446,8 +4446,8 @@ void Courtroom::set_iniswap_dropdown()
   if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
     iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
 
-  iniswaps.removeDuplicates();
   iniswaps.prepend(char_list.at(m_cid).name);
+  iniswaps.removeDuplicates();
   if (iniswaps.size() <= 0) {
     ui_iniswap_dropdown->hide();
     ui_iniswap_remove->hide();
@@ -4530,12 +4530,13 @@ void Courtroom::on_iniswap_remove_clicked()
                                // client will crash
     return;
   }
-  if (ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()) !=
-      char_list.at(m_cid).name) {
+  QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+  QString iniswap = ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex());
+  if (iniswap != char_list.at(m_cid).name && !defswaplist.contains(iniswap)) {
     ui_iniswap_dropdown->removeItem(ui_iniswap_dropdown->currentIndex());
-    on_iniswap_dropdown_changed(0); // Reset back to original
-    update_character(m_cid);
   }
+  on_iniswap_dropdown_changed(0); // Reset back to original
+  update_character(m_cid);
 }
 
 void Courtroom::set_sfx_dropdown()
