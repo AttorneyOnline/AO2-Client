@@ -4648,7 +4648,7 @@ void Courtroom::set_effects_dropdown()
     effectslist.append(effect);
   }
 
-  if (effectslist.size() <= 0) {
+  if (effectslist.empty()) {
     ui_effects_dropdown->hide();
     return;
   }
