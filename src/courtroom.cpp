@@ -2666,13 +2666,13 @@ void Courtroom::do_flash()
       ao_app->get_effect("realization", f_char, f_custom_theme), false);
 }
 
-void Courtroom::do_effect(QString& fx_name, QString& fx_sound, QString& p_char,
+void Courtroom::do_effect(QString& fx_path, QString& fx_sound, QString& p_char,
                           QString& p_folder)
 {
-  if (fx_name == "") {
+  if (fx_path == "") {
     return;
   }
-  QString effect = ao_app->get_effect(fx_name, p_char, p_folder);
+  QString effect = ao_app->get_effect(fx_path, p_char, p_folder);
   if (effect == "") {
     return;
   }
@@ -2686,17 +2686,17 @@ void Courtroom::do_effect(QString& fx_name, QString& fx_sound, QString& p_char,
     return;
   }
   ui_vp_effect->transform_mode = ao_app->get_scaling(
-      ao_app->get_effect_property(fx_name, p_char, "scaling"));
+      ao_app->get_effect_property(fx_path, p_char, "scaling"));
   ui_vp_effect->stretch =
-      ao_app->get_effect_property(fx_name, p_char, "stretch")
+      ao_app->get_effect_property(fx_path, p_char, "stretch")
           .startsWith("true");
-  ui_vp_effect->set_flipped(ao_app->get_effect_property(fx_name, p_char, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
+  ui_vp_effect->set_flipped(ao_app->get_effect_property(fx_path, p_char, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
 
   // Possible values: "chat", "character", "behind"
-  QString layer = ao_app->get_effect_property(fx_name, p_char, "layer").toLower();
+  QString layer = ao_app->get_effect_property(fx_path, p_char, "layer").toLower();
   if (layer == "behind"){
     ui_vp_effect->setParent(ui_viewport);
     ui_vp_effect->stackUnder(ui_vp_player_char);
@@ -2723,7 +2723,7 @@ void Courtroom::do_effect(QString& fx_name, QString& fx_sound, QString& p_char,
     effect_y = ui_viewport->y();
   }
   // This effect respects the character offset settings
-  if (ao_app->get_effect_property(fx_name, p_char, "respect_offset") == "true") {
+  if (ao_app->get_effect_property(fx_path, p_char, "respect_offset") == "true") {
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
