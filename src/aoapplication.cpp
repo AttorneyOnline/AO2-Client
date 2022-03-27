@@ -123,7 +123,10 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme() { current_theme = read_theme(); }
+void AOApplication::reload_theme()
+{
+  current_theme = read_theme();
+}
 
 void AOApplication::set_favorite_list()
 {

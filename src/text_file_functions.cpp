@@ -2,8 +2,7 @@
 
 QString AOApplication::read_theme()
 {
-  QString result = configini->value("theme", "default").value<QString>();
-  return result;
+  return configini->value("theme", "default").toString();
 }
 
 int AOApplication::read_blip_rate()
@@ -18,100 +17,117 @@ int AOApplication::read_blip_rate()
 
 QString AOApplication::get_ooc_name()
 {
-  QString result = configini->value("ooc_name").value<QString>();
-  return result;
+  return configini->value("ooc_name").toString();
 }
 
 int AOApplication::get_default_music()
 {
-  int result = configini->value("default_music", 50).toInt();
+  bool ok;
+  int result = configini->value("default_music", 50).toInt(&ok);
+  if (!ok) {
+    return 50;
+  }
   return result;
 }
 
 int AOApplication::get_default_sfx()
 {
-  int result = configini->value("default_sfx", 50).toInt();
+  bool ok;
+  int result = configini->value("default_sfx", 50).toInt(&ok);
+  if (!ok) {
+    return 50;
+  }
   return result;
 }
 
 int AOApplication::get_default_blip()
 {
-  int result = configini->value("default_blip", 50).toInt();
+  bool ok;
+  int result = configini->value("default_blip", 50).toInt(&ok);
+  if (!ok) {
+    return 50;
+  }
   return result;
 }
 
 int AOApplication::get_max_log_size()
 {
-  int result = configini->value("log_maximum", 200).toInt();
+  bool ok;
+  int result = configini->value("log_maximum", 200).toInt(&ok);
+  if (!ok) {
+    return 200;
+  }
   return result;
 }
 
 int AOApplication::stay_time()
 {
-  int result = configini->value("stay_time", 200).toInt();
+  bool ok;
+  int result = configini->value("stay_time", 200).toInt(&ok);
+  if (!ok) {
+    return 200;
+  }
   return result;
 }
 
 int AOApplication::get_text_crawl()
 {
-  int result = configini->value("text_crawl", 40).toInt();
+  bool ok;
+  int result = configini->value("text_crawl", 40).toInt(&ok);
+  if (!ok) {
+    return 40;
+  }
   return result;
 }
 
 int AOApplication::get_chat_ratelimit()
 {
-  int result = configini->value("chat_ratelimit", 300).toInt();
+  bool ok;
+  int result = configini->value("chat_ratelimit", 300).toInt(&ok);
+  if (!ok) {
+    return 300;
+  }
   return result;
 }
 
 bool AOApplication::get_log_goes_downwards()
 {
-  QString result =
-      configini->value("log_goes_downwards", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("log_goes_downwards", "true").toBool();
 }
 
 bool AOApplication::get_log_newline()
 {
-  QString result = configini->value("log_newline", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("log_newline", "false").toBool();
 }
 
 int AOApplication::get_log_margin()
 {
-  int result = configini->value("log_margin", 0).toInt();
-  return result;
+  return configini->value("log_margin", 0).toInt();
 }
 
 bool AOApplication::get_log_timestamp()
 {
-  QString result = configini->value("log_timestamp", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("log_timestamp", "false").toBool();
 }
 
 QString AOApplication::get_log_timestamp_format()
 {
-  QString result = configini->value("log_timestamp_format", "h:mm:ss AP").value<QString>();
-  return result;
+  return configini->value("log_timestamp_format", "h:mm:ss AP").toString();
 }
 
 bool AOApplication::get_log_ic_actions()
 {
-  QString result =
-      configini->value("log_ic_actions", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("log_ic_actions", "true").toBool();
 }
 
 bool AOApplication::get_showname_enabled_by_default()
 {
-  QString result =
-      configini->value("show_custom_shownames", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("show_custom_shownames", "true").toBool();
 }
 
 QString AOApplication::get_default_username()
 {
-  QString result = configini->value("default_username", "").value<QString>();
+  QString result = configini->value("default_username", "").toString();
   if (result.isEmpty())
     return get_ooc_name();
   else
@@ -120,15 +136,12 @@ QString AOApplication::get_default_username()
 
 QString AOApplication::get_default_showname()
 {
-    QString result = configini->value("default_showname", "").value<QString>();
-    return result;
+  return configini->value("default_showname", "").toString();
 }
 
 QString AOApplication::get_audio_output_device()
 {
-  QString result =
-      configini->value("default_audio_device", "default").value<QString>();
-  return result;
+  return configini->value("default_audio_device", "default").toString();
 }
 
 QStringList AOApplication::get_call_words()
@@ -911,175 +924,138 @@ QString AOApplication::get_custom_realization(QString p_char)
 
 bool AOApplication::get_blank_blip()
 {
-  QString result = configini->value("blank_blip", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("blank_blip", "false").toBool();
 }
 
 bool AOApplication::get_looping_sfx()
 {
-  QString result = configini->value("looping_sfx", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("looping_sfx", "true").toBool();
 }
 
 bool AOApplication::objection_stop_music()
 {
-  QString result =
-      configini->value("objection_stop_music", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("objection_stop_music", "false").toBool();
 }
 
 bool AOApplication::is_instant_objection_enabled()
 {
-  QString result = configini->value("instant_objection", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("instant_objection", "true").toBool();
 }
 
 bool AOApplication::is_desyncrhonized_logs_enabled()
 {
-  QString result = configini->value("desync_logs", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("desync_logs", "false").toBool();
 }
 
 bool AOApplication::is_discord_enabled()
 {
-  QString result = configini->value("discord", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("discord", "true").toBool();
 }
 
 bool AOApplication::is_shake_enabled()
 {
-  QString result = configini->value("shake", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("shake", "true").toBool();
 }
 
 bool AOApplication::is_effects_enabled()
 {
-  QString result = configini->value("effects", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("effects", "true").toBool();
 }
 
 bool AOApplication::is_frame_network_enabled()
 {
-  QString result = configini->value("framenetwork", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("framenetwork", "true").toBool();
 }
 
 bool AOApplication::is_colorlog_enabled()
 {
-  QString result = configini->value("colorlog", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("colorlog", "true").toBool();
 }
 
 bool AOApplication::is_stickysounds_enabled()
 {
-  QString result = configini->value("stickysounds", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("stickysounds", "false").toBool();
 }
 
 bool AOApplication::is_stickyeffects_enabled()
 {
-  QString result = configini->value("stickyeffects", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("stickyeffects", "false").toBool();
 }
 
 bool AOApplication::is_stickypres_enabled()
 {
-  QString result = configini->value("stickypres", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("stickypres", "false").toBool();
 }
 
 bool AOApplication::is_customchat_enabled()
 {
-  QString result = configini->value("customchat", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("customchat", "true").toBool();
 }
 
 bool AOApplication::is_sticker_enabled()
 {
-  QString result = configini->value("sticker", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("sticker", "true").toBool();
 }
 
 bool AOApplication::is_continuous_enabled()
 {
-  QString result = configini->value("continuous_playback", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("continuous_playback", "true").toBool();
 }
 
 bool AOApplication::is_category_stop_enabled()
 {
-  QString result = configini->value("category_stop", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("category_stop", "true").toBool();
 }
 
 bool AOApplication::get_casing_enabled()
 {
-  QString result = configini->value("casing_enabled", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("casing_enabled", "false").toBool();
 }
 
 bool AOApplication::get_casing_defence_enabled()
 {
-  QString result =
-      configini->value("casing_defence_enabled", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("casing_defence_enabled", "false").toBool();
 }
 
 bool AOApplication::get_casing_prosecution_enabled()
 {
-  QString result =
-      configini->value("casing_prosecution_enabled", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("casing_prosecution_enabled", "false").toBool();
 }
 
 bool AOApplication::get_casing_judge_enabled()
 {
-  QString result =
-      configini->value("casing_judge_enabled", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("casing_judge_enabled", "false").toBool();
 }
 
 bool AOApplication::get_casing_juror_enabled()
 {
-  QString result =
-      configini->value("casing_juror_enabled", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("casing_juror_enabled", "false").toBool();
 }
 
 bool AOApplication::get_casing_steno_enabled()
 {
-  QString result =
-      configini->value("casing_steno_enabled", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("casing_steno_enabled", "false").toBool();
 }
 
 bool AOApplication::get_casing_cm_enabled()
 {
-  QString result =
-      configini->value("casing_cm_enabled", "false").value<QString>();
-  return result.startsWith("true");
+  return configini->value("casing_cm_enabled", "false").toBool();
 }
 
 QString AOApplication::get_casing_can_host_cases()
 {
-  QString result =
-      configini->value("casing_can_host_cases", "Turnabout Check Your Settings")
+  return configini->value("casing_can_host_cases", "Turnabout Check Your Settings")
           .value<QString>();
-  return result;
 }
 
 bool AOApplication::get_text_logging_enabled()
 {
-  QString result =
-      configini->value("automatic_logging_enabled", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("automatic_logging_enabled", "true").toBool();
 }
 
 bool AOApplication::get_demo_logging_enabled()
 {
-  QString result =
-      configini->value("demo_logging_enabled", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("demo_logging_enabled", "true").toBool();
 }
 
 QString AOApplication::get_subtheme()
@@ -1098,9 +1074,7 @@ QString AOApplication::get_subtheme()
 
 bool AOApplication::get_animated_theme()
 {
-  QString result =
-      configini->value("animated_theme", "true").value<QString>();
-  return result.startsWith("true");
+  return configini->value("animated_theme", "true").toBool();
 }
 
 QString AOApplication::get_default_scaling()
@@ -1115,6 +1089,5 @@ QStringList AOApplication::get_mount_paths()
 
 bool AOApplication::get_player_count_optout()
 {
-  return configini->value("player_count_optout", "false").value<QString>()
-      .startsWith("true");
+  return configini->value("player_count_optout", "false").toBool();
 }
