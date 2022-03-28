@@ -514,19 +514,19 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  return get_real_suffixed_path(sound_to_check,
-                                {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx" });
+  return get_real_path(sound_to_check,
+                                {"", ".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx" });
 }
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
 {
-  QStringList suffixes {};
+  QStringList suffixes {""};
   if (!static_image) {
     suffixes.append({ ".webp", ".apng", ".gif" });
   }
   suffixes.append(".png");
 
-  return get_real_suffixed_path(path_to_check, suffixes);
+  return get_real_path(path_to_check, suffixes);
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and
