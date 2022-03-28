@@ -12,6 +12,7 @@ base-full/
 logs/
 bass.lib
 
+.vs/
 bin/
 bins/
 build/

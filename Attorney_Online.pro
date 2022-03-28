@@ -38,8 +38,11 @@ contains(DEFINES, DISCORD) {
 DEFINES += BASSAUDIO
 LIBS += -lbass
 LIBS += -lbassopus
+LIBS += -lbassmidi
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
+
+win32:LIBS += -ladvapi32
 
 CONFIG += c++17
 

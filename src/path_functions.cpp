@@ -267,8 +267,17 @@ QString AOApplication::get_real_path(const VPath &vpath) {
 
   // Cache miss; try all known mount paths
   QStringList bases = get_mount_paths();
-  bases.push_front(get_base_path());
+  bases.prepend(get_base_path());
+  // base
+  // content 1
+  // content 2
 
+  // We search last to first
+  std::reverse(bases.begin(), bases.end());
+
+  // content 2
+  // content 1
+  // base
   for (const QString &base : bases) {
     QDir baseDir(base);
     QString path = baseDir.absoluteFilePath(vpath.toQString());

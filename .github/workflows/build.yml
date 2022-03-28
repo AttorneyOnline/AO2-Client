@@ -38,6 +38,11 @@ jobs:
         unzip bass.zip
         cp ./c/x64/bass.lib ./lib
 
+        # BASS MIDI
+        curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
+        unzip bassmidi.zip
+        cp ./c/x64/bassmidi.lib ./lib
+
         # BASS Opus
         curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
         unzip bassopus.zip
@@ -77,6 +82,7 @@ jobs:
         cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
         cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
         cp ../../x64/bass.dll .
+        cp ../../x64/bassmidi.dll .
         cp ../../x64/bassopus.dll .
 
     - name: Upload Artifact

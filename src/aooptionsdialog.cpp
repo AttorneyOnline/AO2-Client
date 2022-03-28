@@ -953,7 +953,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_asset_lbl = new QLabel(ui_assets_tab);
   ui_asset_lbl->setText(
         tr("Add or remove base folders for use by assets. "
-           "Base folders will be searched in the order provided."));
+           "Base folders on the bottom are prioritized over those above them."));
   ui_asset_lbl->setWordWrap(true);
   ui_assets_tab_layout->addWidget(ui_asset_lbl);
 
