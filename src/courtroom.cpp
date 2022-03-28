@@ -734,8 +734,7 @@ void Courtroom::set_widgets()
   ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ " + tr("Log goes down") + " ▼"
                                                        : "▲ " + tr("Log goes up") + " ▲");
 
-  set_size_and_pos(ui_debug_log, "ms_chatlog"); // Old name
-  set_size_and_pos(ui_debug_log, "debug_log"); // New name
+  set_size_and_pos(ui_debug_log, "ms_chatlog"); // Old name, still use it to not break compatibility
   ui_debug_log->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
