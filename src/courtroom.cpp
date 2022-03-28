@@ -1443,8 +1443,11 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   for (int n = 0; n < pos_dropdown_list.size(); ++n) {
     QString pos = pos_dropdown_list.at(n);
     ui_pos_dropdown->addItem(pos);
-    QString icon_path = ao_app->get_image_suffix(ao_app->get_background_path(get_pos_path(pos)));
-    ui_pos_dropdown->setItemIcon(n, QIcon(icon_path));
+    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(get_pos_path(pos))));
+    if (!image.isNull()) {
+      image = image.scaledToHeight(ui_pos_dropdown->iconSize().height());
+    }
+    ui_pos_dropdown->setItemIcon(n, image);
   }
 
   if (current_side != "" && !pos_dropdown_list.contains(current_side))
@@ -5190,7 +5193,7 @@ void Courtroom::set_text_color_dropdown()
     ui_text_color->addItem(color_name);
     QPixmap pixmap(16, 16);
     pixmap.fill(color);
-    ui_text_color->setItemIcon(ui_text_color->count() - 1, QIcon(pixmap));
+    ui_text_color->setItemIcon(ui_text_color->count() - 1, pixmap);
     color_row_to_number.append(c);
   }
   for (int c = 0; c < max_colors; ++c) {
