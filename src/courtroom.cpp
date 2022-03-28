@@ -2062,6 +2062,12 @@ void Courtroom::on_chat_return_pressed()
         ao_app->get_effect_property(effect, current_char, "sound");
     QString p_effect =
         ao_app->read_char_ini(current_char, "effects", "Options");
+
+    // Don't overlap the two sfx
+    if (!ui_pre->isChecked() && (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() == 1)) {
+      fx_sound = "0";
+    }
+
     packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
     if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, "sticky").startsWith("true")) {
       ui_effects_dropdown->blockSignals(true);
