@@ -4402,7 +4402,7 @@ void Courtroom::set_iniswap_dropdown()
   }
   QStringList iniswaps =
       ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
-      ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
+      ao_app->get_list_file(VPath("iniswaps.ini"));
 
   if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
     iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
@@ -4446,7 +4446,7 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   }
   ao_app->write_to_file(
       swaplist.join("\n"),
-      ao_app->get_base_path() + "iniswaps.ini");
+      ao_app->get_real_path(VPath("iniswaps.ini")));
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
@@ -4513,8 +4513,7 @@ void Courtroom::set_sfx_dropdown()
       ao_app->get_character_path(current_char, "soundlist.ini"));
 
   // Append default sound list after the character sound list.
-  sound_list += ao_app->get_list_file(
-  ao_app->get_base_path() + "soundlist.ini");
+  sound_list += ao_app->get_list_file(VPath("soundlist.ini"));
 
   QStringList display_sounds;
   for (const QString &sound : qAsConst(sound_list)) {
@@ -4561,7 +4560,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
   else
-    menu->addAction(QString("Edit global soundlist.ini"), this,
+    menu->addAction(QString("Edit base soundlist.ini"), this,
                     SLOT(on_sfx_edit_requested()));
   if (!custom_sfx.isEmpty())
     menu->addAction(QString("Clear Edit Text"), this, SLOT(on_sfx_remove_clicked()));
@@ -4572,7 +4571,7 @@ void Courtroom::on_sfx_edit_requested()
 {
   QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"));
   if (!file_exists(p_path)) {
-    p_path = ao_app->get_base_path() + "soundlist.ini";
+    p_path = ao_app->get_real_path(VPath("soundlist.ini"));
   }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
