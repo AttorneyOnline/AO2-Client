@@ -2650,19 +2650,11 @@ void Courtroom::do_flash()
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_chat(f_char);
-  ui_vp_effect->stretch = true;
-  ui_vp_effect->setParent(this);
-  ui_vp_effect->stackUnder(ui_vp_objection); // go above the chatbox
-  ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
-
-  ui_vp_effect->set_static_duration(60);
-  ui_vp_effect->set_max_duration(60);
-  ui_vp_effect->load_image(
-      ao_app->get_effect("realization", f_char, f_custom_theme), false);
+  do_effect("realization", "", f_char, f_custom_theme);
 }
 
-void Courtroom::do_effect(QString& fx_path, QString& fx_sound, QString& p_char,
-                          QString& p_folder)
+void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char,
+                          QString p_folder)
 {
   if (fx_path == "") {
     return;
