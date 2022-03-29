@@ -647,10 +647,10 @@ end:
   delete p_packet;
 }
 
-void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
+void AOApplication::send_server_packet(AOPacket *p_packet)
 {
-  if (encoded)
-    p_packet->net_encode();
+  // ***NEVER*** send an unencoded packet.
+  p_packet->net_encode();
 
   QString f_packet = p_packet->to_string();
 #ifdef DEBUG_NETWORK
