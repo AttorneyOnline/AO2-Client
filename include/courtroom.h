@@ -307,7 +307,7 @@ public:
   void set_hp_bar(int p_bar, int p_state);
 
   // Toggles the judge buttons, whether they should appear or not.
-  void toggle_judge_buttons(bool is_on);
+  void show_judge_controls(bool visible);
 
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur,
                      bool steno);
@@ -327,6 +327,16 @@ public:
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
   void on_authentication_state_received(int p_state);
+
+  enum JudgeState {
+      POS_DEPENDENT = -1,
+      HIDE_CONTROLS =  0,
+      SHOW_CONTROLS =  1
+  };
+
+  JudgeState get_judge_state() { return judge_state; }
+  void set_judge_state(JudgeState new_state) { judge_state = new_state; }
+  void set_judge_buttons() { show_judge_controls(ao_app->get_pos_is_judge(current_side)); }
 
   ~Courtroom();
 private:
@@ -482,6 +492,8 @@ private:
   // QVector<int> muted_cids;
 
   bool is_muted = false;
+
+  JudgeState judge_state = POS_DEPENDENT;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
   // noniterrupting preanim, 5 = (c) animation
