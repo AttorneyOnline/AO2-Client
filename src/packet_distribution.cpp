@@ -73,19 +73,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
   else if (header == "CT") {
-    if (f_contents.size() < 2)
+    if (!courtroom_constructed || f_contents.size() < 2)
       goto end;
 
-    if (courtroom_constructed) {
-      if (f_contents.size() == 3)
-        w_courtroom->append_server_chatmessage(
-            f_contents.at(0), f_contents.at(1), f_contents.at(2));
-      else
-        w_courtroom->append_server_chatmessage(f_contents.at(0),
-                                               f_contents.at(1), "0");
+    if (f_contents.size() == 3)
+      w_courtroom->append_server_chatmessage(
+          f_contents.at(0), f_contents.at(1), f_contents.at(2));
+    else
+      w_courtroom->append_server_chatmessage(f_contents.at(0),
+                                             f_contents.at(1), "0");
 
-      append_to_demofile(f_packet_encoded);
-    }
+    append_to_demofile(f_packet_encoded);
   }
   else if (header == "FL") {
     yellow_text_enabled = false;
@@ -137,7 +135,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       auth_packet_enabled = true;
   }
   else if (header == "PN") {
-    if (f_contents.size() < 2)
+    if (!lobby_constructed || f_contents.size() < 2)
       goto end;
 
     w_lobby->set_player_count(f_contents.at(0).toInt(),
@@ -153,7 +151,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "SI") {
-    if (f_contents.size() != 3)
+    if (!lobby_constructed || f_contents.size() != 3)
       goto end;
 
     char_list_size = f_contents.at(0).toInt();
@@ -196,7 +194,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
     }
 
-    w_courtroom->set_window_title(window_title);
+    if (courtroom_constructed)
+      w_courtroom->set_window_title(window_title);
 
     w_lobby->show_loading_overlay();
     w_lobby->set_loading_text(tr("Loading"));
@@ -373,46 +372,39 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     destruct_lobby();
   }
   else if (header == "BN") {
-    if (f_contents.size() < 1)
+    if (!courtroom_constructed || f_contents.isEmpty())
       goto end;
 
-    if (courtroom_constructed) {
-      if (f_contents.size() >= 2) {
-        // We have a pos included in the background packet!
-        w_courtroom->set_side(f_contents.at(1));
-      }
-      w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
-      append_to_demofile(f_packet_encoded);
+    if (f_contents.size() >= 2) {
+      // We have a pos included in the background packet!
+      w_courtroom->set_side(f_contents.at(1));
     }
+    w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
+    append_to_demofile(f_packet_encoded);
   }
   else if (header == "SP") {
-    if (f_contents.size() < 1)
+    if (!courtroom_constructed || f_contents.isEmpty())
       goto end;
 
-    if (courtroom_constructed) // We were sent a "set position" packet
-    {
-      w_courtroom->set_side(f_contents.at(0));
-      append_to_demofile(f_packet_encoded);
-    }
+    // We were sent a "set position" packet
+    w_courtroom->set_side(f_contents.at(0));
+    append_to_demofile(f_packet_encoded);
   }
   else if (header == "SD") // Send pos dropdown
   {
-    if (f_contents.size() < 1)
+    if (!courtroom_constructed || f_contents.isEmpty())
       goto end;
 
     w_courtroom->set_pos_dropdown(f_contents.at(0).split("*"));
   }
   // server accepting char request(CC) packet
   else if (header == "PV") {
-    if (f_contents.size() < 3)
+    if (!courtroom_constructed || f_contents.size() < 3)
       goto end;
-
+    // For some reason, args 0 and 1 are not used (from tsu3 they're client ID and a string "CID")
     w_courtroom->enter_courtroom();
-
-    if (courtroom_constructed) {
-      w_courtroom->set_courtroom_size();
-      w_courtroom->update_character(f_contents.at(2).toInt());
-    }
+    w_courtroom->set_courtroom_size();
+    w_courtroom->update_character(f_contents.at(2).toInt());
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
@@ -429,18 +421,18 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "RT") {
-    if (f_contents.size() < 1)
+    if (f_contents.isEmpty())
       goto end;
     if (courtroom_constructed) {
       if (f_contents.size() == 1)
         w_courtroom->handle_wtce(f_contents.at(0), 0);
-      else if (f_contents.size() == 2)
+      else if (f_contents.size() >= 2)
         w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
       append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "HP") {
-    if (courtroom_constructed && f_contents.size() > 1)
+    if (courtroom_constructed && f_contents.size() >= 2)
     {
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
@@ -474,7 +466,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "ARUP") {
-    if (courtroom_constructed) {
+    if (courtroom_constructed && !f_contents.isEmpty()) {
       int arup_type = f_contents.at(0).toInt();
       for (int n_element = 1; n_element < f_contents.size(); n_element++) {
         w_courtroom->arup_modify(arup_type, n_element - 1,
@@ -484,24 +476,24 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "IL") {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->set_ip_list(f_contents.at(0));
   }
   else if (header == "MU") {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->set_mute(true, f_contents.at(0).toInt());
   }
   else if (header == "UM") {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->set_mute(false, f_contents.at(0).toInt());
   }
   else if (header == "BB") {
-    if (courtroom_constructed && f_contents.size() >= 1) {
+    if (courtroom_constructed && !f_contents.isEmpty()) {
       call_notice(f_contents.at(0));
     }
   }
   else if (header == "KK") {
-    if (courtroom_constructed && f_contents.size() >= 1) {
+    if (courtroom_constructed && !f_contents.isEmpty()) {
       call_notice(tr("You have been kicked from the server.\nReason: %1")
                       .arg(f_contents.at(0)));
       construct_lobby();
@@ -509,7 +501,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "KB") {
-    if (courtroom_constructed && f_contents.size() >= 1) {
+    if (courtroom_constructed && !f_contents.isEmpty()) {
       call_notice(tr("You have been banned from the server.\nReason: %1")
                       .arg(f_contents.at(0)));
       construct_lobby();
@@ -517,11 +509,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "BD") {
+    if (f_contents.isEmpty()) {
+      goto end;
+    }
     call_notice(
         tr("You are banned on this server.\nReason: %1").arg(f_contents.at(0)));
   }
   else if (header == "ZZ") {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->mod_called(f_contents.at(0));
   }
   else if (header == "CASEA") {
@@ -587,7 +582,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   // Subtheme packet
   else if (header == "ST") {
-    if (!courtroom_constructed)
+    if (!courtroom_constructed || f_contents.isEmpty())
       goto end;
     // Subtheme reserved as argument 0
     subtheme = f_contents.at(0);
@@ -604,7 +599,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   // Auth packet
   else if (header == "AUTH") {
-    if (!courtroom_constructed || !auth_packet_enabled || f_contents.size() < 1)
+    if (!courtroom_constructed || !auth_packet_enabled || f_contents.isEmpty())
       goto end;
     bool ok;
     int authenticated = f_contents.at(0).toInt(&ok);
@@ -615,7 +610,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->on_authentication_state_received(authenticated);
   }
   else if (header == "JD") {
-    if (!courtroom_constructed || f_contents.empty()) {
+    if (!courtroom_constructed || f_contents.isEmpty()) {
       goto end;
     }
     bool ok;
@@ -634,7 +629,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
  //AssetURL Packet
   else if (header == "ASS") {
-    if (f_contents.size() > 1 || f_contents.size() == 0) { // This can never be more than one link.
+    if (f_contents.size() > 1 || f_contents.isEmpty()) { // This can never be more than one link.
       goto end;
     }
     QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
