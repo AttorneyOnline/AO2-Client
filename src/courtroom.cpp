@@ -797,8 +797,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
 
-  QString result = ao_app->get_design_element("chatbox_always_show", "courtroom_design.ini");
-  chatbox_always_show = result == "1" || result.startsWith("true");
   initialize_chatbox();
 
   ui_vp_sticker->move(0, 0);
@@ -2667,6 +2665,7 @@ void Courtroom::play_char_sfx(QString sfx_name)
 
 void Courtroom::initialize_chatbox()
 {
+
   int f_charid = m_chatmessage[CHAR_ID].toInt();
   if (f_charid >= 0 && f_charid < char_list.size() &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
@@ -2686,6 +2685,10 @@ void Courtroom::initialize_chatbox()
   set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", p_misc);
   set_size_and_pos(ui_vp_showname, "showname", p_misc);
   set_size_and_pos(ui_vp_message, "message", p_misc);
+
+  QString result = ao_app->get_design_element("chatbox_always_show", "courtroom_design.ini", p_misc);
+  chatbox_always_show = result == "1" || result.startsWith("true");
+
   // We detached the text as parent from the chatbox so it doesn't get affected
   // by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
