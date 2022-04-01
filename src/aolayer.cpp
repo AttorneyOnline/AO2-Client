@@ -382,7 +382,7 @@ void AOLayer::play()
     else
       this->freeze();
   }
-  else if (!movie_delays.isEmpty()) {
+  else {
     while (movie_delays.size() <= frame) {
         frameAdded.wait(&mutex);
     }
