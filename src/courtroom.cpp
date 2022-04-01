@@ -4512,6 +4512,12 @@ void Courtroom::set_sfx_dropdown()
   sound_list = ao_app->get_list_file(
       ao_app->get_character_path(current_char, "soundlist.ini"));
 
+  // If AO2 sound list is empty, try to find the DRO one.
+  if (sound_list.isEmpty()) {
+    sound_list = ao_app->get_list_file(
+        ao_app->get_character_path(current_char, "sounds.ini"));
+  }
+
   // Append default sound list after the character sound list.
   sound_list += ao_app->get_list_file(
   ao_app->get_base_path() + "soundlist.ini");
@@ -4572,7 +4578,10 @@ void Courtroom::on_sfx_edit_requested()
 {
   QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"));
   if (!file_exists(p_path)) {
-    p_path = ao_app->get_base_path() + "soundlist.ini";
+    p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "sounds.ini"));
+    if (!file_exists(p_path)) {
+      p_path = ao_app->get_base_path() + "soundlist.ini";
+    }
   }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
