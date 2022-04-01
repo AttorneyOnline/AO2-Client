@@ -200,6 +200,9 @@ public:
   // Returns the value of default_blip in config.ini
   int get_default_blip();
 
+  // Returns the value of suppress_audio in config.ini
+  int get_default_suppress_audio();
+
   // Returns the value if objections interrupt and skip the message queue
   // from the config.ini.
   bool is_instant_objection_enabled();

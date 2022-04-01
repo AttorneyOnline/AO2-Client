@@ -37,6 +37,12 @@ void AOBlipPlayer::blip_tick()
   BASS_ChannelPlay(f_stream, false);
 }
 
+void AOBlipPlayer::set_muted(bool toggle)
+{
+  m_muted = toggle;
+  set_volume_internal(m_volume);
+}
+
 void AOBlipPlayer::set_volume(int p_value)
 {
   m_volume = static_cast<qreal>(p_value) / 100;
@@ -45,7 +51,8 @@ void AOBlipPlayer::set_volume(int p_value)
 
 void AOBlipPlayer::set_volume_internal(qreal p_value)
 {
-  float volume = static_cast<float>(p_value);
+  // If muted, volume will always be 0
+  float volume = static_cast<float>(p_value) * !m_muted;
 
   for (int n_stream = 0; n_stream < 5; ++n_stream) {
     BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);

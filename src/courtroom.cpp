@@ -26,18 +26,18 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   sfx_delay_timer->setSingleShot(true);
 
   music_player = new AOMusicPlayer(this, ao_app);
-  music_player->set_volume(0);
+  music_player->set_muted(true);
   connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished,
           this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(this, ao_app);
-  sfx_player->set_volume(0);
+  sfx_player->set_muted(true);
 
   objection_player = new AOSfxPlayer(this, ao_app);
-  objection_player->set_volume(0);
+  objection_player->set_muted(true);
 
   blip_player = new AOBlipPlayer(this, ao_app);
-  blip_player->set_volume(0);
+  blip_player->set_muted(true);
 
   modcall_player = new AOSfxPlayer(this, ao_app);
   modcall_player->set_volume(50);
@@ -550,9 +550,41 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_evidence_button, &AOButton::clicked, this,
           &Courtroom::on_evidence_button_clicked);
 
+  connect(qApp, QOverload<Qt::ApplicationState>::of(&QApplication::applicationStateChanged), this,
+          &Courtroom::on_application_state_changed);
+
   set_widgets();
 
   set_char_select();
+}
+
+void Courtroom::on_application_state_changed(Qt::ApplicationState state)
+{
+  // Unsuppressed
+  suppress_audio = 100;
+  if (state != Qt::ApplicationActive) {
+    // Suppressed audio setting
+    suppress_audio = ao_app->get_default_suppress_audio();
+  }
+  update_audio_volume();
+}
+
+void Courtroom::update_audio_volume()
+{
+  float suppress_percent = static_cast<float>(suppress_audio / 100.0f);
+  if (suppress_percent > 1)
+    suppress_percent = 1;
+  if (suppress_percent < 0)
+    suppress_percent = 0;
+
+  music_player->set_volume(ui_music_slider->value() * suppress_percent, 0); // set music
+  // Set the ambience and other misc. music layers
+  for (int i = 1; i < music_player->m_channelmax; ++i) {
+    music_player->set_volume(ui_sfx_slider->value() * suppress_percent, i);
+  }
+  sfx_player->set_volume(ui_sfx_slider->value() * suppress_percent);
+  objection_player->set_volume(ui_sfx_slider->value() * suppress_percent);
+  blip_player->set_volume(ui_blip_slider->value() * suppress_percent);
 }
 
 void Courtroom::set_courtroom_size()
@@ -1272,11 +1304,6 @@ void Courtroom::done_received()
 {
   m_cid = -1;
 
-  music_player->set_volume(0);
-  sfx_player->set_volume(0);
-  objection_player->set_volume(0);
-  blip_player->set_volume(0);
-
   if (char_list.size() > 0)
   {
     set_char_select();
@@ -1525,11 +1552,7 @@ void Courtroom::update_character(int p_cid, QString char_name)
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
-  // have to call these to make sure music, sfx, and blips don't get accidentally muted forever when we change characters
-  music_player->set_volume(ui_music_slider->value(), 0);
-  objection_player->set_volume(ui_sfx_slider->value());
-  sfx_player->set_volume(ui_sfx_slider->value());
-  blip_player->set_volume(ui_blip_slider->value());
+  update_audio_volume();
 }
 
 void Courtroom::enter_courtroom()
@@ -1576,14 +1599,14 @@ void Courtroom::enter_courtroom()
     break;
   }
 
-  music_player->set_volume(ui_music_slider->value(), 0); // set music
-  // Set the ambience and other misc. music layers
-  for (int i = 1; i < music_player->m_channelmax; ++i) {
-    music_player->set_volume(ui_sfx_slider->value(), i);
-  }
-  sfx_player->set_volume(ui_sfx_slider->value());
-  objection_player->set_volume(ui_sfx_slider->value());
-  blip_player->set_volume(ui_blip_slider->value());
+  // Unmute everything
+  music_player->set_muted(false);
+  objection_player->set_muted(false);
+  sfx_player->set_muted(false);
+  blip_player->set_muted(false);
+
+  // Update the audio sliders
+  update_audio_volume();
 
   ui_vp_testimony->stop();
   // ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
@@ -5334,8 +5357,8 @@ void Courtroom::on_guilty_clicked()
 
 void Courtroom::on_change_character_clicked()
 {
-  sfx_player->set_volume(0);
-  blip_player->set_volume(0);
+  sfx_player->set_muted(true);
+  blip_player->set_muted(true);
 
   set_char_select();
 

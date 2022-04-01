@@ -60,6 +60,13 @@ void AOSfxPlayer::stop(int channel)
   BASS_ChannelStop(m_stream_list[channel]);
 }
 
+void AOSfxPlayer::set_muted(bool toggle)
+{
+  m_muted = toggle;
+  // Update the audio volume
+  set_volume_internal(m_volume);
+}
+
 void AOSfxPlayer::set_volume(qreal p_value)
 {
   m_volume = p_value / 100;
@@ -68,7 +75,8 @@ void AOSfxPlayer::set_volume(qreal p_value)
 
 void AOSfxPlayer::set_volume_internal(qreal p_value)
 {
-  float volume = static_cast<float>(p_value);
+  // If muted, volume will always be 0
+  float volume = static_cast<float>(p_value) * !m_muted;
   for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
     BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);
   }
