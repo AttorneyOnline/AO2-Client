@@ -1500,15 +1500,15 @@ void Courtroom::update_character(int p_cid, QString char_name)
       for (const QString &filename : custom_obj) {
         CustomObjection custom_objection;
         custom_objection.filename = filename;
-        QString custom_name = ao_app->read_char_ini(f_char, filename.split(".")[0] + "_name", "Shouts");
+        QString custom_name = ao_app->read_char_ini(f_char, filename.left(filename.lastIndexOf(".")) + "_name", "Shouts");
         QAction *action;
         if (custom_name != "") {
           custom_objection.name = custom_name;
           action = custom_obj_menu->addAction(custom_name);
         }
         else {
-          custom_objection.name = filename.split(".")[0];
-          action = custom_obj_menu->addAction(filename.split(".")[0]);
+          custom_objection.name = filename.left(filename.lastIndexOf("."));
+          action = custom_obj_menu->addAction(custom_objection.name);
         }
         if (custom_obj_menu->defaultAction() == nullptr) {
           custom_obj_menu->setDefaultAction(action);
@@ -2354,9 +2354,8 @@ bool Courtroom::handle_objection()
     // case 4 is AO2 only
     case 4:
       if (custom_objection != "") {
-        filename = "custom_objections/" + custom_objection;
-        objection_player->play(
-            "custom_objections/" + custom_objection.split('.')[0],
+        filename = "custom_objections/" + custom_objection.left(custom_objection.lastIndexOf("."));
+        objection_player->play(filename,
             m_chatmessage[CHAR_NAME],
             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
@@ -5352,8 +5351,6 @@ void Courtroom::on_reload_theme_clicked()
   update_character(m_cid);
   enter_courtroom();
   gen_char_rgb_list(ao_app->get_chat(current_char));
-
-  objection_custom = "";
 
   // to update status on the background
   set_background(current_background, true);
