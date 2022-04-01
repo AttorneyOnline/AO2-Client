@@ -63,7 +63,7 @@ void Courtroom::refresh_emotes()
 
   max_emotes_on_page = emote_columns * emote_rows;
 
-  QString selected_image = ao_app->get_image_suffix(ao_app->get_theme_path("emote_selected", ""));
+  QString selected_image = ao_app->get_image_suffix(ao_app->get_theme_path("emote_selected", ""), true);
 
   for (int n = 0; n < max_emotes_on_page; ++n) {
     int x_pos = (button_width + x_spacing) * x_mod_count;
