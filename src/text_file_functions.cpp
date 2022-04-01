@@ -40,6 +40,12 @@ int AOApplication::get_default_blip()
   return result;
 }
 
+int AOApplication::get_default_suppress_audio()
+{
+  int result = configini->value("suppress_audio", 50).toInt();
+  return result;
+}
+
 int AOApplication::get_max_log_size()
 {
   int result = configini->value("log_maximum", 200).toInt();

@@ -148,8 +148,10 @@ private:
   QLabel *ui_music_volume_lbl;
   QSpinBox *ui_sfx_volume_spinbox;
   QSpinBox *ui_blips_volume_spinbox;
+  QSpinBox *ui_suppress_audio_spinbox;
   QLabel *ui_sfx_volume_lbl;
   QLabel *ui_blips_volume_lbl;
+  QLabel *ui_suppress_audio_lbl;
   QFrame *ui_volume_blip_divider;
   QSpinBox *ui_bliprate_spinbox;
   QLabel *ui_bliprate_lbl;

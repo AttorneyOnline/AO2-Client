@@ -736,6 +736,21 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                              ui_blips_volume_spinbox);
 
   row += 1;
+  ui_suppress_audio_lbl = new QLabel(ui_audio_widget);
+  ui_suppress_audio_lbl->setText(tr("Suppress Audio:"));
+  ui_suppress_audio_lbl->setToolTip(
+      tr("How much of the volume remains when client is not in focus."));
+
+  ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_suppress_audio_lbl);
+
+  ui_suppress_audio_spinbox = new QSpinBox(ui_audio_widget);
+  ui_suppress_audio_spinbox->setMaximum(100);
+  ui_suppress_audio_spinbox->setSuffix("%");
+
+  ui_audio_layout->setWidget(row, QFormLayout::FieldRole,
+                             ui_suppress_audio_spinbox);
+
+  row += 1;
   ui_volume_blip_divider = new QFrame(ui_audio_widget);
   ui_volume_blip_divider->setFrameShape(QFrame::HLine);
   ui_volume_blip_divider->setFrameShadow(QFrame::Sunken);
@@ -1167,6 +1182,7 @@ void AOOptionsDialog::update_values() {
   ui_music_volume_spinbox->setValue(ao_app->get_default_music());
   ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
+  ui_suppress_audio_spinbox->setValue(ao_app->get_default_suppress_audio());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
 
@@ -1244,6 +1260,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("default_music", ui_music_volume_spinbox->value());
   configini->setValue("default_sfx", ui_sfx_volume_spinbox->value());
   configini->setValue("default_blip", ui_blips_volume_spinbox->value());
+  configini->setValue("suppress_audio", ui_suppress_audio_spinbox->value());
   configini->setValue("blip_rate", ui_bliprate_spinbox->value());
   configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
   configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
