@@ -60,7 +60,7 @@ void AOEmoteButton::set_char_image(QString p_char, int p_emote, bool on)
     suffixedPaths.append(ao_app->get_image_suffix(ao_app->get_character_path(
         p_char, "emotions/button" + emotion_number + suffix)));
   }
-  QString image = suffixedPaths[on];
+  QString image = suffixedPaths[static_cast<int>(on)];
 
   QString emoteComment = ao_app->get_emote_comment(p_char, p_emote);
   if (on && !file_exists(suffixedPaths[1])) {;
