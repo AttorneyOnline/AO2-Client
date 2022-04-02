@@ -514,18 +514,38 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  return get_real_path(sound_to_check,
-                                {"", ".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx" });
+  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx" };
+  // Check if we were provided a direct filepath with a suffix already
+  QString path = sound_to_check.toQString();
+  // Loop through our suffixes
+  for (const QString &suffix : suffixes) {
+    // If our VPath ends with a valid suffix
+    if (path.endsWith(suffix, Qt::CaseInsensitive))
+      // Return that as the path
+      return get_real_path(sound_to_check);
+  }
+  // Otherwise, ignore the provided suffix and check our own
+  return get_real_path(sound_to_check, suffixes);
 }
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
 {
-  QStringList suffixes {""};
+  QStringList suffixes {};
   if (!static_image) {
     suffixes.append({ ".webp", ".apng", ".gif" });
   }
   suffixes.append(".png");
 
+  // Check if we were provided a direct filepath with a suffix already
+  QString path = path_to_check.toQString();
+  // Loop through our suffixes
+  for (const QString &suffix : suffixes) {
+    // If our VPath ends with a valid suffix
+    if (path.endsWith(suffix, Qt::CaseInsensitive))
+      // Return that as the path
+      return get_real_path(path_to_check);
+  }
+  // Otherwise, ignore the provided suffix and check our own
   return get_real_path(path_to_check, suffixes);
 }
 
