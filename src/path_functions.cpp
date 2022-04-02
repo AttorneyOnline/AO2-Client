@@ -207,11 +207,8 @@ QString AOApplication::get_image(QString p_element, QString p_theme, QString p_s
 
 QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_character)
 {
-  QVector<VPath> pathlist;
-  // Search for the SFX in sounds/ folders in our current char folder, any of the themes or miscs
-  pathlist += get_asset_paths("sounds/" + p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
-  // Sounds folder path
-  pathlist += get_sounds_path(p_sfx);
+  QVector<VPath> pathlist = get_asset_paths(p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
+  pathlist += get_sounds_path(p_sfx); // Sounds folder path
   QString ret = get_sfx_path(pathlist);
   if (ret.isEmpty()) {
     qWarning().nospace() << "could not find sfx " << p_sfx
