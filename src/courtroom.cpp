@@ -1467,7 +1467,7 @@ void Courtroom::update_character(int p_cid, QString char_name)
     if (char_name.isEmpty()) {
       char_name = char_list.at(m_cid).name;
     }
-    f_char = ao_app->get_char_name(char_name);
+    f_char = char_name;
 
     if (ao_app->is_discord_enabled())
       ao_app->discord->state_character(f_char.toStdString());
@@ -4406,10 +4406,6 @@ void Courtroom::set_iniswap_dropdown()
   QStringList iniswaps =
       ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
       ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
-
-  if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
-    iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
-
   iniswaps.removeDuplicates();
   iniswaps.prepend(char_list.at(m_cid).name);
   if (iniswaps.size() <= 0) {

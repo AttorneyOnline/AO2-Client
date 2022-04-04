@@ -573,15 +573,6 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
   return r_values;
 }
 
-QString AOApplication::get_char_name(QString p_char)
-{
-  QString f_result = read_char_ini(p_char, "name", "Options");
-
-  if (f_result == "")
-    return p_char;
-  return f_result;
-}
-
 QString AOApplication::get_showname(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "showname", "Options");
