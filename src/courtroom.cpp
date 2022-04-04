@@ -1366,6 +1366,14 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_effect->stop();
     ui_vp_message->hide();
     ui_vp_chatbox->setVisible(chatbox_always_show);
+    // Show it if chatbox always shows
+    if (ao_app->is_sticker_enabled() && chatbox_always_show) {
+      ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
+    }
+    // Hide the face sticker
+    else {
+      ui_vp_sticker->stop();
+    }
     // Stop the chat arrow from animating
     ui_vp_chat_arrow->hide();
 
@@ -2414,8 +2422,14 @@ void Courtroom::display_character()
   // Hide the message and chatbox and handle the emotes
   ui_vp_message->hide();
   ui_vp_chatbox->setVisible(chatbox_always_show);
+  // Show it if chatbox always shows
+  if (ao_app->is_sticker_enabled() && chatbox_always_show) {
+    ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
+  }
   // Hide the face sticker
-  ui_vp_sticker->stop();
+  else {
+    ui_vp_sticker->stop();
+  }
   // Initialize the correct pos (called SIDE here for some reason) with DESK_MOD to determine if we should hide the desk or not.
   set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
@@ -3483,6 +3497,13 @@ void Courtroom::start_chat_ticking()
     else {
       ui_vp_chatbox->setVisible(chatbox_always_show);
       ui_vp_message->hide();
+      // Show it if chatbox always shows
+      if (ao_app->is_sticker_enabled() && chatbox_always_show)
+        ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
+      // Hide the face sticker
+      else {
+        ui_vp_sticker->stop();
+      }
     }
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
     int delay = ao_app->stay_time();
