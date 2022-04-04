@@ -3157,7 +3157,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
 
   if (ghost) {
-    ghost_cursors.append(ui_ic_chatlog->textCursor());
+    ghost_cursors.append(old_cursor);
+    bold.setForeground(QColor(255, 255, 255, 128));
+    normal.setForeground(QColor(255, 255, 255, 128));
+    italics.setForeground(QColor(255, 255, 255, 128));
   }
 
   // Timestamp if we're doing that meme
@@ -3179,7 +3182,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // Make shout text bold
   else if (p_action == tr("shouts") && log_ic_actions) {
     ui_ic_chatlog->textCursor().insertText(" " + p_action + " ", normal);
-    if (log_colors) {
+    if (log_colors && !ghost) {
       ui_ic_chatlog->textCursor().insertHtml(
           "<b>" +
           filter_ic_text(p_text, true, -1, 0)
@@ -3215,7 +3218,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     else
       ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result according to html
-    if (log_colors) {
+    if (log_colors && !ghost) {
       QString p_text_filtered = filter_ic_text(p_text, true, -1, color);
       p_text_filtered = p_text_filtered.replace("$c0", ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini").name(QColor::HexRgb));
       for (int c = 1; c < max_colors; ++c) {
