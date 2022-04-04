@@ -426,9 +426,6 @@ public:
   // Returns whether the given pos is a judge position
   bool get_pos_is_judge(const QString &p_pos);
 
-  // Returns the name of p_char
-  QString get_char_name(QString p_char);
-
   // Returns the total amount of emotes of p_char
   int get_emote_number(QString p_char);
 
