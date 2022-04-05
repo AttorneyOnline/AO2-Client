@@ -236,11 +236,28 @@ void NetworkManager::handle_server_packet(QString p_data)
     }
   }
 
-  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
+  const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
 
   for (const QString &packet : packet_list) {
-    AOPacket *f_packet = new AOPacket(packet);
-
+    QStringList f_contents;
+    // Packet should *always* end with #
+    if (packet.endsWith("#")) {
+      f_contents = packet.chopped(1).split("#");
+    }
+    // But, if it somehow doesn't, we should still be able to handle it
+    else {
+      f_contents = packet.split("#");
+    }
+    // Empty packets are suspicious!
+    if (f_contents.isEmpty()) {
+      qWarning() << "WARNING: Empty packet received from server, skipping...";
+      continue;
+    }
+    // Take the first arg as the command
+    QString command = f_contents.takeFirst();
+    // The rest is contents of the packet
+    AOPacket *f_packet = new AOPacket(command, f_contents);
+    // Ship it to the server!
     ao_app->server_packet_received(f_packet);
   }
 }
