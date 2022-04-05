@@ -3,8 +3,13 @@
 QString AOPacket::to_string(bool encoded)
 {
   QStringList contents = m_contents;
-  if (encoded)
+  if (encoded) {
     escape(contents);
+  }
+  // Our packet is just the header by itself
+  if (contents.isEmpty()) {
+    return m_header + "#%";
+  }
   return m_header + "#" + contents.join("#") + "#%";
 }
 
