@@ -57,7 +57,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString f_hdid;
     f_hdid = get_hdid();
 
-    AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
+    QStringList f_contents = {f_hdid};
+    AOPacket *hi_packet = new AOPacket("HI", f_contents);
     send_server_packet(hi_packet);
   }
   else if (header == "ID") {
@@ -70,7 +71,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (lobby_constructed)
       w_lobby->enable_connect_button();
 
-    send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
+    QStringList f_contents = {"AO2", get_version_string()};
+    send_server_packet(new AOPacket("ID", f_contents));
   }
   else if (header == "CT") {
     if (!courtroom_constructed || f_contents.size() < 2)
@@ -146,8 +148,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     if (w_lobby->doubleclicked) {
-        send_server_packet(new AOPacket("askchaa#%"));
-        w_lobby->doubleclicked = false;
+      send_server_packet(new AOPacket("askchaa"));
+      w_lobby->doubleclicked = false;
     }
   }
   else if (header == "SI") {
@@ -203,7 +205,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     AOPacket *f_packet;
 
-    f_packet = new AOPacket("RC#%");
+    f_packet = new AOPacket("RC");
     send_server_packet(f_packet);
 
     // Remove any characters not accepted in folder names for the server_name
@@ -274,7 +276,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     if (!courtroom_loaded)
-      send_server_packet(new AOPacket("RM#%"));
+      send_server_packet(new AOPacket("RM"));
     else
       w_courtroom->character_loading_finished();
     append_to_demofile(f_packet_encoded);
@@ -326,7 +328,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
     }
 
-    send_server_packet(new AOPacket("RD#%"));
+    send_server_packet(new AOPacket("RD"));
   }
   else if (header == "FM") // Fetch music ONLY
   {

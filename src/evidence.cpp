@@ -412,7 +412,7 @@ void Courtroom::on_evidence_clicked(int p_id)
   if (f_real_id == local_evidence_list.size()) {
     if (current_evidence_global)
       ao_app->send_server_packet(
-          new AOPacket("PE#<name>#<description>#empty.png#%"));
+          new AOPacket("PE", {"<name>", "<description>", "empty.png"}));
     else {
       evi_type f_evi;
       f_evi.name = "<name>";
@@ -526,7 +526,7 @@ void Courtroom::on_evidence_delete_clicked()
   evidence_close();
   if (current_evidence_global)
     ao_app->send_server_packet(
-        new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
+        new AOPacket("DE", {QString::number(current_evidence)}));
   else {
     local_evidence_list.remove(current_evidence);
     private_evidence_list = local_evidence_list;

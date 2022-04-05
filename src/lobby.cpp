@@ -352,7 +352,7 @@ void Lobby::on_connect_released()
 
   AOPacket *f_packet;
 
-  f_packet = new AOPacket("askchaa#%");
+  f_packet = new AOPacket("askchaa");
 
   ao_app->send_server_packet(f_packet);
 }
