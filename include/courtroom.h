@@ -213,7 +213,7 @@ public:
 
   // updates character to p_cid and updates necessary ui elements
   // Otptional "char_name" is the iniswap we're using
-  void update_character(int p_cid, QString char_name = "");
+  void update_character(int p_cid, QString char_name = "", bool reset_emote = false);
 
   // properly sets up some varibles: resets user state
   void enter_courtroom();
