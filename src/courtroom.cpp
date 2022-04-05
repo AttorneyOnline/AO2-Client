@@ -1450,7 +1450,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   set_side(current_side);
 }
 
-void Courtroom::update_character(int p_cid, QString char_name)
+void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 {
   bool newchar = m_cid != p_cid;
 
@@ -1464,10 +1464,10 @@ void Courtroom::update_character(int p_cid, QString char_name)
     f_char = "";
   }
   else {
-    if (char_name.isEmpty()) {
-      char_name = char_list.at(m_cid).name;
-    }
     f_char = char_name;
+    if (char_name.isEmpty()) {
+      f_char = char_list.at(m_cid).name;
+    }
 
     if (ao_app->is_discord_enabled())
       ao_app->discord->state_character(f_char.toStdString());
@@ -1478,8 +1478,11 @@ void Courtroom::update_character(int p_cid, QString char_name)
 
   set_text_color_dropdown();
 
-  current_emote_page = 0;
-  current_emote = 0;
+  // If our cid changed or we're being told to reset
+  if (newchar || reset_emote) {
+    current_emote_page = 0;
+    current_emote = 0;
+  }
 
   if (m_cid == -1)
     ui_emotes->hide();
@@ -4448,7 +4451,7 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
-  update_character(m_cid, iniswap);
+  update_character(m_cid, iniswap, true);
   QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
                                                  iniswap, "char_icon"));
   ui_iniswap_dropdown->setItemIcon(p_index, QIcon(icon_path));
@@ -5318,7 +5321,7 @@ void Courtroom::on_reload_theme_clicked()
 
   set_courtroom_size();
   set_widgets();
-  update_character(m_cid);
+  update_character(m_cid, ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()));
   enter_courtroom();
   gen_char_rgb_list(ao_app->get_chat(current_char));
 

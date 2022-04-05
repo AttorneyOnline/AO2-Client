@@ -149,6 +149,9 @@ void Courtroom::set_emote_dropdown()
                                                    current_char, "emotions/button" + QString::number(n + 1) + "_off"));
     ui_emote_dropdown->setItemIcon(n, QIcon(icon_path));
   }
+  if (current_emote > -1 && current_emote < ui_emote_dropdown->count()) {
+    ui_emote_dropdown->setCurrentIndex(current_emote);
+  }
 }
 
 void Courtroom::select_emote(int p_id)
