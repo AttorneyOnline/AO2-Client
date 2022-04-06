@@ -274,9 +274,27 @@ QVector<server_type> AOApplication::read_serverlist_txt()
         if (line_contents.size() < 3)
           continue;
 
-        f_server.ip = line_contents.at(0);
-        f_server.port = line_contents.at(1).toInt();
-        f_server.name = line_contents.at(2);
+        // This one gives us the socket type
+        if (line_contents.size() >= 4) {
+          QString socket_type = line_contents.at(0).toLower();
+          if (socket_type == "ws") {
+            f_server.socket_type = WEBSOCKETS;
+          }
+          else if (socket_type == "tcp") {
+            f_server.socket_type = TCP;
+          }
+          else {
+            qWarning() << "Serverlist.txt - Unknown socket type: " << socket_type;
+          }
+          f_server.ip = line_contents.at(1);
+          f_server.port = line_contents.at(2).toInt();
+          f_server.name = line_contents.at(3);
+        }
+        else {
+          f_server.ip = line_contents.at(0);
+          f_server.port = line_contents.at(1).toInt();
+          f_server.name = line_contents.at(2);
+        }
         f_server.desc = "";
 
         f_server_list.append(f_server);

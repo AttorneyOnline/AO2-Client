@@ -146,8 +146,17 @@ void AOApplication::add_favorite_server(int p_server)
   server_type fav_server = server_list.at(p_server);
 
   QString str_port = QString::number(fav_server.port);
+  QString network_type;
+  switch (fav_server.socket_type) {
+  default:
+    fav_server.socket_type = TCP;
+  case TCP:
+    network_type = "TCP";
+  case WEBSOCKETS:
+    network_type = "WS";
+  }
 
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
+  QString server_line = network_type + ":" + fav_server.ip + ":" + str_port + ":" + fav_server.name;
 
   write_to_serverlist_txt(server_line);
 }
