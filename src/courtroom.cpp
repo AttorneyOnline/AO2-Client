@@ -2103,7 +2103,9 @@ void Courtroom::reset_ui()
   ui_screenshake->set_image("screenshake");
   ui_evidence_present->set_image("present");
 
-  if (!ao_app->is_stickysounds_enabled()) {
+  // If we have sfx on idle enabled, or our pre is checked and stickysounds is disabled
+  if ((ao_app->sfx_on_idle_enabled || ui_pre->isChecked()) && !ao_app->is_stickysounds_enabled()) {
+    // Reset the sfx dropdown to "Default"
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
     custom_sfx = "";
@@ -2548,8 +2550,11 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     // If immediate is not ticked on...
     if (!p_immediate)
     {
-      // Play the sound effect if one was sent to us
-      play_sfx();
+      // Server takes care of making sure 2.9 and below clients don't spam sfx to us
+      if (ao_app->sfx_on_idle_enabled) {
+        // Play the sound effect if one was sent to us
+        play_sfx();
+      }
       // Skip preanim.
       handle_ic_speaking();
     }
