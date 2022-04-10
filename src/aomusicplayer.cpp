@@ -56,7 +56,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   QString d_path = f_path + ".txt";
 
   loop_start[channel] = 0;
-  loop_end[channel] = BASS_ChannelGetLength(newstream, BASS_POS_BYTE);
+  loop_end[channel] = 0;
   if (loop && file_exists(d_path)) // Contains loop/etc. information file
   {
     QStringList lines = ao_app->read_file(d_path).split("\n");
@@ -76,7 +76,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
       int num_channels = 2;
 
       // Calculate the bytes for loop_start/loop_end to use with the sync proc
-      QWORD bytes = static_cast<QWORD>(args[1].trimmed().toFloat() *
+      QWORD bytes = static_cast<QWORD>(args[1].trimmed().toInt() *
                                        sample_size * num_channels);
       if (arg == "loop_start")
         loop_start[channel] = bytes;
@@ -87,7 +87,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
     }
     qDebug() << "Found data file for song" << p_song << "length"
              << BASS_ChannelGetLength(newstream, BASS_POS_BYTE) << "loop start"
-             << loop_start << "loop end" << loop_end;
+             << loop_start[channel] << "loop end" << loop_end[channel];
   }
 
   if (BASS_ChannelIsActive(m_stream_list[channel]) == BASS_ACTIVE_PLAYING) {
@@ -204,13 +204,19 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
     }
     if (loop_start[channel] > 0) {
       if (loop_end[channel] == 0)
-        loop_end[channel] =
-            BASS_ChannelGetLength(m_stream_list[channel], BASS_POS_BYTE);
-      if (loop_end[channel] >
-          0) // Don't loop zero length songs even if we're asked to
+      {
+        // We don't have length, loop when track reaches end
+        loop_sync[channel] = BASS_ChannelSetSync(
+            m_stream_list[channel], BASS_SYNC_END | BASS_SYNC_MIXTIME,
+            loop_end[channel], loopProc, &loop_start[channel]);
+      }
+      else if (loop_end[channel] > 0)
+      {
+        // Don't loop zero length songs even if we're asked to
         loop_sync[channel] = BASS_ChannelSetSync(
             m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
             loop_end[channel], loopProc, &loop_start[channel]);
+      }
     }
   }
 }
