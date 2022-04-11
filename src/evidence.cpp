@@ -12,6 +12,7 @@ void Courtroom::initialize_evidence()
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFrame(false);
   ui_evidence_name->setObjectName("ui_evidence_name");
+  ui_evidence_name->setReadOnly(true);
 
   ui_evidence_buttons = new QWidget(ui_evidence);
   ui_evidence_buttons->setObjectName("ui_evidence_buttons");
@@ -106,6 +107,10 @@ void Courtroom::initialize_evidence()
 
 void Courtroom::refresh_evidence()
 {
+  // If only a single click is needed to view evidence, doubleclick by default
+  QString one_click_view = ao_app->get_design_element("evidence_one_click_view", "courtroom_design.ini");
+  evidence_one_click_view = one_click_view == "1" || one_click_view.startsWith("true");
+
   set_font(ui_evidence_name, "", "evidence_name");
   set_font(ui_evidence_image_name, "", "evidence_image_name");
   set_font(ui_evidence_description, "", "evidence_description");
@@ -427,17 +432,22 @@ void Courtroom::on_evidence_clicked(int p_id)
   }
   else if (f_real_id > local_evidence_list.size())
     return;
+  
+  if (evidence_one_click_view){
+    on_evidence_double_clicked(f_real_id);
+    return;
+  }
+
+  if (ui_evidence_overlay->isVisible()) {
+    return;
+  }
 
   ui_evidence_name->setText(local_evidence_list.at(f_real_id).name);
-
   for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
   ui_evidence_list.at(p_id)->set_selected(true);
-
   current_evidence = f_real_id;
-
-  //  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_double_clicked(int p_id)
@@ -447,6 +457,14 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   if (f_real_id >= local_evidence_list.size())
     return;
 
+  if (ui_evidence_overlay->isVisible()) {
+    on_evidence_x_clicked();
+  }
+
+  for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
+    i_button->set_selected(false);
+
+  ui_evidence_list.at(p_id)->set_selected(true);
   current_evidence = f_real_id;
 
   evi_type f_evi = local_evidence_list.at(f_real_id);
@@ -472,6 +490,11 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
+  if (ui_evidence_overlay->isVisible()) {
+    // Ignore hovering behavior if we're in the process of viewing a piece of evidence
+    return;
+  }
+
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (p_state) {
@@ -544,12 +567,8 @@ void Courtroom::on_evidence_x_clicked()
       local_evidence_list.size()) // Should never happen but you never know.
     return;
 
-  evi_type fake_evidence;
-  fake_evidence.name = ui_evidence_name->text();
-  fake_evidence.description = ui_evidence_description->toPlainText();
-  fake_evidence.image = ui_evidence_image_name->text();
-  if (!compare_evidence_changed(fake_evidence,
-                                local_evidence_list.at(current_evidence))) {
+  if (ui_evidence_ok->isHidden()) {
+    // Nothing was modified
     evidence_close();
     return;
   }
