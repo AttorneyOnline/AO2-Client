@@ -171,7 +171,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
-  ui_ic_chat_message->setPlaceholderText(tr("Message"));
+  ui_ic_chat_message->setPlaceholderText(tr("Message In Character"));
   ui_ic_chat_message_filter = new AOLineEditFilter();
   ui_ic_chat_message_filter->preserve_selection = true;
   ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
@@ -189,6 +189,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
   ui_ooc_chat_message->setObjectName("ui_ooc_chat_message");
+  ui_ooc_chat_message->setPlaceholderText(tr("Message Out Of Character"));
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
