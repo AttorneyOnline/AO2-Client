@@ -739,7 +739,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_suppress_audio_lbl = new QLabel(ui_audio_widget);
   ui_suppress_audio_lbl->setText(tr("Suppress Audio:"));
   ui_suppress_audio_lbl->setToolTip(
-      tr("How much of the volume remains when client is not in focus."));
+      tr("How much of the volume to suppress when client is not in focus."));
 
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_suppress_audio_lbl);
 

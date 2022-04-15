@@ -573,7 +573,7 @@ void Courtroom::on_application_state_changed(Qt::ApplicationState state)
 
 void Courtroom::update_audio_volume()
 {
-  float suppress_percent = static_cast<float>(suppress_audio / 100.0f);
+  float suppress_percent = 1.0 - static_cast<float>(suppress_audio / 100.0f);
   if (suppress_percent > 1)
     suppress_percent = 1;
   if (suppress_percent < 0)
