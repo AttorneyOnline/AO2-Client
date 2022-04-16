@@ -344,8 +344,8 @@ public:
 private:
   AOApplication *ao_app;
 
-  // Percentage of audio that remains when client is not in focus
-  int suppress_audio = 100;
+  // Percentage of audio that is suppressed when client is not in focus
+  int suppress_audio = 0;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;

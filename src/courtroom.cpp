@@ -562,7 +562,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 void Courtroom::on_application_state_changed(Qt::ApplicationState state)
 {
   // Unsuppressed
-  suppress_audio = 100;
+  suppress_audio = 0;
   if (state != Qt::ApplicationActive) {
     // Suppressed audio setting
     suppress_audio = ao_app->get_default_suppress_audio();
@@ -572,20 +572,20 @@ void Courtroom::on_application_state_changed(Qt::ApplicationState state)
 
 void Courtroom::update_audio_volume()
 {
-  float suppress_percent = 1.0 - static_cast<float>(suppress_audio / 100.0f);
-  if (suppress_percent > 1)
-    suppress_percent = 1;
-  if (suppress_percent < 0)
-    suppress_percent = 0;
+  float remaining_percent = 1.0f - static_cast<float>(suppress_audio / 100.0f);
+  if (remaining_percent > 1)
+    remaining_percent = 1;
+  if (remaining_percent < 0)
+    remaining_percent = 0;
 
-  music_player->set_volume(ui_music_slider->value() * suppress_percent, 0); // set music
+  music_player->set_volume(ui_music_slider->value() * remaining_percent, 0); // set music
   // Set the ambience and other misc. music layers
   for (int i = 1; i < music_player->m_channelmax; ++i) {
-    music_player->set_volume(ui_sfx_slider->value() * suppress_percent, i);
+    music_player->set_volume(ui_sfx_slider->value() * remaining_percent, i);
   }
-  sfx_player->set_volume(ui_sfx_slider->value() * suppress_percent);
-  objection_player->set_volume(ui_sfx_slider->value() * suppress_percent);
-  blip_player->set_volume(ui_blip_slider->value() * suppress_percent);
+  sfx_player->set_volume(ui_sfx_slider->value() * remaining_percent);
+  objection_player->set_volume(ui_sfx_slider->value() * remaining_percent);
+  blip_player->set_volume(ui_blip_slider->value() * remaining_percent);
 }
 
 void Courtroom::set_courtroom_size()
