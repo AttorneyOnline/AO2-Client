@@ -971,12 +971,17 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_add->setSizePolicy(stretch_btns);
   ui_mount_buttons_layout->addWidget(ui_mount_add, 0, 0, 1, 1);
   connect(ui_mount_add, &QPushButton::clicked, this, [this] {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
                                                     QApplication::applicationDirPath(),
                                                     QFileDialog::ShowDirsOnly);
-    if (dir.isEmpty())
+    if (path.isEmpty())
       return;
-    QListWidgetItem *dir_item = new QListWidgetItem(dir);
+    QDir dir(QApplication::applicationDirPath());
+    QString relative = dir.relativeFilePath(path);
+    if (!relative.contains("../")) {
+      path = relative;
+    }
+    QListWidgetItem *dir_item = new QListWidgetItem(path);
     ui_mount_list->addItem(dir_item);
     ui_mount_list->setCurrentItem(dir_item);
 
