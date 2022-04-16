@@ -1624,8 +1624,14 @@ void Courtroom::enter_courtroom()
 // Todo: multithread this due to some servers having large as hell music list
 void Courtroom::list_music()
 {
+  // Remember expanded/collapsed state of the musiclist
+  QMap<int, bool> expanded;
+  for (int i = 0; i < ui_music_list->topLevelItemCount(); i++) {
+    expanded[i] = ui_music_list->topLevelItem(i)->isExpanded();
+  }
+
+  // Clear the music list
   ui_music_list->clear();
-  //  ui_music_search->setText("");
 
   QString f_file = "courtroom_design.ini";
 
@@ -1671,9 +1677,12 @@ void Courtroom::list_music()
     ++n_listed_songs;
   }
 
-  ui_music_list->expandAll(); // Needs to somehow remember which categories were
-                              // expanded/collapsed if the music list didn't
-                              // change since last time
+  // Expand top level items
+  for (int i = 0; i < ui_music_list->topLevelItemCount(); i++) {
+    // If expanded[i] overflows, it'll just use default bool initialization - aka "false"
+    ui_music_list->topLevelItem(i)->setExpanded(expanded[i]);
+  }
+
   if (ui_music_search->text() != "") {
     on_music_search_edited(ui_music_search->text());
   }
