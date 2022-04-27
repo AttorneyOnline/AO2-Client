@@ -3303,6 +3303,8 @@ void Courtroom::pop_ic_ghost()
   }
   ghost.select(QTextCursor::BlockUnderCursor);
   ghost.removeSelectedText();
+  if (ghost_blocks <= 1 && !log_goes_downwards)
+    ghost.deleteChar();
   ghost_blocks--;
 }
 
