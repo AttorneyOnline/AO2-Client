@@ -2223,7 +2223,8 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     f_displayname = f_showname;
 
   bool ghost = f_log_mode == UNDELIVERED || f_log_mode == QUEUED;
-  if (!ghost && f_log_mode != IO_ONLY && (ao_app->msg_ghost_enabled && f_char_id == m_cid))
+  // TODO: Make it work with "SENDER"
+  if (!ghost && f_log_mode != IO_ONLY && f_char_id == m_cid)
     pop_ic_ghost();
 
   if (log_ic_actions) {
@@ -2281,6 +2282,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
           [[fallthrough]];
         case DISPLAY_ONLY:
         case UNDELIVERED:
+        case QUEUED:
           append_ic_text(shout_message, f_displayname, tr("shouts"),
                          0, QDateTime::currentDateTime(), ghost);
           break;
@@ -2300,6 +2302,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
           [[fallthrough]];
         case DISPLAY_ONLY:
         case UNDELIVERED:
+        case QUEUED:
           append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"),
                          0, QDateTime::currentDateTime(), ghost);
           break;
@@ -2322,6 +2325,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
       [[fallthrough]];
     case DISPLAY_ONLY:
     case UNDELIVERED:
+    case QUEUED:
       append_ic_text(f_message, f_displayname, "",
                      f_color, QDateTime::currentDateTime(), ghost);
       break;
@@ -3163,20 +3167,30 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
       log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum()
                          : ui_ic_chatlog->verticalScrollBar()->minimum();
 
+  if (ghost) {
+    ghost_blocks++;
+    bold.setForeground(QColor(255, 255, 255, 128));
+    normal.setForeground(QColor(255, 255, 255, 128));
+    italics.setForeground(QColor(255, 255, 255, 128));
+  }
+
   ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
                                                : QTextCursor::Start);
+
+  if (!ghost && ghost_blocks > 0) {
+    for (int i = 0; i < ghost_blocks; ++i) {
+      ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::PreviousBlock
+                                                   : QTextCursor::NextBlock);
+    }
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::EndOfBlock
+                                                 : QTextCursor::StartOfBlock);
+  }
 
   // Only prepend with newline if log goes downwards
   if (log_goes_downwards && need_newline) {
     ui_ic_chatlog->textCursor().insertBlock(format);
   }
 
-  if (ghost) {
-    ghost_cursors.append(old_cursor);
-    bold.setForeground(QColor(255, 255, 255, 128));
-    normal.setForeground(QColor(255, 255, 255, 128));
-    italics.setForeground(QColor(255, 255, 255, 128));
-  }
 
   // Timestamp if we're doing that meme
   if (log_timestamp) {
@@ -3253,14 +3267,15 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // If we got too many blocks in the current log, delete some.
   while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
          log_maximum_blocks > 0) {
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::Start
+    QTextCursor temp_curs = ui_ic_chatlog->textCursor();
+    temp_curs.movePosition(log_goes_downwards ? QTextCursor::Start
                                                  : QTextCursor::End);
-    ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-    ui_ic_chatlog->textCursor().removeSelectedText();
+    temp_curs.select(QTextCursor::BlockUnderCursor);
+    temp_curs.removeSelectedText();
     if (log_goes_downwards)
-      ui_ic_chatlog->textCursor().deleteChar();
+      temp_curs.deleteChar();
     else
-      ui_ic_chatlog->textCursor().deletePreviousChar();
+      temp_curs.deletePreviousChar();
   }
 
   // Finally, scroll the scrollbar to the correct position.
@@ -3272,10 +3287,6 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
   }
   else {
-    // The user hasn't selected any text and the scrollbar is at the bottom:
-    // scroll to the bottom.
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
-                                                 : QTextCursor::Start);
     ui_ic_chatlog->verticalScrollBar()->setValue(
         log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : 0);
   }
@@ -3283,10 +3294,16 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
 void Courtroom::pop_ic_ghost()
 {
-  QTextCursor cursor = ghost_cursors.dequeue();
-  ui_ic_chatlog->setTextCursor(cursor);
-  cursor.select(QTextCursor::BlockUnderCursor);
-  cursor.removeSelectedText();
+  QTextCursor ghost = ui_ic_chatlog->textCursor();
+  ghost.movePosition(log_goes_downwards ? QTextCursor::End
+                                               : QTextCursor::Start);
+  for (int i = 1; i < ghost_blocks; ++i) {
+    ghost.movePosition(log_goes_downwards ? QTextCursor::PreviousBlock
+                                                 : QTextCursor::NextBlock);
+  }
+  ghost.select(QTextCursor::BlockUnderCursor);
+  ghost.removeSelectedText();
+  ghost_blocks--;
 }
 
 void Courtroom::play_preanim(bool immediate)
