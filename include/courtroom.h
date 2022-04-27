@@ -470,7 +470,8 @@ private:
   // amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
 
-  QQueue<QTextCursor> ghost_cursors;
+  // amount of ghost blocks
+  int ghost_blocks = 0;
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
