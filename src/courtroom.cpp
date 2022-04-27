@@ -2041,7 +2041,7 @@ void Courtroom::on_chat_return_pressed()
     log_chatmessage(packet_contents[MESSAGE], packet_contents[CHAR_ID].toInt(),
                     packet_contents[SHOWNAME], packet_contents[CHAR_NAME],
                     packet_contents[OBJECTION_MOD], packet_contents[EVIDENCE_ID].toInt(),
-                    packet_contents[TEXT_COLOR].toInt(), UNDELIVERED);
+                    packet_contents[TEXT_COLOR].toInt(), UNDELIVERED, true);
   }
 }
 
@@ -2095,31 +2095,36 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   bool sender = f_char_id == m_cid;
-  if (SENDER < p_contents.size() && ao_app->msg_ghost_enabled)
+  if (SENDER < p_contents.size() && ao_app->msg_ghost_enabled) {
     // Instead of the above, do it in better logic: if SENDER is equal to our client ID, it's "true". 2.10+ extension, assume "false" by default.
-    sender = p_contents[SENDER] == ao_app->client_id;
+    sender = p_contents[SENDER].toInt() == ao_app->client_id;
+  }
 
   // Record the log I/O, log files should be accurate.
   // If desynced logs are on, display the log IC immediately.
   LogMode log_mode = ao_app->is_desyncrhonized_logs_enabled() ? DISPLAY_AND_IO : IO_ONLY;
 
+  // User-created blankpost
+  if (p_contents[MESSAGE].trimmed().isEmpty()) {
+    // Turn it into true blankpost
+    p_contents[MESSAGE] = "";
+  }
+
   // If we determine we sent this message
   if (sender) {
     // Reset input UI elements, clear input box, etc.
     reset_ui();
+    // Make sure to pop our waiting-on-network msg
+    if (ao_app->msg_ghost_enabled) {
+      pop_ic_ghost();
+    }
     // Initialize operation "message queue ghost"
     if (log_mode == IO_ONLY) {
       log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
                       p_contents[SHOWNAME], p_contents[CHAR_NAME],
                       p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(),
-                      p_contents[TEXT_COLOR].toInt(), QUEUED);
+                      p_contents[TEXT_COLOR].toInt(), QUEUED, sender);
     }
-  }
-
-  // User-created blankpost
-  if (p_contents[MESSAGE].trimmed().isEmpty()) {
-    // Turn it into true blankpost
-    p_contents[MESSAGE] = "";
   }
 
   bool is_objection = false;
@@ -2134,7 +2139,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
       skip_chatmessage_queue();
     }
   }
-  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode);
+  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode, sender);
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
 
@@ -2168,7 +2173,13 @@ void Courtroom::skip_chatmessage_queue()
 
   while (!chatmessage_queue.isEmpty()) {
     QStringList p_contents = chatmessage_queue.dequeue();
-    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY);
+    // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+    bool sender = p_contents[CHAR_ID].toInt() == m_cid;
+    if (SENDER < p_contents.size() && ao_app->msg_ghost_enabled) {
+      // Instead of the above, do it in better logic: if SENDER is equal to our client ID, it's "true". 2.10+ extension, assume "false" by default.
+      sender = p_contents[SENDER].toInt() == ao_app->client_id;
+    }
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
   }
 }
 
@@ -2189,9 +2200,15 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     }
   }
 
+  // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+  bool sender = m_chatmessage[CHAR_ID].toInt() == m_cid;
+  if (ao_app->msg_ghost_enabled) {
+    // Instead of the above, do it in better logic: if SENDER is equal to our client ID, it's "true". 2.10+ extension, assume "false" by default.
+    sender = m_chatmessage[SENDER].toInt() == ao_app->client_id;
+  }
   if (!ao_app->is_desyncrhonized_logs_enabled()) {
     // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
-    log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY);
+    log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
   }
 
   // Process the callwords for this message
@@ -2210,7 +2227,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     handle_ic_message();
 }
 
-void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, QString f_char, QString f_objection_mod, int f_evi_id, int f_color, LogMode f_log_mode)
+void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, QString f_char, QString f_objection_mod, int f_evi_id, int f_color, LogMode f_log_mode, bool sender)
 {
   // Display name will use the showname
   QString f_displayname = f_showname;
@@ -2223,9 +2240,6 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     f_displayname = f_showname;
 
   bool ghost = f_log_mode == UNDELIVERED || f_log_mode == QUEUED;
-  // TODO: Make it work with "SENDER"
-  if (!ghost && f_log_mode != IO_ONLY && f_char_id == m_cid)
-    pop_ic_ghost();
 
   if (log_ic_actions) {
     // Check if a custom objection is in use
@@ -2283,6 +2297,8 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
         case DISPLAY_ONLY:
         case UNDELIVERED:
         case QUEUED:
+          if (!ghost && sender)
+            pop_ic_ghost();
           append_ic_text(shout_message, f_displayname, tr("shouts"),
                          0, QDateTime::currentDateTime(), ghost);
           break;
@@ -2303,6 +2319,8 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
         case DISPLAY_ONLY:
         case UNDELIVERED:
         case QUEUED:
+          if (!ghost && sender)
+            pop_ic_ghost();
           append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"),
                          0, QDateTime::currentDateTime(), ghost);
           break;
@@ -2326,6 +2344,8 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     case DISPLAY_ONLY:
     case UNDELIVERED:
     case QUEUED:
+      if (!ghost && sender)
+        pop_ic_ghost();
       append_ic_text(f_message, f_displayname, "",
                      f_color, QDateTime::currentDateTime(), ghost);
       break;
@@ -3151,6 +3171,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
                                int color, QDateTime timestamp, bool ghost)
 {
+  QColor chatlog_color = ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini");
   last_ic_message = p_name + ":" + p_text;
   QTextCharFormat bold;
   QTextCharFormat normal;
@@ -3169,9 +3190,11 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   if (ghost) {
     ghost_blocks++;
-    bold.setForeground(QColor(255, 255, 255, 128));
-    normal.setForeground(QColor(255, 255, 255, 128));
-    italics.setForeground(QColor(255, 255, 255, 128));
+    QColor ghost_color = chatlog_color;
+    ghost_color.setAlpha(128);
+    bold.setForeground(ghost_color);
+    normal.setForeground(ghost_color);
+    italics.setForeground(ghost_color);
   }
 
   ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
@@ -3217,8 +3240,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
           filter_ic_text(p_text, true, -1, 0)
               .replace(
                   "$c0",
-                  ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini")
-                      .name(QColor::HexRgb)) +
+                  chatlog_color.name(QColor::HexRgb)) +
           "</b>");
     }
     else
@@ -3249,7 +3271,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     // Format the result according to html
     if (log_colors && !ghost) {
       QString p_text_filtered = filter_ic_text(p_text, true, -1, color);
-      p_text_filtered = p_text_filtered.replace("$c0", ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini").name(QColor::HexRgb));
+      p_text_filtered = p_text_filtered.replace("$c0", chatlog_color.name(QColor::HexRgb));
       for (int c = 1; c < max_colors; ++c) {
         p_text_filtered = p_text_filtered.replace("$c" + QString::number(c), default_color_rgb_list.at(c).name(QColor::HexRgb));
       }
