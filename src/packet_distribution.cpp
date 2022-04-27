@@ -103,7 +103,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     effects_enabled = false;
     expanded_desk_mods_enabled = false;
     auth_packet_enabled = false;
-    msg_ghost_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -136,8 +135,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_enabled = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_enabled = true;
-    if (f_packet.contains("msg_ghost", Qt::CaseInsensitive))
-      msg_ghost_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
