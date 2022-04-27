@@ -2316,10 +2316,10 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     }
   }
 
-  // Do not display anything on a repeated blankpost
-  if (blankpost) {
-    // But, don't forget to clear the ghost
-    if (!ghost && sender)
+  // Do not display anything on a repeated blankpost if it's not a ghost
+  if (blankpost && !ghost) {
+    // Don't forget to clear the ghost if it's us
+    if (sender)
       pop_ic_ghost();
     return;
   }
