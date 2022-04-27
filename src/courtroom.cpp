@@ -2037,10 +2037,12 @@ void Courtroom::on_chat_return_pressed()
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
-  log_chatmessage(packet_contents[MESSAGE], packet_contents[CHAR_ID].toInt(),
-                  packet_contents[SHOWNAME], packet_contents[CHAR_NAME],
-                  packet_contents[OBJECTION_MOD], packet_contents[EVIDENCE_ID].toInt(),
-                  packet_contents[TEXT_COLOR].toInt(), UNDELIVERED);
+  if (ao_app->msg_ghost_enabled) {
+    log_chatmessage(packet_contents[MESSAGE], packet_contents[CHAR_ID].toInt(),
+                    packet_contents[SHOWNAME], packet_contents[CHAR_NAME],
+                    packet_contents[OBJECTION_MOD], packet_contents[EVIDENCE_ID].toInt(),
+                    packet_contents[TEXT_COLOR].toInt(), UNDELIVERED);
+  }
 }
 
 void Courtroom::reset_ui()
@@ -2086,9 +2088,32 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (mute_map.value(f_char_id))
     return;
 
-  // Reset input UI elements if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-  if (f_char_id == m_cid) {
+  // Use null showname if packet does not support 2.6+ extensions
+  QString showname = QString();
+  if (SHOWNAME < p_contents.size())
+    showname = p_contents[SHOWNAME];
+
+  // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+  bool sender = f_char_id == m_cid;
+  if (SENDER < p_contents.size() && ao_app->msg_ghost_enabled)
+    // Instead of the above, do it in better logic: if SENDER is equal to our client ID, it's "true". 2.10+ extension, assume "false" by default.
+    sender = p_contents[SENDER] == ao_app->client_id;
+
+  // Record the log I/O, log files should be accurate.
+  // If desynced logs are on, display the log IC immediately.
+  LogMode log_mode = ao_app->is_desyncrhonized_logs_enabled() ? DISPLAY_AND_IO : IO_ONLY;
+
+  // If we determine we sent this message
+  if (sender) {
+    // Reset input UI elements, clear input box, etc.
     reset_ui();
+    // Initialize operation "message queue ghost"
+    if (log_mode == IO_ONLY) {
+      log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
+                      p_contents[SHOWNAME], p_contents[CHAR_NAME],
+                      p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(),
+                      p_contents[TEXT_COLOR].toInt(), QUEUED);
+    }
   }
 
   // User-created blankpost
@@ -2109,16 +2134,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
       skip_chatmessage_queue();
     }
   }
-
-  // Record the log I/O, log files should be accurate.
-  // If desynced logs are on, display the log IC immediately.
-  LogMode log_mode = ao_app->is_desyncrhonized_logs_enabled() ? DISPLAY_AND_IO : IO_ONLY;
-
-  // Use null showname if packet does not support 2.6+ extensions
-  QString showname = QString();
-  if (SHOWNAME < p_contents.size())
-    showname = p_contents[SHOWNAME];
-
   log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode);
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
@@ -2207,8 +2222,8 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if (f_displayname.trimmed().isEmpty())
     f_displayname = f_showname;
 
-  bool ghost = f_log_mode == UNDELIVERED;
-  if (!ghost && f_log_mode != IO_ONLY && f_char_id == m_cid)
+  bool ghost = f_log_mode == UNDELIVERED || f_log_mode == QUEUED;
+  if (!ghost && f_log_mode != IO_ONLY && (ao_app->msg_ghost_enabled && f_char_id == m_cid))
     pop_ic_ghost();
 
   if (log_ic_actions) {

@@ -103,11 +103,12 @@ public:
   bool y_offset_enabled = false;
   bool expanded_desk_mods_enabled = false;
   bool auth_packet_enabled = false;
+  bool msg_ghost_enabled = false;
 
   ///////////////loading info///////////////////
 
-  // player number, it's hardly used but might be needed for some old servers
-  int s_pv = 0;
+  // client ID. Useful for ghost msgs, etc.
+  int client_id = 0;
 
   QString server_software = "";
 

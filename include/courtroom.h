@@ -239,6 +239,7 @@ public:
     DISPLAY_ONLY,
     DISPLAY_AND_IO,
     UNDELIVERED,
+    QUEUED,
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
   void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY);
