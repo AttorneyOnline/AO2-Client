@@ -238,7 +238,6 @@ public:
     IO_ONLY,
     DISPLAY_ONLY,
     DISPLAY_AND_IO,
-    UNDELIVERED,
     QUEUED,
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.

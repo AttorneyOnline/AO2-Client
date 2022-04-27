@@ -416,13 +416,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       append_to_demofile(f_packet_encoded);
     }
   }
-  // Deny latest MS packet
-  else if (header == "xMS") {
-    if (courtroom_constructed && courtroom_loaded)
-    {
-      w_courtroom->pop_ic_ghost();
-    }
-  }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)
     {

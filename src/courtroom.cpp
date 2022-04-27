@@ -2037,12 +2037,6 @@ void Courtroom::on_chat_return_pressed()
   }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
-  if (ao_app->msg_ghost_enabled) {
-    log_chatmessage(packet_contents[MESSAGE], packet_contents[CHAR_ID].toInt(),
-                    packet_contents[SHOWNAME], packet_contents[CHAR_NAME],
-                    packet_contents[OBJECTION_MOD], packet_contents[EVIDENCE_ID].toInt(),
-                    packet_contents[TEXT_COLOR].toInt(), UNDELIVERED, true);
-  }
 }
 
 void Courtroom::reset_ui()
@@ -2095,10 +2089,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   bool sender = f_char_id == m_cid;
-  if (SENDER < p_contents.size() && ao_app->msg_ghost_enabled) {
-    // Instead of the above, do it in better logic: if SENDER is equal to our client ID, it's "true". 2.10+ extension, assume "false" by default.
-    sender = p_contents[SENDER].toInt() == ao_app->client_id;
-  }
 
   // Record the log I/O, log files should be accurate.
   // If desynced logs are on, display the log IC immediately.
@@ -2114,10 +2104,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (sender) {
     // Reset input UI elements, clear input box, etc.
     reset_ui();
-    // Make sure to pop our waiting-on-network msg
-    if (ao_app->msg_ghost_enabled) {
-      pop_ic_ghost();
-    }
     // Initialize operation "message queue ghost"
     if (log_mode == IO_ONLY) {
       log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
@@ -2175,10 +2161,6 @@ void Courtroom::skip_chatmessage_queue()
     QStringList p_contents = chatmessage_queue.dequeue();
     // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
     bool sender = p_contents[CHAR_ID].toInt() == m_cid;
-    if (SENDER < p_contents.size() && ao_app->msg_ghost_enabled) {
-      // Instead of the above, do it in better logic: if SENDER is equal to our client ID, it's "true". 2.10+ extension, assume "false" by default.
-      sender = p_contents[SENDER].toInt() == ao_app->client_id;
-    }
     log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
   }
 }
@@ -2202,10 +2184,6 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   bool sender = m_chatmessage[CHAR_ID].toInt() == m_cid;
-  if (ao_app->msg_ghost_enabled) {
-    // Instead of the above, do it in better logic: if SENDER is equal to our client ID, it's "true". 2.10+ extension, assume "false" by default.
-    sender = m_chatmessage[SENDER].toInt() == ao_app->client_id;
-  }
   if (!ao_app->is_desyncrhonized_logs_enabled()) {
     // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
     log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
@@ -2239,7 +2217,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if (f_displayname.trimmed().isEmpty())
     f_displayname = f_showname;
 
-  bool ghost = f_log_mode == UNDELIVERED || f_log_mode == QUEUED;
+  bool ghost = f_log_mode == QUEUED;
   // Detect if we're trying to log a blankpost
   bool blankpost = (f_log_mode != IO_ONLY && // if we're not in I/O only mode,
                    f_message.isEmpty() &&  // our current message is a blankpost,
@@ -2304,7 +2282,6 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
                          0, QDateTime::currentDateTime(), false);
           break;
         case DISPLAY_ONLY:
-        case UNDELIVERED:
         case QUEUED:
           if (!ghost && sender)
             pop_ic_ghost();
@@ -2329,7 +2306,6 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
                          0, QDateTime::currentDateTime(), false);
           break;
         case DISPLAY_ONLY:
-        case UNDELIVERED:
         case QUEUED:
           if (!ghost && sender)
             pop_ic_ghost();
@@ -2358,7 +2334,6 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
                      f_color, QDateTime::currentDateTime(), false);
       break;
     case DISPLAY_ONLY:
-    case UNDELIVERED:
     case QUEUED:
       if (!ghost && sender)
         pop_ic_ghost();
