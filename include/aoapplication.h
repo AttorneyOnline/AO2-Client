@@ -108,8 +108,8 @@ public:
 
   ///////////////loading info///////////////////
 
-  // player number, it's hardly used but might be needed for some old servers
-  int s_pv = 0;
+  // client ID. Useful for ghost msgs, etc.
+  int client_id = 0;
 
   QString server_software = "";
 

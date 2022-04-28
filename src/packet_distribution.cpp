@@ -65,7 +65,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 2)
       goto end;
 
-    s_pv = f_contents.at(0).toInt();
+    client_id = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
     if (lobby_constructed)

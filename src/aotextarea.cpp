@@ -42,6 +42,36 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message,
   this->auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
 }
 
+void AOTextArea::append_ghost(QString p_name, QString p_message)
+{
+  const QTextCursor old_cursor = this->textCursor();
+  const int old_scrollbar_value = this->verticalScrollBar()->value();
+  const bool is_scrolled_down =
+      old_scrollbar_value == this->verticalScrollBar()->maximum();
+
+  moveCursor(QTextCursor::End);
+  append("");
+  ghost_cursors.append(this->textCursor());
+
+  QString result = p_message.toHtmlEscaped()
+                       .replace("\n", "<br>")
+                       .replace(url_parser_regex, "<a href='\\1'>\\1</a>");
+
+  insertHtml(QLatin1String("<font color='gray'>%1</font>").arg(result));
+  auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
+}
+
+void AOTextArea::clear_ghosts()
+{
+  for (auto &cursor : ghost_cursors) {
+    setTextCursor(cursor);
+    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    cursor.removeSelectedText();
+    cursor.deleteChar(); // Delete newline
+  }
+  ghost_cursors.clear();
+}
+
 void AOTextArea::append_error(QString p_message)
 {
   const QTextCursor old_cursor = this->textCursor();
