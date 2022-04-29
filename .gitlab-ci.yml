@@ -94,7 +94,7 @@ build android arm64:
     - apt-get update
     - >
       apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev
-      clang make git sudo curl ca-certificates pkg-config upx unzip xz-utils android-sdk
+      clang make git sudo curl ca-certificates pkg-config unzip xz-utils android-sdk google-android-ndk-installer
     - git submodule init
     - git submodule update
 
@@ -119,7 +119,7 @@ build android arm64:
     # Build QtApng
     - git clone https://github.com/Skycoder42/QtApng
     - cd QtApng
-    - qmake -spec android-g++
+    - qmake -spec android-clang
     # Don't make examples - they're not compatible with Qt 5.9
     - make -j$(nproc) sub-src
     #- make sub-src-install_subtargets
@@ -127,8 +127,8 @@ build android arm64:
     - cd ..
 
     # Build
-    - qmake -spec android-g++ "DEFINES += ANDROID"
-    - make -j$(nproc) apk
+    - qmake -spec android-clang "DEFINES += ANDROID"
+    - make -j$(nproc)
   artifacts:
     paths:
       - lib/
