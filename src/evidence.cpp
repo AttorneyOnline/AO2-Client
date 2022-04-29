@@ -496,8 +496,6 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
@@ -526,8 +524,6 @@ void Courtroom::on_evidence_left_clicked()
   --current_evidence_page;
 
   set_evidence_page();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_right_clicked()
@@ -535,8 +531,6 @@ void Courtroom::on_evidence_right_clicked()
   ++current_evidence_page;
 
   set_evidence_page();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_present_clicked()
@@ -569,8 +563,6 @@ void Courtroom::on_evidence_delete_clicked()
   }
 
   current_evidence = 0;
-
-  ui_ic_chat_message->setFocus();
 }
 
 bool Courtroom::on_evidence_x_clicked()
@@ -714,7 +706,6 @@ void Courtroom::evidence_close()
   ui_evidence_name->setReadOnly(true);
   ui_evidence_image_name->setReadOnly(true);
   ui_evidence_overlay->hide();
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::evidence_switch(bool global)
