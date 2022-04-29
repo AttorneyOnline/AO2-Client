@@ -3171,11 +3171,10 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   if (ghost) {
     ghost_blocks++;
-    QColor ghost_color = chatlog_color;
-    ghost_color.setAlpha(128);
-    bold.setForeground(ghost_color);
-    normal.setForeground(ghost_color);
-    italics.setForeground(ghost_color);
+    chatlog_color.setAlpha(128);
+    bold.setForeground(chatlog_color);
+    normal.setForeground(chatlog_color);
+    italics.setForeground(chatlog_color);
   }
   else {
     last_ic_message = p_name + ":" + p_text;
@@ -3224,7 +3223,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
           filter_ic_text(p_text, true, -1, 0)
               .replace(
                   "$c0",
-                  chatlog_color.name(QColor::HexRgb)) +
+                  chatlog_color.name(QColor::HexArgb)) +
           "</b>");
     }
     else
@@ -3253,11 +3252,15 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     else
       ui_ic_chatlog->textCursor().insertText(": ", normal);
     // Format the result according to html
-    if (log_colors && !ghost) {
+    if (log_colors) {
       QString p_text_filtered = filter_ic_text(p_text, true, -1, color);
-      p_text_filtered = p_text_filtered.replace("$c0", chatlog_color.name(QColor::HexRgb));
+      p_text_filtered = p_text_filtered.replace("$c0", chatlog_color.name(QColor::HexArgb));
       for (int c = 1; c < max_colors; ++c) {
-        p_text_filtered = p_text_filtered.replace("$c" + QString::number(c), default_color_rgb_list.at(c).name(QColor::HexRgb));
+        QColor color_result = default_color_rgb_list.at(c);
+        if (ghost) {
+          color_result.setAlpha(128);
+        }
+        p_text_filtered = p_text_filtered.replace("$c" + QString::number(c), color_result.name(QColor::HexArgb));
       }
       ui_ic_chatlog->textCursor().insertHtml(p_text_filtered);
     }
