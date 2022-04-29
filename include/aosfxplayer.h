@@ -22,7 +22,7 @@ public:
   void set_looping(bool toggle, int channel = -1);
   void set_muted(bool toggle);
   int m_channel = 0;
-
+  int get_volume() { return m_volume * 100; };
 private:
   QWidget *m_parent;
   AOApplication *ao_app;

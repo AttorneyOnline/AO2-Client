@@ -69,7 +69,7 @@ void AOSfxPlayer::set_muted(bool toggle)
 
 void AOSfxPlayer::set_volume(qreal p_value)
 {
-  m_volume = p_value / 100;
+  m_volume = p_value * 0.01;
   set_volume_internal(m_volume);
 }
 
