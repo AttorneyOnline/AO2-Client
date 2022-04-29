@@ -66,14 +66,14 @@ build linux x86_64:
     - cd QtApng
     - qmake -spec linux-clang
     # Don't make examples - they're not compatible with Qt 5.9
-    - make -j4 sub-src
+    - make -j$(nproc) sub-src
     #- make sub-src-install_subtargets
     - cp plugins/imageformats/libqapng.so ../lib
     - cd ..
 
     # Build
     - qmake -spec linux-clang "DEFINES += DISCORD"
-    - make -j4
+    - make -j$(nproc)
 
     # Post-processing
     - upx --lzma -9 --force bin/Attorney_Online
@@ -81,6 +81,59 @@ build linux x86_64:
     paths:
       - lib/
       - bin/
+
+
+build android arm64:
+  image: ubuntu:18.04
+  stage: build
+  tags:
+    - docker
+    - linux
+  script:
+    # Install dependencies
+    - apt-get update
+    - >
+      apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev
+      clang make git sudo curl ca-certificates pkg-config upx unzip xz-utils
+    - git submodule init
+    - git submodule update
+
+    # Print versions
+    - qmake --version
+    - clang --version
+
+    # Extract BASS
+    - mkdir bass
+    - cd bass
+    - curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
+    - unzip -o bass.zip
+    - cp x64/libbass.so ../lib
+    - curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
+    - unzip -o bassmidi.zip
+    - cp x64/libbassmidi.so ../lib
+    - curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
+    - unzip -o bassopus.zip
+    - cp x64/libbassopus.so ../lib
+    - cd ..
+
+    # Build QtApng
+    - git clone https://github.com/Skycoder42/QtApng
+    - cd QtApng
+    - qmake -spec linux-clang
+    # Don't make examples - they're not compatible with Qt 5.9
+    - make -j$(nproc) sub-src
+    #- make sub-src-install_subtargets
+    - cp plugins/imageformats/libqapng.so ../lib
+    - cd ..
+
+    # Build
+    - qmake -spec linux-clang "DEFINES += ANDROID"
+    - make -j$(nproc) apk
+  artifacts:
+    paths:
+      - lib/
+      - bin/
+
 
 build windows i686:
   image: ${CI_REGISTRY_IMAGE}/builder-windows-i686
@@ -125,7 +178,7 @@ build windows i686:
 
     # Build
     - /opt/mxe/usr/${TARGET_SPEC}/qt5/bin/qmake "DEFINES += DISCORD"
-    - make -j4
+    - make -j$(nproc)
 
     # Post-processing
     - upx --lzma -9 --force bin/Attorney_Online.exe
