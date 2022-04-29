@@ -94,7 +94,7 @@ build android arm64:
     - apt-get update
     - >
       apt-get install --no-install-recommends -y qt5-default qtmultimedia5-dev
-      clang make git sudo curl ca-certificates pkg-config upx unzip xz-utils
+      clang make git sudo curl ca-certificates pkg-config upx unzip xz-utils android-sdk
     - git submodule init
     - git submodule update
 
@@ -107,19 +107,19 @@ build android arm64:
     - cd bass
     - curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
     - unzip -o bass.zip
-    - cp x64/libbass.so ../lib
+    - cp libs/arm64-v8a/libbass.so ../lib
     - curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
     - unzip -o bassmidi.zip
-    - cp x64/libbassmidi.so ../lib
+    - cp libs/arm64-v8a/libbassmidi.so ../lib
     - curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
     - unzip -o bassopus.zip
-    - cp x64/libbassopus.so ../lib
+    - cp libs/arm64-v8a/libbassopus.so ../lib
     - cd ..
 
     # Build QtApng
     - git clone https://github.com/Skycoder42/QtApng
     - cd QtApng
-    - qmake -spec linux-clang
+    - qmake -spec android-g++
     # Don't make examples - they're not compatible with Qt 5.9
     - make -j$(nproc) sub-src
     #- make sub-src-install_subtargets
@@ -127,7 +127,7 @@ build android arm64:
     - cd ..
 
     # Build
-    - qmake -spec linux-clang "DEFINES += ANDROID"
+    - qmake -spec android-g++ "DEFINES += ANDROID"
     - make -j$(nproc) apk
   artifacts:
     paths:
