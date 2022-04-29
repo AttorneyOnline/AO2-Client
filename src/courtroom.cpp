@@ -2964,7 +2964,7 @@ void Courtroom::display_evidence_image()
     bool is_left_side = !(side == "def" || side == "hlp" ||
                           side == "jud" || side == "jur");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side,
-                                          ui_sfx_slider->value());
+                                          sfx_player->get_volume());
   }
 }
 
