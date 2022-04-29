@@ -2088,11 +2088,10 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     showname = p_contents[SHOWNAME];
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-  bool sender = f_char_id == m_cid;
+  bool sender = ao_app->is_desyncrhonized_logs_enabled() || f_char_id == m_cid;
 
   // Record the log I/O, log files should be accurate.
-  // If desynced logs are on, display the log IC immediately.
-  LogMode log_mode = ao_app->is_desyncrhonized_logs_enabled() ? DISPLAY_AND_IO : IO_ONLY;
+  LogMode log_mode = IO_ONLY;
 
   // User-created blankpost
   if (p_contents[MESSAGE].trimmed().isEmpty()) {
@@ -2100,17 +2099,15 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     p_contents[MESSAGE] = "";
   }
 
-  // If we determine we sent this message
-  if (sender) {
+  // If we determine we sent this message, or we have desync enabled
+  if (sender || ao_app->is_desyncrhonized_logs_enabled()) {
     // Reset input UI elements, clear input box, etc.
     reset_ui();
     // Initialize operation "message queue ghost"
-    if (log_mode == IO_ONLY) {
-      log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
-                      p_contents[SHOWNAME], p_contents[CHAR_NAME],
-                      p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(),
-                      p_contents[TEXT_COLOR].toInt(), QUEUED, sender);
-    }
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
+                    p_contents[SHOWNAME], p_contents[CHAR_NAME],
+                    p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(),
+                    p_contents[TEXT_COLOR].toInt(), QUEUED, sender);
   }
 
   bool is_objection = false;
@@ -2125,7 +2122,9 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
       skip_chatmessage_queue();
     }
   }
+  // Log the IO file
   log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode, sender);
+
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
 
@@ -2152,15 +2151,10 @@ void Courtroom::chatmessage_dequeue()
 
 void Courtroom::skip_chatmessage_queue()
 {
-  if (ao_app->is_desyncrhonized_logs_enabled()) {
-    chatmessage_queue.clear();
-    return;
-  }
-
   while (!chatmessage_queue.isEmpty()) {
     QStringList p_contents = chatmessage_queue.dequeue();
     // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-    bool sender = p_contents[CHAR_ID].toInt() == m_cid;
+    bool sender = ao_app->is_desyncrhonized_logs_enabled() || p_contents[CHAR_ID].toInt() == m_cid;
     log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
   }
 }
@@ -2183,11 +2177,10 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   }
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-  bool sender = m_chatmessage[CHAR_ID].toInt() == m_cid;
-  if (!ao_app->is_desyncrhonized_logs_enabled()) {
-    // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
-    log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
-  }
+  bool sender = ao_app->is_desyncrhonized_logs_enabled() || m_chatmessage[CHAR_ID].toInt() == m_cid;
+
+  // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
+  log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
 
   // Process the callwords for this message
   handle_callwords();
