@@ -467,7 +467,10 @@ void Courtroom::on_evidence_double_clicked(int p_id)
     return;
 
   if (ui_evidence_overlay->isVisible()) {
-    on_evidence_x_clicked();
+    if (!on_evidence_x_clicked()) {
+      // We're told not to switch over to the other evidence ("cancel" clicked)
+      return;
+    }
   }
 
   for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
@@ -570,16 +573,16 @@ void Courtroom::on_evidence_delete_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_evidence_x_clicked()
+bool Courtroom::on_evidence_x_clicked()
 {
   if (current_evidence >=
       local_evidence_list.size()) // Should never happen but you never know.
-    return;
+    return true;
 
   if (ui_evidence_ok->isHidden()) {
     // Nothing was modified
     evidence_close();
-    return;
+    return true;
   }
   QMessageBox *msgBox = new QMessageBox;
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
@@ -593,16 +596,14 @@ void Courtroom::on_evidence_x_clicked()
   case QMessageBox::Save:
     evidence_close();
     on_evidence_ok_clicked();
-    break;
+    return true;
   case QMessageBox::Discard:
     evidence_close();
-    break;
+    return true;
   case QMessageBox::Cancel:
-    // Cancel was clicked, do nothing
-    break;
   default:
-    // should never be reached
-    break;
+    // Cancel was clicked, report that.
+    return false;
   }
 }
 

@@ -979,7 +979,7 @@ private slots:
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();
-  void on_evidence_x_clicked();
+  bool on_evidence_x_clicked();
   void on_evidence_ok_clicked();
   void on_evidence_switch_clicked();
   void on_evidence_transfer_clicked();
