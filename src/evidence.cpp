@@ -464,6 +464,7 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_image_name->setReadOnly(false);
   ui_evidence_image_name->setToolTip(tr("Click to edit..."));
 
+  ui_evidence->show();
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
 
