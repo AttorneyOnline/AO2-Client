@@ -375,6 +375,19 @@ void Courtroom::set_evidence_page()
   }
 }
 
+void Courtroom::show_evidence(int f_real_id)
+{
+  // Make sure we're in the global evidence list
+  evidence_switch(true);
+  // Set the evidence page properly
+  current_evidence_page = f_real_id / max_evidence_on_page;
+  set_evidence_page();
+  // Display the target evidence using the local ID
+  int p_id = f_real_id - (max_evidence_on_page * current_evidence_page);
+  on_evidence_double_clicked(p_id);
+}
+
+
 void Courtroom::on_evidence_name_edited()
 {
   if (current_evidence >= local_evidence_list.size())
