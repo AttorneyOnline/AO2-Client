@@ -618,28 +618,7 @@ void Courtroom::on_evidence_ok_clicked()
 
 void Courtroom::on_evidence_switch_clicked()
 {
-  evidence_close();
   evidence_switch(!current_evidence_global);
-  if (current_evidence_global) {
-    ui_evidence_switch->set_image("evidence_global");
-    ui_evidence->set_image("evidence_background");
-    ui_evidence_overlay->set_image("evidence_overlay");
-    ui_evidence_transfer->set_image("evidence_transfer");
-    ui_evidence_transfer->setToolTip(
-        tr("Transfer evidence to private inventory."));
-    ui_evidence_switch->setToolTip(
-        tr("Current evidence is global. Click to switch to private."));
-  }
-  else {
-    ui_evidence_switch->set_image("evidence_private");
-    ui_evidence->set_image("evidence_background_private");
-    ui_evidence_overlay->set_image("evidence_overlay_private");
-    ui_evidence_transfer->set_image("evidence_transfer_private");
-    ui_evidence_transfer->setToolTip(
-        tr("Transfer evidence to global inventory."));
-    ui_evidence_switch->setToolTip(
-        tr("Current evidence is private. Click to switch to global."));
-  }
 }
 
 void Courtroom::on_evidence_transfer_clicked()
@@ -701,6 +680,7 @@ void Courtroom::evidence_close()
 
 void Courtroom::evidence_switch(bool global)
 {
+  evidence_close();
   current_evidence_global = global;
   is_presenting_evidence = false;
   ui_evidence_present->set_image("present");
@@ -710,12 +690,28 @@ void Courtroom::evidence_switch(bool global)
     ui_evidence_present->show();
     ui_evidence_save->hide();
     ui_evidence_load->hide();
+    ui_evidence_switch->set_image("evidence_global");
+    ui_evidence->set_image("evidence_background");
+    ui_evidence_overlay->set_image("evidence_overlay");
+    ui_evidence_transfer->set_image("evidence_transfer");
+    ui_evidence_transfer->setToolTip(
+        tr("Transfer evidence to private inventory."));
+    ui_evidence_switch->setToolTip(
+        tr("Current evidence is global. Click to switch to private."));
   }
   else {
     local_evidence_list = private_evidence_list;
     ui_evidence_present->hide();
     ui_evidence_save->show();
     ui_evidence_load->show();
+    ui_evidence_switch->set_image("evidence_private");
+    ui_evidence->set_image("evidence_background_private");
+    ui_evidence_overlay->set_image("evidence_overlay_private");
+    ui_evidence_transfer->set_image("evidence_transfer_private");
+    ui_evidence_transfer->setToolTip(
+        tr("Transfer evidence to global inventory."));
+    ui_evidence_switch->setToolTip(
+        tr("Current evidence is private. Click to switch to global."));
   }
   current_evidence_page = 0;
   set_evidence_page();
