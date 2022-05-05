@@ -1563,6 +1563,12 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
     }
   }
 
+  if (n_char != -1) {
+    ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
+  }
+  else {
+    ui_ic_chat_name->setPlaceholderText("Spectator");
+  }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
