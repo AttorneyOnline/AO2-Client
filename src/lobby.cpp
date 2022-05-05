@@ -295,6 +295,8 @@ void Lobby::on_public_servers_clicked()
   ui_public_servers->set_image("publicservers_selected");
   ui_favorites->set_image("favorites");
 
+  reset_selection();
+
   list_servers();
 
   public_servers_selected = true;
@@ -305,11 +307,23 @@ void Lobby::on_favorites_clicked()
   ui_favorites->set_image("favorites_selected");
   ui_public_servers->set_image("publicservers");
 
+  reset_selection();
+
   ao_app->set_favorite_list();
 
   list_favorites();
 
   public_servers_selected = false;
+}
+
+void Lobby::reset_selection()
+{
+  last_index = -1;
+  ui_server_list->clearSelection();
+  ui_player_count->setText(tr("Offline"));
+  ui_description->clear();
+
+  ui_connect->setEnabled(false);
 }
 
 void Lobby::on_refresh_pressed() { ui_refresh->set_image("refresh_pressed"); }
