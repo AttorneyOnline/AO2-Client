@@ -443,7 +443,7 @@ void Courtroom::on_evidence_clicked(int p_id)
     return;
   
   if (evidence_one_click_view){
-    on_evidence_double_clicked(f_real_id);
+    on_evidence_double_clicked(p_id);
     return;
   }
 
