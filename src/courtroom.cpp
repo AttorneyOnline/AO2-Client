@@ -1540,8 +1540,8 @@ void Courtroom::update_character(int p_cid)
     }
   }
 
-  if (n_char != -1) {
-    ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
+  if (m_cid != -1) {
+    ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
   }
   else {
     ui_ic_chat_name->setPlaceholderText("Spectator");
