@@ -1540,9 +1540,12 @@ void Courtroom::update_character(int p_cid)
     }
   }
 
-  if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
-                   // to find one
-    ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
+  if (n_char != -1) {
+    ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
+  }
+  else {
+    ui_ic_chat_name->setPlaceholderText("Spectator");
+  }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
