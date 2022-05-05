@@ -989,6 +989,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText(tr("Settings"));
   ui_settings->set_image("courtroom_settings");
+  if (ui_settings->icon().isNull()) {
+      ui_settings->set_image("settings"); // pre-2.10 filename
+  }
   ui_settings->setToolTip(
       tr("Allows you to change various aspects of the client."));
 
