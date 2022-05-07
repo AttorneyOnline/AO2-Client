@@ -100,15 +100,15 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -o bass.zip
-          cp ./c/x64/libbass.so ./lib
+          cp ./x64/libbass.so ./lib
 
           curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
           unzip -o bassmidi.zip
-          cp ./c/x64/libbassmidi.so ./lib
+          cp ./x64/libbassmidi.so ./lib
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -o bassopus.zip
-          cp ./c/x64/libbassopus.so ./lib
+          cp ./x64/libbassopus.so ./lib
 
       - name: Install Mac BASS
         if: matrix.os == 'macos-latest'
