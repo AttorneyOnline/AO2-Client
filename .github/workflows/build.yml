@@ -72,11 +72,26 @@ jobs:
           ${{steps.qt.outputs.make}}
           ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
 
-      - name: Install Discord RPC
+      - name: Install Windows Discord RPC
+        if: matrix.os == 'windows-latest'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
           unzip discord_rpc.zip
-          cp ./discord-rpc/${{matrix.platform}}-dynamic/lib/discord-rpc.lib ./lib
+          cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib
+
+      - name: Install Linux Discord RPC
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
+          unzip discord_rpc.zip
+          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib
+
+      - name: Install Mac Linux RPC
+        if: matrix.os == 'macos-latest'
+        run: |
+          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc.zip
+          unzip discord_rpc.zip
+          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib
 
       - name: Install BASS
         run: |
