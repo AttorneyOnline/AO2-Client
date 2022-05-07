@@ -125,6 +125,21 @@ jobs:
           unzip -o bassopus.zip
           cp ./libbassopus.so ./lib
 
+      - name: Install Android BASS
+        if: matrix.platform == 'android'
+        run: |
+          curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
+          unzip -o bass.zip
+          cp ./libs/arm64-v8a/libbass.so ./lib
+
+          curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
+          unzip -o bassmidi.zip
+          cp ./libs/arm64-v8a/libbassmidi.so ./lib
+
+          curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
+          unzip -o bassopus.zip
+          cp ./libs/arm64-v8a/libbassopus.so ./lib
+
       - name: Create Build Environment
         run: cmake -E make_directory ${{github.workspace}}/build
 
