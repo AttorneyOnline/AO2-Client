@@ -123,7 +123,7 @@ jobs:
 
           curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
           unzip -o bassopus.zip
-          cp ./libbassopus.so ./lib
+          cp ./libbassopus.dylib ./lib
 
       - name: Install Android BASS
         if: matrix.platform == 'android'
