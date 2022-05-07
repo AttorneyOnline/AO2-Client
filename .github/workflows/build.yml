@@ -140,18 +140,15 @@ jobs:
           unzip -o bassopus.zip
           cp ./libs/arm64-v8a/libbassopus.so ./lib
 
-      - name: Create Build Environment
-        run: cmake -E make_directory ${{github.workspace}}/build
+      - name: qmake
+        run: |
+          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+          ${{steps.qt.outputs.make}} qmake_all
 
-      - name: Configure CMake
-        shell: bash
-        working-directory: ${{github.workspace}}/build
-        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-      - name: Build
-        working-directory: ${{github.workspace}}/build
-        shell: bash
-        run: cmake --build . --config $BUILD_TYPE --target Attorney_Online
+      - name: build
+        run: |
+          ${{steps.qt.outputs.make}}
+          ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
 
       - name: Deploy
         working-directory: ${{github.workspace}}/build/Release
