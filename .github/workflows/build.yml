@@ -143,14 +143,13 @@ jobs:
       - name: qmake
         run: |
           qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
-          ${{steps.qt.outputs.make}} qmake_all
 
       - name: build
         run: |
           ${{steps.qt.outputs.make}}
-          ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
 
-      - name: Deploy
+      - name: Deploy Windows
+        if: matrix.os == 'windows-latest'
         working-directory: ${{github.workspace}}/build/Release
         shell: bash
         run: |
