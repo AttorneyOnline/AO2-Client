@@ -47,7 +47,7 @@ jobs:
       - uses: stonedDiscord/action-setup-qt@master
         id: qt
         with:
-          version: ${{matrix.version}}
+          version: 5.15.2
           platform: ${{matrix.platform}}
 
       - name: Install Catch2
