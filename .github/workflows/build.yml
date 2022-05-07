@@ -45,7 +45,7 @@ jobs:
           path: qt/${{matrix.version}}/${{matrix.platform}}
           key: qt-${{matrix.version}}-${{matrix.platform}}
 
-      - uses: Skycoder42/action-setup-qt@master
+      - uses: stonedDiscord/action-setup-qt@master
         id: qt
         with:
           version: ${{matrix.version}}
