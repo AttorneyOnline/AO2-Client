@@ -2,6 +2,9 @@ name: CI build
 
 on: [push]
 
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
 jobs:
   build:
     strategy:
@@ -51,6 +54,8 @@ jobs:
           version: ${{matrix.version}}
           platform: ${{matrix.platform}}
           cachedir: qt/${{matrix.version}}/${{matrix.platform}}
+          env:
+            ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
       - name: Install Catch2
         shell: bash
