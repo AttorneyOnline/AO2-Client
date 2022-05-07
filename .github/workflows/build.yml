@@ -89,8 +89,8 @@ jobs:
           unzip bassopus.zip
           cp ./c/x64/bassopus.lib ./lib
 
-          - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/build
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{github.workspace}}/build
 
       - name: Configure CMake
         shell: bash
@@ -105,13 +105,13 @@ jobs:
       - name: Deploy
         working-directory: ${{github.workspace}}/build/Release
         shell: bash
-      run: |
-        windeployqt .
-        cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
-        cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
-        cp ../../x64/bass.dll .
-        cp ../../x64/bassmidi.dll .
-        cp ../../x64/bassopus.dll .
+        run: |
+          windeployqt .
+          cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
+          cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
+          cp ../../x64/bass.dll .
+          cp ../../x64/bassmidi.dll .
+          cp ../../x64/bassopus.dll .
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
