@@ -93,7 +93,8 @@ jobs:
           unzip discord_rpc.zip
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib
 
-      - name: Install BASS
+      - name: Install Windows BASS
+        if: matrix.os == 'windows-latest'
         run: |
           curl http://www.un4seen.com/files/bass24.zip -o bass.zip
           unzip bass.zip
@@ -106,6 +107,36 @@ jobs:
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip bassopus.zip
           cp ./c/x64/bassopus.lib ./lib
+
+      - name: Install Linux BASS
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
+          unzip bass.zip
+          cp ./c/x64/libbass.so ./lib
+
+          curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
+          unzip bassmidi.zip
+          cp ./c/x64/libbassmidi.so ./lib
+
+          curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+          unzip bassopus.zip
+          cp ./c/x64/libbassopus.so ./lib
+
+      - name: Install Mac BASS
+        if: matrix.os == 'macos-latest'
+        run: |
+          curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
+          unzip bass.zip
+          cp ./libbass.dylib ./lib
+
+          curl http://www.un4seen.com/files/bassmidi24-osx.zip -o bassmidi.zip
+          unzip bassmidi.zip
+          cp ./libbassmidi.dylib ./lib
+
+          curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
+          unzip bassopus.zip
+          cp ./libbassopus.so ./lib
 
       - name: Create Build Environment
         run: cmake -E make_directory ${{github.workspace}}/build
