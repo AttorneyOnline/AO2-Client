@@ -24,11 +24,7 @@ jobs:
             os: ubuntu-latest
           - platform: android
             os: ubuntu-latest
-          - platform: msvc2017_64
-            os: windows-latest
           - platform: msvc2017
-            os: windows-latest
-          - platform: mingw73_64
             os: windows-latest
           - platform: mingw73_32
             os: windows-latest
