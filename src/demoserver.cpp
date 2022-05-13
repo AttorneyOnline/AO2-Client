@@ -80,32 +80,35 @@ void DemoServer::recv_data()
     QString in_data = QString::fromUtf8(client_sock->readAll());
 
     // Copypasted from NetworkManager
-    if (!in_data.endsWith("%")) {
-      partial_packet = true;
-      temp_packet += in_data;
-      return;
-    }
-
-    else {
-      if (partial_packet) {
-        in_data = temp_packet + in_data;
-        temp_packet = "";
-        partial_packet = false;
-      }
-    }
-
-    QStringList packet_list =
-        in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+    const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
 
     for (const QString &packet : packet_list) {
-        AOPacket ao_packet(packet);
-        handle_packet(ao_packet);
+        QStringList f_contents;
+        // Packet should *always* end with #
+        if (packet.endsWith("#")) {
+          f_contents = packet.chopped(1).split("#");
+        }
+        // But, if it somehow doesn't, we should still be able to handle it
+        else {
+          f_contents = packet.split("#");
+        }
+        // Empty packets are suspicious!
+        if (f_contents.isEmpty()) {
+          qWarning() << "WARNING: Empty packet received from server, skipping...";
+          continue;
+        }
+        // Take the first arg as the command
+        QString command = f_contents.takeFirst();
+        // The rest is contents of the packet
+        AOPacket *f_packet = new AOPacket(command, f_contents);
+        // Ship it to the server!
+        handle_packet(f_packet);
     }
 }
 
-void DemoServer::handle_packet(AOPacket packet)
+void DemoServer::handle_packet(AOPacket *packet)
 {
-    packet.net_decode();
+    packet->net_decode();
 
     // This code is literally a barebones AO server
     // It is wise to do it this way, because I can
@@ -115,8 +118,8 @@ void DemoServer::handle_packet(AOPacket packet)
     // Also, at some point, I will make akashit
     // into a shared library.
 
-    QString header = packet.get_header();
-    QStringList contents = packet.get_contents();
+    QString header = packet->get_header();
+    QStringList contents = packet->get_contents();
 
     if (header == "HI") {
         client_sock->write("ID#0#DEMOINTERNAL#0#%");
