@@ -2189,7 +2189,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
                     p_contents[SHOWNAME], p_contents[CHAR_NAME],
                     p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(),
-                    p_contents[TEXT_COLOR].toInt(), QUEUED, sender);
+                    p_contents[TEXT_COLOR].toInt(), QUEUED, sender || ao_app->is_desyncrhonized_logs_enabled());
   }
 
   bool is_objection = false;
