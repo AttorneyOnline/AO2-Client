@@ -2167,7 +2167,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     showname = p_contents[SHOWNAME];
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-  bool sender = ao_app->is_desyncrhonized_logs_enabled() || f_char_id == m_cid;
+  bool sender = f_char_id == m_cid;
 
   // Record the log I/O, log files should be accurate.
   LogMode log_mode = IO_ONLY;
@@ -2178,10 +2178,13 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     p_contents[MESSAGE] = "";
   }
 
-  // If we determine we sent this message, or we have desync enabled
-  if (sender || ao_app->is_desyncrhonized_logs_enabled()) {
+  // If we determine we sent this message
+  if (sender) {
     // Reset input UI elements, clear input box, etc.
     reset_ui();
+  }
+  // If we determine we sent this message, or we have desync enabled
+  if (sender || ao_app->is_desyncrhonized_logs_enabled()) {
     // Initialize operation "message queue ghost"
     log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
                     p_contents[SHOWNAME], p_contents[CHAR_NAME],
