@@ -15,7 +15,7 @@ jobs:
         platform:
           - gcc_64
           - android
-          - msvc2017
+          - msvc2019
           - mingw81_32
           - clang_64
 
@@ -24,7 +24,7 @@ jobs:
             os: ubuntu-latest
           - platform: android
             os: ubuntu-latest
-          - platform: msvc2017
+          - platform: msvc2019
             os: windows-latest
           - platform: mingw81_32
             os: windows-latest
@@ -170,7 +170,7 @@ jobs:
         shell: bash
         run: |
           windeployqt .
-          cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
+          cp ../../msvc2019_64/plugins/imageformats/qapng.dll ./imageformats/
           cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
           cp ../../x64/bass.dll .
           cp ../../x64/bassmidi.dll .
