@@ -16,7 +16,7 @@ jobs:
           - gcc_64
           - android
           - msvc2019
-          - mingw81_64
+          - mingw81_32
           - clang_64
 
         include:
@@ -26,7 +26,7 @@ jobs:
             os: ubuntu-latest
           - platform: msvc2019
             os: windows-2019
-          - platform: mingw81_64
+          - platform: mingw81_32
             os: windows-latest
           - platform: clang_64
             os: macos-latest
@@ -72,8 +72,8 @@ jobs:
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
           unzip discord_rpc.zip
-          cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib/
-          cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./bin/
+          cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./lib/
+          cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./bin/
 
       - name: Install Linux Discord RPC
         if: matrix.os == 'ubuntu-latest'
@@ -96,18 +96,18 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/c/x64/bass.lib ./lib/
-          cp ./bass/x64/bass.dll ./bin/
+          cp ./bass/c/bass.lib ./lib/
+          cp ./bass/bass.dll ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/c/x64/bassmidi.lib ./lib/
-          cp ./bass/x64/bassmidi.dll ./bin/
+          cp ./bass/c/bassmidi.lib ./lib/
+          cp ./bass/bassmidi.dll ./bin/
 
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/c/x64/bassopus.lib ./lib/
-          cp ./bass/x64/bassopus.dll ./bin/
+          cp ./bass/c/bassopus.lib ./lib/
+          cp ./bass/bassopus.dll ./bin/
 
       - name: Install Linux BASS
         if: matrix.os == 'ubuntu-latest'
