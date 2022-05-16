@@ -44,12 +44,9 @@ jobs:
           path: qt/${{matrix.version}}/${{matrix.platform}}
           key: qt-${{matrix.version}}-${{matrix.platform}}
 
-
       - name: Add msbuild to PATH
         if: matrix.platform == 'msvc2019'
         uses: microsoft/setup-msbuild@v1.1
-        with:
-          vs-version: '[16.11]'
 
       - uses: stonedDiscord/action-setup-qt@master
         id: qt
