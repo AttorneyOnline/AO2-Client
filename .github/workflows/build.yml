@@ -176,6 +176,13 @@ jobs:
           windeployqt .
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
 
+      - name: Deploy Android
+        if: matrix.platform == 'android'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          androiddeployqt .
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
