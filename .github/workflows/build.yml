@@ -142,7 +142,7 @@ jobs:
 
       - name: qmake
         run: |
-          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
       - name: build
         run: |
