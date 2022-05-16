@@ -25,7 +25,7 @@ jobs:
           - platform: android
             os: ubuntu-latest
           - platform: msvc2019
-            os: windows-latest
+            os: windows-2019
           - platform: mingw81_64
             os: windows-latest
           - platform: clang_64
@@ -68,7 +68,7 @@ jobs:
           mkdir bin
 
       - name: Install Windows Discord RPC
-        if: matrix.os == 'windows-latest'
+        if: contains(matrix.os, 'windows')
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
           unzip discord_rpc.zip
@@ -92,7 +92,7 @@ jobs:
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin/
 
       - name: Install Windows BASS
-        if: matrix.os == 'windows-latest'
+        if: contains(matrix.os, 'windows')
         run: |
           curl http://www.un4seen.com/files/bass24.zip -o bass.zip
           unzip -d bass -o bass.zip
@@ -169,7 +169,7 @@ jobs:
           ${{steps.qt.outputs.make}}
 
       - name: Deploy Windows
-        if: matrix.os == 'windows-latest'
+        if: contains(matrix.os, 'windows')
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
