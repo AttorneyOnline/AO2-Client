@@ -174,7 +174,7 @@ jobs:
         shell: bash
         run: |
           windeployqt .
-          cp ../../msvc2019_64/plugins/imageformats/qapng.dll ./imageformats/
+          cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
