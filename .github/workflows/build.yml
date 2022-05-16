@@ -103,7 +103,7 @@ jobs:
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/c/x64/bassopus.lib ./lib/
-          cp ./bass/x64/bassopus.lib ./bin/
+          cp ./bass/x64/bassopus.dll ./bin/
 
       - name: Install Linux BASS
         if: matrix.os == 'ubuntu-latest'
