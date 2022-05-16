@@ -16,7 +16,7 @@ jobs:
           - gcc_64
           - android
           - msvc2019
-          - mingw81_32
+          - mingw81_64
           - clang_64
 
         include:
@@ -26,7 +26,7 @@ jobs:
             os: ubuntu-latest
           - platform: msvc2019
             os: windows-latest
-          - platform: mingw81_32
+          - platform: mingw81_64
             os: windows-latest
           - platform: clang_64
             os: macos-latest
