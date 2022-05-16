@@ -65,6 +65,7 @@ jobs:
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
           unzip discord_rpc.zip
           cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib
+          cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./bin
 
       - name: Install Linux Discord RPC
         if: matrix.os == 'ubuntu-latest'
@@ -72,13 +73,15 @@ jobs:
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
           unzip discord_rpc.zip
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib
+          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin
 
-      - name: Install Mac Linux RPC
+      - name: Install Mac Discord RPC
         if: matrix.os == 'macos-latest'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc.zip
           unzip discord_rpc.zip
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib
+          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin
 
       - name: Install Windows BASS
         if: matrix.os == 'windows-latest'
@@ -86,14 +89,17 @@ jobs:
           curl http://www.un4seen.com/files/bass24.zip -o bass.zip
           unzip -d bass -o bass.zip
           cp ./bass/c/x64/bass.lib ./lib
+          cp ./bass/x64/bass.dll ./bin
 
           curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/c/x64/bassmidi.lib ./lib
+          cp ./bass/x64/bassmidi.dll ./bin
 
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/c/x64/bassopus.lib ./lib
+          cp ./bass/x64/bassopus.lib ./bin
 
       - name: Install Linux BASS
         if: matrix.os == 'ubuntu-latest'
@@ -101,14 +107,17 @@ jobs:
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
           cp ./bass/x64/libbass.so ./lib
+          cp ./bass/x64/libbass.so ./bin
 
           curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/x64/libbassmidi.so ./lib
+          cp ./bass/x64/libbassmidi.so ./bin
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/x64/libbassopus.so ./lib
+          cp ./bass/x64/libbassopus.so ./bin
 
       - name: Install Mac BASS
         if: matrix.os == 'macos-latest'
@@ -116,14 +125,17 @@ jobs:
           curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
           unzip -d bass -o bass.zip
           cp ./bass/libbass.dylib ./lib
+          cp ./bass/libbass.dylib ./bin
 
           curl http://www.un4seen.com/files/bassmidi24-osx.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/libbassmidi.dylib ./lib
+          cp ./bass/libbassmidi.dylib ./bin
 
           curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/libbassopus.dylib ./lib
+          cp ./bass/libbassopus.dylib ./bin
 
       - name: Install Android BASS
         if: matrix.platform == 'android'
