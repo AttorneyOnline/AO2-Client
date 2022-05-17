@@ -76,7 +76,7 @@ jobs:
           cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./bin/
 
       - name: Install Linux Discord RPC
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.platform == 'gcc_64'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
           unzip discord_rpc.zip
