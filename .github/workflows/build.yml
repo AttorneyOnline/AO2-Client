@@ -110,7 +110,7 @@ jobs:
           cp ./bass/bassopus.dll ./bin/
 
       - name: Install Linux BASS
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.platform == 'gcc_64'
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
