@@ -181,7 +181,9 @@ jobs:
         working-directory: ${{github.workspace}}/
         shell: bash
         run: |
-          androiddeployqt --input android-Attorney_Online-deployment-settings.json
+          mkdir ./build/libs/
+          mv ./bin/*.so ./build/libs/
+          androiddeployqt --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
