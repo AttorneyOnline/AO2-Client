@@ -181,7 +181,12 @@ jobs:
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
-          macdeployqt .
+          macdeployqt Attorney_Online.app
+          mv *.dylib ./Attorney_Online.app/Contents/Frameworks
+          install_name_tool -change @loader_path/libbass.dylib @rpath/libbass.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          install_name_tool -change @loader_path/libbassopus.dylib @rpath/libbassopus.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          install_name_tool -change @loader_path/libbassmidi.dylib @rpath/libbassmidi.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          install_name_tool -change @loader_path/libdiscord-rpc.dylib @rpath/libdiscord-rpc.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
 
       - name: Deploy Android
         if: matrix.platform == 'android'
