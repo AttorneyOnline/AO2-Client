@@ -176,6 +176,13 @@ jobs:
           windeployqt .
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
 
+      - name: Deploy Mac
+        if: matrix.os == 'macos-latest'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          macdeployqt .
+
       - name: Deploy Android
         if: matrix.platform == 'android'
         working-directory: ${{github.workspace}}/
