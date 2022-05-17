@@ -148,17 +148,22 @@ jobs:
       - name: Install Android BASS
         if: matrix.platform == 'android'
         run: |
+          mkdir ./android/libs/
+          mkdir ./android/libs/armeabi-v7a/
           curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
           unzip -d bass -o bass.zip
           cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
         run: |
