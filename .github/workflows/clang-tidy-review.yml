@@ -44,10 +44,10 @@ jobs:
         sudo cmake --build build/ --target install
 
     - name: Use CMake 3.20.1
-      uses: lukka/get-cmake@master
+      uses: lukka/get-cmake@main
 
     - name: Generate compile_commands.json
-      uses: lukka/run-cmake@master
+      uses: lukka/run-cmake@main
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{github.workspace}}/CMakeLists.txt'
