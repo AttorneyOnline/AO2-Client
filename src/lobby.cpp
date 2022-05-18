@@ -112,6 +112,12 @@ void Lobby::set_widgets()
   if (f_lobby.width < 0 || f_lobby.height < 0) {
     qWarning() << "did not find lobby width or height in " << filename;
 
+    #ifdef ANDROID
+    if(QtAndroid::checkPermission("STORAGE")==QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissions({"STORAGE"},NULL);
+    }
+    #endif
+
     // Most common symptom of bad config files and missing assets.
     call_notice(
         tr("It doesn't look like your client is set up correctly.\n"

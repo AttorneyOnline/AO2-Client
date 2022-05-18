@@ -59,6 +59,8 @@ TRANSLATIONS = resource/translations/ao_en.ts \
 win32:RC_ICONS = resource/logo_ao2.ico
 macx:ICON = resource/logo_ao2.icns
 
+android:QT += androidextras
+
 android:DISTFILES += \
     android/AndroidManifest.xml \
     android/gradle.properties \
