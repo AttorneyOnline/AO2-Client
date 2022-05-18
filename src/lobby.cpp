@@ -113,8 +113,8 @@ void Lobby::set_widgets()
     qWarning() << "did not find lobby width or height in " << filename;
 
     #ifdef ANDROID
-    if(QtAndroid::checkPermission("STORAGE")==QtAndroid::PermissionResult::Denied) {
-        QtAndroid::requestPermissions({"STORAGE"},NULL);
+    if(QtAndroid::checkPermission("android.permission.MANAGE_MEDIA")==QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync({"android.permission.MANAGE_MEDIA"},NULL);
     }
     #endif
 
