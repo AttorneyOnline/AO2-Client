@@ -33,12 +33,12 @@ jobs:
 
     runs-on: ${{matrix.os}}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@master
         with:
           submodules: recursive
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@master
       - name: actions/cache qt
-        uses: actions/cache@v1
+        uses: actions/cache@master
         id: cache
         with:
           path: qt/${{matrix.version}}/${{matrix.platform}}
@@ -46,7 +46,7 @@ jobs:
 
       - name: Add msbuild to PATH
         if: matrix.platform == 'msvc2019'
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@master
 
       - uses: stonedDiscord/action-setup-qt@master
         id: qt
@@ -207,7 +207,7 @@ jobs:
           androiddeployqt --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-${{matrix.platform}}
           path: ${{github.workspace}}/bin/

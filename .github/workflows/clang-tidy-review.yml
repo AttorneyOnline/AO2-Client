@@ -17,17 +17,17 @@ jobs:
             qt: '5.15.2'
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@master
         
     - name: Restore Qt cache
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@master
       id: cache-qt
       with:
         path: ${{github.workspace}}/Qt/${{matrix.qt}}
         key: ${{matrix.os}}-qt-${{matrix.qt}}-cache
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@master
       with:
         version: ${{matrix.qt}}
         dir: ${{github.workspace}}
@@ -44,10 +44,10 @@ jobs:
         sudo cmake --build build/ --target install
 
     - name: Use CMake 3.20.1
-      uses: lukka/get-cmake@v3.20.1
+      uses: lukka/get-cmake@master
 
     - name: Generate compile_commands.json
-      uses: lukka/run-cmake@v3
+      uses: lukka/run-cmake@master
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{github.workspace}}/CMakeLists.txt'
