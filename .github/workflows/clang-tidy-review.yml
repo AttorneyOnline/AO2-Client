@@ -27,7 +27,7 @@ jobs:
         key: ${{matrix.os}}-qt-${{matrix.qt}}-cache
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@master
+      uses: jurplel/install-qt-action@v2
       with:
         version: ${{matrix.qt}}
         dir: ${{github.workspace}}
