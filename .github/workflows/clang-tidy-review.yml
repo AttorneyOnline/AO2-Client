@@ -59,13 +59,13 @@ jobs:
         buildWithCMakeArgs: >-
           --target autogen
 
-    - uses: ZedThree/clang-tidy-review@master
+    - uses: ZedThree/clang-tidy-review@v0.8.2
       id: review
       with:
         build_dir: 'build'
         clang_tidy_checks: '-*,performance-*,readability-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,mpi-*,misc-*,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-init-variables,-cppcoreguidelines-pro-type-member-init,-cppcoreguidelines-avoid-magic-numbers'
         apt_packages: 'pkg-config,libzip-dev,libglu1-mesa-dev,libpulse-dev'
-        max_comments: 15
+        max_comments: 10
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
