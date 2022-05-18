@@ -49,6 +49,8 @@ jobs:
     - name: Generate compile_commands.json
       uses: lukka/run-cmake@main
       with:
+        configurePreset: 'ninja-multi-vcpkg'
+        buildPreset: 'ninja-multi-vcpkg'
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{github.workspace}}/CMakeLists.txt'
         buildDirectory: '${{github.workspace}}/build'
