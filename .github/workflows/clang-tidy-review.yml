@@ -59,7 +59,7 @@ jobs:
         buildWithCMakeArgs: >-
           --target autogen
 
-    - uses: ZedThree/clang-tidy-review@v0.8.2
+    - uses: ZedThree/clang-tidy-review@v0.8.3
       id: review
       with:
         build_dir: 'build'
