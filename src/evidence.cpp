@@ -498,6 +498,7 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_description->appendPlainText(f_evi.description);
   ui_evidence_description->setReadOnly(false);
   ui_evidence_description->setToolTip(tr("Click to edit..."));
+  ui_evidence_description->moveCursor(QTextCursor::Start);
 
   ui_evidence_name->setText(f_evi.name);
   ui_evidence_name->setReadOnly(false);
