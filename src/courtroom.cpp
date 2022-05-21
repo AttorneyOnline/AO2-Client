@@ -552,6 +552,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_evidence_button, &AOButton::clicked, this,
           &Courtroom::on_evidence_button_clicked);
 
+  connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
+
   set_widgets();
 
   set_char_select();
@@ -2839,7 +2841,7 @@ void Courtroom::display_evidence_image()
     // def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(side == "def" || side == "hlp" ||
                           side == "jud" || side == "jur");
-    ui_vp_evidence_display->show_evidence(f_image, is_left_side,
+    ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side,
                                           ui_sfx_slider->value());
   }
 }
