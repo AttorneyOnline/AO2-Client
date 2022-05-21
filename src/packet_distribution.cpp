@@ -604,8 +604,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   // Auth packet
   else if (header == "AUTH") {
-    if (!courtroom_constructed || !auth_packet_enabled || f_contents.isEmpty())
+    if (!courtroom_constructed || !auth_packet_enabled || f_contents.isEmpty()) {
       goto end;
+}
     bool ok;
     int authenticated = f_contents.at(0).toInt(&ok);
     if (!ok) {
