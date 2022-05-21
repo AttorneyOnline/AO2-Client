@@ -488,8 +488,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_mute(true, f_contents.at(0).toInt());
   }
   else if (header == "UM") {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (courtroom_constructed && !f_contents.isEmpty()) {
       w_courtroom->set_mute(false, f_contents.at(0).toInt());
+}
   }
   else if (header == "BB") {
     if (courtroom_constructed && !f_contents.isEmpty()) {
