@@ -70,6 +70,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_chatbox->setObjectName("ui_vp_chatbox");
+
+  ui_vp_sticker = new StickerLayer(this, ao_app);
+  ui_vp_sticker->set_play_once(false);
+  ui_vp_sticker->set_cull_image(false);
+  ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_vp_sticker->setObjectName("ui_vp_sticker");
+
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_showname->setObjectName("ui_vp_showname");
   ui_vp_showname->setAlignment(Qt::AlignLeft);
@@ -178,11 +185,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_message_filter->preserve_selection = true;
   ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
   ui_ic_chat_message->setObjectName("ui_ic_chat_message");
-
-  ui_vp_sticker = new StickerLayer(ui_viewport, ao_app);
-  ui_vp_sticker->set_play_once(false);
-  ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_sticker->setObjectName("ui_vp_sticker");
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
@@ -833,7 +835,7 @@ void Courtroom::set_widgets()
 
   initialize_chatbox();
 
-  ui_vp_sticker->move(0, 0);
+  ui_vp_sticker->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_sticker->combo_resize(ui_viewport->width(),
                               ui_viewport->height());
 
