@@ -154,8 +154,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "SI") {
-    if (!lobby_constructed || f_contents.size() != 3)
+    if (!lobby_constructed || f_contents.size() != 3) {
       goto end;
+}
 
     char_list_size = f_contents.at(0).toInt();
     evidence_list_size = f_contents.at(1).toInt();
