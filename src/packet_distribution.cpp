@@ -75,8 +75,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     send_server_packet(new AOPacket("ID", f_contents));
   }
   else if (header == "CT") {
-    if (!courtroom_constructed || f_contents.size() < 2)
+    if (!courtroom_constructed || f_contents.size() < 2) {
       goto end;
+}
 
     if (f_contents.size() == 3)
       w_courtroom->append_server_chatmessage(
