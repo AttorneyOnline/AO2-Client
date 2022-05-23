@@ -138,7 +138,8 @@ void NetworkManager::connect_to_server(server_type p_server)
 
   switch (p_server.socket_type) {
   default:
-      p_server.socket_type = TCP;
+    p_server.socket_type = TCP;
+    [[fallthrough]];
   case TCP:
     qInfo() << "using TCP backend";
     server_socket.tcp = new QTcpSocket(this);
