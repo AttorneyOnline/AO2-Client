@@ -7,6 +7,7 @@
 #include "discord_rich_presence.h"
 
 #include "bass.h"
+#include "bassmidi.h"
 #include "bassopus.h"
 
 #include <QApplication>
@@ -420,6 +421,9 @@ public:
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
 
+  // Returns whether the given pos is a judge position
+  bool get_pos_is_judge(const QString &p_pos);
+
   // Returns the name of p_char
   QString get_char_name(QString p_char);
 
@@ -543,7 +547,7 @@ public:
   QString asset_url;
 
   void initBASS();
-  static void load_bass_opus_plugin();
+  static void load_bass_plugins();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
   static void doBASSreset();

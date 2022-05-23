@@ -16,7 +16,6 @@ AOMusicPlayer::~AOMusicPlayer()
 QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
                          int effect_flags)
 {
-  QFuture<QString> invoking_future = music_watcher.future();
   channel = channel % m_channelmax;
   if (channel < 0) // wtf?
     return "[ERROR] Invalid Channel";
@@ -32,6 +31,8 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   if (f_path.startsWith("http")) {
     if (f_path.endsWith(".opus"))
       newstream = BASS_OPUS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
+    else if (f_path.endsWith(".mid"))
+      newstream = BASS_MIDI_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0, 1);
     else
       newstream = BASS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
 
@@ -39,18 +40,15 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
     f_path = ao_app->get_real_path(ao_app->get_music_path(p_song));
     if (f_path.endsWith(".opus"))
       newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
+    else if (f_path.endsWith(".mid"))
+      newstream = BASS_MIDI_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags, 1);
+    else if (f_path.endsWith(".mo3") || f_path.endsWith(".xm") || f_path.endsWith(".mod") || f_path.endsWith(".s3m") || f_path.endsWith(".it") || f_path.endsWith(".mtm") || f_path.endsWith(".umx") )
+      newstream = BASS_MusicLoad(FALSE,f_path.utf16(), 0, 0, flags, 1);
     else
       newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
   }
 
   int error_code = BASS_ErrorGetCode();
-
-  if (invoking_future.isCanceled()) {
-      // Target future has changed. This stream has become irrelevant.
-      // So even if the stream manages to finish after the latest one, we don't run
-      // into order issues.
-      return QString();
-  }
 
   if (ao_app->get_audio_output_device() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());

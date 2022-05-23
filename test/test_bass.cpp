@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "bass.h"
+#include "bassmidi.h"
 #include "bassopus.h"
 
 TEST_CASE("BASS URL streaming", "[bass][noci]") {

@@ -113,6 +113,13 @@ enum CHAT_MESSAGE {
   EFFECTS
 };
 
+enum EMOTE_MOD {
+  IDLE = 0,
+  PREANIM = 1,
+  ZOOM = 5,
+  PREANIM_ZOOM = 6,
+};
+
 enum MUSIC_EFFECT { FADE_IN = 1, FADE_OUT = 2, SYNC_POS = 4 };
 
 #endif // DATATYPES_H

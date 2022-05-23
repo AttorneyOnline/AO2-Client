@@ -16,6 +16,7 @@ aopacket.h
 aosfxplayer.h
 aotextarea.h
 bass.h
+bassmidi.h
 bassopus.h
 chatlogpiece.h
 courtroom.h

@@ -306,7 +306,6 @@ void Lobby::on_favorites_clicked()
   ui_public_servers->set_image("publicservers");
 
   ao_app->set_favorite_list();
-  // ao_app->favorite_list = read_serverlist_txt();
 
   list_favorites();
 
