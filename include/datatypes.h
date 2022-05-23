@@ -10,8 +10,8 @@ enum connection_type {
 };
 
 static QMap<QString, connection_type> to_connection_type = {
-    {"ws", connection_type::TCP},
-    {"tcp", connection_type::WEBSOCKETS}
+    {"tcp", connection_type::TCP},
+    {"ws", connection_type::WEBSOCKETS}
 };
 
 struct server_type {
