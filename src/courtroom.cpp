@@ -3841,7 +3841,7 @@ void Courtroom::set_self_offset(QString p_list, QString p_effect) {
       self_offset_v = 0;
     else
       self_offset_v = self_offsets[1].toInt();
-    ui_vp_player_char->move(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+    ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 
     //If an effect is ignoring the users offset, we force it to the default position of the viewport.
     if (ao_app->get_effect_property(play_effect[0], current_char, "ignore_offset") == "true") {
