@@ -1,11 +1,17 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include <QMap>
 #include <QString>
 
 enum connection_type {
   TCP,
   WEBSOCKETS,
+};
+
+static QMap<QString, connection_type> to_connection_type = {
+    {"ws", connection_type::TCP},
+    {"tcp", connection_type::WEBSOCKETS}
 };
 
 struct server_type {

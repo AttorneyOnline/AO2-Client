@@ -152,10 +152,10 @@ void AOApplication::add_favorite_server(int p_server)
     fav_server.socket_type = TCP;
     Q_FALLTHROUGH();
   case TCP:
-    network_type = "TCP";
+    network_type = "tcp";
     break;
   case WEBSOCKETS:
-    network_type = "WS";
+    network_type = "ws";
     break;
   }
 
