@@ -271,6 +271,7 @@ QVector<server_type> AOApplication::read_serverlist_txt()
 
   if (serverlist_txt.open(QIODevice::ReadOnly)) {
       QTextStream in(&serverlist_txt);
+      in.setCodec("UTF-8");
 
       while (!in.atEnd()) {
         QString line = in.readLine();

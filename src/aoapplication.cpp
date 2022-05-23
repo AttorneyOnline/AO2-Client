@@ -32,7 +32,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   original_message_handler = qInstallMessageHandler(message_handler);
 
   setApplicationVersion(get_version_string());
-  setApplicationDisplayName(tr("Attorney Online 2"));
+  setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
 }
 
 AOApplication::~AOApplication()
