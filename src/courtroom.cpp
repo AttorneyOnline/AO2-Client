@@ -1443,7 +1443,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   for (int n = 0; n < pos_dropdown_list.size(); ++n) {
     QString pos = pos_dropdown_list.at(n);
     ui_pos_dropdown->addItem(pos);
-    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(get_pos_path(pos))));
+    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos))));
     if (!image.isNull()) {
       image = image.scaledToHeight(ui_pos_dropdown->iconSize().height());
     }
@@ -3760,80 +3760,10 @@ void Courtroom::play_sfx()
         ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
 
-QString Courtroom::get_pos_path(QString pos, bool desk)
-{
-  // witness is default if pos is invalid
-  QString f_background;
-  QString f_desk_image;
-  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("witnessempty")))) {
-    f_background = "witnessempty";
-    f_desk_image = "stand";
-  }
-  else {
-    f_background = "wit";
-    f_desk_image = "wit_overlay";
-  }
-
-  if (pos == "def" && file_exists(ao_app->get_image_suffix(
-                             ao_app->get_background_path("defenseempty")))) {
-    f_background = "defenseempty";
-    f_desk_image = "defensedesk";
-  }
-  else if (pos == "pro" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("prosecutorempty")))) {
-    f_background = "prosecutorempty";
-    f_desk_image = "prosecutiondesk";
-  }
-  else if (pos == "jud" && file_exists(ao_app->get_image_suffix(
-                                  ao_app->get_background_path("judgestand")))) {
-    f_background = "judgestand";
-    f_desk_image = "judgedesk";
-  }
-  else if (pos == "hld" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("helperstand")))) {
-    f_background = "helperstand";
-    f_desk_image = "helperdesk";
-  }
-  else if (pos == "hlp" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("prohelperstand")))) {
-    f_background = "prohelperstand";
-    f_desk_image = "prohelperdesk";
-  }
-  else if (pos == "jur" && file_exists(ao_app->get_image_suffix(
-                                  ao_app->get_background_path("jurystand")))) {
-    f_background = "jurystand";
-    f_desk_image = "jurydesk";
-  }
-  else if (pos == "sea" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("seancestand")))) {
-    f_background = "seancestand";
-    f_desk_image = "seancedesk";
-  }
-
-  if (file_exists(ao_app->get_image_suffix(
-          ao_app->get_background_path(pos)))) // Unique pos path
-  {
-    f_background = pos;
-    f_desk_image = pos + "_overlay";
-  }
-
-  QString desk_override = ao_app->read_design_ini("overlays/" + f_background, ao_app->get_background_path("design.ini"));
-  if (desk_override != "")
-    f_desk_image = desk_override;
-  if (desk) {
-    return f_desk_image;
-  }
-  return f_background;
-}
-
 void Courtroom::set_scene(QString f_desk_mod, QString f_side)
 {
-  ui_vp_background->load_image(get_pos_path(f_side));
-  ui_vp_desk->load_image(get_pos_path(f_side, true));
+  ui_vp_background->load_image(ao_app->get_pos_path(f_side));
+  ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
 
   if (f_desk_mod == "0" ||
       (f_desk_mod != "1" &&

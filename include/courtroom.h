@@ -184,9 +184,6 @@ public:
   // Sets the local pair list based on the characters available on the server.
   void set_pair_list();
 
-  // get pos filepath for bg or desk
-  QString get_pos_path(QString pos, bool desk = false);
-
   // sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
 
