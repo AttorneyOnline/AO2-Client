@@ -75,6 +75,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_showname->setAlignment(Qt::AlignLeft);
   ui_vp_chat_arrow = new InterfaceLayer(this, ao_app);
   ui_vp_chat_arrow->set_play_once(false);
+  ui_vp_chat_arrow->set_cull_image(false);
   ui_vp_chat_arrow->setObjectName("ui_vp_chat_arrow");
 
   ui_vp_message = new QTextEdit(this);
@@ -147,6 +148,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_display = new InterfaceLayer(this, ao_app);
   ui_music_display->set_play_once(false);
+  ui_music_display->set_cull_image(false);
   ui_music_display->transform_mode = Qt::SmoothTransformation;
   ui_music_display->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_music_display->setObjectName("ui_music_display");
@@ -552,6 +554,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_evidence_button, &AOButton::clicked, this,
           &Courtroom::on_evidence_button_clicked);
 
+  connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
+
   set_widgets();
 
   set_char_select();
@@ -734,8 +738,7 @@ void Courtroom::set_widgets()
   ui_ic_chatlog->setPlaceholderText(log_goes_downwards ? "▼ " + tr("Log goes down") + " ▼"
                                                        : "▲ " + tr("Log goes up") + " ▲");
 
-  set_size_and_pos(ui_debug_log, "ms_chatlog"); // Old name
-  set_size_and_pos(ui_debug_log, "debug_log"); // New name
+  set_size_and_pos(ui_debug_log, "ms_chatlog"); // Old name, still use it to not break compatibility
   ui_debug_log->setFrameShape(QFrame::NoFrame);
 
   set_size_and_pos(ui_server_chatlog, "server_chatlog");
@@ -987,6 +990,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText(tr("Settings"));
   ui_settings->set_image("courtroom_settings");
+  if (ui_settings->icon().isNull()) {
+      ui_settings->set_image("settings"); // pre-2.10 filename
+  }
   ui_settings->setToolTip(
       tr("Allows you to change various aspects of the client."));
 
@@ -1406,10 +1412,7 @@ void Courtroom::set_side(QString p_side)
     ui_pos_remove->show();
   }
 
-  toggle_judge_buttons(false);
-
-  if (f_side == "jud")
-    toggle_judge_buttons(true);
+  set_judge_buttons();
 
   // Block the signals to prevent setCurrentIndex from triggering a pos
   // change
@@ -2846,7 +2849,7 @@ void Courtroom::display_evidence_image()
     // def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(side == "def" || side == "hlp" ||
                           side == "jud" || side == "jur");
-    ui_vp_evidence_display->show_evidence(f_image, is_left_side,
+    ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side,
                                           ui_sfx_slider->value());
   }
 }
@@ -4048,27 +4051,28 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
   }
 }
 
-void Courtroom::toggle_judge_buttons(bool is_on)
+void Courtroom::show_judge_controls(bool visible)
 {
-  if (is_on) {
-    ui_witness_testimony->show();
-    ui_cross_examination->show();
-    ui_guilty->show();
-    ui_not_guilty->show();
-    ui_defense_minus->show();
-    ui_defense_plus->show();
-    ui_prosecution_minus->show();
-    ui_prosecution_plus->show();
+  if (judge_state != POS_DEPENDENT) {
+    visible = judge_state == SHOW_CONTROLS; // Server-side override
   }
-  else {
-    ui_witness_testimony->hide();
-    ui_cross_examination->hide();
-    ui_guilty->hide();
-    ui_not_guilty->hide();
-    ui_defense_minus->hide();
-    ui_defense_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_prosecution_plus->hide();
+  QList<QWidget*> judge_controls =
+      {
+        ui_witness_testimony,
+        ui_cross_examination,
+        ui_guilty,
+        ui_not_guilty,
+        ui_defense_minus,
+        ui_defense_plus,
+        ui_prosecution_minus,
+        ui_prosecution_plus
+      };
+
+  for (QWidget* control : judge_controls) {
+      if (visible)
+          control->show();
+      else
+          control->hide();
   }
 }
 
@@ -4099,10 +4103,10 @@ void Courtroom::on_ooc_return_pressed()
   //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
   if (ooc_message.startsWith("/pos") & !ao_app->effects_enabled) {
     if (ooc_message == "/pos jud") {
-      toggle_judge_buttons(true);
+      show_judge_controls(true);
     }
     else {
-      toggle_judge_buttons(false);
+      show_judge_controls(false);
     }
   }
 
@@ -4379,6 +4383,8 @@ void Courtroom::on_pos_remove_clicked()
   ui_pos_dropdown->blockSignals(true);
   QString default_side = ao_app->get_char_side(current_char);
 
+  show_judge_controls(ao_app->get_pos_is_judge(default_side));
+
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
     if (pos == default_side) {
@@ -4409,8 +4415,12 @@ void Courtroom::set_iniswap_dropdown()
   QStringList iniswaps =
       ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
       ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
-  iniswaps.removeDuplicates();
+
+  if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
+    iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
+
   iniswaps.prepend(char_list.at(m_cid).name);
+  iniswaps.removeDuplicates();
   if (iniswaps.size() <= 0) {
     ui_iniswap_dropdown->hide();
     ui_iniswap_remove->hide();
@@ -4492,12 +4502,13 @@ void Courtroom::on_iniswap_remove_clicked()
                                // client will crash
     return;
   }
-  if (ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()) !=
-      char_list.at(m_cid).name) {
+  QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
+  QString iniswap = ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex());
+  if (iniswap != char_list.at(m_cid).name && !defswaplist.contains(iniswap)) {
     ui_iniswap_dropdown->removeItem(ui_iniswap_dropdown->currentIndex());
-    on_iniswap_dropdown_changed(0); // Reset back to original
-    update_character(m_cid);
   }
+  on_iniswap_dropdown_changed(0); // Reset back to original
+  update_character(m_cid);
 }
 
 void Courtroom::set_sfx_dropdown()
@@ -4515,7 +4526,7 @@ void Courtroom::set_sfx_dropdown()
 
   // Append default sound list after the character sound list.
   sound_list += ao_app->get_list_file(
-  ao_app->get_base_path() + "soundlist.ini");
+      ao_app->get_base_path() + "soundlist.ini");
 
   QStringList display_sounds;
   for (const QString &sound : qAsConst(sound_list)) {
@@ -4538,10 +4549,10 @@ void Courtroom::set_sfx_dropdown()
 
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
+  custom_sfx = "";
   ui_ic_chat_message->setFocus();
   if (p_index == 0) {
       ui_sfx_remove->hide();
-      custom_sfx = "";
   }
 }
 
@@ -4690,8 +4701,9 @@ QString Courtroom::get_char_sfx()
   if (index == 0) { // Default
     return ao_app->get_sfx_name(current_char, current_emote);
   }
-  if (index == 1) // Nothing
+  if (index == 1) { // Nothing
     return "1";
+  }
   QString sfx = sound_list[index-2].split("=")[0].trimmed();
   if (sfx == "")
     return "1";

@@ -108,12 +108,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // Fill the combobox with the names of the themes.
   ui_subtheme_combobox->addItem("server");
   ui_subtheme_combobox->addItem("default");
-  QDirIterator it2(ao_app->get_base_path() + "themes/" + ao_app->current_theme, QDir::Dirs,
+  QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")), QDir::Dirs,
                   QDirIterator::NoIteratorFlags);
   while (it2.hasNext()) {
     QString actualname = QDir(it2.next()).dirName();
-    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc")
+    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc") {
       ui_subtheme_combobox->addItem(actualname);
+    }
   }
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_subtheme_combobox);
@@ -953,7 +954,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_asset_lbl = new QLabel(ui_assets_tab);
   ui_asset_lbl->setText(
         tr("Add or remove base folders for use by assets. "
-           "Base folders will be searched in the order provided."));
+           "Base folders on the bottom are prioritized over those above them."));
   ui_asset_lbl->setWordWrap(true);
   ui_assets_tab_layout->addWidget(ui_asset_lbl);
 
@@ -1319,7 +1320,7 @@ void AOOptionsDialog::theme_changed(int i) {
   // Fill the combobox with the names of the themes.
   ui_subtheme_combobox->addItem("server");
   ui_subtheme_combobox->addItem("default");
-  QDirIterator it(ao_app->get_base_path() + "themes/" + ui_theme_combobox->itemText(i), QDir::Dirs,
+  QDirIterator it(ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(i))), QDir::Dirs,
                   QDirIterator::NoIteratorFlags);
   while (it.hasNext()) {
     QString actualname = QDir(it.next()).dirName();
