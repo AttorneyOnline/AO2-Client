@@ -169,7 +169,7 @@ jobs:
         if: matrix.platform == 'android'
         run: |
           git clone https://github.com/KDAB/android_openssl.git
-          cp ./android_openssl/arm/lib*.so ./lib/
+          cp ./android_openssl/latest/arm/lib*.so ./lib/
 
       - name: qmake
         run: |
