@@ -70,3 +70,7 @@ android:DISTFILES += \
     android/gradlew.bat
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+ANDROID_EXTRA_LIBS += \
+    lib/libcrypto_1_1.so \
+    lib/libssl_1_1.so

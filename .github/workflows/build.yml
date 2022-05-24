@@ -165,6 +165,12 @@ jobs:
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
+      - name: Install Android OpenSSL
+        if: matrix.platform == 'android'
+        run: |
+          git clone https://github.com/KDAB/android_openssl.git
+          cp ./android_openssl/arm/lib*.so ./lib/
+
       - name: qmake
         run: |
           qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
