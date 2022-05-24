@@ -170,6 +170,7 @@ jobs:
         run: |
           git clone https://github.com/KDAB/android_openssl.git
           cp ./android_openssl/latest/arm/lib*.so ./lib/
+          cp ./android_openssl/latest/arm/lib*.so ./android/libs/armeabi-v7a/
 
       - name: qmake
         run: |
