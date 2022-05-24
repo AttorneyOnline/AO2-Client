@@ -4,9 +4,8 @@
 <context>
     <name>AOApplication</name>
     <message>
-        <location filename="../../src/aoapplication.cpp" line="35"/>
         <source>Attorney Online 2</source>
-        <translation>Attorney Online 2</translation>
+        <translation type="vanished">Attorney Online 2</translation>
     </message>
     <message>
         <location filename="../../src/aoapplication.cpp" line="158"/>
@@ -14,50 +13,50 @@
         <translation>Disconesso dal server.</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="176"/>
+        <location filename="../../src/aoapplication.cpp" line="35"/>
         <source>Attorney Online %1</source>
         <translation>Attorney Online %1</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="202"/>
+        <location filename="../../src/packet_distribution.cpp" line="201"/>
         <source>Loading</source>
         <translation>Caricamento</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="263"/>
+        <location filename="../../src/packet_distribution.cpp" line="262"/>
         <source>Loading chars:
-%1/%2</source>
-        <translation>Caricamento della musica:
-%1/%2</translation>
-    </message>
-    <message>
-        <location filename="../../src/packet_distribution.cpp" line="293"/>
-        <source>Loading music:
 %1/%2</source>
         <translation>Caricamento dei personaggi:
 %1/%2</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="365"/>
+        <location filename="../../src/packet_distribution.cpp" line="292"/>
+        <source>Loading music:
+%1/%2</source>
+        <translation>Caricamento della musica:
+%1/%2</translation>
+    </message>
+    <message>
+        <location filename="../../src/packet_distribution.cpp" line="364"/>
         <source>[Global log]</source>
         <translation>[Log globali]</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="505"/>
+        <location filename="../../src/packet_distribution.cpp" line="504"/>
         <source>You have been kicked from the server.
 Reason: %1</source>
         <translation>Sei stato cacciato dal server.
 Motivo: %1</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="513"/>
+        <location filename="../../src/packet_distribution.cpp" line="512"/>
         <source>You have been banned from the server.
 Reason: %1</source>
         <translation>Sei stato bannato dal server.
 Motivo: %1</translation>
     </message>
     <message>
-        <location filename="../../src/packet_distribution.cpp" line="521"/>
+        <location filename="../../src/packet_distribution.cpp" line="520"/>
         <source>You are banned on this server.
 Reason: %1</source>
         <translation>Sei bannato da questo server.
@@ -810,7 +809,7 @@ Motivo: %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="157"/>
-        <location filename="../../src/courtroom.cpp" line="4609"/>
+        <location filename="../../src/courtroom.cpp" line="4617"/>
         <source>None</source>
         <translation>Nulla</translation>
     </message>
@@ -1014,7 +1013,7 @@ char.ini [Options] category, effects = ;miscname; che si riferisce a misc/&lt;mi
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="949"/>
-        <location filename="../../src/courtroom.cpp" line="4303"/>
+        <location filename="../../src/courtroom.cpp" line="4311"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
@@ -1198,7 +1197,7 @@ Puoi anche selezionare il colore dei tuoi messaggi attualmente scritti e usare l
         <location filename="../../src/courtroom.cpp" line="1798"/>
         <location filename="../../src/courtroom.cpp" line="1801"/>
         <location filename="../../src/courtroom.cpp" line="1805"/>
-        <location filename="../../src/courtroom.cpp" line="4161"/>
+        <location filename="../../src/courtroom.cpp" line="4169"/>
         <source>CLIENT</source>
         <translation>CLIENT</translation>
     </message>
@@ -1241,7 +1240,7 @@ Puoi anche selezionare il colore dei tuoi messaggi attualmente scritti e usare l
         <location filename="../../src/courtroom.cpp" line="2289"/>
         <location filename="../../src/courtroom.cpp" line="2292"/>
         <location filename="../../src/courtroom.cpp" line="2295"/>
-        <location filename="../../src/courtroom.cpp" line="3216"/>
+        <location filename="../../src/courtroom.cpp" line="3215"/>
         <source>shouts</source>
         <translation>urla</translation>
     </message>
@@ -1253,156 +1252,156 @@ Puoi anche selezionare il colore dei tuoi messaggi attualmente scritti e usare l
         <translation>ha presentato una prova</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3212"/>
+        <location filename="../../src/courtroom.cpp" line="3211"/>
+        <location filename="../../src/courtroom.cpp" line="3950"/>
         <location filename="../../src/courtroom.cpp" line="3951"/>
-        <location filename="../../src/courtroom.cpp" line="3952"/>
         <source>has stopped the music</source>
         <translation>ha fermato la musica</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3891"/>
+        <location filename="../../src/courtroom.cpp" line="3890"/>
         <source>You have been banned.</source>
         <translation>Sei stato bannato.</translation>
     </message>
     <message>
+        <location filename="../../src/courtroom.cpp" line="3954"/>
         <location filename="../../src/courtroom.cpp" line="3955"/>
-        <location filename="../../src/courtroom.cpp" line="3956"/>
         <source>has played a song</source>
         <translation>ha riprodotto una canzone</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="3967"/>
+        <location filename="../../src/courtroom.cpp" line="3966"/>
         <source>[LOADING] %1</source>
         <translation>[CARICAMENTO] %1</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4118"/>
+        <location filename="../../src/courtroom.cpp" line="4126"/>
         <source>You don&apos;t have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it&apos;s likely the case file you&apos;re looking for can&apos;t be found in there.</source>
         <translation>Non hai una cartella `base/cases/`! È appena stata creata, ma visto che ERA apposta per te, è probabile che il file che stai cercando non può essere trovato lì.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4133"/>
+        <location filename="../../src/courtroom.cpp" line="4141"/>
         <source>You need to give a filename to load (extension not needed)! Make sure that it is in the `base/cases/` folder, and that it is a correctly formatted ini.
 Cases you can load: %1</source>
         <translation>Hai bisogno di dare un nome ad un file per caricarlo (estensione non necessaria)! Sii sicuro che si trovi nella cartella: `base/cases/` e che il .ini sia correttamente scritto.
 Casi che puoi caricare: %1</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4145"/>
+        <location filename="../../src/courtroom.cpp" line="4153"/>
         <source>Too many arguments to load a case! You only need one filename, without extension.</source>
         <translation>Troppe parole per caricare un caso! Hai solo bisogno del nome di un file, senza estensione.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4162"/>
+        <location filename="../../src/courtroom.cpp" line="4170"/>
         <source>Case made by %1.</source>
         <translation>Caso fatto da %1.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4172"/>
+        <location filename="../../src/courtroom.cpp" line="4180"/>
         <source>Navigate to %1 for the CM doc.</source>
         <translation>Vai su %1 per il doc fatto dal CM.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4194"/>
-        <location filename="../../src/courtroom.cpp" line="4196"/>
+        <location filename="../../src/courtroom.cpp" line="4202"/>
+        <location filename="../../src/courtroom.cpp" line="4204"/>
         <location filename="../../src/evidence.cpp" line="774"/>
         <location filename="../../src/evidence.cpp" line="776"/>
         <source>UNKNOWN</source>
         <translation>SCONOSCIUTO</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4204"/>
+        <location filename="../../src/courtroom.cpp" line="4212"/>
         <source>Your case &quot;%1&quot; was loaded!</source>
         <translation>Il tuo caso %1 è stato caricato!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4219"/>
+        <location filename="../../src/courtroom.cpp" line="4227"/>
         <source>You don&apos;t have a `base/cases/` folder! It was just made for you, but seeing as it WAS just made for you, it&apos;s likely that you somehow deleted it.</source>
         <translation>Non hai una cartella `base/cases/`! È appena stata creata, ma visto che ERA apposta per te, probabilmente l&apos;hai cancellata in qualche modo.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4234"/>
+        <location filename="../../src/courtroom.cpp" line="4242"/>
         <source>You need to give a filename to save (extension not needed) and the courtroom status!</source>
         <translation>Hai bisogno di dare il nome di un file (estensione non necessaria) e lo stato della stanza!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4244"/>
+        <location filename="../../src/courtroom.cpp" line="4252"/>
         <source>Too many arguments to save a case! You only need a filename without extension and the courtroom status!</source>
         <translation>Troppe parole per salvare un caso! Hai bisogno solamente di un nome di un file senza estensione e lo stato della stanza!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4271"/>
+        <location filename="../../src/courtroom.cpp" line="4279"/>
         <source>Succesfully saved, edit doc and cmdoc link on the ini!</source>
         <translation>Salvato con successo, modifica il link doc e cmdoc nell&apos;ini!</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4296"/>
+        <location filename="../../src/courtroom.cpp" line="4304"/>
         <source>Debug</source>
         <translation>Debug</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4812"/>
+        <location filename="../../src/courtroom.cpp" line="4820"/>
         <source>Stop Current Song</source>
         <translation>Ferma la seguente ost</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4813"/>
+        <location filename="../../src/courtroom.cpp" line="4821"/>
         <source>Play Random Song</source>
         <translation>Riproduci un&apos;ost Casuale</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4815"/>
+        <location filename="../../src/courtroom.cpp" line="4823"/>
         <source>Expand All Categories</source>
         <translation>Espandi Tutte le Categorie</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4817"/>
+        <location filename="../../src/courtroom.cpp" line="4825"/>
         <source>Collapse All Categories</source>
         <translation>Comprimi Tutte le Categorie</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4821"/>
+        <location filename="../../src/courtroom.cpp" line="4829"/>
         <source>Fade Out Previous</source>
         <translation>Dissolvenza precedente</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4827"/>
+        <location filename="../../src/courtroom.cpp" line="4835"/>
         <source>Fade In</source>
         <translation>Dissolvenza</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="4833"/>
+        <location filename="../../src/courtroom.cpp" line="4841"/>
         <source>Synchronize</source>
         <translation>Sincronizza</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="5184"/>
+        <location filename="../../src/courtroom.cpp" line="5192"/>
         <source>Default</source>
         <translation>Default</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="5368"/>
+        <location filename="../../src/courtroom.cpp" line="5374"/>
         <source>Reason:</source>
         <translation>Motivo:</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="5369"/>
+        <location filename="../../src/courtroom.cpp" line="5375"/>
         <source>Call Moderator</source>
         <translation>Chiama Moderatore</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="5377"/>
-        <location filename="../../src/courtroom.cpp" line="5381"/>
+        <location filename="../../src/courtroom.cpp" line="5383"/>
+        <location filename="../../src/courtroom.cpp" line="5387"/>
         <source>Error</source>
         <translation>Errore</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="5377"/>
+        <location filename="../../src/courtroom.cpp" line="5383"/>
         <source>You must provide a reason.</source>
         <translation>Devi fornire un motivo.</translation>
     </message>
     <message>
-        <location filename="../../src/courtroom.cpp" line="5381"/>
+        <location filename="../../src/courtroom.cpp" line="5387"/>
         <source>The message is too long.</source>
         <translation>Il messaggio è troppo lungo.</translation>
     </message>
