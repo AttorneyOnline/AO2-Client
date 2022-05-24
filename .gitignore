@@ -7,12 +7,13 @@
 *.pro.user
 base_override.h
 .DS_Store
+*.o
+moc*
+*.autosave
 
 base-full/
 logs/
 bass.lib
-
-.vs/
 bin/
 bins/
 build/
@@ -26,19 +27,11 @@ base/config.ini
 base/serverlist.txt
 
 .qmake.stash
-
+.vs/
 Makefile*
 object_script*
 /android/gradle*
-/Attorney_Online_remake_resource.rc
-/attorney_online_remake_plugin_import.cpp
-
+/Attorney_Online_*.rc
+/attorney_online_*_plugin_import.cpp
 server/__pycache__
 discord/
-
-*.o
-moc*
-/Attorney_Online_CC_resource.rc
-/attorney_online_cc_plugin_import.cpp
-
-*.autosave
