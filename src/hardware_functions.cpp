@@ -100,6 +100,18 @@ QString get_hdid()
 
 #endif
 
+#elif defined ANDROID
+QString get_hdid()
+{
+    // i stole this from https://forum.qt.io/topic/33755/qt-5-2-beta-1-getting-android_id-from-the-settings
+    QAndroidJniObject myID = QAndroidJniObject::fromString("ANDROID_ID");
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative", "activity", "()Landroid/app/Activity;");
+    QAndroidJniObject appctx = activity.callObjectMethod("getApplicationContext","()Landroid/content/Context;");
+    QAndroidJniObject contentR = appctx.callObjectMethod("getContentResolver", "()Landroid/content/ContentResolver;");
+    QAndroidJniObject result = QAndroidJniObject::callStaticObjectMethod("android/provider/Settings$Secure","getString", "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;",contentR.object<jobject>(), myID.object<jstring>());
+    return result.toString();
+}
+
 #else
 #include <QSysInfo>
 
