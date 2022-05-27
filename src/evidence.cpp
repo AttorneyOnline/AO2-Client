@@ -786,10 +786,12 @@ void Courtroom::on_evidence_load_clicked()
   inventory.setIniCodec("UTF-8");
   local_evidence_list.clear();
   QStringList evilist = inventory.childGroups();
-  QMap<int, QString> tempevi;
-  for (auto s : evilist) tempevi[s.toInt()] = s;
+  QMap<int, QString> sorted_evi;
+  for (const auto &s : evilist) {
+    sorted_evi[s.toInt()] = s;
+  }
   evilist = QStringList(tempevi.values());
-  foreach (QString evi, evilist) {
+  for (const QString &evi : evilist) {
     if (evi == "General")
       continue;
 
