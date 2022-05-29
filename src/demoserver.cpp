@@ -389,15 +389,32 @@ void DemoServer::playback()
         current_packet = demo_data.dequeue();
     }
     if (!demo_data.isEmpty()) {
-        AOPacket wait_packet = AOPacket(current_packet);
+        QStringList f_contents;
+        // Packet should *always* end with #
+        if (current_packet.endsWith("#")) {
+          f_contents = current_packet.chopped(1).split("#");
+        }
+        // But, if it somehow doesn't, we should still be able to handle it
+        else {
+          f_contents = current_packet.split("#");
+        }
+        // Take the first arg as the command
+        QString command = f_contents.takeFirst();
+        // The rest is contents of the packet
+        AOPacket *wait_packet = new AOPacket(command, f_contents);
 
-        int duration = wait_packet.get_contents().at(0).toInt();
+        QStringList contents = wait_packet->get_contents();
+        int duration = 0;
+        if (!contents.isEmpty()) {
+          duration = contents.at(0).toInt();
+        }
         // Max wait reached
         if (max_wait != -1 && duration + elapsed_time > max_wait) {
+          int prev_duration = duration;
           duration = qMax(0, max_wait - elapsed_time);
           qDebug() << "Max_wait of " << max_wait << " reached. Forcing duration to " << duration << "ms";
           // Skip the difference on the timers
-          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+          emit skip_timers(prev_duration - duration);
         }
         // Manual user skip, such as with >
         else if (timer->remainingTime() > 0) {
