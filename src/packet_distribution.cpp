@@ -75,8 +75,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     send_server_packet(new AOPacket("ID", f_contents));
   }
   else if (header == "CT") {
-    if (!courtroom_constructed || f_contents.size() < 2)
+    if (!courtroom_constructed || f_contents.size() < 2) {
       goto end;
+}
 
     if (f_contents.size() == 3)
       w_courtroom->append_server_chatmessage(
@@ -153,8 +154,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "SI") {
-    if (!lobby_constructed || f_contents.size() != 3)
+    if (!lobby_constructed || f_contents.size() != 3) {
       goto end;
+}
 
     char_list_size = f_contents.at(0).toInt();
     evidence_list_size = f_contents.at(1).toInt();
@@ -485,8 +487,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_mute(true, f_contents.at(0).toInt());
   }
   else if (header == "UM") {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (courtroom_constructed && !f_contents.isEmpty()) {
       w_courtroom->set_mute(false, f_contents.at(0).toInt());
+}
   }
   else if (header == "BB") {
     if (courtroom_constructed && !f_contents.isEmpty()) {
@@ -600,8 +603,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   // Auth packet
   else if (header == "AUTH") {
-    if (!courtroom_constructed || !auth_packet_enabled || f_contents.isEmpty())
+    if (!courtroom_constructed || !auth_packet_enabled || f_contents.isEmpty()) {
       goto end;
+}
     bool ok;
     int authenticated = f_contents.at(0).toInt(&ok);
     if (!ok) {
