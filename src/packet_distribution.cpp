@@ -29,6 +29,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   QStringList f_contents = p_packet->get_contents();
   QString f_packet = p_packet->to_string();
 
+  bool log_to_demo = true;
+
 #ifdef DEBUG_NETWORK
   if (header != "checkconnection")
     qDebug() << "R:" << f_packet;
@@ -60,6 +62,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QStringList f_contents = {f_hdid};
     AOPacket *hi_packet = new AOPacket("HI", f_contents);
     send_server_packet(hi_packet);
+    log_to_demo = false;
   }
   else if (header == "ID") {
     if (f_contents.size() < 2)
@@ -85,8 +88,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     else
       w_courtroom->append_server_chatmessage(f_contents.at(0),
                                              f_contents.at(1), "0");
-
-    append_to_demofile(f_packet_encoded);
   }
   else if (header == "FL") {
     yellow_text_enabled = false;
@@ -136,6 +137,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_enabled = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_enabled = true;
+    log_to_demo = false;
   }
   else if (header == "PN") {
     if (!lobby_constructed || f_contents.size() < 2)
@@ -152,6 +154,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       send_server_packet(new AOPacket("askchaa"));
       w_lobby->doubleclicked = false;
     }
+    log_to_demo = false;
   }
   else if (header == "SI") {
     if (!lobby_constructed || f_contents.size() != 3) {
@@ -228,6 +231,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (is_discord_enabled())
       discord->state_server(server_name.toStdString(),
                             hash.result().toBase64().toStdString());
+    log_to_demo = false;
   }
   else if (header == "CharsCheck") {
     if (!courtroom_constructed)
@@ -239,6 +243,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       else
         w_courtroom->set_taken(n_char, false);
     }
+    log_to_demo = false;
   }
 
   else if (header == "SC") {
@@ -280,7 +285,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       send_server_packet(new AOPacket("RM"));
     else
       w_courtroom->character_loading_finished();
-    append_to_demofile(f_packet_encoded);
   }
   else if (header == "SM") {
     if (!courtroom_constructed || courtroom_loaded)
@@ -330,6 +334,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     send_server_packet(new AOPacket("RD"));
+    log_to_demo = false;
   }
   else if (header == "FM") // Fetch music ONLY
   {
@@ -343,6 +348,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     w_courtroom->list_music();
+    log_to_demo = false;
   }
   else if (header == "FA") // Fetch areas ONLY
   {
@@ -358,6 +364,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     w_courtroom->list_areas();
+    log_to_demo = false;
   }
   else if (header == "DONE") {
     if (!courtroom_constructed)
@@ -373,6 +380,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     courtroom_loaded = true;
 
     destruct_lobby();
+    log_to_demo = false;
   }
   else if (header == "BN") {
     if (!courtroom_constructed || f_contents.isEmpty())
@@ -383,7 +391,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_side(f_contents.at(1));
     }
     w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
-    append_to_demofile(f_packet_encoded);
   }
   else if (header == "SP") {
     if (!courtroom_constructed || f_contents.isEmpty())
@@ -391,7 +398,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // We were sent a "set position" packet
     w_courtroom->set_side(f_contents.at(0));
-    append_to_demofile(f_packet_encoded);
   }
   else if (header == "SD") // Send pos dropdown
   {
@@ -413,14 +419,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->chatmessage_enqueue(p_packet->get_contents());
-      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)
     {
       w_courtroom->handle_song(&p_packet->get_contents());
-      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "RT") {
@@ -431,7 +435,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_courtroom->handle_wtce(f_contents.at(0), 0);
       else if (f_contents.size() >= 2)
         w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
-      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "HP") {
@@ -439,7 +442,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     {
       w_courtroom->set_hp_bar(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
-      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "LE") {
@@ -465,7 +467,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
 
       w_courtroom->set_evidence_list(f_evi_list);
-      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "ARUP") {
@@ -477,24 +478,29 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
       w_courtroom->list_areas();
     }
+    log_to_demo = false;
   }
   else if (header == "IL") {
     if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->set_ip_list(f_contents.at(0));
+    log_to_demo = false;
   }
   else if (header == "MU") {
     if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->set_mute(true, f_contents.at(0).toInt());
+    log_to_demo = false;
   }
   else if (header == "UM") {
     if (courtroom_constructed && !f_contents.isEmpty()) {
       w_courtroom->set_mute(false, f_contents.at(0).toInt());
+    log_to_demo = false;
 }
   }
   else if (header == "BB") {
     if (courtroom_constructed && !f_contents.isEmpty()) {
       call_notice(f_contents.at(0));
     }
+    log_to_demo = false;
   }
   else if (header == "KK") {
     if (courtroom_constructed && !f_contents.isEmpty()) {
@@ -503,6 +509,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       construct_lobby();
       destruct_courtroom();
     }
+    log_to_demo = false;
   }
   else if (header == "KB") {
     if (courtroom_constructed && !f_contents.isEmpty()) {
@@ -511,6 +518,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       construct_lobby();
       destruct_courtroom();
     }
+    log_to_demo = false;
   }
   else if (header == "BD") {
     if (f_contents.isEmpty()) {
@@ -518,6 +526,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
     call_notice(
         tr("You are banned on this server.\nReason: %1").arg(f_contents.at(0)));
+    log_to_demo = false;
   }
   else if (header == "ZZ") {
     if (courtroom_constructed && !f_contents.isEmpty())
@@ -573,7 +582,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_clock_visibility(id, true);
     else if (type == 3)
       w_courtroom->set_clock_visibility(id, false);
-    append_to_demofile(f_packet_encoded);
   }
   else if (header == "CHECK") {
     if (!courtroom_constructed)
@@ -583,6 +591,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     qDebug() << "ping:" << ping_time;
     if (ping_time != -1)
       latency = ping_time;
+    log_to_demo = false;
   }
   // Subtheme packet
   else if (header == "ST") {
@@ -613,6 +622,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
 
     w_courtroom->on_authentication_state_received(authenticated);
+    log_to_demo = false;
   }
   else if (header == "JD") {
     if (!courtroom_constructed || f_contents.isEmpty()) {
@@ -640,6 +650,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
     if (t_asset_url.isValid())
     asset_url = t_asset_url.toString();
+  }
+
+  if (log_to_demo) {
+    append_to_demofile(f_packet_encoded);
   }
 
 end:
