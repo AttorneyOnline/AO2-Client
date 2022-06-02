@@ -34,12 +34,6 @@ void AOBlipPlayer::blip_tick()
   HSTREAM f_stream = m_stream_list[f_cycle];
 
   BASS_ChannelSetDevice(f_stream, BASS_GetDevice());
-  int f_bass_error = BASS_ErrorGetCode();
-  if (f_bass_error == BASS_ERROR_DEVICE) {
-    ao_app->doBASSreset();
-    BASS_ChannelSetDevice(f_stream, BASS_GetDevice());
-  }
-
   BASS_ChannelPlay(f_stream, false);
 }
 

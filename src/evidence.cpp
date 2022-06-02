@@ -6,7 +6,9 @@ void Courtroom::initialize_evidence()
   ui_evidence->setObjectName("ui_evidence");
 
   // ui_evidence_name = new QLabel(ui_evidence);
-  ui_evidence_name = new AOLineEdit(ui_evidence);
+  ui_evidence_name = new QLineEdit(ui_evidence);
+  ui_evidence_name_filter = new AOLineEditFilter();
+  ui_evidence_name->installEventFilter(ui_evidence_name_filter);
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFrame(false);
   ui_evidence_name->setObjectName("ui_evidence_name");
@@ -41,7 +43,9 @@ void Courtroom::initialize_evidence()
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_delete->setToolTip(tr("Destroy this piece of evidence"));
   ui_evidence_delete->setObjectName("ui_evidence_delete");
-  ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name = new QLineEdit(ui_evidence_overlay);
+  ui_evidence_image_name_filter = new AOLineEditFilter();
+  ui_evidence_image_name->installEventFilter(ui_evidence_image_name_filter);
   ui_evidence_image_name->setObjectName("ui_evidence_image_name");
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_button->setText(tr("Choose.."));
@@ -56,50 +60,46 @@ void Courtroom::initialize_evidence()
                                 "evidence and send them to server."));
   ui_evidence_ok->setObjectName("ui_evidence_ok");
 
-  ui_evidence_description = new AOTextEdit(ui_evidence_overlay);
+  ui_evidence_description = new QPlainTextEdit(ui_evidence_overlay);
   ui_evidence_description->setFrameStyle(QFrame::NoFrame);
   ui_evidence_description->setToolTip(
-      tr("Double-click to edit. Press [X] to update your changes."));
+      tr("Click to edit. Press [X] to update your changes."));
   ui_evidence_description->setObjectName("ui_evidence_description");
 
-  connect(ui_evidence_name, SIGNAL(returnPressed()), this,
-          SLOT(on_evidence_name_edited()));
-  connect(ui_evidence_name, SIGNAL(double_clicked()), this,
-          SLOT(on_evidence_name_double_clicked()));
-  connect(ui_evidence_left, SIGNAL(clicked()), this,
-          SLOT(on_evidence_left_clicked()));
-  connect(ui_evidence_right, SIGNAL(clicked()), this,
-          SLOT(on_evidence_right_clicked()));
-  connect(ui_evidence_present, SIGNAL(clicked()), this,
-          SLOT(on_evidence_present_clicked()));
-  connect(ui_evidence_switch, SIGNAL(clicked()), this,
-          SLOT(on_evidence_switch_clicked()));
-  connect(ui_evidence_transfer, SIGNAL(clicked()), this,
-          SLOT(on_evidence_transfer_clicked()));
-  connect(ui_evidence_save, SIGNAL(clicked()), this,
-          SLOT(on_evidence_save_clicked()));
-  connect(ui_evidence_load, SIGNAL(clicked()), this,
-          SLOT(on_evidence_load_clicked()));
+  connect(ui_evidence_name, &QLineEdit::returnPressed, this,
+          &Courtroom::on_evidence_name_edited);
+  connect(ui_evidence_left, &AOButton::clicked, this,
+          &Courtroom::on_evidence_left_clicked);
+  connect(ui_evidence_right, &AOButton::clicked, this,
+          &Courtroom::on_evidence_right_clicked);
+  connect(ui_evidence_present, &AOButton::clicked, this,
+          &Courtroom::on_evidence_present_clicked);
+  connect(ui_evidence_switch, &AOButton::clicked, this,
+          &Courtroom::on_evidence_switch_clicked);
+  connect(ui_evidence_transfer, &AOButton::clicked, this,
+          &Courtroom::on_evidence_transfer_clicked);
+  connect(ui_evidence_save, &AOButton::clicked, this,
+          &Courtroom::on_evidence_save_clicked);
+  connect(ui_evidence_load, &AOButton::clicked, this,
+          &Courtroom::on_evidence_load_clicked);
 
-  connect(ui_evidence_delete, SIGNAL(clicked()), this,
-          SLOT(on_evidence_delete_clicked()));
-  connect(ui_evidence_image_name, SIGNAL(returnPressed()), this,
-          SLOT(on_evidence_image_name_edited()));
-  connect(ui_evidence_image_name, SIGNAL(double_clicked()), this,
-          SLOT(on_evidence_image_name_double_clicked()));
-  connect(ui_evidence_image_button, SIGNAL(clicked()), this,
-          SLOT(on_evidence_image_button_clicked()));
-  connect(ui_evidence_x, SIGNAL(clicked()), this,
-          SLOT(on_evidence_x_clicked()));
-  connect(ui_evidence_ok, SIGNAL(clicked()), this,
-          SLOT(on_evidence_ok_clicked()));
+  connect(ui_evidence_delete, &AOButton::clicked, this,
+          &Courtroom::on_evidence_delete_clicked);
+  connect(ui_evidence_image_name, &QLineEdit::returnPressed, this,
+          &Courtroom::on_evidence_image_name_edited);
+  connect(ui_evidence_image_button, &AOButton::clicked, this,
+          &Courtroom::on_evidence_image_button_clicked);
+  connect(ui_evidence_x, &AOButton::clicked, this,
+          &Courtroom::on_evidence_x_clicked);
+  connect(ui_evidence_ok, &AOButton::clicked, this,
+          &Courtroom::on_evidence_ok_clicked);
 
-  connect(ui_evidence_name, SIGNAL(textChanged(QString)), this,
-          SLOT(on_evidence_edited()));
-  connect(ui_evidence_image_name, SIGNAL(textChanged(QString)), this,
-          SLOT(on_evidence_edited()));
-  connect(ui_evidence_description, SIGNAL(textChanged()), this,
-          SLOT(on_evidence_edited()));
+  connect(ui_evidence_name, &QLineEdit::textChanged, this,
+          &Courtroom::on_evidence_edited);
+  connect(ui_evidence_image_name, &QLineEdit::textChanged, this,
+          &Courtroom::on_evidence_edited);
+  connect(ui_evidence_description, &QPlainTextEdit::textChanged, this,
+          &Courtroom::on_evidence_edited);
 
   ui_evidence->hide();
 }
@@ -227,12 +227,12 @@ void Courtroom::refresh_evidence()
 
     f_evidence->set_id(n);
 
-    connect(f_evidence, SIGNAL(evidence_clicked(int)), this,
-            SLOT(on_evidence_clicked(int)));
-    connect(f_evidence, SIGNAL(evidence_double_clicked(int)), this,
-            SLOT(on_evidence_double_clicked(int)));
-    connect(f_evidence, SIGNAL(on_hover(int, bool)), this,
-            SLOT(on_evidence_hover(int, bool)));
+    connect(f_evidence, &AOEvidenceButton::evidence_clicked, this,
+            &Courtroom::on_evidence_clicked);
+    connect(f_evidence, &AOEvidenceButton::evidence_double_clicked, this,
+            &Courtroom::on_evidence_double_clicked);
+    connect(f_evidence, &AOEvidenceButton::on_hover, this,
+            &Courtroom::on_evidence_hover);
 
     ++x_mod_count;
 
@@ -263,8 +263,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
       evidence_close();
       ui_evidence_name->setText("");
     }
-    else if (ui_evidence_description->isReadOnly()) // We haven't double clicked
-                                                    // to edit it or anything
+    else if (ui_evidence_ok->isHidden()) // We haven't clicked to edit it or anything
     {
       on_evidence_double_clicked(current_evidence);
     }
@@ -281,7 +280,11 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
       msgBox->setDetailedText(tr(
           "Name: %1\n"
           "Image: %2\n"
-          "Description:\n%3").arg(local_evidence_list.at(current_evidence).name).arg(local_evidence_list.at(current_evidence).image).arg(local_evidence_list.at(current_evidence).description));
+          "Description:\n%3").arg(
+                                    local_evidence_list.at(current_evidence).name,
+                                    local_evidence_list.at(current_evidence).image,
+                                    local_evidence_list.at(current_evidence).description)
+                                  );
       msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
       msgBox->setDefaultButton(QMessageBox::LastButton);
       // msgBox->setWindowModality(Qt::NonModal);
@@ -289,6 +292,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
       switch (ret) {
       case QMessageBox::Yes:
         // "Keep changes"
+        ui_evidence_ok->hide();
         break;
       case QMessageBox::No:
         // "Discard changes and keep theirs"
@@ -309,7 +313,7 @@ void Courtroom::set_evidence_page()
   ui_evidence_left->hide();
   ui_evidence_right->hide();
 
-  for (AOEvidenceButton *i_button : ui_evidence_list) {
+  for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list)) {
     i_button->hide();
   }
 
@@ -366,31 +370,27 @@ void Courtroom::set_evidence_page()
   }
 }
 
+void Courtroom::show_evidence(int f_real_id)
+{
+  // Make sure we're in the global evidence list
+  evidence_switch(true);
+  // Set the evidence page properly
+  current_evidence_page = f_real_id / max_evidence_on_page;
+  set_evidence_page();
+  // Display the target evidence using the local ID
+  int p_id = f_real_id - (max_evidence_on_page * current_evidence_page);
+  on_evidence_double_clicked(p_id);
+}
+
+
 void Courtroom::on_evidence_name_edited()
 {
-  ui_evidence_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
 }
 
-void Courtroom::on_evidence_name_double_clicked()
-{
-  if (ui_evidence_overlay->isVisible()) {
-    ui_evidence_name->setReadOnly(false);
-  }
-  else {
-    ui_evidence_name->setReadOnly(true);
-  }
-}
-
-void Courtroom::on_evidence_image_name_double_clicked()
-{
-  ui_evidence_image_name->setReadOnly(false);
-}
-
 void Courtroom::on_evidence_image_name_edited()
 {
-  ui_evidence_image_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
 }
@@ -420,8 +420,6 @@ void Courtroom::on_evidence_image_button_clicked()
 
 void Courtroom::on_evidence_clicked(int p_id)
 {
-  ui_evidence_name->setReadOnly(true);
-
   int f_real_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (f_real_id == local_evidence_list.size()) {
@@ -445,7 +443,7 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   ui_evidence_name->setText(local_evidence_list.at(f_real_id).name);
 
-  for (AOEvidenceButton *i_button : ui_evidence_list)
+  for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
   ui_evidence_list.at(p_id)->set_selected(true);
@@ -468,16 +466,18 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
   ui_evidence_description->clear();
   ui_evidence_description->appendPlainText(f_evi.description);
-  ui_evidence_description->setReadOnly(true);
-  ui_evidence_description->setToolTip(tr("Double-click to edit..."));
+  ui_evidence_description->setReadOnly(false);
+  ui_evidence_description->setToolTip(tr("Click to edit..."));
 
   ui_evidence_name->setText(f_evi.name);
-  ui_evidence_name->setReadOnly(true);
-  ui_evidence_name->setToolTip(tr("Double-click to edit..."));
-  ui_evidence_image_name->setText(f_evi.image);
-  ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_name->setToolTip(tr("Double-click to edit..."));
+  ui_evidence_name->setReadOnly(false);
+  ui_evidence_name->setToolTip(tr("Click to edit..."));
 
+  ui_evidence_image_name->setText(f_evi.image);
+  ui_evidence_image_name->setReadOnly(false);
+  ui_evidence_image_name->setToolTip(tr("Click to edit..."));
+
+  ui_evidence->show();
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
 
@@ -486,7 +486,6 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
-  ui_evidence_name->setReadOnly(true);
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (p_state) {
@@ -595,9 +594,7 @@ void Courtroom::on_evidence_x_clicked()
 
 void Courtroom::on_evidence_ok_clicked()
 {
-  ui_evidence_name->setReadOnly(true);
-  ui_evidence_description->setReadOnly(true);
-  ui_evidence_image_name->setReadOnly(true);
+  ui_evidence_ok->hide();
   if (current_evidence < local_evidence_list.size()) {
     evi_type f_evi = local_evidence_list.at(current_evidence);
     if (current_evidence_global) {
@@ -699,11 +696,8 @@ void Courtroom::on_evidence_edited()
 void Courtroom::evidence_close()
 {
   ui_evidence_description->setReadOnly(true);
-  ui_evidence_description->setToolTip("");
   ui_evidence_name->setReadOnly(true);
-  ui_evidence_name->setToolTip("");
   ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_name->setToolTip("");
   ui_evidence_overlay->hide();
   ui_ic_chat_message->setFocus();
 }

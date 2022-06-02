@@ -12,8 +12,9 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
+
   //
-  this->setWindowTitle(tr("Attorney Online 2"));
+  this->setWindowTitle(tr("Attorney Online %1").arg(ao_app->applicationVersion()));
   this->setWindowIcon(QIcon(":/logo.png"));
   this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
@@ -59,12 +60,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatbox = new AOTextArea(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatbox->setObjectName("ui_chatbox");
-  ui_chatname = new QLineEdit(this);
-  ui_chatname->setPlaceholderText(tr("Name"));
-  ui_chatname->setText(ao_app->get_ooc_name());
-  ui_chatname->setObjectName("ui_chatname");
-  ui_chatmessage = new QLineEdit(this);
-  ui_chatmessage->setObjectName("ui_chatmessage");
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_background->setObjectName("ui_loading_background");
   ui_loading_text = new QTextEdit(ui_loading_background);
@@ -76,35 +71,33 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_cancel = new AOButton(ui_loading_background, ao_app);
   ui_cancel->setObjectName("ui_cancel");
 
-  connect(ui_public_servers, SIGNAL(clicked()), this,
-          SLOT(on_public_servers_clicked()));
-  connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
-  connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
-  connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
-  connect(ui_add_to_fav, SIGNAL(pressed()), this,
-          SLOT(on_add_to_fav_pressed()));
-  connect(ui_add_to_fav, SIGNAL(released()), this,
-          SLOT(on_add_to_fav_released()));
-  connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
-  connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
-  connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
-  connect(ui_settings, SIGNAL(clicked()), this, SLOT(on_settings_clicked()));
-  connect(ui_server_list, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this,
-          SLOT(on_server_list_clicked(QTreeWidgetItem *, int)));
-  connect(ui_server_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
-          this, SLOT(on_server_list_doubleclicked(QTreeWidgetItem *, int)));
-  connect(ui_server_list, SIGNAL(customContextMenuRequested(QPoint)),
-          this, SLOT(on_server_list_context_menu_requested(QPoint)));
-  connect(ui_server_search, SIGNAL(textChanged(QString)), this,
-          SLOT(on_server_search_edited(QString)));
-  connect(ui_chatmessage, SIGNAL(returnPressed()), this,
-          SLOT(on_chatfield_return_pressed()));
-  connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
+  connect(ui_public_servers, &AOButton::clicked, this,
+          &Lobby::on_public_servers_clicked);
+  connect(ui_favorites, &AOButton::clicked, this, &Lobby::on_favorites_clicked);
+  connect(ui_refresh, &AOButton::pressed, this, &Lobby::on_refresh_pressed);
+  connect(ui_refresh, &AOButton::released, this, &Lobby::on_refresh_released);
+  connect(ui_add_to_fav, &AOButton::pressed, this,
+          &Lobby::on_add_to_fav_pressed);
+  connect(ui_add_to_fav, &AOButton::released, this,
+          &Lobby::on_add_to_fav_released);
+  connect(ui_connect, &AOButton::pressed, this, &Lobby::on_connect_pressed);
+  connect(ui_connect, &AOButton::released, this, &Lobby::on_connect_released);
+  connect(ui_about, &AOButton::clicked, this, &Lobby::on_about_clicked);
+  connect(ui_settings, &AOButton::clicked, this, &Lobby::on_settings_clicked);
+  connect(ui_server_list, &QTreeWidget::itemClicked, this,
+          &Lobby::on_server_list_clicked);
+  connect(ui_server_list, &QTreeWidget::itemDoubleClicked,
+          this, &Lobby::on_server_list_doubleclicked);
+  connect(ui_server_search, &QLineEdit::textChanged, this,
+          &Lobby::on_server_search_edited);
+  connect(ui_cancel, &AOButton::clicked, ao_app, &AOApplication::loading_cancelled);
 
 
   ui_connect->setEnabled(false);
 
   list_servers();
+  get_motd();
+  check_for_updates();
 
   set_widgets();
 }
@@ -119,7 +112,13 @@ void Lobby::set_widgets()
   pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
 
   if (f_lobby.width < 0 || f_lobby.height < 0) {
-    qDebug() << "W: did not find lobby width or height in " << filename;
+    qWarning() << "did not find lobby width or height in " << filename;
+
+    #ifdef ANDROID
+    if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE")==QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync({"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"});
+    }
+    #endif
 
     // Most common symptom of bad config files and missing assets.
     call_notice(
@@ -159,7 +158,7 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText(tr("Settings"));
-  ui_settings->set_image("settings");
+  ui_settings->set_image("lobby_settings");
   ui_settings->setToolTip(
       tr("Allows you to change various aspects of the client."));
 
@@ -175,10 +174,6 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
-
-  set_size_and_pos(ui_chatname, "chatname");
-
-  set_size_and_pos(ui_chatmessage, "chatmessage");
 
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground");
@@ -208,7 +203,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
       ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qDebug() << "W: could not find " << p_identifier << " in " << filename;
+    qWarning() << "could not find" << p_identifier << "in" << filename;
     p_widget->hide();
   }
   else {
@@ -222,8 +217,6 @@ void Lobby::set_fonts()
   set_font(ui_player_count, "player_count");
   set_font(ui_description, "description");
   set_font(ui_chatbox, "chatbox");
-  set_font(ui_chatname, "chatname");
-  set_font(ui_chatmessage, "chatmessage");
   set_font(ui_loading_text, "loading_text");
   set_font(ui_server_list, "server_list");
 }
@@ -321,7 +314,6 @@ void Lobby::on_favorites_clicked()
   ui_public_servers->set_image("publicservers");
 
   ao_app->set_favorite_list();
-  // ao_app->favorite_list = read_serverlist_txt();
 
   list_favorites();
 
@@ -334,9 +326,13 @@ void Lobby::on_refresh_released()
 {
   ui_refresh->set_image("refresh");
 
-  AOPacket *f_packet = new AOPacket("ALL#%");
-
-  ao_app->send_ms_packet(f_packet);
+  if (public_servers_selected) {
+    ao_app->net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
+    get_motd();
+  } else {
+    ao_app->set_favorite_list();
+    list_favorites();
+  }
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -442,8 +438,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
       f_server = ao_app->get_favorite_list().at(n_server);
     }
 
-    ui_description->clear();
-    ui_description->append_linked(f_server.desc);
+    set_server_description(f_server.desc);
 
     ui_description->moveCursor(QTextCursor::Start);
     ui_description->ensureCursorVisible();
@@ -493,22 +488,6 @@ void Lobby::on_server_search_edited(QString p_text)
   }
 }
 
-void Lobby::on_chatfield_return_pressed()
-{
-  // no you can't send empty messages
-  if (ui_chatname->text() == "" || ui_chatmessage->text() == "")
-    return;
-
-  QString f_header = "CT";
-  QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
-
-  AOPacket *f_packet = new AOPacket(f_header, f_contents);
-
-  ao_app->send_ms_packet(f_packet);
-
-  ui_chatmessage->clear();
-}
-
 void Lobby::list_servers()
 {
   public_servers_selected = true;
@@ -521,7 +500,7 @@ void Lobby::list_servers()
   ui_server_search->setText("");
 
   int i = 0;
-  for (server_type i_server : ao_app->get_server_list()) {
+  for (const server_type &i_server : qAsConst(ao_app->get_server_list())) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
@@ -537,7 +516,7 @@ void Lobby::list_favorites()
   ui_server_list->clear();
 
   int i = 0;
-  for (server_type i_server : ao_app->get_favorite_list()) {
+  for (const server_type &i_server : qAsConst(ao_app->get_favorite_list())) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_server_list);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
@@ -545,6 +524,29 @@ void Lobby::list_favorites()
     i++;
   }
   ui_server_list->setSortingEnabled(true);
+}
+
+void Lobby::get_motd()
+{
+  ao_app->net_manager->request_document(MSDocumentType::Motd,
+                                        [this](QString document) {
+    if (document.isEmpty()) {
+      document = tr("Couldn't get the message of the day.");
+    }
+    ui_chatbox->setHtml(document);
+  });
+}
+
+void Lobby::check_for_updates()
+{
+  ao_app->net_manager->request_document(MSDocumentType::ClientVersion,
+                                        [this](QString version) {
+    const QString current_version = ao_app->get_version_string();
+    if (!version.isEmpty() && version != current_version) {
+      ui_version->setText(tr("Version: %1 (!)").arg(current_version));
+      ui_version->setToolTip(tr("New version available: %1").arg(version));
+    }
+  });
 }
 
 void Lobby::append_chatmessage(QString f_name, QString f_message)
@@ -561,10 +563,16 @@ void Lobby::append_error(QString f_message)
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = tr("Online: %1/%2")
-                         .arg(QString::number(players_online))
-                         .arg(QString::number(max_players));
+  QString f_string = tr("Online: %1/%2").arg(
+              QString::number(players_online),
+              QString::number(max_players));
   ui_player_count->setText(f_string);
+}
+
+void Lobby::set_server_description(const QString& server_description)
+{
+    ui_description->clear();
+    ui_description->append_linked(server_description);
 }
 
 void Lobby::enable_connect_button() { ui_connect->setEnabled(true); }

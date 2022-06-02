@@ -52,25 +52,25 @@ void Courtroom::construct_char_select()
   ui_char_taken->setText(tr("Taken"));
   ui_char_taken->setObjectName("ui_char_taken");
 
-  connect(ui_char_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
-          this, SLOT(on_char_list_double_clicked(QTreeWidgetItem *, int)));
+  connect(ui_char_list, &QTreeWidget::itemDoubleClicked,
+          this, &Courtroom::on_char_list_double_clicked);
 
-  connect(ui_back_to_lobby, SIGNAL(clicked()), this,
-          SLOT(on_back_to_lobby_clicked()));
+  connect(ui_back_to_lobby, &AOButton::clicked, this,
+          &Courtroom::on_back_to_lobby_clicked);
 
-  connect(ui_char_select_left, SIGNAL(clicked()), this,
-          SLOT(on_char_select_left_clicked()));
-  connect(ui_char_select_right, SIGNAL(clicked()), this,
-          SLOT(on_char_select_right_clicked()));
+  connect(ui_char_select_left, &AOButton::clicked, this,
+          &Courtroom::on_char_select_left_clicked);
+  connect(ui_char_select_right, &AOButton::clicked, this,
+          &Courtroom::on_char_select_right_clicked);
 
-  connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
+  connect(ui_spectator, &AOButton::clicked, this, &Courtroom::on_spectator_clicked);
 
-  connect(ui_char_search, SIGNAL(textEdited(const QString &)), this,
-          SLOT(on_char_search_changed()));
-  connect(ui_char_passworded, SIGNAL(stateChanged(int)), this,
-          SLOT(on_char_passworded_clicked()));
-  connect(ui_char_taken, SIGNAL(stateChanged(int)), this,
-          SLOT(on_char_taken_clicked()));
+  connect(ui_char_search, &QLineEdit::textEdited,this,
+          &Courtroom::on_char_search_changed);
+  connect(ui_char_passworded, &QCheckBox::stateChanged, this,
+          &Courtroom::on_char_passworded_clicked);
+  connect(ui_char_taken, &QCheckBox::stateChanged, this,
+           &Courtroom::on_char_taken_clicked);
 
 }
 
@@ -82,7 +82,7 @@ void Courtroom::set_char_select()
       ao_app->get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0) {
-    qDebug() << "W: did not find char_select width or height in "
+    qWarning() << "did not find char_select width or height in "
                 "courtroom_design.ini!";
     this->setFixedSize(714, 668);
   }
@@ -116,7 +116,7 @@ void Courtroom::set_char_select_page()
   ui_char_select_left->hide();
   ui_char_select_right->hide();
 
-  for (AOCharButton *i_button : ui_char_button_list) {
+  for (AOCharButton *i_button : qAsConst(ui_char_button_list)) {
     i_button->reset();
     i_button->hide();
     i_button->move(0, 0);
@@ -147,7 +147,7 @@ void Courtroom::set_char_select_page()
 
 void Courtroom::on_char_list_double_clicked(QTreeWidgetItem *p_item, int column)
 {
-  UNUSED(column);
+  Q_UNUSED(column);
   int cid = p_item->text(1).toInt();
   if (cid == -1 && !p_item->isExpanded()) {
     p_item->setExpanded(true);
@@ -164,15 +164,16 @@ void Courtroom::char_clicked(int n_char)
 {
   if (n_char != -1)
   {
+    QString char_name = char_list.at(n_char).name;
     QString char_ini_path = ao_app->get_real_path(
-          ao_app->get_character_path(char_list.at(n_char).name, "char.ini"));
-
-    qDebug() << "char_ini_path" << char_ini_path;
+          ao_app->get_character_path(char_name, "char.ini"));
 
     if (!file_exists(char_ini_path)) {
-      call_error("Could not find " + char_ini_path);
+      call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
       return;
     }
+
+    qDebug() << "Found char.ini for" << char_name << "at" << char_ini_path;
   }
 
   if (n_char != m_cid || n_char == -1) {
@@ -188,8 +189,12 @@ void Courtroom::char_clicked(int n_char)
     set_courtroom_size();
   }
 
-  if (n_char != -1)
+  if (n_char != -1) {
     ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
+  }
+  else {
+    ui_ic_chat_name->setPlaceholderText("Spectator");
+  }
 }
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
@@ -242,6 +247,7 @@ void Courtroom::character_loading_finished()
       delete item;
     }
     ui_char_button_list.clear();
+    ui_char_list->clear();
   }
 
   // First, we'll make all the character buttons in the very beginning.
@@ -298,13 +304,12 @@ void Courtroom::character_loading_finished()
               100);
       ao_app->w_lobby->set_loading_value(loading_value);
       ao_app->w_lobby->set_loading_text(
-          tr("Generating chars:\n%1/%2")
-              .arg(QString::number(ao_app->generated_chars))
-              .arg(QString::number(ao_app->char_list_size)));
+          tr("Generating chars:\n%1/%2").arg(
+                      QString::number(ao_app->generated_chars),
+                      QString::number(ao_app->char_list_size)));
     }
   }
   ui_char_list->expandAll();
-  filter_character_list();
 }
 
 void Courtroom::filter_character_list()

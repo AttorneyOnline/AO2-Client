@@ -12,6 +12,9 @@ bool file_exists(QString file_path)
 
 bool dir_exists(QString dir_path)
 {
+  if (dir_path == "")
+      return false;
+
   QDir check_dir(dir_path);
 
   return check_dir.exists();

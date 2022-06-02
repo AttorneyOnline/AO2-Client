@@ -1,14 +1,13 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#define UNUSED(x) (void)(x)
-
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"
 #include "discord_rich_presence.h"
 
 #include "bass.h"
+#include "bassmidi.h"
 #include "bassopus.h"
 
 #include <QApplication>
@@ -77,10 +76,8 @@ public:
   void construct_courtroom();
   void destruct_courtroom();
 
-  void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);
 
-  void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
   void call_settings_menu();
@@ -139,7 +136,7 @@ public:
   void add_favorite_server(int p_server);
   void remove_favorite_server(int p_server);
 
-  void set_server_list();
+  void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
 
   // reads the theme from config.ini and sets it accordingly
@@ -288,6 +285,9 @@ public:
   // Returns whether the log should have a timestamp.
   bool get_log_timestamp();
 
+  // Returns the format string for the log timestamp
+  QString get_log_timestamp_format();
+
   // Returns whether to log IC actions.
   bool get_log_ic_actions();
 
@@ -425,6 +425,9 @@ public:
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
 
+  // Returns whether the given pos is a judge position
+  bool get_pos_is_judge(const QString &p_pos);
+
   // Returns the name of p_char
   QString get_char_name(QString p_char);
 
@@ -507,8 +510,11 @@ public:
   // Get the message for the CM for casing alerts.
   QString get_casing_can_host_cases();
 
-  // Get if automatic logging is enabled
-  bool get_auto_logging_enabled();
+  // Get if text file logging is enabled
+  bool get_text_logging_enabled();
+
+  // Get if demo logging is enabled
+  bool get_demo_logging_enabled();
 
   // Get the subtheme from settings
   QString get_subtheme();
@@ -521,6 +527,9 @@ public:
 
   // Get a list of custom mount paths
   QStringList get_mount_paths();
+
+  // Get whether to opt out of player count metrics sent to the master server
+  bool get_player_count_optout();
 
   // Currently defined subtheme
   QString subtheme;
@@ -542,7 +551,7 @@ public:
   QString asset_url;
 
   void initBASS();
-  static void load_bass_opus_plugin();
+  static void load_bass_plugins();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
                                  void *user);
   static void doBASSreset();
@@ -552,8 +561,8 @@ public:
 
 private:
   const int RELEASE = 2;
-  const int MAJOR_VERSION = 9;
-  const int MINOR_VERSION = 1;
+  const int MAJOR_VERSION = 10;
+  const int MINOR_VERSION = 0;
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
@@ -561,12 +570,13 @@ private:
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
 
-private slots:
-  void ms_connect_finished(bool connected, bool will_retry);
-
 public slots:
   void server_disconnected();
   void loading_cancelled();
+
+signals:
+  void qt_log_message(QtMsgType type, const QMessageLogContext &context,
+                      const QString &msg);
 };
 
 #endif // AOAPPLICATION_H

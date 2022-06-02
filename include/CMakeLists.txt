@@ -10,14 +10,13 @@ aoevidencebutton.h
 aoevidencedisplay.h
 aoimage.h
 aolayer.h
-aolineedit.h
 aomusicplayer.h
 aooptionsdialog.h
 aopacket.h
 aosfxplayer.h
 aotextarea.h
-aotextedit.h
 bass.h
+bassmidi.h
 bassopus.h
 chatlogpiece.h
 courtroom.h
@@ -28,6 +27,7 @@ discord-rpc.h
 discord_register.h
 discord_rich_presence.h
 discord_rpc.h
+eventfilters.h
 file_functions.h
 hardware_functions.h
 lobby.h

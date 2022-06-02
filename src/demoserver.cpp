@@ -21,7 +21,7 @@ void DemoServer::start_server()
         return;
     }
     this->port = tcp_server->serverPort();
-    qDebug() << "Server started";
+    qInfo() << "Demo server started at port" << port;
     server_started = true;
 }
 
@@ -63,7 +63,7 @@ void DemoServer::accept_connection()
 
     if (client_sock) {
         // Client is already connected...
-        qDebug() << "Multiple connections to demo server disallowed.";
+        qWarning() << "Multiple connections to demo server disallowed.";
         QTcpSocket* temp_socket = tcp_server->nextPendingConnection();
         connect(temp_socket, &QAbstractSocket::disconnected, temp_socket, &QObject::deleteLater);
         temp_socket->disconnectFromHost();
@@ -97,7 +97,7 @@ void DemoServer::recv_data()
     QStringList packet_list =
         in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
-    for (QString packet : packet_list) {
+    for (const QString &packet : packet_list) {
         AOPacket ao_packet(packet);
         handle_packet(ao_packet);
     }
@@ -233,9 +233,39 @@ void DemoServer::handle_packet(AOPacket packet)
             QString packet = "CT#DEMO#" + tr("min_wait is deprecated. Use the client Settings for minimum wait instead!") + "#1#%";
             client_sock->write(packet.toUtf8());
         }
+        else if (contents[1].startsWith("/debug"))
+        {
+            QStringList args = contents[1].split(" ");
+            if (args.size() > 1)
+            {
+              bool ok;
+              int toggle = args.at(1).toInt(&ok);
+              if (ok && (toggle == 0 || toggle == 1)) {
+                debug_mode = toggle == 1;
+                QString packet = "CT#DEMO#" + tr("Setting debug mode to %1").arg(static_cast<int>(debug_mode)) + "#1#%";
+                client_sock->write(packet.toUtf8());
+                // Debug mode disabled?
+                if (!debug_mode) {
+                  // Reset the timer
+                  client_sock->write("TI#4#1#0#%");
+                  client_sock->write("TI#4#3#0#%");
+                }
+              }
+              else
+              {
+                QString packet = "CT#DEMO#" + tr("Valid values are 1 or 0!") + "#1#%";
+                client_sock->write(packet.toUtf8());
+              }
+            }
+            else
+            {
+              QString packet = "CT#DEMO#" + tr("Set debug mode using /debug 1 to enable, and /debug 0 to disable, which will use the fifth timer (TI#4) to show the remaining time until next demo line.") + "#1#%";
+              client_sock->write(packet.toUtf8());
+            }
+        }
         else if (contents[1].startsWith("/help"))
         {
-            QString packet = "CT#DEMO#" + tr("Available commands:\nload, reload, play, pause, max_wait, help") + "#1#%";
+            QString packet = "CT#DEMO#" + tr("Available commands:\nload, reload, play, pause, max_wait, debug, help") + "#1#%";
             client_sock->write(packet.toUtf8());
         }
     }
@@ -269,7 +299,7 @@ void DemoServer::load_demo(QString filename)
     // No-shenanigans 2.9.0 demo file with the dreaded demo desync bug detected https://github.com/AttorneyOnline/AO2-Client/pull/496
     // If we don't start with the SC packet this means user-edited weirdo shenanigans. Don't screw around with those.
     if (demo_data.head().startsWith("SC#") && demo_data.last().startsWith("wait#")) {
-      qDebug() << "Loaded a broken pre-2.9.1 demo file, with the wait desync issue!";
+      qInfo() << "Loaded a broken pre-2.9.1 demo file, with the wait desync issue!";
       QMessageBox *msgBox = new QMessageBox;
       msgBox->setAttribute(Qt::WA_DeleteOnClose);
       msgBox->setTextFormat(Qt::RichText);
@@ -281,7 +311,7 @@ void DemoServer::load_demo(QString filename)
       QQueue <QString> p_demo_data;
       switch (ret) {
         case QMessageBox::Yes:
-          qDebug() << "Making a backup of the broken demo...";
+          qInfo() << "Making a backup of the broken demo...";
           QFile::copy(filename, filename + ".backup");
           while (!demo_data.isEmpty()) {
             QString current_packet = demo_data.dequeue();
@@ -297,7 +327,7 @@ void DemoServer::load_demo(QString filename)
             QTextStream out(&demo_file);
             out.setCodec("UTF-8");
             out << p_demo_data.dequeue();
-            for (QString line : p_demo_data) {
+            for (const QString &line : qAsConst(p_demo_data)) {
               out << "\n" << line;
             }
             demo_file.flush();
@@ -321,8 +351,8 @@ void DemoServer::reset_state()
     client_sock->write("LE##%");
 
     // Reset timers
-    client_sock->write("TI#0#3#0#%");
     client_sock->write("TI#0#1#0#%");
+    client_sock->write("TI#0#3#0#%");
     client_sock->write("TI#1#1#0#%");
     client_sock->write("TI#1#3#0#%");
     client_sock->write("TI#2#1#0#%");
@@ -359,19 +389,25 @@ void DemoServer::playback()
         AOPacket wait_packet = AOPacket(current_packet);
 
         int duration = wait_packet.get_contents().at(0).toInt();
-        if (max_wait != -1) {
-          if (duration + elapsed_time > max_wait) {
-            duration = qMax(0, max_wait - elapsed_time);
-            // Skip the difference on the timers
-            emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
-          }
-          else if (timer->interval() != 0 && duration + elapsed_time > timer->interval()) {
-              duration = qMax(0, timer->interval() - elapsed_time);
-              emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
-          }
+        // Max wait reached
+        if (max_wait != -1 && duration + elapsed_time > max_wait) {
+          duration = qMax(0, max_wait - elapsed_time);
+          qDebug() << "Max_wait of " << max_wait << " reached. Forcing duration to " << duration << "ms";
+          // Skip the difference on the timers
+          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+        }
+        // Manual user skip, such as with >
+        else if (timer->remainingTime() > 0) {
+          qDebug() << "Timer of interval " << timer->interval() << " is being skipped. Forcing to skip " << timer->remainingTime() << "ms on TI# clocks";
+          emit skip_timers(timer->remainingTime());
         }
         elapsed_time += duration;
         timer->start(duration);
+        if (debug_mode) {
+          client_sock->write("TI#4#2#%");
+          QString debug_timer = "TI#4#0#" + QString::number(duration) + "#%";
+          client_sock->write(debug_timer.toUtf8());
+        }
     }
     else {
       QString end_packet = "CT#DEMO#" + tr("Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.") + "#1#%";

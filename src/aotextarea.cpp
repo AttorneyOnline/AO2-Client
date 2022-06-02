@@ -11,7 +11,7 @@ void AOTextArea::append_linked(QString p_message)
 }
 
 void AOTextArea::append_chatmessage(QString p_name, QString p_message,
-                                    QString p_colour)
+                                    QString p_name_colour, QString p_color)
 {
   const QTextCursor old_cursor = this->textCursor();
   const int old_scrollbar_value = this->verticalScrollBar()->value();
@@ -21,14 +21,21 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message,
   this->moveCursor(QTextCursor::End);
 
   this->append("");
-  this->insertHtml("<b><font color=" + p_colour + ">" + p_name.toHtmlEscaped() +
-                   "</font></b>:&nbsp;");
+  if (!p_name.isEmpty()) {
+    this->insertHtml("<b><font color=" + p_name_colour + ">" + p_name.toHtmlEscaped() +
+                     "</font></b>:&nbsp;");
 
-  // cheap workarounds ahoy
-  p_message += " ";
+    // cheap workarounds ahoy
+    p_message += " ";
+  }
+
   QString result = p_message.toHtmlEscaped()
                        .replace("\n", "<br>")
                        .replace(url_parser_regex, "<a href='\\1'>\\1</a>");
+
+  if (!p_color.isEmpty()) {
+    result = "<font color=" + p_color + ">" + result + "</font>";
+  }
 
   this->insertHtml(result);
 

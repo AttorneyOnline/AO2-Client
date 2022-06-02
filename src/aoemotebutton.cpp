@@ -11,7 +11,7 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app,
   this->move(p_x, p_y);
   this->resize(p_w, p_h);
 
-  connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
+  connect(this, &AOEmoteButton::clicked, this, &AOEmoteButton::on_clicked);
 }
 
 void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
@@ -21,15 +21,34 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
   if (file_exists(p_image)) {
     this->setText("");
     this->setStyleSheet(
-        "QPushButton { border-image: url(\"" + p_image +
-        "\") 0 0 0 0 stretch stretch; }"
+        "QPushButton { border: none; }"
         "QToolTip { color: #000000; background-color: #ffffff; border: 0px; }");
+    this->setIcon(QPixmap(p_image).scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    this->setIconSize(this->size());
   }
-  else if ((p_image.contains("_on") &&
-            file_exists(tmp_p_image.replace("_on", "_off"))) ||
-           (p_image.contains("_off") &&
-            file_exists(tmp_p_image.replace("_off", "_on")))) {
-    QImage tmpImage(tmp_p_image);
+  else {
+    this->setText(p_emote_comment);
+    this->setStyleSheet("QPushButton { border-image: url(); }"
+                        "QToolTip { background-image: url(); color: #000000; "
+                        "background-color: #ffffff; border: 0px; }");
+    this->setIcon(QIcon());
+    this->setIconSize(this->size());
+  }
+}
+
+void AOEmoteButton::set_char_image(QString p_char, int p_emote, bool on)
+{
+  QString emotion_number = QString::number(p_emote + 1);
+  QStringList suffixes { "_off", "_on" };
+  QStringList suffixedPaths;
+  for (const QString &suffix : suffixes) {
+    suffixedPaths.append(ao_app->get_image_suffix(ao_app->get_character_path(
+        p_char, "emotions/button" + emotion_number + suffix)));
+  }
+
+  QString emoteComment = ao_app->get_emote_comment(p_char, p_emote);
+  if (!file_exists(suffixedPaths[on]) && file_exists(suffixedPaths[!on])) {
+    QImage tmpImage(suffixedPaths[!on]);
     tmpImage = tmpImage.convertToFormat(QImage::Format_ARGB32);
     QPoint p1, p2;
     p2.setY(tmpImage.height());
@@ -46,25 +65,13 @@ void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
     p.fillRect(0, 0, tmpImage.width(), tmpImage.height(), gradient);
 
     p.end();
-    tmpImage.save(p_image, "png");
-    set_image(p_image, p_emote_comment);
+
+    // Original suffixed path may be empty, so create the path again
+    suffixedPaths[on] = QString(suffixedPaths[!on]).replace(suffixes[!on], suffixes[on]);
+    tmpImage.save(suffixedPaths[on], "png");
   }
-  else {
-    this->setText(p_emote_comment);
-    this->setStyleSheet("QPushButton { border-image: url(); }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
-  }
+
+  set_image(suffixedPaths[on], emoteComment);
 }
 
-void AOEmoteButton::set_char_image(QString p_char, int p_emote, QString suffix)
-{
-  QString emotion_number = QString::number(p_emote + 1);
-  QString image_path =
-      ao_app->get_image_suffix(ao_app->get_character_path(
-          p_char, "emotions/button" + emotion_number + suffix));
-
-  this->set_image(image_path, ao_app->get_emote_comment(p_char, p_emote));
-}
-
-void AOEmoteButton::on_clicked() { emote_clicked(m_id); }
+void AOEmoteButton::on_clicked() { emit emote_clicked(m_id); }

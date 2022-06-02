@@ -24,6 +24,7 @@
 
 #include <QDirIterator>
 #include <QListWidget>
+#include <QTextBrowser>
 #include <QTextStream>
 
 class Lobby;
@@ -62,6 +63,8 @@ private:
   QSpinBox *ui_log_margin_spinbox;
   QLabel *ui_log_timestamp_lbl;
   QCheckBox *ui_log_timestamp_cb;
+  QLabel *ui_log_timestamp_format_lbl;
+  QComboBox *ui_log_timestamp_format_combobox;
   QLabel *ui_stay_time_lbl;
   QSpinBox *ui_stay_time_spinbox;
   QLabel *ui_desync_logs_lbl;
@@ -122,6 +125,12 @@ private:
   QLabel *ui_category_stop_lbl;
   QCheckBox *ui_category_stop_cb;
 
+  QLabel *ui_log_text_lbl;
+  QCheckBox *ui_log_text_cb;
+
+  QLabel *ui_log_demo_lbl;
+  QCheckBox *ui_log_demo_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;
@@ -172,8 +181,6 @@ private:
   QCheckBox *ui_casing_cm_cb;
   QLabel *ui_casing_cm_cases_lbl;
   QLineEdit *ui_casing_cm_cases_textbox;
-  QLabel *ui_log_lbl;
-  QCheckBox *ui_log_cb;
 
   QWidget *ui_assets_tab;
   QVBoxLayout *ui_assets_tab_layout;
@@ -186,6 +193,12 @@ private:
   QPushButton *ui_mount_down;
   QPushButton *ui_mount_clear_cache;
 
+  QWidget *ui_privacy_tab;
+  QVBoxLayout *ui_privacy_layout;
+  QCheckBox *ui_privacy_optout_cb;
+  QFrame *ui_privacy_separator;
+  QTextBrowser *ui_privacy_policy;
+
   bool asset_cache_dirty = false;
 
   bool needs_default_audiodev();
@@ -197,6 +210,8 @@ public slots:
   void save_pressed();
   void discard_pressed();
   void button_clicked(QAbstractButton *button);
+  void on_timestamp_format_edited();
+  void timestamp_cb_changed(int state);
   void on_reload_theme_clicked();
   void theme_changed(int i);
 };

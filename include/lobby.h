@@ -14,12 +14,14 @@
 #include <QProgressBar>
 #include <QTextBrowser>
 #include <QTreeWidget>
-
 #include <QDebug>
 #include <QScrollBar>
 #include <QHeaderView>
 #include <QAction>
 #include <QMenu>
+#ifdef ANDROID
+#include <QtAndroidExtras/QtAndroid>
+#endif
 
 class AOApplication;
 
@@ -32,9 +34,12 @@ public:
   void set_widgets();
   void list_servers();
   void list_favorites();
+  void get_motd();
+  void check_for_updates();
   void append_chatmessage(QString f_name, QString f_message);
   void append_error(QString f_message);
   void set_player_count(int players_online, int max_players);
+  void set_server_description(const QString& server_description);
   void set_stylesheet(QWidget *widget);
   void set_stylesheets();
   void set_fonts();
@@ -77,9 +82,6 @@ private:
   AOTextArea *ui_description;
 
   AOTextArea *ui_chatbox;
-
-  QLineEdit *ui_chatname;
-  QLineEdit *ui_chatmessage;
 
   AOImage *ui_loading_background;
   QTextEdit *ui_loading_text;

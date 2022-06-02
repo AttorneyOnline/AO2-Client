@@ -19,6 +19,15 @@
 #define CASE_SENSITIVE_FILESYSTEM
 #endif
 
+static bool is_power_2(unsigned int n) {
+  unsigned int r = 0;
+  while (n) {
+    r += n & 1;
+    n >>= 1;
+  }
+  return r == 1;
+}
+
 QString AOApplication::get_base_path()
 {
   QString base_path = "";
@@ -172,20 +181,41 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
 
 QString AOApplication::get_asset(QString p_element, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc, QString p_character, QString p_placeholder)
 {
-  return get_asset_path(get_asset_paths(p_element, p_theme, p_subtheme, p_default_theme, p_misc, p_character, p_placeholder));
+  QString ret = get_asset_path(get_asset_paths(p_element, p_theme, p_subtheme, p_default_theme, p_misc, p_character, p_placeholder));
+  if (ret.isEmpty()) {
+    qWarning().nospace() << "could not find asset " << p_element
+                         << " (theme = " << p_theme
+                         << ", misc = " << p_misc
+                         << ", char = " << p_character << ")";
+  }
+  return ret;
 }
 
 QString AOApplication::get_image(QString p_element, QString p_theme, QString p_subtheme, QString p_default_theme, QString p_misc, QString p_character, QString p_placeholder,
                                  bool static_image)
 {
-  return get_image_path(get_asset_paths(p_element, p_theme, p_subtheme, p_default_theme, p_misc, p_character, p_placeholder), static_image);
+  QString ret = get_image_path(get_asset_paths(p_element, p_theme, p_subtheme, p_default_theme, p_misc, p_character, p_placeholder), static_image);
+  if (ret.isEmpty()) {
+    qWarning().nospace() << "could not find image " << p_element
+                         << " (theme = " << p_theme
+                         << ", misc = " << p_misc
+                         << ", char = " << p_character
+                         << ", static = " << static_image << ")";
+  }
+  return ret;
 }
 
 QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_character)
 {
   QVector<VPath> pathlist = get_asset_paths(p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
   pathlist += get_sounds_path(p_sfx); // Sounds folder path
-  return get_sfx_path(pathlist);
+  QString ret = get_sfx_path(pathlist);
+  if (ret.isEmpty()) {
+    qWarning().nospace() << "could not find sfx " << p_sfx
+                         << " (char = " << p_character
+                         << ", misc = " << p_misc << ")";
+  }
+  return ret;
 }
 
 QString AOApplication::get_case_sensitive_path(QString p_file)
@@ -237,8 +267,17 @@ QString AOApplication::get_real_path(const VPath &vpath) {
 
   // Cache miss; try all known mount paths
   QStringList bases = get_mount_paths();
-  bases.push_front(get_base_path());
+  bases.prepend(get_base_path());
+  // base
+  // content 1
+  // content 2
 
+  // We search last to first
+  std::reverse(bases.begin(), bases.end());
+
+  // content 2
+  // content 1
+  // base
   for (const QString &base : bases) {
     QDir baseDir(base);
     QString path = baseDir.absoluteFilePath(vpath.toQString());
@@ -249,8 +288,17 @@ QString AOApplication::get_real_path(const VPath &vpath) {
     path = get_case_sensitive_path(path);
     if (exists(path)) {
       asset_lookup_cache.insert(qHash(vpath), path);
+      unsigned int cache_size = asset_lookup_cache.size();
+      if (is_power_2(cache_size))
+        qDebug() << "lookup cache has reached" << cache_size << "entries";
       return path;
     }
+  }
+
+  // Not found in mount paths; check if the file is remote
+  QString remotePath = vpath.toQString();
+  if (remotePath.startsWith("http:") || remotePath.startsWith("https:")) {
+      return remotePath;
   }
 
   // File or directory not found
@@ -264,7 +312,10 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
   // Try cache first
   QString phys_path = asset_lookup_cache.value(qHash(vpath));
   if (!phys_path.isEmpty() && exists(phys_path)) {
-    return phys_path;
+    for (const QString &suffix : suffixes) { // make sure cached asset is the right type
+      if (phys_path.endsWith(suffix, Qt::CaseInsensitive))
+        return phys_path;
+    }
   }
 
   // Cache miss; try each suffix on all known mount paths
@@ -282,6 +333,9 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
       path = get_case_sensitive_path(path);
       if (exists(path)) {
         asset_lookup_cache.insert(qHash(vpath), path);
+        unsigned int cache_size = asset_lookup_cache.size();
+        if (is_power_2(cache_size))
+          qDebug() << "lookup cache has reached" << cache_size << "entries";
         return path;
       }
     }

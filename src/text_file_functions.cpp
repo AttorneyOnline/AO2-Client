@@ -10,8 +10,8 @@ int AOApplication::read_blip_rate()
 {
   int result = configini->value("blip_rate", 2).toInt();
 
-  if (result < 1)
-    return 1;
+  if (result < 0)
+    return 0;
 
   return result;
 }
@@ -89,6 +89,12 @@ bool AOApplication::get_log_timestamp()
   return result.startsWith("true");
 }
 
+QString AOApplication::get_log_timestamp_format()
+{
+  QString result = configini->value("log_timestamp_format", "h:mm:ss AP").value<QString>();
+  return result;
+}
+
 bool AOApplication::get_log_ic_actions()
 {
   QString result =
@@ -158,11 +164,14 @@ QStringList AOApplication::get_list_file(QString p_file)
 
 QString AOApplication::read_file(QString filename)
 {
+  if (filename.isEmpty())
+    return QString();
+
   QFile f_log(filename);
 
   if (!f_log.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    qDebug() << "Couldn't open" << filename;
-    return "";
+    qWarning() << "Couldn't open" << filename << "for reading";
+    return QString();
   }
 
   QTextStream in(&f_log);
@@ -278,6 +287,7 @@ QVector<server_type> AOApplication::read_serverlist_txt()
 
   if (serverlist_txt.open(QIODevice::ReadOnly)) {
       QTextStream in(&serverlist_txt);
+      in.setCodec("UTF-8");
 
       while (!in.atEnd()) {
         QString line = in.readLine();
@@ -528,12 +538,12 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
   return get_real_suffixed_path(sound_to_check,
-                                { "", ".opus", ".ogg", ".mp3", ".wav" });
+                                {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx" });
 }
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
 {
-  QStringList suffixes { "" };
+  QStringList suffixes {};
   if (!static_image) {
     suffixes.append({ ".webp", ".apng", ".gif" });
   }
@@ -715,7 +725,7 @@ QString AOApplication::get_emote_comment(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    qWarning() << "misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
   return result_contents.at(0);
@@ -729,7 +739,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    qWarning() << "misformatted char.ini: " << p_char << ", " << p_emote;
     return "";
   }
   return result_contents.at(1);
@@ -743,7 +753,7 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
+    qWarning() << "misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
   return result_contents.at(2);
@@ -757,7 +767,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4) {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", "
+    qWarning() << "misformatted char.ini: " << p_char << ", "
              << QString::number(p_emote);
     return 0;
   }
@@ -888,14 +898,15 @@ QString AOApplication::get_effect(QString effect, QString p_char,
   if (p_folder == "")
     p_folder = read_char_ini(p_char, "effects", "Options");
 
-  QString p_path = get_image("effects/" + effect, current_theme, get_subtheme(), default_theme, "");
-  QString p_misc_path = get_image(effect, current_theme, get_subtheme(), default_theme, p_folder);
+  QStringList paths {
+    get_image("effects/" + effect, current_theme, get_subtheme(), default_theme, ""),
+    get_image(effect, current_theme, get_subtheme(), default_theme, p_folder)
+  };
 
-  if (!file_exists(p_misc_path) && !file_exists(p_path))
-    return "";
-  else if (file_exists(p_misc_path))
-    return p_misc_path;
-  return p_path;
+  for (const auto &p : paths)
+    if (file_exists(p))
+      return p;
+  return {};
 }
 
 QString AOApplication::get_effect_property(QString fx_name, QString p_char,
@@ -922,6 +933,15 @@ QString AOApplication::get_custom_realization(QString p_char)
   if (f_result == "")
     return get_court_sfx("realization");
   return get_sfx_suffix(get_sounds_path(f_result));
+}
+
+bool AOApplication::get_pos_is_judge(const QString &p_pos)
+{
+  QStringList positions = read_design_ini("judges", get_background_path("design.ini")).split(",");
+  if (positions.size() == 1 && positions[0] == "") {
+      return p_pos == "jud"; //Hardcoded BS only if we have no judges= defined
+  }
+  return positions.contains(p_pos.trimmed());
 }
 
 bool AOApplication::get_blank_blip()
@@ -1083,10 +1103,17 @@ QString AOApplication::get_casing_can_host_cases()
   return result;
 }
 
-bool AOApplication::get_auto_logging_enabled()
+bool AOApplication::get_text_logging_enabled()
 {
   QString result =
       configini->value("automatic_logging_enabled", "true").value<QString>();
+  return result.startsWith("true");
+}
+
+bool AOApplication::get_demo_logging_enabled()
+{
+  QString result =
+      configini->value("demo_logging_enabled", "true").value<QString>();
   return result.startsWith("true");
 }
 
@@ -1119,4 +1146,10 @@ QString AOApplication::get_default_scaling()
 QStringList AOApplication::get_mount_paths()
 {
   return configini->value("mount_paths").value<QStringList>();
+}
+
+bool AOApplication::get_player_count_optout()
+{
+  return configini->value("player_count_optout", "false").value<QString>()
+      .startsWith("true");
 }

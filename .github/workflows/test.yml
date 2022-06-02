@@ -17,7 +17,7 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@master
 
     - name: Install catch2
       run: |
@@ -31,14 +31,17 @@ jobs:
       run: |
         # Download
         curl http://www.un4seen.com/files/bass24-linux.zip -o bass_linux.zip
+        curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi_linux.zip
         curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus_linux.zip
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
         # Extract
         unzip bass_linux.zip
+        unzip bassmidi_linux.zip
         unzip bassopus_linux.zip
         unzip discord_rpc_linux.zip
         # Copy
         cp x64/libbass.so lib
+        cp x64/libbassmidi.so lib
         cp x64/libbassopus.so lib
         cp discord-rpc/linux-dynamic/lib/libdiscord-rpc.so lib
 
