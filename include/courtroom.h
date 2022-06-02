@@ -1000,6 +1000,7 @@ private slots:
   void chatmessage_dequeue();
 
   void preview_emote(QString emote);
+  void update_emote_preview();
 };
 
 #endif // COURTROOM_H

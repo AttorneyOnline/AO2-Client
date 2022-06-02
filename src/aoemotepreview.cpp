@@ -12,8 +12,9 @@ AOEmotePreview::AOEmotePreview(QWidget *parent, AOApplication *p_ao_app) : QWidg
   ui_vp_player_char->masked = false;
 //  ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
 //  ui_vp_desk->setObjectName("ui_vp_desk");
-
-  setWindowTitle(tr("Preview"));
+  ui_size_label = new QLabel(this);
+  ui_size_label->setObjectName("ui_size_label");
+  ui_size_label->setStyleSheet("QLabel { color: lime; background-color: black; }");
   setWindowFlag(Qt::WindowMinMaxButtonsHint, false);
   setWindowFlag(Qt::Tool);
   this->resize(256, 192);
@@ -35,15 +36,19 @@ void AOEmotePreview::set_widgets()
   // the AO2 desk element
 //  ui_vp_desk->move_and_center(0, 0);
 //  ui_vp_desk->combo_resize(ui_viewport->width(), ui_viewport->height());
+
+  ui_size_label->setText(QString::number(this->width()) + "x" + QString::number(this->height()));
 }
 
-void AOEmotePreview::play(QString emote, QString char_name)
+void AOEmotePreview::play(QString emote, QString char_name, bool flipped)
 {
   ui_vp_player_char->stop();
   ui_vp_player_char->set_play_once(false);
+  ui_vp_player_char->set_flipped(flipped);
   ui_vp_player_char->load_image(emote, char_name, 0, false);
   m_emote = emote;
   m_char = char_name;
+  setWindowTitle(char_name + ": " + emote);
 }
 
 void AOEmotePreview::resizeEvent(QResizeEvent *)

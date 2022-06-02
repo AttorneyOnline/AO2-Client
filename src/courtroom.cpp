@@ -206,8 +206,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_search->setPlaceholderText(tr("Search"));
   ui_music_search->setObjectName("ui_music_search");
 
-  initialize_emotes();
-
   ui_pos_dropdown = new QComboBox(this);
   ui_pos_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_pos_dropdown->setObjectName("ui_pos_dropdown");
@@ -401,6 +399,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_evidence_button = new AOButton(this, ao_app);
   ui_evidence_button->setObjectName("ui_evidence_button");
 
+  initialize_emotes();
   initialize_evidence();
 
   construct_char_select();
