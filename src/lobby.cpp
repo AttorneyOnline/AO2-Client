@@ -112,6 +112,12 @@ void Lobby::set_widgets()
   if (f_lobby.width < 0 || f_lobby.height < 0) {
     qWarning() << "did not find lobby width or height in " << filename;
 
+    #ifdef ANDROID
+    if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE")==QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync({"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"});
+    }
+    #endif
+
     // Most common symptom of bad config files and missing assets.
     call_notice(
         tr("It doesn't look like your client is set up correctly.\n"
@@ -306,7 +312,6 @@ void Lobby::on_favorites_clicked()
   ui_public_servers->set_image("publicservers");
 
   ao_app->set_favorite_list();
-  // ao_app->favorite_list = read_serverlist_txt();
 
   list_favorites();
 

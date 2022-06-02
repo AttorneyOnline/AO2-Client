@@ -265,6 +265,7 @@ QVector<server_type> AOApplication::read_serverlist_txt()
 
   if (serverlist_txt.open(QIODevice::ReadOnly)) {
       QTextStream in(&serverlist_txt);
+      in.setCodec("UTF-8");
 
       while (!in.atEnd()) {
         QString line = in.readLine();
@@ -925,6 +926,15 @@ QString AOApplication::get_custom_realization(QString p_char)
   if (f_result == "")
     return get_court_sfx("realization");
   return get_sfx_suffix(get_sounds_path(f_result));
+}
+
+bool AOApplication::get_pos_is_judge(const QString &p_pos)
+{
+  QStringList positions = read_design_ini("judges", get_background_path("design.ini")).split(",");
+  if (positions.size() == 1 && positions[0] == "") {
+      return p_pos == "jud"; //Hardcoded BS only if we have no judges= defined
+  }
+  return positions.contains(p_pos.trimmed());
 }
 
 bool AOApplication::get_blank_blip()

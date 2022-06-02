@@ -14,10 +14,12 @@
 #include <QProgressBar>
 #include <QTextBrowser>
 #include <QTreeWidget>
-
 #include <QDebug>
 #include <QScrollBar>
 #include <QHeaderView>
+#ifdef ANDROID
+#include <QtAndroidExtras/QtAndroid>
+#endif
 
 class AOApplication;
 
