@@ -18,6 +18,7 @@ jobs:
           - msvc2019
           - mingw81_32
           - clang_64
+          - ios
 
         include:
           - platform: gcc_64
