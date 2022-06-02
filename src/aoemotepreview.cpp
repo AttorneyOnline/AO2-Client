@@ -14,7 +14,7 @@ AOEmotePreview::AOEmotePreview(QWidget *parent, AOApplication *p_ao_app) : QWidg
 //  ui_vp_desk->setObjectName("ui_vp_desk");
   ui_size_label = new QLabel(this);
   ui_size_label->setObjectName("ui_size_label");
-  ui_size_label->setStyleSheet("QLabel { color: lime; background-color: black; }");
+//  ui_size_label->setStyleSheet("QLabel { color: lime; background-color: black; }");
   setWindowFlag(Qt::WindowMinMaxButtonsHint, false);
   setWindowFlag(Qt::Tool);
   this->resize(256, 192);
@@ -40,11 +40,12 @@ void AOEmotePreview::set_widgets()
   ui_size_label->setText(QString::number(this->width()) + "x" + QString::number(this->height()));
 }
 
-void AOEmotePreview::play(QString emote, QString char_name, bool flipped)
+void AOEmotePreview::play(QString emote, QString char_name, bool flipped, int self_offset, int self_offset_v)
 {
   ui_vp_player_char->stop();
   ui_vp_player_char->set_play_once(false);
   ui_vp_player_char->set_flipped(flipped);
+  ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
   ui_vp_player_char->load_image(emote, char_name, 0, false);
   m_emote = emote;
   m_char = char_name;

@@ -12,7 +12,7 @@ public:
                  AOApplication *p_ao_app = nullptr);
 
   void set_widgets();
-  void play(QString emote, QString char_name, bool flipped = false);
+  void play(QString emote, QString char_name, bool flipped = false, int self_offset = 0, int self_offset_v = 0);
 private:
   AOApplication *ao_app;
   QWidget *ui_viewport;
