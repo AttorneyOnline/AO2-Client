@@ -30,6 +30,8 @@ jobs:
             os: windows-latest
           - platform: clang_64
             os: macos-latest
+          - platform: ios
+            os: macos-latest
 
     runs-on: ${{matrix.os}}
     steps:
@@ -86,7 +88,7 @@ jobs:
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
 
       - name: Install Mac Discord RPC
-        if: matrix.os == 'macos-latest'
+        if: matrix.platform == 'clang64'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc.zip
           unzip discord_rpc.zip
@@ -130,7 +132,7 @@ jobs:
           cp ./bass/x64/libbassopus.so ./bin/
 
       - name: Install Mac BASS
-        if: matrix.os == 'macos-latest'
+        if: matrix.platform == 'clang64'
         run: |
           curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
           unzip -d bass -o bass.zip
@@ -146,6 +148,24 @@ jobs:
           unzip -d bass -o bassopus.zip
           cp ./bass/libbassopus.dylib ./lib/
           cp ./bass/libbassopus.dylib ./bin/
+
+      - name: Install iOS BASS
+        if: matrix.platform == 'ios'
+        run: |
+          curl http://www.un4seen.com/files/bass24-ios.zip -o bass.zip
+          unzip -d bass -o bass.zip
+          cp ./bass/bass.xcframework/ios-arm64_armv7_armv7s/libbass.a ./lib/
+          cp ./bass/bass.xcframework/ios-arm64_armv7_armv7s/libbass.dylib ./bin/
+
+          curl http://www.un4seen.com/files/bassmidi24-ios.zip -o bassmidi.zip
+          unzip -d bass -o bassmidi.zip
+          cp ./bass/bass.xcframework/ios-arm64_armv7_armv7s/libbassmidi.a ./lib/
+          cp ./bass/bass.xcframework/ios-arm64_armv7_armv7s/libbassmidi.a ./bin/
+
+          curl http://www.un4seen.com/files/bassopus24-ios.zip -o bassopus.zip
+          unzip -d bass -o bassopus.zip
+          cp ./bass/bass.xcframework/ios-arm64_armv7_armv7s/libbassopus.a ./lib/
+          cp ./bass/bass.xcframework/ios-arm64_armv7_armv7s/libbassopus.a ./bin/
 
       - name: Install Android BASS
         if: matrix.platform == 'android'
@@ -184,7 +204,7 @@ jobs:
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
 
       - name: Deploy Mac
-        if: matrix.os == 'macos-latest'
+        if: matrix.platform == 'clang64'
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
