@@ -35,6 +35,10 @@ void Courtroom::initialize_emotes()
 
   connect(ui_pre, QOverload<int>::of(&QCheckBox::stateChanged), this, &Courtroom::update_emote_preview);
   connect(ui_flip, &AOButton::clicked, this, &Courtroom::update_emote_preview);
+  connect(ui_pair_offset_spinbox, QOverload<int>::of(&QSpinBox::valueChanged), this,
+          &Courtroom::update_emote_preview);
+  connect(ui_pair_vert_offset_spinbox, QOverload<int>::of(&QSpinBox::valueChanged), this,
+          &Courtroom::update_emote_preview);
 }
 
 void Courtroom::refresh_emotes()
@@ -235,6 +239,13 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   }
   int emote_num = id + max_emotes_on_page * current_emote_page;
   emote_menu->clear();
+  emote_menu->setDefaultAction(emote_menu->addAction("Preview Selected", this, [=]{
+    emote_preview->show();
+    emote_preview->raise();
+    emote_preview->set_widgets();
+    update_emote_preview();
+  }
+  ));
   QString prefix = "";
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-") {
@@ -262,7 +273,7 @@ void Courtroom::preview_emote(QString f_emote)
   emote_preview->show();
   emote_preview->raise();
   emote_preview->set_widgets();
-  emote_preview->play(f_emote, current_char, ui_flip->isChecked());
+  emote_preview->play(f_emote, current_char, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
 }
 
 void Courtroom::on_emote_left_clicked()
