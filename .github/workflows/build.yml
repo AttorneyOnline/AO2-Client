@@ -89,7 +89,7 @@ jobs:
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
 
       - name: Install Mac Discord RPC
-        if: matrix.platform == 'clang64'
+        if: matrix.platform == 'clang_64'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc.zip
           unzip discord_rpc.zip
@@ -133,7 +133,7 @@ jobs:
           cp ./bass/x64/libbassopus.so ./bin/
 
       - name: Install Mac BASS
-        if: matrix.platform == 'clang64'
+        if: matrix.platform == 'clang_64'
         run: |
           curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
           unzip -d bass -o bass.zip
@@ -205,7 +205,7 @@ jobs:
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
 
       - name: Deploy Mac
-        if: matrix.platform == 'clang64'
+        if: matrix.platform == 'clang_64'
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
