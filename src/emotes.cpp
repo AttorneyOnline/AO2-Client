@@ -15,6 +15,12 @@ void Courtroom::initialize_emotes()
   ui_emote_dropdown = new QComboBox(this);
   ui_emote_dropdown->setObjectName("ui_emote_dropdown");
 
+  emote_menu = new QMenu(this);
+  emote_menu->setObjectName("ui_emote_menu");
+
+  emote_preview = new AOEmotePreview(this, ao_app);
+  emote_preview->setObjectName("ui_emote_preview");
+
   connect(ui_emote_left, &AOButton::clicked, this,
           &Courtroom::on_emote_left_clicked);
   connect(ui_emote_right, &AOButton::clicked, this,
@@ -76,8 +82,13 @@ void Courtroom::refresh_emotes()
 
     f_emote->set_id(n);
 
+    f_emote->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(f_emote, &AOEmoteButton::emote_clicked, this,
             &Courtroom::on_emote_clicked);
+
+    connect(f_emote,
+            &AOEmoteButton::customContextMenuRequested, this,
+            &Courtroom::show_emote_menu);
 
     ++x_mod_count;
 
@@ -195,6 +206,33 @@ void Courtroom::select_emote(int p_id)
 void Courtroom::on_emote_clicked(int p_id)
 {
   select_emote(p_id + max_emotes_on_page * current_emote_page);
+}
+
+void Courtroom::show_emote_menu(const QPoint &pos)
+{
+  AOEmoteButton* button = qobject_cast<AOEmoteButton*>(sender());
+  int emote_num = button->get_id() + max_emotes_on_page * current_emote_page;
+  emote_menu->clear();
+  QString prefix = "";
+  QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
+  if (!f_pre.isEmpty() && f_pre != "-") {
+    emote_menu->addAction("Preview preanim: " + f_pre, this, [=]{ preview_emote(f_pre); });
+  }
+
+  QString f_emote = ao_app->get_emote(current_char, emote_num);
+  if (!f_emote.isEmpty()) {
+    emote_menu->addAction("Preview idle: " + f_emote, this, [=]{ preview_emote("(a)" + f_emote); });
+    emote_menu->addAction("Preview talk: " + f_emote, this, [=]{ preview_emote("(b)" + f_emote); });
+  }
+  emote_menu->popup(button->mapToGlobal(pos));
+}
+
+void Courtroom::preview_emote(QString f_emote)
+{
+  emote_preview->show();
+  emote_preview->raise();
+  emote_preview->set_widgets();
+  emote_preview->play(f_emote, current_char);
 }
 
 void Courtroom::on_emote_left_clicked()
