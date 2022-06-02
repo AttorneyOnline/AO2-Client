@@ -211,13 +211,13 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   QString prefix = "";
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-") {
-    emote_menu->addAction("Preview preanim " + f_pre, this, [=]{ preview_emote(f_pre); });
+    emote_menu->addAction("Preview preanim: " + f_pre, this, [=]{ preview_emote(f_pre); });
   }
 
   QString f_emote = ao_app->get_emote(current_char, emote_num);
   if (!f_emote.isEmpty()) {
-    emote_menu->addAction("Preview (a)" + f_emote, this, [=]{ preview_emote("(a)" + f_emote); });
-    emote_menu->addAction("Preview (b)" + f_emote, this, [=]{ preview_emote("(b)" + f_emote); });
+    emote_menu->addAction("Preview idle: " + f_emote, this, [=]{ preview_emote("(a)" + f_emote); });
+    emote_menu->addAction("Preview talk: " + f_emote, this, [=]{ preview_emote("(b)" + f_emote); });
   }
   emote_menu->popup(button->mapToGlobal(pos));
 }
