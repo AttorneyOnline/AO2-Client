@@ -802,6 +802,7 @@ private:
   void set_char_select();
   void set_char_select_page();
   void char_clicked(int n_char);
+  void on_char_button_context_menu_requested(const QPoint &pos);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
@@ -872,6 +873,7 @@ private slots:
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(QString p_text);
+  void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);
@@ -928,6 +930,7 @@ private slots:
   void on_prosecution_plus_clicked();
 
   void on_text_color_changed(int p_color);
+  void on_text_color_context_menu_requested(const QPoint &pos);
   void set_text_color_dropdown();
 
   void on_music_slider_moved(int p_value);
@@ -958,6 +961,7 @@ private slots:
   void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
+  void on_evidence_context_menu_requested(const QPoint &pos);
 
   void on_evidence_delete_clicked();
   void on_evidence_x_clicked();
