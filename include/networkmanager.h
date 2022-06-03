@@ -54,7 +54,7 @@ public:
 public slots:
   void get_server_list(const std::function<void()> &cb);
   void ship_server_packet(QString p_packet);
-  void handle_server_packet(QString p_data);
+  void handle_server_packet(const QString& p_data);
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);

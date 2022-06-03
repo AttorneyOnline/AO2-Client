@@ -219,7 +219,7 @@ void NetworkManager::ship_server_packet(QString p_packet)
   }
 }
 
-void NetworkManager::handle_server_packet(QString p_data)
+void NetworkManager::handle_server_packet(const QString& p_data)
 {
   QString in_data = p_data;
 
