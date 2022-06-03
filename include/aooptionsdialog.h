@@ -50,6 +50,7 @@ private:
   QLabel *ui_subtheme_label;
   QComboBox *ui_subtheme_combobox;
   QPushButton *ui_theme_reload_button;
+  QPushButton *ui_theme_folder_button;
   QLabel *ui_animated_theme_lbl;
   QCheckBox *ui_animated_theme_cb;
   QFrame *ui_theme_log_divider;

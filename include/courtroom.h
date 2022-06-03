@@ -24,6 +24,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "eventfilters.h"
+#include "aoemotepreview.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -706,6 +707,9 @@ private:
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
 
+  QMenu *emote_menu;
+  AOEmotePreview *emote_preview;
+
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
   AOButton *ui_pos_remove;
@@ -823,6 +827,7 @@ private:
   void set_char_select();
   void set_char_select_page();
   void char_clicked(int n_char);
+  void on_char_button_context_menu_requested(const QPoint &pos);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
@@ -892,6 +897,7 @@ private slots:
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(QString p_text);
+  void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);
@@ -935,6 +941,8 @@ private slots:
   void on_custom_objection_clicked();
   void show_custom_objection_menu(const QPoint &pos);
 
+  void show_emote_menu(const QPoint &pos);
+
   void on_realization_clicked();
   void on_screenshake_clicked();
 
@@ -948,6 +956,7 @@ private slots:
   void on_prosecution_plus_clicked();
 
   void on_text_color_changed(int p_color);
+  void on_text_color_context_menu_requested(const QPoint &pos);
   void set_text_color_dropdown();
 
   void on_music_slider_moved(int p_value);
@@ -978,6 +987,7 @@ private slots:
   void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
+  void on_evidence_context_menu_requested(const QPoint &pos);
 
   void on_evidence_delete_clicked();
   bool on_evidence_x_clicked();
@@ -991,6 +1001,8 @@ private slots:
   void evidence_switch(bool global);
   void on_evidence_save_clicked();
   void on_evidence_load_clicked();
+  void evidence_save(QString filename);
+  void evidence_load(QString filename);
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
@@ -1014,6 +1026,9 @@ private slots:
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
+
+  void preview_emote(QString emote);
+  void update_emote_preview();
 };
 
 #endif // COURTROOM_H
