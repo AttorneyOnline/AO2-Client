@@ -103,6 +103,7 @@ void Courtroom::initialize_evidence()
           &Courtroom::on_evidence_edited);
 
   ui_evidence->hide();
+  evidence_load("inventories/autosave.ini");
 }
 
 void Courtroom::refresh_evidence()
@@ -638,6 +639,11 @@ void Courtroom::on_evidence_ok_clicked()
       set_evidence_page();
     }
   }
+
+  // Autosave private evidence
+  if (!current_evidence_global) {
+    evidence_save("inventories/autosave.ini");
+  }
 }
 
 void Courtroom::on_evidence_switch_clicked()
@@ -747,24 +753,19 @@ void Courtroom::on_evidence_save_clicked()
     return; // Don't allow saving/loading operations when in global inventory
             // mode for now
 
+  // "Inventories" dir keeps our private evidence data
+  if (!dir_exists("inventories")) {
+    // Create one if it doesn't yet exist
+    QDir("inventories").mkdir("inventories");
+  }
+
   QString p_path = QFileDialog::getSaveFileName(
-      this, tr("Save Inventory"), "base/inventories/", tr("Ini Files (*.ini)"));
-  if (p_path.isEmpty())
-    return;
+      this, tr("Save Inventory"), "inventories/", tr("Ini Files (*.ini)"));
 
   evidence_close();
   ui_evidence_name->setText("");
 
-  QSettings inventory(p_path, QSettings::IniFormat);
-  inventory.clear();
-  for (int i = 0; i < local_evidence_list.size(); i++) {
-    inventory.beginGroup(QString::number(i));
-    inventory.setValue("name", local_evidence_list[i].name);
-    inventory.setValue("description", local_evidence_list[i].description);
-    inventory.setValue("image", local_evidence_list[i].image);
-    inventory.endGroup();
-  }
-  inventory.sync();
+  evidence_save(p_path);
 }
 
 void Courtroom::on_evidence_load_clicked()
@@ -774,29 +775,57 @@ void Courtroom::on_evidence_load_clicked()
             // mode for now
 
   QString p_path = QFileDialog::getOpenFileName(
-      this, tr("Open Inventory"), "base/inventories/", tr("Ini Files (*.ini)"));
+      this, tr("Open Inventory"), "inventories/", tr("Ini Files (*.ini)"));
   if (p_path.isEmpty())
     return;
 
   evidence_close();
   ui_evidence_name->setText("");
+  evidence_load(p_path);
+  set_evidence_page();
+}
 
-  QSettings inventory(p_path, QSettings::IniFormat);
+void Courtroom::evidence_load(QString filename)
+{
+  if (!file_exists(filename)) {
+    qWarning() << "Trying to load a non-existant evidence save file:" << filename;
+    return;
+  }
+  QSettings inventory(filename, QSettings::IniFormat);
   local_evidence_list.clear();
   foreach (QString evi, inventory.childGroups()) {
     if (evi == "General")
       continue;
 
     evi_type f_evi;
-    f_evi.name = inventory.value(evi + "/name", tr("UNKNOWN")).value<QString>();
+    f_evi.name = inventory.value(evi + "/name", "<name>").value<QString>();
     f_evi.description =
-        inventory.value(evi + "/description", tr("UNKNOWN")).value<QString>();
+        inventory.value(evi + "/description", "<description>").value<QString>();
     f_evi.image =
-        inventory.value(evi + "/image", "UNKNOWN.png").value<QString>();
+        inventory.value(evi + "/image", "empty.png").value<QString>();
     local_evidence_list.append(f_evi);
   }
   private_evidence_list = local_evidence_list;
-  set_evidence_page();
+}
+
+void Courtroom::evidence_save(QString filename)
+{
+  // "Inventories" dir keeps our private evidence data
+  if (!dir_exists("inventories")) {
+    // Create one if it doesn't yet exist
+    QDir("inventories").mkdir("inventories");
+  }
+
+  QSettings inventory(filename, QSettings::IniFormat);
+  inventory.clear();
+  for (int i = 0; i < local_evidence_list.size(); i++) {
+    inventory.beginGroup(QString::number(i));
+    inventory.setValue("name", local_evidence_list[i].name);
+    inventory.setValue("description", local_evidence_list[i].description);
+    inventory.setValue("image", local_evidence_list[i].image);
+    inventory.endGroup();
+  }
+  inventory.sync();
 }
 
 bool Courtroom::compare_evidence_changed(evi_type evi_a, evi_type evi_b)
