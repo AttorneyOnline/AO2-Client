@@ -3760,7 +3760,7 @@ void Courtroom::play_sfx()
         ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
 
-void Courtroom::set_scene(QString f_desk_mod, QString f_side)
+void Courtroom::set_scene(const QString f_desk_mod, const QString f_side)
 {
   ui_vp_background->load_image(ao_app->get_pos_path(f_side));
   ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
