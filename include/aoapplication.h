@@ -162,6 +162,7 @@ public:
   QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="", bool static_image=false);
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
+  QString get_pos_path(const QString& pos, bool desk = false);
   QString get_case_sensitive_path(QString p_file);
   QString get_real_path(const VPath &vpath);
   QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
