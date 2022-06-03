@@ -92,7 +92,7 @@ VPath AOApplication::get_default_background_path(QString p_file)
   return VPath("background/default/" + p_file);
 }
 
-QString AOApplication::get_pos_path(const QString& pos, bool desk)
+QString AOApplication::get_pos_path(const QString pos, bool desk)
 {
   // witness is default if pos is invalid
   QString f_background;
