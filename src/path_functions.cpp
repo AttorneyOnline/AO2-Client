@@ -154,8 +154,9 @@ QString AOApplication::get_pos_path(const QString& pos, bool desk)
   }
 
   QString desk_override = read_design_ini("overlays/" + f_background, get_background_path("design.ini"));
-  if (desk_override != "")
+  if (desk_override != "") {
     f_desk_image = desk_override;
+}
   if (desk) {
     return f_desk_image;
   }
