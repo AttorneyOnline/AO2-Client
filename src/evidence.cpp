@@ -792,8 +792,14 @@ void Courtroom::evidence_load(QString filename)
     return;
   }
   QSettings inventory(filename, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
   local_evidence_list.clear();
-  foreach (QString evi, inventory.childGroups()) {
+  QMap<int, QString> sorted_evi;
+  for (const auto &s : inventory.childGroups()) {
+    sorted_evi[s.toInt()] = s;
+  }
+  QStringList evilist(sorted_evi.values());
+  for (const QString &evi : evilist) {
     if (evi == "General")
       continue;
 
@@ -817,6 +823,7 @@ void Courtroom::evidence_save(QString filename)
   }
 
   QSettings inventory(filename, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
   inventory.clear();
   for (int i = 0; i < local_evidence_list.size(); i++) {
     inventory.beginGroup(QString::number(i));
