@@ -173,7 +173,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
-  ui_ic_chat_message->setPlaceholderText(tr("Message"));
+  ui_ic_chat_message->setPlaceholderText(tr("Message in-character"));
   ui_ic_chat_message_filter = new AOLineEditFilter();
   ui_ic_chat_message_filter->preserve_selection = true;
   ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
@@ -191,6 +191,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
   ui_ooc_chat_message->setObjectName("ui_ooc_chat_message");
+  ui_ooc_chat_message->setPlaceholderText(tr("Message out-of-character"));
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
@@ -1553,9 +1554,12 @@ void Courtroom::update_character(int p_cid)
     }
   }
 
-  if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
-                   // to find one
+  if (m_cid != -1) {
     ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
+  }
+  else {
+    ui_ic_chat_name->setPlaceholderText("Spectator");
+  }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
