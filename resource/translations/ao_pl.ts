@@ -65,7 +65,7 @@ Have a nice day.</source>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="364"/>
         <source>[Global log]</source>
-        <translation type="unfinished"></translation>
+        <translation>[Globalny dziennik]</translation>
     </message>
     <message>
         <location filename="../../src/packet_distribution.cpp" line="504"/>
@@ -171,7 +171,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="103"/>
         <source>Sets a &apos;subtheme&apos;, which will stack on top of the current theme and replace anything it can.Keep it at &apos;server&apos; to let the server decide. Keep it at &apos;default&apos; to keep it unchanging.</source>
-        <translation>Ustawia &apos;podmotyw&apos;, który będzie dodatkiem dla obecnego motywu i będzie zastępywać wszystko to co może. Ustaw na &apos;server&apos;, aby serwer decydował za ciebie. Ustaw na &apos;default&apos;, aby nie zmieniał się.</translation>
+        <translation>Ustawia &apos;podmotyw&apos;, który będzie dodatkiem dla obecnego motywu i będzie zastępywać wszystko to co może. Ustaw na &apos;server&apos;, aby serwer decydował za ciebie. Ustaw na &apos;default&apos;, aby się nie zmieniał.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="125"/>
@@ -181,7 +181,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="127"/>
         <source>Refresh the theme and update all of the ui elements to match.</source>
-        <translation>Odśwież motyw i uaktualnij wszystkie elementy interfejsu, aby dopasować.</translation>
+        <translation>Odśwież motyw i uaktualnij wszystkie elementy interfejsu, aby do niego pasowały.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="134"/>
@@ -201,7 +201,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="157"/>
         <source>If ticked, new messages will appear at the bottom (like the OOC chatlog). The traditional (AO1) behaviour is equivalent to this being unticked.</source>
-        <translation>Jeżeli jest to zaznaczone, nowe wiadomości zaczną się pojawiać na dole (tak jak na czacie OOC). Tradycyjne (AO1) zachowanie jest równoważne do tego bycia odznaczonym.</translation>
+        <translation>Jeżeli jest to zaznaczone, nowe wiadomości zaczną się pojawiać na dole (tak jak na czacie OOC). Tradycyjne zachowanie (z AO1) jest równoważne do tego bycia odznaczonym.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="169"/>
@@ -220,7 +220,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="186"/>
         <source>If ticked, new messages will appear separated, with the message coming on the next line after the name. When unticked, it displays it as &apos;name: message&apos;.</source>
-        <translation>Jeśli jest to zaznaczone, nowe wiadomości będą pojawiać się oddzielone, z wiadomością w kolejnym wierszu po nicku. Jeżeli odznaczone, będzie się pokazywać w formacie &apos;nick: wiadomość&quot;.</translation>
+        <translation>Jeśli jest to zaznaczone, nowe wiadomości będą pojawiać się oddzielnie, z wiadomością w kolejnym wierszu po ksywce. Jeżeli odznaczone, będzie się pokazywać w formacie &apos;ksywka: wiadomość&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="198"/>
@@ -230,7 +230,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="199"/>
         <source>The distance in pixels between each entry in the IC log. Default: 0.</source>
-        <translation>Dystans w pikselach pomiędzy każdym wpisem w dzienniku IC. Domyślnie: 0.</translation>
+        <translation>Odległość w pikselach pomiędzy każdym wpisem w dzienniku IC. Domyślnie: 0.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="213"/>
@@ -240,7 +240,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="215"/>
         <source>If ticked, log will contain a timestamp in UTC before the name.</source>
-        <translation>Jeżeli jest to zaznaczone, dziennik będzie pokazywać datę w UTC przed nickiem.</translation>
+        <translation>Jeżeli jest to zaznaczone, dziennik będzie pokazywać datę w UTC przed ksywką.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="250"/>
@@ -373,17 +373,17 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="367"/>
         <source>Your showname will be automatically set to this value when you join a server.</source>
-        <translation>Twoja ksywka będzie automatycznie ustawiana do tej wartości, gdy dołączysz na serwer.</translation>
+        <translation>Twoja ksywka będzie automatycznie ustawiana na tą, gdy dołączysz na serwer.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="386"/>
         <source>Alternate Server List:</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternatywna Lista Serwerów:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="388"/>
         <source>Overrides the base URL to retrieve server information from.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nadpisuje podstawowy adres URL, żeby otrzymywać z niego informacje o serwerze.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="412"/>
@@ -533,22 +533,22 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="590"/>
         <source>Log to Text Files:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisuj dziennik do plików tekstowych:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="592"/>
         <source>Text logs of gameplay will be automatically written in the /logs folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dziennik z rozgrywki będzie automatycznie zapisywany w formie plików tekstowych w folderze /logs.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="600"/>
         <source>Log to Demo Files:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisuj dziennik do plików demo:</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="602"/>
         <source>Gameplay will be automatically recorded as demos in the /logs folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozgrywka będzie automatycznie zapisywana jako dema w folderze /logs.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="617"/>
@@ -618,17 +618,17 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="757"/>
         <source>Play a blip sound &quot;once per every X symbols&quot;, where X is the blip rate. 0 plays a blip sound only once.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zagraj dźwięk blipa &quot;raz na X symboli&quot;, gdzie X to tempo blipów. Wartość 0 odtwarza dźwięk blipa tylko raz.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="956"/>
         <source>Add or remove base folders for use by assets. Base folders on the bottom are prioritized over those above them.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodawaj lub usuwaj foldery base, do użycia przez zasoby. Foldery base na dole będą otwierane wcześniej, od tych nad nimi.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="1183"/>
         <source>Couldn&apos;t get the privacy policy.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się uzyskać polityki prywatności.</translation>
     </message>
     <message>
         <source>Play a blip sound &quot;once per every X symbols&quot;, where X is the blip rate.</source>
@@ -643,7 +643,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="766"/>
         <source>If true, the game will play a blip sound even when a space is &apos;being said&apos;.</source>
-        <translation>Jeżeli jest to zaznaczone, gra zagra dźwięk blip za każdym razem spacja &apos;jest mówiona&apos;.</translation>
+        <translation>Jeżeli jest to zaznaczone, gra zagra dźwięk blip za każdym razem spacja &quot;jest mówiona&quot;.</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="777"/>
@@ -712,17 +712,17 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="1073"/>
         <source>Privacy</source>
-        <translation type="unfinished"></translation>
+        <translation>Prywatność</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="1078"/>
         <source>Do not include me in public player counts</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie uwzględnia ciebie w liczeniu liczby graczy</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="1092"/>
         <source>Getting privacy policy...</source>
-        <translation type="unfinished"></translation>
+        <translation>Uzyskiwanie polityki prywatności...</translation>
     </message>
     <message>
         <location filename="../../src/aooptionsdialog.cpp" line="1173"/>
@@ -885,7 +885,7 @@ Powód: %1</translation>
     <message>
         <location filename="../../src/charselect.cpp" line="172"/>
         <source>Could not find character (char.ini) for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie znaleziono postaci (char.ini) dla %1</translation>
     </message>
     <message>
         <source>Could not find %1</source>
@@ -1272,12 +1272,12 @@ Możesz również zaznaczyć część twojej obecnie pisanej wiadomości i uży�
     <message>
         <location filename="../../src/courtroom.cpp" line="3966"/>
         <source>[LOADING] %1</source>
-        <translation type="unfinished"></translation>
+        <translation>[WCZYTYWANIE] %1</translation>
     </message>
     <message>
         <location filename="../../src/courtroom.cpp" line="4304"/>
         <source>Debug</source>
-        <translation type="unfinished"></translation>
+        <translation>Debug</translation>
     </message>
     <message>
         <source>[STREAM] %1</source>
@@ -1703,7 +1703,7 @@ Zostaniesz zawiadomiony, jeśli są jakieś niezapisane zmiany.</translation>
     <message>
         <location filename="../../src/evidence.cpp" line="66"/>
         <source>Click to edit. Press [X] to update your changes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Naciśnij, aby edytować. Kliknij [X], aby zaktualizować swoje zmiany.</translation>
     </message>
     <message>
         <location filename="../../src/evidence.cpp" line="119"/>
@@ -1763,7 +1763,7 @@ Opis:
         <location filename="../../src/evidence.cpp" line="474"/>
         <location filename="../../src/evidence.cpp" line="478"/>
         <source>Click to edit...</source>
-        <translation type="unfinished"></translation>
+        <translation>Naciśnij, aby edytować...</translation>
     </message>
     <message>
         <source>Click the pencil to edit...</source>
@@ -1884,23 +1884,24 @@ Opis:
     <message>
         <location filename="../../src/demoserver.cpp" line="245"/>
         <source>Setting debug mode to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawianie trybu debugowania do %1</translation>
     </message>
     <message>
         <location filename="../../src/demoserver.cpp" line="256"/>
         <source>Valid values are 1 or 0!</source>
-        <translation type="unfinished"></translation>
+        <translation>Prawidłowe wartości to 1 albo 0!</translation>
     </message>
     <message>
         <location filename="../../src/demoserver.cpp" line="262"/>
         <source>Set debug mode using /debug 1 to enable, and /debug 0 to disable, which will use the fifth timer (TI#4) to show the remaining time until next demo line.</source>
-        <translation type="unfinished"></translation>
+        <translation>Włącz i wyłącz tryb debugowania za pomocą /debug 1 oraz /debug 0, który będzie używać piątego licznika (TI#4), aby pokazać pozostały czas do następnej lini demo.</translation>
     </message>
     <message>
         <location filename="../../src/demoserver.cpp" line="268"/>
         <source>Available commands:
 load, reload, play, pause, max_wait, debug, help</source>
-        <translation type="unfinished"></translation>
+        <translation>Dostępne komendy:
+load, reload, play, pause, max_wait, debug, help</translation>
     </message>
     <message>
         <source>Available commands:
@@ -1970,17 +1971,17 @@ Czy pobrałeś wszystkie zasoby poprawnie z tiny.cc/getao, włączając duży fo
     <message>
         <location filename="../../src/lobby.cpp" line="526"/>
         <source>Couldn&apos;t get the message of the day.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie można było uzyskać wiadomość dnia.</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="538"/>
         <source>Version: %1 (!)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wersja: %1 (!)</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="539"/>
         <source>New version available: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dostępna jest nowa wersja: %1</translation>
     </message>
     <message>
         <source>&lt;h2&gt;Attorney Online %1&lt;/h2&gt;The courtroom drama simulator&lt;p&gt;&lt;b&gt;Source code:&lt;/b&gt; &lt;a href=&apos;https://github.com/AttorneyOnline/AO2-Client&apos;&gt;https://github.com/AttorneyOnline/AO2-Client&lt;/a&gt;&lt;p&gt;&lt;b&gt;Major development:&lt;/b&gt;&lt;br&gt;OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, Crystalwarrior, Iamgoofball&lt;p&gt;&lt;b&gt;Client development:&lt;/b&gt;&lt;br&gt;Cents02, in1tiate, raidensnake, windrammer&lt;p&gt;&lt;b&gt;QA testing:&lt;/b&gt;&lt;br&gt;CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, Veritas, Wiso&lt;p&gt;&lt;b&gt;Special thanks:&lt;/b&gt;&lt;br&gt;CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); Rue (website); Draxirch (UI design); Lewdton and Argoneus (tsuserver); Fiercy, Noevain, Cronnicossy, and FanatSors (AO1); server hosts, game masters, case makers, content creators, and the whole AO2 community!&lt;p&gt;The Attorney Online networked visual novel project is copyright (c) 2016-2020 Attorney Online developers. Open-source licenses apply. All other assets are the property of their respective owners.&lt;p&gt;Running on Qt version %2 with the BASS audio engine.&lt;br&gt;APNG plugin loaded: %3&lt;p&gt;Built on %4</source>
@@ -2030,7 +2031,7 @@ Czy pobrałeś wszystkie zasoby poprawnie z tiny.cc/getao, włączając duży fo
     <message>
         <location filename="../../src/networkmanager.cpp" line="65"/>
         <source>No description provided.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie podano opisu.</translation>
     </message>
 </context>
 <context>
@@ -2039,7 +2040,7 @@ Czy pobrałeś wszystkie zasoby poprawnie z tiny.cc/getao, włączając duży fo
         <location filename="../../src/debug_functions.cpp" line="47"/>
         <location filename="../../src/debug_functions.cpp" line="57"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -2047,17 +2048,17 @@ Czy pobrałeś wszystkie zasoby poprawnie z tiny.cc/getao, włączając duży fo
     <message>
         <location filename="../../src/aomusicplayer.cpp" line="140"/>
         <source>None</source>
-        <translation type="unfinished">Nic</translation>
+        <translation>Nic</translation>
     </message>
     <message>
         <location filename="../../src/aomusicplayer.cpp" line="144"/>
         <source>[MISSING] %1</source>
-        <translation type="unfinished">[BRAKUJĄCY] %1</translation>
+        <translation>[BRAKUJĄCY] %1</translation>
     </message>
     <message>
         <location filename="../../src/aomusicplayer.cpp" line="148"/>
         <source>[STREAM] %1</source>
-        <translation type="unfinished">[STREAM] %1</translation>
+        <translation>[STREAM] %1</translation>
     </message>
 </context>
 <context>
