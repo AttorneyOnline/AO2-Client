@@ -104,6 +104,7 @@ public:
   bool y_offset_enabled = false;
   bool expanded_desk_mods_enabled = false;
   bool auth_packet_enabled = false;
+  bool custom_blips_enabled = false;
 
   ///////////////loading info///////////////////
 
