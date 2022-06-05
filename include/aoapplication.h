@@ -467,8 +467,11 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's blips (previously called their "gender")
-  QString get_blips(QString p_char);
+  // Returns p_char's blipname by reading char.ini for blips (previously called "gender")
+  QString get_blipname(QString p_char);
+  
+  // Returns p_blipname's sound(path) to play in the client
+  QString get_blips(QString p_blipname);
 
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
