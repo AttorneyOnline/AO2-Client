@@ -477,7 +477,7 @@ private:
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 30;
+  static const int MS_MAXIMUM = 31;
   QString m_chatmessage[MS_MAXIMUM];
 
   QString previous_ic_message = "";
@@ -673,6 +673,7 @@ private:
   QLineEdit *ui_ic_chat_message;
   AOLineEditFilter *ui_ic_chat_message_filter;
   QLineEdit *ui_ic_chat_name;
+  QLineEdit *ui_custom_blips;
 
   QLineEdit *ui_ooc_chat_message;
   QLineEdit *ui_ooc_chat_name;
