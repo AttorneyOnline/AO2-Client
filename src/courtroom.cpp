@@ -5559,8 +5559,9 @@ void Courtroom::on_evidence_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("evidence/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->popup(ui_evidence_button->mapToGlobal(pos));
