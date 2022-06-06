@@ -4573,6 +4573,10 @@ void Courtroom::on_sfx_edit_requested()
   if (!file_exists(p_path)) {
     p_path = ao_app->get_real_path(VPath("soundlist.ini"));
   }
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_base_path() + "soundlist.ini";
+  }
+  }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
