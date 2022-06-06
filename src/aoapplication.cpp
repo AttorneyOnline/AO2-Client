@@ -154,8 +154,9 @@ void AOApplication::add_favorite_server(int p_server)
 
 void AOApplication::remove_favorite_server(int p_server)
 {
-  if (p_server < 0 || p_server >= favorite_list.size())
+  if (p_server < 0 || p_server >= favorite_list.size()) {
     return;
+}
 
   server_type fav_server = favorite_list.at(p_server);
 
