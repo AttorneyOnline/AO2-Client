@@ -4399,10 +4399,9 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open background " + current_background), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("background/" + current_background + "/"));
-    if (!dir_exists(p_path))
-_path)) {
-return;
-}
+    if (!dir_exists(p_path)) {
+        return;
+    }
   }
   );
   menu->addAction(QString("Open background folder"), this,
