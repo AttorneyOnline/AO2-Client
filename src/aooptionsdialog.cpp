@@ -974,8 +974,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     QString path = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
                                                     QApplication::applicationDirPath(),
                                                     QFileDialog::ShowDirsOnly);
-    if (path.isEmpty())
+    if (path.isEmpty()) {
       return;
+    }
     QDir dir(QApplication::applicationDirPath());
     QString relative = dir.relativeFilePath(path);
     if (!relative.contains("../")) {
