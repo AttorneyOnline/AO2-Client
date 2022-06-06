@@ -144,12 +144,22 @@ void AOApplication::add_favorite_server(int p_server)
     return;
 
   server_type fav_server = server_list.at(p_server);
+  QSettings l_favorite_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
+  QString l_new_group = QString::number(l_favorite_ini.childGroups().size());
+  l_favorite_ini.setIniCodec("UTF-8");
 
-  QString str_port = QString::number(fav_server.port);
+  l_favorite_ini.beginGroup(l_new_group);
+  l_favorite_ini.setValue("name", fav_server.name);
+  l_favorite_ini.setValue("address", fav_server.ip);
+  l_favorite_ini.setValue("port", fav_server.port);
 
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
-
-  write_to_serverlist_txt(server_line);
+  if (fav_server.socket_type == TCP) {
+   l_favorite_ini.setValue("protocol", "tcp");
+  }
+  else {
+    l_favorite_ini.setValue("protocol", "ws");
+  }
+  l_favorite_ini.sync();
 }
 
 void AOApplication::server_disconnected()

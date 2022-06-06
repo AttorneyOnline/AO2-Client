@@ -133,6 +133,8 @@ public:
 
   void set_favorite_list();
   QVector<server_type> &get_favorite_list() { return favorite_list; }
+
+  // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
 
   void set_server_list(QVector<server_type> &servers) { server_list = servers; }
@@ -324,11 +326,13 @@ public:
   // Append to the currently open demo file if there is one
   void append_to_demofile(QString packet_string);
 
-  // Appends the argument string to serverlist.txt
-  void write_to_serverlist_txt(QString p_line);
-
   // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
+
+  /**
+   * @brief Migrates the favorite serverlist format from txt to ini.
+   */
+  void migrate_serverlist_txt(QFile &p_serverlist_txt);
 
   // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, VPath p_design_path);
