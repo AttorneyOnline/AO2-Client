@@ -137,8 +137,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   connect(ui_theme_folder_button, &QPushButton::clicked, this,
           [=] {
     QString p_path = ao_app->get_real_path(VPath("themes/"));
-    if (!dir_exists(p_path))
+    if (!dir_exists(p_path)) {
       return;
+}
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );

@@ -4400,16 +4400,18 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("background/" + current_background + "/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->addAction(QString("Open background folder"), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("background/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
@@ -4646,8 +4648,9 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("sounds/general/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
@@ -4919,8 +4922,9 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("sounds/music/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
 
@@ -5240,8 +5244,9 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_asset("chat_config.ini", ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, ao_app->get_chat(current_char));
     if (!file_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->popup(ui_text_color->mapToGlobal(pos));
@@ -5558,8 +5563,9 @@ void Courtroom::on_evidence_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("evidence/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->popup(ui_evidence_button->mapToGlobal(pos));
