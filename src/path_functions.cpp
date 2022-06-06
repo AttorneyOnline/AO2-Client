@@ -92,6 +92,77 @@ VPath AOApplication::get_default_background_path(QString p_file)
   return VPath("background/default/" + p_file);
 }
 
+QString AOApplication::get_pos_path(const QString& pos, const bool desk)
+{
+  // witness is default if pos is invalid
+  QString f_background;
+  QString f_desk_image;
+  if (file_exists(get_image_suffix(get_background_path("witnessempty")))) {
+    f_background = "witnessempty";
+    f_desk_image = "stand";
+  }
+  else {
+    f_background = "wit";
+    f_desk_image = "wit_overlay";
+  }
+
+  if (pos == "def" && file_exists(get_image_suffix(
+                             get_background_path("defenseempty")))) {
+    f_background = "defenseempty";
+    f_desk_image = "defensedesk";
+  }
+  else if (pos == "pro" &&
+           file_exists(get_image_suffix(
+               get_background_path("prosecutorempty")))) {
+    f_background = "prosecutorempty";
+    f_desk_image = "prosecutiondesk";
+  }
+  else if (pos == "jud" && file_exists(get_image_suffix(
+                                  get_background_path("judgestand")))) {
+    f_background = "judgestand";
+    f_desk_image = "judgedesk";
+  }
+  else if (pos == "hld" &&
+           file_exists(get_image_suffix(
+               get_background_path("helperstand")))) {
+    f_background = "helperstand";
+    f_desk_image = "helperdesk";
+  }
+  else if (pos == "hlp" &&
+           file_exists(get_image_suffix(
+               get_background_path("prohelperstand")))) {
+    f_background = "prohelperstand";
+    f_desk_image = "prohelperdesk";
+  }
+  else if (pos == "jur" && file_exists(get_image_suffix(
+                                  get_background_path("jurystand")))) {
+    f_background = "jurystand";
+    f_desk_image = "jurydesk";
+  }
+  else if (pos == "sea" &&
+           file_exists(get_image_suffix(
+               get_background_path("seancestand")))) {
+    f_background = "seancestand";
+    f_desk_image = "seancedesk";
+  }
+
+  if (file_exists(get_image_suffix(
+          get_background_path(pos)))) // Unique pos path
+  {
+    f_background = pos;
+    f_desk_image = pos + "_overlay";
+  }
+
+  QString desk_override = read_design_ini("overlays/" + f_background, get_background_path("design.ini"));
+  if (desk_override != "") {
+    f_desk_image = desk_override;
+}
+  if (desk) {
+    return f_desk_image;
+  }
+  return f_background;
+}
+
 VPath AOApplication::get_evidence_path(QString p_file)
 {
   return VPath("evidence/" + p_file);
@@ -267,8 +338,17 @@ QString AOApplication::get_real_path(const VPath &vpath) {
 
   // Cache miss; try all known mount paths
   QStringList bases = get_mount_paths();
-  bases.push_front(get_base_path());
+  bases.prepend(get_base_path());
+  // base
+  // content 1
+  // content 2
 
+  // We search last to first
+  std::reverse(bases.begin(), bases.end());
+
+  // content 2
+  // content 1
+  // base
   for (const QString &base : bases) {
     QDir baseDir(base);
     QString path = baseDir.absoluteFilePath(vpath.toQString());
