@@ -4918,8 +4918,9 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("sounds/music/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
 
