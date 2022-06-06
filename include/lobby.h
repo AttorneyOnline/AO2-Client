@@ -14,10 +14,12 @@
 #include <QProgressBar>
 #include <QTextBrowser>
 #include <QTreeWidget>
-
 #include <QDebug>
 #include <QScrollBar>
 #include <QHeaderView>
+#ifdef ANDROID
+#include <QtAndroidExtras/QtAndroid>
+#endif
 
 class AOApplication;
 
@@ -46,6 +48,7 @@ public:
   QString get_chatlog();
   int get_selected_server();
   void enable_connect_button();
+  void reset_selection();
 
   void set_loading_value(int p_value);
 
