@@ -4408,10 +4408,9 @@ return;
   menu->addAction(QString("Open background folder"), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("background/"));
-    if (!dir_exists(p_path))
-_path)) {
-return;
-}
+    if (!dir_exists(p_path)) {
+        return;
+    }
   }
   );
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
@@ -4647,10 +4646,9 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open sounds folder"), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("sounds/general/"));
-    if (!dir_exists(p_path))
-_path)) {
-return;
-}
+    if (!dir_exists(p_path)) {
+        return;
+    }
   }
   );
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
@@ -4921,10 +4919,9 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open music folder"), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("sounds/music/"));
-    if (!dir_exists(p_path))
-_path)) {
-return;
-}
+    if (!dir_exists(p_path)) {
+        return;
+    }
   }
   );
 
@@ -5243,10 +5240,9 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open currently used chat_config.ini"), this,
                   [=] {
     QString p_path = ao_app->get_asset("chat_config.ini", ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, ao_app->get_chat(current_char));
-    if (!file_exists(p_path))
-_path)) {
-return;
-}
+    if (!file_exists(p_path)) {
+        return;
+    }
   }
   );
   menu->popup(ui_text_color->mapToGlobal(pos));
@@ -5562,10 +5558,9 @@ void Courtroom::on_evidence_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open evidence folder"), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("evidence/"));
-    if (!dir_exists(p_path))
-_path)) {
-return;
-}
+    if (!dir_exists(p_path)) {
+        return;
+    }
   }
   );
   menu->popup(ui_evidence_button->mapToGlobal(pos));
