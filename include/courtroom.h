@@ -812,6 +812,7 @@ private:
 
   void initialize_evidence();
   void refresh_evidence();
+  void show_evidence(int f_real_id);
   void set_evidence_page();
 
   void reset_ui();

@@ -383,9 +383,9 @@ void AOLayer::play()
       this->freeze();
   }
   else {
-      while (movie_delays.size() <= frame) {
-          frameAdded.wait(&mutex);
-      }
+    while (movie_delays.size() <= frame) {
+        frameAdded.wait(&mutex);
+    }
     ticker->start(this->get_frame_delay(movie_delays[frame]));
   }
 }
@@ -531,6 +531,8 @@ void AOLayer::kill()
   this->clear();
   movie_frames.clear();
   movie_delays.clear();
+  last_max_frames = max_frames;
+  max_frames = 0;
   last_path = "";
 }
 
