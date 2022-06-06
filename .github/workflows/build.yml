@@ -207,7 +207,7 @@ jobs:
           install_name_tool -change @loader_path/libbassmidi.dylib @rpath/libbassmidi.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
           install_name_tool -change @loader_path/libdiscord-rpc.dylib @rpath/libdiscord-rpc.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
           install_name_tool -change @loader_path/libqapng.dylib @rpath/libqapng.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
-          hdiutil create -volname "Attorney_Online" -srcfolder "./Attorney_Online" -ov -format UDZO "Attorney_Online.dmg"
+          hdiutil create -volname "Attorney_Online" -srcfolder "./Attorney_Online.app" -ov -format UDZO "Attorney_Online.dmg"
 
       - name: Deploy Android
         if: matrix.platform == 'android'
