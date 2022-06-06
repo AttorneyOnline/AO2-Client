@@ -1,4 +1,4 @@
-QT += core gui widgets network
+QT += core gui widgets network websockets
 
 TARGET = Attorney_Online
 TEMPLATE = app
@@ -54,7 +54,8 @@ TRANSLATIONS = resource/translations/ao_en.ts \
                resource/translations/ao_ru.ts \
                resource/translations/ao_es.ts \
                resource/translations/ao_pt.ts \
-               resource/translations/ao_pl.ts
+               resource/translations/ao_pl.ts \
+               resource/translations/ao_it.ts
 
 win32:RC_ICONS = resource/logo_ao2.ico
 macx:ICON = resource/logo_ao2.icns
