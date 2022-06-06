@@ -180,8 +180,16 @@ jobs:
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
-          windeployqt .
+          windeployqt --no-quick-import --no-translations --no-virtualkeyboard .
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
+          rm ./imageformats/qtiff.dll
+          rm ./imageformats/qjpeg.dll
+          rm ./imageformats/qicns.dll
+          rm ./imageformats/qico.dll
+          rm ./imageformats/qsvg.dll
+          rm ./imageformats/qtga.dll
+          rm ./imageformats/qwbmp.dll
+          rm -r iconengines
 
       - name: Deploy Mac
         if: matrix.os == 'macos-latest'
