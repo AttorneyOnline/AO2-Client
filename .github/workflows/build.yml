@@ -190,6 +190,8 @@ jobs:
           rm ./imageformats/qtga.dll
           rm ./imageformats/qwbmp.dll
           rm -r iconengines
+          rm -r bearer
+          rm -r styles
 
       - name: Deploy Mac
         if: matrix.os == 'macos-latest'
