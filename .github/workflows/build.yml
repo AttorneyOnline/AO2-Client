@@ -189,6 +189,7 @@ jobs:
           rm ./imageformats/qsvg.dll
           rm ./imageformats/qtga.dll
           rm ./imageformats/qwbmp.dll
+          rm ./Qt5Svg.dll
           rm -r iconengines
           rm -r bearer
           rm -r styles
