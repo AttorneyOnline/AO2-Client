@@ -4,6 +4,7 @@
 #include "debug_functions.h"
 #include "lobby.h"
 
+#include <QAbstractSocket>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QNetworkReply>
@@ -12,14 +13,8 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;
 
-  server_socket = new QTcpSocket(this);
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
-
-  connect(server_socket, &QTcpSocket::readyRead, this,
-          &NetworkManager::handle_server_packet);
-  connect(server_socket, &QTcpSocket::disconnected, ao_app,
-          &AOApplication::server_disconnected);
 
   QString master_config =
       ao_app->configini->value("master", "").value<QString>();
@@ -60,10 +55,18 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply,
     const auto entry = entryRef.toObject();
     server_type server;
     server.ip = entry["ip"].toString();
-    server.port = entry["port"].toInt();
     server.name = entry["name"].toString();
     server.desc = entry["description"].toString(tr("No description provided."));
-    server_list.append(server);
+    if (entry["ws_port"].isDouble()) {
+      server.socket_type = WEBSOCKETS;
+      server.port = entry["ws_port"].toInt();
+    } else {
+      server.socket_type = TCP;
+      server.port = entry["port"].toInt();
+    }
+    if (server.port != 0) {
+        server_list.append(server);
+    }
   }
   ao_app->set_server_list(server_list);
 
@@ -128,26 +131,99 @@ void NetworkManager::request_document(MSDocumentType document_type,
 
 void NetworkManager::connect_to_server(server_type p_server)
 {
-  server_socket->close();
-  server_socket->abort();
+  disconnect_from_server();
 
   qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
                               << p_server.port;
 
-  server_socket->connectToHost(p_server.ip, p_server.port);
+  switch (p_server.socket_type) {
+  default:
+    p_server.socket_type = TCP;
+    [[fallthrough]];
+  case TCP:
+    qInfo() << "using TCP backend";
+    server_socket.tcp = new QTcpSocket(this);
+
+    connect(server_socket.tcp, &QAbstractSocket::connected, this, [] {
+      qDebug() << "established connection to server";
+    });
+    connect(server_socket.tcp, &QIODevice::readyRead, this, [this] {
+      handle_server_packet(QString::fromUtf8(server_socket.tcp->readAll()));
+    });
+    connect(server_socket.tcp, &QAbstractSocket::disconnected, ao_app,
+            &AOApplication::server_disconnected);
+    connect(server_socket.tcp, &QAbstractSocket::errorOccurred, this, [this] {
+      qCritical() << "TCP socket error:" << server_socket.tcp->errorString();
+    });
+
+    server_socket.tcp->connectToHost(p_server.ip, p_server.port);
+    break;
+  case WEBSOCKETS:
+    qInfo() << "using WebSockets backend";
+    server_socket.ws = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
+
+    connect(server_socket.ws, &QWebSocket::connected, this, [] {
+      qDebug() << "established connection to server";
+    });
+    connect(server_socket.ws, &QWebSocket::textMessageReceived, this,
+            &NetworkManager::handle_server_packet);
+    connect(server_socket.ws, &QWebSocket::disconnected, ao_app,
+            &AOApplication::server_disconnected);
+    connect(server_socket.ws, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
+            this, [this] {
+      qCritical() << "WebSockets error:" << server_socket.ws->errorString();
+    });
+
+    QUrl url;
+    url.setScheme("ws");
+    url.setHost(p_server.ip);
+    url.setPort(p_server.port);
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
+    server_socket.ws->open(req);
+    break;
+  }
+
+  connected = true;
+  active_connection_type = p_server.socket_type;
+}
+
+void NetworkManager::disconnect_from_server()
+{
+  if (!connected)
+    return;
+
+  switch (active_connection_type) {
+  case TCP:
+    server_socket.tcp->close();
+    server_socket.tcp->deleteLater();
+    break;
+  case WEBSOCKETS:
+    server_socket.ws->close(QWebSocketProtocol::CloseCodeGoingAway);
+    server_socket.ws->deleteLater();
+    break;
+  }
+
+  connected = false;
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)
 {
-  server_socket->write(p_packet.toUtf8());
+  switch (active_connection_type) {
+  case TCP:
+    server_socket.tcp->write(p_packet.toUtf8());
+    break;
+  case WEBSOCKETS:
+    server_socket.ws->sendTextMessage(p_packet);
+    break;
+  }
 }
 
-void NetworkManager::handle_server_packet()
+void NetworkManager::handle_server_packet(const QString& p_data)
 {
-  QByteArray buffer = server_socket->readAll();
-  QString in_data = QString::fromUtf8(buffer, buffer.size());
+  QString in_data = p_data;
 
-  if (!in_data.endsWith("%")) {
+  if (!p_data.endsWith("%")) {
     partial_packet = true;
     temp_packet += in_data;
     return;
