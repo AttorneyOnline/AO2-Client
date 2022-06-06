@@ -232,8 +232,9 @@ void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open characters folder"), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("characters/"));
-    if (!dir_exists(p_path))
+    if (!dir_exists(p_path)) {
       return;
+}
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
