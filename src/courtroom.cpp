@@ -4528,8 +4528,9 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open character folder " + current_char), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
-    if (!dir_exists(p_path))
+    if (!dir_exists(p_path)) {
       return;
+    }
 
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
@@ -4537,8 +4538,9 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
   menu->addAction(QString("Open characters folder "), this,
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("characters/"));
-    if (!dir_exists(p_path))
+    if (!dir_exists(p_path)) {
       return;
+    }
 
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
@@ -4550,8 +4552,9 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
 void Courtroom::on_iniswap_edit_requested()
 {
   QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char.ini"));
-  if (!file_exists(p_path))
+  if (!file_exists(p_path)) {
     return;
+  }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
@@ -4592,8 +4595,9 @@ void Courtroom::set_sfx_dropdown()
   for (const QString &sound : qAsConst(sound_list)) {
     QStringList unpacked = sound.split("=");
     QString display = unpacked[0].trimmed();
-    if (unpacked.size() > 1)
+    if (unpacked.size() > 1) {
       display = unpacked[1].trimmed();
+    }
 
     display_sounds.append(display);
   }
