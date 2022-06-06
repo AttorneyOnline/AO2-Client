@@ -4409,8 +4409,9 @@ return;
                   [=] {
     QString p_path = ao_app->get_real_path(VPath("background/"));
     if (!dir_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
