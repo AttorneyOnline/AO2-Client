@@ -4579,9 +4579,10 @@ void Courtroom::on_sfx_edit_requested()
   QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"));
   if (!file_exists(p_path)) {
     p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "sounds.ini"));
-    if (!file_exists(p_path)) {
-      p_path = ao_app->get_base_path() + "soundlist.ini";
-    }
+  }
+
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_base_path() + "soundlist.ini";
   }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
