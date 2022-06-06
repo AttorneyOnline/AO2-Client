@@ -5240,8 +5240,9 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
                   [=] {
     QString p_path = ao_app->get_asset("chat_config.ini", ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, ao_app->get_chat(current_char));
     if (!file_exists(p_path))
-      return;
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+_path)) {
+return;
+}
   }
   );
   menu->popup(ui_text_color->mapToGlobal(pos));
