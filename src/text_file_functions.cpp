@@ -267,8 +267,9 @@ void AOApplication::delete_from_serverlist_txt(QString p_line)
       while(!t.atEnd())
       {
           QString line = t.readLine();
-          if(!line.contains(p_line))
+          if(!line.contains(p_line)) {
               s.append(line + "\n");
+}
       }
       serverlist_txt.resize(0);
       t << s;
