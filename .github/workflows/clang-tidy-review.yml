@@ -17,10 +17,10 @@ jobs:
             qt: '5.15.2'
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@master
         
     - name: Restore Qt cache
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@master
       id: cache-qt
       with:
         path: ${{github.workspace}}/Qt/${{matrix.qt}}
@@ -44,7 +44,7 @@ jobs:
         sudo cmake --build build/ --target install
 
     - name: Use CMake 3.20.1
-      uses: lukka/get-cmake@v3.20.1
+      uses: lukka/get-cmake@main
 
     - name: Generate compile_commands.json
       uses: lukka/run-cmake@v3
@@ -59,12 +59,13 @@ jobs:
         buildWithCMakeArgs: >-
           --target autogen
 
-    - uses: ZedThree/clang-tidy-review@v0.8.2
+    - uses: ZedThree/clang-tidy-review@v0.8.3
       id: review
       with:
         build_dir: 'build'
         clang_tidy_checks: '-*,performance-*,readability-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,mpi-*,misc-*,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-init-variables,-cppcoreguidelines-pro-type-member-init,-cppcoreguidelines-avoid-magic-numbers'
         apt_packages: 'pkg-config,libzip-dev,libglu1-mesa-dev,libpulse-dev'
+        max_comments: 10
     # If there are any comments, fail the check
     - if: steps.review.outputs.total_comments > 0
       run: exit 1
