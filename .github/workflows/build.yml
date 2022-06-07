@@ -208,6 +208,7 @@ jobs:
           install_name_tool -change @loader_path/libdiscord-rpc.dylib @rpath/libdiscord-rpc.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
           install_name_tool -change @loader_path/libqapng.dylib @rpath/libqapng.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
           hdiutil create -volname "Attorney_Online" -srcfolder "./Attorney_Online.app" -ov -format UDZO "Attorney_Online.dmg"
+          rm -r ./Attorney_Online.app/
 
       - name: Deploy Android
         if: matrix.platform == 'android'
