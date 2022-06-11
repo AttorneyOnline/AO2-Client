@@ -214,6 +214,9 @@ public slots:
   void timestamp_cb_changed(int state);
   void on_reload_theme_clicked();
   void theme_changed(int i);
+
+signals:
+  void max_log_updated(int p_max_length);
 };
 
 #endif // AOOPTIONSDIALOG_H
