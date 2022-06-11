@@ -1,6 +1,9 @@
 #include "aotextarea.h"
 
-AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent) {}
+AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
+{
+  this->document()->setMaximumBlockCount(10);
+}
 
 void AOTextArea::append_linked(QString p_message)
 {
@@ -8,7 +11,6 @@ void AOTextArea::append_linked(QString p_message)
                        .replace("\n", "<br>")
                        .replace(url_parser_regex, "<a href='\\1'>\\1</a>");
   this->insertHtml(result);
-  this->document()->setMaximumBlockCount(10);
 }
 
 void AOTextArea::append_chatmessage(QString p_name, QString p_message,
@@ -41,6 +43,8 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message,
   this->insertHtml(result);
 
   this->auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
+  qDebug() << "Linecount : " << this->document()->lineCount() << Qt::endl
+           << "Blockcount : " << this->document()->blockCount();
 }
 
 void AOTextArea::append_error(QString p_message)
