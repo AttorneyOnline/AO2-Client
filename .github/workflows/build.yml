@@ -180,7 +180,7 @@ jobs:
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
-          windeployqt --no-quick-import --no-translations --no-virtualkeyboard .
+          windeployqt --no-quick-import --no-translations --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-opengl-sw .
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
           rm ./imageformats/qtiff.dll
           rm ./imageformats/qjpeg.dll
