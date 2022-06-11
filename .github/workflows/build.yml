@@ -50,7 +50,7 @@ jobs:
         if: matrix.platform == 'msvc2019'
         uses: microsoft/setup-msbuild@master
 
-      - uses: stonedDiscord/action-setup-qt@master
+      - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
           version: 5.15.1
