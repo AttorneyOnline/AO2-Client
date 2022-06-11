@@ -8,6 +8,7 @@ void AOTextArea::append_linked(QString p_message)
                        .replace("\n", "<br>")
                        .replace(url_parser_regex, "<a href='\\1'>\\1</a>");
   this->insertHtml(result);
+  this->document()->setMaximumBlockCount(10);
 }
 
 void AOTextArea::append_chatmessage(QString p_name, QString p_message,
@@ -22,8 +23,8 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message,
 
   this->append("");
   if (!p_name.isEmpty()) {
-    this->insertHtml("<b><font color=" + p_name_colour + ">" + p_name.toHtmlEscaped() +
-                     "</font></b>:&nbsp;");
+    this->insertHtml("<b><font color=" + p_name_colour + ">" +
+                     p_name.toHtmlEscaped() + "</font></b>:&nbsp;");
 
     // cheap workarounds ahoy
     p_message += " ";
