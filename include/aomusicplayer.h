@@ -2,9 +2,11 @@
 #define AOMUSICPLAYER_H
 #include "file_functions.h"
 
+#ifdef BASSAUDIO
 #include "bass.h"
 #include "bassmidi.h"
 #include "bassopus.h"
+#endif
 
 #include "aoapplication.h"
 

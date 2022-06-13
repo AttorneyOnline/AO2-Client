@@ -673,6 +673,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
     ui_audio_device_combobox->addItem("default"); //TODO translate this without breaking the default audio device
   }
+
+  #ifdef BASSAUDIO
   BASS_DEVICEINFO info;
   for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
     ui_audio_device_combobox->addItem(info.name);
@@ -680,6 +682,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       ui_audio_device_combobox->setCurrentIndex(
           ui_audio_device_combobox->count() - 1);
   }
+#endif
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole,
                              ui_audio_device_combobox);
 

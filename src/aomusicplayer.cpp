@@ -1,5 +1,6 @@
 #include "aomusicplayer.h"
 
+#ifdef BASSAUDIO
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
@@ -214,3 +215,72 @@ void AOMusicPlayer::set_looping(bool toggle, int channel)
     }
   }
 }
+#else
+AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
+{
+  m_parent = parent;
+  ao_app = p_ao_app;
+}
+
+AOMusicPlayer::~AOMusicPlayer()
+{
+
+}
+
+QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
+                         int effect_flags)
+{
+  channel = channel % m_channelmax;
+  if (channel < 0) // wtf?
+    return "[ERROR] Invalid Channel";
+
+  QString f_path = p_song;
+
+  QString d_path = f_path + ".txt";
+
+  loop_start[channel] = 0;
+
+  this->set_looping(loop, channel); // Have to do this here due to any
+                                    // crossfading-related changes, etc.
+
+  bool is_stop = (p_song == "~stop.mp3");
+  QString p_song_clear = QUrl(p_song).fileName();
+  p_song_clear = p_song_clear.left(p_song_clear.lastIndexOf('.'));
+
+  if (is_stop) {
+    return QObject::tr("None");
+  }
+
+  if (p_song.startsWith("http") && channel == 0) {
+    return QObject::tr("[STREAM] %1").arg(p_song_clear);
+  }
+
+  if (channel == 0)
+    return p_song_clear;
+
+  return "";
+}
+
+void AOMusicPlayer::stop(int channel)
+{
+
+}
+
+void AOMusicPlayer::set_volume(int p_value, int channel)
+{
+  m_volume[channel] = p_value;
+  float volume = m_volume[channel] / 100.0f;
+}
+
+void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
+{
+  Q_UNUSED(handle);
+  Q_UNUSED(data);
+  QWORD loop_start = *(static_cast<unsigned *>(user));
+}
+
+void AOMusicPlayer::set_looping(bool toggle, int channel)
+{
+
+}
+#endif

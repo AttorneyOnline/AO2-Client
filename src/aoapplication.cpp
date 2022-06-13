@@ -191,6 +191,7 @@ void AOApplication::call_announce_menu(Courtroom *court)
   announcer.exec();
 }
 
+#ifdef BASSAUDIO
 // Callback for when BASS device is lost
 // Only actually used for music syncs
 void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
@@ -259,4 +260,25 @@ void AOApplication::load_bass_plugins()
 }
 #else
 #error This operating system is unsupported for BASS plugins.
+#endif
+#else
+void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
+                                       DWORD data, void *user)
+{
+  Q_UNUSED(handle);
+  Q_UNUSED(channel);
+  Q_UNUSED(data);
+  Q_UNUSED(user);
+  doBASSreset();
+}
+
+void AOApplication::doBASSreset()
+{
+
+}
+
+void AOApplication::initBASS()
+{
+
+}
 #endif

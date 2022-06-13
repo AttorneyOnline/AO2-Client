@@ -1,8 +1,10 @@
 #ifndef AOBLIPPLAYER_H
 #define AOBLIPPLAYER_H
 
+#ifdef BASSAUDIO
 #include "bass.h"
 #include "bassopus.h"
+#endif
 
 #include "aoapplication.h"
 

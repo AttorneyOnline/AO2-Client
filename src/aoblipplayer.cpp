@@ -1,5 +1,6 @@
 #include "aoblipplayer.h"
 
+#ifdef BASSAUDIO
 AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
@@ -51,3 +52,38 @@ void AOBlipPlayer::set_volume_internal(qreal p_value)
     BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);
   }
 }
+#else
+AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
+{
+  m_parent = parent;
+  ao_app = p_ao_app;
+}
+
+void AOBlipPlayer::set_blips(QString p_sfx)
+{
+  QString f_path = ao_app->get_sfx_suffix(ao_app->get_sounds_path(p_sfx));
+
+  set_volume_internal(m_volume);
+}
+
+void AOBlipPlayer::blip_tick()
+{
+  int f_cycle = m_cycle++;
+
+  if (m_cycle == 5)
+    m_cycle = 0;
+
+  HSTREAM f_stream = m_stream_list[f_cycle];
+}
+
+void AOBlipPlayer::set_volume(int p_value)
+{
+  m_volume = static_cast<qreal>(p_value) / 100;
+  set_volume_internal(m_volume);
+}
+
+void AOBlipPlayer::set_volume_internal(qreal p_value)
+{
+  float volume = static_cast<float>(p_value);
+}
+#endif

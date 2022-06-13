@@ -1,8 +1,10 @@
 #ifndef AOSFXPLAYER_H
 #define AOSFXPLAYER_H
 
+#ifdef BASSAUDIO
 #include "bass.h"
 #include "bassopus.h"
+#endif
 
 #include "aoapplication.h"
 

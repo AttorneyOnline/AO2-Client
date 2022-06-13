@@ -1,6 +1,7 @@
 #include "aosfxplayer.h"
 #include "file_functions.h"
 
+#ifdef BASSAUDIO
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
   m_parent = parent;
@@ -91,3 +92,54 @@ void AOSfxPlayer::set_looping(bool toggle, int channel)
                         BASS_SAMPLE_LOOP); // set the LOOP flag
   }
 }
+#else
+
+AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
+{
+  m_parent = parent;
+  ao_app = p_ao_app;
+}
+
+void AOSfxPlayer::clear()
+{
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::loop_clear()
+{
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
+{
+  QString path = ao_app->get_sfx(p_sfx, p_misc, p_character);
+
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::stop(int channel)
+{
+  if (channel == -1) {
+    channel = m_channel;
+  }
+}
+
+void AOSfxPlayer::set_volume(qreal p_value)
+{
+  m_volume = p_value / 100;
+  set_volume_internal(m_volume);
+}
+
+void AOSfxPlayer::set_volume_internal(qreal p_value)
+{
+  float volume = static_cast<float>(p_value);
+}
+
+void AOSfxPlayer::set_looping(bool toggle, int channel)
+{
+  if (channel == -1) {
+    channel = m_channel;
+  }
+  m_looping = toggle;
+}
+#endif

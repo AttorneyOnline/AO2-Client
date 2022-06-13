@@ -36,9 +36,11 @@ contains(DEFINES, DISCORD) {
 # is no longer an option due to outdated code and lack of versatility.
 # Download at un4seen.com and place the DLLs in the "lib" and "bin" folders.
 DEFINES += BASSAUDIO
-LIBS += -lbass
-LIBS += -lbassopus
-LIBS += -lbassmidi
+contains(DEFINES, BASSAUDIO) {
+  LIBS += -lbass
+  LIBS += -lbassopus
+  LIBS += -lbassmidi
+}
 
 macx:LIBS += -framework CoreFoundation -framework Foundation -framework CoreServices
 
