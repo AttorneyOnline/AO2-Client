@@ -92,7 +92,7 @@ jobs:
           unzip discord_rpc.zip
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib/
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
-          cp ./discord-rpc/win32-dynamic/include/discord*.h ./include/
+          cp ./discord-rpc/linux-dynamic/include/discord*.h ./include/
           export DEFINES="${DEFINES}:DISCORD"
 
       - name: Install Mac Discord RPC
@@ -102,7 +102,7 @@ jobs:
           unzip discord_rpc.zip
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib/
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin/
-          cp ./discord-rpc/win32-dynamic/include/discord*.h ./include/
+          cp ./discord-rpc/osx-dynamic/include/discord*.h ./include/
           export DEFINES="${DEFINES}:DISCORD"
 
       - name: Install Windows BASS
