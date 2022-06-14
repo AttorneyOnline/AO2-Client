@@ -4143,11 +4143,14 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
     return;
   }
 
-  if (effect_name == "shake") {
+  if (effect_name == "screenshake") {
     do_screenshake();
   }
   else if (effect_name == "flash") {
     do_flash();
+  }
+  else {
+    do_effect(effect_name, "", "", "");
   }
 
   if (!sfx_name.isEmpty()) {
