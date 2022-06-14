@@ -51,6 +51,14 @@ jobs:
         if: matrix.platform == 'msvc2019'
         uses: microsoft/setup-msbuild@master
         
+      - name: Downgrade Android NDK
+        if: matrix.platform = 'android'
+        run: |
+           ANDROID_ROOT=/usr/local/lib/android
+           ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
+           ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
+           ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
+        
       - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
