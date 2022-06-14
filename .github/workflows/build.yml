@@ -52,7 +52,7 @@ jobs:
         uses: microsoft/setup-msbuild@master
         
       - name: Downgrade Android NDK
-        if: matrix.platform = 'android'
+        if: matrix.platform == 'android'
         run: |
            ANDROID_ROOT=/usr/local/lib/android
            ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
