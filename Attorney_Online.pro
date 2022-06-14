@@ -29,7 +29,9 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 # DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {
-  LIBS += -ldiscord-rpc
+  win32:LIBS += -ldiscord-rpc
+  linux:LIBS += -ldiscord-rpc
+   macx:LIBS += -ldiscord-rpc
 }
 
 # As of 2.8.5, BASS and BASSOPUS are required for all platforms. Qt Multimedia
