@@ -90,7 +90,7 @@ jobs:
           cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./lib/
           cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./bin/
           cp ./discord-rpc/win32-dynamic/include/discord*.h ./include/
-          qmake -set DISCORD
+          qmake -set DISCORD TRUE
 
       - name: Install Linux Discord RPC
         if: matrix.platform == 'gcc_64'
@@ -100,7 +100,7 @@ jobs:
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib/
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
           cp ./discord-rpc/linux-dynamic/include/discord*.h ./include/
-          qmake -set DISCORD
+          qmake -set DISCORD TRUE
 
       - name: Install Mac Discord RPC
         if: matrix.os == 'macos-latest'
@@ -110,7 +110,7 @@ jobs:
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib/
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin/
           cp ./discord-rpc/osx-dynamic/include/discord*.h ./include/
-          qmake -set DISCORD
+          qmake -set DISCORD TRUE
 
       - name: Install Windows BASS
         if: contains(matrix.os, 'windows')
