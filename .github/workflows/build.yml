@@ -61,6 +61,9 @@ jobs:
         run: |
           git clone https://github.com/Skycoder42/QtApng.git
           cd QtApng
+          cd src/3rdparty
+          get_libs.sh 1.2.12 1.6.37
+          cd ../..
           qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
           ${{steps.qt.outputs.make}} qmake_all
           ${{steps.qt.outputs.make}}
