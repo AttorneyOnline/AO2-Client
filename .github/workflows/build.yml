@@ -21,9 +21,9 @@ jobs:
 
         include:
           - platform: gcc_64
-            os: ubuntu-latest
+            os: ubuntu-18.04
           - platform: android
-            os: ubuntu-latest
+            os: ubuntu-18.04
           - platform: msvc2019
             os: windows-2019
           - platform: mingw81_32
