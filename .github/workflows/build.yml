@@ -83,7 +83,7 @@ jobs:
           cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./lib/
           cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./bin/
           cp ./discord-rpc/win32-dynamic/include/discord*.h ./include/
-          set DEFINES=%DEFINES%;DISCORD
+          set DEFINES="%DEFINES%;DISCORD"
 
       - name: Install Linux Discord RPC
         if: matrix.platform == 'gcc_64'
