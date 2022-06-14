@@ -54,7 +54,7 @@ jobs:
       - name: Install Android NDK
         if: matrix.platform == 'android'
         run: |
-          apt install google-android-ndk-installer
+          sudo apt install google-android-ndk-installer
 
       - uses: Skycoder42/action-setup-qt@master
         id: qt
