@@ -51,11 +51,6 @@ jobs:
         if: matrix.platform == 'msvc2019'
         uses: microsoft/setup-msbuild@master
         
-      - name: Install Android NDK
-        if: matrix.platform == 'android'
-        run: |
-          sudo apt install google-android-ndk-installer
-
       - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
