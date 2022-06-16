@@ -42,12 +42,10 @@ class VPath : QString {
 public:
   explicit VPath(const QString &str) : QString(str) {}
   inline QString const &toQString() const { return *this; }
-  inline bool operator==(const VPath &str) const
-  {
+  inline bool operator==(const VPath &str) const {
     return this->toQString() == str.toQString();
   }
-  inline VPath operator+(const VPath &str) const
-  {
+  inline VPath operator+(const VPath &str) const {
     return VPath(this->toQString() + str.toQString());
   }
 };
@@ -150,7 +148,7 @@ public:
 
   // implementation in path_functions.cpp
   QString get_base_path();
-  VPath get_theme_path(QString p_file, QString p_theme = "");
+  VPath get_theme_path(QString p_file, QString p_theme="");
   VPath get_character_path(QString p_char, QString p_file);
   VPath get_misc_path(QString p_misc, QString p_file);
   VPath get_sounds_path(QString p_file);
@@ -158,31 +156,18 @@ public:
   VPath get_background_path(QString p_file);
   VPath get_default_background_path(QString p_file);
   VPath get_evidence_path(QString p_file);
-  QVector<VPath> get_asset_paths(QString p_element, QString p_theme = "",
-                                 QString p_subtheme = "",
-                                 QString p_default_theme = "",
-                                 QString p_misc = "", QString p_character = "",
-                                 QString p_placeholder = "");
+  QVector<VPath> get_asset_paths(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_asset_path(QVector<VPath> pathlist);
-  QString get_image_path(QVector<VPath> pathlist, bool static_image = false);
+  QString get_image_path(QVector<VPath> pathlist, bool static_image=false);
   QString get_sfx_path(QVector<VPath> pathlist);
-  QString get_config_value(QString p_identifier, QString p_config,
-                           QString p_theme = "", QString p_subtheme = "",
-                           QString p_default_theme = "", QString p_misc = "");
-  QString get_asset(QString p_element, QString p_theme = "",
-                    QString p_subtheme = "", QString p_default_theme = "",
-                    QString p_misc = "", QString p_character = "",
-                    QString p_placeholder = "");
-  QString get_image(QString p_element, QString p_theme = "",
-                    QString p_subtheme = "", QString p_default_theme = "",
-                    QString p_misc = "", QString p_character = "",
-                    QString p_placeholder = "", bool static_image = false);
-  QString get_sfx(QString p_sfx, QString p_misc = "", QString p_character = "");
-  QString get_pos_path(const QString &pos, bool desk = false);
+  QString get_config_value(QString p_identifier, QString p_config, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="");
+  QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
+  QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="", bool static_image=false);
+  QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
+  QString get_pos_path(const QString& pos, bool desk = false);
   QString get_case_sensitive_path(QString p_file);
   QString get_real_path(const VPath &vpath);
-  QString get_real_suffixed_path(const VPath &vpath,
-                                 const QStringList &suffixes);
+  QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
   void invalidate_lookup_cache();
 
   ////// Functions for reading and writing files //////
@@ -223,8 +208,8 @@ public:
   // from the config.ini.
   bool is_instant_objection_enabled();
 
-  // returns if log will show messages as-received, while viewport will parse
-  // according to the queue (Text Stay Time) from the config.ini
+  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
+  // from the config.ini
   bool is_desyncrhonized_logs_enabled();
 
   // Returns the value of whether Discord should be enabled on startup
@@ -272,8 +257,8 @@ public:
   // from the config.ini.
   bool is_continuous_enabled();
 
-  // Returns the value of whether stopping music by double clicking category
-  // should be used from the config.ini.
+  // Returns the value of whether stopping music by double clicking category should be used
+  // from the config.ini.
   bool is_category_stop_enabled();
 
   // Returns the value of the maximum amount of lines the IC chatlog
@@ -286,8 +271,7 @@ public:
   // Returns the letter display speed during text crawl in in-character messages
   int get_text_crawl();
 
-  // Returns Minimum amount of time (in miliseconds) that must pass before the
-  // next Enter key press will send your IC message. (new behaviour)
+  // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
   int get_chat_ratelimit();
 
   // Returns whether the log should go upwards (new behaviour)
@@ -318,7 +302,7 @@ public:
   // Returns whether the user would like to have custom shownames on by default.
   bool get_showname_enabled_by_default();
 
-  // Returns the showname the user may have set in config.ini.
+  //Returns the showname the user may have set in config.ini.
   QString get_default_showname();
 
   // Returns the list of words in callwords.ini
@@ -381,16 +365,15 @@ public:
   // theme path
   QString get_penalty_value(QString p_identifier);
 
-  // Returns the sfx with p_identifier from courtroom_sounds.ini in the current
-  // theme path
-  QString get_court_sfx(QString p_identifier, QString p_misc = "");
+  // Returns the sfx with p_identifier from courtroom_sounds.ini in the current theme path
+  QString get_court_sfx(QString p_identifier, QString p_misc="");
 
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(VPath sound_to_check);
 
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
   // PNG.
-  QString get_image_suffix(VPath path_to_check, bool static_image = false);
+  QString get_image_suffix(VPath path_to_check, bool static_image=false);
 
   // Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line,
@@ -441,10 +424,8 @@ public:
   QString get_effect(QString effect, QString p_char, QString p_folder);
 
   // Return p_property of fx_name. If p_property is "sound", return
-  // the value associated with fx_name, otherwise use fx_name + '_' +
-  // p_property.
-  QString get_effect_property(QString fx_name, QString p_char,
-                              QString p_property);
+  // the value associated with fx_name, otherwise use fx_name + '_' + p_property.
+  QString get_effect_property(QString fx_name, QString p_char, QString p_property);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
@@ -497,13 +478,10 @@ public:
   // Returns p_char's blips (previously called their "gender")
   QString get_blips(QString p_char);
 
-  // Get a property of a given emote, or get it from "options" if emote doesn't
-  // have it
-  QString get_emote_property(QString p_char, QString p_emote,
-                             QString p_property);
+  // Get a property of a given emote, or get it from "options" if emote doesn't have it
+  QString get_emote_property(QString p_char, QString p_emote, QString p_property);
 
-  // Return a transformation mode from a string ("smooth" for smooth, anything
-  // else for fast)
+  // Return a transformation mode from a string ("smooth" for smooth, anything else for fast)
   Qt::TransformationMode get_scaling(QString p_scaling);
 
   // Returns the scaling type for p_miscname
@@ -584,7 +562,7 @@ public:
   static void doBASSreset();
 
   QElapsedTimer demo_timer;
-  DemoServer *demo_server = nullptr;
+  DemoServer* demo_server = nullptr;
 
 private:
   const int RELEASE = 2;
