@@ -121,7 +121,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_timestamp = ao_app->get_log_timestamp();
   log_timestamp_format = ao_app->get_log_timestamp_format();
 
-  ui_debug_log = new AOTextArea(this);
+  ui_debug_log = new AOTextArea(this, ao_app->get_max_log_size());
   ui_debug_log->setReadOnly(true);
   ui_debug_log->setOpenExternalLinks(true);
   ui_debug_log->hide();
