@@ -256,6 +256,7 @@ QVector<server_type> AOApplication::read_serverlist_txt()
       f_server.ip = l_favorite_ini.value("address", "127.0.0.1").toString();
       f_server.port = l_favorite_ini.value("port", 27016).toInt();
       f_server.name = l_favorite_ini.value("name", "Missing Name").toString();
+      f_server.desc = l_favorite_ini.value("desc", "No description").toString();
       f_server.socket_type = to_connection_type.value(l_favorite_ini.value("protocol", "tcp").toString());
       f_server_list.append(f_server);
       l_favorite_ini.endGroup();
