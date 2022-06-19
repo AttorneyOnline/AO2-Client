@@ -1040,7 +1040,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
   if(!ao_app->get_log_timestamp())
-      ui_log_timestamp_format_combobox->setDisabled(true);
+get_log_timestamp()) {
 
   row += 1;
   ui_log_ic_actions_lbl = new QLabel(ui_form_logging_widget);
