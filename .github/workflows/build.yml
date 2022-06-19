@@ -37,6 +37,9 @@ jobs:
         with:
           submodules: recursive
       - uses: actions/setup-python@master
+        with:
+          python-version: '3.10'
+          
       - name: actions/cache qt
         uses: actions/cache@master
         id: cache
@@ -47,8 +50,16 @@ jobs:
       - name: Add msbuild to PATH
         if: matrix.platform == 'msvc2019'
         uses: microsoft/setup-msbuild@master
-
-      - uses: stonedDiscord/action-setup-qt@master
+        
+      - name: Downgrade Android NDK
+        if: matrix.platform == 'android'
+        run: |
+           ANDROID_ROOT=/usr/local/lib/android
+           ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
+           ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
+           ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
+        
+      - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
           version: 5.15.1
@@ -58,6 +69,10 @@ jobs:
         run: |
           git clone https://github.com/Skycoder42/QtApng.git
           cd QtApng
+          cd src/3rdparty
+          chmod +x get_libs.sh
+          ./get_libs.sh 1.2.12 1.6.37
+          cd ../..
           qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
           ${{steps.qt.outputs.make}} qmake_all
           ${{steps.qt.outputs.make}}
@@ -74,6 +89,7 @@ jobs:
           unzip discord_rpc.zip
           cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./lib/
           cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./bin/
+          cp ./discord-rpc/win32-dynamic/include/discord*.h ./include/
 
       - name: Install Linux Discord RPC
         if: matrix.platform == 'gcc_64'
@@ -82,6 +98,7 @@ jobs:
           unzip discord_rpc.zip
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib/
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
+          cp ./discord-rpc/linux-dynamic/include/discord*.h ./include/
 
       - name: Install Mac Discord RPC
         if: matrix.os == 'macos-latest'
@@ -90,6 +107,7 @@ jobs:
           unzip discord_rpc.zip
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib/
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin/
+          cp ./discord-rpc/osx-dynamic/include/discord*.h ./include/
 
       - name: Install Windows BASS
         if: contains(matrix.os, 'windows')
@@ -167,7 +185,7 @@ jobs:
 
       - name: qmake
         run: |
-          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
+          qmake DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
       - name: build
         run: |
@@ -178,8 +196,19 @@ jobs:
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
-          windeployqt .
+          windeployqt --no-quick-import --no-translations --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-opengl-sw .
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
+          rm ./imageformats/qtiff.dll
+          rm ./imageformats/qjpeg.dll
+          rm ./imageformats/qicns.dll
+          rm ./imageformats/qico.dll
+          rm ./imageformats/qsvg.dll
+          rm ./imageformats/qtga.dll
+          rm ./imageformats/qwbmp.dll
+          rm ./Qt5Svg.dll
+          rm -r iconengines
+          rm -r bearer
+          rm -r styles
 
       - name: Deploy Mac
         if: matrix.os == 'macos-latest'
@@ -194,6 +223,8 @@ jobs:
           install_name_tool -change @loader_path/libbassmidi.dylib @rpath/libbassmidi.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
           install_name_tool -change @loader_path/libdiscord-rpc.dylib @rpath/libdiscord-rpc.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
           install_name_tool -change @loader_path/libqapng.dylib @rpath/libqapng.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          hdiutil create -volname "Attorney_Online" -srcfolder "./Attorney_Online.app" -ov -format UDZO "Attorney_Online.dmg"
+          rm -r ./Attorney_Online.app/
 
       - name: Deploy Android
         if: matrix.platform == 'android'

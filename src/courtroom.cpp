@@ -70,6 +70,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_chatbox = new AOImage(this, ao_app);
   ui_vp_chatbox->setObjectName("ui_vp_chatbox");
+
+  ui_vp_sticker = new StickerLayer(this, ao_app);
+  ui_vp_sticker->set_play_once(false);
+  ui_vp_sticker->set_cull_image(false);
+  ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_vp_sticker->setObjectName("ui_vp_sticker");
+
   ui_vp_showname = new QLabel(ui_vp_chatbox);
   ui_vp_showname->setObjectName("ui_vp_showname");
   ui_vp_showname->setAlignment(Qt::AlignLeft);
@@ -114,7 +121,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   log_timestamp = ao_app->get_log_timestamp();
   log_timestamp_format = ao_app->get_log_timestamp_format();
 
-  ui_debug_log = new AOTextArea(this);
+  ui_debug_log = new AOTextArea(this, ao_app->get_max_log_size());
   ui_debug_log->setReadOnly(true);
   ui_debug_log->setOpenExternalLinks(true);
   ui_debug_log->hide();
@@ -173,16 +180,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
-  ui_ic_chat_message->setPlaceholderText(tr("Message"));
+  ui_ic_chat_message->setPlaceholderText(tr("Message in-character"));
   ui_ic_chat_message_filter = new AOLineEditFilter();
   ui_ic_chat_message_filter->preserve_selection = true;
   ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
   ui_ic_chat_message->setObjectName("ui_ic_chat_message");
-
-  ui_vp_sticker = new StickerLayer(ui_viewport, ao_app);
-  ui_vp_sticker->set_play_once(false);
-  ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_vp_sticker->setObjectName("ui_vp_sticker");
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
@@ -191,6 +193,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
   ui_ooc_chat_message->setObjectName("ui_ooc_chat_message");
+  ui_ooc_chat_message->setPlaceholderText(tr("Message out-of-character"));
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
@@ -380,12 +383,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100, 100);
-  ui_pair_offset_spinbox->setSuffix(tr("% x offset"));
+  ui_pair_offset_spinbox->setSuffix("% x");
   ui_pair_offset_spinbox->setObjectName("ui_pair_offset_spinbox");
 
   ui_pair_vert_offset_spinbox = new QSpinBox(this);
   ui_pair_vert_offset_spinbox->setRange(-100, 100);
-  ui_pair_vert_offset_spinbox->setSuffix(tr("% y offset"));
+  ui_pair_vert_offset_spinbox->setSuffix("% y");
   ui_pair_vert_offset_spinbox->setObjectName("ui_pair_vert_offset_spinbox");
 
   ui_pair_order_dropdown = new QComboBox(this);
@@ -829,7 +832,7 @@ void Courtroom::set_widgets()
                       ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
-  ui_vp_sticker->move(0, 0);
+  ui_vp_sticker->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_sticker->combo_resize(ui_viewport->width(),
                               ui_viewport->height());
 
@@ -1442,7 +1445,15 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   ui_pos_dropdown->blockSignals(true);
   pos_dropdown_list = pos_dropdowns;
   ui_pos_dropdown->clear();
-  ui_pos_dropdown->addItems(pos_dropdown_list);
+  for (int n = 0; n < pos_dropdown_list.size(); ++n) {
+    QString pos = pos_dropdown_list.at(n);
+    ui_pos_dropdown->addItem(pos);
+    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos))));
+    if (!image.isNull()) {
+      image = image.scaledToHeight(ui_pos_dropdown->iconSize().height());
+    }
+    ui_pos_dropdown->setItemIcon(n, image);
+  }
 
   if (current_side != "" && !pos_dropdown_list.contains(current_side))
     ui_pos_dropdown->setEditText(current_side);
@@ -1544,9 +1555,12 @@ void Courtroom::update_character(int p_cid)
     }
   }
 
-  if (m_cid != -1) // there is no name at char_list -1, and we crash if we try
-                   // to find one
+  if (m_cid != -1) {
     ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
+  }
+  else {
+    ui_ic_chat_name->setPlaceholderText("Spectator");
+  }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
@@ -3753,73 +3767,10 @@ void Courtroom::play_sfx()
         ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
 
-void Courtroom::set_scene(QString f_desk_mod, QString f_side)
+void Courtroom::set_scene(const QString f_desk_mod, const QString f_side)
 {
-  // witness is default if pos is invalid
-  QString f_background;
-  QString f_desk_image;
-  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("witnessempty")))) {
-    f_background = "witnessempty";
-    f_desk_image = "stand";
-  }
-  else {
-    f_background = "wit";
-    f_desk_image = "wit_overlay";
-  }
-
-  if (f_side == "def" && file_exists(ao_app->get_image_suffix(
-                             ao_app->get_background_path("defenseempty")))) {
-    f_background = "defenseempty";
-    f_desk_image = "defensedesk";
-  }
-  else if (f_side == "pro" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("prosecutorempty")))) {
-    f_background = "prosecutorempty";
-    f_desk_image = "prosecutiondesk";
-  }
-  else if (f_side == "jud" && file_exists(ao_app->get_image_suffix(
-                                  ao_app->get_background_path("judgestand")))) {
-    f_background = "judgestand";
-    f_desk_image = "judgedesk";
-  }
-  else if (f_side == "hld" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("helperstand")))) {
-    f_background = "helperstand";
-    f_desk_image = "helperdesk";
-  }
-  else if (f_side == "hlp" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("prohelperstand")))) {
-    f_background = "prohelperstand";
-    f_desk_image = "prohelperdesk";
-  }
-  else if (f_side == "jur" && file_exists(ao_app->get_image_suffix(
-                                  ao_app->get_background_path("jurystand")))) {
-    f_background = "jurystand";
-    f_desk_image = "jurydesk";
-  }
-  else if (f_side == "sea" &&
-           file_exists(ao_app->get_image_suffix(
-               ao_app->get_background_path("seancestand")))) {
-    f_background = "seancestand";
-    f_desk_image = "seancedesk";
-  }
-
-  if (file_exists(ao_app->get_image_suffix(
-          ao_app->get_background_path(f_side)))) // Unique pos path
-  {
-    f_background = f_side;
-    f_desk_image = f_side + "_overlay";
-  }
-
-  QString desk_override = ao_app->read_design_ini("overlays/" + f_background, ao_app->get_background_path("design.ini"));
-  if (desk_override != "")
-    f_desk_image = desk_override;
-
-  ui_vp_background->load_image(f_background);
-  ui_vp_desk->load_image(f_desk_image);
+  ui_vp_background->load_image(ao_app->get_pos_path(f_side));
+  ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
 
   if (f_desk_mod == "0" ||
       (f_desk_mod != "1" &&
@@ -5193,7 +5144,7 @@ void Courtroom::set_text_color_dropdown()
     ui_text_color->addItem(color_name);
     QPixmap pixmap(16, 16);
     pixmap.fill(color);
-    ui_text_color->setItemIcon(ui_text_color->count() - 1, QIcon(pixmap));
+    ui_text_color->setItemIcon(ui_text_color->count() - 1, pixmap);
     color_row_to_number.append(c);
   }
   for (int c = 0; c < max_colors; ++c) {
