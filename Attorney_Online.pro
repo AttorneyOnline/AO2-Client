@@ -1,4 +1,4 @@
-QT += core gui widgets network websockets
+QT += core gui widgets network uitools websockets
 
 TARGET = Attorney_Online
 TEMPLATE = app
