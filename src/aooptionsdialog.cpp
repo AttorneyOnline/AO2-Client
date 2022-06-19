@@ -1039,9 +1039,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
-  if(!ao_app->get_log_timestamp())
-get_log_timestamp()) {
-
+  if(!ao_app->get_log_timestamp()) {
+    ui_log_timestamp_format_combobox->setDisabled(true);
+  }
   row += 1;
   ui_log_ic_actions_lbl = new QLabel(ui_form_logging_widget);
   ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
