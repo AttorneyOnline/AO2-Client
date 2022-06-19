@@ -3851,6 +3851,7 @@ void Courtroom::set_self_offset(const QString& p_list) {
       }
     const int percent = 100;
     ui_vp_player_char->move(ui_viewport->width() * self_offset / percent, ui_viewport->height() * self_offset_v / percent);
+    }
 }
 
 void Courtroom::set_ip_list(QString p_list)
