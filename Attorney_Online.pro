@@ -71,3 +71,5 @@ android:DISTFILES += \
     android/gradlew.bat
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+FORMS += $$files($$PWD/resource/ui/*.ui)
