@@ -4522,16 +4522,16 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 
   menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
-  menu->addAction(QString("Play"), this, SLOT(on_sfx_play_clicked()));
+  menu->addAction(QString("Play"), this, &Courtroom::on_sfx_play_clicked);
   if (file_exists(ao_app->get_real_path(
-                    ao_app->get_character_path(current_char, "soundlist.ini"))))
+          ao_app->get_character_path(current_char, "soundlist.ini"))))
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
-                    SLOT(on_sfx_edit_requested()));
+                    &Courtroom::on_sfx_edit_requested);
   else
     menu->addAction(QString("Edit global soundlist.ini"), this,
-                    SLOT(on_sfx_edit_requested()));
+                    &Courtroom::on_sfx_edit_requested);
   if (!custom_sfx.isEmpty())
-    menu->addAction(QString("Clear Edit Text"), this, SLOT(on_sfx_remove_clicked()));
+    menu->addAction(QString("Clear Edit Text"), this, &Courtroom::on_sfx_remove_clicked);
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
 }
 
