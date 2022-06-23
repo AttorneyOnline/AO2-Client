@@ -77,13 +77,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   // Fill the combobox with the names of the themes.
   QSet<QString> themes;
-  QStringList bases = ao_app->get_mount_paths();
-  bases.push_front(ao_app->get_base_path());
-  for (const QString &base : bases) {
-    QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
-                    QDirIterator::NoIteratorFlags);
-    while (it.hasNext()) {
-      QString actualname = QDir(it.next()).dirName();
+  QStringList mounted_base_paths = ao_app->get_mount_paths();
+  mounted_base_paths.push_front(ao_app->get_base_path());
+  for (const QString &base : mounted_base_paths) {
+    QStringList name_candidates = QDir(base + "/themes").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name | QDir::Reversed);
+    for (const QString &actualname : qAsConst(name_candidates)) {
       if (!themes.contains(actualname)) {
         ui_theme_combobox->addItem(actualname);
         themes.insert(actualname);
@@ -256,7 +254,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_log_ic_actions_cb = new QCheckBox(ui_form_layout_widget);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
-  
+
   row += 1;
   ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
   ui_stay_time_lbl->setText(tr("Text Stay Time:"));
