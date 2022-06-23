@@ -3994,13 +3994,44 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
   if (p_state < 0 || p_state > 10)
     return;
 
+  int prev_state = p_state;
   if (p_bar == 1) {
     ui_defense_bar->set_image("defensebar" + QString::number(p_state));
+    prev_state = defense_bar_state;
     defense_bar_state = p_state;
   }
   else if (p_bar == 2) {
     ui_prosecution_bar->set_image("prosecutionbar" + QString::number(p_state));
+    prev_state = prosecution_bar_state;
     prosecution_bar_state = p_state;
+  }
+
+  QString sfx_name;
+  QString effect_name;
+  if (p_state > prev_state) {
+    sfx_name = ao_app->get_penalty_value("hp_increased_sfx");
+    effect_name = ao_app->get_penalty_value("hp_increased_effect").toLower();
+  }
+  else if (p_state < prev_state) {
+    sfx_name = ao_app->get_penalty_value("hp_decreased_sfx");
+    effect_name = ao_app->get_penalty_value("hp_decreased_effect").toLower();
+  }
+  else {
+    return;
+  }
+
+  if (effect_name == "screenshake") {
+    do_screenshake();
+  }
+  else if (effect_name == "flash") {
+    do_flash();
+  }
+  else {
+    do_effect(effect_name, "", "", "");
+  }
+
+  if (!sfx_name.isEmpty()) {
+    sfx_player->play(sfx_name);
   }
 }
 

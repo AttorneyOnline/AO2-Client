@@ -521,6 +521,13 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
   return return_color;
 }
 
+QString AOApplication::get_penalty_value(QString p_identifier)
+{
+  return get_config_value(p_identifier, "penalty/penalty.ini", current_theme,
+                          get_subtheme(), default_theme, "");
+}
+
+
 QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 {
   QString value = get_config_value(p_identifier, "courtroom_sounds.ini", current_theme, get_subtheme(), default_theme, p_misc);

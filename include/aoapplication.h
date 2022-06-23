@@ -361,6 +361,10 @@ public:
   // Returns the color from the misc folder.
   QColor get_chat_color(QString p_identifier, QString p_chat);
 
+  // Returns the value with p_identifier from penalty/penalty.ini in the current
+  // theme path
+  QString get_penalty_value(QString p_identifier);
+
   // Returns the sfx with p_identifier from courtroom_sounds.ini in the current theme path
   QString get_court_sfx(QString p_identifier, QString p_misc="");
 
