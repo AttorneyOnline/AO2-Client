@@ -125,11 +125,6 @@ QString AOApplication::get_version_string()
 
 void AOApplication::reload_theme() { current_theme = read_theme(); }
 
-void AOApplication::set_favorite_list()
-{
-  favorite_list = read_serverlist_txt();
-}
-
 QString AOApplication::get_current_char()
 {
   if (courtroom_constructed)

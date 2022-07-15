@@ -67,9 +67,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     s_pv = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
-    if (lobby_constructed)
-      w_lobby->enable_connect_button();
-
     send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
   }
   else if (header == "CT") {
@@ -139,18 +136,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "PN") {
     if (f_contents.size() < 2)
       goto end;
-
-    w_lobby->set_player_count(f_contents.at(0).toInt(),
-                              f_contents.at(1).toInt());
-
-    if (f_contents.size() >= 3) {
-        w_lobby->set_server_description(f_contents.at(2));
-    }
-
-    if (w_lobby->doubleclicked) {
-        send_server_packet(new AOPacket("askchaa#%"));
-        w_lobby->doubleclicked = false;
-    }
   }
   else if (header == "SI") {
     if (f_contents.size() != 3)
@@ -173,29 +158,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    int selected_server = w_lobby->get_selected_server();
-
-    QString server_address = "", server_name = "";
-    if (w_lobby->public_servers_selected) {
-      if (selected_server >= 0 && selected_server < server_list.size()) {
-        auto info = server_list.at(selected_server);
-        server_name = info.name;
-        server_address =
-            QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title = server_name;
-      }
-    }
-    else {
-      if (selected_server >= 0 && selected_server < favorite_list.size()) {
-        auto info = favorite_list.at(selected_server);
-        server_name = info.name;
-        server_address =
-            QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title = server_name;
-      }
-    }
-
-    w_courtroom->set_window_title(window_title);
+    w_courtroom->set_window_title("kenji alpha - not for distribution");
 
     w_lobby->show_loading_overlay();
     w_lobby->set_loading_text(tr("Loading"));
@@ -208,23 +171,21 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_demo_logging_enabled() && server_name != "Demo playback") {
+    if (AOApplication::get_demo_logging_enabled()) {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
-          "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
-          "/'yyyy-MM-dd hh-mm-ss t'.log'");
-      this->write_to_file("Joined server " + server_name + " hosted on address " +
-                              server_address + " on " +
+          "'logs/'yyyy-MM-dd hh-mm-ss t'.log'");
+      this->write_to_file("Joined server on " +
                               QDateTime::currentDateTime().toUTC().toString(),
                           log_filename, true);
     }
     else
       this->log_filename = "";
 
-    QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
-    hash.addData(server_address.toUtf8());
-    if (is_discord_enabled())
-      discord->state_server(server_name.toStdString(),
-                            hash.result().toBase64().toStdString());
+//    QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
+//    hash.addData(server_address.toUtf8());
+//    if (is_discord_enabled())
+//      discord->state_server(server_name.toStdString(),
+//                            hash.result().toBase64().toStdString());
   }
   else if (header == "CharsCheck") {
     if (!courtroom_constructed)
@@ -359,10 +320,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "DONE") {
     if (!courtroom_constructed)
       goto end;
-
-    if (lobby_constructed)
-      w_courtroom->append_server_chatmessage(tr("[Global log]"),
-                                             w_lobby->get_chatlog(), "0");
 
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();
