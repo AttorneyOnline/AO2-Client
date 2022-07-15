@@ -256,7 +256,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_log_ic_actions_cb = new QCheckBox(ui_form_layout_widget);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
-  
+
   row += 1;
   ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
   ui_stay_time_lbl->setText(tr("Text Stay Time:"));
@@ -1179,6 +1179,9 @@ void AOOptionsDialog::update_values() {
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
+
+  //Clear the list to prevent duplication of default entries.
+  ui_mount_list->clear();
   ui_mount_list->addItem(defaultMount);
   ui_mount_list->addItems(ao_app->get_mount_paths());
 
