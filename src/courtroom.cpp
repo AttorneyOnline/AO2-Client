@@ -5613,8 +5613,7 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     return;
   }
 
-  auto current_style = ao_app->style();
-  int checkbox_width = current_style->pixelMetric(QStyle::PM_IndicatorWidth) + current_style->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
+  int checkbox_width = ao_app->style()->pixelMetric(QStyle::PM_IndicatorWidth) + ao_app->style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
 
   int label_theme_width = (p_label != nullptr ? design_ini_result.width : (design_ini_result.width - checkbox_width));
   int label_px_width =
