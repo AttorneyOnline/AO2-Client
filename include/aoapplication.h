@@ -86,25 +86,6 @@ public:
   qint64 latency = 0;
   QString window_title;
 
-  /////////////////server metadata//////////////////
-
-  bool yellow_text_enabled = false;
-  bool prezoom_enabled = false;
-  bool flipping_enabled = false;
-  bool custom_objection_enabled = false;
-  bool desk_mod_enabled = false;
-  bool evidence_enabled = false;
-  bool cccc_ic_support_enabled = false;
-  bool arup_enabled = false;
-  bool casing_alerts_enabled = false;
-  bool modcall_reason_enabled = false;
-  bool looping_sfx_support_enabled = false;
-  bool additive_enabled = false;
-  bool effects_enabled = false;
-  bool y_offset_enabled = false;
-  bool expanded_desk_mods_enabled = false;
-  bool auth_packet_enabled = false;
-
   ///////////////loading info///////////////////
 
   // player number, it's hardly used but might be needed for some old servers

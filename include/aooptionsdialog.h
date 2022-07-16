@@ -165,7 +165,6 @@ private:
   QWidget *ui_casing_tab;
   QWidget *ui_casing_widget;
   QFormLayout *ui_casing_layout;
-  QLabel *ui_casing_supported_lbl;
   QLabel *ui_casing_enabled_lbl;
   QCheckBox *ui_casing_enabled_cb;
   QLabel *ui_casing_def_lbl;

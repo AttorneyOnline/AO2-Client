@@ -815,19 +815,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_casing_layout->setContentsMargins(0, 0, 0, 0);
   row = 0;
 
-  // -- SERVER SUPPORTS CASING
-
-  ui_casing_supported_lbl = new QLabel(ui_casing_widget);
-  if (ao_app->casing_alerts_enabled)
-    ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
-  else
-    ui_casing_supported_lbl->setText(
-        tr("This server does not support case alerts."));
-  ui_casing_supported_lbl->setToolTip(tr("Pretty self-explanatory."));
-
-  ui_casing_layout->setWidget(row, QFormLayout::FieldRole,
-                              ui_casing_supported_lbl);
-
   // -- CASE ANNOUNCEMENTS
 
   row += 1;

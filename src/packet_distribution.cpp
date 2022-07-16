@@ -38,22 +38,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() == 0)
       goto end;
 
-    // default(legacy) values
-    yellow_text_enabled = false;
-    prezoom_enabled = false;
-    flipping_enabled = false;
-    custom_objection_enabled = false;
-    desk_mod_enabled = false;
-    evidence_enabled = false;
-    cccc_ic_support_enabled = false;
-    arup_enabled = false;
-    casing_alerts_enabled = false;
-    modcall_reason_enabled = false;
-    looping_sfx_support_enabled = false;
-    additive_enabled = false;
-    effects_enabled = false;
-    y_offset_enabled = false;
-
     QString f_hdid;
     f_hdid = get_hdid();
 
@@ -83,55 +67,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       append_to_demofile(f_packet_encoded);
     }
-  }
-  else if (header == "FL") {
-    yellow_text_enabled = false;
-    prezoom_enabled = false;
-    flipping_enabled = false;
-    custom_objection_enabled = false;
-    desk_mod_enabled = false;
-    evidence_enabled = false;
-    cccc_ic_support_enabled = false;
-    arup_enabled = false;
-    casing_alerts_enabled = false;
-    modcall_reason_enabled = false;
-    looping_sfx_support_enabled = false;
-    additive_enabled = false;
-    effects_enabled = false;
-    expanded_desk_mods_enabled = false;
-    auth_packet_enabled = false;
-    if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
-      yellow_text_enabled = true;
-    if (f_packet.contains("prezoom", Qt::CaseInsensitive))
-      prezoom_enabled = true;
-    if (f_packet.contains("flipping", Qt::CaseInsensitive))
-      flipping_enabled = true;
-    if (f_packet.contains("customobjections", Qt::CaseInsensitive))
-      custom_objection_enabled = true;
-    if (f_packet.contains("deskmod", Qt::CaseInsensitive))
-      desk_mod_enabled = true;
-    if (f_packet.contains("evidence", Qt::CaseInsensitive))
-      evidence_enabled = true;
-    if (f_packet.contains("cccc_ic_support", Qt::CaseInsensitive))
-      cccc_ic_support_enabled = true;
-    if (f_packet.contains("arup", Qt::CaseInsensitive))
-      arup_enabled = true;
-    if (f_packet.contains("casing_alerts", Qt::CaseInsensitive))
-      casing_alerts_enabled = true;
-    if (f_packet.contains("modcall_reason", Qt::CaseInsensitive))
-      modcall_reason_enabled = true;
-    if (f_packet.contains("looping_sfx", Qt::CaseInsensitive))
-      looping_sfx_support_enabled = true;
-    if (f_packet.contains("additive", Qt::CaseInsensitive))
-      additive_enabled = true;
-    if (f_packet.contains("effects", Qt::CaseInsensitive))
-      effects_enabled = true;
-    if (f_packet.contains("y_offset", Qt::CaseInsensitive))
-        y_offset_enabled = true;
-    if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
-      expanded_desk_mods_enabled = true;
-    if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
-      auth_packet_enabled = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
@@ -560,7 +495,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   // Auth packet
   else if (header == "AUTH") {
-    if (!courtroom_constructed || !auth_packet_enabled || f_contents.size() < 1)
+    if (!courtroom_constructed || f_contents.size() < 1)
       goto end;
     bool ok;
     int authenticated = f_contents.at(0).toInt(&ok);
