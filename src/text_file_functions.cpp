@@ -307,7 +307,7 @@ void AOApplication::migrate_serverlist_txt(QFile &p_serverlist_txt)
     l_settings.sync();
   }
   p_serverlist_txt.close();
-  p_serverlist_txt.rename(get_base_path() + "serverlist_depricated.txt");
+  p_serverlist_txt.rename(get_base_path() + "serverlist_deprecated.txt");
 }
 
 QString AOApplication::read_design_ini(QString p_identifier,
