@@ -1690,9 +1690,6 @@ void Courtroom::list_music()
 // Todo: multithread this due to some servers having large as hell area list
 void Courtroom::list_areas()
 {
-  ui_area_list->clear();
-  //  ui_music_search->setText("");
-
   int n_listed_areas = 0;
 
   for (int n_area = 0; n_area < area_list.size(); ++n_area) {
@@ -1700,8 +1697,6 @@ void Courtroom::list_areas()
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_enabled) {
-      i_area.prepend("[" + QString::number(n_area) + "] "); // Give it the index
-
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
@@ -1722,7 +1717,10 @@ void Courtroom::list_areas()
     }
 
 
-    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
+    QTreeWidgetItem *treeItem = ui_area_list->topLevelItem(n_area);
+    if (treeItem == nullptr) {
+      treeItem = new QTreeWidgetItem(ui_area_list);
+    }
     treeItem->setText(0, area_list.at(n_area));
     treeItem->setText(1, i_area);
 
@@ -1750,6 +1748,10 @@ void Courtroom::list_areas()
     }
 
     ++n_listed_areas;
+  }
+
+  while (ui_area_list->topLevelItemCount() > n_listed_areas) {
+    ui_area_list->takeTopLevelItem(ui_area_list->topLevelItemCount()-1);
   }
 
   if (ui_music_search->text() != "") {
