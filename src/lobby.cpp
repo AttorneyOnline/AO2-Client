@@ -597,7 +597,6 @@ void Lobby::on_server_list_context_menu_requested(const QPoint & pos )
     return;
 
   QAction *newAct = new QAction(tr("&Remove"), this);
-  newAct->setStatusTip(tr("new sth"));
   connect(newAct, SIGNAL(triggered()), this, SLOT(remove_favorite()));
 
 
