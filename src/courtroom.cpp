@@ -1699,7 +1699,7 @@ void Courtroom::list_areas()
     QString i_area = "";
     i_area.append(area_list.at(n_area));
 
-    if (ao_app->arup_enabled) {
+    if (ao_app->arup_supported) {
       i_area.prepend("[" + QString::number(n_area) + "] "); // Give it the index
 
       i_area.append("\n  ");
@@ -1726,7 +1726,7 @@ void Courtroom::list_areas()
     treeItem->setText(0, area_list.at(n_area));
     treeItem->setText(1, i_area);
 
-    if (ao_app->arup_enabled) {
+    if (ao_app->arup_supported) {
       // Coloring logic here.
       treeItem->setBackground(1, free_brush);
       if (arup_locks.at(n_area) == "LOCKED") {
