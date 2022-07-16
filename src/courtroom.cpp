@@ -4085,7 +4085,7 @@ void Courtroom::on_ooc_return_pressed()
 
   //We ignore it when the server is compatible with 2.8
   //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
-  if (ooc_message.startsWith("/pos") & !ao_app->effects_enabled) {
+  if (ooc_message.startsWith("/pos") && !ao_app->effects_enabled) {
     if (ooc_message == "/pos jud") {
       show_judge_controls(true);
     }
