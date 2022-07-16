@@ -814,7 +814,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // -- SERVER SUPPORTS CASING
 
   ui_casing_supported_lbl = new QLabel(ui_casing_widget);
-  if (ao_app->casing_alerts_enabled)
+  if (ao_app->casing_alerts_supported)
     ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
   else
     ui_casing_supported_lbl->setText(
