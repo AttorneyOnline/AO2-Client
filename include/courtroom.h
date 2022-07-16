@@ -256,7 +256,7 @@ public:
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
-  
+
   // Display the character.
   void display_character();
 
@@ -442,7 +442,7 @@ private:
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
-  
+
   // delay before the next queue entry is going to be processed
   QTimer *text_queue_timer;
 
@@ -812,6 +812,7 @@ private:
 
   void initialize_evidence();
   void refresh_evidence();
+  void show_evidence(int f_real_id);
   void set_evidence_page();
 
   void reset_ui();
@@ -883,6 +884,7 @@ private slots:
   void on_sfx_dropdown_custom(QString p_sfx);
   void set_sfx_dropdown();
   void on_sfx_context_menu_requested(const QPoint &pos);
+  void on_sfx_play_clicked();
   void on_sfx_edit_requested();
   void on_sfx_remove_clicked();
 

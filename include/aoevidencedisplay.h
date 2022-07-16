@@ -7,6 +7,7 @@
 
 #include <QDebug>
 #include <QLabel>
+#include <QPushButton>
 
 class AOEvidenceDisplay : public QLabel {
   Q_OBJECT
@@ -14,19 +15,23 @@ class AOEvidenceDisplay : public QLabel {
 public:
   AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app);
 
-  void show_evidence(QString p_evidence_image, bool is_left_side, int p_volume);
-  QLabel *get_evidence_icon();
+  void show_evidence(int p_index, QString p_evidence_image, bool is_left_side, int p_volume);
   void reset();
   void combo_resize(int w, int h);
+
+signals:
+  void show_evidence_details(int index);
 
 private:
   AOApplication *ao_app;
   InterfaceLayer *evidence_movie;
-  QLabel *evidence_icon;
+  QPushButton *evidence_icon;
   AOSfxPlayer *sfx_player;
+  int last_evidence_index = -1;
 
 private slots:
   void show_done();
+  void icon_clicked();
 };
 
 #endif // AOEVIDENCEDISPLAY_H

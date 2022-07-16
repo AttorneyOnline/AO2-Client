@@ -236,52 +236,31 @@ bool AOApplication::append_to_file(QString p_text, QString p_file,
   return false;
 }
 
-void AOApplication::write_to_serverlist_txt(QString p_line)
-{
-  QFile serverlist_txt;
-  QString serverlist_txt_path = get_base_path() + "serverlist.txt";
-
-  serverlist_txt.setFileName(serverlist_txt_path);
-
-  if (!serverlist_txt.open(QIODevice::WriteOnly | QIODevice::Append)) {
-    return;
-  }
-
-  QTextStream out(&serverlist_txt);
-  out.setCodec("UTF-8");
-  out << "\r\n" << p_line;
-
-  serverlist_txt.close();
-}
-
 QVector<server_type> AOApplication::read_serverlist_txt()
 {
   QVector<server_type> f_server_list;
 
-  QFile serverlist_txt;
-  QString serverlist_txt_path = get_base_path() + "serverlist.txt";
+  QFile serverlist_txt(get_base_path() + "serverlist.txt");
+  QFile serverlist_ini(get_base_path() + "favorite_servers.ini");
 
-  serverlist_txt.setFileName(serverlist_txt_path);
+  if (serverlist_txt.exists() && !serverlist_ini.exists()) {
+    migrate_serverlist_txt(serverlist_txt);
+  }
 
-  if (serverlist_txt.open(QIODevice::ReadOnly)) {
-      QTextStream in(&serverlist_txt);
-      in.setCodec("UTF-8");
-
-      while (!in.atEnd()) {
-        QString line = in.readLine();
-        server_type f_server;
-        QStringList line_contents = line.split(":");
-
-        if (line_contents.size() < 3)
-          continue;
-
-        f_server.ip = line_contents.at(0);
-        f_server.port = line_contents.at(1).toInt();
-        f_server.name = line_contents.at(2);
-        f_server.desc = "";
-
-        f_server_list.append(f_server);
-      }
+  if (serverlist_ini.exists()) {
+    QSettings l_favorite_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
+    l_favorite_ini.setIniCodec("UTF-8");
+    for(QString &fav_index: l_favorite_ini.childGroups()) {
+      server_type f_server;
+      l_favorite_ini.beginGroup(fav_index);
+      f_server.ip = l_favorite_ini.value("address", "127.0.0.1").toString();
+      f_server.port = l_favorite_ini.value("port", 27016).toInt();
+      f_server.name = l_favorite_ini.value("name", "Missing Name").toString();
+      f_server.desc = l_favorite_ini.value("desc", "No description").toString();
+      f_server.socket_type = to_connection_type.value(l_favorite_ini.value("protocol", "tcp").toString());
+      f_server_list.append(f_server);
+      l_favorite_ini.endGroup();
+    }
   }
 
   server_type demo_server;
@@ -292,6 +271,43 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   f_server_list.append(demo_server);
 
   return f_server_list;
+}
+
+void AOApplication::migrate_serverlist_txt(QFile &p_serverlist_txt)
+{
+  // We migrate our legacy serverlist.txt to a QSettings object.
+  // Then we write it to disk.
+  QSettings l_settings(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
+  l_settings.setIniCodec("UTF-8");
+  if (p_serverlist_txt.open(QIODevice::ReadOnly)) {
+    QTextStream l_favorite_textstream(&p_serverlist_txt);
+    l_favorite_textstream.setCodec("UTF-8");
+    int l_entry_index = 0;
+
+    while (!l_favorite_textstream.atEnd()) {
+      QString l_favorite_line = l_favorite_textstream.readLine();
+      QStringList l_line_contents = l_favorite_line.split(":");
+
+      if (l_line_contents.size() >= 3) {
+        l_settings.beginGroup(QString::number(l_entry_index));
+        l_settings.setValue("name", l_line_contents.at(2));
+        l_settings.setValue("address", l_line_contents.at(0));
+        l_settings.setValue("port", l_line_contents.at(1));
+
+        if (l_line_contents.size() >= 4) {
+          l_settings.setValue("protocol", l_line_contents.at(3));
+        }
+        else {
+          l_settings.setValue("protocol","tcp");
+        }
+        l_settings.endGroup();
+        l_entry_index++;
+      }
+    }
+    l_settings.sync();
+  }
+  p_serverlist_txt.close();
+  p_serverlist_txt.rename(get_base_path() + "serverlist_depricated.txt");
 }
 
 QString AOApplication::read_design_ini(QString p_identifier,
@@ -504,6 +520,13 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 
   return return_color;
 }
+
+QString AOApplication::get_penalty_value(QString p_identifier)
+{
+  return get_config_value(p_identifier, "penalty/penalty.ini", current_theme,
+                          get_subtheme(), default_theme, "");
+}
+
 
 QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 {
