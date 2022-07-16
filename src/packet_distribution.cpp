@@ -173,7 +173,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    window_title = tr("Attorney Online %1").arg(applicationVersion());
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -183,7 +182,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title += ": " + server_name;
+        window_title = server_name;
       }
     }
     else {
@@ -192,7 +191,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title += ": " + server_name;
+        window_title = server_name;
       }
     }
 
@@ -606,9 +605,30 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "AUTH") {
     if (!courtroom_constructed || !auth_packet_enabled || f_contents.size() < 1)
       goto end;
-    int authenticated = f_contents.at(0).toInt();
+    bool ok;
+    int authenticated = f_contents.at(0).toInt(&ok);
+    if (!ok) {
+      qWarning() << "Malformed AUTH packet! Contents:" << f_contents.at(0);
+    }
 
     w_courtroom->on_authentication_state_received(authenticated);
+  }
+  else if (header == "JD") {
+    if (!courtroom_constructed || f_contents.empty()) {
+      goto end;
+    }
+    bool ok;
+    Courtroom::JudgeState state = static_cast<Courtroom::JudgeState>(f_contents.at(0).toInt(&ok));
+    if (!ok) {
+      goto end; // ignore malformed packet
+    }
+    w_courtroom->set_judge_state(state);
+    if (w_courtroom->get_judge_state() != Courtroom::POS_DEPENDENT) { // If we receive JD -1, it means the server asks us to fall back to client-side judge buttons behavior
+      w_courtroom->show_judge_controls(w_courtroom->get_judge_state() == Courtroom::SHOW_CONTROLS);
+    }
+    else {
+      w_courtroom->set_judge_buttons(); // client-side judge behavior
+    }
   }
 
  //AssetURL Packet

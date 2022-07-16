@@ -108,12 +108,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // Fill the combobox with the names of the themes.
   ui_subtheme_combobox->addItem("server");
   ui_subtheme_combobox->addItem("default");
-  QDirIterator it2(ao_app->get_base_path() + "themes/" + ao_app->current_theme, QDir::Dirs,
+  QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")), QDir::Dirs,
                   QDirIterator::NoIteratorFlags);
   while (it2.hasNext()) {
     QString actualname = QDir(it2.next()).dirName();
-    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc")
+    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc") {
       ui_subtheme_combobox->addItem(actualname);
+    }
   }
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_subtheme_combobox);
@@ -970,12 +971,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_add->setSizePolicy(stretch_btns);
   ui_mount_buttons_layout->addWidget(ui_mount_add, 0, 0, 1, 1);
   connect(ui_mount_add, &QPushButton::clicked, this, [this] {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
                                                     QApplication::applicationDirPath(),
                                                     QFileDialog::ShowDirsOnly);
-    if (dir.isEmpty())
+    if (path.isEmpty()) {
       return;
-    QListWidgetItem *dir_item = new QListWidgetItem(dir);
+    }
+    QDir dir(QApplication::applicationDirPath());
+    QString relative = dir.relativeFilePath(path);
+    if (!relative.contains("../")) {
+      path = relative;
+    }
+    QListWidgetItem *dir_item = new QListWidgetItem(path);
     ui_mount_list->addItem(dir_item);
     ui_mount_list->setCurrentItem(dir_item);
 
@@ -1319,7 +1326,7 @@ void AOOptionsDialog::theme_changed(int i) {
   // Fill the combobox with the names of the themes.
   ui_subtheme_combobox->addItem("server");
   ui_subtheme_combobox->addItem("default");
-  QDirIterator it(ao_app->get_base_path() + "themes/" + ui_theme_combobox->itemText(i), QDir::Dirs,
+  QDirIterator it(ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(i))), QDir::Dirs,
                   QDirIterator::NoIteratorFlags);
   while (it.hasNext()) {
     QString actualname = QDir(it.next()).dirName();
