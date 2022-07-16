@@ -119,7 +119,7 @@ void AOLayer::center_pixmap(QPixmap f_pixmap) {
 
 int AOLayer::get_pos_from_center(int f_center) {
     int center_scaled = int(float(f_center) * scaling_factor);
-    int f_pos = x + ((((f_w / 2) * -1) + center_scaled) * -1);
+    int f_pos = center_scaled - (f_w / 2) - x;
     qDebug() << "centering image at center" << f_center << "final position" << f_pos;
     return f_pos;
 }

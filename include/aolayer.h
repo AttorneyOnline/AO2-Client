@@ -160,19 +160,6 @@ protected:
    @brief Get the position to move us to, given the pixel X position of the point in the original image that we'd like to be centered.
 
    @return The position to move to.
-
-   @details
-   Given the equation P = x - ((c * (V / h)) - ((w * (V / h)) / 2)), where:
-
-   - x is the pixel position of the background layer,
-     relative to the top left corner of the viewport (Usually zero)
-   - c is the pixel position in the original pixmap
-     which should be in the center of the viewport
-   - V is the height of the viewport in pixels
-   - h is the height of the original pixmap in pixels
-   - w is the width of the original pixmap in pixels
-
-   This function solves for P.
   */
   int get_pos_from_center(int f_center);
 
