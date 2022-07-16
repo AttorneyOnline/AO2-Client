@@ -52,6 +52,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_void->hide();
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
+  ui_vp_background->masked = false;
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_speedlines->setObjectName("ui_vp_speedlines");
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
@@ -63,6 +64,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_sideplayer_char->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_desk->setObjectName("ui_vp_desk");
+  ui_vp_desk->masked = false;
 
   ui_vp_effect = new EffectLayer(this, ao_app);
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -1350,7 +1352,8 @@ void Courtroom::set_background(QString p_background, bool display)
     }
   }
   for (const QString &pos : ao_app->read_design_ini("positions", ao_app->get_background_path("design.ini")).split(",")) {
-    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos)))) {
+    QString real_pos = pos.split(":")[0];
+    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(real_pos)))) {
       pos_list.append(pos);
     }
   }
@@ -1435,7 +1438,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   for (int n = 0; n < pos_dropdown_list.size(); ++n) {
     QString pos = pos_dropdown_list.at(n);
     ui_pos_dropdown->addItem(pos);
-    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos))));
+    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos).first)));
     if (!image.isNull()) {
       image = image.scaledToHeight(ui_pos_dropdown->iconSize().height());
     }
@@ -1969,8 +1972,7 @@ void Courtroom::on_chat_return_pressed()
 
   // If the server we're on supports Looping SFX and Screenshake, use it if the
   // emote uses it.
-  packet_contents.append(
-      ao_app->get_sfx_looping(current_char, current_emote));
+  packet_contents.append(ao_app->get_sfx_looping(current_char, current_emote));
   packet_contents.append(QString::number(screenshake_state));
 
   QString pre_emote = ao_app->get_pre_emote(current_char, current_emote);
@@ -3697,12 +3699,13 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_scene(const QString f_desk_mod, const QString f_side)
 {
-  ui_vp_background->load_image(ao_app->get_pos_path(f_side));
-  ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
+  QPair<QString, int> bg_pair = ao_app->get_pos_path(f_side);
+  QPair<QString, int> desk_pair = ao_app->get_pos_path(f_side, true);
+  ui_vp_background->load_image(bg_pair.first, bg_pair.second);
+  ui_vp_desk->load_image(desk_pair.first, desk_pair.second);
+  last_side = f_side;
 
-  if (f_desk_mod == "0" ||
-      (f_desk_mod != "1" &&
-       (f_side == "jud" || f_side == "hld" || f_side == "hlp"))) {
+  if (f_desk_mod == "0") {
     ui_vp_desk->hide();
   }
   else {

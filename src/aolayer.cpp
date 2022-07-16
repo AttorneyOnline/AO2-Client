@@ -83,6 +83,7 @@ QPixmap AOLayer::get_pixmap(QImage image)
     f_pixmap = QPixmap::fromImage(image);
   //    auto aspect_ratio = Qt::KeepAspectRatio;
   if (!f_pixmap.isNull()) {
+    scaling_factor = float(f_h) / float(f_pixmap.height());
     if (f_pixmap.height() > f_h) // We are downscaling, use anti-aliasing.
       transform_mode = Qt::SmoothTransformation;
     if (stretch)
@@ -101,14 +102,26 @@ void AOLayer::set_frame(QPixmap f_pixmap)
 }
 
 void AOLayer::center_pixmap(QPixmap f_pixmap) {
-  QLabel::move(
-      x + (f_w - f_pixmap.width()) / 2,
-      y + (f_h - f_pixmap.height())); // Always center horizontally, always put
-                                      // at the bottom vertically
+  if (g_center == -1) {
+      QLabel::move(
+          x + (f_w - f_pixmap.width()) / 2,
+          y + (f_h - f_pixmap.height())); // Always center horizontally, always put
+                                          // at the bottom vertically
+  }
+  else {
+      QLabel::move(get_pos_from_center(g_center), y + (f_h - f_pixmap.height()));
+  }
   if (masked)
       this->setMask(
           QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
                   f_h)); // make sure we don't escape the area we've been given
+}
+
+int AOLayer::get_pos_from_center(int f_center) {
+    int center_scaled = int(float(f_center) * scaling_factor);
+    int f_pos = x + ((((f_w / 2) * -1) + center_scaled) * -1);
+    qDebug() << "centering image at center" << f_center << "final position" << f_pos;
+    return f_pos;
 }
 
 void AOLayer::combo_resize(int w, int h)
@@ -141,8 +154,9 @@ void AOLayer::move_and_center(int ax, int ay)
     center_pixmap(movie_frames[0]); // just use the first frame since dimensions are all that matter
 }
 
-void BackgroundLayer::load_image(QString p_filename)
+void BackgroundLayer::load_image(QString p_filename, int p_center)
 {
+  g_center = p_center;
   play_once = false;
   cull_image = false;
   VPath design_path = ao_app->get_background_path("design.ini");
@@ -154,7 +168,7 @@ void BackgroundLayer::load_image(QString p_filename)
 #endif
   QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
 
-  if (final_path == last_path) {
+  if (final_path == last_path && g_center == last_center) {
     // Don't restart background if background is unchanged
     return;
   }
@@ -302,7 +316,7 @@ void AOLayer::start_playback(QString p_image)
     force_continuous = true;
   }
 
-  if (((last_path == p_image) && (!force_continuous)) || p_image == "")
+  if (((last_path == p_image) && (!force_continuous) && (g_center == last_center)) || p_image == "")
     return;
 
 #ifdef DEBUG_MOVIE
@@ -338,6 +352,7 @@ void AOLayer::start_playback(QString p_image)
   }
   frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
   last_path = p_image;
+  last_center = g_center;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
   this->set_frame(movie_frames[frame]);
@@ -641,6 +656,16 @@ void AOLayer::fade(bool in, int duration)
     connect(fade_anim, SIGNAL(finished()), this, SLOT(in?fadein_finished():fadeout_finished()));
 
 }
+
+QPropertyAnimation* AOLayer::slide(int newcenter, int duration) {
+    QPropertyAnimation* slide_anim = new QPropertyAnimation(this, "pos");
+    slide_anim->setDuration(duration);
+    slide_anim->setStartValue(this->pos().x());
+    slide_anim->setEndValue(get_pos_from_center(newcenter));
+    slide_anim->setEasingCurve(QEasingCurve::Linear);
+    return slide_anim;
+}
+
 
 void AOLayer::fadeout_finished() {}
 

@@ -99,6 +99,8 @@ public:
 
   void fade(bool in, int duration);
 
+  QPropertyAnimation* slide(int newcenter, int duration);
+
   void invert();
 
 protected:
@@ -123,6 +125,8 @@ protected:
   int f_w = 0;
   int f_h = 0;
 
+  float scaling_factor = 0.0;
+
   int frame = 0;
   int max_frames = 0;
   int last_max_frames = 0;
@@ -145,8 +149,32 @@ protected:
 
   // Set the movie's frame to provided pixmap
   void set_frame(QPixmap f_pixmap);
+
+  // If set to anything other than -1, overrides center_pixmap to use it as a pixel position to center at
+  // Currently only used by background layers
+  int g_center = -1;
+  int last_center = -1;     // g_center from the last image.
   // Center the QLabel in the viewport based on the dimensions of f_pixmap
   void center_pixmap(QPixmap f_pixmap);
+  /*!
+   @brief Get the position to move us to, given the pixel X position of the point in the original image that we'd like to be centered.
+
+   @return The position to move to.
+
+   @details
+   Given the equation P = x - ((c * (V / h)) - ((w * (V / h)) / 2)), where:
+
+   - x is the pixel position of the background layer,
+     relative to the top left corner of the viewport (Usually zero)
+   - c is the pixel position in the original pixmap
+     which should be in the center of the viewport
+   - V is the height of the viewport in pixels
+   - h is the height of the original pixmap in pixels
+   - w is the width of the original pixmap in pixels
+
+   This function solves for P.
+  */
+  int get_pos_from_center(int f_center);
 
 private:
   // Populates the frame and delay vectors.
@@ -175,7 +203,7 @@ class BackgroundLayer : public AOLayer {
   Q_OBJECT
 public:
   BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
-  void load_image(QString p_filename);
+  void load_image(QString p_filename, int center = -1);
 signals:
   void hide_void();
 protected:

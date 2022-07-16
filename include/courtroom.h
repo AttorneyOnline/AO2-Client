@@ -609,6 +609,7 @@ private:
 
   QString current_background = "default";
   QString current_side = "";
+  QString last_side = "";
 
   QString last_music_search = "";
   QString last_area_search = "";
