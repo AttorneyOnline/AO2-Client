@@ -39,6 +39,7 @@ public:
 private:
   AOApplication *ao_app;
 
+  QPushButton *ui_about_button;
   QVBoxLayout *ui_vertical_layout;
   QTabWidget *ui_settings_tabs;
 
@@ -214,6 +215,7 @@ public slots:
   void timestamp_cb_changed(int state);
   void on_reload_theme_clicked();
   void theme_changed(int i);
+  void about_button_pressed();
 };
 
 #endif // AOOPTIONSDIALOG_H

@@ -53,9 +53,6 @@ private:
   AOButton *ui_cancel;
 
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
-
-private slots:
-  void on_about_clicked();
 };
 
 #endif // LOBBY_H

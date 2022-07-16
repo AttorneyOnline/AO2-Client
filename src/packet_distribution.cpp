@@ -67,7 +67,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     s_pv = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
-    send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
+    send_server_packet(new AOPacket("ID#kenji#" + get_version_string() + "#%"));
   }
   else if (header == "CT") {
     if (f_contents.size() < 2)

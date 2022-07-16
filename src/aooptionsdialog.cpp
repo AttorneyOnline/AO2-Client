@@ -28,7 +28,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_settings_buttons->setOrientation(Qt::Horizontal);
   ui_settings_buttons->setStandardButtons(QDialogButtonBox::Cancel |
                                           QDialogButtonBox::Save |
-                                          QDialogButtonBox::RestoreDefaults);
+                                          QDialogButtonBox::RestoreDefaults |
+                                          QDialogButtonBox::Help);
+  ui_settings_buttons->button(QDialogButtonBox::Help)->setText(tr("About"));
 
   connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
                    &AOOptionsDialog::save_pressed);
@@ -36,6 +38,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                    &AOOptionsDialog::discard_pressed);
   connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
                    &AOOptionsDialog::button_clicked);
+  connect(ui_settings_buttons, &QDialogButtonBox::helpRequested, this,
+                   &AOOptionsDialog::about_button_pressed);
 
   // We'll stop updates so that the window won't flicker while it's being made.
   setUpdatesEnabled(false);
@@ -788,7 +792,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_objectmusic_lbl = new QLabel(ui_audio_widget);
   ui_objectmusic_lbl->setText(tr("Kill Music On Objection:"));
   ui_objectmusic_lbl->setToolTip(
-      tr("If true, AO2 will ask the server to stop music when you use 'Objection!' "));
+      tr("If true, kenji will ask the server to stop music when you use 'Objection!' "));
 
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_objectmusic_lbl);
 
@@ -1334,6 +1338,56 @@ void AOOptionsDialog::theme_changed(int i) {
       ui_subtheme_combobox->addItem(actualname);
   }
 
+}
+
+void AOOptionsDialog::about_button_pressed()
+{
+  const bool hasApng = QImageReader::supportedImageFormats().contains("apng");
+
+  QString msg =
+      tr("<h2>kenji %1</h2>"
+         "When you've run into a wall with no place to go, return to the basics."
+         "<p><b>Source code:</b> "
+         "<a href='https://github.com/in1tiate/kenji'>"
+         "https://github.com/in1tiate/kenji</a>"
+         "<h2>Attorney Online 2:</h2>"
+         "The courtroom drama simulator."
+         "<p><b>AO2 Source code:</b> "
+         "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
+         "https://github.com/AttorneyOnline/AO2-Client</a>"
+         "<p><b>Major development:</b><br>"
+         "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
+         "Crystalwarrior, Iamgoofball, in1tiate"
+         "<p><b>Client development:</b><br>"
+         "Cents02, windrammer, skyedeving"
+         "<p><b>QA testing:</b><br>"
+         "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
+         "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
+         "Robotic Overlord, Shadowlions (aka Shali), Sierra, SomeGuy, "
+         "Veritas, Wiso"
+         "<p><b>Translations:</b><br>"
+         "k-emiko (Русский), Pyraq (Polski), scatterflower (日本語), vintprox (Русский), "
+         "windrammer (Español, Português)"
+         "<p><b>Special thanks:</b><br>"
+         "CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); "
+         "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
+         "Rue (website); Draxirch (UI design); "
+         "Lewdton and Argoneus (tsuserver); "
+         "Fiercy, Noevain, Cronnicossy, and FanatSors (AO1); "
+         "server hosts, game masters, case makers, content creators, "
+         "and the whole AO2 community!"
+         "<p>The Attorney Online networked visual novel project "
+         "is copyright (c) 2016-2021 Attorney Online developers. Open-source "
+         "licenses apply. All other assets are the property of their "
+         "respective owners."
+         "<p>Running on Qt version %2 with the BASS audio engine.<br>"
+         "APNG plugin loaded: %3"
+         "<p>Built on %4")
+      .arg(ao_app->get_version_string())
+      .arg(QLatin1String(QT_VERSION_STR))
+      .arg(hasApng ? tr("Yes") : tr("No"))
+      .arg(QLatin1String(__DATE__));
+  QMessageBox::about(this, tr("About"), msg);
 }
 
 void AOOptionsDialog::on_timestamp_format_edited() { ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_combobox->currentText())); }
