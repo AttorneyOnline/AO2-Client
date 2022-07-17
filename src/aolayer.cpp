@@ -637,8 +637,8 @@ void AOLayer::shfx_timer_done()
 }
 
 void AOLayer::invert() {
-    const QPixmap* pixmap = this->pixmap();
-    QImage* image = new QImage(pixmap->toImage());
+    const QPixmap &pixmap = this->pixmap(Qt::ReturnByValue);
+    QImage* image = new QImage(pixmap.toImage());
     image->invertPixels(QImage::InvertRgb);
     this->setPixmap(QPixmap::fromImage(*image));
 }

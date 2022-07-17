@@ -9,8 +9,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ao_app->initBASS();
 
-  qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
-
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
 
@@ -2563,20 +2561,21 @@ void Courtroom::do_screenshake()
     QPropertyAnimation *screenshake_animation =
         new QPropertyAnimation(ui_element, "pos", this);
     QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
+    qDebug() << pos_default;
 
     int duration = 300; // How long does the screenshake last
     int frequency = 20; // How often in ms is there a "jolt" frame
+    int max_deviation = int(7 * (float(ui_viewport->height()) / float(192)));
+    qDebug() << "Max deviation" << max_deviation;
     int maxframes = duration / frequency;
-    int max_x = 7; // Max deviation from origin on x axis
-    int max_y = 7; // Max deviation from origin on y axis
     screenshake_animation->setDuration(duration);
     for (int frame = 0; frame < maxframes; frame++) {
       double fraction = double(frame * frequency) / duration;
-      int rng = qrand(); // QRandomGenerator::global()->generate();
-      int rand_x = max_x - (int(rng) % (max_x * 2));
-      int rand_y = max_y - (int(rng + 100) % (max_y * 2));
+      int rand_x = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
+      int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
       screenshake_animation->setKeyValueAt(
           fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
+      qDebug() << QPair(pos_default.x() + rand_x, pos_default.y() + rand_y);
     }
     screenshake_animation->setEndValue(pos_default);
     screenshake_animation->setEasingCurve(QEasingCurve::Linear);
@@ -4004,6 +4003,11 @@ void Courtroom::mod_called(QString p_ip)
 void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                             bool steno)
 {
+  Q_UNUSED(def);
+  Q_UNUSED(pro);
+  Q_UNUSED(jud);
+  Q_UNUSED(jur);
+  Q_UNUSED(steno);
   if (ui_casing->isChecked()) {
     ui_server_chatlog->append(msg);
     modcall_player->play(ao_app->get_court_sfx("case_call"));
@@ -4819,7 +4823,7 @@ void Courtroom::music_random()
   }
   if (clist.length() == 0)
       return;
-  on_music_list_double_clicked(clist.at(qrand() % clist.length()), 1);
+  on_music_list_double_clicked(clist.at(QRandomGenerator::system()->bounded(-255, 255) % clist.length()), 1);
 }
 
 void Courtroom::music_list_expand_all() { ui_music_list->expandAll(); }

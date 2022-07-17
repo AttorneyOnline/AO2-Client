@@ -52,6 +52,7 @@
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 #include <QRegExp>
+#include <QRandomGenerator>
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>

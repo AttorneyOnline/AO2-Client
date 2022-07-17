@@ -95,7 +95,7 @@ void DemoServer::recv_data()
     }
 
     QStringList packet_list =
-        in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+        in_data.split("%", Qt::SkipEmptyParts);
 
     for (const QString &packet : packet_list) {
         AOPacket ao_packet(packet);

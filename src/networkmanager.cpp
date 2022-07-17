@@ -237,7 +237,7 @@ void NetworkManager::handle_server_packet(const QString& p_data)
     }
   }
 
-  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
+  const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
 
   for (const QString &packet : packet_list) {
     AOPacket *f_packet = new AOPacket(packet);
