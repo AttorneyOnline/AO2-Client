@@ -2783,6 +2783,7 @@ void Courtroom::display_evidence_image()
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     //QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     // def jud and hlp should display the evidence icon on the RIGHT side
+    // TODO: Make this configured by the background
     bool is_left_side = !(side == "def" || side == "hlp" ||
                           side == "jud" || side == "jur");
     ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side,
@@ -2802,6 +2803,7 @@ void Courtroom::handle_ic_speaking()
     // Obtain character information for our character
     QString filename;
     // I still hate this hardcoding. If we're on pos pro, hlp and wit, use prosecution_speedlines. Otherwise, defense_speedlines.
+    // TODO: Make this configured by the background
     if (side == "pro" || side == "hlp" || side == "wit")
       filename = "prosecution_speedlines";
     else
