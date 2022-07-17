@@ -149,114 +149,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole,
                               ui_theme_log_divider);
-
-  row += 1;
-  ui_downwards_lbl = new QLabel(ui_form_layout_widget);
-  ui_downwards_lbl->setText(tr("Log goes downwards:"));
-  ui_downwards_lbl->setToolTip(
-      tr("If ticked, new messages will appear at "
-         "the bottom (like the OOC chatlog). The traditional "
-         "(AO1) behaviour is equivalent to this being unticked."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_downwards_lbl);
-
-  ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_downwards_cb);
-
-  row += 1;
-  ui_length_lbl = new QLabel(ui_form_layout_widget);
-  ui_length_lbl->setText(tr("Log length:"));
-  ui_length_lbl->setToolTip(tr(
-      "The amount of message lines the IC chatlog will keep before "
-      "deleting older message lines. A value of 0 or below counts as 'infinite'."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_length_lbl);
-
-  ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_length_spinbox->setSuffix(" lines");
-  ui_length_spinbox->setMaximum(10000);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_length_spinbox);
-
-  row += 1;
-  ui_log_newline_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_newline_lbl->setText(tr("Log newline:"));
-  ui_log_newline_lbl->setToolTip(
-      tr("If ticked, new messages will appear separated, "
-         "with the message coming on the next line after the name. "
-         "When unticked, it displays it as 'name: message'."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_newline_lbl);
-
-  ui_log_newline_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_newline_cb);
-
-  row += 1;
-  ui_log_margin_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_margin_lbl->setText(tr("Log margin:"));
-  ui_log_margin_lbl->setToolTip(tr(
-      "The distance in pixels between each entry in the IC log. "
-      "Default: 0."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_margin_lbl);
-
-  ui_log_margin_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_log_margin_spinbox->setSuffix(" px");
-  ui_log_margin_spinbox->setMaximum(1000);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_margin_spinbox);
-
-  row += 1;
-  ui_log_timestamp_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_timestamp_lbl->setText(tr("Log timestamp:"));
-  ui_log_timestamp_lbl->setToolTip(
-      tr("If ticked, log will contain a timestamp in UTC before the name."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_lbl);
-
-  ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
-
-  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
-
-  row += 1;
-  ui_log_timestamp_format_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
-
-  ui_log_timestamp_format_combobox = new QComboBox(ui_form_layout_widget);
-  ui_log_timestamp_format_combobox->setEditable(true);
-
-  QString l_current_format = ao_app->get_log_timestamp_format();
-
-  ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
-  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
-  ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
-  ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
-  ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
-
-  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
-
-  if(!ao_app->get_log_timestamp())
-      ui_log_timestamp_format_combobox->setDisabled(true);
-
-  row += 1;
-  ui_log_ic_actions_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
-  ui_log_ic_actions_lbl->setToolTip(
-      tr("If ticked, log will show IC actions such as shouting and presenting evidence."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_ic_actions_lbl);
-
-  ui_log_ic_actions_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
-
+  
   row += 1;
   ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
   ui_stay_time_lbl->setText(tr("Text Stay Time:"));
@@ -271,18 +164,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_stay_time_spinbox->setMaximum(10000);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stay_time_spinbox);
-
-  row += 1;
-  ui_desync_logs_lbl = new QLabel(ui_form_layout_widget);
-  ui_desync_logs_lbl->setText(tr("Desynchronize IC Logs:"));
-  ui_desync_logs_lbl->setToolTip(
-      tr("If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_desync_logs_lbl);
-
-  ui_desync_logs_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_desync_logs_cb);
 
   row += 1;
   ui_instant_objection_lbl = new QLabel(ui_form_layout_widget);
@@ -583,27 +464,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_category_stop_cb = new QCheckBox(ui_form_layout_widget);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
-
-  //Check whether mass logging is enabled
-  row += 1;
-  ui_log_text_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_text_lbl->setText(tr("Log to Text Files:"));
-  ui_log_text_lbl->setToolTip(
-      tr("Text logs of gameplay will be automatically written in the /logs folder."));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_text_lbl);
-
-  ui_log_text_cb = new QCheckBox(ui_form_layout_widget);
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_text_cb);
-
-  row += 1;
-  ui_log_demo_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_demo_lbl->setText(tr("Log to Demo Files:"));
-  ui_log_demo_lbl->setToolTip(
-      tr("Gameplay will be automatically recorded as demos in the /logs folder."));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_demo_lbl);
-
-  ui_log_demo_cb = new QCheckBox(ui_form_layout_widget);
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_demo_cb);
 
   // Finish gameplay tab
   QScrollArea *scroll = new QScrollArea(this);
@@ -1073,6 +933,166 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     if (row >= ui_mount_list->count() - 1)
       ui_mount_down->setEnabled(false);
   });
+
+  // Logging tab
+  ui_logging_tab = new QWidget(this);
+  ui_settings_tabs->addTab(ui_logging_tab, tr("Logging"));
+  ui_form_logging_widget = new QWidget(this);
+
+  ui_logging_form = new QFormLayout(ui_form_logging_widget);
+  ui_logging_form->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                     Qt::AlignVCenter);
+  ui_logging_form->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                    Qt::AlignTop);
+  ui_logging_form->setContentsMargins(5, 5, 0, 0);
+  ui_logging_form->setSpacing(4);
+  row = 0;
+
+  ui_downwards_lbl = new QLabel(ui_form_logging_widget);
+  ui_downwards_lbl->setText(tr("Log goes downwards:"));
+  ui_downwards_lbl->setToolTip(
+      tr("If ticked, new messages will appear at "
+         "the bottom (like the OOC chatlog). The traditional "
+         "(AO1) behaviour is equivalent to this being unticked."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_downwards_lbl);
+
+  ui_downwards_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_downwards_cb);
+
+  row += 1;
+  ui_length_lbl = new QLabel(ui_form_logging_widget);
+  ui_length_lbl->setText(tr("Log length:"));
+  ui_length_lbl->setToolTip(tr(
+      "The amount of message lines the IC chatlog will keep before "
+      "deleting older message lines. A value of 0 or below counts as 'infinite'."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_length_lbl);
+
+  ui_length_spinbox = new QSpinBox(ui_form_logging_widget);
+  ui_length_spinbox->setSuffix(" lines");
+  ui_length_spinbox->setMaximum(10000);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_length_spinbox);
+
+  row += 1;
+  ui_log_newline_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_newline_lbl->setText(tr("Log newline:"));
+  ui_log_newline_lbl->setToolTip(
+      tr("If ticked, new messages will appear separated, "
+         "with the message coming on the next line after the name. "
+         "When unticked, it displays it as 'name: message'."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_newline_lbl);
+
+  ui_log_newline_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_newline_cb);
+
+  row += 1;
+  ui_log_margin_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_margin_lbl->setText(tr("Log margin:"));
+  ui_log_margin_lbl->setToolTip(tr(
+      "The distance in pixels between each entry in the IC log. "
+      "Default: 0."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_margin_lbl);
+
+  ui_log_margin_spinbox = new QSpinBox(ui_form_logging_widget);
+  ui_log_margin_spinbox->setSuffix(" px");
+  ui_log_margin_spinbox->setMaximum(1000);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_margin_spinbox);
+
+  row += 1;
+  ui_log_timestamp_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_timestamp_lbl->setText(tr("Log timestamp:"));
+  ui_log_timestamp_lbl->setToolTip(
+      tr("If ticked, log will contain a timestamp in UTC before the name."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_lbl);
+
+  ui_log_timestamp_cb = new QCheckBox(ui_form_logging_widget);
+
+  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
+
+  row += 1;
+  ui_log_timestamp_format_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
+
+  ui_log_timestamp_format_combobox = new QComboBox(ui_form_logging_widget);
+  ui_log_timestamp_format_combobox->setEditable(true);
+
+  QString l_current_format = ao_app->get_log_timestamp_format();
+
+  ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
+  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
+  ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
+
+  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
+
+  if(!ao_app->get_log_timestamp()) {
+    ui_log_timestamp_format_combobox->setDisabled(true);
+  }
+  row += 1;
+  ui_log_ic_actions_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
+  ui_log_ic_actions_lbl->setToolTip(
+      tr("If ticked, log will show IC actions such as shouting and presenting evidence."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_ic_actions_lbl);
+
+  ui_log_ic_actions_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
+
+  row += 1;
+  ui_desync_logs_lbl = new QLabel(ui_form_logging_widget);
+  ui_desync_logs_lbl->setText(tr("Desynchronize IC Logs:"));
+  ui_desync_logs_lbl->setToolTip(
+      tr("If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_desync_logs_lbl);
+
+  ui_desync_logs_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_desync_logs_cb);
+
+  //Check whether mass logging is enabled
+  row += 1;
+  ui_log_text_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_text_lbl->setText(tr("Log to Text Files:"));
+  ui_log_text_lbl->setToolTip(
+      tr("Text logs of gameplay will be automatically written in the /logs folder."));
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_text_lbl);
+
+  ui_log_text_cb = new QCheckBox(ui_form_logging_widget);
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_text_cb);
+
+  row += 1;
+  ui_log_demo_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_demo_lbl->setText(tr("Log to Demo Files:"));
+  ui_log_demo_lbl->setToolTip(
+      tr("Gameplay will be automatically recorded as demos in the /logs folder."));
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_demo_lbl);
+
+  ui_log_demo_cb = new QCheckBox(ui_form_logging_widget);
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_demo_cb);
+
+  // Finish logging tab
+  QScrollArea *log_scroll = new QScrollArea(this);
+  log_scroll->setWidget(ui_form_logging_widget);
+  ui_logging_tab->setLayout(new QVBoxLayout);
+  ui_logging_tab->layout()->addWidget(log_scroll);
+  ui_logging_tab->show();
 
   // Privacy tab
   ui_privacy_tab = new QWidget(this);
