@@ -2601,6 +2601,11 @@ void Courtroom::handle_ic_message()
   }
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+// It's a surprise tool that will help us later.
+inline double NegRand() { return 2*(qrand()/(float)RAND_MAX)-1; } // Returns random double between -1 and 1
+#endif
+
 void Courtroom::do_screenshake()
 {
   if (!ao_app->is_shake_enabled())
@@ -2633,14 +2638,12 @@ void Courtroom::do_screenshake()
     screenshake_animation->setDuration(duration);
     for (int frame = 0; frame < maxframes; frame++) {
       double fraction = double(frame * frequency) / duration;
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+      int rand_x = max_deviation*NegRand() + 1;
+      int rand_y = max_deviation*NegRand() + 1;
+#else
       int rand_x = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
       int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
-#else
-      // Ugly pre-5.10 STLpilled way of getting random negative numbers, for older distributions
-      int range = (max_deviation) - (-max_deviation) + 1;
-      int rand_x = -max_deviation+int(range*qrand()/(RAND_MAX+1.0));
-      int rand_y = -max_deviation+int(range*qrand()/(RAND_MAX+1.0));
 #endif
       screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
