@@ -885,7 +885,7 @@ QStringList AOApplication::get_effects(QString p_char)
     if (theme_file.exists()) {
       QSettings theme_effects = QSettings(p_theme_path, QSettings::IniFormat, this);
       theme_effects.setIniCodec("UTF-8");
-      if (theme_effects.value("Version/major", 0).toInt() > 2) {
+      if (theme_effects.value("Version/major", 0).toInt() < 2) {
         AOUtils::migrateEffects(&theme_file);
       }
       QStringList theme_effect_groups = theme_effects.childGroups();
@@ -904,7 +904,7 @@ QStringList AOApplication::get_effects(QString p_char)
       // If misc path is different from default path, stack the new miscs on top of the defaults
       QSettings misc_effects = QSettings(p_misc_path, QSettings::IniFormat, this);
       misc_effects.setIniCodec("UTF-8");
-      if (misc_effects.value("Version/major", 0).toInt() > 2) {
+      if (misc_effects.value("Version/major", 0).toInt() < 2) {
         AOUtils::migrateEffects(&misc_file);
       }
       QStringList misc_effect_groups = misc_effects.childGroups();
