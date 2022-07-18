@@ -877,19 +877,27 @@ QStringList AOApplication::get_effects(QString p_char)
   QString p_misc = read_char_ini(p_char, "effects", "Options");
   QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
   QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QStringList effect_names;
   QSettings effects_config(p_path, QSettings::IniFormat);
   effects_config.setIniCodec("UTF-8");
   QStringList effects = effects_config.childGroups();
+  effects.removeAll("version");
   std::sort(effects.begin(), effects.end(), [] (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
+  for (int i = 0; i < effects.size(); ++i) {
+    effect_names.append(effects_config.value(QString::number(i) + "/name").toString());
+  }
   if (p_path != p_misc_path) {
     // If misc path is different from default path, stack the new miscs on top of the defaults
     QSettings effects_config_misc(p_misc_path, QSettings::IniFormat);
     effects_config_misc.setIniCodec("UTF-8");
     QStringList misc_effects = effects_config_misc.childGroups();
+    misc_effects.removeAll("version");
     std::sort(misc_effects.begin(), misc_effects.end(), [] (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
-    effects += misc_effects;
+    for (int i = 0; i < misc_effects.size(); ++i) {
+      effect_names.append(effects_config_misc.value(QString::number(i) + "/name").toString());
+    }
   }
-  return effects;
+  return effect_names;
 }
 
 QString AOApplication::get_effect(QString effect, QString p_char,
@@ -923,7 +931,7 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
       settings.setIniCodec("UTF-8");
       QStringList char_effects = settings.childGroups();
       for (int i = 0; i < char_effects.size(); ++i) {
-        QString effect = settings.value(fx_name).toString();
+        QString effect = settings.value(char_effects[i] + "/name").toString();
         if (effect.toLower() == fx_name.toLower()) {
           f_result = settings.value(char_effects[i] + "/" + p_property).toString();
           if (!f_result.isEmpty()) {

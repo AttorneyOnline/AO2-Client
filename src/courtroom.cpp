@@ -4649,14 +4649,7 @@ void Courtroom::set_effects_dropdown()
     return;
   }
   QStringList effectslist;
-  QStringList char_effects = ao_app->get_effects(current_char);
-  for (int i = 0; i < char_effects.size(); ++i) {
-    QString effect = char_effects[i];
-    if (effect.contains(":")) {
-      effect = effect.section(':', 1);
-    }
-    effectslist.append(effect);
-  }
+  effectslist.append(ao_app->get_effects(current_char));
 
   if (effectslist.empty()) {
     ui_effects_dropdown->hide();
