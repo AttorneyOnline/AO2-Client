@@ -48,6 +48,7 @@ public:
   QString get_chatlog();
   int get_selected_server();
   void enable_connect_button();
+  void reset_selection();
 
   void set_loading_value(int p_value);
 
