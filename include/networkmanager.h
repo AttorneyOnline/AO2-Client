@@ -6,7 +6,7 @@
 
 #include <QDnsLookup>
 #include <QNetworkAccessManager>
-#include <QTcpSocket>
+#include <QtWebSockets/QWebSocket>
 #include <QTime>
 #include <QTimer>
 
@@ -21,31 +21,40 @@ enum MSDocumentType {
 class NetworkManager : public QObject {
   Q_OBJECT
 
-public:
-  explicit NetworkManager(AOApplication *parent);
-  ~NetworkManager() = default;
-
+private:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
-  QTcpSocket *server_socket;
+
+  union {
+    QWebSocket *ws;
+    QTcpSocket *tcp;
+  } server_socket;
+  connection_type active_connection_type;
+  bool connected = false;
+
   QTimer *heartbeat_timer;
 
-  const QString DEFAULT_MS_BASEURL = "https://servers.aceattorneyonline.com";
+  const QString DEFAULT_MS_BASEURL = "http://servers.aceattorneyonline.com";
   QString ms_baseurl = DEFAULT_MS_BASEURL;
 
-  const int heartbeat_interval = 60 * 5;
+  const int heartbeat_interval = 60 * 5 * 1000;
 
   bool partial_packet = false;
   QString temp_packet = "";
 
   unsigned int s_decryptor = 5;
 
+public:
+  explicit NetworkManager(AOApplication *parent);
+  ~NetworkManager() = default;
+
   void connect_to_server(server_type p_server);
+  void disconnect_from_server();
 
 public slots:
   void get_server_list(const std::function<void()> &cb);
   void ship_server_packet(QString p_packet);
-  void handle_server_packet();
+  void handle_server_packet(const QString& p_data);
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);

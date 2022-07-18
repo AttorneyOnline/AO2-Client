@@ -112,6 +112,12 @@ void Lobby::set_widgets()
   if (f_lobby.width < 0 || f_lobby.height < 0) {
     qWarning() << "did not find lobby width or height in " << filename;
 
+    #ifdef ANDROID
+    if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE")==QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync({"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"});
+    }
+    #endif
+
     // Most common symptom of bad config files and missing assets.
     call_notice(
         tr("It doesn't look like your client is set up correctly.\n"
@@ -295,6 +301,8 @@ void Lobby::on_public_servers_clicked()
   ui_public_servers->set_image("publicservers_selected");
   ui_favorites->set_image("favorites");
 
+  reset_selection();
+
   list_servers();
 
   public_servers_selected = true;
@@ -305,12 +313,23 @@ void Lobby::on_favorites_clicked()
   ui_favorites->set_image("favorites_selected");
   ui_public_servers->set_image("publicservers");
 
+  reset_selection();
+
   ao_app->set_favorite_list();
-  // ao_app->favorite_list = read_serverlist_txt();
 
   list_favorites();
 
   public_servers_selected = false;
+}
+
+void Lobby::reset_selection()
+{
+  last_index = -1;
+  ui_server_list->clearSelection();
+  ui_player_count->setText(tr("Offline"));
+  ui_description->clear();
+
+  ui_connect->setEnabled(false);
 }
 
 void Lobby::on_refresh_pressed() { ui_refresh->set_image("refresh_pressed"); }
@@ -431,8 +450,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
       f_server = ao_app->get_favorite_list().at(n_server);
     }
 
-    ui_description->clear();
-    ui_description->append_linked(f_server.desc);
+    set_server_description(f_server.desc);
 
     ui_description->moveCursor(QTextCursor::Start);
     ui_description->ensureCursorVisible();
@@ -561,6 +579,12 @@ void Lobby::set_player_count(int players_online, int max_players)
               QString::number(players_online),
               QString::number(max_players));
   ui_player_count->setText(f_string);
+}
+
+void Lobby::set_server_description(const QString& server_description)
+{
+    ui_description->clear();
+    ui_description->append_linked(server_description);
 }
 
 void Lobby::enable_connect_button() { ui_connect->setEnabled(true); }

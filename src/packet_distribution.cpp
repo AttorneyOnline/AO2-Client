@@ -143,6 +143,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_lobby->set_player_count(f_contents.at(0).toInt(),
                               f_contents.at(1).toInt());
 
+    if (f_contents.size() >= 3) {
+        w_lobby->set_server_description(f_contents.at(2));
+    }
+
     if (w_lobby->doubleclicked) {
         send_server_packet(new AOPacket("askchaa#%"));
         w_lobby->doubleclicked = false;
@@ -169,7 +173,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     courtroom_loaded = false;
 
-    window_title = tr("Attorney Online %1").arg(applicationVersion());
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
@@ -179,7 +182,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title += ": " + server_name;
+        window_title = server_name;
       }
     }
     else {
@@ -188,7 +191,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         server_name = info.name;
         server_address =
             QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title += ": " + server_name;
+        window_title = server_name;
       }
     }
 
@@ -236,9 +239,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
 
   else if (header == "SC") {
-    if (!courtroom_constructed || courtroom_loaded)
+    if (!courtroom_constructed)
       goto end;
-
+    w_courtroom->clear_chars();
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       QStringList sub_elements = f_contents.at(n_element).split("&");
 
@@ -252,24 +255,28 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       // temporary. the CharsCheck packet sets this properly
       f_char.taken = false;
 
-      ++loaded_chars;
-
-      w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
-                                    .arg(QString::number(loaded_chars))
-                                    .arg(QString::number(char_list_size)));
-
       w_courtroom->append_char(f_char);
 
-      int total_loading_size =
-          char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(
-          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-           static_cast<double>(total_loading_size)) *
-          100);
-      w_lobby->set_loading_value(loading_value);
+      if (!courtroom_loaded) {
+        ++loaded_chars;
+        w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
+                                      .arg(QString::number(loaded_chars))
+                                      .arg(QString::number(char_list_size)));
+
+        int total_loading_size =
+            char_list_size * 2 + evidence_list_size + music_list_size;
+        int loading_value = int(
+            ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
+             static_cast<double>(total_loading_size)) *
+            100);
+        w_lobby->set_loading_value(loading_value);
+      }
     }
 
-    send_server_packet(new AOPacket("RM#%"));
+    if (!courtroom_loaded)
+      send_server_packet(new AOPacket("RM#%"));
+    else
+      w_courtroom->character_loading_finished();
     append_to_demofile(f_packet_encoded);
   }
   else if (header == "SM") {
@@ -424,12 +431,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       goto end;
     if (courtroom_constructed) {
-        if (f_contents.size() == 1)
-          w_courtroom->handle_wtce(f_contents.at(0), 0);
-        else if (f_contents.size() == 2) {
-          w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
-        append_to_demofile(f_packet_encoded);
-      }
+      if (f_contents.size() == 1)
+        w_courtroom->handle_wtce(f_contents.at(0), 0);
+      else if (f_contents.size() == 2)
+        w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
+      append_to_demofile(f_packet_encoded);
     }
   }
   else if (header == "HP") {
@@ -599,9 +605,30 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "AUTH") {
     if (!courtroom_constructed || !auth_packet_enabled || f_contents.size() < 1)
       goto end;
-    int authenticated = f_contents.at(0).toInt();
+    bool ok;
+    int authenticated = f_contents.at(0).toInt(&ok);
+    if (!ok) {
+      qWarning() << "Malformed AUTH packet! Contents:" << f_contents.at(0);
+    }
 
     w_courtroom->on_authentication_state_received(authenticated);
+  }
+  else if (header == "JD") {
+    if (!courtroom_constructed || f_contents.empty()) {
+      goto end;
+    }
+    bool ok;
+    Courtroom::JudgeState state = static_cast<Courtroom::JudgeState>(f_contents.at(0).toInt(&ok));
+    if (!ok) {
+      goto end; // ignore malformed packet
+    }
+    w_courtroom->set_judge_state(state);
+    if (w_courtroom->get_judge_state() != Courtroom::POS_DEPENDENT) { // If we receive JD -1, it means the server asks us to fall back to client-side judge buttons behavior
+      w_courtroom->show_judge_controls(w_courtroom->get_judge_state() == Courtroom::SHOW_CONTROLS);
+    }
+    else {
+      w_courtroom->set_judge_buttons(); // client-side judge behavior
+    }
   }
 
  //AssetURL Packet

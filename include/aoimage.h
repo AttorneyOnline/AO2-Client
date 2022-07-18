@@ -22,6 +22,8 @@ public:
 
   bool is_static = false;
 
+  bool masked = false;
+
   bool set_image(QString p_image, QString p_misc = "");
   void set_size_and_pos(QString identifier);
 };

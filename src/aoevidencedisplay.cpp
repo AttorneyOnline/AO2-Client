@@ -8,18 +8,22 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
     : QLabel(p_parent)
 {
   ao_app = p_ao_app;
-  evidence_icon = new QLabel(this);
+  evidence_icon = new QPushButton(this);
+  evidence_icon->hide();
   sfx_player = new AOSfxPlayer(this, ao_app);
 
   evidence_movie = new InterfaceLayer(this, ao_app);
 
   connect(evidence_movie, &InterfaceLayer::done, this, &AOEvidenceDisplay::show_done);
+  connect(evidence_icon, &QPushButton::clicked, this, &AOEvidenceDisplay::icon_clicked);
 }
 
-void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
+void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image,
                                       bool is_left_side, int p_volume)
 {
   this->reset();
+
+  last_evidence_index = p_index;
 
   sfx_player->set_volume(p_volume);
 
@@ -43,8 +47,11 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
       ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
   f_pixmap = f_pixmap.scaled(icon_dimensions.width, icon_dimensions.height);
-  evidence_icon->setPixmap(f_pixmap);
-  evidence_icon->resize(f_pixmap.size());
+  QIcon f_icon(f_pixmap);
+
+  evidence_icon->setIcon(f_icon);
+  evidence_icon->setIconSize(f_pixmap.rect().size());
+  evidence_icon->resize(f_pixmap.rect().size());
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
   evidence_movie->static_duration = 320;
   evidence_movie->max_duration = 1000;
@@ -63,7 +70,11 @@ void AOEvidenceDisplay::reset()
 
 void AOEvidenceDisplay::show_done() { evidence_icon->show(); }
 
-QLabel *AOEvidenceDisplay::get_evidence_icon() { return evidence_icon; }
+void AOEvidenceDisplay::icon_clicked() {
+  if (last_evidence_index != -1) {
+    emit show_evidence_details(last_evidence_index - 1); // i dont know why i have to subtract 1 here
+  }
+}
 
 void AOEvidenceDisplay::combo_resize(int w, int h)
 {

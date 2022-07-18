@@ -148,7 +148,7 @@ private:
 
   // used in populate_vectors
   void load_next_frame();
-  std::atomic_bool exit_loop = false; //awful solution but i'm not fucking using QThread
+  std::atomic_bool exit_loop { false }; //awful solution but i'm not fucking using QThread
   QFuture<void> frame_loader;
   QMutex mutex;
   QWaitCondition frameAdded;

@@ -1,13 +1,25 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include <QMap>
 #include <QString>
+
+enum connection_type {
+  TCP,
+  WEBSOCKETS,
+};
+
+static QMap<QString, connection_type> to_connection_type = {
+    {"tcp", connection_type::TCP},
+    {"ws", connection_type::WEBSOCKETS}
+};
 
 struct server_type {
   QString name;
   QString desc;
   QString ip;
   int port;
+  connection_type socket_type;
 };
 
 struct emote_type {
@@ -99,6 +111,13 @@ enum CHAT_MESSAGE {
   FRAME_SFX,
   ADDITIVE,
   EFFECTS,
+};
+
+enum EMOTE_MOD {
+  IDLE = 0,
+  PREANIM = 1,
+  ZOOM = 5,
+  PREANIM_ZOOM = 6,
 };
 
 enum MUSIC_EFFECT { FADE_IN = 1, FADE_OUT = 2, SYNC_POS = 4 };

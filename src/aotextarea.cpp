@@ -1,6 +1,9 @@
 #include "aotextarea.h"
 
-AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent) {}
+AOTextArea::AOTextArea(QWidget *p_parent, int p_log_length) : QTextBrowser(p_parent)
+{
+  this->document()->setMaximumBlockCount(p_log_length);
+}
 
 void AOTextArea::append_linked(QString p_message)
 {

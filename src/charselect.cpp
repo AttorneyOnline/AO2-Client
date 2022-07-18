@@ -188,9 +188,6 @@ void Courtroom::char_clicked(int n_char)
     enter_courtroom();
     set_courtroom_size();
   }
-
-  if (n_char != -1)
-    ui_ic_chat_name->setPlaceholderText(char_list.at(n_char).name);
 }
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
@@ -243,6 +240,7 @@ void Courtroom::character_loading_finished()
       delete item;
     }
     ui_char_button_list.clear();
+    ui_char_list->clear();
   }
 
   // First, we'll make all the character buttons in the very beginning.
@@ -305,7 +303,6 @@ void Courtroom::character_loading_finished()
     }
   }
   ui_char_list->expandAll();
-  filter_character_list();
 }
 
 void Courtroom::filter_character_list()

@@ -30,6 +30,9 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   message_handler_context = this;
   original_message_handler = qInstallMessageHandler(message_handler);
+
+  setApplicationVersion(get_version_string());
+  setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
 }
 
 AOApplication::~AOApplication()
@@ -141,12 +144,23 @@ void AOApplication::add_favorite_server(int p_server)
     return;
 
   server_type fav_server = server_list.at(p_server);
+  QSettings l_favorite_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
+  QString l_new_group = QString::number(l_favorite_ini.childGroups().size());
+  l_favorite_ini.setIniCodec("UTF-8");
 
-  QString str_port = QString::number(fav_server.port);
+  l_favorite_ini.beginGroup(l_new_group);
+  l_favorite_ini.setValue("name", fav_server.name);
+  l_favorite_ini.setValue("address", fav_server.ip);
+  l_favorite_ini.setValue("port", fav_server.port);
+  l_favorite_ini.setValue("desc", fav_server.desc);
 
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
-
-  write_to_serverlist_txt(server_line);
+  if (fav_server.socket_type == TCP) {
+   l_favorite_ini.setValue("protocol", "tcp");
+  }
+  else {
+    l_favorite_ini.setValue("protocol", "ws");
+  }
+  l_favorite_ini.sync();
 }
 
 void AOApplication::server_disconnected()
@@ -193,7 +207,7 @@ void AOApplication::doBASSreset()
 {
   BASS_Free();
   BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-  load_bass_opus_plugin();
+  load_bass_plugins();
 }
 
 void AOApplication::initBASS()
@@ -207,7 +221,7 @@ void AOApplication::initBASS()
 
   if (get_audio_output_device() == "default") {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-    load_bass_opus_plugin();
+    load_bass_plugins();
   }
   else {
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
@@ -215,30 +229,33 @@ void AOApplication::initBASS()
         BASS_SetDevice(a);
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);
-        load_bass_opus_plugin();
+        load_bass_plugins();
         qInfo() << info.name << "was set as the default audio output device.";
         return;
       }
     }
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
-    load_bass_opus_plugin();
+    load_bass_plugins();
   }
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
-void AOApplication::load_bass_opus_plugin()
+void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("bassopus.dll", 0);
-}
-#elif (defined(LINUX) || defined(__linux__))
-void AOApplication::load_bass_opus_plugin()
-{
-  BASS_PluginLoad("libbassopus.so", 0);
+  BASS_PluginLoad("bassmidi.dll", 0);
 }
 #elif defined __APPLE__
-void AOApplication::load_bass_opus_plugin()
+void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("libbassopus.dylib", 0);
+  BASS_PluginLoad("libbassmidi.dylib", 0);
+}
+#elif (defined(LINUX) || defined(__linux__))
+void AOApplication::load_bass_plugins()
+{
+  BASS_PluginLoad("libbassopus.so", 0);
+  BASS_PluginLoad("libbassmidi.so", 0);
 }
 #else
 #error This operating system is unsupported for BASS plugins.

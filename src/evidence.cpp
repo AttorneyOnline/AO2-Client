@@ -50,7 +50,6 @@ void Courtroom::initialize_evidence()
   ui_evidence_image_button = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_button->setText(tr("Choose.."));
   ui_evidence_image_button->setObjectName("ui_evidence_image_button");
-  ui_evidence_image_button->setDisabled(true);
   ui_evidence_x = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_x->setToolTip(
       tr("Close the evidence display/editing overlay.\n"
@@ -64,12 +63,8 @@ void Courtroom::initialize_evidence()
   ui_evidence_description = new QPlainTextEdit(ui_evidence_overlay);
   ui_evidence_description->setFrameStyle(QFrame::NoFrame);
   ui_evidence_description->setToolTip(
-      tr("Click the pencil icon to edit. Press [X] to update your changes."));
+      tr("Click to edit. Press [X] to update your changes."));
   ui_evidence_description->setObjectName("ui_evidence_description");
-
-  ui_evidence_edit = new AOButton(ui_evidence_overlay, ao_app);
-  ui_evidence_edit->setToolTip(tr("Edit this piece of evidence."));
-  ui_evidence_edit->setObjectName("ui_evidence_edit");
 
   connect(ui_evidence_name, &QLineEdit::returnPressed, this,
           &Courtroom::on_evidence_name_edited);
@@ -102,10 +97,9 @@ void Courtroom::initialize_evidence()
   connect(ui_evidence_name, &QLineEdit::textChanged, this,
           &Courtroom::on_evidence_edited);
   connect(ui_evidence_image_name, &QLineEdit::textChanged, this,
-          &Courtroom::on_evidence_image_name_edited);
+          &Courtroom::on_evidence_edited);
   connect(ui_evidence_description, &QPlainTextEdit::textChanged, this,
           &Courtroom::on_evidence_edited);
-  connect(ui_evidence_edit, &AOButton::clicked, this, &Courtroom::on_evidence_edit_clicked);
 
   ui_evidence->hide();
 }
@@ -161,9 +155,6 @@ void Courtroom::refresh_evidence()
 
   set_size_and_pos(ui_evidence_ok, "evidence_ok");
   ui_evidence_ok->set_image("evidence_ok");
-
-  set_size_and_pos(ui_evidence_edit, "evidence_edit");
-  ui_evidence_edit->set_image("evidence_edit");
 
   set_size_and_pos(ui_evidence_switch, "evidence_switch");
   if (current_evidence_global) {
@@ -272,8 +263,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
       evidence_close();
       ui_evidence_name->setText("");
     }
-    else if (ui_evidence_description->isReadOnly()) // We haven't double clicked
-                                                    // to edit it or anything
+    else if (ui_evidence_ok->isHidden()) // We haven't clicked to edit it or anything
     {
       on_evidence_double_clicked(current_evidence);
     }
@@ -302,6 +292,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
       switch (ret) {
       case QMessageBox::Yes:
         // "Keep changes"
+        ui_evidence_ok->hide();
         break;
       case QMessageBox::No:
         // "Discard changes and keep theirs"
@@ -379,6 +370,19 @@ void Courtroom::set_evidence_page()
   }
 }
 
+void Courtroom::show_evidence(int f_real_id)
+{
+  // Make sure we're in the global evidence list
+  evidence_switch(true);
+  // Set the evidence page properly
+  current_evidence_page = f_real_id / max_evidence_on_page;
+  set_evidence_page();
+  // Display the target evidence using the local ID
+  int p_id = f_real_id - (max_evidence_on_page * current_evidence_page);
+  on_evidence_double_clicked(p_id);
+}
+
+
 void Courtroom::on_evidence_name_edited()
 {
   if (current_evidence >= local_evidence_list.size())
@@ -387,14 +391,13 @@ void Courtroom::on_evidence_name_edited()
 
 void Courtroom::on_evidence_image_name_edited()
 {
-  ui_evidence_image_name->setReadOnly(true);
   if (current_evidence >= local_evidence_list.size())
     return;
 }
 
 void Courtroom::on_evidence_image_button_clicked()
 {
-  QDir dir(ao_app->get_base_path() + "evidence");
+  QDir dir(ao_app->get_real_path(ao_app->get_evidence_path("")));
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
@@ -410,6 +413,15 @@ void Courtroom::on_evidence_image_button_clicked()
     return;
 
   QString filename = filenames.at(0);
+  QStringList bases = ao_app->get_mount_paths();
+  bases.prepend(ao_app->get_base_path());
+  for (const QString &base : bases) {
+    QDir baseDir(base);
+    if (filename.startsWith(baseDir.absolutePath())) {
+      dir.setPath(baseDir.absolutePath() + "/evidence");
+      break;
+    }
+  }
   filename = dir.relativeFilePath(filename);
   ui_evidence_image_name->setText(filename);
   on_evidence_image_name_edited();
@@ -417,8 +429,6 @@ void Courtroom::on_evidence_image_button_clicked()
 
 void Courtroom::on_evidence_clicked(int p_id)
 {
-  ui_evidence_name->setReadOnly(true);
-
   int f_real_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (f_real_id == local_evidence_list.size()) {
@@ -465,16 +475,18 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
   ui_evidence_description->clear();
   ui_evidence_description->appendPlainText(f_evi.description);
-  ui_evidence_description->setReadOnly(true);
-  ui_evidence_description->setToolTip(tr("Click the pencil to edit..."));
+  ui_evidence_description->setReadOnly(false);
+  ui_evidence_description->setToolTip(tr("Click to edit..."));
 
   ui_evidence_name->setText(f_evi.name);
-  ui_evidence_name->setReadOnly(true);
-  ui_evidence_name->setToolTip(tr("Click the pencil to edit..."));
-  ui_evidence_image_name->setText(f_evi.image);
-  ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_name->setToolTip(tr("Click the pencil to edit..."));
+  ui_evidence_name->setReadOnly(false);
+  ui_evidence_name->setToolTip(tr("Click to edit..."));
 
+  ui_evidence_image_name->setText(f_evi.image);
+  ui_evidence_image_name->setReadOnly(false);
+  ui_evidence_image_name->setToolTip(tr("Click to edit..."));
+
+  ui_evidence->show();
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
 
@@ -483,7 +495,6 @@ void Courtroom::on_evidence_double_clicked(int p_id)
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
-  ui_evidence_name->setReadOnly(true);
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (p_state) {
@@ -592,11 +603,7 @@ void Courtroom::on_evidence_x_clicked()
 
 void Courtroom::on_evidence_ok_clicked()
 {
-  ui_evidence_name->setReadOnly(true);
-  ui_evidence_description->setReadOnly(true);
-  ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_edit->show();
-  ui_evidence_image_button->setDisabled(true);
+  ui_evidence_ok->hide();
   if (current_evidence < local_evidence_list.size()) {
     evi_type f_evi = local_evidence_list.at(current_evidence);
     if (current_evidence_global) {
@@ -679,22 +686,6 @@ void Courtroom::on_evidence_transfer_clicked()
   msgBox->exec();
 }
 
-void Courtroom::on_evidence_edit_clicked()
-{
-    if (!ui_evidence_overlay->isVisible())
-        return;
-    if (!ui_evidence_edit->isHidden()) {
-        ui_evidence_name->setReadOnly(false);
-        ui_evidence_image_name->setReadOnly(false);
-        ui_evidence_description->setReadOnly(false);
-        ui_evidence_image_button->setDisabled(false);
-        ui_evidence_edit->hide();
-    }
-    else {
-        return;
-    }
-}
-
 void Courtroom::on_evidence_edited()
 {
   if (current_evidence >=
@@ -714,13 +705,8 @@ void Courtroom::on_evidence_edited()
 void Courtroom::evidence_close()
 {
   ui_evidence_description->setReadOnly(true);
-  ui_evidence_description->setToolTip("");
   ui_evidence_name->setReadOnly(true);
-  ui_evidence_name->setToolTip("");
   ui_evidence_image_name->setReadOnly(true);
-  ui_evidence_image_name->setToolTip("");
-  ui_evidence_edit->show();
-  ui_evidence_image_button->setDisabled(true);
   ui_evidence_overlay->hide();
   ui_ic_chat_message->setFocus();
 }
@@ -762,6 +748,7 @@ void Courtroom::on_evidence_save_clicked()
   ui_evidence_name->setText("");
 
   QSettings inventory(p_path, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
   inventory.clear();
   for (int i = 0; i < local_evidence_list.size(); i++) {
     inventory.beginGroup(QString::number(i));
@@ -788,8 +775,14 @@ void Courtroom::on_evidence_load_clicked()
   ui_evidence_name->setText("");
 
   QSettings inventory(p_path, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
   local_evidence_list.clear();
-  foreach (QString evi, inventory.childGroups()) {
+  QMap<int, QString> sorted_evi;
+  for (const auto &s : inventory.childGroups()) {
+    sorted_evi[s.toInt()] = s;
+  }
+  QStringList evilist(sorted_evi.values());
+  for (const QString &evi : evilist) {
     if (evi == "General")
       continue;
 
