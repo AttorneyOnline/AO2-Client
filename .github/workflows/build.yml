@@ -217,7 +217,7 @@ jobs:
           rm -r styles
 
       - name: Deploy Linux
-        if: matrix.platform == 'gcc64'
+        if: matrix.platform == 'gcc_64'
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
@@ -259,5 +259,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-${{matrix.platform}}
+          name: Attorney_Online-${{matrix.os}}-${{matrix.platform}}
           path: ${{github.workspace}}/bin/
