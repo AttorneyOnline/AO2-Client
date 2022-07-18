@@ -916,6 +916,7 @@ QStringList AOApplication::get_effects(QString p_char)
       }
     }
   }
+  effect_names.removeAll("");
   return effect_names;
 }
 

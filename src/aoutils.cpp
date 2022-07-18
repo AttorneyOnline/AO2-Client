@@ -2,9 +2,11 @@
 
 #include <QMap>
 #include <QSettings>
+#include <QDebug>
 
 void AOUtils::migrateEffects(QFile *p_file)
 {
+  qDebug() << "Migrating effect.in at " << p_file->fileName();
   QMap<QString, QString> l_effects_settings;
   QSettings *l_effects_ini = new QSettings(p_file->fileName(), QSettings::IniFormat);
   l_effects_ini->setIniCodec("UTF-8");
@@ -50,6 +52,6 @@ void AOUtils::migrateEffects(QFile *p_file)
       l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/" + l_key_name, l_effects_settings.value(l_key));
     }
 
-      l_effects_ini->sync();
+    l_effects_ini->sync();
     }
 }
