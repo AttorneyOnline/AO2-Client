@@ -4060,7 +4060,6 @@ void Courtroom::on_ooc_return_pressed()
 {
   QString ooc_message = ui_ooc_chat_message->text();
 
-<<<<<<< HEAD
   // DEBUG FADE COMMANDS, REMOVE THESE B4 PROD
   if (ooc_message.startsWith("/fade")) {
       if (ooc_message == "/fadeout") {
@@ -4077,17 +4076,6 @@ void Courtroom::on_ooc_return_pressed()
           ui_vp_background->fade(true, 700);
       }
       return;
-=======
-  //We ignore it when the server is compatible with 2.8
-  //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
-  if (ooc_message.startsWith("/pos") && !ao_app->effects_enabled) {
-    if (ooc_message == "/pos jud") {
-      show_judge_controls(true);
-    }
-    else {
-      show_judge_controls(false);
-    }
->>>>>>> c8914c930294266729fdb1b90cab5b8f5d5bd6c3
   }
   else if (ooc_message.startsWith("/load_case")) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
