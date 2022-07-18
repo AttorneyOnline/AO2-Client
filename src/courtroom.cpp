@@ -2548,34 +2548,33 @@ void Courtroom::do_screenshake()
   // This way, the animation is reset in such a way that last played screenshake
   // would return to its "final frame" properly. This properly resets all UI
   // elements without having to bother keeping track of "origin" positions.
-  // Works great wit the chat text being detached from the chat box!
+  // Works great with the chat text being detached from the chat box!
   screenshake_animation_group->setCurrentTime(
       screenshake_animation_group->duration());
   screenshake_animation_group->clear();
 
-  QList<QWidget *> affected_list = {ui_vp_background, ui_vp_player_char,
+  const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char,
                                     ui_vp_sideplayer_char, ui_vp_chatbox};
 
   // I would prefer if this was its own "shake" function to be honest.
-  foreach (QWidget *ui_element, affected_list) {
+  for (QWidget *ui_element : affected_list) {
     QPropertyAnimation *screenshake_animation =
         new QPropertyAnimation(ui_element, "pos", this);
     QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
-    qDebug() << pos_default;
 
     int duration = 300; // How long does the screenshake last
     int frequency = 20; // How often in ms is there a "jolt" frame
-    int max_deviation = int(7 * (float(ui_viewport->height()) / float(192)));
-    qDebug() << "Max deviation" << max_deviation;
-    int maxframes = duration / frequency;
+    // Maximum deviation from the origin position. This is 7 pixels for a 256x192 viewport,
+    // so we scale that value in accordance with the current viewport height so the shake
+    // is roughly the same intensity regardless of viewport size. Done as a float operation for maximum accuracy.
+    int max_deviation = 7 * (float(ui_viewport->height()) / 192);
+    int maxframes = 15; // duration / frequency;
     screenshake_animation->setDuration(duration);
     for (int frame = 0; frame < maxframes; frame++) {
       double fraction = double(frame * frequency) / duration;
       int rand_x = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
       int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
-      screenshake_animation->setKeyValueAt(
-          fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
-      qDebug() << QPair(pos_default.x() + rand_x, pos_default.y() + rand_y);
+      screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
     screenshake_animation->setEndValue(pos_default);
     screenshake_animation->setEasingCurve(QEasingCurve::Linear);
