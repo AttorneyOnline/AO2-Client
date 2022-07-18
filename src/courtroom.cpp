@@ -2633,8 +2633,14 @@ void Courtroom::do_screenshake()
     screenshake_animation->setDuration(duration);
     for (int frame = 0; frame < maxframes; frame++) {
       double fraction = double(frame * frequency) / duration;
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
       int rand_x = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
       int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
+#else
+      // Ugly pre-5.10 STLpilled way of getting random negative numbers, for older distributions
+      int rand_x = (qrand() % (max_deviation * 2)) - max_deviation;
+      int rand_y = (qrand() % (max_deviation * 2)) - max_deviation;
+#endif
       screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
     screenshake_animation->setEndValue(pos_default);
