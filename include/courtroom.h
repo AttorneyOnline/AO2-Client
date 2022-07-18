@@ -188,8 +188,7 @@ public:
   void set_scene(QString f_desk_mod, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  // sets ui_effects_layer according to the SELF_OFFSET, unless it is overwritten by effects.ini
-  void set_self_offset(QString p_list, QString p_effect);
+  void set_self_offset(const QString& p_list);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -257,7 +256,7 @@ public:
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
-  
+
   // Display the character.
   void display_character();
 
@@ -305,7 +304,7 @@ public:
   void set_hp_bar(int p_bar, int p_state);
 
   // Toggles the judge buttons, whether they should appear or not.
-  void toggle_judge_buttons(bool is_on);
+  void show_judge_controls(bool visible);
 
   void announce_case(QString title, bool def, bool pro, bool jud, bool jur,
                      bool steno);
@@ -325,6 +324,16 @@ public:
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
   void on_authentication_state_received(int p_state);
+
+  enum JudgeState {
+      POS_DEPENDENT = -1,
+      HIDE_CONTROLS =  0,
+      SHOW_CONTROLS =  1
+  };
+
+  JudgeState get_judge_state() { return judge_state; }
+  void set_judge_state(JudgeState new_state) { judge_state = new_state; }
+  void set_judge_buttons() { show_judge_controls(ao_app->get_pos_is_judge(current_side)); }
 
   ~Courtroom();
 private:
@@ -402,6 +411,7 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+  bool chatbox_always_show = false;
 
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
@@ -433,7 +443,7 @@ private:
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
-  
+
   // delay before the next queue entry is going to be processed
   QTimer *text_queue_timer;
 
@@ -480,6 +490,8 @@ private:
   // QVector<int> muted_cids;
 
   bool is_muted = false;
+
+  JudgeState judge_state = POS_DEPENDENT;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle, 4 =
   // noniterrupting preanim, 5 = (c) animation
@@ -801,6 +813,7 @@ private:
 
   void initialize_evidence();
   void refresh_evidence();
+  void show_evidence(int f_real_id);
   void set_evidence_page();
 
   void reset_ui();
@@ -808,7 +821,6 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
-  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
@@ -872,6 +884,7 @@ private slots:
   void on_sfx_dropdown_custom(QString p_sfx);
   void set_sfx_dropdown();
   void on_sfx_context_menu_requested(const QPoint &pos);
+  void on_sfx_play_clicked();
   void on_sfx_edit_requested();
   void on_sfx_remove_clicked();
 

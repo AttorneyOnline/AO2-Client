@@ -133,6 +133,8 @@ public:
 
   void set_favorite_list();
   QVector<server_type> &get_favorite_list() { return favorite_list; }
+
+  // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
 
   void set_server_list(QVector<server_type> &servers) { server_list = servers; }
@@ -162,6 +164,7 @@ public:
   QString get_asset(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");
   QString get_image(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="", bool static_image=false);
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
+  QString get_pos_path(const QString& pos, bool desk = false);
   QString get_case_sensitive_path(QString p_file);
   QString get_real_path(const VPath &vpath);
   QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
@@ -323,11 +326,13 @@ public:
   // Append to the currently open demo file if there is one
   void append_to_demofile(QString packet_string);
 
-  // Appends the argument string to serverlist.txt
-  void write_to_serverlist_txt(QString p_line);
-
   // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
+
+  /**
+   * @brief Migrates the favorite serverlist format from txt to ini.
+   */
+  void migrate_serverlist_txt(QFile &p_serverlist_txt);
 
   // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, VPath p_design_path);
@@ -355,6 +360,10 @@ public:
 
   // Returns the color from the misc folder.
   QColor get_chat_color(QString p_identifier, QString p_chat);
+
+  // Returns the value with p_identifier from penalty/penalty.ini in the current
+  // theme path
+  QString get_penalty_value(QString p_identifier);
 
   // Returns the sfx with p_identifier from courtroom_sounds.ini in the current theme path
   QString get_court_sfx(QString p_identifier, QString p_misc="");
@@ -420,6 +429,12 @@ public:
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
+
+  // Returns whether the given pos is a judge position
+  bool get_pos_is_judge(const QString &p_pos);
+
+  // Returns the name of p_char
+  QString get_char_name(QString p_char);
 
   // Returns the total amount of emotes of p_char
   int get_emote_number(QString p_char);
