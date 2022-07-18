@@ -1,4 +1,5 @@
 #include "text_file_functions.h"
+#include "aoutils.h"
 
 QString AOApplication::read_theme()
 {
@@ -874,27 +875,45 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 
 QStringList AOApplication::get_effects(QString p_char)
 {
-  QString p_misc = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString p_theme_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
+  QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme,
+                                  read_char_ini(p_char, "effects", "Options"));
   QStringList effect_names;
-  QSettings effects_config(p_path, QSettings::IniFormat);
-  effects_config.setIniCodec("UTF-8");
-  QStringList effects = effects_config.childGroups();
-  effects.removeAll("version");
-  std::sort(effects.begin(), effects.end(), [] (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
-  for (int i = 0; i < effects.size(); ++i) {
-    effect_names.append(effects_config.value(QString::number(i) + "/name").toString());
+  {
+    //Theme effects!
+    QFile theme_file = QFile(p_theme_path);
+    if (theme_file.exists()) {
+      QSettings theme_effects = QSettings(p_theme_path, QSettings::IniFormat, this);
+      theme_effects.setIniCodec("UTF-8");
+      if (theme_effects.value("Version/major", 0).toInt() > 2) {
+        AOUtils::migrateEffects(&theme_file);
+      }
+      QStringList theme_effect_groups = theme_effects.childGroups();
+      theme_effect_groups.removeAll("version");
+      std::sort(theme_effect_groups.begin(), theme_effect_groups.end(), []
+                (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
+      for(const QString &effect_index : theme_effect_groups) {
+       effect_names.append(theme_effects.value(effect_index + "/name").toString());
+      }
+    }
   }
-  if (p_path != p_misc_path) {
-    // If misc path is different from default path, stack the new miscs on top of the defaults
-    QSettings effects_config_misc(p_misc_path, QSettings::IniFormat);
-    effects_config_misc.setIniCodec("UTF-8");
-    QStringList misc_effects = effects_config_misc.childGroups();
-    misc_effects.removeAll("version");
-    std::sort(misc_effects.begin(), misc_effects.end(), [] (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
-    for (int i = 0; i < misc_effects.size(); ++i) {
-      effect_names.append(effects_config_misc.value(QString::number(i) + "/name").toString());
+  {
+    //Misc effects!
+    QFile misc_file = QFile(p_misc_path);
+    if ((p_theme_path != p_misc_path) && misc_file.exists()) {
+      // If misc path is different from default path, stack the new miscs on top of the defaults
+      QSettings misc_effects = QSettings(p_misc_path, QSettings::IniFormat, this);
+      misc_effects.setIniCodec("UTF-8");
+      if (misc_effects.value("Version/major", 0).toInt() > 2) {
+        AOUtils::migrateEffects(&misc_file);
+      }
+      QStringList misc_effect_groups = misc_effects.childGroups();
+      misc_effect_groups.removeAll("version");
+      std::sort(misc_effect_groups.begin(), misc_effect_groups.end(), []
+                (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
+      for(const QString &effect_index : misc_effect_groups) {
+        effect_names.append(misc_effects.value(effect_index + "/name").toString());
+      }
     }
   }
   return effect_names;
