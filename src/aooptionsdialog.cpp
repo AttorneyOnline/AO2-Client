@@ -1092,7 +1092,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   log_scroll->setWidget(ui_form_logging_widget);
   ui_logging_tab->setLayout(new QVBoxLayout);
   ui_logging_tab->layout()->addWidget(log_scroll);
-  ui_logging_tab->show();
 
   // Privacy tab
   ui_privacy_tab = new QWidget(this);
