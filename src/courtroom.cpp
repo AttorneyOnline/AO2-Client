@@ -2638,8 +2638,9 @@ void Courtroom::do_screenshake()
       int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
 #else
       // Ugly pre-5.10 STLpilled way of getting random negative numbers, for older distributions
-      int rand_x = (qrand() % (max_deviation * 2)) - max_deviation;
-      int rand_y = (qrand() % (max_deviation * 2)) - max_deviation;
+      int range = (max_deviation) - (-max_deviation) + 1;
+      int rand_x = -max_deviation+int(range*qrand()/(RAND_MAX+1.0));
+      int rand_y = -max_deviation+int(range*qrand()/(RAND_MAX+1.0));
 #endif
       screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
