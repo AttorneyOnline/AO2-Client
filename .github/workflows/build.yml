@@ -216,6 +216,19 @@ jobs:
           rm -r bearer
           rm -r styles
 
+      - name: Deploy Linux
+        if: matrix.platform == 'gcc64'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp ../scripts/launch.sh .
+          chmod +x launch.sh
+          chmod +x Attorney_Online
+          tar -cf Attorney_Online.tar ./*
+          rm *.so
+          rm *.sh
+          rm Attorney_Online
+
       - name: Deploy Mac
         if: matrix.os == 'macos-latest'
         working-directory: ${{github.workspace}}/bin/
