@@ -184,8 +184,14 @@ jobs:
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
+        if: matrix.platform != 'android'
         run: |
-          qmake DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
+          qmake QMAKE_CXXFLAGS += "-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+
+      - name: qmake android
+        if: matrix.platform == 'android'
+        run: |
+          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
       - name: build
         run: |
