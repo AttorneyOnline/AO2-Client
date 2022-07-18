@@ -26,10 +26,7 @@ private:
   QString m_emote = "";
   QString m_char = "";
 protected:
-  virtual void resizeEvent(QResizeEvent *);
-
-signals:
-
+  void resizeEvent(QResizeEvent *);
 };
 
 #endif // AOEMOTEPREVIEW_H
