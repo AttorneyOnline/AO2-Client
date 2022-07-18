@@ -51,6 +51,7 @@
 #include <QMessageBox>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#include <QRandomGenerator>
 #include <QRegExp>
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
