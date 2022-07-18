@@ -1,16 +1,11 @@
 #ifndef AOUTILS_H
 #define AOUTILS_H
 
-#include <QFile>
+#include <QSettings>
 
-class AOUtils {
-
-public :
-
-    static void migrateEffects(QFile* p_file);
-
-private :
-    AOUtils(){};
+namespace AOUtils
+{
+void migrateEffects(QSettings &p_fileName);
 };
 
-#endif //AOUTILS_H
+#endif // AOUTILS_H

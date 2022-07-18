@@ -1,58 +1,75 @@
 #include "aoutils.h"
 
-#include <QMap>
-#include <QSettings>
 #include <QDebug>
+#include <QMap>
+#include <QPair>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QSettings>
 
-void AOUtils::migrateEffects(QFile *p_file)
+void AOUtils::migrateEffects(QSettings &p_effects_ini)
 {
-  qDebug() << "Migrating effect.in at " << p_file->fileName();
-  QMap<QString, QString> l_effects_settings;
-  QSettings *l_effects_ini = new QSettings(p_file->fileName(), QSettings::IniFormat);
-  l_effects_ini->setIniCodec("UTF-8");
+  qDebug() << "Migrating effects from file:" << p_effects_ini.fileName();
+
+  QMap<QString, QString> l_effect_map;
   {
-    // Load all known keys into QMap and clear the old ini
-    QStringList keys = l_effects_ini->childKeys();
-    for (const QString &key : qAsConst(keys)) {
-      l_effects_settings.insert(key, l_effects_ini->value(key).toString()); // Don't care about datatype for now.
+    const QStringList l_key_list = p_effects_ini.childKeys();
+    for (const QString &i_key : l_key_list)
+    {
+      l_effect_map.insert(i_key, p_effects_ini.value(i_key).toString());
     }
-    l_effects_ini->clear();
-    l_effects_ini->sync();
+
+    p_effects_ini.clear();
+    p_effects_ini.sync();
   }
-  l_effects_ini->setValue("Version/major", "2"); // This is the second revision of effects.ini
+  // update revision
+  p_effects_ini.beginGroup("version");
+  p_effects_ini.setValue("major", "2");
+  p_effects_ini.endGroup();
 
-  // All abandon hope who read beyond this line. You have been warned.
+  const QStringList l_property_list{
+    "sound",
+    "scaling",
+    "stretch",
+    "ignore_offset",
+    "under_chatbox",
+  };
 
-  // Due to the annoying nature of lexiographic sorting of QSettings we need an index to order the file.
-  int l_effect_sort_index = -1;
+  const QMap<QString, QPair<QString, QString>> l_property_replacement_list{
+    {"under_chatbox", {"layer", "chat"}},
+  };
 
-  for (auto effectKeyIterator = l_effects_settings.keyBegin(), IteratorEnd = l_effects_settings.keyEnd();
-       effectKeyIterator != IteratorEnd; ++effectKeyIterator) {
+  QStringList l_key_list;
+  const QRegularExpression l_regex(QString("(\\w+)_(%1)$").arg(l_property_list.join("|")));
+  for (const QString &i_key : l_effect_map.keys())
+  {
+    if (l_regex.match(i_key).hasMatch())
+    {
+      continue;
+    }
+    l_key_list.append(i_key);
+  }
 
-    // This split size determines how we process the string :
-    //  Size 1 : We have a category name that will become sound and be added as a name.
-    //  Size 2 : We have a key that needs to be handled, we discard the old group part and take only the key.
-    //  Size 3 : We discard the group part and merge the keys back into a two_word key.
-    QString l_key = effectKeyIterator.operator*();
-    QStringList l_split_key = l_key.split("_");
+  int i = 0;
+  for (const QString &i_effect_key : qAsConst(l_key_list))
+  {
+    p_effects_ini.beginGroup(QString::number(i++));
+    p_effects_ini.setValue("name", i_effect_key);
+    p_effects_ini.setValue("sound", l_effect_map.value(i_effect_key));
+    p_effects_ini.setValue("cull", true);
 
-    if (l_split_key.size() == 1) {
-      // We implicity create the group this way too!
-      l_effect_sort_index++;
-      l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/name", l_key);
-      l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/sound", l_effects_settings.value(l_key));
-      l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/cull", "true");
+    for (const QString &i_property : l_property_list)
+    {
+      const QString l_property_key = QString("%1_%2").arg(i_effect_key, i_property);
+      if (l_effect_map.contains(l_property_key))
+      {
+        const QString l_property_value = l_effect_map.value(l_property_key);
+        const auto [l_converted_key, l_converted_value] = l_property_replacement_list.value(i_property, {i_property, l_property_value});
+        p_effects_ini.setValue(l_converted_key, l_converted_value);
+      }
     }
 
-    if (l_split_key.size() == 2) {
-      l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/" + l_split_key.at(1), l_effects_settings.value(l_key));
-    }
-
-    if (l_split_key.size() == 3) {
-      QString l_key_name = l_split_key.at(1) + "_" + l_split_key.at(2);
-      l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/" + l_key_name, l_effects_settings.value(l_key));
-    }
-
-    l_effects_ini->sync();
-    }
+    p_effects_ini.endGroup();
+  }
+  p_effects_ini.sync();
 }
