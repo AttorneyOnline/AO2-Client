@@ -152,7 +152,11 @@ void NetworkManager::connect_to_server(server_type p_server)
     });
     connect(server_socket.tcp, &QAbstractSocket::disconnected, ao_app,
             &AOApplication::server_disconnected);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    connect(server_socket.tcp, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [this] {
+#else
     connect(server_socket.tcp, &QAbstractSocket::errorOccurred, this, [this] {
+#endif
       qCritical() << "TCP socket error:" << server_socket.tcp->errorString();
     });
 
