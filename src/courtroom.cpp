@@ -4543,11 +4543,11 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
   if (file_exists(ao_app->get_real_path(
                     ao_app->get_character_path(current_char, "char.ini"))))
     menu->addAction(QString("Edit " + current_char + "/char.ini"), this,
-                    &Courtroom::on_iniswap_edit_requested());
+                    &Courtroom::on_iniswap_edit_requested);
   if (ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()) !=
       char_list.at(m_cid).name)
     menu->addAction(QString("Remove " + current_char), this,
-                    &Courtroom::on_iniswap_remove_clicked());
+                    &Courtroom::on_iniswap_remove_clicked);
 
   menu->addSeparator();
   menu->addAction(QString("Open character folder " + current_char), this,
@@ -4771,9 +4771,9 @@ void Courtroom::on_effects_context_menu_requested(const QPoint &pos)
         QString("Open misc/" +
                 ao_app->read_char_ini(current_char, "effects", "Options") +
                 " folder"),
-        this, &Courtroom::on_character_effects_edit_requested());
+        this, &Courtroom::on_character_effects_edit_requested);
   menu->addAction(QString("Open theme's effects folder"), this,
-                  &Courtroom::on_effects_edit_requested());
+                  &Courtroom::on_effects_edit_requested);
   menu->popup(ui_effects_dropdown->mapToGlobal(pos));
 }
 void Courtroom::on_effects_edit_requested()
