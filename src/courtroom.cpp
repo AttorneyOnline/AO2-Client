@@ -4483,9 +4483,11 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
     if (!swaplist.contains(entry) && entry != char_list.at(m_cid).name && !defswaplist.contains(entry))
       swaplist.append(entry);
   }
-  ao_app->write_to_file(
-      swaplist.join("\n"),
-      ao_app->get_real_path(VPath("iniswaps.ini")));
+  QString p_path = ao_app->get_real_path(VPath("iniswaps.ini"));
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_base_path() + "iniswaps.ini";
+  }
+  ao_app->write_to_file(swaplist.join("\n"), p_path);
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
@@ -4628,6 +4630,10 @@ void Courtroom::on_sfx_edit_requested()
 
   if (!file_exists(p_path)) {
     p_path = ao_app->get_real_path(VPath("soundlist.ini"));
+  }
+
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_base_path() + "soundlist.ini";
   }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
