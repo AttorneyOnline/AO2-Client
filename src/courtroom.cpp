@@ -4450,9 +4450,6 @@ void Courtroom::set_iniswap_dropdown()
       ao_app->get_list_file(VPath("iniswaps.ini")) +
       ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
 
-  if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
-    iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
-
   iniswaps.prepend(char_list.at(m_cid).name);
   iniswaps.removeDuplicates();
   if (iniswaps.size() <= 0) {
