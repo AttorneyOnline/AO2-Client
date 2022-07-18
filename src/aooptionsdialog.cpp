@@ -1199,6 +1199,9 @@ void AOOptionsDialog::update_values() {
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
+
+  //Clear the list to prevent duplication of default entries.
+  ui_mount_list->clear();
   ui_mount_list->addItem(defaultMount);
   ui_mount_list->addItems(ao_app->get_mount_paths());
 

@@ -689,19 +689,6 @@ void Courtroom::set_widgets()
   ui_vp_evidence_display->combo_resize(ui_viewport->width(),
                                        ui_viewport->height());
 
-  ui_vp_chat_arrow->move(0, 0);
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions("chat_arrow", "courtroom_design.ini");
-
-  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qWarning() << "could not find \"chat_arrow\" in courtroom_design.ini";
-    ui_vp_chat_arrow->hide();
-  }
-  else {
-    ui_vp_chat_arrow->move(design_ini_result.x + ui_vp_chatbox->x(), design_ini_result.y + ui_vp_chatbox->y());
-    ui_vp_chat_arrow->combo_resize(design_ini_result.width, design_ini_result.height);
-  }
-
   // layering shenanigans with ui_vp_chatbox prevent us from doing the sensible
   // thing, which is to parent these to ui_viewport. instead, AOLayer handles
   // masking so we don't overlap parts of the UI, and they become free floating
@@ -790,15 +777,12 @@ void Courtroom::set_widgets()
     ui_music_list->setIndentation(music_list_indentation.toInt());
 
   QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
-  if (music_list_animated == "1")
-    ui_music_list->setAnimated(true);
-  else
-    ui_music_list->setAnimated(false);
+  ui_music_list->setAnimated(music_list_animated == "1" || music_list_animated.startsWith("true"));
 
   set_size_and_pos(ui_music_name, "music_name");
 
   ui_music_display->move(0, 0);
-  design_ini_result =
+  pos_size_type design_ini_result =
       ao_app->get_element_dimensions("music_display", "courtroom_design.ini");
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
@@ -819,19 +803,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
 
-  ui_vp_chatbox->set_image("chatblank");
-  ui_vp_chatbox->hide();
-
-  set_size_and_pos(ui_vp_showname, "showname");
-
-  set_size_and_pos(ui_vp_message, "message");
-  ui_vp_message->hide();
-
-  // We detached the text as parent from the chatbox so it doesn't get affected
-  // by the screenshake.
-  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
-                      ui_vp_message->y() + ui_vp_chatbox->y());
-  ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+  initialize_chatbox();
 
   ui_vp_sticker->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_sticker->combo_resize(ui_viewport->width(),
@@ -1378,7 +1350,15 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_sideplayer_char->stop();
     ui_vp_effect->stop();
     ui_vp_message->hide();
-    ui_vp_chatbox->hide();
+    ui_vp_chatbox->setVisible(chatbox_always_show);
+    // Show it if chatbox always shows
+    if (ao_app->is_sticker_enabled() && chatbox_always_show) {
+      ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
+    }
+    // Hide the face sticker
+    else {
+      ui_vp_sticker->stop();
+    }
     // Stop the chat arrow from animating
     ui_vp_chat_arrow->hide();
 
@@ -1690,9 +1670,6 @@ void Courtroom::list_music()
 // Todo: multithread this due to some servers having large as hell area list
 void Courtroom::list_areas()
 {
-  ui_area_list->clear();
-  //  ui_music_search->setText("");
-
   int n_listed_areas = 0;
 
   for (int n_area = 0; n_area < area_list.size(); ++n_area) {
@@ -1700,8 +1677,6 @@ void Courtroom::list_areas()
     i_area.append(area_list.at(n_area));
 
     if (ao_app->arup_supported) {
-      i_area.prepend("[" + QString::number(n_area) + "] "); // Give it the index
-
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
@@ -1722,7 +1697,10 @@ void Courtroom::list_areas()
     }
 
 
-    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_area_list);
+    QTreeWidgetItem *treeItem = ui_area_list->topLevelItem(n_area);
+    if (treeItem == nullptr) {
+      treeItem = new QTreeWidgetItem(ui_area_list);
+    }
     treeItem->setText(0, area_list.at(n_area));
     treeItem->setText(1, i_area);
 
@@ -1750,6 +1728,10 @@ void Courtroom::list_areas()
     }
 
     ++n_listed_areas;
+  }
+
+  while (ui_area_list->topLevelItemCount() > n_listed_areas) {
+    ui_area_list->takeTopLevelItem(ui_area_list->topLevelItemCount()-1);
   }
 
   if (ui_music_search->text() != "") {
@@ -2430,9 +2412,15 @@ void Courtroom::display_character()
   sfx_player->loop_clear();
   // Hide the message and chatbox and handle the emotes
   ui_vp_message->hide();
-  ui_vp_chatbox->hide();
+  ui_vp_chatbox->setVisible(chatbox_always_show);
+  // Show it if chatbox always shows
+  if (ao_app->is_sticker_enabled() && chatbox_always_show) {
+    ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
+  }
   // Hide the face sticker
-  ui_vp_sticker->stop();
+  else {
+    ui_vp_sticker->stop();
+  }
   // Initialize the correct pos (called SIDE here for some reason) with DESK_MOD to determine if we should hide the desk or not.
   set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
@@ -2712,6 +2700,7 @@ void Courtroom::play_char_sfx(QString sfx_name)
 
 void Courtroom::initialize_chatbox()
 {
+
   int f_charid = m_chatmessage[CHAR_ID].toInt();
   if (f_charid >= 0 && f_charid < char_list.size() &&
       (m_chatmessage[SHOWNAME].isEmpty() || !ui_showname_enable->isChecked())) {
@@ -2731,6 +2720,12 @@ void Courtroom::initialize_chatbox()
   set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", p_misc);
   set_size_and_pos(ui_vp_showname, "showname", p_misc);
   set_size_and_pos(ui_vp_message, "message", p_misc);
+
+  QString result = ao_app->get_design_element("chatbox_always_show", "courtroom_design.ini", p_misc);
+  chatbox_always_show = result == "1" || result.startsWith("true");
+
+  // We detached the text as parent from the chatbox so it doesn't get affected
+  // by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
                       ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
@@ -3439,8 +3434,15 @@ void Courtroom::start_chat_ticking()
       ui_vp_message->show();
     }
     else {
-      ui_vp_chatbox->hide();
+      ui_vp_chatbox->setVisible(chatbox_always_show);
       ui_vp_message->hide();
+      // Show it if chatbox always shows
+      if (ao_app->is_sticker_enabled() && chatbox_always_show)
+        ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
+      // Hide the face sticker
+      else {
+        ui_vp_sticker->stop();
+      }
     }
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
     int delay = ao_app->stay_time();
