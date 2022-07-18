@@ -411,8 +411,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
 
   connect(ui_vp_objection, &SplashLayer::done, this, &Courtroom::objection_done);
-  connect(ui_vp_effect, &EffectLayer::done, this, &Courtroom::effect_done);
-  connect(ui_vp_wtce, &SplashLayer::done, this, &Courtroom::effect_done);
   connect(ui_vp_player_char, &CharLayer::done, this, &Courtroom::preanim_done);
   connect(ui_vp_player_char, &CharLayer::shake, this, &Courtroom::do_screenshake);
   connect(ui_vp_player_char, &CharLayer::flash, this, &Courtroom::do_flash);
@@ -2056,8 +2054,14 @@ void Courtroom::on_chat_return_pressed()
         ao_app->get_effect_property(effect, current_char, "sound");
     QString p_effect =
         ao_app->read_char_ini(current_char, "effects", "Options");
+
+    // Don't overlap the two sfx
+    if (!ui_pre->isChecked() && (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() == 1)) {
+      fx_sound = "0";
+    }
+
     packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
-    if (!ao_app->is_stickyeffects_enabled()) {
+    if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, "sticky").startsWith("true")) {
       ui_effects_dropdown->blockSignals(true);
       ui_effects_dropdown->setCurrentIndex(0);
       ui_effects_dropdown->blockSignals(false);
@@ -2396,12 +2400,6 @@ bool Courtroom::handle_objection()
   return false;
 }
 
-void Courtroom::effect_done()
-{
-  ui_vp_effect->stop();
-  ui_vp_wtce->stop();
-}
-
 void Courtroom::display_character()
 {
   // Stop all previously playing animations, effects etc.
@@ -2436,13 +2434,10 @@ void Courtroom::display_character()
   else
     ui_vp_player_char->network_strings.clear();
 
-  // Determine if we should flip the character or not (what servers don't support flipping at this point?)
-  if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
-    ui_vp_player_char->set_flipped(true);
-  else
-    ui_vp_player_char->set_flipped(false);
+  // Determine if we should flip the character or not
+  ui_vp_player_char->set_flipped(m_chatmessage[FLIP].toInt() == 1);
   // Move the character on the viewport according to the offsets
-  set_self_offset(m_chatmessage[SELF_OFFSET], m_chatmessage[EFFECTS]);
+  set_self_offset(m_chatmessage[SELF_OFFSET]);
 }
 
 void Courtroom::display_pair_character(QString other_charid, QString other_offset)
@@ -2652,45 +2647,100 @@ void Courtroom::do_flash()
 
   QString f_char = m_chatmessage[CHAR_NAME];
   QString f_custom_theme = ao_app->get_chat(f_char);
-  ui_vp_effect->stretch = true;
-  ui_vp_effect->set_static_duration(60);
-  ui_vp_effect->set_max_duration(60);
-  ui_vp_player_char->stackUnder(ui_vp_objection); // go above the chatbox
-  ui_vp_effect->load_image(
-      ao_app->get_effect("realization", f_char, f_custom_theme), false);
+  do_effect("realization", "", f_char, f_custom_theme);
 }
 
-void Courtroom::do_effect(QString fx_name, QString fx_sound, QString p_char,
+void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char,
                           QString p_folder)
 {
-  if (fx_name == "")
+  if (fx_path == "") {
     return;
-  QString effect = ao_app->get_effect(fx_name, p_char, p_folder);
-  if (effect == "")
+  }
+  QString effect = ao_app->get_effect(fx_path, p_char, p_folder);
+  if (effect == "") {
     return;
+  }
 
-  if (fx_sound != "")
+  if (fx_sound != "") {
     sfx_player->play(fx_sound);
+  }
 
   // Only check if effects are disabled after playing the sound if it exists
-  if (!ao_app->is_effects_enabled())
+  if (!ao_app->is_effects_enabled()) {
     return;
+  }
   ui_vp_effect->transform_mode = ao_app->get_scaling(
-      ao_app->get_effect_property(fx_name, p_char, "scaling"));
+      ao_app->get_effect_property(fx_path, p_char, "scaling"));
   ui_vp_effect->stretch =
-      ao_app->get_effect_property(fx_name, p_char, "stretch")
+      ao_app->get_effect_property(fx_path, p_char, "stretch")
           .startsWith("true");
-  bool under_chatbox = ao_app->get_effect_property(fx_name, p_char, "under_chatbox").startsWith("true");
-  if (under_chatbox)
-    ui_vp_effect->stackUnder(ui_vp_chatbox);
-  else
-    ui_vp_effect->stackUnder(ui_vp_objection);
+  ui_vp_effect->set_flipped(ao_app->get_effect_property(fx_path, p_char, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
-  ui_vp_effect->set_static_duration(0);
-  ui_vp_effect->set_max_duration(0);
-  ui_vp_effect->load_image(effect, true);
+
+  bool looping =
+      ao_app->get_effect_property(fx_path, p_char, "loop")
+          .startsWith("true");
+
+  int max_duration =
+      ao_app->get_effect_property(fx_path, p_char, "max_duration")
+          .toInt();
+
+  bool cull =
+      ao_app->get_effect_property(fx_path, p_char, "cull")
+          .startsWith("true");
+
+  // Possible values: "chat", "character", "behind"
+  QString layer = ao_app->get_effect_property(fx_path, p_char, "layer").toLower();
+  if (layer == "behind"){
+    ui_vp_effect->setParent(ui_viewport);
+    ui_vp_effect->stackUnder(ui_vp_player_char);
+  }
+  else if (layer == "character") {
+    ui_vp_effect->setParent(ui_viewport);
+    ui_vp_effect->stackUnder(ui_vp_desk);
+  }
+  else if (layer == "over") {
+    ui_vp_effect->setParent(ui_viewport);
+    ui_vp_effect->raise();
+  }
+  else { // if (layer == "chat") {
+    ui_vp_effect->setParent(this);
+    ui_vp_effect->stackUnder(ui_vp_objection);
+  }
+
+  int effect_x = 0;
+  int effect_y = 0;
+  // The effect is not parented to viewport, meaning we're overlaying ui elements
+  if (ui_vp_effect->parentWidget() != ui_viewport) {
+    //We need to add the viewport as an offset as effects are not bound to it.
+    effect_x = ui_viewport->x();
+    effect_y = ui_viewport->y();
+  }
+  // This effect respects the character offset settings
+  if (ao_app->get_effect_property(fx_path, p_char, "respect_offset") == "true") {
+    QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
+    int self_offset = self_offsets[0].toInt();
+    int self_offset_v;
+    if (self_offsets.length() <= 1) {
+      self_offset_v = 0;
+    }
+    else {
+      self_offset_v = self_offsets[1].toInt();
+    }
+
+    // Move the effects layer to match the position of our character
+    const int percent = 100;
+    effect_x += ui_viewport->width() * self_offset / percent;
+    effect_y += ui_viewport->height() * self_offset_v / percent;
+  }
+  ui_vp_effect->move(effect_x, effect_y);
+
+  ui_vp_effect->set_static_duration(max_duration);
+  ui_vp_effect->set_max_duration(max_duration);
+  ui_vp_effect->load_image(effect, looping);
+  ui_vp_effect->set_cull_image(cull);
 }
 
 void Courtroom::play_char_sfx(QString sfx_name)
@@ -3385,7 +3435,7 @@ void Courtroom::start_chat_ticking()
   // handle expanded desk mods
   switch(m_chatmessage[DESK_MOD].toInt()) {
     case 4:
-      set_self_offset(m_chatmessage[SELF_OFFSET], QString("||"));
+      set_self_offset(m_chatmessage[SELF_OFFSET]);
       [[fallthrough]];
     case 2:
       set_scene("1", m_chatmessage[SIDE]);
@@ -3785,28 +3835,19 @@ void Courtroom::set_scene(const QString f_desk_mod, const QString f_side)
   }
 }
 
-void Courtroom::set_self_offset(QString p_list, QString p_effect) {
+void Courtroom::set_self_offset(const QString& p_list) {
     QStringList self_offsets = p_list.split("&");
-    QStringList play_effect = p_effect.split("|");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
-    if (self_offsets.length() <= 1)
+    if (self_offsets.length() <= 1) {
       self_offset_v = 0;
-    else
-      self_offset_v = self_offsets[1].toInt();
-    ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
-
-    //If an effect is ignoring the users offset, we force it to the default position of the viewport.
-    if (ao_app->get_effect_property(play_effect[0], current_char, "ignore_offset") == "true") {
-      ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
-      return;
     }
-
-    //Offset is not disabled, we move the effects layer to match the position of our character
-    //We need to add the viewport as an offset as effects are not bound to it.
-    int effect_x = (ui_viewport->width() * self_offset / 100) + ui_viewport->x();
-    int effect_y = (ui_viewport->height() * self_offset_v / 100) + ui_viewport->y();
-    ui_vp_effect->move(effect_x, effect_y);
+    else {
+      self_offset_v = self_offsets[1].toInt();
+      ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+      const int percent = 100;
+      ui_vp_player_char->move(ui_viewport->width() * self_offset / percent, ui_viewport->height() * self_offset_v / percent);
+    }
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -4607,9 +4648,17 @@ void Courtroom::set_effects_dropdown()
     ui_effects_dropdown->hide();
     return;
   }
-  QStringList effectslist = ao_app->get_effects(current_char);
+  QStringList effectslist;
+  QStringList char_effects = ao_app->get_effects(current_char);
+  for (int i = 0; i < char_effects.size(); ++i) {
+    QString effect = char_effects[i];
+    if (effect.contains(":")) {
+      effect = effect.section(':', 1);
+    }
+    effectslist.append(effect);
+  }
 
-  if (effectslist.size() <= 0) {
+  if (effectslist.empty()) {
     ui_effects_dropdown->hide();
     return;
   }
