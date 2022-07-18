@@ -186,7 +186,7 @@ jobs:
       - name: qmake
         if: matrix.platform != 'android'
         run: |
-          qmake QMAKE_CXXFLAGS += "-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+          qmake QMAKE_CXXFLAGS+="-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
 
       - name: qmake android
         if: matrix.platform == 'android'
