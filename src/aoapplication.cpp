@@ -152,6 +152,7 @@ void AOApplication::add_favorite_server(int p_server)
   l_favorite_ini.setValue("name", fav_server.name);
   l_favorite_ini.setValue("address", fav_server.ip);
   l_favorite_ini.setValue("port", fav_server.port);
+  l_favorite_ini.setValue("desc", fav_server.desc);
 
   if (fav_server.socket_type == TCP) {
    l_favorite_ini.setValue("protocol", "tcp");
