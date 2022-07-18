@@ -41,6 +41,7 @@ void AOUtils::migrateEffects(QFile *p_file)
       l_effect_sort_index++;
       l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/name", l_key);
       l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/sound", l_effects_settings.value(l_key));
+      l_effects_ini->setValue(QString::number(l_effect_sort_index) + "/cull", "true");
     }
 
     if (l_split_key.size() == 2) {
