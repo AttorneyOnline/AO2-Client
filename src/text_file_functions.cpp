@@ -880,13 +880,13 @@ QStringList AOApplication::get_effects(QString p_char)
   QSettings effects_config(p_path, QSettings::IniFormat);
   effects_config.setIniCodec("UTF-8");
   QStringList effects = effects_config.childGroups();
-  std::sort(effects.begin(), effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
+  std::sort(effects.begin(), effects.end(), [] (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
   if (p_path != p_misc_path) {
     // If misc path is different from default path, stack the new miscs on top of the defaults
     QSettings effects_config_misc(p_misc_path, QSettings::IniFormat);
     effects_config_misc.setIniCodec("UTF-8");
     QStringList misc_effects = effects_config_misc.childGroups();
-    std::sort(misc_effects.begin(), misc_effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
+    std::sort(misc_effects.begin(), misc_effects.end(), [] (const QString &a, const QString &b) {return a.toInt() < b.toInt();});
     effects += misc_effects;
   }
   return effects;
@@ -923,10 +923,7 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
       settings.setIniCodec("UTF-8");
       QStringList char_effects = settings.childGroups();
       for (int i = 0; i < char_effects.size(); ++i) {
-        QString effect = char_effects[i];
-        if (effect.contains(":")) {
-          effect = effect.section(':', 1);
-        }
+        QString effect = settings.value(fx_name).toString();
         if (effect.toLower() == fx_name.toLower()) {
           f_result = settings.value(char_effects[i] + "/" + p_property).toString();
           if (!f_result.isEmpty()) {
