@@ -1807,7 +1807,7 @@ void Courtroom::on_chat_return_pressed()
 
   ui_ic_chat_message->blockSignals(true);
   QTimer::singleShot(ao_app->get_chat_ratelimit(), this,
-                     [=] { ui_ic_chat_message->blockSignals(false); });
+                     [this] { ui_ic_chat_message->blockSignals(false); });
   // MS#
   // deskmod#
   // pre-emote#
