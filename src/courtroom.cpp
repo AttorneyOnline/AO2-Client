@@ -8,8 +8,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
                        ~Qt::WindowMaximizeButtonHint);
 
   ao_app->initBASS();
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0) // Needed for pre-5.10 RNG stuff
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
+#endif
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
