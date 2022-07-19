@@ -2566,6 +2566,30 @@ void Courtroom::do_screenshake()
   screenshake_animation_group->start();
 }
 
+void Courtroom::do_transition(QString old_pos, QString new_pos) {
+
+    set_scene("", old_pos);
+
+    QPair<QString, int> old_pos_pair = ao_app->get_pos_path(old_pos);
+    QPair<QString, int> new_pos_pair = ao_app->get_pos_path(new_pos);
+
+    if (old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1) {
+        return;
+    }
+    int offset = old_pos_pair.second - new_pos_pair.second;
+    const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
+    for (QWidget *ui_element : affected_list) {
+        QPropertyAnimation *transition_animation = new QPropertyAnimation(ui_element, "pos", this);
+        transition_animation->setStartValue(QPoint(ui_element->x(), ui_element->y()));
+        transition_animation->setDuration(ao_app->get_pos_transition_duration(old_pos, new_pos) * 60);
+        transition_animation->setEndValue(QPoint(ui_element->x() + offset, ui_element->y()));
+        transition_animation->setEasingCurve(QEasingCurve::BezierSpline);
+        transition_animation_group->addAnimation(transition_animation);
+    }
+    transition_animation_group->start();
+    set_scene("", new_pos);
+}
+
 void Courtroom::do_flash()
 {
   if (!ao_app->is_effects_enabled())
@@ -4076,6 +4100,12 @@ void Courtroom::on_ooc_return_pressed()
           ui_vp_background->fade(true, 700);
       }
       return;
+  }
+  else if (ooc_message.startsWith("/slide")) {
+      QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
+      if (command.size() >= 3) {
+          do_transition(command[1], command[2]);
+      }
   }
   else if (ooc_message.startsWith("/load_case")) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)

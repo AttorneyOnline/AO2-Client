@@ -353,6 +353,8 @@ private:
   QParallelAnimationGroup *screenshake_animation_group =
       new QParallelAnimationGroup;
 
+  QParallelAnimationGroup *transition_animation_group = new QParallelAnimationGroup;
+
   bool next_character_is_not_special = false; // If true, write the
                                               // next character as it is.
 
@@ -825,6 +827,7 @@ public slots:
   void objection_done();
   void preanim_done();
   void do_screenshake();
+  void do_transition(QString old_pos, QString new_pos);
   void do_flash();
   void do_effect(QString fx_path, QString fx_sound, QString p_char,
                  QString p_folder);

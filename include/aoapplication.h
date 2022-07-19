@@ -410,6 +410,11 @@ public:
   // Returns whether the given pos is a judge position
   bool get_pos_is_judge(const QString &p_pos);
 
+  /**
+   * @brief Returns the duration of the transition animation between the two given positions, if it exists
+   */
+  int get_pos_transition_duration(const QString &old_pos, const QString &new_pos);
+
   // Returns the name of p_char
   QString get_char_name(QString p_char);
 
