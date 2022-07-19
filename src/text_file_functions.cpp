@@ -912,11 +912,11 @@ bool AOApplication::get_pos_is_judge(const QString &p_pos)
 int AOApplication::get_pos_transition_duration(const QString &old_pos, const QString &new_pos)
 {
     QString true_pos = old_pos.split(":")[0];
-    if (old_pos.split(":").size() < 2 || new_pos.split(":").size() < 2 || (true_pos != new_pos.split(":")[1]))
+    if (old_pos.split(":").size() < 2 || new_pos.split(":").size() < 2 || (true_pos != new_pos.split(":")[0]))
         return -1;
     QStringList transitions = read_design_ini(true_pos + "/transitions", get_background_path("design.ini")).split(",");
 
-    for (QString transition : transitions) {
+    for (const QString &transition : transitions) {
         QStringList transition_split = transition.split(":");
         if (transition_split.contains(old_pos.split(":")[1]) && transition_split.contains(new_pos.split(":")[1])) {
             if (transition_split.size() < 3 || !transition_split[2].toInt() || transition_split[2].toInt() < 0) {

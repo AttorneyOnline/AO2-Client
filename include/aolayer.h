@@ -74,6 +74,12 @@ public:
   // Stop the movie and clear all vectors
   void kill();
 
+  // Start playback of the movie (if animated).
+  void play();
+
+  // Freeze the movie at the current frame.
+  void freeze();
+
   // Set the m_flipped variable to true/false
   void set_flipped(bool p_flipped) { m_flipped = p_flipped; }
 
@@ -85,6 +91,9 @@ public:
 
   // Move the label and center it
   void move_and_center(int ax, int ay);
+
+  // Returns the scaling factor
+  float get_scaling_factor();
 
   // This is somewhat pointless now as there's no "QMovie" object to resize, aka
   // no "combo" to speak of
@@ -136,12 +145,6 @@ protected:
   bool m_flipped = false;
 
   int duration = 0;
-
-  // Start playback of the movie (if animated).
-  void play();
-
-  // Freeze the movie at the current frame.
-  void freeze();
 
   // Retreive a pixmap adjused for mirroring/aspect ratio shenanigans from a
   // provided QImage

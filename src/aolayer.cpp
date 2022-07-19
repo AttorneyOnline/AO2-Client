@@ -154,6 +154,8 @@ void AOLayer::move_and_center(int ax, int ay)
     center_pixmap(movie_frames[0]); // just use the first frame since dimensions are all that matter
 }
 
+float AOLayer::get_scaling_factor() { return scaling_factor; }
+
 void BackgroundLayer::load_image(QString p_filename, int p_center)
 {
   g_center = p_center;

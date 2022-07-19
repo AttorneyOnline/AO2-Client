@@ -557,6 +557,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
 
+  connect(transition_animation_group, &QParallelAnimationGroup::finished, this, &Courtroom::on_transition_finish);
+
   set_widgets();
 
   set_char_select();
@@ -2345,7 +2347,8 @@ void Courtroom::display_character()
     ui_vp_sticker->stop();
   }
   // Initialize the correct pos (called SIDE here for some reason) with DESK_MOD to determine if we should hide the desk or not.
-  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+  //set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+
 
   // Arrange the netstrings of the frame SFX for the character to know about
   if (!m_chatmessage[FRAME_SFX].isEmpty() &&
@@ -2485,24 +2488,12 @@ void Courtroom::handle_ic_message()
   // Update the chatbox information
   initialize_chatbox();
 
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-  bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
   if (m_chatmessage[EMOTE] != "") {
     // Display our own character
     display_character();
 
-    // Reset the pair character
-    ui_vp_sideplayer_char->stop();
-    ui_vp_sideplayer_char->move(0, 0);
+    do_transition(m_chatmessage[DESK_MOD], last_side, m_chatmessage[SIDE]);
 
-    // If the emote_mod is not zooming
-    if (emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
-      // Display the pair character
-      display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
-    }
-
-    // Parse the emote_mod part of the chat message
-    handle_emote_mod(emote_mod, immediate);
   }
   else
   {
@@ -2566,28 +2557,66 @@ void Courtroom::do_screenshake()
   screenshake_animation_group->start();
 }
 
-void Courtroom::do_transition(QString old_pos, QString new_pos) {
+void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_pos) {
 
-    set_scene("", old_pos);
+    set_scene(p_desk_mod, old_pos);
 
     QPair<QString, int> old_pos_pair = ao_app->get_pos_path(old_pos);
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(new_pos);
 
     if (old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1) {
+        on_transition_finish();
         return;
     }
-    int offset = old_pos_pair.second - new_pos_pair.second;
-    const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
-    for (QWidget *ui_element : affected_list) {
+    const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
+    int duration = ao_app->get_pos_transition_duration(old_pos, new_pos);
+
+    for (AOLayer *ui_element : affected_list) {
         QPropertyAnimation *transition_animation = new QPropertyAnimation(ui_element, "pos", this);
-        transition_animation->setStartValue(QPoint(ui_element->x(), ui_element->y()));
-        transition_animation->setDuration(ao_app->get_pos_transition_duration(old_pos, new_pos) * 60);
-        transition_animation->setEndValue(QPoint(ui_element->x() + offset, ui_element->y()));
-        transition_animation->setEasingCurve(QEasingCurve::BezierSpline);
+        transition_animation->setStartValue(ui_element->pos());
+        transition_animation->setDuration(duration);
+        int offset = (old_pos_pair.second * ui_element->get_scaling_factor()) - (new_pos_pair.second * ui_element->get_scaling_factor());
+        transition_animation->setEndValue(QPoint(ui_element->pos().x() + offset, ui_element->pos().y()));
+        qDebug() << "endvalue" << transition_animation->endValue();
+        transition_animation->setEasingCurve(QEasingCurve::Linear);
         transition_animation_group->addAnimation(transition_animation);
     }
+
+    QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
+    ui_vp_sideplayer_animation->setDuration(duration);
+    int offset = (old_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor()) - (new_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor());
+    QPoint starting_position = QPoint(ui_vp_sideplayer_char->pos().x() + offset, ui_vp_sideplayer_char->pos().y());
+    ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
+    ui_vp_sideplayer_char->load_image("normal", "Miles", -1, false);
+    ui_vp_sideplayer_char->freeze();
+    ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
+    ui_vp_sideplayer_animation->setStartValue(starting_position);
+    ui_vp_sideplayer_animation->setEasingCurve(QEasingCurve::Linear);
+    transition_animation_group->addAnimation(ui_vp_sideplayer_animation);
+
+    ui_vp_player_char->freeze();
     transition_animation_group->start();
-    set_scene("", new_pos);
+    set_scene(p_desk_mod, new_pos);
+}
+
+void Courtroom::on_transition_finish() {
+
+    int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+    bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
+
+    // Reset the pair character
+    ui_vp_sideplayer_char->stop();
+    ui_vp_sideplayer_char->move(0, 0);
+
+    // If the emote_mod is not zooming
+    //if (emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
+      // Display the pair character
+    //  display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
+    //}
+
+    // Parse the emote_mod part of the chat message
+    handle_emote_mod(emote_mod, immediate);
+
 }
 
 void Courtroom::do_flash()
@@ -4104,7 +4133,7 @@ void Courtroom::on_ooc_return_pressed()
   else if (ooc_message.startsWith("/slide")) {
       QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
       if (command.size() >= 3) {
-          do_transition(command[1], command[2]);
+          do_transition("", command[1], command[2]);
       }
   }
   else if (ooc_message.startsWith("/load_case")) {
