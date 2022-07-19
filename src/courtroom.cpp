@@ -4080,6 +4080,11 @@ void Courtroom::mod_called(QString p_ip)
 void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                             bool steno)
 {
+  Q_UNUSED(def);
+  Q_UNUSED(pro);
+  Q_UNUSED(jud);
+  Q_UNUSED(jur);
+  Q_UNUSED(steno);
   if (ui_casing->isChecked()) {
     ui_server_chatlog->append(msg);
     modcall_player->play(ao_app->get_court_sfx("case_call"));
@@ -4891,7 +4896,11 @@ void Courtroom::music_random()
   }
   if (clist.length() == 0)
       return;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
   on_music_list_double_clicked(clist.at(qrand() % clist.length()), 1);
+#else
+  on_music_list_double_clicked(clist.at(QRandomGenerator::global()->bounded(0, clist.length())), 1);
+#endif
 }
 
 void Courtroom::music_list_expand_all() { ui_music_list->expandAll(); }
