@@ -106,11 +106,14 @@ void Discord::state_lobby() {}
 
 void Discord::state_server(std::string name, std::string server_id)
 {
+  Q_UNUSED(name);
+  Q_UNUSED(server_id);
   qDebug() << "Discord RPC: Setting server state";
 }
 
 void Discord::state_character(std::string name)
 {
+  Q_UNUSED(name);
   qDebug() << "Discord RPC: Setting character state";
 }
 
