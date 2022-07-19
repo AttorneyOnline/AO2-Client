@@ -222,6 +222,8 @@ jobs:
         shell: bash
         run: |
           cp ../scripts/launch.sh .
+          mkdir imageformats
+          cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
           chmod +x launch.sh
           chmod +x Attorney_Online
           tar -cf Attorney_Online.tar ./*
