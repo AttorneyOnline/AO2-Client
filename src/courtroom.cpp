@@ -2601,11 +2601,6 @@ void Courtroom::handle_ic_message()
   }
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-// It's a surprise tool that will help us later.
-inline double NegRand() { return 2*(qrand()/(float)RAND_MAX)-1; } // Returns random double between -1 and 1
-#endif
-
 void Courtroom::do_screenshake()
 {
   if (!ao_app->is_shake_enabled())
@@ -2639,8 +2634,8 @@ void Courtroom::do_screenshake()
     for (int frame = 0; frame < maxframes; frame++) {
       double fraction = double(frame * frequency) / duration;
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-      int rand_x = max_deviation*NegRand() + 1;
-      int rand_y = max_deviation*NegRand() + 1;
+      int rand_x = max_deviation * (2 * (qrand() / (float)RAND_MAX) - 1) + 1;
+      int rand_y = max_deviation * (2 * (qrand() / (float)RAND_MAX) - 1) + 1;
 #else
       int rand_x = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
       int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
