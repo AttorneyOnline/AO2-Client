@@ -227,6 +227,7 @@ jobs:
           chmod +x launch.sh
           chmod +x Attorney_Online
           tar -cf Attorney_Online.tar ./*
+          rm -rf imageformats
           rm *.so
           rm *.sh
           rm Attorney_Online
