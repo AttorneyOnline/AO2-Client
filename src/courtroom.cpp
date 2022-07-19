@@ -2489,11 +2489,7 @@ void Courtroom::handle_ic_message()
   initialize_chatbox();
 
   if (m_chatmessage[EMOTE] != "") {
-    // Display our own character
-    display_character();
-
     do_transition(m_chatmessage[DESK_MOD], last_side, m_chatmessage[SIDE]);
-
   }
   else
   {
@@ -2603,6 +2599,7 @@ void Courtroom::on_transition_finish() {
 
     int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
     bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
+
 
     // Reset the pair character
     ui_vp_sideplayer_char->stop();
