@@ -184,8 +184,14 @@ jobs:
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
+        if: matrix.platform != 'android'
         run: |
-          qmake DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
+          qmake QMAKE_CXXFLAGS+="-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+
+      - name: qmake android
+        if: matrix.platform == 'android'
+        run: |
+          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
       - name: build
         run: |
@@ -209,6 +215,19 @@ jobs:
           rm -r iconengines
           rm -r bearer
           rm -r styles
+
+      - name: Deploy Linux
+        if: matrix.platform == 'gcc_64'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp ../scripts/launch.sh .
+          chmod +x launch.sh
+          chmod +x Attorney_Online
+          tar -cf Attorney_Online.tar ./*
+          rm *.so
+          rm *.sh
+          rm Attorney_Online
 
       - name: Deploy Mac
         if: matrix.os == 'macos-latest'
@@ -240,5 +259,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-${{matrix.platform}}
+          name: Attorney_Online-${{matrix.os}}-${{matrix.platform}}
           path: ${{github.workspace}}/bin/

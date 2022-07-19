@@ -80,13 +80,15 @@ void Courtroom::refresh_emotes()
 
   max_emotes_on_page = emote_columns * emote_rows;
 
+  QString selected_image = ao_app->get_image_suffix(ao_app->get_theme_path("emote_selected", ""), true);
+
   for (int n = 0; n < max_emotes_on_page; ++n) {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
     AOEmoteButton *f_emote = new AOEmoteButton(ui_emotes, ao_app, x_pos, y_pos,
                                                button_width, button_height);
-
+    f_emote->set_selected_image(selected_image);
     ui_emote_list.append(f_emote);
 
     f_emote->set_id(n);
