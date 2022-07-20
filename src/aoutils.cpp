@@ -41,13 +41,13 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
 
   QStringList l_key_list;
   const QRegularExpression l_regex(QString("(\\w+)_(%1)$").arg(l_property_list.join("|")));
-  for (const QString &i_key : l_effect_map.keys())
+  for (auto i = l_property_replacement_list.begin(); i != l_property_replacement_list.end(); i++)
   {
-    if (l_regex.match(i_key).hasMatch())
+    if (l_regex.match(i.key()).hasMatch())
     {
       continue;
     }
-    l_key_list.append(i_key);
+    l_key_list.append(i.key());
   }
 
   int i = 0;
@@ -57,6 +57,10 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
     p_effects_ini.setValue("name", i_effect_key);
     p_effects_ini.setValue("sound", l_effect_map.value(i_effect_key));
     p_effects_ini.setValue("cull", true);
+
+    if (i_effect_key == "realization") {
+        p_effects_ini.setValue("stretch", true);
+    }
 
     for (const QString &i_property : l_property_list)
     {
