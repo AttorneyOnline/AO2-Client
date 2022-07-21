@@ -375,6 +375,19 @@ void Courtroom::set_evidence_page()
   }
 }
 
+void Courtroom::show_evidence(int f_real_id)
+{
+  // Make sure we're in the global evidence list
+  evidence_switch(true);
+  // Set the evidence page properly
+  current_evidence_page = f_real_id / max_evidence_on_page;
+  set_evidence_page();
+  // Display the target evidence using the local ID
+  int p_id = f_real_id - (max_evidence_on_page * current_evidence_page);
+  on_evidence_double_clicked(p_id);
+}
+
+
 void Courtroom::on_evidence_name_edited()
 {
   if (current_evidence >= local_evidence_list.size())
@@ -389,7 +402,7 @@ void Courtroom::on_evidence_image_name_edited()
 
 void Courtroom::on_evidence_image_button_clicked()
 {
-  QDir dir(ao_app->get_base_path() + "evidence");
+  QDir dir(ao_app->get_real_path(ao_app->get_evidence_path("")));
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
@@ -405,6 +418,15 @@ void Courtroom::on_evidence_image_button_clicked()
     return;
 
   QString filename = filenames.at(0);
+  QStringList bases = ao_app->get_mount_paths();
+  bases.prepend(ao_app->get_base_path());
+  for (const QString &base : bases) {
+    QDir baseDir(base);
+    if (filename.startsWith(baseDir.absolutePath())) {
+      dir.setPath(baseDir.absolutePath() + "/evidence");
+      break;
+    }
+  }
   filename = dir.relativeFilePath(filename);
   ui_evidence_image_name->setText(filename);
   on_evidence_image_name_edited();
@@ -486,6 +508,7 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_image_name->setReadOnly(false);
   ui_evidence_image_name->setToolTip(tr("Click to edit..."));
 
+  ui_evidence->show();
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
 }
@@ -733,6 +756,7 @@ void Courtroom::on_evidence_save_clicked()
   ui_evidence_name->setText("");
 
   QSettings inventory(p_path, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
   inventory.clear();
   for (int i = 0; i < local_evidence_list.size(); i++) {
     inventory.beginGroup(QString::number(i));
@@ -759,8 +783,14 @@ void Courtroom::on_evidence_load_clicked()
   ui_evidence_name->setText("");
 
   QSettings inventory(p_path, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
   local_evidence_list.clear();
-  foreach (QString evi, inventory.childGroups()) {
+  QMap<int, QString> sorted_evi;
+  for (const auto &s : inventory.childGroups()) {
+    sorted_evi[s.toInt()] = s;
+  }
+  QStringList evilist(sorted_evi.values());
+  for (const QString &evi : evilist) {
     if (evi == "General")
       continue;
 
