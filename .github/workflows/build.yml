@@ -1,176 +1,266 @@
-name: build
+name: CI build
 
-on: push
+on: [push]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
 jobs:
-  windows:
-    runs-on: windows-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 5.15.1
+        platform:
+          - gcc_64
+          - android
+          - msvc2019
+          - mingw81_32
+          - clang_64
 
+        include:
+          - platform: gcc_64
+            os: ubuntu-latest
+          - platform: android
+            os: ubuntu-latest
+          - platform: msvc2019
+            os: windows-2019
+          - platform: mingw81_32
+            os: windows-latest
+          - platform: clang_64
+            os: macos-latest
+
+    runs-on: ${{matrix.os}}
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@master
+        with:
+          python-version: '3.10'
+          
+      - name: actions/cache qt
+        uses: actions/cache@master
+        id: cache
+        with:
+          path: qt/${{matrix.version}}/${{matrix.platform}}
+          key: qt-${{matrix.version}}-${{matrix.platform}}
 
-    - name: Install Catch2
-      shell: bash
-      run: |
-        curl -L https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz -o catch2.tar.gz
-        tar xvf catch2.tar.gz
-        cd Catch2-2.13.4
-        cmake -Bbuild -H. -DBUILD_TESTING=OFF
-        cmake --build build/ --target install
+      - name: Add msbuild to PATH
+        if: matrix.platform == 'msvc2019'
+        uses: microsoft/setup-msbuild@master
+        
+      - name: Downgrade Android NDK
+        if: matrix.platform == 'android'
+        run: |
+           ANDROID_ROOT=/usr/local/lib/android
+           ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
+           ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
+           ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
+        
+      - uses: Skycoder42/action-setup-qt@master
+        id: qt
+        with:
+          version: 5.15.1
+          platform: ${{matrix.platform}}
 
-    - name: Fetch external libs
-      run: |
-        # QtApng
-        curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-msvc2017_64-5.14.1.zip -o apng.zip
-        unzip apng.zip
+      - name: Install QtApng
+        run: |
+          git clone https://github.com/Skycoder42/QtApng.git
+          cd QtApng
+          cd src/3rdparty
+          chmod +x get_libs.sh
+          ./get_libs.sh 1.2.12 1.6.37
+          cd ../..
+          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
+          ${{steps.qt.outputs.make}} qmake_all
+          ${{steps.qt.outputs.make}}
+          ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
 
-        # discord-rpc
-        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
-        unzip discord_rpc_win.zip
-        cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib
+      - name: Create bin folder
+        run: |
+          mkdir bin
 
-        # BASS
-        curl http://www.un4seen.com/files/bass24.zip -o bass.zip
-        unzip bass.zip
-        cp ./c/x64/bass.lib ./lib
+      - name: Install Windows Discord RPC
+        if: contains(matrix.os, 'windows')
+        run: |
+          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
+          unzip discord_rpc.zip
+          cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./lib/
+          cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./bin/
+          cp ./discord-rpc/win32-dynamic/include/discord*.h ./include/
 
-        # BASS MIDI
-        curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
-        unzip bassmidi.zip
-        cp ./c/x64/bassmidi.lib ./lib
+      - name: Install Linux Discord RPC
+        if: matrix.platform == 'gcc_64'
+        run: |
+          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
+          unzip discord_rpc.zip
+          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib/
+          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
+          cp ./discord-rpc/linux-dynamic/include/discord*.h ./include/
 
-        # BASS Opus
-        curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
-        unzip bassopus.zip
-        cp ./c/x64/bassopus.lib ./lib
+      - name: Install Mac Discord RPC
+        if: matrix.os == 'macos-latest'
+        run: |
+          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc.zip
+          unzip discord_rpc.zip
+          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib/
+          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin/
+          cp ./discord-rpc/osx-dynamic/include/discord*.h ./include/
 
-    - name: Cache Qt
-      id: cache-qt
-      uses: actions/cache@v1
-      with:
-        path: ../Qt
-        key: ${{ runner.os }}-qt5
+      - name: Install Windows BASS
+        if: contains(matrix.os, 'windows')
+        run: |
+          curl http://www.un4seen.com/files/bass24.zip -o bass.zip
+          unzip -d bass -o bass.zip
+          cp ./bass/c/bass.lib ./lib/
+          cp ./bass/bass.dll ./bin/
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
-      with:
-        version: '5.15.2'
-        cached: ${{steps.cache-qt.outputs.cache-hit}}
+          curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
+          unzip -d bass -o bassmidi.zip
+          cp ./bass/c/bassmidi.lib ./lib/
+          cp ./bass/bassmidi.dll ./bin/
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/build
+          curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+          unzip -d bass -o bassopus.zip
+          cp ./bass/c/bassopus.lib ./lib/
+          cp ./bass/bassopus.dll ./bin/
 
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{github.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      - name: Install Linux BASS
+        if: matrix.platform == 'gcc_64'
+        run: |
+          curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
+          unzip -d bass -o bass.zip
+          cp ./bass/x64/libbass.so ./lib/
+          cp ./bass/x64/libbass.so ./bin/
 
-    - name: Build
-      working-directory: ${{github.workspace}}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE --target Attorney_Online
+          curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
+          unzip -d bass -o bassmidi.zip
+          cp ./bass/x64/libbassmidi.so ./lib/
+          cp ./bass/x64/libbassmidi.so ./bin/
 
-    - name: Deploy
-      working-directory: ${{github.workspace}}/build/Release
-      shell: bash
-      run: |
-        windeployqt .
-        cp ../../msvc2017_64/plugins/imageformats/qapng.dll ./imageformats/
-        cp ../../discord-rpc/win64-dynamic/bin/discord-rpc.dll .
-        cp ../../x64/bass.dll .
-        cp ../../x64/bassmidi.dll .
-        cp ../../x64/bassopus.dll .
+          curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+          unzip -d bass -o bassopus.zip
+          cp ./bass/x64/libbassopus.so ./lib/
+          cp ./bass/x64/libbassopus.so ./bin/
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Attorney_Online-x64
-        path: ${{github.workspace}}/build/Release/
+      - name: Install Mac BASS
+        if: matrix.os == 'macos-latest'
+        run: |
+          curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
+          unzip -d bass -o bass.zip
+          cp ./bass/libbass.dylib ./lib/
+          cp ./bass/libbass.dylib ./bin/
 
-  # linux:
-  #   # The CMake configure and build commands are platform agnostic and should work equally
-  #   # well on Windows or Mac.  You can convert this to a matrix build if you need
-  #   # cross-platform coverage.
-  #   # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  #   runs-on: ubuntu-20.04
+          curl http://www.un4seen.com/files/bassmidi24-osx.zip -o bassmidi.zip
+          unzip -d bass -o bassmidi.zip
+          cp ./bass/libbassmidi.dylib ./lib/
+          cp ./bass/libbassmidi.dylib ./bin/
 
-  #   steps:
-  #   - uses: actions/checkout@v2
+          curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
+          unzip -d bass -o bassopus.zip
+          cp ./bass/libbassopus.dylib ./lib/
+          cp ./bass/libbassopus.dylib ./bin/
 
-  #   - name: Install catch2
-  #     run: |
-  #       curl -L https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz -o catch2.tar.gz
-  #       tar xvf catch2.tar.gz
-  #       cd Catch2-2.13.4
-  #       cmake -Bbuild -H. -DBUILD_TESTING=OFF
-  #       sudo cmake --build build/ --target install
+      - name: Install Android BASS
+        if: matrix.platform == 'android'
+        run: |
+          mkdir ./android/libs/
+          mkdir ./android/libs/armeabi-v7a/
+          curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
+          unzip -d bass -o bass.zip
+          cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
 
-  #   - name: Fetch external libs
-  #     run: |
-  #       # Download
-  #       curl http://www.un4seen.com/files/bass24-linux.zip -o bass_linux.zip
-  #       curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus_linux.zip
-  #       curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
-  #       # Extract
-  #       unzip bass_linux.zip
-  #       unzip bassopus_linux.zip
-  #       unzip discord_rpc_linux.zip
-  #       # Copy
-  #       cp x64/libbass.so lib
-  #       cp x64/libbassopus.so lib
-  #       cp discord-rpc/linux-dynamic/lib/libdiscord-rpc.so lib
+          curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
+          unzip -d bass -o bassmidi.zip
+          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
 
-  #   - name: Install Qt5
-  #     run: sudo apt update -y && sudo apt install -y qt5-default
+          curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
+          unzip -d bass -o bassopus.zip
+          cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
-  #   - name: Install QtApng
-  #     run: |
-  #       git clone https://github.com/Skycoder42/QtApng
-  #       cd QtApng
-  #       qmake
-  #       make
-  #       sudo make install
+      - name: qmake
+        if: matrix.platform != 'android'
+        run: |
+          qmake QMAKE_CXXFLAGS+="-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
 
-  #   - name: Create Build Environment
-  #     # Some projects don't allow in-source building, so create a separate build directory
-  #     # We'll use this as our working directory for all subsequent commands
-  #     run: cmake -E make_directory ${{github.workspace}}/build
+      - name: qmake android
+        if: matrix.platform == 'android'
+        run: |
+          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
-  #   - name: Configure CMake
-  #     # Use a bash shell so we can use the same syntax for environment variable
-  #     # access regardless of the host operating system
-  #     shell: bash
-  #     env:
-  #       CC: gcc-10
-  #       CXX: g++-10
-  #     working-directory: ${{github.workspace}}/build
-  #     # Note the current convention is to use the -S and -B options here to specify source
-  #     # and build directories, but this is only available with CMake 3.13 and higher.
-  #     # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-  #     run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      - name: build
+        run: |
+          ${{steps.qt.outputs.make}}
 
-  #   - name: Build
-  #     working-directory: ${{github.workspace}}/build
-  #     shell: bash
-  #     # Execute the build.  You can specify a specific target with "--target <NAME>"
-  #     run: cmake --build . --config $BUILD_TYPE --target Attorney_Online
+      - name: Deploy Windows
+        if: contains(matrix.os, 'windows')
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          windeployqt --no-quick-import --no-translations --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-opengl-sw .
+          cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
+          rm ./imageformats/qtiff.dll
+          rm ./imageformats/qjpeg.dll
+          rm ./imageformats/qicns.dll
+          rm ./imageformats/qico.dll
+          rm ./imageformats/qsvg.dll
+          rm ./imageformats/qtga.dll
+          rm ./imageformats/qwbmp.dll
+          rm ./Qt5Svg.dll
+          rm -r iconengines
+          rm -r bearer
+          rm -r styles
 
-  #   - name: Strip
-  #     working-directory: ${{github.workspace}}/build
-  #     shell: bash
-  #     run: strip -s Attorney_Online
+      - name: Deploy Linux
+        if: matrix.platform == 'gcc_64'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp ../scripts/launch.sh .
+          mkdir imageformats
+          cp ../QtApng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
+          chmod +x launch.sh
+          chmod +x Attorney_Online
+          tar -cf Attorney_Online.tar ./*
+          rm -rf imageformats
+          rm *.so
+          rm *.sh
+          rm Attorney_Online
 
-  #   - name: Compress
-  #     working-directory: ${{github.workspace}}/build
-  #     shell: bash
-  #     run: tar czvf Attorney_Online-linux-x86_64.tgz Attorney_Online
+      - name: Deploy Mac
+        if: matrix.os == 'macos-latest'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          macdeployqt Attorney_Online.app
+          cp ../QtApng/plugins/imageformats/libqapng.dylib ./Attorney_Online.app/Contents/PlugIns/imageformats/
+          mv *.dylib ./Attorney_Online.app/Contents/Frameworks
+          install_name_tool -change @loader_path/libbass.dylib @rpath/libbass.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          install_name_tool -change @loader_path/libbassopus.dylib @rpath/libbassopus.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          install_name_tool -change @loader_path/libbassmidi.dylib @rpath/libbassmidi.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          install_name_tool -change @loader_path/libdiscord-rpc.dylib @rpath/libdiscord-rpc.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          install_name_tool -change @loader_path/libqapng.dylib @rpath/libqapng.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
+          hdiutil create -volname "Attorney_Online" -srcfolder "./Attorney_Online.app" -ov -format UDZO "Attorney_Online.dmg"
+          rm -r ./Attorney_Online.app/
 
-  #   - name: Upload Artifact
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: Attorney_Online
-  #       path: ${{github.workspace}}/build/Attorney_Online-linux-x86_64.tgz
+      - name: Deploy Android
+        if: matrix.platform == 'android'
+        working-directory: ${{github.workspace}}/
+        shell: bash
+        run: |
+          mkdir ./build/libs/
+          mkdir ./build/libs/armeabi-v7a/
+          mv ./bin/*.so ./build/libs/armeabi-v7a/
+          cp ./QtApng/plugins/imageformats/libplugins_imageformats_qapng_armeabi-v7a.so ./build/libs/armeabi-v7a/
+          androiddeployqt --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-${{matrix.os}}-${{matrix.platform}}
+          path: ${{github.workspace}}/bin/
