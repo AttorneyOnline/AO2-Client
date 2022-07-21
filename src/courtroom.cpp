@@ -2547,10 +2547,17 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 
     set_scene(p_desk_mod, old_pos);
 
+    transition_animation_group->setCurrentTime(
+        transition_animation_group->duration());
+    transition_animation_group->clear();
+
+    display_character();
+
     QPair<QString, int> old_pos_pair = ao_app->get_pos_path(old_pos);
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(new_pos);
 
-    if (old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1) {
+    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1) {
+        qDebug() << "skipping transition - not applicable";
         on_transition_finish();
         return;
     }
@@ -2570,22 +2577,34 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 
     QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
     ui_vp_sideplayer_animation->setDuration(duration);
-    int offset = (old_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor()) - (new_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor());
-    QPoint starting_position = QPoint(ui_vp_sideplayer_char->pos().x() + offset, ui_vp_sideplayer_char->pos().y());
+    ui_vp_sideplayer_char->move(0, 0);
+    int offset = (ui_vp_background->width() - ui_vp_sideplayer_char->width()) +
+            ((old_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor()) - (new_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor())) +
+            m_chatmessage[SELF_OFFSET].split("&")[0].toInt();
+    QPoint starting_position = QPoint(offset, m_chatmessage[SELF_OFFSET].split("&")[1].toInt());
     ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
-    ui_vp_sideplayer_char->load_image("normal", "Miles", -1, false);
-    ui_vp_sideplayer_char->freeze();
-    ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
     ui_vp_sideplayer_animation->setStartValue(starting_position);
     ui_vp_sideplayer_animation->setEasingCurve(QEasingCurve::Linear);
     transition_animation_group->addAnimation(ui_vp_sideplayer_animation);
+    ui_vp_sideplayer_char->set_flipped(m_chatmessage[FLIP].toInt());
+    QString slide_emote;
+    if (m_chatmessage[OBJECTION_MOD].contains("4&") || m_chatmessage[OBJECTION_MOD].toInt() > 0)
+        slide_emote = "(a)pointing";
+    else if (m_chatmessage[EMOTE_MOD].toInt() != IDLE)
+        slide_emote = "(a)normal";
+    else
+        slide_emote = "(a)" + m_chatmessage[EMOTE];
+
+    ui_vp_sideplayer_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
 
     ui_vp_player_char->freeze();
+    ui_vp_sideplayer_char->freeze();
     transition_animation_group->start();
-    set_scene(p_desk_mod, new_pos);
 }
 
 void Courtroom::on_transition_finish() {
+
+    set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
     int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
     bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
