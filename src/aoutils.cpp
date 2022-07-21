@@ -40,8 +40,8 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
   };
 
   QStringList l_key_list;
-  const QRegularExpression l_regex(QString("(\\w+)_(%1)$").arg(l_property_list.join("|")));
-  for (auto i = l_property_replacement_list.begin(); i != l_property_replacement_list.end(); i++)
+  const QRegularExpression l_regex(QStringLiteral("(\\w+)_(%1)$").arg(l_property_list.join("|")));
+  for (auto i = l_effect_map.begin(); i != l_effect_map.end(); i++)
   {
     if (l_regex.match(i.key()).hasMatch())
     {

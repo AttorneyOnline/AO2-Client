@@ -1,7 +1,6 @@
 #ifndef AOUTILS_H
 #define AOUTILS_H
 
-#include <QRegularExpression>
 #include <QSettings>
 
 namespace AOUtils
