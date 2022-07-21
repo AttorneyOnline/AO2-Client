@@ -2117,17 +2117,7 @@ void Courtroom::skip_chatmessage_queue()
 void Courtroom::unpack_chatmessage(QStringList p_contents)
 {
   for (int n_string = 0; n_string < MS_MAXIMUM; ++n_string) {
-    // Note that we have added stuff that vanilla clients and servers simply
-    // won't send. So now, we have to check if the thing we want even exists
-    // amongst the packet's content. Also, don't
-    // forget! A size 15 message will have indices from 0 to 14.
-    // TODO: What the fuck does this even do? It smells like compatibility code.
-    if (n_string < p_contents.size() && (n_string < MS_MINIMUM)) {
-      m_chatmessage[n_string] = p_contents.at(n_string);
-    }
-    else {
-      m_chatmessage[n_string] = "";
-    }
+    m_chatmessage[n_string] = p_contents.at(n_string);
   }
 
   if (!ao_app->is_desyncrhonized_logs_enabled()) {
@@ -3450,6 +3440,7 @@ void Courtroom::start_chat_ticking()
     sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); // text meme bonanza
+  qDebug() << "emote_mod" << emote_mod;
   if ((emote_mod == IDLE || emote_mod == ZOOM) && m_chatmessage[SCREENSHAKE] == "1") {
     this->do_screenshake();
   }
