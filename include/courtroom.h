@@ -188,8 +188,7 @@ public:
   void set_scene(QString f_desk_mod, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  // sets ui_effects_layer according to the SELF_OFFSET, unless it is overwritten by effects.ini
-  void set_self_offset(QString p_list, QString p_effect);
+  void set_self_offset(const QString& p_list);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -411,6 +410,7 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+  bool chatbox_always_show = false;
 
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
@@ -820,7 +820,6 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
-  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
