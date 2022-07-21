@@ -11,7 +11,22 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app,
   this->move(p_x, p_y);
   this->resize(p_w, p_h);
 
+  ui_selected = new QLabel(this);
+  ui_selected->resize(size());
+  ui_selected->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_selected->hide();
+
   connect(this, &AOEmoteButton::clicked, this, &AOEmoteButton::on_clicked);
+}
+
+void AOEmoteButton::set_selected_image(QString p_image)
+{
+  if (file_exists(p_image)) {
+    ui_selected->setStyleSheet("border-image: url(\"" + p_image + "\")");
+  }
+  else {
+    ui_selected->setStyleSheet("background-color: rgba(0, 0, 0, 128)");
+  }
 }
 
 void AOEmoteButton::set_image(QString p_image, QString p_emote_comment)
@@ -45,33 +60,19 @@ void AOEmoteButton::set_char_image(QString p_char, int p_emote, bool on)
     suffixedPaths.append(ao_app->get_image_suffix(ao_app->get_character_path(
         p_char, "emotions/button" + emotion_number + suffix)));
   }
+  QString image = suffixedPaths[static_cast<int>(on)];
 
   QString emoteComment = ao_app->get_emote_comment(p_char, p_emote);
-  if (!file_exists(suffixedPaths[on]) && file_exists(suffixedPaths[!on])) {
-    QImage tmpImage(suffixedPaths[!on]);
-    tmpImage = tmpImage.convertToFormat(QImage::Format_ARGB32);
-    QPoint p1, p2;
-    p2.setY(tmpImage.height());
-
-    QLinearGradient gradient(p1, p2);
-    gradient.setColorAt(0, Qt::transparent);
-    gradient.setColorAt(1, QColor(0, 0, 0, 159));
-
-    QPainter p(&tmpImage);
-    p.fillRect(0, 0, tmpImage.width(), tmpImage.height(), gradient);
-
-    gradient.setColorAt(0, QColor(0, 0, 0, 159));
-    gradient.setColorAt(1, Qt::transparent);
-    p.fillRect(0, 0, tmpImage.width(), tmpImage.height(), gradient);
-
-    p.end();
-
-    // Original suffixed path may be empty, so create the path again
-    suffixedPaths[on] = QString(suffixedPaths[!on]).replace(suffixes[!on], suffixes[on]);
-    tmpImage.save(suffixedPaths[on], "png");
+  if (on && !file_exists(suffixedPaths[1])) {;
+    ui_selected->show();
+    image = suffixedPaths[0];
+  }
+  else {
+    ui_selected->hide();
   }
 
-  set_image(suffixedPaths[on], emoteComment);
+  set_image(image, emoteComment);
 }
 
 void AOEmoteButton::on_clicked() { emit emote_clicked(m_id); }
+
