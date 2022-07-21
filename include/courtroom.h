@@ -24,6 +24,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "eventfilters.h"
+#include "misc_functions.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -257,6 +258,9 @@ public:
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
 
+  // After attempting to play a transition animation, clean up the viewport objects for everyone else and continue the IC processing callstack
+  void post_transition_cleanup();
+
   // Display the character.
   void display_character();
 
@@ -484,6 +488,11 @@ private:
   static const int MS_MAXIMUM = 30;
   QString m_chatmessage[MS_MAXIMUM];
 
+  /**
+   * @brief The amount of time to wait at the start and end of transition animations
+   */
+  static const int TRANSITION_BOOKEND_DELAY = 300;
+
   QString previous_ic_message = "";
   QString additive_previous = "";
 
@@ -613,7 +622,10 @@ private:
 
   QString current_background = "default";
   QString current_side = "";
+
+  // used for courtroom transition logic
   QString last_side = "";
+  int last_offset = 0;
 
   QString last_music_search = "";
   QString last_area_search = "";

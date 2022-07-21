@@ -102,6 +102,13 @@ public:
   // Return the frame delay adjusted for speed
   int get_frame_delay(int delay);
 
+  /**
+   * @brief Returns the x offset to use to ensure proper centering in the viewport.
+   * This is used by courtroom transition code to know exactly where to put the characters at the start and end of the animation.
+   * @return The offset to center the pixmap in the viewport
+   */
+  int get_centered_offset();
+
   // iterate through a list of paths and return the first entry that exists. if
   // none exist, return NULL (safe because we check again for existence later)
   QString find_image(QStringList p_list);

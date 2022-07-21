@@ -111,10 +111,21 @@ void AOLayer::center_pixmap(QPixmap f_pixmap) {
   else {
       QLabel::move(get_pos_from_center(g_center), y + (f_h - f_pixmap.height()));
   }
-  if (masked)
-      this->setMask(
-          QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
-                  f_h)); // make sure we don't escape the area we've been given
+  if (masked) {
+      if (g_center == -1) {
+        this->setMask(
+            QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
+                    f_h)); // make sure we don't escape the area we've been given
+      }
+      else {
+          int center_scaled = int(float(g_center) * scaling_factor);
+          this->setMask(QRegion((f_pixmap.width() - center_scaled) / 2, (f_pixmap.height() - f_h) / 2, f_w, f_h));
+      }
+  }
+}
+
+int AOLayer::get_centered_offset() {
+    return x + (f_w - movie_frames[0].width()) / 2;
 }
 
 int AOLayer::get_pos_from_center(int f_center) {

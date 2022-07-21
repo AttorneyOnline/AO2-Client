@@ -2,8 +2,9 @@
 
 void delay(int p_milliseconds)
 {
-  QTime dieTime = QTime::currentTime().addMSecs(p_milliseconds);
-
-  while (QTime::currentTime() < dieTime)
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    QEventLoop loop;
+    QTimer t;
+    t.connect(&t, &QTimer::timeout, &loop, &QEventLoop::quit);
+    t.start(p_milliseconds);
+    loop.exec();
 }
