@@ -62,6 +62,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_sideplayer_char->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_desk->setObjectName("ui_vp_desk");
+  ui_vp_desk->masked = false;
 
   ui_vp_effect = new EffectLayer(this, ao_app);
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -2570,29 +2571,35 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
     int duration = ao_app->get_pos_transition_duration(old_pos, new_pos);
 
+    ui_vp_player_char->move_and_center(last_offset, 0);
+
+    // Set up the background, desk, and player objects' animations
+
     for (AOLayer *ui_element : affected_list) {
         QPropertyAnimation *transition_animation = new QPropertyAnimation(ui_element, "pos", this);
         transition_animation->setStartValue(ui_element->pos());
         transition_animation->setDuration(duration);
         int offset = (old_pos_pair.second * ui_element->get_scaling_factor()) - (new_pos_pair.second * ui_element->get_scaling_factor());
-        if (qobject_cast<CharLayer*>(ui_element)) { // if this is the player character
-            offset += last_offset;
-            offset += ui_vp_player_char->get_centered_offset();
-        }
         transition_animation->setEndValue(QPoint(ui_element->pos().x() + offset, ui_element->pos().y()));
         qDebug() << "endvalue" << transition_animation->endValue();
         transition_animation->setEasingCurve(QEasingCurve::Linear);
         transition_animation_group->addAnimation(transition_animation);
     }
 
-    QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
-    ui_vp_sideplayer_animation->setDuration(duration);
-    int offset = (new_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor()) -
-                 (old_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor()) +
-                  m_chatmessage[SELF_OFFSET].split("&")[0].toInt() +
-                  ui_vp_sideplayer_char->get_centered_offset();
+    // Setting up the former pair character to work for us as our stand-in for the next character
 
     QPoint starting_position = QPoint(offset, m_chatmessage[SELF_OFFSET].split("&")[1].toInt());
+    QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
+
+    ui_vp_sideplayer_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
+    ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
+
+
+    ui_vp_sideplayer_animation->setDuration(duration);
+    int offset = new_pos_pair.second - (ui_vp_sideplayer_char->width() / 2);
+    offset += ui_vp_sideplayer_char->
+    offset += m_chatmessage[SELF_OFFSET].split("&")[0].toInt();
+
     qDebug() << starting_position;
     ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
     ui_vp_sideplayer_animation->setStartValue(starting_position);
@@ -2606,9 +2613,6 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
         slide_emote = "(a)normal";
     else
         slide_emote = "(a)" + m_chatmessage[EMOTE];
-
-    ui_vp_sideplayer_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
-    ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
 
     ui_vp_player_char->freeze();
     ui_vp_player_char->show();

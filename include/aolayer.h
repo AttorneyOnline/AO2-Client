@@ -164,6 +164,7 @@ protected:
   // Currently only used by background layers
   int g_center = -1;
   int last_center = -1;     // g_center from the last image.
+  int centered_offset = 0;
   // Center the QLabel in the viewport based on the dimensions of f_pixmap
   void center_pixmap(QPixmap f_pixmap);
   /*!

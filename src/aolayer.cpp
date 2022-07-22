@@ -103,6 +103,7 @@ void AOLayer::set_frame(QPixmap f_pixmap)
 
 void AOLayer::center_pixmap(QPixmap f_pixmap) {
   if (g_center == -1) {
+      centered_offset = (f_w - f_pixmap.width()) / 2;
       QLabel::move(
           x + (f_w - f_pixmap.width()) / 2,
           y + (f_h - f_pixmap.height())); // Always center horizontally, always put
@@ -125,7 +126,7 @@ void AOLayer::center_pixmap(QPixmap f_pixmap) {
 }
 
 int AOLayer::get_centered_offset() {
-    return x + (f_w - movie_frames[0].width()) / 2;
+    return centered_offset;
 }
 
 int AOLayer::get_pos_from_center(int f_center) {
