@@ -664,7 +664,7 @@ void Courtroom::set_widgets()
   // If there is a point to it, show all CCCC features.
   // We also do this this soon so that set_size_and_pos can hide them all later,
   // if needed.
-  if (ao_app->cccc_ic_support_enabled) {
+  if (ao_app->cccc_ic_supported) {
     ui_pair_button->show();
     ui_immediate->show();
     ui_showname_enable->show();
@@ -679,7 +679,7 @@ void Courtroom::set_widgets()
     ui_ic_chat_name->setEnabled(false);
   }
 
-  if (ao_app->casing_alerts_enabled) {
+  if (ao_app->casing_alerts_supported) {
     ui_announce_casing->show();
     ui_casing->show();
   }
@@ -1512,7 +1512,7 @@ void Courtroom::update_character(int p_cid)
     set_iniswap_dropdown();
 
   ui_custom_objection->hide();
-  if (ao_app->custom_objection_enabled) // if setting is enabled
+  if (ao_app->custom_objection_supported) // if setting is enabled
   {
     custom_obj_menu->clear();
     custom_objections_list.clear();
@@ -1579,17 +1579,17 @@ void Courtroom::enter_courtroom()
 
   set_evidence_page();
 
-  if (ao_app->flipping_enabled)
+  if (ao_app->flipping_supported)
     ui_flip->show();
   else
     ui_flip->hide();
 
-  if (ao_app->additive_enabled)
+  if (ao_app->additive_text_supported)
     ui_additive->show();
   else
     ui_additive->hide();
 
-  if (ao_app->casing_alerts_enabled)
+  if (ao_app->casing_alerts_supported)
     ui_casing->show();
   else
     ui_casing->hide();
@@ -1696,7 +1696,7 @@ void Courtroom::list_areas()
     QString i_area = "";
     i_area.append(area_list.at(n_area));
 
-    if (ao_app->arup_enabled) {
+    if (ao_app->arup_supported) {
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
@@ -1724,7 +1724,7 @@ void Courtroom::list_areas()
     treeItem->setText(0, area_list.at(n_area));
     treeItem->setText(1, i_area);
 
-    if (ao_app->arup_enabled) {
+    if (ao_app->arup_supported) {
       // Coloring logic here.
       treeItem->setBackground(1, free_brush);
       if (arup_locks.at(n_area) == "LOCKED") {
@@ -1794,7 +1794,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
     color =
         ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini")
             .name();
-  if (!ao_app->auth_packet_enabled && p_message == "Logged in as a moderator.") {
+  if (!ao_app->auth_packet_supported && p_message == "Logged in as a moderator.") {
     // Emulate successful authentication
     on_authentication_state_received(1);
   }
@@ -1864,10 +1864,10 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_desk_mod = "chat";
 
-  if (ao_app->desk_mod_enabled) {
+  if (ao_app->desk_mod_supported) {
     f_desk_mod =
         QString::number(ao_app->get_desk_mod(current_char, current_emote));
-    if (!ao_app->expanded_desk_mods_enabled) {
+    if (!ao_app->expanded_desk_mods_supported) {
       if (f_desk_mod == "2" || f_desk_mod == "4")
         f_desk_mod = "0";
       else if (f_desk_mod == "3" || f_desk_mod == "5")
@@ -1911,7 +1911,7 @@ void Courtroom::on_chat_return_pressed()
       f_emote_mod = PREANIM;
     }
     // Turn zoom into preanim zoom
-    else if (f_emote_mod == ZOOM && ao_app->prezoom_enabled) {
+    else if (f_emote_mod == ZOOM && ao_app->prezoom_supported) {
       f_emote_mod = PREANIM_ZOOM;
     }
     // Play the sfx
@@ -1947,7 +1947,7 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_obj_state;
 
-  if ((objection_state == 4 && !ao_app->custom_objection_enabled) ||
+  if ((objection_state == 4 && !ao_app->custom_objection_supported) ||
       (objection_state < 0))
     f_obj_state = "0";
   else if (objection_custom != "" && objection_state == 4) {
@@ -1973,7 +1973,7 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_flip;
 
-  if (ao_app->flipping_enabled) {
+  if (ao_app->flipping_supported) {
     if (ui_flip->isChecked())
       f_flip = "1";
     else
@@ -1998,7 +1998,7 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(f_text_color);
 
   // If the server we're on supports CCCC stuff, we should use it!
-  if (ao_app->cccc_ic_support_enabled) {
+  if (ao_app->cccc_ic_supported) {
     // If there is a showname entered, use that -- else, just send an empty
     // packet-part.
     if (!ui_ic_chat_name->text().isEmpty()) {
@@ -2012,7 +2012,7 @@ void Courtroom::on_chat_return_pressed()
     // ourselves. Or a charid of -1 or lower, through some means.
     if (other_charid > -1 && other_charid != m_cid) {
       QString packet = QString::number(other_charid);
-      if (ao_app->effects_enabled) // Only servers with effects enabled will
+      if (ao_app->effects_supported) // Only servers with effects enabled will
                                    // support pair reordering
         packet += "^" + QString::number(pair_order);
       packet_contents.append(packet);
@@ -2021,7 +2021,7 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    if(ao_app->y_offset_enabled)
+    if(ao_app->y_offset_supported)
         packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
     else
         packet_contents.append(QString::number(char_offset));
@@ -2037,7 +2037,7 @@ void Courtroom::on_chat_return_pressed()
 
   // If the server we're on supports Looping SFX and Screenshake, use it if the
   // emote uses it.
-  if (ao_app->looping_sfx_support_enabled) {
+  if (ao_app->looping_sfx_supported) {
     packet_contents.append(
         ao_app->get_sfx_looping(current_char, current_emote));
     packet_contents.append(QString::number(screenshake_state));
@@ -2068,10 +2068,10 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->additive_enabled) {
+  if (ao_app->additive_text_supported) {
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
-  if (ao_app->effects_enabled) {
+  if (ao_app->effects_supported) {
     QString fx_sound =
         ao_app->get_effect_property(effect, current_char, "sound");
     QString p_effect =
@@ -2217,7 +2217,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     // supports CCCC's IC features, or if it's just japing us. Also, don't
     // forget! A size 15 message will have indices from 0 to 14.
     if (n_string < p_contents.size() &&
-        (n_string < MS_MINIMUM || ao_app->cccc_ic_support_enabled)) {
+        (n_string < MS_MINIMUM || ao_app->cccc_ic_supported)) {
       m_chatmessage[n_string] = p_contents.at(n_string);
     }
     else {
@@ -2512,7 +2512,7 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
         }
       }
       // Flip the pair character
-      if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
+      if (ao_app->flipping_supported && m_chatmessage[OTHER_FLIP].toInt() == 1)
         ui_vp_sideplayer_char->set_flipped(true);
       else
         ui_vp_sideplayer_char->set_flipped(false);
@@ -4150,7 +4150,7 @@ void Courtroom::on_ooc_return_pressed()
 
   //We ignore it when the server is compatible with 2.8
   //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
-  if (ooc_message.startsWith("/pos") && !ao_app->effects_enabled) {
+  if (ooc_message.startsWith("/pos") & !ao_app->effects_supported) {
     if (ooc_message == "/pos jud") {
       show_judge_controls(true);
     }
@@ -4876,10 +4876,10 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
   QStringList packet_contents;
   packet_contents.append(p_song);
   packet_contents.append(QString::number(m_cid));
-  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
-      ao_app->effects_enabled)
+  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_supported) ||
+      ao_app->effects_supported)
     packet_contents.append(ui_ic_chat_name->text());
-  if (ao_app->effects_enabled)
+  if (ao_app->effects_supported)
     packet_contents.append(QString::number(music_flags));
   ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
 }
@@ -4991,10 +4991,10 @@ void Courtroom::music_stop(bool no_effects)
   packet_contents.append(
       fake_song); // this is our fake song, playing it triggers special code
   packet_contents.append(QString::number(m_cid));
-  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
-      ao_app->effects_enabled)
+  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_supported) ||
+      ao_app->effects_supported)
     packet_contents.append(ui_ic_chat_name->text());
-  if (ao_app->effects_enabled) {
+  if (ao_app->effects_supported) {
     if (no_effects)
       packet_contents.append("0");
     else
@@ -5166,7 +5166,7 @@ void Courtroom::on_pair_clicked()
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
-    if(ao_app->y_offset_enabled)
+    if(ao_app->y_offset_supported)
         ui_pair_vert_offset_spinbox->show();
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
@@ -5437,7 +5437,7 @@ void Courtroom::on_spectator_clicked() { char_clicked(-1); }
 
 void Courtroom::on_call_mod_clicked()
 {
-  if (ao_app->modcall_reason_enabled) {
+  if (ao_app->modcall_reason_supported) {
     QMessageBox errorBox;
     QInputDialog input;
 
@@ -5564,7 +5564,7 @@ qint64 Courtroom::pong()
 
 void Courtroom::on_casing_clicked()
 {
-  if (ao_app->casing_alerts_enabled) {
+  if (ao_app->casing_alerts_supported) {
     if (ui_casing->isChecked()) {
       QStringList f_packet;
 
@@ -5587,7 +5587,7 @@ void Courtroom::on_casing_clicked()
 void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
                               bool jur, bool steno)
 {
-  if (ao_app->casing_alerts_enabled) {
+  if (ao_app->casing_alerts_supported) {
     QStringList f_packet;
 
     f_packet.append(title);
