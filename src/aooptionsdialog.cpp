@@ -869,7 +869,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_remove->setSizePolicy(stretch_btns);
   ui_mount_remove->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_remove, 0, 1, 1, 1);
-  connect(ui_mount_remove, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_remove, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -887,7 +887,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_up->setMaximumWidth(40);
   ui_mount_up->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_up, 0, 3, 1, 1);
-  connect(ui_mount_up, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_up, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -905,7 +905,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_down->setMaximumWidth(40);
   ui_mount_down->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_down, 0, 4, 1, 1);
-  connect(ui_mount_down, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_down, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -927,12 +927,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   "Use this when you have added an asset that takes precedence over another "
   "existing asset."));
   ui_mount_buttons_layout->addWidget(ui_mount_clear_cache, 0, 6, 1, 1);
-  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [this] {
     asset_cache_dirty = true;
     ui_mount_clear_cache->setEnabled(false);
   });
 
-  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [=] {
+  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [this] {
     auto selected_items = ui_mount_list->selectedItems();
     bool row_selected = !ui_mount_list->selectedItems().isEmpty();
     ui_mount_remove->setEnabled(row_selected);
