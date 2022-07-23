@@ -52,6 +52,9 @@
 #include <QMessageBox>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator> //added in Qt 5.10
+#endif
 #include <QRegExp>
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
