@@ -69,6 +69,8 @@ class Courtroom : public QMainWindow {
 public:
   explicit Courtroom(AOApplication *p_ao_app);
 
+  void update_audio_volume();
+
   void append_char(char_type p_char) { char_list.append(p_char); }
   void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
   void append_music(QString f_music) { music_list.append(f_music); }
@@ -337,6 +339,9 @@ public:
   ~Courtroom();
 private:
   AOApplication *ao_app;
+
+  // Percentage of audio that is suppressed when client is not in focus
+  int suppress_audio = 0;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
@@ -987,6 +992,8 @@ private slots:
   void on_switch_area_music_clicked();
 
   void on_casing_clicked();
+
+  void on_application_state_changed(Qt::ApplicationState state);
 
   void ping_server();
 
