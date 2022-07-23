@@ -24,6 +24,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "eventfilters.h"
+#include "aoemotepreview.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -690,6 +691,9 @@ private:
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
 
+  QMenu *emote_menu;
+  AOEmotePreview *emote_preview;
+
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
   AOButton *ui_pos_remove;
@@ -920,6 +924,8 @@ private slots:
   void on_custom_objection_clicked();
   void show_custom_objection_menu(const QPoint &pos);
 
+  void show_emote_menu(const QPoint &pos);
+
   void on_realization_clicked();
   void on_screenshake_clicked();
 
@@ -999,6 +1005,9 @@ private slots:
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
+
+  void preview_emote(QString emote);
+  void update_emote_preview();
 };
 
 #endif // COURTROOM_H
