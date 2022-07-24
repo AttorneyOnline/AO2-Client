@@ -748,7 +748,9 @@ void Courtroom::on_evidence_save_clicked()
   ui_evidence_name->setText("");
 
   QSettings inventory(p_path, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   inventory.setIniCodec("UTF-8");
+#endif
   inventory.clear();
   for (int i = 0; i < local_evidence_list.size(); i++) {
     inventory.beginGroup(QString::number(i));
@@ -775,7 +777,9 @@ void Courtroom::on_evidence_load_clicked()
   ui_evidence_name->setText("");
 
   QSettings inventory(p_path, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   inventory.setIniCodec("UTF-8");
+#endif
   local_evidence_list.clear();
   QMap<int, QString> sorted_evi;
   for (const auto &s : inventory.childGroups()) {

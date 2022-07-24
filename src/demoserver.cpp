@@ -287,7 +287,9 @@ void DemoServer::load_demo(QString filename)
     p_path = filename;
     // Process the demo file
     QTextStream demo_stream(&demo_file);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     demo_stream.setCodec("UTF-8");
+#endif
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
         while (!line.endsWith("%")) {
@@ -329,7 +331,9 @@ void DemoServer::load_demo(QString filename)
           if (demo_file.open(QIODevice::WriteOnly | QIODevice::Text |
                          QIODevice::Truncate)) {
             QTextStream out(&demo_file);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             out.setCodec("UTF-8");
+#endif
             out << p_demo_data.dequeue();
             for (const QString &line : qAsConst(p_demo_data)) {
               out << "\n" << line;

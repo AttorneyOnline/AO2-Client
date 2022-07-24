@@ -1278,7 +1278,9 @@ void AOOptionsDialog::save_pressed()
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |
                          QIODevice::Text)) {
     QTextStream out(callwordsini);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     out.setCodec("UTF-8");
+#endif
     out << ui_callwords_textbox->toPlainText();
     callwordsini->close();
   }

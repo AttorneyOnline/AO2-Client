@@ -146,7 +146,9 @@ void AOApplication::add_favorite_server(int p_server)
   server_type fav_server = server_list.at(p_server);
   QSettings l_favorite_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
   QString l_new_group = QString::number(l_favorite_ini.childGroups().size());
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   l_favorite_ini.setIniCodec("UTF-8");
+#endif
 
   l_favorite_ini.beginGroup(l_new_group);
   l_favorite_ini.setValue("name", fav_server.name);
