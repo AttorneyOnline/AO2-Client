@@ -2,7 +2,6 @@
 
 #include "aoapplication.h"
 #include "file_functions.h"
-#include "misc_functions.h"
 
 static QThreadPool *thread_pool;
 
