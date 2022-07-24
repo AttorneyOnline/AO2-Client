@@ -113,7 +113,7 @@ enum CHAT_MESSAGE {
   EFFECTS
 };
 
-enum EMOTE_MOD {
+enum EMOTE_MOD_TYPE {
   IDLE = 0,
   PREANIM = 1,
   ZOOM = 5,
