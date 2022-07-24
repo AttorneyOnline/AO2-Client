@@ -31,7 +31,7 @@ private:
   int m_id = 0;
 
 protected:
-  void enterEvent(QEvent *e);
+  void enterEvent(QEnterEvent *e);
   void leaveEvent(QEvent *e);
   void mouseDoubleClickEvent(QMouseEvent *e);
   /*

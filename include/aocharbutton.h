@@ -37,7 +37,7 @@ private:
   AOImage *ui_selector;
 
 protected:
-  void enterEvent(QEvent *e);
+  void enterEvent(QEnterEvent *e);
   void leaveEvent(QEvent *e);
 };
 

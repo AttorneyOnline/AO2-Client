@@ -78,7 +78,7 @@ void AOCharButton::set_image(QString p_character)
   }
 }
 
-void AOCharButton::enterEvent(QEvent *e)
+void AOCharButton::enterEvent(QEnterEvent *e)
 {
   ui_selector->move(this->x() - 1, this->y() - 1);
   ui_selector->raise();
