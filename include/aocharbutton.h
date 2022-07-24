@@ -6,6 +6,7 @@
 
 #include <QFile>
 #include <QPushButton>
+#include <QEnterEvent>
 #include <QString>
 #include <QWidget>
 
