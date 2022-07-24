@@ -88,22 +88,22 @@ public:
 
   /////////////////server metadata//////////////////
 
-  bool yellow_text_enabled = false;
-  bool prezoom_enabled = false;
-  bool flipping_enabled = false;
-  bool custom_objection_enabled = false;
-  bool desk_mod_enabled = false;
-  bool evidence_enabled = false;
-  bool cccc_ic_support_enabled = false;
-  bool arup_enabled = false;
-  bool casing_alerts_enabled = false;
-  bool modcall_reason_enabled = false;
-  bool looping_sfx_support_enabled = false;
-  bool additive_enabled = false;
-  bool effects_enabled = false;
-  bool y_offset_enabled = false;
-  bool expanded_desk_mods_enabled = false;
-  bool auth_packet_enabled = false;
+  bool yellow_text_supported = false;
+  bool prezoom_supported = false;
+  bool flipping_supported = false;
+  bool custom_objection_supported = false;
+  bool desk_mod_supported = false;
+  bool evidence_supported = false;
+  bool cccc_ic_supported = false;
+  bool arup_supported = false;
+  bool casing_alerts_supported = false;
+  bool modcall_reason_supported = false;
+  bool looping_sfx_supported = false;
+  bool additive_text_supported = false;
+  bool effects_supported = false;
+  bool y_offset_supported = false;
+  bool expanded_desk_mods_supported = false;
+  bool auth_packet_supported = false;
 
   ///////////////loading info///////////////////
 
@@ -203,6 +203,9 @@ public:
 
   // Returns the value of default_blip in config.ini
   int get_default_blip();
+
+  // Returns the value of suppress_audio in config.ini
+  int get_default_suppress_audio();
 
   // Returns the value if objections interrupt and skip the message queue
   // from the config.ini.

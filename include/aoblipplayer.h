@@ -18,6 +18,7 @@ public:
   void set_blips(QString p_sfx);
   void blip_tick();
   void set_volume(int p_volume);
+  void set_muted(bool toggle);
 
   int m_cycle = 0;
 
@@ -25,6 +26,8 @@ private:
   QWidget *m_parent;
   AOApplication *ao_app;
   qreal m_volume;
+
+  bool m_muted = false;
 
   void set_volume_internal(qreal p_volume);
 

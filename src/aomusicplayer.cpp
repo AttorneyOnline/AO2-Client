@@ -159,10 +159,20 @@ void AOMusicPlayer::stop(int channel)
   BASS_ChannelStop(m_stream_list[channel]);
 }
 
+void AOMusicPlayer::set_muted(bool toggle)
+{
+  m_muted = toggle;
+  // Update all volume based on the mute setting
+  for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
+    set_volume(m_volume[n_stream], n_stream);
+  }
+}
+
 void AOMusicPlayer::set_volume(int p_value, int channel)
 {
   m_volume[channel] = p_value;
-  float volume = m_volume[channel] / 100.0f;
+  // If muted, volume will always be 0
+  float volume = (m_volume[channel] / 100.0f) * !m_muted;
   if (channel < 0) {
     for (int n_stream = 0; n_stream < m_channelmax; ++n_stream) {
       BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL,
