@@ -3987,8 +3987,13 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
     ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
   }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   music_player->music_watcher.setFuture(QtConcurrent::run(music_player, &AOMusicPlayer::play, f_song, channel,
                                                           looping, effect_flags));
+#else
+  music_player->music_watcher.setFuture(QtConcurrent::run(&AOMusicPlayer::play, music_player, f_song, channel,
+                                                          looping, effect_flags));
+#endif
 }
 
 void Courtroom::update_ui_music_name()
