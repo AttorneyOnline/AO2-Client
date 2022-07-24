@@ -2409,7 +2409,7 @@ bool Courtroom::handle_objection()
             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       break;
-      m_chatmessage[EMOTE_MOD] = PREANIM;
+      m_chatmessage[EMOTE_MOD] = QChar(PREANIM);
     }
     ui_vp_objection->load_image(
         filename, m_chatmessage[CHAR_NAME],
