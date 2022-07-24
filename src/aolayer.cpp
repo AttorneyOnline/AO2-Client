@@ -336,7 +336,7 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
-  frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
+  frame_loader = QtConcurrent::run(thread_pool, &AOLayer::populate_vectors, this);
   last_path = p_image;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
