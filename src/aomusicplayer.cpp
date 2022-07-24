@@ -184,39 +184,39 @@ void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
   BASS_ChannelLock(channel, false);
 }
 
-void AOMusicPlayer::set_looping(bool toggle, int channel)
+void AOMusicPlayer::set_looping(bool loop_song, int channel)
 {
-  m_looping = toggle;
-  if (!m_looping) {
+  if (!loop_song) {
     if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
       BASS_ChannelFlags(m_stream_list[channel], 0,
                         BASS_SAMPLE_LOOP); // remove the LOOP flag
     BASS_ChannelRemoveSync(m_stream_list[channel], loop_sync[channel]);
     loop_sync[channel] = 0;
+    return;
   }
-  else {
-    BASS_ChannelFlags(m_stream_list[channel], BASS_SAMPLE_LOOP,
-                      BASS_SAMPLE_LOOP); // set the LOOP flag
-    if (loop_sync[channel] != 0) {
-      BASS_ChannelRemoveSync(m_stream_list[channel],
-                             loop_sync[channel]); // remove the sync
-      loop_sync[channel] = 0;
+
+  BASS_ChannelFlags(m_stream_list[channel], BASS_SAMPLE_LOOP,
+                    BASS_SAMPLE_LOOP); // set the LOOP flag
+  if (loop_sync[channel] != 0) {
+    BASS_ChannelRemoveSync(m_stream_list[channel],
+                           loop_sync[channel]); // remove the sync
+    loop_sync[channel] = 0;
+  }
+
+  if (loop_start[channel] > 0) {
+    if (loop_end[channel] > 0 && (loop_end[channel] > loop_start[channel]))
+    {
+      //Loop when the endpoint is reached.
+      loop_sync[channel] = BASS_ChannelSetSync(
+          m_stream_list[channel], BASS_SYNC_END | BASS_SYNC_MIXTIME,
+          loop_end[channel] , loopProc, &loop_start[channel]);
     }
-    if (loop_start[channel] > 0) {
-      if (loop_end[channel] == 0)
-      {
-        // We don't have length, loop when track reaches end
-        loop_sync[channel] = BASS_ChannelSetSync(
-            m_stream_list[channel], BASS_SYNC_END | BASS_SYNC_MIXTIME,
-            loop_end[channel], loopProc, &loop_start[channel]);
-      }
-      else if (loop_end[channel] > 0)
-      {
-        // Don't loop zero length songs even if we're asked to
-        loop_sync[channel] = BASS_ChannelSetSync(
-            m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
-            loop_end[channel], loopProc, &loop_start[channel]);
-      }
+    else
+    {
+      //Loop when the end of the file is reached.
+      loop_sync[channel] = BASS_ChannelSetSync(
+          m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
+          0 , loopProc, &loop_start[channel]);
     }
   }
 }

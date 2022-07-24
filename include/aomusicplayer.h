@@ -19,12 +19,19 @@ public:
   AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app);
   virtual ~AOMusicPlayer();
   void set_volume(int p_value, int channel = -1);
-  void set_looping(bool toggle, int channel = 0);
+  void set_looping(bool loop_song, int channel = 0);
 
   const int m_channelmax = 4;
 
   // These have to be public for the stupid sync thing
+  /**
+   * @brief The starting sample of the AB-Loop.
+   */
   int loop_start[4] = {0, 0, 0, 0};
+
+  /**
+   * @brief The end sample of the AB-Loop.
+   */
   int loop_end[4] = {0, 0, 0, 0};
 
   QFutureWatcher<QString> music_watcher;
