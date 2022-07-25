@@ -4695,22 +4695,9 @@ void Courtroom::set_effects_dropdown()
   ui_effects_dropdown->show();
   ui_effects_dropdown->addItems(effectslist);
 
-  // ICON-MAKING HELL
-  QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
-  VPath custom_path("misc/" + p_effect + "/icons/");
-  VPath theme_path = ao_app->get_theme_path("effects/icons/");
-  VPath default_path = ao_app->get_theme_path("effects/icons/", "default");
+  // Make the icons
   for (int i = 0; i < ui_effects_dropdown->count(); ++i) {
-    VPath entry = VPath(ui_effects_dropdown->itemText(i));
-    QString iconpath = ao_app->get_image_suffix(custom_path + entry);
-    if (!file_exists(iconpath)) {
-      iconpath = ao_app->get_image_suffix(theme_path + entry);
-      if (!file_exists(iconpath)) {
-        iconpath = ao_app->get_image_suffix(default_path + entry);
-        if (!file_exists(iconpath))
-          continue;
-      }
-    }
+    QString iconpath = ao_app->get_effect("icons/" + ui_effects_dropdown->itemText(i), current_char, "");
     ui_effects_dropdown->setItemIcon(i, QIcon(iconpath));
   }
 
