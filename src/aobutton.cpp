@@ -8,7 +8,7 @@ AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
 {
   ao_app = p_ao_app;
   movie = new QMovie(this);
-  connect(movie, &QMovie::frameChanged, [=]{
+  connect(movie, &QMovie::frameChanged, [this]{
     this->setIcon(movie->currentPixmap().scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     this->setIconSize(QSize(this->width(), this->height()));
   });
