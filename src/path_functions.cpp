@@ -334,11 +334,15 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 #endif
 }
 
-QString AOApplication::get_real_path(const VPath &vpath) {
+QString AOApplication::get_real_path(const VPath &vpath,
+                                     const QStringList &suffixes) {
   // Try cache first
   QString phys_path = asset_lookup_cache.value(qHash(vpath));
   if (!phys_path.isEmpty() && exists(phys_path)) {
-    return phys_path;
+    for (const QString &suffix : suffixes) { // make sure cached asset is the right type
+      if (phys_path.endsWith(suffix, Qt::CaseInsensitive))
+        return phys_path;
+    }
   }
 
   // Cache miss; try all known mount paths
@@ -354,50 +358,6 @@ QString AOApplication::get_real_path(const VPath &vpath) {
   // content 2
   // content 1
   // base
-  for (const QString &base : bases) {
-    QDir baseDir(base);
-    QString path = baseDir.absoluteFilePath(vpath.toQString());
-    if (!path.startsWith(baseDir.absolutePath())) {
-      qWarning() << "invalid path" << path << "(path is outside vfs)";
-      break;
-    }
-    path = get_case_sensitive_path(path);
-    if (exists(path)) {
-      asset_lookup_cache.insert(qHash(vpath), path);
-      unsigned int cache_size = asset_lookup_cache.size();
-      if (is_power_2(cache_size))
-        qDebug() << "lookup cache has reached" << cache_size << "entries";
-      return path;
-    }
-  }
-
-  // Not found in mount paths; check if the file is remote
-  QString remotePath = vpath.toQString();
-  if (remotePath.startsWith("http:") || remotePath.startsWith("https:")) {
-      return remotePath;
-  }
-
-  // File or directory not found
-  return QString();
-}
-
-// Special case of get_real_path where multiple suffixes need to be tried
-// on each mount path.
-QString AOApplication::get_real_suffixed_path(const VPath &vpath,
-                                              const QStringList &suffixes) {
-  // Try cache first
-  QString phys_path = asset_lookup_cache.value(qHash(vpath));
-  if (!phys_path.isEmpty() && exists(phys_path)) {
-    for (const QString &suffix : suffixes) { // make sure cached asset is the right type
-      if (phys_path.endsWith(suffix, Qt::CaseInsensitive))
-        return phys_path;
-    }
-  }
-
-  // Cache miss; try each suffix on all known mount paths
-  QStringList bases = get_mount_paths();
-  bases.push_front(get_base_path());
-
   for (const QString &base : bases) {
     for (const QString &suffix : suffixes) {
       QDir baseDir(base);
@@ -415,6 +375,12 @@ QString AOApplication::get_real_suffixed_path(const VPath &vpath,
         return path;
       }
     }
+  }
+
+  // Not found in mount paths; check if the file is remote
+  QString remotePath = vpath.toQString();
+  if (remotePath.startsWith("http:") || remotePath.startsWith("https:")) {
+      return remotePath;
   }
 
   // File or directory not found
