@@ -76,7 +76,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
       int num_channels = 2;
 
       // Calculate the bytes for loop_start/loop_end to use with the sync proc
-      QWORD bytes = static_cast<QWORD>(args[1].trimmed().toInt() *
+      QWORD bytes = static_cast<QWORD>(args[1].trimmed().toUInt() *
                                        sample_size * num_channels);
       if (arg == "loop_start")
         loop_start[channel] = bytes;

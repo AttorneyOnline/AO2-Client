@@ -28,12 +28,12 @@ public:
   /**
    * @brief The starting sample of the AB-Loop.
    */
-  int loop_start[4] = {0, 0, 0, 0};
+  unsigned int loop_start[4] = {0, 0, 0, 0};
 
   /**
    * @brief The end sample of the AB-Loop.
    */
-  int loop_end[4] = {0, 0, 0, 0};
+  unsigned int loop_end[4] = {0, 0, 0, 0};
 
   QFutureWatcher<QString> music_watcher;
 
