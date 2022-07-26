@@ -36,7 +36,7 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
   };
 
   const QMap<QString, QPair<QString, QString>> l_property_replacement_list{
-    {"under_chatbox", {"layer", "chat"}},
+    {"under_chatbox", {"layer", "character"}},
   };
 
   QStringList l_key_list;
@@ -57,9 +57,11 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
     p_effects_ini.setValue("name", i_effect_key);
     p_effects_ini.setValue("sound", l_effect_map.value(i_effect_key));
     p_effects_ini.setValue("cull", true);
+    p_effects_ini.setValue("layer", "character");
 
     if (i_effect_key == "realization") {
         p_effects_ini.setValue("stretch", true);
+        p_effects_ini.setValue("layer", "chat");
     }
 
     for (const QString &i_property : l_property_list)
