@@ -136,11 +136,15 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_folder_button);
   connect(ui_theme_folder_button, &QPushButton::clicked, this,
           [=] {
-    QString p_path = ao_app->get_real_path(VPath("themes/"));
-    if (!dir_exists(p_path)) {
-      return;
-}
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+    QStringList bases = ao_app->get_mount_paths();
+    bases.prepend(ao_app->get_base_path());
+    for (const QString &base : bases) {
+      QString p_path = base + "/themes/";
+      if (!dir_exists(p_path)) {
+          return;
+      }
+      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+    }
   }
   );
 
