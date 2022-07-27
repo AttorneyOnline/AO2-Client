@@ -4447,7 +4447,6 @@ void Courtroom::set_iniswap_dropdown()
   }
   QStringList iniswaps =
       ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
-      ao_app->get_list_file(VPath("iniswaps.ini")) +
       ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
 
   iniswaps.prepend(char_list.at(m_cid).name);
