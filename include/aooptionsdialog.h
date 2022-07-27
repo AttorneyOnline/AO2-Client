@@ -51,6 +51,8 @@ private:
   QLabel *ui_subtheme_label;
   QComboBox *ui_subtheme_combobox;
   QPushButton *ui_theme_reload_button;
+  QLabel *ui_evidence_double_click_lbl;
+  QCheckBox *ui_evidence_double_click_cb;
   QLabel *ui_animated_theme_lbl;
   QCheckBox *ui_animated_theme_cb;
   QFrame *ui_theme_log_divider;

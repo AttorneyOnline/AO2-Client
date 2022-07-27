@@ -604,9 +604,6 @@ private:
   QVector<evi_type> private_evidence_list;
   QVector<evi_type> global_evidence_list;
 
-  // If we use double click or single click to view evidence
-  bool evidence_one_click_view = false;
-
   // false = use private_evidence_list
   bool current_evidence_global = true;
 

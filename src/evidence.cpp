@@ -107,10 +107,6 @@ void Courtroom::initialize_evidence()
 
 void Courtroom::refresh_evidence()
 {
-  // If only a single click is needed to view evidence, doubleclick by default
-  QString one_click_view = ao_app->get_design_element("evidence_one_click_view", "courtroom_design.ini");
-  evidence_one_click_view = one_click_view == "1" || one_click_view.startsWith("true");
-
   set_font(ui_evidence_name, "", "evidence_name");
   set_font(ui_evidence_image_name, "", "evidence_image_name");
   set_font(ui_evidence_description, "", "evidence_description");
@@ -455,7 +451,7 @@ void Courtroom::on_evidence_clicked(int p_id)
   else if (f_real_id > local_evidence_list.size())
     return;
   
-  if (evidence_one_click_view){
+  if (!ao_app->get_evidence_double_click()){
     on_evidence_double_clicked(p_id);
     return;
   }

@@ -538,6 +538,9 @@ public:
   // Get whether to opt out of player count metrics sent to the master server
   bool get_player_count_optout();
 
+  // Whether opening evidence requires a single or double click
+  bool get_evidence_double_click();
+
   // Currently defined subtheme
   QString subtheme;
 

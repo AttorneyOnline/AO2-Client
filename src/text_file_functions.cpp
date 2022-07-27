@@ -1195,3 +1195,9 @@ bool AOApplication::get_player_count_optout()
   return configini->value("player_count_optout", "false").value<QString>()
       .startsWith("true");
 }
+
+bool AOApplication::get_evidence_double_click()
+{
+  return configini->value("evidence_double_click", "false").value<QString>()
+      .startsWith("true");
+}
