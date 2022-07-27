@@ -4430,13 +4430,17 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
-  menu->addAction(QString("Open background folder"), this,
+  menu->addAction(QString("Open background folders"), this,
                   [=] {
-    QString p_path = ao_app->get_real_path(VPath("background/"));
-    if (!dir_exists(p_path)) {
-        return;
+    QStringList bases = ao_app->get_mount_paths();
+    bases.append(ao_app->get_base_path());
+    for (const QString &base : bases) {
+      QString p_path = base + "/background/";
+      if (!dir_exists(p_path)) {
+          return;
+      }
+      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
     }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
@@ -4562,14 +4566,17 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
-  menu->addAction(QString("Open characters folder "), this,
+  menu->addAction(QString("Open character folders"), this,
                   [=] {
-    QString p_path = ao_app->get_real_path(VPath("characters/"));
-    if (!dir_exists(p_path)) {
-      return;
+    QStringList bases = ao_app->get_mount_paths();
+    bases.append(ao_app->get_base_path());
+    for (const QString &base : bases) {
+      QString p_path = base + "/characters/";
+      if (!dir_exists(p_path)) {
+          return;
+      }
+      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
     }
-
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
 
@@ -4676,13 +4683,17 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
   if (!custom_sfx.isEmpty())
     menu->addAction(QString("Clear Edit Text"), this, &Courtroom::on_sfx_remove_clicked);
   menu->addSeparator();
-  menu->addAction(QString("Open sounds folder"), this,
+  menu->addAction(QString("Open sound folders"), this,
                   [=] {
-    QString p_path = ao_app->get_real_path(VPath("sounds/general/"));
-    if (!dir_exists(p_path)) {
-        return;
+    QStringList bases = ao_app->get_mount_paths();
+    bases.append(ao_app->get_base_path());
+    for (const QString &base : bases) {
+      QString p_path = base + "/sounds/general/";
+      if (!dir_exists(p_path)) {
+          return;
+      }
+      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
     }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
@@ -4967,13 +4978,17 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
           &Courtroom::music_synchronize);
 
   menu->addSeparator();
-  menu->addAction(QString("Open music folder"), this,
+  menu->addAction(QString("Open music folders"), this,
                   [=] {
-    QString p_path = ao_app->get_real_path(VPath("sounds/music/"));
-    if (!dir_exists(p_path)) {
-        return;
+    QStringList bases = ao_app->get_mount_paths();
+    bases.append(ao_app->get_base_path());
+    for (const QString &base : bases) {
+      QString p_path = base + "/sounds/music/";
+      if (!dir_exists(p_path)) {
+          return;
+      }
+      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
     }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
 
@@ -5608,13 +5623,17 @@ void Courtroom::on_evidence_button_clicked()
 void Courtroom::on_evidence_context_menu_requested(const QPoint &pos)
 {
   QMenu *menu = new QMenu(this);
-  menu->addAction(QString("Open evidence folder"), this,
+  menu->addAction(QString("Open evidence folders"), this,
                   [=] {
-    QString p_path = ao_app->get_real_path(VPath("evidence/"));
-    if (!dir_exists(p_path)) {
-        return;
+    QStringList bases = ao_app->get_mount_paths();
+    bases.append(ao_app->get_base_path());
+    for (const QString &base : bases) {
+      QString p_path = base + "/evidence/";
+      if (!dir_exists(p_path)) {
+          return;
+      }
+      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
     }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->popup(ui_evidence_button->mapToGlobal(pos));
