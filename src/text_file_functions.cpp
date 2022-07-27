@@ -1195,3 +1195,10 @@ bool AOApplication::get_player_count_optout()
   return configini->value("player_count_optout", "false").value<QString>()
       .startsWith("true");
 }
+
+bool AOApplication::get_sfx_on_idle()
+{
+  return configini->value("sfx_on_idle", "false").value<QString>()
+      .startsWith("true");
+}
+

@@ -1879,18 +1879,11 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_desk_mod);
 
-  packet_contents.append(ao_app->get_pre_emote(current_char, current_emote));
-
-  packet_contents.append(current_char);
-
-  packet_contents.append(ao_app->get_emote(current_char, current_emote));
-
-  packet_contents.append(ui_ic_chat_message->text());
-
-  packet_contents.append(f_side);
-
+  QString f_pre = ao_app->get_pre_emote(current_char, current_emote);
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
   QString f_sfx = "1";
+  int f_sfx_delay = get_char_sfx_delay();
+
 // EMOTE MOD OVERRIDES:
   // Emote_mod 2 is only used by objection check later, having it in the char.ini does nothing
   if (f_emote_mod == 2) {
@@ -1937,13 +1930,33 @@ void Courtroom::on_chat_return_pressed()
   // Custom sfx override via sound list dropdown.
   if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0) {
     f_sfx = get_char_sfx();
+    // We have a custom sfx but we're on idle emotes.
+    // Turn them into pre so the sound plays if client setting sfx_on_idle is enabled.
+    if (ao_app->get_sfx_on_idle() && (f_emote_mod == IDLE || f_emote_mod == ZOOM)) {
+      // We turn idle into preanim, but make it not send a pre animation
+      f_pre = "";
+      // Set sfx delay to 0 so the sfx plays immediately
+      f_sfx_delay = 0;
+      // Set the emote mod to preanim so the sound plays
+      f_emote_mod = f_emote_mod == IDLE ? PREANIM : PREANIM_ZOOM;
+    }
   }
+
+  packet_contents.append(f_pre);
+
+  packet_contents.append(current_char);
+
+  packet_contents.append(ao_app->get_emote(current_char, current_emote));
+
+  packet_contents.append(ui_ic_chat_message->text());
+
+  packet_contents.append(f_side);
 
   packet_contents.append(f_sfx);
   packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
-  packet_contents.append(QString::number(get_char_sfx_delay()));
+  packet_contents.append(QString::number(f_sfx_delay));
 
   QString f_obj_state;
 
@@ -2111,14 +2124,16 @@ void Courtroom::reset_ui()
   ui_screenshake->set_image("screenshake");
   ui_evidence_present->set_image("present");
 
-  // If we have sfx on idle enabled, or our pre is checked and stickysounds is disabled
-  if ((ao_app->sfx_on_idle_supported || ui_pre->isChecked()) && !ao_app->is_stickysounds_enabled()) {
-    // Reset the sfx dropdown to "Default"
+  // If sticky sounds is disabled and we either have SFX on Idle enabled, or our Preanim checkbox is checked
+  if (!ao_app->is_stickysounds_enabled() && (ao_app->get_sfx_on_idle() || ui_pre->isChecked())) {
+    // Reset the SFX Dropdown to "Default"
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
     custom_sfx = "";
   }
+  // If sticky preanims is disabled
   if (!ao_app->is_stickypres_enabled())
+    // Turn off our Preanim checkbox
     ui_pre->setChecked(false);
 }
 
@@ -2550,7 +2565,7 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
   switch (emote_mod) {
   case PREANIM:
   case PREANIM_ZOOM:
-    // Emotes 1, 2 and 6 all play preanim that makes the chatbox wait for it to finish.
+    // play preanim that makes the chatbox wait for it to finish.
     play_preanim(false);
     break;
   case IDLE:
@@ -2558,11 +2573,6 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     // If immediate is not ticked on...
     if (!p_immediate)
     {
-      // Server takes care of making sure 2.9 and below clients don't spam sfx to us
-      if (ao_app->sfx_on_idle_supported) {
-        // Play the sound effect if one was sent to us
-        play_sfx();
-      }
       // Skip preanim.
       handle_ic_speaking();
     }

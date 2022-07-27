@@ -104,7 +104,6 @@ public:
   bool y_offset_supported = false;
   bool expanded_desk_mods_supported = false;
   bool auth_packet_supported = false;
-  bool sfx_on_idle_supported = false;
 
   ///////////////loading info///////////////////
 
@@ -538,6 +537,9 @@ public:
 
   // Get whether to opt out of player count metrics sent to the master server
   bool get_player_count_optout();
+
+  // Get if sfx can be sent to play on idle
+  bool get_sfx_on_idle();
 
   // Currently defined subtheme
   QString subtheme;

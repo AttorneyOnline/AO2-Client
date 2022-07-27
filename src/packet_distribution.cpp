@@ -103,7 +103,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     effects_supported = false;
     expanded_desk_mods_supported = false;
     auth_packet_supported = false;
-    sfx_on_idle_supported = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -136,8 +135,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_supported = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_supported = true;
-    if (f_packet.contains("sfx_on_idle", Qt::CaseInsensitive))
-      sfx_on_idle_supported = true;
   }
   else if (header == "PN") {
     if (f_contents.size() < 2)
