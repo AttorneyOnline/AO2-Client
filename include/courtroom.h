@@ -24,6 +24,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "eventfilters.h"
+#include "aoemotepreview.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -51,6 +52,9 @@
 #include <QMessageBox>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator> //added in Qt 5.10
+#endif
 #include <QRegExp>
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
@@ -68,6 +72,8 @@ class Courtroom : public QMainWindow {
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+
+  void update_audio_volume();
 
   void append_char(char_type p_char) { char_list.append(p_char); }
   void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
@@ -188,8 +194,7 @@ public:
   void set_scene(QString f_desk_mod, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  // sets ui_effects_layer according to the SELF_OFFSET, unless it is overwritten by effects.ini
-  void set_self_offset(QString p_list, QString p_effect);
+  void set_self_offset(const QString& p_list);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -256,7 +261,7 @@ public:
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
-  
+
   // Display the character.
   void display_character();
 
@@ -339,6 +344,9 @@ public:
 private:
   AOApplication *ao_app;
 
+  // Percentage of audio that is suppressed when client is not in focus
+  int suppress_audio = 0;
+
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
 
@@ -411,6 +419,7 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+  bool chatbox_always_show = false;
 
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
@@ -442,7 +451,7 @@ private:
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
-  
+
   // delay before the next queue entry is going to be processed
   QTimer *text_queue_timer;
 
@@ -685,6 +694,9 @@ private:
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
 
+  QMenu *emote_menu;
+  AOEmotePreview *emote_preview;
+
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
   AOButton *ui_pos_remove;
@@ -820,7 +832,6 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
-  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
@@ -884,6 +895,7 @@ private slots:
   void on_sfx_dropdown_custom(QString p_sfx);
   void set_sfx_dropdown();
   void on_sfx_context_menu_requested(const QPoint &pos);
+  void on_sfx_play_clicked();
   void on_sfx_edit_requested();
   void on_sfx_remove_clicked();
 
@@ -914,6 +926,8 @@ private slots:
   void on_take_that_clicked();
   void on_custom_objection_clicked();
   void show_custom_objection_menu(const QPoint &pos);
+
+  void show_emote_menu(const QPoint &pos);
 
   void on_realization_clicked();
   void on_screenshake_clicked();
@@ -988,10 +1002,15 @@ private slots:
 
   void on_casing_clicked();
 
+  void on_application_state_changed(Qt::ApplicationState state);
+
   void ping_server();
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
+
+  void preview_emote(QString emote);
+  void update_emote_preview();
 };
 
 #endif // COURTROOM_H

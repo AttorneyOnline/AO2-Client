@@ -9,7 +9,7 @@
 
 class AOTextArea : public QTextBrowser {
 public:
-  AOTextArea(QWidget *p_parent = nullptr);
+  AOTextArea(QWidget *p_parent = nullptr, int p_log_length = 5000);
 
   void append_linked(QString p_message);
   void append_chatmessage(QString p_name, QString p_message,
