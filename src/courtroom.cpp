@@ -4427,6 +4427,7 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
     if (!dir_exists(p_path)) {
         return;
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->addAction(QString("Open background folder"), this,
@@ -4435,6 +4436,7 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
     if (!dir_exists(p_path)) {
         return;
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
@@ -4680,6 +4682,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
     if (!dir_exists(p_path)) {
         return;
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
@@ -4970,6 +4973,7 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
     if (!dir_exists(p_path)) {
         return;
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
 
@@ -5291,6 +5295,7 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
     if (!file_exists(p_path)) {
         return;
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->popup(ui_text_color->mapToGlobal(pos));
@@ -5609,6 +5614,7 @@ void Courtroom::on_evidence_context_menu_requested(const QPoint &pos)
     if (!dir_exists(p_path)) {
         return;
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
   menu->popup(ui_evidence_button->mapToGlobal(pos));
