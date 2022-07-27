@@ -130,9 +130,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   row += 1;
   ui_theme_folder_button = new QPushButton(ui_form_layout_widget);
-  ui_theme_folder_button->setText(tr("Open Themes Folder"));
+  ui_theme_folder_button->setText(tr("Open Themes Folders"));
   ui_theme_folder_button->setToolTip(
-      tr("Open the folder where all the themes are contained."));
+      tr("Open all the folders where the themes are contained."));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_folder_button);
   connect(ui_theme_folder_button, &QPushButton::clicked, this,
           [=] {
