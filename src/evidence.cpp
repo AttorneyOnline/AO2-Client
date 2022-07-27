@@ -555,6 +555,9 @@ void Courtroom::on_evidence_delete_clicked()
     local_evidence_list.remove(current_evidence);
     private_evidence_list = local_evidence_list;
     set_evidence_page();
+
+    // Autosave private evidence
+    evidence_save("inventories/autosave.ini");
   }
 
   current_evidence = 0;
@@ -682,6 +685,9 @@ void Courtroom::on_evidence_transfer_clicked()
     evi_type f_evi = local_evidence_list.at(current_evidence);
     name = f_evi.name;
     private_evidence_list.append(f_evi);
+
+    // Autosave private evidence
+    evidence_save("inventories/autosave.ini");
   }
 
   QMessageBox *msgBox = new QMessageBox;
@@ -774,6 +780,7 @@ void Courtroom::on_evidence_load_clicked()
   evidence_close();
   ui_evidence_name->setText("");
   evidence_load(p_path);
+  local_evidence_list = private_evidence_list;
   set_evidence_page();
 }
 
@@ -784,7 +791,8 @@ void Courtroom::evidence_load(QString filename)
     return;
   }
   QSettings inventory(filename, QSettings::IniFormat);
-  local_evidence_list.clear();
+  inventory.setIniCodec("UTF-8");
+  private_evidence_list.clear();
   foreach (QString evi, inventory.childGroups()) {
     if (evi == "General")
       continue;
@@ -795,9 +803,8 @@ void Courtroom::evidence_load(QString filename)
         inventory.value(evi + "/description", "<description>").value<QString>();
     f_evi.image =
         inventory.value(evi + "/image", "empty.png").value<QString>();
-    local_evidence_list.append(f_evi);
+    private_evidence_list.append(f_evi);
   }
-  private_evidence_list = local_evidence_list;
 }
 
 void Courtroom::evidence_save(QString filename)
@@ -810,11 +817,11 @@ void Courtroom::evidence_save(QString filename)
 
   QSettings inventory(filename, QSettings::IniFormat);
   inventory.clear();
-  for (int i = 0; i < local_evidence_list.size(); i++) {
+  for (int i = 0; i < private_evidence_list.size(); i++) {
     inventory.beginGroup(QString::number(i));
-    inventory.setValue("name", local_evidence_list[i].name);
-    inventory.setValue("description", local_evidence_list[i].description);
-    inventory.setValue("image", local_evidence_list[i].image);
+    inventory.setValue("name", private_evidence_list[i].name);
+    inventory.setValue("description", private_evidence_list[i].description);
+    inventory.setValue("image", private_evidence_list[i].image);
     inventory.endGroup();
   }
   inventory.sync();
