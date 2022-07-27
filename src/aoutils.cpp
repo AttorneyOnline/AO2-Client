@@ -40,6 +40,12 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
   };
 
   QStringList l_key_list;
+  // Matches old effects.ini childKeys that are not the effect name, but a property that applies to an effect.
+  // This is due to the name also being used as a key to apply the sfx property.
+  // Example :
+  // realization_scaling - This would not be appended to the key_list as it matches scaling property.
+  // realization_alt - This would be appened as it contains an underscore, but not a property.
+  // hearts - This would be appended as it does not contain a property
   const QRegularExpression l_regex(QStringLiteral("(\\w+)_(%1)$").arg(l_property_list.join("|")));
   for (auto i = l_effect_map.begin(); i != l_effect_map.end(); i++)
   {
