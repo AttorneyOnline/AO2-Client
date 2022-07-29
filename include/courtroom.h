@@ -52,7 +52,7 @@
 #include <QMessageBox>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #include <QRandomGenerator> //added in Qt 5.10
 #endif
 #include <QRegExp>
@@ -974,7 +974,7 @@ private slots:
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();
-  void on_evidence_x_clicked();
+  bool on_evidence_x_clicked();
   void on_evidence_ok_clicked();
   void on_evidence_switch_clicked();
   void on_evidence_transfer_clicked();

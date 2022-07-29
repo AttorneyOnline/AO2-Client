@@ -8,8 +8,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
                        ~Qt::WindowMaximizeButtonHint);
 
   ao_app->initBASS();
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0) // Needed for pre-5.10 RNG stuff
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
+#endif
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
@@ -4142,6 +4143,11 @@ void Courtroom::mod_called(QString p_ip)
 void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                             bool steno)
 {
+  Q_UNUSED(def);
+  Q_UNUSED(pro);
+  Q_UNUSED(jud);
+  Q_UNUSED(jur);
+  Q_UNUSED(steno);
   if (ui_casing->isChecked()) {
     ui_server_chatlog->append(msg);
     modcall_player->play(ao_app->get_court_sfx("case_call"));
@@ -4468,7 +4474,7 @@ void Courtroom::set_iniswap_dropdown()
   }
   QStringList iniswaps =
       ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
-      ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
+      ao_app->get_list_file(VPath("iniswaps.ini"));
 
   if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
     iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
@@ -4510,9 +4516,11 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
     if (!swaplist.contains(entry) && entry != char_list.at(m_cid).name && !defswaplist.contains(entry))
       swaplist.append(entry);
   }
-  ao_app->write_to_file(
-      swaplist.join("\n"),
-      ao_app->get_base_path() + "iniswaps.ini");
+  QString p_path = ao_app->get_real_path(VPath("iniswaps.ini"));
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_base_path() + "iniswaps.ini";
+  }
+  ao_app->write_to_file(swaplist.join("\n"), p_path);
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
@@ -4586,8 +4594,7 @@ void Courtroom::set_sfx_dropdown()
   }
 
   // Append default sound list after the character sound list.
-  sound_list += ao_app->get_list_file(
-      ao_app->get_base_path() + "soundlist.ini");
+  sound_list += ao_app->get_list_file(VPath("soundlist.ini"));
 
   QStringList display_sounds;
   for (const QString &sound : qAsConst(sound_list)) {
@@ -4635,7 +4642,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
                     &Courtroom::on_sfx_edit_requested);
   else
-    menu->addAction(QString("Edit global soundlist.ini"), this,
+    menu->addAction(QString("Edit base soundlist.ini"), this,
                     &Courtroom::on_sfx_edit_requested);
   if (!custom_sfx.isEmpty())
     menu->addAction(QString("Clear Edit Text"), this, &Courtroom::on_sfx_remove_clicked);
@@ -4652,6 +4659,10 @@ void Courtroom::on_sfx_edit_requested()
   QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"));
   if (!file_exists(p_path)) {
     p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "sounds.ini"));
+  }
+
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_real_path(VPath("soundlist.ini"));
   }
 
   if (!file_exists(p_path)) {
@@ -4676,14 +4687,7 @@ void Courtroom::set_effects_dropdown()
     return;
   }
   QStringList effectslist;
-  QStringList char_effects = ao_app->get_effects(current_char);
-  for (int i = 0; i < char_effects.size(); ++i) {
-    QString effect = char_effects[i];
-    if (effect.contains(":")) {
-      effect = effect.section(':', 1);
-    }
-    effectslist.append(effect);
-  }
+  effectslist.append(ao_app->get_effects(current_char));
 
   if (effectslist.empty()) {
     ui_effects_dropdown->hide();
@@ -4695,22 +4699,9 @@ void Courtroom::set_effects_dropdown()
   ui_effects_dropdown->show();
   ui_effects_dropdown->addItems(effectslist);
 
-  // ICON-MAKING HELL
-  QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
-  VPath custom_path("misc/" + p_effect + "/icons/");
-  VPath theme_path = ao_app->get_theme_path("effects/icons/");
-  VPath default_path = ao_app->get_theme_path("effects/icons/", "default");
+  // Make the icons
   for (int i = 0; i < ui_effects_dropdown->count(); ++i) {
-    VPath entry = VPath(ui_effects_dropdown->itemText(i));
-    QString iconpath = ao_app->get_image_suffix(custom_path + entry);
-    if (!file_exists(iconpath)) {
-      iconpath = ao_app->get_image_suffix(theme_path + entry);
-      if (!file_exists(iconpath)) {
-        iconpath = ao_app->get_image_suffix(default_path + entry);
-        if (!file_exists(iconpath))
-          continue;
-      }
-    }
+    QString iconpath = ao_app->get_effect("icons/" + ui_effects_dropdown->itemText(i), current_char, "");
     ui_effects_dropdown->setItemIcon(i, QIcon(iconpath));
   }
 
@@ -4961,7 +4952,11 @@ void Courtroom::music_random()
   }
   if (clist.length() == 0)
       return;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
   on_music_list_double_clicked(clist.at(qrand() % clist.length()), 1);
+#else
+  on_music_list_double_clicked(clist.at(QRandomGenerator::global()->bounded(0, clist.length())), 1);
+#endif
 }
 
 void Courtroom::music_list_expand_all() { ui_music_list->expandAll(); }
