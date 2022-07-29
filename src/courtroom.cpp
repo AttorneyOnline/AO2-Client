@@ -2072,18 +2072,18 @@ void Courtroom::on_chat_return_pressed()
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
   if (ao_app->effects_supported) {
-    QString fx_sound =
-        ao_app->get_effect_property(effect, current_char, "sound");
-    QString p_effect =
+    QString p_effect_folder =
         ao_app->read_char_ini(current_char, "effects", "Options");
+    QString fx_sound =
+        ao_app->get_effect_property(effect, current_char, p_effect_folder, "sound");
 
     // Don't overlap the two sfx
     if (!ui_pre->isChecked() && (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() == 1)) {
       fx_sound = "0";
     }
 
-    packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
-    if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, "sticky").startsWith("true")) {
+    packet_contents.append(effect + "|" + p_effect_folder + "|" + fx_sound);
+    if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, p_effect_folder, "sticky").startsWith("true")) {
       ui_effects_dropdown->blockSignals(true);
       ui_effects_dropdown->setCurrentIndex(0);
       ui_effects_dropdown->blockSignals(false);
@@ -2697,29 +2697,29 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char,
     return;
   }
   ui_vp_effect->transform_mode = ao_app->get_scaling(
-      ao_app->get_effect_property(fx_path, p_char, "scaling"));
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "scaling"));
   ui_vp_effect->stretch =
-      ao_app->get_effect_property(fx_path, p_char, "stretch")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "stretch")
           .startsWith("true");
-  ui_vp_effect->set_flipped(ao_app->get_effect_property(fx_path, p_char, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
+  ui_vp_effect->set_flipped(ao_app->get_effect_property(fx_path, p_char, p_folder, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
 
   bool looping =
-      ao_app->get_effect_property(fx_path, p_char, "loop")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "loop")
           .startsWith("true");
 
   int max_duration =
-      ao_app->get_effect_property(fx_path, p_char, "max_duration")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "max_duration")
           .toInt();
 
   bool cull =
-      ao_app->get_effect_property(fx_path, p_char, "cull")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "cull")
           .startsWith("true");
 
   // Possible values: "chat", "character", "behind"
-  QString layer = ao_app->get_effect_property(fx_path, p_char, "layer").toLower();
+  QString layer = ao_app->get_effect_property(fx_path, p_char, p_folder, "layer").toLower();
   if (layer == "behind"){
     ui_vp_effect->setParent(ui_viewport);
     ui_vp_effect->stackUnder(ui_vp_player_char);
@@ -2746,7 +2746,7 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char,
     effect_y = ui_viewport->y();
   }
   // This effect respects the character offset settings
-  if (ao_app->get_effect_property(fx_path, p_char, "respect_offset") == "true") {
+  if (ao_app->get_effect_property(fx_path, p_char, p_folder, "respect_offset") == "true") {
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;

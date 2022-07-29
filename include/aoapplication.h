@@ -422,12 +422,12 @@ public:
   // a string
   QStringList get_effects(QString p_char);
 
-  // t
+  // Get the correct effect image
   QString get_effect(QString effect, QString p_char, QString p_folder);
 
   // Return p_property of fx_name. If p_property is "sound", return
   // the value associated with fx_name, otherwise use fx_name + '_' + p_property.
-  QString get_effect_property(QString fx_name, QString p_char, QString p_property);
+  QString get_effect_property(QString fx_name, QString p_char, QString p_folder, QString p_property);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
