@@ -12,6 +12,7 @@ void Courtroom::initialize_evidence()
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFrame(false);
   ui_evidence_name->setObjectName("ui_evidence_name");
+  ui_evidence_name->setReadOnly(true);
 
   ui_evidence_buttons = new QWidget(ui_evidence);
   ui_evidence_buttons->setObjectName("ui_evidence_buttons");
@@ -449,17 +450,22 @@ void Courtroom::on_evidence_clicked(int p_id)
   }
   else if (f_real_id > local_evidence_list.size())
     return;
+  
+  if (!ao_app->get_evidence_double_click()){
+    on_evidence_double_clicked(p_id);
+    return;
+  }
+
+  if (ui_evidence_overlay->isVisible()) {
+    return;
+  }
 
   ui_evidence_name->setText(local_evidence_list.at(f_real_id).name);
-
   for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
   ui_evidence_list.at(p_id)->set_selected(true);
-
   current_evidence = f_real_id;
-
-  //  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_double_clicked(int p_id)
@@ -469,6 +475,17 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   if (f_real_id >= local_evidence_list.size())
     return;
 
+  if (ui_evidence_overlay->isVisible()) {
+    if (!on_evidence_x_clicked()) {
+      // We're told not to switch over to the other evidence ("cancel" clicked)
+      return;
+    }
+  }
+
+  for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
+    i_button->set_selected(false);
+
+  ui_evidence_list.at(p_id)->set_selected(true);
   current_evidence = f_real_id;
 
   evi_type f_evi = local_evidence_list.at(f_real_id);
@@ -477,6 +494,7 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_description->appendPlainText(f_evi.description);
   ui_evidence_description->setReadOnly(false);
   ui_evidence_description->setToolTip(tr("Click to edit..."));
+  ui_evidence_description->moveCursor(QTextCursor::Start);
 
   ui_evidence_name->setText(f_evi.name);
   ui_evidence_name->setReadOnly(false);
@@ -489,12 +507,15 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence->show();
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
+  if (ui_evidence_overlay->isVisible()) {
+    // Ignore hovering behavior if we're in the process of viewing a piece of evidence
+    return;
+  }
+
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (p_state) {
@@ -514,8 +535,6 @@ void Courtroom::on_evidence_left_clicked()
   --current_evidence_page;
 
   set_evidence_page();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_right_clicked()
@@ -523,8 +542,6 @@ void Courtroom::on_evidence_right_clicked()
   ++current_evidence_page;
 
   set_evidence_page();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_present_clicked()
@@ -557,24 +574,18 @@ void Courtroom::on_evidence_delete_clicked()
   }
 
   current_evidence = 0;
-
-  ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_evidence_x_clicked()
+bool Courtroom::on_evidence_x_clicked()
 {
   if (current_evidence >=
       local_evidence_list.size()) // Should never happen but you never know.
-    return;
+    return true;
 
-  evi_type fake_evidence;
-  fake_evidence.name = ui_evidence_name->text();
-  fake_evidence.description = ui_evidence_description->toPlainText();
-  fake_evidence.image = ui_evidence_image_name->text();
-  if (!compare_evidence_changed(fake_evidence,
-                                local_evidence_list.at(current_evidence))) {
+  if (ui_evidence_ok->isHidden()) {
+    // Nothing was modified
     evidence_close();
-    return;
+    return true;
   }
   QMessageBox *msgBox = new QMessageBox;
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
@@ -588,16 +599,14 @@ void Courtroom::on_evidence_x_clicked()
   case QMessageBox::Save:
     evidence_close();
     on_evidence_ok_clicked();
-    break;
+    return true;
   case QMessageBox::Discard:
     evidence_close();
-    break;
+    return true;
   case QMessageBox::Cancel:
-    // Cancel was clicked, do nothing
-    break;
   default:
-    // should never be reached
-    break;
+    // Cancel was clicked, report that.
+    return false;
   }
 }
 
@@ -629,28 +638,7 @@ void Courtroom::on_evidence_ok_clicked()
 
 void Courtroom::on_evidence_switch_clicked()
 {
-  evidence_close();
   evidence_switch(!current_evidence_global);
-  if (current_evidence_global) {
-    ui_evidence_switch->set_image("evidence_global");
-    ui_evidence->set_image("evidence_background");
-    ui_evidence_overlay->set_image("evidence_overlay");
-    ui_evidence_transfer->set_image("evidence_transfer");
-    ui_evidence_transfer->setToolTip(
-        tr("Transfer evidence to private inventory."));
-    ui_evidence_switch->setToolTip(
-        tr("Current evidence is global. Click to switch to private."));
-  }
-  else {
-    ui_evidence_switch->set_image("evidence_private");
-    ui_evidence->set_image("evidence_background_private");
-    ui_evidence_overlay->set_image("evidence_overlay_private");
-    ui_evidence_transfer->set_image("evidence_transfer_private");
-    ui_evidence_transfer->setToolTip(
-        tr("Transfer evidence to global inventory."));
-    ui_evidence_switch->setToolTip(
-        tr("Current evidence is private. Click to switch to global."));
-  }
 }
 
 void Courtroom::on_evidence_transfer_clicked()
@@ -708,11 +696,11 @@ void Courtroom::evidence_close()
   ui_evidence_name->setReadOnly(true);
   ui_evidence_image_name->setReadOnly(true);
   ui_evidence_overlay->hide();
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::evidence_switch(bool global)
 {
+  evidence_close();
   current_evidence_global = global;
   is_presenting_evidence = false;
   ui_evidence_present->set_image("present");
@@ -722,12 +710,28 @@ void Courtroom::evidence_switch(bool global)
     ui_evidence_present->show();
     ui_evidence_save->hide();
     ui_evidence_load->hide();
+    ui_evidence_switch->set_image("evidence_global");
+    ui_evidence->set_image("evidence_background");
+    ui_evidence_overlay->set_image("evidence_overlay");
+    ui_evidence_transfer->set_image("evidence_transfer");
+    ui_evidence_transfer->setToolTip(
+        tr("Transfer evidence to private inventory."));
+    ui_evidence_switch->setToolTip(
+        tr("Current evidence is global. Click to switch to private."));
   }
   else {
     local_evidence_list = private_evidence_list;
     ui_evidence_present->hide();
     ui_evidence_save->show();
     ui_evidence_load->show();
+    ui_evidence_switch->set_image("evidence_private");
+    ui_evidence->set_image("evidence_background_private");
+    ui_evidence_overlay->set_image("evidence_overlay_private");
+    ui_evidence_transfer->set_image("evidence_transfer_private");
+    ui_evidence_transfer->setToolTip(
+        tr("Transfer evidence to global inventory."));
+    ui_evidence_switch->setToolTip(
+        tr("Current evidence is private. Click to switch to global."));
   }
   current_evidence_page = 0;
   set_evidence_page();
