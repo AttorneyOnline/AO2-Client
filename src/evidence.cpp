@@ -816,6 +816,7 @@ void Courtroom::evidence_save(QString filename)
   }
 
   QSettings inventory(filename, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
   inventory.clear();
   for (int i = 0; i < private_evidence_list.size(); i++) {
     inventory.beginGroup(QString::number(i));
