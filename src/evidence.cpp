@@ -398,7 +398,7 @@ void Courtroom::on_evidence_image_name_edited()
 
 void Courtroom::on_evidence_image_button_clicked()
 {
-  QDir dir(ao_app->get_real_path(ao_app->get_evidence_path("")));
+  QDir dir("base/evidence/");
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
@@ -418,7 +418,7 @@ void Courtroom::on_evidence_image_button_clicked()
   bases.prepend(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDir baseDir(base);
-    if (filename.startsWith(baseDir.absolutePath())) {
+    if (filename.startsWith(baseDir.absolutePath() + "/")) {
       dir.setPath(baseDir.absolutePath() + "/evidence");
       break;
     }
