@@ -31,8 +31,8 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   if (f_path.startsWith("http")) {
 
     if (ao_app->is_streaming_disabled()) {
-        return QObject::tr("[MISSING] Streaming disabled.");
         BASS_ChannelStop(m_stream_list[channel]);
+        return QObject::tr("[MISSING] Streaming disabled.");
     }
 
     if (f_path.endsWith(".opus"))
