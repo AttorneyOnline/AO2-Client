@@ -912,7 +912,13 @@ QStringList AOApplication::get_effects(QString p_char)
          // port legacy effects
     if (!l_effects_ini.contains("version/major") || l_effects_ini.value("version/major").toInt() < 2)
     {
-      AOUtils::migrateEffects(l_effects_ini);
+      QFile effects_old(i_filepath);
+      if (QFile::copy(i_filepath, i_filepath + ".old")) {
+        AOUtils::migrateEffects(l_effects_ini);
+      }
+      else {
+        qWarning() << "Could not back up old effects.ini during migraiton";
+      }
     }
 
     QStringList l_group_list;
