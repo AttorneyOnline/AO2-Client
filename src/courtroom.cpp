@@ -4700,7 +4700,11 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 
   menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
-  menu->addAction(QString("Play"), this, &Courtroom::on_sfx_play_clicked);
+  // SFX is not "Nothing" or "Default"?
+  if (get_char_sfx() != "0" && get_char_sfx() != "1") {
+    // Add an option to play the SFX
+    menu->addAction(QString("Play " + get_char_sfx()), this, &Courtroom::on_sfx_play_clicked);;
+  }
   if (file_exists(ao_app->get_real_path(
           ao_app->get_character_path(current_char, "soundlist.ini"))))
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
