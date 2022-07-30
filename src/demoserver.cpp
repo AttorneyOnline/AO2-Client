@@ -106,9 +106,9 @@ void DemoServer::recv_data()
     }
 }
 
-void DemoServer::handle_packet(AOPacket *packet)
+void DemoServer::handle_packet(AOPacket *p_packet)
 {
-    packet->net_decode();
+    p_packet->net_decode();
 
     // This code is literally a barebones AO server
     // It is wise to do it this way, because I can
@@ -118,8 +118,8 @@ void DemoServer::handle_packet(AOPacket *packet)
     // Also, at some point, I will make akashit
     // into a shared library.
 
-    QString header = packet->get_header();
-    QStringList contents = packet->get_contents();
+    QString header = p_packet->get_header();
+    QStringList contents = p_packet->get_contents();
 
     if (header == "HI") {
         client_sock->write("ID#0#DEMOINTERNAL#0#%");
@@ -272,6 +272,8 @@ void DemoServer::handle_packet(AOPacket *packet)
             client_sock->write(packet.toUtf8());
         }
     }
+
+    delete p_packet;
 }
 
 void DemoServer::load_demo(QString filename)
@@ -400,13 +402,9 @@ void DemoServer::playback()
         }
         // Take the first arg as the command
         QString command = f_contents.takeFirst();
-        // The rest is contents of the packet
-        AOPacket *wait_packet = new AOPacket(command, f_contents);
-
-        QStringList contents = wait_packet->get_contents();
         int duration = 0;
-        if (!contents.isEmpty()) {
-          duration = contents.at(0).toInt();
+        if (!f_contents.isEmpty()) {
+          duration = f_contents.at(0).toInt();
         }
         // Max wait reached
         if (max_wait != -1 && duration + elapsed_time > max_wait) {
