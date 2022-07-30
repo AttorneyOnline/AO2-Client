@@ -340,7 +340,7 @@ public:
    * The demo server entry is always present at the top of the list.
    *
    * If the server list returned was to be empty (exluding the demo server entry),
-   * the will return a list of servers from the legacy serverlist.txt file.
+   * will return a list of servers from the legacy serverlist.txt file.
    *
    * @return A list of servers.
    */
