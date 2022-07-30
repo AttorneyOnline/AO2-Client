@@ -687,7 +687,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_disablestreams_lbl = new QLabel(ui_audio_widget);
   ui_disablestreams_lbl->setText(tr("Disable Music Streaming:"));
   ui_disablestreams_lbl->setToolTip(
-      tr("If true, AO2 will not play any streamed audio and show the song as missing."));
+      tr("If true, AO2 will not play any streamed audio and show that streaming is disabled."));
   ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_disablestreams_lbl);
 
   ui_disablestreams_cb = new QCheckBox(ui_audio_widget);
