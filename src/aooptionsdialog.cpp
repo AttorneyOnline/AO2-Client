@@ -467,7 +467,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   row += 1;
   ui_sfx_on_idle_lbl = new QLabel(ui_form_layout_widget);
-  ui_sfx_on_idle_lbl->setText(tr("Play SFX on Idle:"));
+  ui_sfx_on_idle_lbl->setText(tr("Always Send SFX:"));
   ui_sfx_on_idle_lbl->setToolTip(
       tr("If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF."));
 
