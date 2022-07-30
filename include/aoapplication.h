@@ -137,6 +137,10 @@ public:
   // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
 
+  // Removes the server from favorite_servers.ini
+  void remove_favorite_server(int p_server);
+
+  // Document me!
   void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
 

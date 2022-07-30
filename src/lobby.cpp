@@ -45,6 +45,9 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list->setColumnWidth(0, 0);
   ui_server_list->setIndentation(0);
   ui_server_list->setObjectName("ui_server_list");
+  ui_server_list->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(ui_server_list, &QWidget::customContextMenuRequested,
+          this, &Lobby::on_server_list_context_menu_requested);
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);
@@ -498,6 +501,31 @@ void Lobby::on_server_search_edited(QString p_text)
       item->setHidden(false);
     }
   }
+}
+
+void Lobby::on_server_list_context_menu_requested(const QPoint &pos)
+{
+    if (public_servers_selected)
+      return;
+
+    QAction *removeAct = new QAction(tr("&Remove"), this);
+    connect(removeAct, &QAction::triggered, this, &Lobby::remove_favorite);
+
+    QMenu menu(this);
+    menu.addAction(removeAct);
+
+    menu.exec(ui_server_list->mapToGlobal(pos));
+}
+
+void Lobby::remove_favorite()
+{
+  if (!public_servers_selected) {
+    int selection = get_selected_server();
+      if (selection > -1) {
+      ao_app->remove_favorite_server(selection);
+      list_favorites();
+      }
+   }
 }
 
 void Lobby::list_servers()

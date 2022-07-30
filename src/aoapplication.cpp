@@ -1,3 +1,5 @@
+#include <QCollator>
+
 #include "aoapplication.h"
 
 #include "courtroom.h"
@@ -161,6 +163,14 @@ void AOApplication::add_favorite_server(int p_server)
     l_favorite_ini.setValue("protocol", "ws");
   }
   l_favorite_ini.sync();
+}
+
+void AOApplication::remove_favorite_server(int p_server)
+{
+  if (p_server < 0 || p_server >= server_list.size())
+    return;
+
+  //Here lies a shitty implementation.
 }
 
 void AOApplication::server_disconnected()

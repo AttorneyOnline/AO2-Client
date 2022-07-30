@@ -17,6 +17,8 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QHeaderView>
+#include <QAction>
+#include <QMenu>
 #ifdef ANDROID
 #include <QtAndroidExtras/QtAndroid>
 #endif
@@ -106,6 +108,9 @@ private slots:
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column);
   void on_server_search_edited(QString p_text);
+
+  void on_server_list_context_menu_requested(const QPoint & pos);
+  void remove_favorite();
 };
 
 #endif // LOBBY_H
