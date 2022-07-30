@@ -1037,6 +1037,11 @@ bool AOApplication::objection_stop_music()
   return result.startsWith("true");
 }
 
+bool AOApplication::is_streaming_disabled()
+{
+    return configini->value("streaming_disabled", false).toBool();
+}
+
 bool AOApplication::is_instant_objection_enabled()
 {
   QString result = configini->value("instant_objection", "true").value<QString>();

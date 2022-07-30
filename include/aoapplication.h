@@ -194,6 +194,9 @@ public:
   // Returns true if stop music on objection is enabled in the config.ini
   bool objection_stop_music();
 
+  // Returns true if streaming is enabled in the config.ini
+  bool is_streaming_disabled();
+
   // Returns the value of default_music in config.ini
   int get_default_music();
 

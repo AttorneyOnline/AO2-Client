@@ -697,6 +697,16 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_objectmusic_cb);
 
+  row += 1;
+  ui_disablestreams_lbl = new QLabel(ui_audio_widget);
+  ui_disablestreams_lbl->setText(tr("Disable Music Streaming:"));
+  ui_disablestreams_lbl->setToolTip(
+      tr("If true, AO2 will not play any streamed audio and show that streaming is disabled."));
+  ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_disablestreams_lbl);
+
+  ui_disablestreams_cb = new QCheckBox(ui_audio_widget);
+  ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_disablestreams_cb);
+
   // The casing tab!
   ui_casing_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
@@ -1217,6 +1227,7 @@ void AOOptionsDialog::update_values() {
   ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());
   ui_loopsfx_cb->setChecked(ao_app->get_looping_sfx());
   ui_objectmusic_cb->setChecked(ao_app->objection_stop_music());
+  ui_disablestreams_cb->setChecked(ao_app->is_streaming_disabled());
   ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
   ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
   ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
@@ -1323,6 +1334,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
   configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
   configini->setValue("objection_stop_music", ui_objectmusic_cb->isChecked());
+  configini->setValue("streaming_disabled", ui_disablestreams_cb->isChecked());
 
   configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
   configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
