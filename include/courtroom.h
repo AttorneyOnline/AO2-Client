@@ -52,7 +52,7 @@
 #include <QMessageBox>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #include <QRandomGenerator> //added in Qt 5.10
 #endif
 #include <QRegExp>
@@ -213,7 +213,8 @@ public:
   QString get_current_background() { return current_background; }
 
   // updates character to p_cid and updates necessary ui elements
-  void update_character(int p_cid);
+  // Optional "char_name" is the iniswap we're using
+  void update_character(int p_cid, QString char_name = "", bool reset_emote = false);
 
   // properly sets up some varibles: resets user state
   void enter_courtroom();
@@ -974,7 +975,7 @@ private slots:
   void on_evidence_button_clicked();
 
   void on_evidence_delete_clicked();
-  void on_evidence_x_clicked();
+  bool on_evidence_x_clicked();
   void on_evidence_ok_clicked();
   void on_evidence_switch_clicked();
   void on_evidence_transfer_clicked();
@@ -985,6 +986,8 @@ private slots:
   void evidence_switch(bool global);
   void on_evidence_save_clicked();
   void on_evidence_load_clicked();
+  void evidence_save(QString filename);
+  void evidence_load(QString filename);
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();

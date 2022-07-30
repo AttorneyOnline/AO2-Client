@@ -466,6 +466,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
 
   row += 1;
+
   ui_sfx_on_idle_lbl = new QLabel(ui_form_layout_widget);
   ui_sfx_on_idle_lbl->setText(tr("Always Send SFX:"));
   ui_sfx_on_idle_lbl->setToolTip(
@@ -476,6 +477,19 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_sfx_on_idle_cb = new QCheckBox(ui_form_layout_widget);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_sfx_on_idle_cb);
+
+  row += 1;
+
+  ui_evidence_double_click_lbl = new QLabel(ui_form_layout_widget);
+  ui_evidence_double_click_lbl->setText(tr("Evidence Double Click:"));
+  ui_evidence_double_click_lbl->setToolTip(
+      tr("If ticked, Evidence needs a double-click to view rather than a single click."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_evidence_double_click_lbl);
+
+  ui_evidence_double_click_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_evidence_double_click_cb);
 
   // Finish gameplay tab
   QScrollArea *scroll = new QScrollArea(this);
@@ -1223,6 +1237,7 @@ void AOOptionsDialog::update_values() {
   ui_suppress_audio_spinbox->setValue(ao_app->get_default_suppress_audio());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
+  ui_evidence_double_click_cb->setChecked(ao_app->get_evidence_double_click());
 
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
@@ -1287,6 +1302,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());
   configini->setValue("sfx_on_idle", ui_sfx_on_idle_cb->isChecked());
+  configini->setValue("evidence_double_click", ui_evidence_double_click_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |

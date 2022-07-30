@@ -1,4 +1,5 @@
 #include "text_file_functions.h"
+#include "aoutils.h"
 
 QString AOApplication::read_theme()
 {
@@ -599,6 +600,7 @@ void AOApplication::set_char_ini(QString p_char, QString value,
 {
   QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   settings.beginGroup(target_tag);
   settings.setValue(p_search_line, value);
   settings.endGroup();
@@ -620,15 +622,6 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
   if (!settings.group().isEmpty())
     settings.endGroup();
   return r_values;
-}
-
-QString AOApplication::get_char_name(QString p_char)
-{
-  QString f_result = read_char_ini(p_char, "name", "Options");
-
-  if (f_result == "")
-    return p_char;
-  return f_result;
 }
 
 QString AOApplication::get_showname(QString p_char)
@@ -900,22 +893,61 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 
 QStringList AOApplication::get_effects(QString p_char)
 {
-  QString p_misc = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
-  QSettings effects_config(p_path, QSettings::IniFormat);
-  effects_config.setIniCodec("UTF-8");
-  QStringList effects = effects_config.childGroups();
-  std::sort(effects.begin(), effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
-  if (p_path != p_misc_path) {
-    // If misc path is different from default path, stack the new miscs on top of the defaults
-    QSettings effects_config_misc(p_misc_path, QSettings::IniFormat);
-    effects_config_misc.setIniCodec("UTF-8");
-    QStringList misc_effects = effects_config_misc.childGroups();
-    std::sort(misc_effects.begin(), misc_effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
-    effects += misc_effects;
+  const QStringList l_filepath_list{
+    get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, ""),
+    get_asset("effects.ini", current_theme, get_subtheme(), default_theme, read_char_ini(p_char, "effects", "Options")),
+  };
+
+  QStringList l_effect_name_list;
+  for (const QString &i_filepath : l_filepath_list)
+  {
+    if (!QFile::exists(i_filepath))
+    {
+      continue;
+    }
+
+    QSettings l_effects_ini(i_filepath, QSettings::IniFormat);
+    l_effects_ini.setIniCodec("UTF-8");
+
+         // port legacy effects
+    if (!l_effects_ini.contains("version/major") || l_effects_ini.value("version/major").toInt() < 2)
+    {
+      AOUtils::migrateEffects(l_effects_ini);
+    }
+
+    QStringList l_group_list;
+    for (const QString &i_group : l_effects_ini.childGroups())
+    {
+      bool l_result;
+      i_group.toInt(&l_result);
+      if (l_result)
+      {
+        l_group_list.append(i_group);
+      }
+    }
+
+    std::sort(l_group_list.begin(), l_group_list.end(), [](const QString &lhs, const QString &rhs) {
+      return lhs.toInt() < rhs.toInt();
+    });
+
+    for (const QString &i_group : qAsConst(l_group_list))
+    {
+      const QString l_key = i_group + "/name";
+      if (!l_effects_ini.contains(l_key))
+      {
+        continue;
+      }
+
+      const QString l_effect_name = l_effects_ini.value(l_key).toString();
+      if (l_effect_name.isEmpty())
+      {
+        continue;
+      }
+
+      l_effect_name_list.append(l_effect_name);
+    }
   }
-  return effects;
+  return l_effect_name_list;
 }
 
 QString AOApplication::get_effect(QString effect, QString p_char,
@@ -936,10 +968,13 @@ QString AOApplication::get_effect(QString effect, QString p_char,
 }
 
 QString AOApplication::get_effect_property(QString fx_name, QString p_char,
-                                           QString p_property)
+                                           QString p_folder, QString p_property)
 {
+  if (p_folder == "")
+    p_folder = read_char_ini(p_char, "effects", "Options");
+
   const auto paths = get_asset_paths("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  const auto misc_paths = get_asset_paths("effects.ini", current_theme, get_subtheme(), default_theme, read_char_ini(p_char, "effects", "Options"));
+  const auto misc_paths = get_asset_paths("effects.ini", current_theme, get_subtheme(), default_theme, p_folder);
   QString path;
   QString f_result;
   for (const VPath &p : paths + misc_paths) {
@@ -949,10 +984,7 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
       settings.setIniCodec("UTF-8");
       QStringList char_effects = settings.childGroups();
       for (int i = 0; i < char_effects.size(); ++i) {
-        QString effect = char_effects[i];
-        if (effect.contains(":")) {
-          effect = effect.section(':', 1);
-        }
+        QString effect = settings.value(char_effects[i] + "/name").toString();
         if (effect.toLower() == fx_name.toLower()) {
           f_result = settings.value(char_effects[i] + "/" + p_property).toString();
           if (!f_result.isEmpty()) {
@@ -1202,3 +1234,8 @@ bool AOApplication::get_sfx_on_idle()
       .startsWith("true");
 }
 
+bool AOApplication::get_evidence_double_click()
+{
+  return configini->value("evidence_double_click", "true").value<QString>()
+      .startsWith("true");
+}
