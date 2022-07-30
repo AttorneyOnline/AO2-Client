@@ -130,21 +130,17 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   row += 1;
   ui_theme_folder_button = new QPushButton(ui_form_layout_widget);
-  ui_theme_folder_button->setText(tr("Open Themes Folders"));
+  ui_theme_folder_button->setText(tr("Open Theme Folder"));
   ui_theme_folder_button->setToolTip(
-      tr("Open all the folders where the themes are contained."));
+      tr("Open the theme folder of the currently selected theme."));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_folder_button);
   connect(ui_theme_folder_button, &QPushButton::clicked, this,
           [=] {
-    QStringList bases = ao_app->get_mount_paths();
-    bases.prepend(ao_app->get_base_path());
-    for (const QString &base : bases) {
-      QString p_path = base + "/themes/";
-      if (!dir_exists(p_path)) {
-          return;
-      }
-      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+    QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
+    if (!dir_exists(p_path)) {
+        return;
     }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
 

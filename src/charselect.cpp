@@ -218,16 +218,16 @@ void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
     QString p_path = ao_app->get_real_path(VPath("characters/" + char_name + "/"));
     if (!dir_exists(p_path)) {
       return;
-}
+    }
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
-  menu->addAction(QString("Open characters folder"), this,
+  menu->addAction(QString("Open base characters folder"), this,
                   [=] {
-    QString p_path = ao_app->get_real_path(VPath("characters/"));
+    QString p_path = ao_app->get_base_path() + "characters/";
     if (!dir_exists(p_path)) {
       return;
-}
+    }
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
