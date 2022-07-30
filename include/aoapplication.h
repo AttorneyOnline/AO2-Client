@@ -78,7 +78,7 @@ public:
 
   void server_packet_received(AOPacket *p_packet);
 
-  void send_server_packet(AOPacket *p_packet, bool encoded = true);
+  void send_server_packet(AOPacket *p_packet);
 
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
