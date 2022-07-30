@@ -334,11 +334,22 @@ public:
   // Append to the currently open demo file if there is one
   void append_to_demofile(QString packet_string);
 
-  // Returns the contents of serverlist.txt
+  /**
+   * @brief Reads favorite_servers.ini and returns a list of servers.
+   *
+   * The demo server entry is always present at the top of the list.
+   *
+   * If the server list returned was to be empty (exluding the demo server entry),
+   * the will return a list of servers from the legacy serverlist.txt file.
+   *
+   * @return A list of servers.
+   */
   QVector<server_type> read_favorite_servers();
 
   /**
-   * @brief Migrates the favorite serverlist format from txt to ini.
+   * @brief Reads serverlist.txt and returns a list of servers.
+   *
+   * @return A list of servers.
    */
   QVector<server_type> read_legacy_favorite_servers();
 

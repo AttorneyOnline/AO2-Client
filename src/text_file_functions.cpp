@@ -331,7 +331,6 @@ QVector<server_type> AOApplication::read_legacy_favorite_servers()
       serverlist.append(std::move(server));
     }
     serverlist_txt.close();
-    serverlist_txt.rename("(deprecated)serverlist.txt");
   }
 
   return serverlist;
