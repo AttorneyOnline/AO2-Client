@@ -24,6 +24,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "eventfilters.h"
+#include "aoemotepreview.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -51,6 +52,9 @@
 #include <QMessageBox>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator> //added in Qt 5.10
+#endif
 #include <QRegExp>
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
@@ -68,6 +72,8 @@ class Courtroom : public QMainWindow {
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+
+  void update_audio_volume();
 
   void append_char(char_type p_char) { char_list.append(p_char); }
   void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
@@ -207,7 +213,8 @@ public:
   QString get_current_background() { return current_background; }
 
   // updates character to p_cid and updates necessary ui elements
-  void update_character(int p_cid);
+  // Optional "char_name" is the iniswap we're using
+  void update_character(int p_cid, QString char_name = "", bool reset_emote = false);
 
   // properly sets up some varibles: resets user state
   void enter_courtroom();
@@ -337,6 +344,9 @@ public:
   ~Courtroom();
 private:
   AOApplication *ao_app;
+
+  // Percentage of audio that is suppressed when client is not in focus
+  int suppress_audio = 0;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
@@ -685,6 +695,9 @@ private:
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
 
+  QMenu *emote_menu;
+  AOEmotePreview *emote_preview;
+
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
   AOButton *ui_pos_remove;
@@ -917,6 +930,8 @@ private slots:
   void on_custom_objection_clicked();
   void show_custom_objection_menu(const QPoint &pos);
 
+  void show_emote_menu(const QPoint &pos);
+
   void on_realization_clicked();
   void on_screenshake_clicked();
 
@@ -964,7 +979,7 @@ private slots:
   void on_evidence_context_menu_requested(const QPoint &pos);
 
   void on_evidence_delete_clicked();
-  void on_evidence_x_clicked();
+  bool on_evidence_x_clicked();
   void on_evidence_ok_clicked();
   void on_evidence_switch_clicked();
   void on_evidence_transfer_clicked();
@@ -975,6 +990,8 @@ private slots:
   void evidence_switch(bool global);
   void on_evidence_save_clicked();
   void on_evidence_load_clicked();
+  void evidence_save(QString filename);
+  void evidence_load(QString filename);
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
@@ -992,10 +1009,15 @@ private slots:
 
   void on_casing_clicked();
 
+  void on_application_state_changed(Qt::ApplicationState state);
+
   void ping_server();
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
+
+  void preview_emote(QString emote);
+  void update_emote_preview();
 };
 
 #endif // COURTROOM_H

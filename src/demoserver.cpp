@@ -95,7 +95,11 @@ void DemoServer::recv_data()
     }
 
     QStringList packet_list =
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
         in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+#else
+        in_data.split("%", Qt::SkipEmptyParts);
+#endif
 
     for (const QString &packet : packet_list) {
         AOPacket ao_packet(packet);

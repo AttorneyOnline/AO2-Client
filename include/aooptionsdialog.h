@@ -52,6 +52,8 @@ private:
   QComboBox *ui_subtheme_combobox;
   QPushButton *ui_theme_reload_button;
   QPushButton *ui_theme_folder_button;
+  QLabel *ui_evidence_double_click_lbl;
+  QCheckBox *ui_evidence_double_click_cb;
   QLabel *ui_animated_theme_lbl;
   QCheckBox *ui_animated_theme_cb;
   QFrame *ui_theme_log_divider;
@@ -128,8 +130,10 @@ private:
   QLabel *ui_music_volume_lbl;
   QSpinBox *ui_sfx_volume_spinbox;
   QSpinBox *ui_blips_volume_spinbox;
+  QSpinBox *ui_suppress_audio_spinbox;
   QLabel *ui_sfx_volume_lbl;
   QLabel *ui_blips_volume_lbl;
+  QLabel *ui_suppress_audio_lbl;
   QFrame *ui_volume_blip_divider;
   QSpinBox *ui_bliprate_spinbox;
   QLabel *ui_bliprate_lbl;

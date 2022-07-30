@@ -88,22 +88,22 @@ public:
 
   /////////////////server metadata//////////////////
 
-  bool yellow_text_enabled = false;
-  bool prezoom_enabled = false;
-  bool flipping_enabled = false;
-  bool custom_objection_enabled = false;
-  bool desk_mod_enabled = false;
-  bool evidence_enabled = false;
-  bool cccc_ic_support_enabled = false;
-  bool arup_enabled = false;
-  bool casing_alerts_enabled = false;
-  bool modcall_reason_enabled = false;
-  bool looping_sfx_support_enabled = false;
-  bool additive_enabled = false;
-  bool effects_enabled = false;
-  bool y_offset_enabled = false;
-  bool expanded_desk_mods_enabled = false;
-  bool auth_packet_enabled = false;
+  bool yellow_text_supported = false;
+  bool prezoom_supported = false;
+  bool flipping_supported = false;
+  bool custom_objection_supported = false;
+  bool desk_mod_supported = false;
+  bool evidence_supported = false;
+  bool cccc_ic_supported = false;
+  bool arup_supported = false;
+  bool casing_alerts_supported = false;
+  bool modcall_reason_supported = false;
+  bool looping_sfx_supported = false;
+  bool additive_text_supported = false;
+  bool effects_supported = false;
+  bool y_offset_supported = false;
+  bool expanded_desk_mods_supported = false;
+  bool auth_packet_supported = false;
 
   ///////////////loading info///////////////////
 
@@ -166,8 +166,7 @@ public:
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
   QString get_pos_path(const QString& pos, bool desk = false);
   QString get_case_sensitive_path(QString p_file);
-  QString get_real_path(const VPath &vpath);
-  QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
+  QString get_real_path(const VPath &vpath, const QStringList &suffixes={""});
   void invalidate_lookup_cache();
 
   ////// Functions for reading and writing files //////
@@ -203,6 +202,9 @@ public:
 
   // Returns the value of default_blip in config.ini
   int get_default_blip();
+
+  // Returns the value of suppress_audio in config.ini
+  int get_default_suppress_audio();
 
   // Returns the value if objections interrupt and skip the message queue
   // from the config.ini.
@@ -420,21 +422,18 @@ public:
   // a string
   QStringList get_effects(QString p_char);
 
-  // t
+  // Get the correct effect image
   QString get_effect(QString effect, QString p_char, QString p_folder);
 
   // Return p_property of fx_name. If p_property is "sound", return
   // the value associated with fx_name, otherwise use fx_name + '_' + p_property.
-  QString get_effect_property(QString fx_name, QString p_char, QString p_property);
+  QString get_effect_property(QString fx_name, QString p_char, QString p_folder, QString p_property);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
 
   // Returns whether the given pos is a judge position
   bool get_pos_is_judge(const QString &p_pos);
-
-  // Returns the name of p_char
-  QString get_char_name(QString p_char);
 
   // Returns the total amount of emotes of p_char
   int get_emote_number(QString p_char);
@@ -535,6 +534,9 @@ public:
 
   // Get whether to opt out of player count metrics sent to the master server
   bool get_player_count_optout();
+
+  // Whether opening evidence requires a single or double click
+  bool get_evidence_double_click();
 
   // Currently defined subtheme
   QString subtheme;
