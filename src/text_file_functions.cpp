@@ -1228,6 +1228,12 @@ bool AOApplication::get_player_count_optout()
       .startsWith("true");
 }
 
+bool AOApplication::get_sfx_on_idle()
+{
+  return configini->value("sfx_on_idle", "false").value<QString>()
+      .startsWith("true");
+}
+
 bool AOApplication::get_evidence_double_click()
 {
   return configini->value("evidence_double_click", "true").value<QString>()

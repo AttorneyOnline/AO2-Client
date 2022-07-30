@@ -112,6 +112,9 @@ private:
   QLabel *ui_category_stop_lbl;
   QCheckBox *ui_category_stop_cb;
 
+  QLabel *ui_sfx_on_idle_lbl;
+  QCheckBox *ui_sfx_on_idle_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;

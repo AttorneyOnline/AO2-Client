@@ -535,6 +535,9 @@ public:
   // Get whether to opt out of player count metrics sent to the master server
   bool get_player_count_optout();
 
+  // Get if sfx can be sent to play on idle
+  bool get_sfx_on_idle();
+
   // Whether opening evidence requires a single or double click
   bool get_evidence_double_click();
 
