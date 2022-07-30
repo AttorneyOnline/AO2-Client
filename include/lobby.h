@@ -67,6 +67,7 @@ private:
 
   AOButton *ui_refresh;
   AOButton *ui_add_to_fav;
+  AOButton *ui_remove_from_fav;
   AOButton *ui_connect;
 
   QLabel *ui_version;
@@ -99,12 +100,15 @@ private slots:
   void on_refresh_released();
   void on_add_to_fav_pressed();
   void on_add_to_fav_released();
+  void on_remove_from_fav_pressed();
+  void on_remove_from_fav_released();
   void on_connect_pressed();
   void on_connect_released();
   void on_about_clicked();
   void on_settings_clicked();
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column);
+  void on_server_list_context_menu_requested(const QPoint &point);
   void on_server_search_edited(QString p_text);
 };
 
