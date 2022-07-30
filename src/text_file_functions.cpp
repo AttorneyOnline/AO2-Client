@@ -600,6 +600,7 @@ void AOApplication::set_char_ini(QString p_char, QString value,
 {
   QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
+  settings.setIniCodec("UTF-8");
   settings.beginGroup(target_tag);
   settings.setValue(p_search_line, value);
   settings.endGroup();
@@ -621,15 +622,6 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
   if (!settings.group().isEmpty())
     settings.endGroup();
   return r_values;
-}
-
-QString AOApplication::get_char_name(QString p_char)
-{
-  QString f_result = read_char_ini(p_char, "name", "Options");
-
-  if (f_result == "")
-    return p_char;
-  return f_result;
 }
 
 QString AOApplication::get_showname(QString p_char)
