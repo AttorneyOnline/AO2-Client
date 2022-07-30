@@ -465,6 +465,32 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
 
+  row += 1;
+
+  ui_sfx_on_idle_lbl = new QLabel(ui_form_layout_widget);
+  ui_sfx_on_idle_lbl->setText(tr("Always Send SFX:"));
+  ui_sfx_on_idle_lbl->setToolTip(
+      tr("If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_sfx_on_idle_lbl);
+
+  ui_sfx_on_idle_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_sfx_on_idle_cb);
+
+  row += 1;
+
+  ui_evidence_double_click_lbl = new QLabel(ui_form_layout_widget);
+  ui_evidence_double_click_lbl->setText(tr("Evidence Double Click:"));
+  ui_evidence_double_click_lbl->setToolTip(
+      tr("If ticked, Evidence needs a double-click to view rather than a single click."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_evidence_double_click_lbl);
+
+  ui_evidence_double_click_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_evidence_double_click_cb);
+
   // Finish gameplay tab
   QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
@@ -596,6 +622,21 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                              ui_blips_volume_spinbox);
 
   row += 1;
+  ui_suppress_audio_lbl = new QLabel(ui_audio_widget);
+  ui_suppress_audio_lbl->setText(tr("Suppress Audio:"));
+  ui_suppress_audio_lbl->setToolTip(
+      tr("How much of the volume to suppress when client is not in focus."));
+
+  ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_suppress_audio_lbl);
+
+  ui_suppress_audio_spinbox = new QSpinBox(ui_audio_widget);
+  ui_suppress_audio_spinbox->setMaximum(100);
+  ui_suppress_audio_spinbox->setSuffix("%");
+
+  ui_audio_layout->setWidget(row, QFormLayout::FieldRole,
+                             ui_suppress_audio_spinbox);
+
+  row += 1;
   ui_volume_blip_divider = new QFrame(ui_audio_widget);
   ui_volume_blip_divider->setFrameShape(QFrame::HLine);
   ui_volume_blip_divider->setFrameShadow(QFrame::Sunken);
@@ -674,7 +715,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // -- SERVER SUPPORTS CASING
 
   ui_casing_supported_lbl = new QLabel(ui_casing_widget);
-  if (ao_app->casing_alerts_enabled)
+  if (ao_app->casing_alerts_supported)
     ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
   else
     ui_casing_supported_lbl->setText(
@@ -854,7 +895,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_remove->setSizePolicy(stretch_btns);
   ui_mount_remove->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_remove, 0, 1, 1, 1);
-  connect(ui_mount_remove, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_remove, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -872,7 +913,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_up->setMaximumWidth(40);
   ui_mount_up->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_up, 0, 3, 1, 1);
-  connect(ui_mount_up, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_up, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -890,7 +931,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_down->setMaximumWidth(40);
   ui_mount_down->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_down, 0, 4, 1, 1);
-  connect(ui_mount_down, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_down, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -912,12 +953,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   "Use this when you have added an asset that takes precedence over another "
   "existing asset."));
   ui_mount_buttons_layout->addWidget(ui_mount_clear_cache, 0, 6, 1, 1);
-  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [this] {
     asset_cache_dirty = true;
     ui_mount_clear_cache->setEnabled(false);
   });
 
-  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [=] {
+  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [this] {
     auto selected_items = ui_mount_list->selectedItems();
     bool row_selected = !ui_mount_list->selectedItems().isEmpty();
     ui_mount_remove->setEnabled(row_selected);
@@ -1172,6 +1213,7 @@ void AOOptionsDialog::update_values() {
   ui_sticker_cb->setChecked(ao_app->is_sticker_enabled());
   ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
   ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
+  ui_sfx_on_idle_cb->setChecked(ao_app->get_sfx_on_idle());
   ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());
   ui_loopsfx_cb->setChecked(ao_app->get_looping_sfx());
   ui_objectmusic_cb->setChecked(ao_app->objection_stop_music());
@@ -1192,8 +1234,10 @@ void AOOptionsDialog::update_values() {
   ui_music_volume_spinbox->setValue(ao_app->get_default_music());
   ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
+  ui_suppress_audio_spinbox->setValue(ao_app->get_default_suppress_audio());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
+  ui_evidence_double_click_cb->setChecked(ao_app->get_evidence_double_click());
 
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
@@ -1257,6 +1301,8 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("demo_logging_enabled", ui_log_demo_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());
+  configini->setValue("sfx_on_idle", ui_sfx_on_idle_cb->isChecked());
+  configini->setValue("evidence_double_click", ui_evidence_double_click_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |
@@ -1272,6 +1318,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("default_music", ui_music_volume_spinbox->value());
   configini->setValue("default_sfx", ui_sfx_volume_spinbox->value());
   configini->setValue("default_blip", ui_blips_volume_spinbox->value());
+  configini->setValue("suppress_audio", ui_suppress_audio_spinbox->value());
   configini->setValue("blip_rate", ui_bliprate_spinbox->value());
   configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
   configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());

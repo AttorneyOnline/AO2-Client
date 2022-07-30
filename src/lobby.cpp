@@ -303,9 +303,9 @@ void Lobby::on_public_servers_clicked()
 
   reset_selection();
 
-  list_servers();
-
   public_servers_selected = true;
+
+  list_servers();
 }
 
 void Lobby::on_favorites_clicked()
@@ -317,9 +317,9 @@ void Lobby::on_favorites_clicked()
 
   ao_app->set_favorite_list();
 
-  list_favorites();
-
   public_servers_selected = false;
+
+  list_favorites();
 }
 
 void Lobby::reset_selection()
@@ -502,7 +502,9 @@ void Lobby::on_server_search_edited(QString p_text)
 
 void Lobby::list_servers()
 {
-  public_servers_selected = true;
+  if (!public_servers_selected) {
+    return;
+  }
   ui_favorites->set_image("favorites");
   ui_public_servers->set_image("publicservers_selected");
 
@@ -524,6 +526,9 @@ void Lobby::list_servers()
 
 void Lobby::list_favorites()
 {
+  if (public_servers_selected) {
+    return;
+  }
   ui_server_list->setSortingEnabled(false);
   ui_server_list->clear();
 

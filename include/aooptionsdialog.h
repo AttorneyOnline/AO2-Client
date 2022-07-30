@@ -51,6 +51,8 @@ private:
   QLabel *ui_subtheme_label;
   QComboBox *ui_subtheme_combobox;
   QPushButton *ui_theme_reload_button;
+  QLabel *ui_evidence_double_click_lbl;
+  QCheckBox *ui_evidence_double_click_cb;
   QLabel *ui_animated_theme_lbl;
   QCheckBox *ui_animated_theme_cb;
   QFrame *ui_theme_log_divider;
@@ -110,6 +112,9 @@ private:
   QLabel *ui_category_stop_lbl;
   QCheckBox *ui_category_stop_cb;
 
+  QLabel *ui_sfx_on_idle_lbl;
+  QCheckBox *ui_sfx_on_idle_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;
@@ -127,8 +132,10 @@ private:
   QLabel *ui_music_volume_lbl;
   QSpinBox *ui_sfx_volume_spinbox;
   QSpinBox *ui_blips_volume_spinbox;
+  QSpinBox *ui_suppress_audio_spinbox;
   QLabel *ui_sfx_volume_lbl;
   QLabel *ui_blips_volume_lbl;
+  QLabel *ui_suppress_audio_lbl;
   QFrame *ui_volume_blip_divider;
   QSpinBox *ui_bliprate_spinbox;
   QLabel *ui_bliprate_lbl;

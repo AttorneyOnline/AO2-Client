@@ -12,7 +12,7 @@ AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static) : Q
   if (!is_static) // Only create the QMovie if we're non-static
   {
     movie = new QMovie(this);
-    connect(movie, &QMovie::frameChanged, [=]{
+    connect(movie, &QMovie::frameChanged, [this]{
       QPixmap f_pixmap = movie->currentPixmap();
       f_pixmap =
           f_pixmap.scaled(this->size(), Qt::IgnoreAspectRatio);

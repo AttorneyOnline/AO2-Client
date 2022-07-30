@@ -8,8 +8,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
                        ~Qt::WindowMaximizeButtonHint);
 
   ao_app->initBASS();
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0) // Needed for pre-5.10 RNG stuff
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
+#endif
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
@@ -26,18 +27,18 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   sfx_delay_timer->setSingleShot(true);
 
   music_player = new AOMusicPlayer(this, ao_app);
-  music_player->set_volume(0);
+  music_player->set_muted(true);
   connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished,
           this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(this, ao_app);
-  sfx_player->set_volume(0);
+  sfx_player->set_muted(true);
 
   objection_player = new AOSfxPlayer(this, ao_app);
-  objection_player->set_volume(0);
+  objection_player->set_muted(true);
 
   blip_player = new AOBlipPlayer(this, ao_app);
-  blip_player->set_volume(0);
+  blip_player->set_muted(true);
 
   modcall_player = new AOSfxPlayer(this, ao_app);
   modcall_player->set_volume(50);
@@ -208,8 +209,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_search->setFrame(false);
   ui_music_search->setPlaceholderText(tr("Search"));
   ui_music_search->setObjectName("ui_music_search");
-
-  initialize_emotes();
 
   ui_pos_dropdown = new QComboBox(this);
   ui_pos_dropdown->view()->setTextElideMode(Qt::ElideLeft);
@@ -404,6 +403,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_evidence_button = new AOButton(this, ao_app);
   ui_evidence_button->setObjectName("ui_evidence_button");
 
+  initialize_emotes();
   initialize_evidence();
 
   construct_char_select();
@@ -555,11 +555,43 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_evidence_button, &AOButton::clicked, this,
           &Courtroom::on_evidence_button_clicked);
 
+  connect(qApp, QOverload<Qt::ApplicationState>::of(&QApplication::applicationStateChanged), this,
+          &Courtroom::on_application_state_changed);
+
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
 
   set_widgets();
 
   set_char_select();
+}
+
+void Courtroom::on_application_state_changed(Qt::ApplicationState state)
+{
+  // Unsuppressed
+  suppress_audio = 0;
+  if (state != Qt::ApplicationActive) {
+    // Suppressed audio setting
+    suppress_audio = ao_app->get_default_suppress_audio();
+  }
+  update_audio_volume();
+}
+
+void Courtroom::update_audio_volume()
+{
+  float remaining_percent = 1.0f - static_cast<float>(suppress_audio / 100.0f);
+  if (remaining_percent > 1)
+    remaining_percent = 1;
+  if (remaining_percent < 0)
+    remaining_percent = 0;
+
+  music_player->set_volume(ui_music_slider->value() * remaining_percent, 0); // set music
+  // Set the ambience and other misc. music layers
+  for (int i = 1; i < music_player->m_channelmax; ++i) {
+    music_player->set_volume(ui_sfx_slider->value() * remaining_percent, i);
+  }
+  sfx_player->set_volume(ui_sfx_slider->value() * remaining_percent);
+  objection_player->set_volume(ui_sfx_slider->value() * remaining_percent);
+  blip_player->set_volume(ui_blip_slider->value() * remaining_percent);
 }
 
 void Courtroom::set_courtroom_size()
@@ -633,7 +665,7 @@ void Courtroom::set_widgets()
   // If there is a point to it, show all CCCC features.
   // We also do this this soon so that set_size_and_pos can hide them all later,
   // if needed.
-  if (ao_app->cccc_ic_support_enabled) {
+  if (ao_app->cccc_ic_supported) {
     ui_pair_button->show();
     ui_immediate->show();
     ui_showname_enable->show();
@@ -648,7 +680,7 @@ void Courtroom::set_widgets()
     ui_ic_chat_name->setEnabled(false);
   }
 
-  if (ao_app->casing_alerts_enabled) {
+  if (ao_app->casing_alerts_supported) {
     ui_announce_casing->show();
     ui_casing->show();
   }
@@ -1282,11 +1314,6 @@ void Courtroom::done_received()
 {
   m_cid = -1;
 
-  music_player->set_volume(0);
-  sfx_player->set_volume(0);
-  objection_player->set_volume(0);
-  blip_player->set_volume(0);
-
   if (char_list.size() > 0)
   {
     set_char_select();
@@ -1442,7 +1469,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   set_side(current_side);
 }
 
-void Courtroom::update_character(int p_cid)
+void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 {
   bool newchar = m_cid != p_cid;
 
@@ -1456,7 +1483,10 @@ void Courtroom::update_character(int p_cid)
     f_char = "";
   }
   else {
-    f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+    f_char = char_name;
+    if (char_name.isEmpty()) {
+      f_char = char_list.at(m_cid).name;
+    }
 
     if (ao_app->is_discord_enabled())
       ao_app->discord->state_character(f_char.toStdString());
@@ -1467,8 +1497,11 @@ void Courtroom::update_character(int p_cid)
 
   set_text_color_dropdown();
 
-  current_emote_page = 0;
-  current_emote = 0;
+  // If our cid changed or we're being told to reset
+  if (newchar || reset_emote) {
+    current_emote_page = 0;
+    current_emote = 0;
+  }
 
   if (m_cid == -1)
     ui_emotes->hide();
@@ -1486,7 +1519,7 @@ void Courtroom::update_character(int p_cid)
     set_iniswap_dropdown();
 
   ui_custom_objection->hide();
-  if (ao_app->custom_objection_enabled) // if setting is enabled
+  if (ao_app->custom_objection_supported) // if setting is enabled
   {
     custom_obj_menu->clear();
     custom_objections_list.clear();
@@ -1543,11 +1576,7 @@ void Courtroom::update_character(int p_cid)
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
-  // have to call these to make sure music, sfx, and blips don't get accidentally muted forever when we change characters
-  music_player->set_volume(ui_music_slider->value(), 0);
-  objection_player->set_volume(ui_sfx_slider->value());
-  sfx_player->set_volume(ui_sfx_slider->value());
-  blip_player->set_volume(ui_blip_slider->value());
+  update_audio_volume();
 }
 
 void Courtroom::enter_courtroom()
@@ -1557,17 +1586,17 @@ void Courtroom::enter_courtroom()
 
   set_evidence_page();
 
-  if (ao_app->flipping_enabled)
+  if (ao_app->flipping_supported)
     ui_flip->show();
   else
     ui_flip->hide();
 
-  if (ao_app->additive_enabled)
+  if (ao_app->additive_text_supported)
     ui_additive->show();
   else
     ui_additive->hide();
 
-  if (ao_app->casing_alerts_enabled)
+  if (ao_app->casing_alerts_supported)
     ui_casing->show();
   else
     ui_casing->hide();
@@ -1594,14 +1623,14 @@ void Courtroom::enter_courtroom()
     break;
   }
 
-  music_player->set_volume(ui_music_slider->value(), 0); // set music
-  // Set the ambience and other misc. music layers
-  for (int i = 1; i < music_player->m_channelmax; ++i) {
-    music_player->set_volume(ui_sfx_slider->value(), i);
-  }
-  sfx_player->set_volume(ui_sfx_slider->value());
-  objection_player->set_volume(ui_sfx_slider->value());
-  blip_player->set_volume(ui_blip_slider->value());
+  // Unmute everything
+  music_player->set_muted(false);
+  objection_player->set_muted(false);
+  sfx_player->set_muted(false);
+  blip_player->set_muted(false);
+
+  // Update the audio sliders
+  update_audio_volume();
 
   ui_vp_testimony->stop();
   // ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
@@ -1674,7 +1703,7 @@ void Courtroom::list_areas()
     QString i_area = "";
     i_area.append(area_list.at(n_area));
 
-    if (ao_app->arup_enabled) {
+    if (ao_app->arup_supported) {
       i_area.append("\n  ");
 
       i_area.append(arup_statuses.at(n_area));
@@ -1702,7 +1731,7 @@ void Courtroom::list_areas()
     treeItem->setText(0, area_list.at(n_area));
     treeItem->setText(1, i_area);
 
-    if (ao_app->arup_enabled) {
+    if (ao_app->arup_supported) {
       // Coloring logic here.
       treeItem->setBackground(1, free_brush);
       if (arup_locks.at(n_area) == "LOCKED") {
@@ -1772,7 +1801,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
     color =
         ao_app->get_color("server_chatlog_sender_color", "courtroom_fonts.ini")
             .name();
-  if (!ao_app->auth_packet_enabled && p_message == "Logged in as a moderator.") {
+  if (!ao_app->auth_packet_supported && p_message == "Logged in as a moderator.") {
     // Emulate successful authentication
     on_authentication_state_received(1);
   }
@@ -1807,7 +1836,7 @@ void Courtroom::on_chat_return_pressed()
 
   ui_ic_chat_message->blockSignals(true);
   QTimer::singleShot(ao_app->get_chat_ratelimit(), this,
-                     [=] { ui_ic_chat_message->blockSignals(false); });
+                     [this] { ui_ic_chat_message->blockSignals(false); });
   // MS#
   // deskmod#
   // pre-emote#
@@ -1842,10 +1871,10 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_desk_mod = "chat";
 
-  if (ao_app->desk_mod_enabled) {
+  if (ao_app->desk_mod_supported) {
     f_desk_mod =
         QString::number(ao_app->get_desk_mod(current_char, current_emote));
-    if (!ao_app->expanded_desk_mods_enabled) {
+    if (!ao_app->expanded_desk_mods_supported) {
       if (f_desk_mod == "2" || f_desk_mod == "4")
         f_desk_mod = "0";
       else if (f_desk_mod == "3" || f_desk_mod == "5")
@@ -1857,18 +1886,11 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_desk_mod);
 
-  packet_contents.append(ao_app->get_pre_emote(current_char, current_emote));
-
-  packet_contents.append(current_char);
-
-  packet_contents.append(ao_app->get_emote(current_char, current_emote));
-
-  packet_contents.append(ui_ic_chat_message->text());
-
-  packet_contents.append(f_side);
-
+  QString f_pre = ao_app->get_pre_emote(current_char, current_emote);
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
   QString f_sfx = "1";
+  int f_sfx_delay = get_char_sfx_delay();
+
 // EMOTE MOD OVERRIDES:
   // Emote_mod 2 is only used by objection check later, having it in the char.ini does nothing
   if (f_emote_mod == 2) {
@@ -1889,7 +1911,7 @@ void Courtroom::on_chat_return_pressed()
       f_emote_mod = PREANIM;
     }
     // Turn zoom into preanim zoom
-    else if (f_emote_mod == ZOOM && ao_app->prezoom_enabled) {
+    else if (f_emote_mod == ZOOM && ao_app->prezoom_supported) {
       f_emote_mod = PREANIM_ZOOM;
     }
     // Play the sfx
@@ -1915,17 +1937,37 @@ void Courtroom::on_chat_return_pressed()
   // Custom sfx override via sound list dropdown.
   if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0) {
     f_sfx = get_char_sfx();
+    // We have a custom sfx but we're on idle emotes.
+    // Turn them into pre so the sound plays if client setting sfx_on_idle is enabled.
+    if (ao_app->get_sfx_on_idle() && (f_emote_mod == IDLE || f_emote_mod == ZOOM)) {
+      // We turn idle into preanim, but make it not send a pre animation
+      f_pre = "";
+      // Set sfx delay to 0 so the sfx plays immediately
+      f_sfx_delay = 0;
+      // Set the emote mod to preanim so the sound plays
+      f_emote_mod = f_emote_mod == IDLE ? PREANIM : PREANIM_ZOOM;
+    }
   }
+
+  packet_contents.append(f_pre);
+
+  packet_contents.append(current_char);
+
+  packet_contents.append(ao_app->get_emote(current_char, current_emote));
+
+  packet_contents.append(ui_ic_chat_message->text());
+
+  packet_contents.append(f_side);
 
   packet_contents.append(f_sfx);
   packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
-  packet_contents.append(QString::number(get_char_sfx_delay()));
+  packet_contents.append(QString::number(f_sfx_delay));
 
   QString f_obj_state;
 
-  if ((objection_state == 4 && !ao_app->custom_objection_enabled) ||
+  if ((objection_state == 4 && !ao_app->custom_objection_supported) ||
       (objection_state < 0))
     f_obj_state = "0";
   else if (objection_custom != "" && objection_state == 4) {
@@ -1951,7 +1993,7 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_flip;
 
-  if (ao_app->flipping_enabled) {
+  if (ao_app->flipping_supported) {
     if (ui_flip->isChecked())
       f_flip = "1";
     else
@@ -1976,7 +2018,7 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(f_text_color);
 
   // If the server we're on supports CCCC stuff, we should use it!
-  if (ao_app->cccc_ic_support_enabled) {
+  if (ao_app->cccc_ic_supported) {
     // If there is a showname entered, use that -- else, just send an empty
     // packet-part.
     if (!ui_ic_chat_name->text().isEmpty()) {
@@ -1990,7 +2032,7 @@ void Courtroom::on_chat_return_pressed()
     // ourselves. Or a charid of -1 or lower, through some means.
     if (other_charid > -1 && other_charid != m_cid) {
       QString packet = QString::number(other_charid);
-      if (ao_app->effects_enabled) // Only servers with effects enabled will
+      if (ao_app->effects_supported) // Only servers with effects enabled will
                                    // support pair reordering
         packet += "^" + QString::number(pair_order);
       packet_contents.append(packet);
@@ -1999,7 +2041,7 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append("-1");
     }
     // Send the offset as it's gonna be used regardless
-    if(ao_app->y_offset_enabled)
+    if(ao_app->y_offset_supported)
         packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
     else
         packet_contents.append(QString::number(char_offset));
@@ -2015,7 +2057,7 @@ void Courtroom::on_chat_return_pressed()
 
   // If the server we're on supports Looping SFX and Screenshake, use it if the
   // emote uses it.
-  if (ao_app->looping_sfx_support_enabled) {
+  if (ao_app->looping_sfx_supported) {
     packet_contents.append(
         ao_app->get_sfx_looping(current_char, current_emote));
     packet_contents.append(QString::number(screenshake_state));
@@ -2046,22 +2088,22 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->additive_enabled) {
+  if (ao_app->additive_text_supported) {
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
-  if (ao_app->effects_enabled) {
-    QString fx_sound =
-        ao_app->get_effect_property(effect, current_char, "sound");
-    QString p_effect =
+  if (ao_app->effects_supported) {
+    QString p_effect_folder =
         ao_app->read_char_ini(current_char, "effects", "Options");
+    QString fx_sound =
+        ao_app->get_effect_property(effect, current_char, p_effect_folder, "sound");
 
     // Don't overlap the two sfx
     if (!ui_pre->isChecked() && (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() == 1)) {
       fx_sound = "0";
     }
 
-    packet_contents.append(effect + "|" + p_effect + "|" + fx_sound);
-    if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, "sticky").startsWith("true")) {
+    packet_contents.append(effect + "|" + p_effect_folder + "|" + fx_sound);
+    if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, p_effect_folder, "sticky").startsWith("true")) {
       ui_effects_dropdown->blockSignals(true);
       ui_effects_dropdown->setCurrentIndex(0);
       ui_effects_dropdown->blockSignals(false);
@@ -2089,12 +2131,16 @@ void Courtroom::reset_ui()
   ui_screenshake->set_image("screenshake");
   ui_evidence_present->set_image("present");
 
-  if (!ao_app->is_stickysounds_enabled()) {
+  // If sticky sounds is disabled and we either have SFX on Idle enabled, or our Preanim checkbox is checked
+  if (!ao_app->is_stickysounds_enabled() && (ao_app->get_sfx_on_idle() || ui_pre->isChecked())) {
+    // Reset the SFX Dropdown to "Default"
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
     custom_sfx = "";
   }
+  // If sticky preanims is disabled
   if (!ao_app->is_stickypres_enabled())
+    // Turn off our Preanim checkbox
     ui_pre->setChecked(false);
 }
 
@@ -2195,7 +2241,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     // supports CCCC's IC features, or if it's just japing us. Also, don't
     // forget! A size 15 message will have indices from 0 to 14.
     if (n_string < p_contents.size() &&
-        (n_string < MS_MINIMUM || ao_app->cccc_ic_support_enabled)) {
+        (n_string < MS_MINIMUM || ao_app->cccc_ic_supported)) {
       m_chatmessage[n_string] = p_contents.at(n_string);
     }
     else {
@@ -2490,7 +2536,7 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
         }
       }
       // Flip the pair character
-      if (ao_app->flipping_enabled && m_chatmessage[OTHER_FLIP].toInt() == 1)
+      if (ao_app->flipping_supported && m_chatmessage[OTHER_FLIP].toInt() == 1)
         ui_vp_sideplayer_char->set_flipped(true);
       else
         ui_vp_sideplayer_char->set_flipped(false);
@@ -2526,7 +2572,7 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
   switch (emote_mod) {
   case PREANIM:
   case PREANIM_ZOOM:
-    // Emotes 1, 2 and 6 all play preanim that makes the chatbox wait for it to finish.
+    // play preanim that makes the chatbox wait for it to finish.
     play_preanim(false);
     break;
   case IDLE:
@@ -2534,8 +2580,6 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     // If immediate is not ticked on...
     if (!p_immediate)
     {
-      // Play the sound effect if one was sent to us
-      play_sfx();
       // Skip preanim.
       handle_ic_speaking();
     }
@@ -2604,33 +2648,38 @@ void Courtroom::do_screenshake()
   // This way, the animation is reset in such a way that last played screenshake
   // would return to its "final frame" properly. This properly resets all UI
   // elements without having to bother keeping track of "origin" positions.
-  // Works great wit the chat text being detached from the chat box!
+  // Works great with the chat text being detached from the chat box!
   screenshake_animation_group->setCurrentTime(
       screenshake_animation_group->duration());
   screenshake_animation_group->clear();
 
-  QList<QWidget *> affected_list = {ui_vp_background, ui_vp_player_char,
+  const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char,
                                     ui_vp_sideplayer_char, ui_vp_chatbox};
 
   // I would prefer if this was its own "shake" function to be honest.
-  foreach (QWidget *ui_element, affected_list) {
+  for (QWidget *ui_element : affected_list) {
     QPropertyAnimation *screenshake_animation =
         new QPropertyAnimation(ui_element, "pos", this);
     QPoint pos_default = QPoint(ui_element->x(), ui_element->y());
 
     int duration = 300; // How long does the screenshake last
     int frequency = 20; // How often in ms is there a "jolt" frame
-    int maxframes = duration / frequency;
-    int max_x = 7; // Max deviation from origin on x axis
-    int max_y = 7; // Max deviation from origin on y axis
+    // Maximum deviation from the origin position. This is 7 pixels for a 256x192 viewport,
+    // so we scale that value in accordance with the current viewport height so the shake
+    // is roughly the same intensity regardless of viewport size. Done as a float operation for maximum accuracy.
+    int max_deviation = 7 * (float(ui_viewport->height()) / 192);
+    int maxframes = 15; // duration / frequency;
     screenshake_animation->setDuration(duration);
     for (int frame = 0; frame < maxframes; frame++) {
       double fraction = double(frame * frequency) / duration;
-      int rng = qrand(); // QRandomGenerator::global()->generate();
-      int rand_x = max_x - (int(rng) % (max_x * 2));
-      int rand_y = max_y - (int(rng + 100) % (max_y * 2));
-      screenshake_animation->setKeyValueAt(
-          fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+      int rand_x = max_deviation * (2 * (qrand() / (float)RAND_MAX) - 1) + 1;
+      int rand_y = max_deviation * (2 * (qrand() / (float)RAND_MAX) - 1) + 1;
+#else
+      int rand_x = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
+      int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
+#endif
+      screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
     screenshake_animation->setEndValue(pos_default);
     screenshake_animation->setEasingCurve(QEasingCurve::Linear);
@@ -2670,29 +2719,29 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char,
     return;
   }
   ui_vp_effect->transform_mode = ao_app->get_scaling(
-      ao_app->get_effect_property(fx_path, p_char, "scaling"));
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "scaling"));
   ui_vp_effect->stretch =
-      ao_app->get_effect_property(fx_path, p_char, "stretch")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "stretch")
           .startsWith("true");
-  ui_vp_effect->set_flipped(ao_app->get_effect_property(fx_path, p_char, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
+  ui_vp_effect->set_flipped(ao_app->get_effect_property(fx_path, p_char, p_folder, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
   ui_vp_effect->set_play_once(
       false); // The effects themselves dictate whether or not they're looping.
               // Static effects will linger.
 
   bool looping =
-      ao_app->get_effect_property(fx_path, p_char, "loop")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "loop")
           .startsWith("true");
 
   int max_duration =
-      ao_app->get_effect_property(fx_path, p_char, "max_duration")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "max_duration")
           .toInt();
 
   bool cull =
-      ao_app->get_effect_property(fx_path, p_char, "cull")
+      ao_app->get_effect_property(fx_path, p_char, p_folder, "cull")
           .startsWith("true");
 
   // Possible values: "chat", "character", "behind"
-  QString layer = ao_app->get_effect_property(fx_path, p_char, "layer").toLower();
+  QString layer = ao_app->get_effect_property(fx_path, p_char, p_folder, "layer").toLower();
   if (layer == "behind"){
     ui_vp_effect->setParent(ui_viewport);
     ui_vp_effect->stackUnder(ui_vp_player_char);
@@ -2719,7 +2768,7 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char,
     effect_y = ui_viewport->y();
   }
   // This effect respects the character offset settings
-  if (ao_app->get_effect_property(fx_path, p_char, "respect_offset") == "true") {
+  if (ao_app->get_effect_property(fx_path, p_char, p_folder, "respect_offset") == "true") {
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
@@ -2902,7 +2951,7 @@ void Courtroom::display_evidence_image()
     bool is_left_side = !(side == "def" || side == "hlp" ||
                           side == "jud" || side == "jur");
     ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side,
-                                          ui_sfx_slider->value());
+                                          sfx_player->get_volume());
   }
 }
 
@@ -4115,6 +4164,11 @@ void Courtroom::mod_called(QString p_ip)
 void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
                             bool steno)
 {
+  Q_UNUSED(def);
+  Q_UNUSED(pro);
+  Q_UNUSED(jud);
+  Q_UNUSED(jur);
+  Q_UNUSED(steno);
   if (ui_casing->isChecked()) {
     ui_server_chatlog->append(msg);
     modcall_player->play(ao_app->get_court_sfx("case_call"));
@@ -4128,7 +4182,7 @@ void Courtroom::on_ooc_return_pressed()
 
   //We ignore it when the server is compatible with 2.8
   //Using an arbitrary 2.8 feature flag certainly won't cause issues someday.
-  if (ooc_message.startsWith("/pos") && !ao_app->effects_enabled) {
+  if (ooc_message.startsWith("/pos") & !ao_app->effects_supported) {
     if (ooc_message == "/pos jud") {
       show_judge_controls(true);
     }
@@ -4440,10 +4494,7 @@ void Courtroom::set_iniswap_dropdown()
   }
   QStringList iniswaps =
       ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
-      ao_app->get_list_file(ao_app->get_base_path() + "iniswaps.ini");
-
-  if (ao_app->get_char_name(char_list.at(m_cid).name) != char_list.at(m_cid).name)
-    iniswaps.append(ao_app->get_char_name(char_list.at(m_cid).name));
+      ao_app->get_list_file(VPath("iniswaps.ini"));
 
   iniswaps.prepend(char_list.at(m_cid).name);
   iniswaps.removeDuplicates();
@@ -4473,7 +4524,6 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
   QString iniswap = ui_iniswap_dropdown->itemText(p_index);
-  ao_app->set_char_ini(char_list.at(m_cid).name, iniswap, "name", "Options");
 
   QStringList swaplist;
   QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
@@ -4482,13 +4532,15 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
     if (!swaplist.contains(entry) && entry != char_list.at(m_cid).name && !defswaplist.contains(entry))
       swaplist.append(entry);
   }
-  ao_app->write_to_file(
-      swaplist.join("\n"),
-      ao_app->get_base_path() + "iniswaps.ini");
+  QString p_path = ao_app->get_real_path(VPath("iniswaps.ini"));
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_base_path() + "iniswaps.ini";
+  }
+  ao_app->write_to_file(swaplist.join("\n"), p_path);
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
   ui_iniswap_dropdown->blockSignals(false);
-  update_character(m_cid);
+  update_character(m_cid, iniswap, true);
   QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
                                                  iniswap, "char_icon"));
   ui_iniswap_dropdown->setItemIcon(p_index, QIcon(icon_path));
@@ -4558,8 +4610,7 @@ void Courtroom::set_sfx_dropdown()
   }
 
   // Append default sound list after the character sound list.
-  sound_list += ao_app->get_list_file(
-      ao_app->get_base_path() + "soundlist.ini");
+  sound_list += ao_app->get_list_file(VPath("soundlist.ini"));
 
   QStringList display_sounds;
   for (const QString &sound : qAsConst(sound_list)) {
@@ -4607,7 +4658,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
                     &Courtroom::on_sfx_edit_requested);
   else
-    menu->addAction(QString("Edit global soundlist.ini"), this,
+    menu->addAction(QString("Edit base soundlist.ini"), this,
                     &Courtroom::on_sfx_edit_requested);
   if (!custom_sfx.isEmpty())
     menu->addAction(QString("Clear Edit Text"), this, &Courtroom::on_sfx_remove_clicked);
@@ -4624,6 +4675,10 @@ void Courtroom::on_sfx_edit_requested()
   QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"));
   if (!file_exists(p_path)) {
     p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "sounds.ini"));
+  }
+
+  if (!file_exists(p_path)) {
+    p_path = ao_app->get_real_path(VPath("soundlist.ini"));
   }
 
   if (!file_exists(p_path)) {
@@ -4648,14 +4703,7 @@ void Courtroom::set_effects_dropdown()
     return;
   }
   QStringList effectslist;
-  QStringList char_effects = ao_app->get_effects(current_char);
-  for (int i = 0; i < char_effects.size(); ++i) {
-    QString effect = char_effects[i];
-    if (effect.contains(":")) {
-      effect = effect.section(':', 1);
-    }
-    effectslist.append(effect);
-  }
+  effectslist.append(ao_app->get_effects(current_char));
 
   if (effectslist.empty()) {
     ui_effects_dropdown->hide();
@@ -4667,22 +4715,9 @@ void Courtroom::set_effects_dropdown()
   ui_effects_dropdown->show();
   ui_effects_dropdown->addItems(effectslist);
 
-  // ICON-MAKING HELL
-  QString p_effect = ao_app->read_char_ini(current_char, "effects", "Options");
-  VPath custom_path("misc/" + p_effect + "/icons/");
-  VPath theme_path = ao_app->get_theme_path("effects/icons/");
-  VPath default_path = ao_app->get_theme_path("effects/icons/", "default");
+  // Make the icons
   for (int i = 0; i < ui_effects_dropdown->count(); ++i) {
-    VPath entry = VPath(ui_effects_dropdown->itemText(i));
-    QString iconpath = ao_app->get_image_suffix(custom_path + entry);
-    if (!file_exists(iconpath)) {
-      iconpath = ao_app->get_image_suffix(theme_path + entry);
-      if (!file_exists(iconpath)) {
-        iconpath = ao_app->get_image_suffix(default_path + entry);
-        if (!file_exists(iconpath))
-          continue;
-      }
-    }
+    QString iconpath = ao_app->get_effect("icons/" + ui_effects_dropdown->itemText(i), current_char, "");
     ui_effects_dropdown->setItemIcon(i, QIcon(iconpath));
   }
 
@@ -4853,10 +4888,10 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
   QStringList packet_contents;
   packet_contents.append(p_song);
   packet_contents.append(QString::number(m_cid));
-  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
-      ao_app->effects_enabled)
+  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_supported) ||
+      ao_app->effects_supported)
     packet_contents.append(ui_ic_chat_name->text());
-  if (ao_app->effects_enabled)
+  if (ao_app->effects_supported)
     packet_contents.append(QString::number(music_flags));
   ao_app->send_server_packet(new AOPacket("MC", packet_contents));
 }
@@ -4933,7 +4968,11 @@ void Courtroom::music_random()
   }
   if (clist.length() == 0)
       return;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
   on_music_list_double_clicked(clist.at(qrand() % clist.length()), 1);
+#else
+  on_music_list_double_clicked(clist.at(QRandomGenerator::global()->bounded(0, clist.length())), 1);
+#endif
 }
 
 void Courtroom::music_list_expand_all() { ui_music_list->expandAll(); }
@@ -4968,10 +5007,10 @@ void Courtroom::music_stop(bool no_effects)
   packet_contents.append(
       fake_song); // this is our fake song, playing it triggers special code
   packet_contents.append(QString::number(m_cid));
-  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_support_enabled) ||
-      ao_app->effects_enabled)
+  if ((!ui_ic_chat_name->text().isEmpty() && ao_app->cccc_ic_supported) ||
+      ao_app->effects_supported)
     packet_contents.append(ui_ic_chat_name->text());
-  if (ao_app->effects_enabled) {
+  if (ao_app->effects_supported) {
     if (no_effects)
       packet_contents.append("0");
     else
@@ -5143,7 +5182,7 @@ void Courtroom::on_pair_clicked()
   if (ui_pair_list->isHidden()) {
     ui_pair_list->show();
     ui_pair_offset_spinbox->show();
-    if(ao_app->y_offset_enabled)
+    if(ao_app->y_offset_supported)
         ui_pair_vert_offset_spinbox->show();
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
@@ -5370,8 +5409,8 @@ void Courtroom::on_guilty_clicked()
 
 void Courtroom::on_change_character_clicked()
 {
-  sfx_player->set_volume(0);
-  blip_player->set_volume(0);
+  sfx_player->set_muted(true);
+  blip_player->set_muted(true);
 
   set_char_select();
 
@@ -5384,7 +5423,7 @@ void Courtroom::on_reload_theme_clicked()
 
   set_courtroom_size();
   set_widgets();
-  update_character(m_cid);
+  update_character(m_cid, ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()));
   enter_courtroom();
   gen_char_rgb_list(ao_app->get_chat(current_char));
 
@@ -5414,7 +5453,7 @@ void Courtroom::on_spectator_clicked() { char_clicked(-1); }
 
 void Courtroom::on_call_mod_clicked()
 {
-  if (ao_app->modcall_reason_enabled) {
+  if (ao_app->modcall_reason_supported) {
     QMessageBox errorBox;
     QInputDialog input;
 
@@ -5541,7 +5580,7 @@ qint64 Courtroom::pong()
 
 void Courtroom::on_casing_clicked()
 {
-  if (ao_app->casing_alerts_enabled) {
+  if (ao_app->casing_alerts_supported) {
     if (ui_casing->isChecked()) {
       QStringList f_packet;
 
@@ -5564,7 +5603,7 @@ void Courtroom::on_casing_clicked()
 void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
                               bool jur, bool steno)
 {
-  if (ao_app->casing_alerts_enabled) {
+  if (ao_app->casing_alerts_supported) {
     QStringList f_packet;
 
     f_packet.append(title);
