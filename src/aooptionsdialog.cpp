@@ -120,7 +120,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_subtheme_combobox);
 
   row += 1;
-
   ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
   ui_theme_reload_button->setText(tr("Reload Theme"));
   ui_theme_reload_button->setToolTip(
@@ -128,6 +127,22 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
   connect(ui_theme_reload_button, &QPushButton::clicked, this,
           &AOOptionsDialog::on_reload_theme_clicked);
+
+  row += 1;
+  ui_theme_folder_button = new QPushButton(ui_form_layout_widget);
+  ui_theme_folder_button->setText(tr("Open Theme Folder"));
+  ui_theme_folder_button->setToolTip(
+      tr("Open the theme folder of the currently selected theme."));
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_folder_button);
+  connect(ui_theme_folder_button, &QPushButton::clicked, this,
+          [=] {
+    QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
+    if (!dir_exists(p_path)) {
+        return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
 
   row += 1;
   ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);

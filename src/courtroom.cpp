@@ -211,6 +211,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_music_search->setObjectName("ui_music_search");
 
   ui_pos_dropdown = new QComboBox(this);
+  ui_pos_dropdown->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_pos_dropdown->view()->setTextElideMode(Qt::ElideLeft);
   ui_pos_dropdown->setObjectName("ui_pos_dropdown");
 
@@ -359,6 +360,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_prosecution_minus->setObjectName("ui_prosecution_minus");
 
   ui_text_color = new QComboBox(this);
+  ui_text_color->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_text_color->setObjectName("ui_text_color");
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
@@ -401,6 +403,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_button->setObjectName("ui_pair_button");
 
   ui_evidence_button = new AOButton(this, ao_app);
+  ui_evidence_button->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_evidence_button->setObjectName("ui_evidence_button");
 
   initialize_emotes();
@@ -431,6 +434,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           QOverload<int>::of(&Courtroom::on_pos_dropdown_changed));
   connect(ui_pos_dropdown, &QComboBox::editTextChanged, this,
           QOverload<QString>::of(&Courtroom::on_pos_dropdown_changed));
+  connect(ui_pos_dropdown, &QComboBox::customContextMenuRequested, this,
+          &Courtroom::on_pos_dropdown_context_menu_requested);
   connect(ui_pos_remove, &AOButton::clicked, this, &Courtroom::on_pos_remove_clicked);
 
   connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
@@ -500,6 +505,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_text_color, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           &Courtroom::on_text_color_changed);
+  connect(ui_text_color, &QComboBox::customContextMenuRequested, this,
+          &Courtroom::on_text_color_context_menu_requested);
 
   connect(ui_music_slider, &QSlider::valueChanged, this,
           &Courtroom::on_music_slider_moved);
@@ -554,6 +561,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_evidence_button, &AOButton::clicked, this,
           &Courtroom::on_evidence_button_clicked);
+  connect(ui_evidence_button, &QComboBox::customContextMenuRequested, this,
+          &Courtroom::on_evidence_context_menu_requested);
 
   connect(qApp, QOverload<Qt::ApplicationState>::of(&QApplication::applicationStateChanged), this,
           &Courtroom::on_application_state_changed);
@@ -4532,6 +4541,25 @@ void Courtroom::on_pos_dropdown_changed(QString p_text)
   set_side(p_text);
 }
 
+void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
+{
+  QMenu *menu = ui_iniswap_dropdown->lineEdit()->createStandardContextMenu();
+
+  menu->setAttribute(Qt::WA_DeleteOnClose);
+  menu->addSeparator();
+
+  menu->addAction(QString("Open background " + current_background), this,
+                  [=] {
+    QString p_path = ao_app->get_real_path(VPath("background/" + current_background + "/"));
+    if (!dir_exists(p_path)) {
+        return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
+  menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
+}
+
 void Courtroom::on_pos_remove_clicked()
 {
   ui_pos_dropdown->blockSignals(true);
@@ -4633,18 +4661,32 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
   if (file_exists(ao_app->get_real_path(
                     ao_app->get_character_path(current_char, "char.ini"))))
     menu->addAction(QString("Edit " + current_char + "/char.ini"), this,
-                    SLOT(on_iniswap_edit_requested()));
+                    &Courtroom::on_iniswap_edit_requested);
   if (ui_iniswap_dropdown->itemText(ui_iniswap_dropdown->currentIndex()) !=
       char_list.at(m_cid).name)
     menu->addAction(QString("Remove " + current_char), this,
-                    SLOT(on_iniswap_remove_clicked()));
+                    &Courtroom::on_iniswap_remove_clicked);
+
+  menu->addSeparator();
+  menu->addAction(QString("Open character folder " + current_char), this,
+                  [=] {
+    QString p_path = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
+    if (!dir_exists(p_path)) {
+      return;
+    }
+
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
 }
+
 void Courtroom::on_iniswap_edit_requested()
 {
   QString p_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char.ini"));
-  if (!file_exists(p_path))
+  if (!file_exists(p_path)) {
     return;
+  }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
 
@@ -4690,8 +4732,9 @@ void Courtroom::set_sfx_dropdown()
   for (const QString &sound : qAsConst(sound_list)) {
     QStringList unpacked = sound.split("=");
     QString display = unpacked[0].trimmed();
-    if (unpacked.size() > 1)
+    if (unpacked.size() > 1) {
       display = unpacked[1].trimmed();
+    }
 
     display_sounds.append(display);
   }
@@ -4726,7 +4769,11 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 
   menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
-  menu->addAction(QString("Play"), this, &Courtroom::on_sfx_play_clicked);
+  // SFX is not "Nothing" or "Default"?
+  if (get_char_sfx() != "0" && get_char_sfx() != "1" && get_char_sfx() != "-") {
+    // Add an option to play the SFX
+    menu->addAction(QString("Play " + get_char_sfx()), this, &Courtroom::on_sfx_play_clicked);;
+  }
   if (file_exists(ao_app->get_real_path(
           ao_app->get_character_path(current_char, "soundlist.ini"))))
     menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this,
@@ -4736,6 +4783,16 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
                     &Courtroom::on_sfx_edit_requested);
   if (!custom_sfx.isEmpty())
     menu->addAction(QString("Clear Edit Text"), this, &Courtroom::on_sfx_remove_clicked);
+  menu->addSeparator();
+  menu->addAction(QString("Open base sounds folder"), this,
+                  [=] {
+    QString p_path = ao_app->get_base_path() + "sounds/general/";
+    if (!dir_exists(p_path)) {
+      return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
 }
 
@@ -4809,9 +4866,9 @@ void Courtroom::on_effects_context_menu_requested(const QPoint &pos)
         QString("Open misc/" +
                 ao_app->read_char_ini(current_char, "effects", "Options") +
                 " folder"),
-        this, SLOT(on_character_effects_edit_requested()));
+        this, &Courtroom::on_character_effects_edit_requested);
   menu->addAction(QString("Open theme's effects folder"), this,
-                  SLOT(on_effects_edit_requested()));
+                  &Courtroom::on_effects_edit_requested);
   menu->popup(ui_effects_dropdown->mapToGlobal(pos));
 }
 void Courtroom::on_effects_edit_requested()
@@ -5000,6 +5057,17 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->actions().back()->setChecked(music_flags & SYNC_POS);
   connect(menu->actions().back(), &QAction::toggled, this,
           &Courtroom::music_synchronize);
+
+  menu->addSeparator();
+  menu->addAction(QString("Open base music folder"), this,
+                  [=] {
+    QString p_path = ao_app->get_base_path() + "sounds/music/";
+    if (!dir_exists(p_path)) {
+      return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
 
   menu->popup(ui_music_list->mapToGlobal(pos));
 }
@@ -5313,6 +5381,22 @@ void Courtroom::on_prosecution_plus_clicked()
         new AOPacket("HP", {"2", QString::number(f_state)}));
 }
 
+void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
+{
+  QMenu *menu = new QMenu(this);
+
+  menu->addAction(QString("Open currently used chat_config.ini"), this,
+                  [=] {
+    QString p_path = ao_app->get_asset("chat_config.ini", ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, ao_app->get_chat(current_char));
+    if (!file_exists(p_path)) {
+        return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
+  menu->popup(ui_text_color->mapToGlobal(pos));
+}
+
 void Courtroom::set_text_color_dropdown()
 {
   // Clear the lists
@@ -5615,6 +5699,21 @@ void Courtroom::on_evidence_button_clicked()
   else {
     ui_evidence->hide();
   }
+}
+
+void Courtroom::on_evidence_context_menu_requested(const QPoint &pos)
+{
+  QMenu *menu = new QMenu(this);
+  menu->addAction(QString("Open base evidence folder"), this,
+                  [=] {
+    QString p_path = ao_app->get_base_path() + "evidence/";
+    if (!dir_exists(p_path)) {
+      return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
+  menu->popup(ui_evidence_button->mapToGlobal(pos));
 }
 
 void Courtroom::on_switch_area_music_clicked()

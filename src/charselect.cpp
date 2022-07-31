@@ -190,6 +190,41 @@ void Courtroom::char_clicked(int n_char)
   }
 }
 
+void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
+{
+  AOCharButton* button = qobject_cast<AOCharButton*>(sender());
+  int n_char = ui_char_button_list.indexOf(button);
+  if (n_char == -1)
+  {
+    return;
+  }
+
+  QString char_name = char_list.at(n_char).name;
+  QString char_ini_path = ao_app->get_real_path(
+        ao_app->get_character_path(char_name, "char.ini"));
+
+  if (!file_exists(char_ini_path)) {
+    call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
+    return;
+  }
+
+  QMenu *menu = new QMenu(this);
+  menu->addAction(QString("Edit " + char_name + "/char.ini"), this,
+                  [=] { QDesktopServices::openUrl(QUrl::fromLocalFile(char_ini_path)); }
+  );
+  menu->addSeparator();
+  menu->addAction(QString("Open character folder " + char_name), this,
+                  [=] {
+    QString p_path = ao_app->get_real_path(VPath("characters/" + char_name + "/"));
+    if (!dir_exists(p_path)) {
+      return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
+  menu->popup(button->mapToGlobal(pos));
+}
+
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 {
   if (ui_char_button_list_filtered.size() == 0)
@@ -249,6 +284,7 @@ void Courtroom::character_loading_finished()
   for (int n = 0; n < char_list.size(); n++) {
     AOCharButton *char_button =
         new AOCharButton(ui_char_buttons, ao_app, 0, 0, char_list.at(n).taken);
+    char_button->setContextMenuPolicy(Qt::CustomContextMenu);
     char_button->reset();
     char_button->hide();
     char_button->set_image(char_list.at(n).name);
@@ -282,6 +318,7 @@ void Courtroom::character_loading_finished()
     
     connect(char_button, &AOCharButton::clicked,
             [this, n]() { this->char_clicked(n); });
+    connect(char_button, &AOCharButton::customContextMenuRequested, this, &Courtroom::on_char_button_context_menu_requested);
 
     // This part here serves as a way of showing to the player that the game is
     // still running, it is just loading the pictures of the characters.
