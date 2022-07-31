@@ -917,7 +917,7 @@ QStringList AOApplication::get_effects(QString p_char)
         AOUtils::migrateEffects(l_effects_ini);
       }
       else {
-        qWarning() << "Unable to copy effects.ini, skipping migration";
+        qWarning() << "Unable to copy effects.ini, skipping migration.";
       }
     }
 
