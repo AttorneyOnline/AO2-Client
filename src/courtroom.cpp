@@ -4469,15 +4469,6 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
-  menu->addAction(QString("Open base backgrounds folder"), this,
-                  [=] {
-    QString p_path = ao_app->get_base_path() + "background/";
-    if (!dir_exists(p_path)) {
-      return;
-    }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
-  }
-  );
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
 }
 
@@ -4599,16 +4590,6 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
-  menu->addAction(QString("Open base character folder"), this,
-                  [=] {
-    QString p_path = ao_app->get_base_path() + "characters/";
-    if (!dir_exists(p_path)) {
-      return;
-    }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
-  }
-  );
-
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
 }
 
@@ -4701,7 +4682,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
   menu->setAttribute(Qt::WA_DeleteOnClose);
   menu->addSeparator();
   // SFX is not "Nothing" or "Default"?
-  if (get_char_sfx() != "0" && get_char_sfx() != "1") {
+  if (get_char_sfx() != "0" && get_char_sfx() != "1" && get_char_sfx() != "-") {
     // Add an option to play the SFX
     menu->addAction(QString("Play " + get_char_sfx()), this, &Courtroom::on_sfx_play_clicked);;
   }

@@ -222,15 +222,6 @@ void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
-  menu->addAction(QString("Open base characters folder"), this,
-                  [=] {
-    QString p_path = ao_app->get_base_path() + "characters/";
-    if (!dir_exists(p_path)) {
-      return;
-    }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
-  }
-  );
   menu->popup(button->mapToGlobal(pos));
 }
 
