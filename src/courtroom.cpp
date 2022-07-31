@@ -2161,15 +2161,35 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (mute_map.value(f_char_id))
     return;
 
-  // Reset input UI elements if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-  if (f_char_id == m_cid) {
-    reset_ui();
-  }
+  // Use null showname if packet does not support 2.6+ extensions
+  QString showname = QString();
+  if (SHOWNAME < p_contents.size())
+    showname = p_contents[SHOWNAME];
+
+  // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+  bool sender = f_char_id == m_cid;
+
+  // Record the log I/O, log files should be accurate.
+  LogMode log_mode = IO_ONLY;
 
   // User-created blankpost
   if (p_contents[MESSAGE].trimmed().isEmpty()) {
     // Turn it into true blankpost
     p_contents[MESSAGE] = "";
+  }
+
+  // If we determine we sent this message
+  if (sender) {
+    // Reset input UI elements, clear input box, etc.
+    reset_ui();
+  }
+  // If we determine we sent this message, or we have desync enabled
+  if (sender || ao_app->is_desyncrhonized_logs_enabled()) {
+    // Initialize operation "message queue ghost"
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
+                    p_contents[SHOWNAME], p_contents[CHAR_NAME],
+                    p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(),
+                    p_contents[TEXT_COLOR].toInt(), QUEUED, sender || ao_app->is_desyncrhonized_logs_enabled());
   }
 
   bool is_objection = false;
@@ -2184,17 +2204,9 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
       skip_chatmessage_queue();
     }
   }
+  // Log the IO file
+  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode, sender);
 
-  // Record the log I/O, log files should be accurate.
-  // If desynced logs are on, display the log IC immediately.
-  LogMode log_mode = ao_app->is_desyncrhonized_logs_enabled() ? DISPLAY_AND_IO : IO_ONLY;
-
-  // Use null showname if packet does not support 2.6+ extensions
-  QString showname = QString();
-  if (SHOWNAME < p_contents.size())
-    showname = p_contents[SHOWNAME];
-
-  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode);
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
 
@@ -2221,14 +2233,11 @@ void Courtroom::chatmessage_dequeue()
 
 void Courtroom::skip_chatmessage_queue()
 {
-  if (ao_app->is_desyncrhonized_logs_enabled()) {
-    chatmessage_queue.clear();
-    return;
-  }
-
   while (!chatmessage_queue.isEmpty()) {
     QStringList p_contents = chatmessage_queue.dequeue();
-    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY);
+    // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+    bool sender = ao_app->is_desyncrhonized_logs_enabled() || p_contents[CHAR_ID].toInt() == m_cid;
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
   }
 }
 
@@ -2249,10 +2258,11 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     }
   }
 
-  if (!ao_app->is_desyncrhonized_logs_enabled()) {
-    // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
-    log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY);
-  }
+  // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
+  bool sender = ao_app->is_desyncrhonized_logs_enabled() || m_chatmessage[CHAR_ID].toInt() == m_cid;
+
+  // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
+  log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
 
   // Process the callwords for this message
   handle_callwords();
@@ -2270,7 +2280,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
     handle_ic_message();
 }
 
-void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, QString f_char, QString f_objection_mod, int f_evi_id, int f_color, LogMode f_log_mode)
+void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_showname, QString f_char, QString f_objection_mod, int f_evi_id, int f_color, LogMode f_log_mode, bool sender)
 {
   // Display name will use the showname
   QString f_displayname = f_showname;
@@ -2282,6 +2292,13 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
   if (f_displayname.trimmed().isEmpty())
     f_displayname = f_showname;
 
+  bool ghost = f_log_mode == QUEUED;
+  // Detect if we're trying to log a blankpost
+  bool blankpost = (f_log_mode != IO_ONLY && // if we're not in I/O only mode,
+                   f_message.isEmpty() &&  // our current message is a blankpost,
+                   !ic_chatlog_history.isEmpty() && // the chat log isn't empty,
+                   last_ic_message == f_displayname + ":" && // the chat log's last message is a blank post, and
+                   last_ic_message.mid(0, last_ic_message.lastIndexOf(":")) == f_displayname); // the blankpost's showname is the same as ours
   bool selfname = f_char_id == m_cid;
 
   if (log_ic_actions) {
@@ -2299,6 +2316,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
 
     //QString f_custom_theme = ao_app->get_chat(f_char);
     if (objection_mod <= 4 && objection_mod >= 1) {
+      blankpost = false;
       QString shout_message;
       switch (objection_mod) {
       case 1:
@@ -2335,16 +2353,23 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
           log_ic_text(f_char, f_displayname, shout_message, tr("shouts"), 0, selfname);
           break;
         case DISPLAY_AND_IO:
-          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"), 0, selfname);
-          [[fallthrough]];
+          log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
+          append_ic_text(shout_message, f_displayname, tr("shouts"),
+                         0, selfname, QDateTime::currentDateTime(), false);
+          break;
         case DISPLAY_ONLY:
-          append_ic_text(shout_message, f_displayname, tr("shouts"), 0, selfname);
+        case QUEUED:
+          if (!ghost && sender)
+            pop_ic_ghost();
+          append_ic_text(shout_message, f_displayname, tr("shouts"),
+                         0, selfname, QDateTime::currentDateTime(), ghost);
           break;
       }
     }
 
     // If the evidence ID is in the valid range
     if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size()) {
+      blankpost = false;
       // Obtain the evidence name
       QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
       switch (f_log_mode) {
@@ -2352,34 +2377,46 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
           log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"), 0, selfname);
           break;
         case DISPLAY_AND_IO:
-          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"), 0, selfname);
-          [[fallthrough]];
+          log_ic_text(f_showname, f_displayname, f_evi_name, tr("has presented evidence"));
+          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"),
+                         0, selfname, QDateTime::currentDateTime(), false);
+          break;
         case DISPLAY_ONLY:
-          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"), 0, selfname);
+        case QUEUED:
+          if (!ghost && sender)
+            pop_ic_ghost();
+          append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"),
+                         0, selfname, QDateTime::currentDateTime(), ghost);
           break;
       }
     }
   }
 
-  if ((f_log_mode != IO_ONLY) && // if we're not in I/O only mode,
-      f_message.isEmpty() &&  // our current message is a blankpost,
-      !ic_chatlog_history.isEmpty() && // the chat log isn't empty,
-      last_ic_message == f_displayname + ":" && // the chat log's last message is a blank post, and
-      last_ic_message.mid(0, last_ic_message.lastIndexOf(":")) == f_displayname) // the blankpost's showname is the same as ours
-    return; // Skip adding message
+  // Do not display anything on a repeated blankpost if it's not a ghost
+  if (blankpost && !ghost) {
+    // Don't forget to clear the ghost if it's us
+    if (sender)
+      pop_ic_ghost();
+    return;
+  }
+
   switch (f_log_mode) {
     case IO_ONLY:
       log_ic_text(f_showname, f_displayname, f_message, "", f_color, selfname);
       break;
     case DISPLAY_AND_IO:
       log_ic_text(f_showname, f_displayname, f_message, "", f_color, selfname);
-      [[fallthrough]];
+      append_ic_text(f_message, f_displayname, "",
+                     f_color, selfname, QDateTime::currentDateTime(), false);
+      break;
     case DISPLAY_ONLY:
-      append_ic_text(f_message, f_displayname, "", f_color, selfname);
+    case QUEUED:
+      if (!ghost && sender)
+        pop_ic_ghost();
+      append_ic_text(f_message, f_displayname, "",
+                     f_color, selfname, QDateTime::currentDateTime(), ghost);
       break;
   }
-  if (!ui_showname_enable->isChecked())
-      regenerate_ic_chatlog();
 }
 
 bool Courtroom::handle_objection()
@@ -3264,9 +3301,9 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 }
 
 void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
-                               int color, bool selfname, QDateTime timestamp)
+                               int color, bool selfname, QDateTime timestamp, bool ghost)
 {
-  last_ic_message = p_name + ":" + p_text;
+  QColor chatlog_color = ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini");
   QTextCharFormat bold;
   QTextCharFormat normal;
   QTextCharFormat italics;
@@ -3292,13 +3329,34 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
       log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum()
                          : ui_ic_chatlog->verticalScrollBar()->minimum();
 
+  if (ghost) {
+    ghost_blocks++;
+    chatlog_color.setAlpha(128);
+    bold.setForeground(chatlog_color);
+    normal.setForeground(chatlog_color);
+    italics.setForeground(chatlog_color);
+  }
+  else {
+    last_ic_message = p_name + ":" + p_text;
+  }
+
   ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
                                                : QTextCursor::Start);
+
+  if (!ghost && ghost_blocks > 0) {
+    for (int i = 0; i < ghost_blocks; ++i) {
+      ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::PreviousBlock
+                                                   : QTextCursor::NextBlock);
+    }
+    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::EndOfBlock
+                                                 : QTextCursor::StartOfBlock);
+  }
 
   // Only prepend with newline if log goes downwards
   if (log_goes_downwards && need_newline) {
     ui_ic_chatlog->textCursor().insertBlock(format);
   }
+
 
   // Timestamp if we're doing that meme
   if (log_timestamp) {
@@ -3322,14 +3380,13 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // Make shout text bold
   else if (p_action == tr("shouts") && log_ic_actions) {
     ui_ic_chatlog->textCursor().insertText(" " + p_action + " ", normal);
-    if (log_colors) {
+    if (log_colors && !ghost) {
       ui_ic_chatlog->textCursor().insertHtml(
           "<b>" +
           filter_ic_text(p_text, true, -1, 0)
               .replace(
                   "$c0",
-                  ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini")
-                      .name(QColor::HexRgb)) +
+                  chatlog_color.name(QColor::HexArgb)) +
           "</b>");
     }
     else
@@ -3360,9 +3417,13 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     // Format the result according to html
     if (log_colors) {
       QString p_text_filtered = filter_ic_text(p_text, true, -1, color);
-      p_text_filtered = p_text_filtered.replace("$c0", ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini").name(QColor::HexRgb));
+      p_text_filtered = p_text_filtered.replace("$c0", chatlog_color.name(QColor::HexArgb));
       for (int c = 1; c < max_colors; ++c) {
-        p_text_filtered = p_text_filtered.replace("$c" + QString::number(c), default_color_rgb_list.at(c).name(QColor::HexRgb));
+        QColor color_result = default_color_rgb_list.at(c);
+        if (ghost) {
+          color_result.setAlpha(128);
+        }
+        p_text_filtered = p_text_filtered.replace("$c" + QString::number(c), color_result.name(QColor::HexArgb));
       }
       ui_ic_chatlog->textCursor().insertHtml(p_text_filtered);
     }
@@ -3378,14 +3439,15 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   // If we got too many blocks in the current log, delete some.
   while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
          log_maximum_blocks > 0) {
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::Start
+    QTextCursor temp_curs = ui_ic_chatlog->textCursor();
+    temp_curs.movePosition(log_goes_downwards ? QTextCursor::Start
                                                  : QTextCursor::End);
-    ui_ic_chatlog->textCursor().select(QTextCursor::BlockUnderCursor);
-    ui_ic_chatlog->textCursor().removeSelectedText();
+    temp_curs.select(QTextCursor::BlockUnderCursor);
+    temp_curs.removeSelectedText();
     if (log_goes_downwards)
-      ui_ic_chatlog->textCursor().deleteChar();
+      temp_curs.deleteChar();
     else
-      ui_ic_chatlog->textCursor().deletePreviousChar();
+      temp_curs.deletePreviousChar();
   }
 
   // Finally, scroll the scrollbar to the correct position.
@@ -3397,13 +3459,25 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
     ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
   }
   else {
-    // The user hasn't selected any text and the scrollbar is at the bottom:
-    // scroll to the bottom.
-    ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
-                                                 : QTextCursor::Start);
     ui_ic_chatlog->verticalScrollBar()->setValue(
         log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : 0);
   }
+}
+
+void Courtroom::pop_ic_ghost()
+{
+  QTextCursor ghost = ui_ic_chatlog->textCursor();
+  ghost.movePosition(log_goes_downwards ? QTextCursor::End
+                                               : QTextCursor::Start);
+  for (int i = 1; i < ghost_blocks; ++i) {
+    ghost.movePosition(log_goes_downwards ? QTextCursor::PreviousBlock
+                                                 : QTextCursor::NextBlock);
+  }
+  ghost.select(QTextCursor::BlockUnderCursor);
+  ghost.removeSelectedText();
+  if (ghost_blocks <= 1 && !log_goes_downwards)
+    ghost.deleteChar();
+  ghost_blocks--;
 }
 
 void Courtroom::play_preanim(bool immediate)
