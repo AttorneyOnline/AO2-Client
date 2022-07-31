@@ -1886,18 +1886,11 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_desk_mod);
 
-  packet_contents.append(ao_app->get_pre_emote(current_char, current_emote));
-
-  packet_contents.append(current_char);
-
-  packet_contents.append(ao_app->get_emote(current_char, current_emote));
-
-  packet_contents.append(ui_ic_chat_message->text());
-
-  packet_contents.append(f_side);
-
+  QString f_pre = ao_app->get_pre_emote(current_char, current_emote);
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
   QString f_sfx = "1";
+  int f_sfx_delay = get_char_sfx_delay();
+
 // EMOTE MOD OVERRIDES:
   // Emote_mod 2 is only used by objection check later, having it in the char.ini does nothing
   if (f_emote_mod == 2) {
@@ -1944,13 +1937,33 @@ void Courtroom::on_chat_return_pressed()
   // Custom sfx override via sound list dropdown.
   if (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() != 0) {
     f_sfx = get_char_sfx();
+    // We have a custom sfx but we're on idle emotes.
+    // Turn them into pre so the sound plays if client setting sfx_on_idle is enabled.
+    if (ao_app->get_sfx_on_idle() && (f_emote_mod == IDLE || f_emote_mod == ZOOM)) {
+      // We turn idle into preanim, but make it not send a pre animation
+      f_pre = "";
+      // Set sfx delay to 0 so the sfx plays immediately
+      f_sfx_delay = 0;
+      // Set the emote mod to preanim so the sound plays
+      f_emote_mod = f_emote_mod == IDLE ? PREANIM : PREANIM_ZOOM;
+    }
   }
+
+  packet_contents.append(f_pre);
+
+  packet_contents.append(current_char);
+
+  packet_contents.append(ao_app->get_emote(current_char, current_emote));
+
+  packet_contents.append(ui_ic_chat_message->text());
+
+  packet_contents.append(f_side);
 
   packet_contents.append(f_sfx);
   packet_contents.append(QString::number(f_emote_mod));
   packet_contents.append(QString::number(m_cid));
 
-  packet_contents.append(QString::number(get_char_sfx_delay()));
+  packet_contents.append(QString::number(f_sfx_delay));
 
   QString f_obj_state;
 
@@ -2118,12 +2131,16 @@ void Courtroom::reset_ui()
   ui_screenshake->set_image("screenshake");
   ui_evidence_present->set_image("present");
 
-  if (!ao_app->is_stickysounds_enabled()) {
+  // If sticky sounds is disabled and we either have SFX on Idle enabled, or our Preanim checkbox is checked
+  if (!ao_app->is_stickysounds_enabled() && (ao_app->get_sfx_on_idle() || ui_pre->isChecked())) {
+    // Reset the SFX Dropdown to "Default"
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
     custom_sfx = "";
   }
+  // If sticky preanims is disabled
   if (!ao_app->is_stickypres_enabled())
+    // Turn off our Preanim checkbox
     ui_pre->setChecked(false);
 }
 
@@ -2592,7 +2609,7 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
   switch (emote_mod) {
   case PREANIM:
   case PREANIM_ZOOM:
-    // Emotes 1, 2 and 6 all play preanim that makes the chatbox wait for it to finish.
+    // play preanim that makes the chatbox wait for it to finish.
     play_preanim(false);
     break;
   case IDLE:
@@ -2600,8 +2617,6 @@ void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
     // If immediate is not ticked on...
     if (!p_immediate)
     {
-      // Play the sound effect if one was sent to us
-      play_sfx();
       // Skip preanim.
       handle_ic_speaking();
     }
@@ -4307,19 +4322,18 @@ void Courtroom::on_ooc_return_pressed()
       append_server_chatmessage(tr("CLIENT"),
                                 tr("Case made by %1.").arg(caseauth), "1");
     if (!casedoc.isEmpty()) {
-      QStringList f_contents = {ui_ooc_chat_name->text(), "/doc " + casedoc};
-      ao_app->send_server_packet(new AOPacket("CT", f_contents));
+      ao_app->send_server_packet(new AOPacket("CT", {ui_ooc_chat_name->text(), "/doc " + casedoc}));
     }
-    if (!casestatus.isEmpty())
-      ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() +
-                                              "#/status " + casestatus + "#%"));
+    if (!casestatus.isEmpty()) {
+      ao_app->send_server_packet(new AOPacket("CT", {ui_ooc_chat_name->text(), "/status " + casestatus}));
+    }
     if (!cmdoc.isEmpty())
       append_server_chatmessage(
           "CLIENT", tr("Navigate to %1 for the CM doc.").arg(cmdoc), "1");
 
     for (int i = local_evidence_list.size() - 1; i >= 0; i--) {
       ao_app->send_server_packet(
-          new AOPacket("DE#" + QString::number(i) + "#%"));
+          new AOPacket("DE", {QString::number(i)}));
     }
 
     // sort the case_evidence numerically
@@ -4953,7 +4967,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
     packet_contents.append(ui_ic_chat_name->text());
   if (ao_app->effects_supported)
     packet_contents.append(QString::number(music_flags));
-  ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
+  ao_app->send_server_packet(new AOPacket("MC", packet_contents));
 }
 
 void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
@@ -5076,7 +5090,7 @@ void Courtroom::music_stop(bool no_effects)
     else
       packet_contents.append(QString::number(music_flags));
   }
-  ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
+  ao_app->send_server_packet(new AOPacket("MC", packet_contents));
 }
 
 void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
@@ -5088,7 +5102,7 @@ void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
   QStringList packet_contents;
   packet_contents.append(p_area);
   packet_contents.append(QString::number(m_cid));
-  ao_app->send_server_packet(new AOPacket("MC", packet_contents), false);
+  ao_app->send_server_packet(new AOPacket("MC", packet_contents));
 }
 
 void Courtroom::on_hold_it_clicked()
@@ -5269,7 +5283,7 @@ void Courtroom::on_defense_minus_clicked()
 
   if (f_state >= 0)
     ao_app->send_server_packet(
-        new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+        new AOPacket("HP", {"1", QString::number(f_state)}));
 }
 
 void Courtroom::on_defense_plus_clicked()
@@ -5278,7 +5292,7 @@ void Courtroom::on_defense_plus_clicked()
 
   if (f_state <= 10)
     ao_app->send_server_packet(
-        new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+        new AOPacket("HP", {"1", QString::number(f_state)}));
 }
 
 void Courtroom::on_prosecution_minus_clicked()
@@ -5287,7 +5301,7 @@ void Courtroom::on_prosecution_minus_clicked()
 
   if (f_state >= 0)
     ao_app->send_server_packet(
-        new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+        new AOPacket("HP", {"2", QString::number(f_state)}));
 }
 
 void Courtroom::on_prosecution_plus_clicked()
@@ -5296,7 +5310,7 @@ void Courtroom::on_prosecution_plus_clicked()
 
   if (f_state <= 10)
     ao_app->send_server_packet(
-        new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+        new AOPacket("HP", {"2", QString::number(f_state)}));
 }
 
 void Courtroom::set_text_color_dropdown()
@@ -5432,7 +5446,7 @@ void Courtroom::on_witness_testimony_clicked()
   if (is_muted)
     return;
 
-  ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
+  ao_app->send_server_packet(new AOPacket("RT", {"testimony1"}));
 
   ui_ic_chat_message->setFocus();
 }
@@ -5442,7 +5456,7 @@ void Courtroom::on_cross_examination_clicked()
   if (is_muted)
     return;
 
-  ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
+  ao_app->send_server_packet(new AOPacket("RT", {"testimony2"}));
 
   ui_ic_chat_message->setFocus();
 }
@@ -5452,7 +5466,7 @@ void Courtroom::on_not_guilty_clicked()
   if (is_muted)
     return;
 
-  ao_app->send_server_packet(new AOPacket("RT#judgeruling#0#%"));
+  ao_app->send_server_packet(new AOPacket("RT", {"judgeruling", "0"}));
 
   ui_ic_chat_message->setFocus();
 }
@@ -5462,7 +5476,7 @@ void Courtroom::on_guilty_clicked()
   if (is_muted)
     return;
 
-  ao_app->send_server_packet(new AOPacket("RT#judgeruling#1#%"));
+  ao_app->send_server_packet(new AOPacket("RT", {"judgeruling", "1"}));
 
   ui_ic_chat_message->setFocus();
 }
@@ -5541,7 +5555,7 @@ void Courtroom::on_call_mod_clicked()
     ao_app->send_server_packet(new AOPacket("ZZ", mod_reason));
   }
   else {
-    ao_app->send_server_packet(new AOPacket("ZZ#%"));
+    ao_app->send_server_packet(new AOPacket("ZZ"));
   }
 
   ui_ic_chat_message->setFocus();
@@ -5626,7 +5640,7 @@ void Courtroom::ping_server()
   ping_timer.start();
   is_pinging = true;
   ao_app->send_server_packet(
-      new AOPacket("CH#" + QString::number(m_cid) + "#%"));
+      new AOPacket("CH", {QString::number(m_cid)}));
 }
 
 qint64 Courtroom::pong()
@@ -5656,7 +5670,7 @@ void Courtroom::on_casing_clicked()
       ao_app->send_server_packet(new AOPacket("SETCASE", f_packet));
     }
     else
-      ao_app->send_server_packet(new AOPacket("SETCASE#\"\"#0#0#0#0#0#0#%"));
+      ao_app->send_server_packet(new AOPacket("SETCASE", {"","0","0","0","0","0","0"}));
   }
 }
 

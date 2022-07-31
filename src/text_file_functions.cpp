@@ -243,78 +243,97 @@ bool AOApplication::append_to_file(QString p_text, QString p_file,
   return false;
 }
 
-QVector<server_type> AOApplication::read_serverlist_txt()
+QVector<server_type> AOApplication::read_favorite_servers()
 {
-  QVector<server_type> f_server_list;
+  QVector<server_type> serverlist;
 
-  QFile serverlist_txt(get_base_path() + "serverlist.txt");
-  QFile serverlist_ini(get_base_path() + "favorite_servers.ini");
-
-  if (serverlist_txt.exists() && !serverlist_ini.exists()) {
-    migrate_serverlist_txt(serverlist_txt);
-  }
-
-  if (serverlist_ini.exists()) {
-    QSettings l_favorite_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
-    l_favorite_ini.setIniCodec("UTF-8");
-    for(QString &fav_index: l_favorite_ini.childGroups()) {
-      server_type f_server;
-      l_favorite_ini.beginGroup(fav_index);
-      f_server.ip = l_favorite_ini.value("address", "127.0.0.1").toString();
-      f_server.port = l_favorite_ini.value("port", 27016).toInt();
-      f_server.name = l_favorite_ini.value("name", "Missing Name").toString();
-      f_server.desc = l_favorite_ini.value("desc", "No description").toString();
-      f_server.socket_type = to_connection_type.value(l_favorite_ini.value("protocol", "tcp").toString());
-      f_server_list.append(f_server);
-      l_favorite_ini.endGroup();
-    }
-  }
-
+  // demo server is always at the top
   server_type demo_server;
   demo_server.ip = "127.0.0.1";
   demo_server.port = 99999;
   demo_server.name = tr("Demo playback");
   demo_server.desc = tr("Play back demos you have previously recorded");
-  f_server_list.append(demo_server);
+  serverlist.append(demo_server);
 
-  return f_server_list;
+  QString fav_servers_ini_path(get_base_path() + "favorite_servers.ini");
+  if (!QFile::exists(fav_servers_ini_path)) {
+    qWarning() << "failed to locate favorite_servers.ini, falling back to legacy serverlist.txt";
+    serverlist += read_legacy_favorite_servers();
+  }
+  else {
+    QSettings fav_servers_ini(fav_servers_ini_path, QSettings::IniFormat);
+    fav_servers_ini.setIniCodec("UTF-8");
+
+    auto grouplist = fav_servers_ini.childGroups();
+    { // remove all negative and non-numbers
+      auto filtered_grouplist = grouplist;
+      for (const QString &group : qAsConst(grouplist)) {
+        bool ok = false;
+        const int l_num = group.toInt(&ok);
+        if (ok && l_num >= 0) {
+          continue;
+        }
+        filtered_grouplist.append(group);
+      }
+      std::sort(filtered_grouplist.begin(), filtered_grouplist.end(), [](const auto &a, const auto &b) -> bool {
+        return a.toInt() < b.toInt();
+      });
+      grouplist = std::move(filtered_grouplist);
+    }
+
+    for(const QString &group: qAsConst(grouplist)) {
+      server_type f_server;
+      fav_servers_ini.beginGroup(group);
+      f_server.ip = fav_servers_ini.value("address", "127.0.0.1").toString();
+      f_server.port = fav_servers_ini.value("port", 27016).toInt();
+      f_server.name = fav_servers_ini.value("name", "Missing Name").toString();
+      f_server.desc = fav_servers_ini.value("desc", "No description").toString();
+      f_server.socket_type = to_connection_type.value(fav_servers_ini.value("protocol", "tcp").toString());
+      serverlist.append(std::move(f_server));
+      fav_servers_ini.endGroup();
+    }
+  }
+
+  return serverlist;
 }
 
-void AOApplication::migrate_serverlist_txt(QFile &p_serverlist_txt)
+QVector<server_type> AOApplication::read_legacy_favorite_servers()
 {
-  // We migrate our legacy serverlist.txt to a QSettings object.
-  // Then we write it to disk.
-  QSettings l_settings(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
-  l_settings.setIniCodec("UTF-8");
-  if (p_serverlist_txt.open(QIODevice::ReadOnly)) {
-    QTextStream l_favorite_textstream(&p_serverlist_txt);
-    l_favorite_textstream.setCodec("UTF-8");
-    int l_entry_index = 0;
+  QVector<server_type> serverlist;
 
-    while (!l_favorite_textstream.atEnd()) {
-      QString l_favorite_line = l_favorite_textstream.readLine();
-      QStringList l_line_contents = l_favorite_line.split(":");
+  QFile serverlist_txt(get_base_path() + "serverlist.txt");
+  if (!serverlist_txt.exists()) {
+    qWarning() << "serverlist.txt does not exist";
+  } else if (!serverlist_txt.open(QIODevice::ReadOnly)) {
+    qWarning() << "failed to open serverlist.txt";
+  } else {
+    QTextStream stream(&serverlist_txt);
+    stream.setCodec("UTF-8");
 
-      if (l_line_contents.size() >= 3) {
-        l_settings.beginGroup(QString::number(l_entry_index));
-        l_settings.setValue("name", l_line_contents.at(2));
-        l_settings.setValue("address", l_line_contents.at(0));
-        l_settings.setValue("port", l_line_contents.at(1));
+    while (!stream.atEnd())
+    {
+      QStringList contents = stream.readLine().split(":");
 
-        if (l_line_contents.size() >= 4) {
-          l_settings.setValue("protocol", l_line_contents.at(3));
-        }
-        else {
-          l_settings.setValue("protocol","tcp");
-        }
-        l_settings.endGroup();
-        l_entry_index++;
+      int item_count = contents.size();
+      if (item_count < 3 || item_count > 4) {
+        continue;
       }
+
+      server_type server;
+      server.ip = contents.at(0);
+      server.port = contents.at(1).toInt();
+      server.name = contents.at(2);
+      if (item_count == 4) {
+        server.socket_type = connection_type(contents.at(3).toInt());
+      } else {
+        server.socket_type = TCP;
+      }
+      serverlist.append(std::move(server));
     }
-    l_settings.sync();
+    serverlist_txt.close();
   }
-  p_serverlist_txt.close();
-  p_serverlist_txt.rename(get_base_path() + "serverlist_deprecated.txt");
+
+  return serverlist;
 }
 
 QString AOApplication::read_design_ini(QString p_identifier,
@@ -912,7 +931,13 @@ QStringList AOApplication::get_effects(QString p_char)
          // port legacy effects
     if (!l_effects_ini.contains("version/major") || l_effects_ini.value("version/major").toInt() < 2)
     {
-      AOUtils::migrateEffects(l_effects_ini);
+      QFile effects_old(i_filepath);
+      if (QFile::copy(i_filepath, i_filepath + ".old")) {
+        AOUtils::migrateEffects(l_effects_ini);
+      }
+      else {
+        qWarning() << "Unable to copy effects.ini, skipping migration.";
+      }
     }
 
     QStringList l_group_list;
@@ -1035,6 +1060,11 @@ bool AOApplication::objection_stop_music()
   QString result =
       configini->value("objection_stop_music", "false").value<QString>();
   return result.startsWith("true");
+}
+
+bool AOApplication::is_streaming_disabled()
+{
+    return configini->value("streaming_disabled", false).toBool();
 }
 
 bool AOApplication::is_instant_objection_enabled()
@@ -1225,6 +1255,12 @@ QStringList AOApplication::get_mount_paths()
 bool AOApplication::get_player_count_optout()
 {
   return configini->value("player_count_optout", "false").value<QString>()
+      .startsWith("true");
+}
+
+bool AOApplication::get_sfx_on_idle()
+{
+  return configini->value("sfx_on_idle", "false").value<QString>()
       .startsWith("true");
 }
 

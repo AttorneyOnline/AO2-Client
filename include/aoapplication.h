@@ -78,7 +78,7 @@ public:
 
   void server_packet_received(AOPacket *p_packet);
 
-  void send_server_packet(AOPacket *p_packet, bool encoded = true);
+  void send_server_packet(AOPacket *p_packet);
 
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
@@ -131,11 +131,14 @@ public:
 
   ///////////////////////////////////////////
 
-  void set_favorite_list();
+  void load_favorite_list();
+  void save_favorite_list();
   QVector<server_type> &get_favorite_list() { return favorite_list; }
 
   // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
+  void remove_favorite_server(int p_server);
+  void prompt_remove_favorite_server(int p_server);
 
   void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
@@ -193,6 +196,9 @@ public:
 
   // Returns true if stop music on objection is enabled in the config.ini
   bool objection_stop_music();
+
+  // Returns true if streaming is enabled in the config.ini
+  bool is_streaming_disabled();
 
   // Returns the value of default_music in config.ini
   int get_default_music();
@@ -328,13 +334,24 @@ public:
   // Append to the currently open demo file if there is one
   void append_to_demofile(QString packet_string);
 
-  // Returns the contents of serverlist.txt
-  QVector<server_type> read_serverlist_txt();
+  /**
+   * @brief Reads favorite_servers.ini and returns a list of servers.
+   *
+   * The demo server entry is always present at the top of the list.
+   *
+   * If the server list returned was to be empty (exluding the demo server entry),
+   * will return a list of servers from the legacy serverlist.txt file.
+   *
+   * @return A list of servers.
+   */
+  QVector<server_type> read_favorite_servers();
 
   /**
-   * @brief Migrates the favorite serverlist format from txt to ini.
+   * @brief Reads serverlist.txt and returns a list of servers.
+   *
+   * @return A list of servers.
    */
-  void migrate_serverlist_txt(QFile &p_serverlist_txt);
+  QVector<server_type> read_legacy_favorite_servers();
 
   // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, VPath p_design_path);
@@ -534,6 +551,9 @@ public:
 
   // Get whether to opt out of player count metrics sent to the master server
   bool get_player_count_optout();
+
+  // Get if sfx can be sent to play on idle
+  bool get_sfx_on_idle();
 
   // Whether opening evidence requires a single or double click
   bool get_evidence_double_click();

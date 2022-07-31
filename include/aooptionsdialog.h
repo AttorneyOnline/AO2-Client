@@ -112,6 +112,9 @@ private:
   QLabel *ui_category_stop_lbl;
   QCheckBox *ui_category_stop_cb;
 
+  QLabel *ui_sfx_on_idle_lbl;
+  QCheckBox *ui_sfx_on_idle_cb;
+
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
   QVBoxLayout *ui_callwords_layout;
@@ -142,6 +145,8 @@ private:
   QCheckBox *ui_loopsfx_cb;
   QLabel *ui_objectmusic_lbl;
   QCheckBox *ui_objectmusic_cb;
+  QLabel *ui_disablestreams_lbl;
+  QCheckBox *ui_disablestreams_cb;
   QDialogButtonBox *ui_settings_buttons;
 
   QWidget *ui_casing_tab;
