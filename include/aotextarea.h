@@ -14,13 +14,10 @@ public:
   void append_linked(QString p_message);
   void append_chatmessage(QString p_name, QString p_message,
                           QString p_name_colour, QString p_color = QString());
-  void append_ghost(QString p_name, QString p_message);
-  void clear_ghosts();
   void append_error(QString p_message);
 
 private:
   const QRegExp url_parser_regex = QRegExp("\\b(https?://\\S+\\.\\S+)\\b");
-  QList<QTextCursor> ghost_cursors;
 
   void auto_scroll(QTextCursor old_cursor, int scrollbar_value,
                    bool is_scrolled_down);

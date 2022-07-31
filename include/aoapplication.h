@@ -107,7 +107,7 @@ public:
 
   ///////////////loading info///////////////////
 
-  // client ID. Useful for ghost msgs, etc.
+  // client ID. Not useful, to be removed eventually
   int client_id = 0;
 
   QString server_software = "";
