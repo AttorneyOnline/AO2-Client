@@ -391,7 +391,11 @@ void Lobby::on_about_clicked()
          "Crystalwarrior, Iamgoofball, in1tiate"
          "<p><b>Client development:</b><br>"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
          "Cents02, windrammer, skyedeving"
+=======
+         "Cents02, windrammer, skyedeving, TrickyLeifa,"
+>>>>>>> Stashed changes
 =======
          "Cents02, windrammer, skyedeving, TrickyLeifa,"
 >>>>>>> Stashed changes
@@ -408,11 +412,11 @@ void Lobby::on_about_clicked()
          "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
          "Rue (website); Draxirch (UI design); "
          "Lewdton and Argoneus (tsuserver); "
-         "Fiercy, Noevain, Cronnicossy, and FanatSors (AO1); "
+         "Fiercy, Noevain, Cronnicossy, dyviacat(updating credits), and FanatSors (AO1); "
          "server hosts, game masters, case makers, content creators, "
          "and the whole AO2 community!"
          "<p>The Attorney Online networked visual novel project "
-         "is copyright (c) 2016-2021 Attorney Online developers. Open-source "
+         "is copyright (c) 2016-2022 Attorney Online developers. Open-source "
          "licenses apply. All other assets are the property of their "
          "respective owners."
          "<p>Running on Qt version %2 with the BASS audio engine.<br>"
