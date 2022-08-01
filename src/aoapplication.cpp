@@ -180,11 +180,6 @@ void AOApplication::remove_favorite_server(int p_server)
   save_favorite_list();
 }
 
-void AOApplication::prompt_remove_favorite_server(int p_server)
-{
-
-}
-
 void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {
