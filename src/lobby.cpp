@@ -173,7 +173,8 @@ void Lobby::set_widgets()
   ui_settings->setToolTip(
       tr("Allows you to change various aspects of the client."));
 
-  set_size_and_pos(ui_server_list, "server_list");
+  set_size_and_pos(ui_server_list, "server_list");  
+  ui_server_list->header()->setMinimumSectionSize((ao_app->get_font_size("server_list", "lobby_fonts.ini")*2)+2);
 
   set_size_and_pos(ui_server_search, "server_search");
 
