@@ -2552,10 +2552,12 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_pos) {
 
+    // for debugging animation
+    //ui_vp_sideplayer_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
+
     set_scene(p_desk_mod, old_pos);
 
-    transition_animation_group->setCurrentTime(
-        transition_animation_group->duration());
+    transition_animation_group->setCurrentTime(0);
     transition_animation_group->clear();
 
     display_character();
@@ -2570,6 +2572,8 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     }
     const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
     int duration = ao_app->get_pos_transition_duration(old_pos, new_pos);
+
+    qDebug() << "transition duration" << duration;
 
     ui_vp_player_char->move_and_center(last_offset, 0);
 
@@ -2587,25 +2591,8 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     }
 
     // Setting up the former pair character to work for us as our stand-in for the next character
+    // This should be easy. But it isn't
 
-    QPoint starting_position = QPoint(offset, m_chatmessage[SELF_OFFSET].split("&")[1].toInt());
-    QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
-
-    ui_vp_sideplayer_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
-    ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
-
-
-    ui_vp_sideplayer_animation->setDuration(duration);
-    int offset = new_pos_pair.second - (ui_vp_sideplayer_char->width() / 2);
-    offset += ui_vp_sideplayer_char->
-    offset += m_chatmessage[SELF_OFFSET].split("&")[0].toInt();
-
-    qDebug() << starting_position;
-    ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
-    ui_vp_sideplayer_animation->setStartValue(starting_position);
-    ui_vp_sideplayer_animation->setEasingCurve(QEasingCurve::Linear);
-    transition_animation_group->addAnimation(ui_vp_sideplayer_animation);
-    ui_vp_sideplayer_char->set_flipped(m_chatmessage[FLIP].toInt());
     QString slide_emote;
     if (m_chatmessage[OBJECTION_MOD].contains("4&") || m_chatmessage[OBJECTION_MOD].toInt() > 0)
         slide_emote = "(a)pointing";
@@ -2613,6 +2600,23 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
         slide_emote = "(a)normal";
     else
         slide_emote = "(a)" + m_chatmessage[EMOTE];
+
+    // Load the image we're going to use to get scaling information, and move it into the final position for animation data
+    ui_vp_sideplayer_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
+    ui_vp_sideplayer_char->move_and_center(m_chatmessage[SELF_OFFSET].split("&")[0].toInt(), m_chatmessage[SELF_OFFSET].split("&")[1].toInt());
+    int offset = (new_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor()) - (old_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor());
+
+    QPoint starting_position = QPoint(ui_vp_player_char->pos().x() + offset + m_chatmessage[SELF_OFFSET].split("&")[0].toInt(), m_chatmessage[SELF_OFFSET].split("&")[1].toInt());
+    QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
+
+    ui_vp_sideplayer_animation->setDuration(duration);
+    ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
+    ui_vp_sideplayer_animation->setStartValue(starting_position);
+    ui_vp_sideplayer_animation->setEasingCurve(QEasingCurve::Linear);
+    transition_animation_group->addAnimation(ui_vp_sideplayer_animation);
+
+    ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
+    ui_vp_sideplayer_char->set_flipped(m_chatmessage[FLIP].toInt());
 
     ui_vp_player_char->freeze();
     ui_vp_player_char->show();
