@@ -220,7 +220,7 @@ void AOMusicPlayer::set_looping(bool loop_song, int channel)
   }
 
   if (loop_start[channel] >= 0) {
-    if (loop_start < loop_end[channel])
+    if (loop_start[channel] < loop_end[channel])
     {
       //Loop when the endpoint is reached.
       loop_sync[channel] = BASS_ChannelSetSync(
