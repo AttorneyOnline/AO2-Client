@@ -220,19 +220,19 @@ void AOMusicPlayer::set_looping(bool loop_song, int channel)
   }
 
   if (loop_start[channel] >= 0) {
-    if (loop_end[channel] > 0 && (loop_end[channel] > loop_start[channel]))
+    if (loop_start < loop_end[channel])
     {
       //Loop when the endpoint is reached.
       loop_sync[channel] = BASS_ChannelSetSync(
-          m_stream_list[channel], BASS_SYNC_END | BASS_SYNC_MIXTIME,
-          loop_end[channel] , loopProc, &loop_start[channel]);
+          m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
+          loop_end[channel], loopProc, &loop_start[channel]);
     }
     else
     {
       //Loop when the end of the file is reached.
       loop_sync[channel] = BASS_ChannelSetSync(
-          m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
-          0 , loopProc, &loop_start[channel]);
+          m_stream_list[channel], BASS_SYNC_END | BASS_SYNC_MIXTIME,
+          0, loopProc, &loop_start[channel]);
     }
   }
 }
