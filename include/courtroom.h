@@ -189,8 +189,8 @@ public:
   // sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
 
-  // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  void set_self_offset(const QString& p_list);
+  // sets p_layer according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
+  void set_self_offset(const QString& p_list, AOLayer* p_layer);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -626,6 +626,7 @@ private:
   // used for courtroom transition logic
   QString last_side = "";
   int last_offset = 0;
+  int last_v_offset = 0;
 
   QString last_music_search = "";
   QString last_area_search = "";

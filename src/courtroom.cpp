@@ -2354,9 +2354,6 @@ void Courtroom::display_character()
 
   // Determine if we should flip the character or not
   ui_vp_player_char->set_flipped(m_chatmessage[FLIP].toInt() == 1);
-
-  // Move the character on the viewport according to the offsets
-  set_self_offset(m_chatmessage[SELF_OFFSET]);
 }
 
 void Courtroom::display_pair_character(QString other_charid, QString other_offset)
@@ -2487,13 +2484,6 @@ void Courtroom::handle_ic_message()
     start_chat_ticking();
   }
 
-  bool bOk;
-  last_offset = m_chatmessage[SELF_OFFSET].split("&")[0].toInt(&bOk);
-  if (!bOk) {
-      last_offset = 0;
-      qWarning() << "Malformed offset:" << m_chatmessage[SELF_OFFSET];
-  }
-
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
   if (!ao_app->is_instant_objection_enabled() && chatmessage_queue.size() > 0)
   {
@@ -2575,8 +2565,6 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 
     qDebug() << "transition duration" << duration;
 
-    ui_vp_player_char->move_and_center(last_offset, 0);
-
     // Set up the background, desk, and player objects' animations
 
     for (AOLayer *ui_element : affected_list) {
@@ -2602,22 +2590,21 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
         slide_emote = "(a)" + m_chatmessage[EMOTE];
 
     // Load the image we're going to use to get scaling information, and move it into the final position for animation data
+    ui_vp_sideplayer_char->set_flipped(m_chatmessage[FLIP].toInt());
     ui_vp_sideplayer_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
-    ui_vp_sideplayer_char->move_and_center(m_chatmessage[SELF_OFFSET].split("&")[0].toInt(), m_chatmessage[SELF_OFFSET].split("&")[1].toInt());
+    set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_sideplayer_char);
     int offset = (new_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor()) - (old_pos_pair.second * ui_vp_sideplayer_char->get_scaling_factor());
 
-    QPoint starting_position = QPoint(ui_vp_player_char->pos().x() + offset + m_chatmessage[SELF_OFFSET].split("&")[0].toInt(), m_chatmessage[SELF_OFFSET].split("&")[1].toInt());
+    QPoint starting_position = QPoint(ui_vp_player_char->pos().x() + offset, ui_vp_player_char->pos().y());
     QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
 
     ui_vp_sideplayer_animation->setDuration(duration);
-    ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
     ui_vp_sideplayer_animation->setStartValue(starting_position);
+    ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
     ui_vp_sideplayer_animation->setEasingCurve(QEasingCurve::Linear);
     transition_animation_group->addAnimation(ui_vp_sideplayer_animation);
 
     ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
-    ui_vp_sideplayer_char->set_flipped(m_chatmessage[FLIP].toInt());
-
     ui_vp_player_char->freeze();
     ui_vp_player_char->show();
     ui_vp_sideplayer_char->freeze();
@@ -2625,11 +2612,14 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 }
 
 
-void Courtroom::on_transition_finish() { delay(TRANSITION_BOOKEND_DELAY); post_transition_cleanup(); }
+void Courtroom::on_transition_finish() { delay(TRANSITION_BOOKEND_DELAY); set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_player_char); post_transition_cleanup(); }
 
 void Courtroom::post_transition_cleanup() {
 
     set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+
+    // Move the character on the viewport according to the offsets
+    set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_player_char);
 
     int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
     bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
@@ -3447,7 +3437,7 @@ void Courtroom::start_chat_ticking()
   // handle expanded desk mods
   switch(m_chatmessage[DESK_MOD].toInt()) {
     case 4:
-      set_self_offset(m_chatmessage[SELF_OFFSET]);
+      set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_player_char);
       [[fallthrough]];
     case 2:
       set_scene("1", m_chatmessage[SIDE]);
@@ -3848,7 +3838,7 @@ void Courtroom::set_scene(const QString f_desk_mod, const QString f_side)
   }
 }
 
-void Courtroom::set_self_offset(const QString& p_list) {
+void Courtroom::set_self_offset(const QString& p_list, AOLayer* p_layer) {
     QStringList self_offsets = p_list.split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
@@ -3857,9 +3847,9 @@ void Courtroom::set_self_offset(const QString& p_list) {
     }
     else {
       self_offset_v = self_offsets[1].toInt();
-      ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+      p_layer->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
       const int percent = 100;
-      ui_vp_player_char->move(ui_viewport->width() * self_offset / percent, ui_viewport->height() * self_offset_v / percent);
+      p_layer->move(ui_viewport->width() * self_offset / percent, ui_viewport->height() * self_offset_v / percent);
     }
 }
 
