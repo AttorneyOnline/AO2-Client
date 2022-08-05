@@ -264,9 +264,6 @@ public:
   // Display the character.
   void display_character();
 
-  // Display the character's pair if present.
-  void display_pair_character(QString other_charid, QString other_offset);
-
   // Handle the emote modifier value and proceed through the logic accordingly.
   void handle_emote_mod(int emote_mod, bool p_immediate);
 
