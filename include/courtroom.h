@@ -261,9 +261,6 @@ public:
   // Start the logic for doing a courtroom pan transition
   void do_transition(QString desk_mod, QString old_pos, QString new_pos);
 
-  // After attempting to play a transition animation, clean up the viewport objects for everyone else and continue the IC processing callstack
-  void post_transition_cleanup();
-
   // Display the character.
   void display_character();
 
@@ -1015,6 +1012,9 @@ private slots:
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
+
+  // After attempting to play a transition animation, clean up the viewport objects for everyone else and continue the IC processing callstack
+  void post_transition_cleanup();
 };
 
 #endif // COURTROOM_H

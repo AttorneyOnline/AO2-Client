@@ -2612,10 +2612,9 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 
 
 void Courtroom::on_transition_finish() {
-    delay(TRANSITION_BOOKEND_DELAY);
     transition_animation_group->clear();
     transition_animation_group->setCurrentTime(0);
-    post_transition_cleanup();
+    QTimer::singleShot(TRANSITION_BOOKEND_DELAY, this, SLOT(post_transition_cleanup()));
 }
 
 void Courtroom::post_transition_cleanup() {
@@ -2632,12 +2631,6 @@ void Courtroom::post_transition_cleanup() {
     // Reset the pair character
     ui_vp_sideplayer_char->stop();
     ui_vp_sideplayer_char->move_and_center(0, 0);
-
-    // If the emote_mod is not zooming
-    //if (emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
-      // Display the pair character
-    //  display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
-    //}
 
     // Parse the emote_mod part of the chat message
     handle_emote_mod(emote_mod, immediate);
