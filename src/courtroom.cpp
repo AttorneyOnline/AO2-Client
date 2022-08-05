@@ -2542,16 +2542,6 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_pos) {
 
-    // for debugging animation
-    //ui_vp_sideplayer_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
-
-    set_scene(p_desk_mod, old_pos);
-
-    transition_animation_group->setCurrentTime(0);
-    transition_animation_group->clear();
-
-    display_character();
-
     QPair<QString, int> old_pos_pair = ao_app->get_pos_path(old_pos);
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(new_pos);
 
@@ -2560,20 +2550,29 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
         post_transition_cleanup();
         return;
     }
-    const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
-    int duration = ao_app->get_pos_transition_duration(old_pos, new_pos);
 
+    // for debugging animation
+    //ui_vp_sideplayer_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
+
+    set_scene(p_desk_mod, old_pos);
+
+    display_character();
+
+    const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
+
+    int duration = ao_app->get_pos_transition_duration(old_pos, new_pos);
     qDebug() << "transition duration" << duration;
 
     // Set up the background, desk, and player objects' animations
 
     for (AOLayer *ui_element : affected_list) {
         QPropertyAnimation *transition_animation = new QPropertyAnimation(ui_element, "pos", this);
+        qDebug() << "Start pos" << ui_element->pos();
         transition_animation->setStartValue(ui_element->pos());
         transition_animation->setDuration(duration);
         int offset = (old_pos_pair.second * ui_element->get_scaling_factor()) - (new_pos_pair.second * ui_element->get_scaling_factor());
         transition_animation->setEndValue(QPoint(ui_element->pos().x() + offset, ui_element->pos().y()));
-        qDebug() << "endvalue" << transition_animation->endValue();
+        qDebug() << "End pos" << transition_animation->endValue();
         transition_animation->setEasingCurve(QEasingCurve::Linear);
         transition_animation_group->addAnimation(transition_animation);
     }
@@ -2612,7 +2611,11 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 }
 
 
-void Courtroom::on_transition_finish() { delay(TRANSITION_BOOKEND_DELAY); set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_player_char); post_transition_cleanup(); }
+void Courtroom::on_transition_finish() {
+    delay(TRANSITION_BOOKEND_DELAY);
+    transition_animation_group->clear();
+    post_transition_cleanup();
+}
 
 void Courtroom::post_transition_cleanup() {
 
@@ -4150,12 +4153,6 @@ void Courtroom::on_ooc_return_pressed()
           ui_vp_background->fade(true, 700);
       }
       return;
-  }
-  else if (ooc_message.startsWith("/slide")) {
-      QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
-      if (command.size() >= 3) {
-          do_transition("", command[1], command[2]);
-      }
   }
   else if (ooc_message.startsWith("/load_case")) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)

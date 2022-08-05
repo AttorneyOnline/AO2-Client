@@ -258,6 +258,9 @@ public:
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
 
+  // Start the logic for doing a courtroom pan transition
+  void do_transition(QString desk_mod, QString old_pos, QString new_pos);
+
   // After attempting to play a transition animation, clean up the viewport objects for everyone else and continue the IC processing callstack
   void post_transition_cleanup();
 
@@ -841,7 +844,6 @@ public slots:
   void objection_done();
   void preanim_done();
   void do_screenshake();
-  void do_transition(QString desk_mod, QString old_pos, QString new_pos);
   void on_transition_finish();
   void do_flash();
   void do_effect(QString fx_path, QString fx_sound, QString p_char,
