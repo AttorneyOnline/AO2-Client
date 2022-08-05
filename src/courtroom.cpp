@@ -379,9 +379,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_mute_list = new QListWidget(this);
   ui_mute_list->setObjectName("ui_mute_list");
 
-  ui_pair_list = new QListWidget(this);
-  ui_pair_list->setObjectName("ui_pair_list");
-
   ui_pair_offset_spinbox = new QSpinBox(this);
   ui_pair_offset_spinbox->setRange(-100, 100);
   ui_pair_offset_spinbox->setSuffix("% x");
@@ -391,14 +388,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_vert_offset_spinbox->setRange(-100, 100);
   ui_pair_vert_offset_spinbox->setSuffix("% y");
   ui_pair_vert_offset_spinbox->setObjectName("ui_pair_vert_offset_spinbox");
-
-  ui_pair_order_dropdown = new QComboBox(this);
-  ui_pair_order_dropdown->addItem(tr("To front"));
-  ui_pair_order_dropdown->addItem(tr("To behind"));
-  ui_pair_order_dropdown->setObjectName("ui_pair_order_dropdown");
-
-  ui_pair_button = new AOButton(this, ao_app);
-  ui_pair_button->setObjectName("ui_pair_button");
 
   ui_evidence_button = new AOButton(this, ao_app);
   ui_evidence_button->setObjectName("ui_evidence_button");
@@ -542,15 +531,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_showname_enable, &AOButton::clicked, this,
           &Courtroom::on_showname_enable_clicked);
 
-  connect(ui_pair_button, &AOButton::clicked, this, &Courtroom::on_pair_clicked);
-  connect(ui_pair_list, &QListWidget::clicked, this,
-          &Courtroom::on_pair_list_clicked);
   connect(ui_pair_offset_spinbox, QOverload<int>::of(&QSpinBox::valueChanged), this,
           &Courtroom::on_pair_offset_changed);
   connect(ui_pair_vert_offset_spinbox, QOverload<int>::of(&QSpinBox::valueChanged), this,
           &Courtroom::on_pair_vert_offset_changed);
-  connect(ui_pair_order_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-          &Courtroom::on_pair_order_dropdown_changed);
 
   connect(ui_evidence_button, &AOButton::clicked, this,
           &Courtroom::on_evidence_button_clicked);
@@ -608,20 +592,6 @@ void Courtroom::set_mute_list()
   }
 }
 
-void Courtroom::set_pair_list()
-{
-  QStringList sorted_pair_list;
-
-  for (const char_type &i_char : qAsConst(char_list))
-    sorted_pair_list.append(i_char.name);
-
-  sorted_pair_list.sort();
-
-  for (const QString &i_name : sorted_pair_list) {
-    ui_pair_list->addItem(i_name);
-  }
-}
-
 void Courtroom::set_widgets()
 {
   QString filename = "courtroom_design.ini";
@@ -635,7 +605,6 @@ void Courtroom::set_widgets()
   // If there is a point to it, show all CCCC features.
   // We also do this this soon so that set_size_and_pos can hide them all later,
   // if needed.
-  ui_pair_button->show();
   ui_immediate->show();
   ui_showname_enable->show();
   ui_ic_chat_name->show();
@@ -723,33 +692,17 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
 
-  set_size_and_pos(ui_pair_list, "pair_list");
-  ui_pair_list->hide();
-  ui_pair_list->setToolTip(tr("Select a character you wish to pair with."));
-
   set_size_and_pos(ui_pair_offset_spinbox, "pair_offset_spinbox");
-  ui_pair_offset_spinbox->hide();
   ui_pair_offset_spinbox->setToolTip(
       tr("Change the horizontal percentage offset of your character's position "
          "from the "
          "center of the screen."));
 
   set_size_and_pos(ui_pair_vert_offset_spinbox, "pair_vert_offset_spinbox");
-  ui_pair_vert_offset_spinbox->hide();
   ui_pair_vert_offset_spinbox->setToolTip(
       tr("Change the vertical percentage offset of your character's position "
          "from the "
          "center of the screen."));
-
-  ui_pair_order_dropdown->hide();
-  set_size_and_pos(ui_pair_order_dropdown, "pair_order_dropdown");
-  ui_pair_order_dropdown->setToolTip(
-      tr("Change the order of appearance for your character."));
-
-  set_size_and_pos(ui_pair_button, "pair_button");
-  ui_pair_button->set_image("pair_button");
-  ui_pair_button->setToolTip(
-      tr("Display the list of characters to pair with."));
 
   set_size_and_pos(ui_area_list, "music_list");
   ui_area_list->header()->setMinimumSectionSize(ui_area_list->width());
@@ -1287,7 +1240,6 @@ void Courtroom::done_received()
   }
 
   set_mute_list();
-  set_pair_list();
 
   show();
 
@@ -1930,8 +1882,9 @@ void Courtroom::on_chat_return_pressed()
   // Similarly, we send over whom we're paired with, unless we have chosen
   // ourselves. Or a charid of -1 or lower, through some means.
   // Also send over the pairing order.
+  // TODO: REWORK THIS FOR TRANSITIONS
   if (other_charid > -1 && other_charid != m_cid) {
-    QString packet = QString::number(other_charid) + "^" + QString::number(pair_order);
+    QString packet = QString::number(other_charid) + "^" + QString::number(0);
     packet_contents.append(packet);
   }
   else {
@@ -2480,15 +2433,19 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(new_pos);
 
     if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1) {
+
+#ifdef DEBUG_TRANSITION
         qDebug() << "skipping transition - not applicable";
+#endif
         post_transition_cleanup();
         return;
     }
-
+#ifdef DEBUG_TRANSITION
     // for debugging animation
     ui_vp_sideplayer_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
 
     qDebug() << "STARTING TRANSITION, CURRENT TIME:" << transition_animation_group->currentTime();
+#endif
 
     set_scene(p_desk_mod, old_pos);
 
@@ -2497,18 +2454,15 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
 
     int duration = ao_app->get_pos_transition_duration(old_pos, new_pos);
-    qDebug() << "transition duration" << duration;
 
     // Set up the background, desk, and player objects' animations
 
     for (AOLayer *ui_element : affected_list) {
         QPropertyAnimation *transition_animation = new QPropertyAnimation(ui_element, "pos", this);
-        qDebug() << "Start pos" << ui_element->pos();
         transition_animation->setStartValue(ui_element->pos());
         transition_animation->setDuration(duration);
         int offset = (old_pos_pair.second * ui_element->get_scaling_factor()) - (new_pos_pair.second * ui_element->get_scaling_factor());
         transition_animation->setEndValue(QPoint(ui_element->pos().x() + offset, ui_element->pos().y()));
-        qDebug() << "End pos" << transition_animation->endValue();
         transition_animation->setEasingCurve(QEasingCurve::Linear);
         transition_animation_group->addAnimation(transition_animation);
     }
@@ -4747,48 +4701,6 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
   }
 }
 
-void Courtroom::on_pair_list_clicked(QModelIndex p_index)
-{
-  QListWidgetItem *f_item = ui_pair_list->item(p_index.row());
-  QString f_char = f_item->text();
-  QString real_char;
-  int f_cid = -1;
-
-  if (f_char.endsWith(" [x]")) {
-    real_char = f_char.left(f_char.size() - 4);
-    f_item->setText(real_char);
-  }
-  else {
-    real_char = f_char;
-    for (int n_char = 0; n_char < char_list.size(); n_char++) {
-      if (char_list.at(n_char).name == real_char)
-        f_cid = n_char;
-    }
-  }
-
-  if (f_cid < -2 || f_cid >= char_list.size()) {
-    qWarning() << "" << real_char << " not present in char_list";
-    return;
-  }
-
-  other_charid = f_cid;
-
-  // Redo the character list.
-  QStringList sorted_pair_list;
-
-  for (const char_type &i_char : qAsConst(char_list))
-    sorted_pair_list.append(i_char.name);
-
-  sorted_pair_list.sort();
-
-  for (int i = 0; i < ui_pair_list->count(); i++) {
-    ui_pair_list->item(i)->setText(sorted_pair_list.at(i));
-  }
-  if (other_charid != -1) {
-    f_item->setText(real_char + " [x]");
-  }
-}
-
 void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
                                              int column)
 {
@@ -5068,42 +4980,12 @@ void Courtroom::on_mute_clicked()
 {
   if (ui_mute_list->isHidden()) {
     ui_mute_list->show();
-    ui_pair_list->hide();
-    ui_pair_offset_spinbox->hide();
-    ui_pair_vert_offset_spinbox->hide();
-    ui_pair_order_dropdown->hide();
-    ui_pair_button->set_image("pair_button");
     ui_mute->set_image("mute_pressed");
   }
   else {
     ui_mute_list->hide();
     ui_mute->set_image("mute");
   }
-}
-
-void Courtroom::on_pair_clicked()
-{
-  if (ui_pair_list->isHidden()) {
-    ui_pair_list->show();
-    ui_pair_offset_spinbox->show();
-    ui_pair_vert_offset_spinbox->show();
-    ui_pair_order_dropdown->show();
-    ui_mute_list->hide();
-    ui_mute->set_image("mute");
-    ui_pair_button->set_image("pair_button_pressed");
-  }
-  else {
-    ui_pair_list->hide();
-    ui_pair_offset_spinbox->hide();
-    ui_pair_vert_offset_spinbox->hide();
-    ui_pair_order_dropdown->hide();
-    ui_pair_button->set_image("pair_button");
-  }
-}
-
-void Courtroom::on_pair_order_dropdown_changed(int p_index)
-{
-  pair_order = p_index;
 }
 
 void Courtroom::on_defense_minus_clicked()

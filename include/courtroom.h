@@ -183,9 +183,6 @@ public:
   // sets the local mute list based on characters available on the server
   void set_mute_list();
 
-  // Sets the local pair list based on the characters available on the server.
-  void set_pair_list();
-
   // sets desk and bg based on pos in chatmessage
   void set_scene(QString f_desk_mod, QString f_side);
 
@@ -374,9 +371,6 @@ private:
 
   // The vertical offset this user has given.
   int char_vert_offset = 0;
-
-  // 0 = in front, 1 = behind
-  int pair_order = 0;
 
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
@@ -679,12 +673,8 @@ private:
   static const int max_clocks = 5;
   AOClockLabel *ui_clock[max_clocks];
 
-  AOButton *ui_pair_button;
-  QListWidget *ui_pair_list;
   QSpinBox *ui_pair_offset_spinbox;
   QSpinBox *ui_pair_vert_offset_spinbox;
-
-  QComboBox *ui_pair_order_dropdown;
 
   QLineEdit *ui_ic_chat_message;
   AOLineEditFilter *ui_ic_chat_message_filter;
@@ -859,7 +849,6 @@ private slots:
   void chat_tick();
 
   void on_mute_list_clicked(QModelIndex p_index);
-  void on_pair_list_clicked(QModelIndex p_index);
 
   void on_chat_return_pressed();
 
@@ -936,8 +925,6 @@ private slots:
   void on_screenshake_clicked();
 
   void on_mute_clicked();
-  void on_pair_clicked();
-  void on_pair_order_dropdown_changed(int p_index);
 
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();
