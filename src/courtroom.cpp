@@ -1361,9 +1361,7 @@ void Courtroom::set_background(QString p_background, bool display)
     QString f_side = current_side;
     if (current_side == "")
       f_side = ao_app->get_char_side(current_char);
-    set_scene(
-        QString::number(ao_app->get_desk_mod(current_char, current_emote)),
-        f_side);
+    set_scene(QString::number(ao_app->get_desk_mod(current_char, current_emote)), f_side);
   }
 }
 
@@ -2552,7 +2550,9 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     }
 
     // for debugging animation
-    //ui_vp_sideplayer_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
+    ui_vp_sideplayer_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
+
+    qDebug() << "STARTING TRANSITION, CURRENT TIME:" << transition_animation_group->currentTime();
 
     set_scene(p_desk_mod, old_pos);
 
@@ -2614,6 +2614,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 void Courtroom::on_transition_finish() {
     delay(TRANSITION_BOOKEND_DELAY);
     transition_animation_group->clear();
+    transition_animation_group->setCurrentTime(0);
     post_transition_cleanup();
 }
 
