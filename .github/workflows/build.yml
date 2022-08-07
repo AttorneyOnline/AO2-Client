@@ -78,10 +78,6 @@ jobs:
           ${{steps.qt.outputs.make}}
           ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
 
-      - name: Create bin folder
-        run: |
-          mkdir bin
-
       - name: Install Windows Discord RPC
         if: contains(matrix.os, 'windows')
         run: |
