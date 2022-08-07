@@ -32,7 +32,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   original_message_handler = qInstallMessageHandler(message_handler);
 
   setApplicationVersion(get_version_string());
-  setApplicationDisplayName(tr("Attorney Online 2"));
+  setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
 }
 
 AOApplication::~AOApplication()
@@ -51,6 +51,7 @@ void AOApplication::construct_lobby()
     return;
   }
 
+  load_favorite_list();
   w_lobby = new Lobby(this);
   lobby_constructed = true;
 
@@ -125,9 +126,34 @@ QString AOApplication::get_version_string()
 
 void AOApplication::reload_theme() { current_theme = read_theme(); }
 
-void AOApplication::set_favorite_list()
+void AOApplication::load_favorite_list()
 {
-  favorite_list = read_serverlist_txt();
+  favorite_list = read_favorite_servers();
+}
+
+void AOApplication::save_favorite_list()
+{
+  QSettings favorite_servers_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
+  favorite_servers_ini.setIniCodec("UTF-8");
+
+  favorite_servers_ini.clear();
+  // skip demo server entry, demo server entry is always at index 0
+  for(int i = 1; i < favorite_list.size(); ++i) {
+    auto fav_server = favorite_list.at(i);
+    favorite_servers_ini.beginGroup(QString::number(i));
+    favorite_servers_ini.setValue("name", fav_server.name);
+    favorite_servers_ini.setValue("address", fav_server.ip);
+    favorite_servers_ini.setValue("port", fav_server.port);
+    favorite_servers_ini.setValue("desc", fav_server.desc);
+
+    if (fav_server.socket_type == TCP) {
+      favorite_servers_ini.setValue("protocol", "tcp");
+    } else {
+      favorite_servers_ini.setValue("protocol", "ws");
+    }
+    favorite_servers_ini.endGroup();
+  }
+  favorite_servers_ini.sync();
 }
 
 QString AOApplication::get_current_char()
@@ -142,14 +168,16 @@ void AOApplication::add_favorite_server(int p_server)
 {
   if (p_server < 0 || p_server >= server_list.size())
     return;
+  favorite_list.append(server_list.at(p_server));
+  save_favorite_list();
+}
 
-  server_type fav_server = server_list.at(p_server);
-
-  QString str_port = QString::number(fav_server.port);
-
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
-
-  write_to_serverlist_txt(server_line);
+void AOApplication::remove_favorite_server(int p_server)
+{
+  if (p_server < 0 || p_server >= favorite_list.size())
+    return;
+  favorite_list.removeAt(p_server);
+  save_favorite_list();
 }
 
 void AOApplication::server_disconnected()

@@ -1,4 +1,4 @@
-QT += core gui widgets network
+QT += core gui widgets network websockets
 
 TARGET = Attorney_Online
 TEMPLATE = app
@@ -29,7 +29,9 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 # DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {
-  LIBS += -ldiscord-rpc
+  win32:LIBS            += -ldiscord-rpc
+  linux:!android:LIBS   += -ldiscord-rpc
+  mac:LIBS              += -ldiscord-rpc
 }
 
 # As of 2.8.5, BASS and BASSOPUS are required for all platforms. Qt Multimedia
@@ -54,18 +56,20 @@ TRANSLATIONS = resource/translations/ao_en.ts \
                resource/translations/ao_ru.ts \
                resource/translations/ao_es.ts \
                resource/translations/ao_pt.ts \
-               resource/translations/ao_pl.ts
+               resource/translations/ao_pl.ts \
+               resource/translations/ao_it.ts
 
 win32:RC_ICONS = resource/logo_ao2.ico
 macx:ICON = resource/logo_ao2.icns
 
+android:QT += androidextras
+
 android:DISTFILES += \
     android/AndroidManifest.xml \
-    android/build.gradle \
+    android/gradle.properties \
     android/gradle/wrapper/gradle-wrapper.jar \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew \
-    android/gradlew.bat \
-    android/res/values/libs.xml
+    android/gradlew.bat
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

@@ -120,7 +120,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_subtheme_combobox);
 
   row += 1;
-
   ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
   ui_theme_reload_button->setText(tr("Reload Theme"));
   ui_theme_reload_button->setToolTip(
@@ -128,6 +127,22 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
   connect(ui_theme_reload_button, &QPushButton::clicked, this,
           &AOOptionsDialog::on_reload_theme_clicked);
+
+  row += 1;
+  ui_theme_folder_button = new QPushButton(ui_form_layout_widget);
+  ui_theme_folder_button->setText(tr("Open Theme Folder"));
+  ui_theme_folder_button->setToolTip(
+      tr("Open the theme folder of the currently selected theme."));
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_folder_button);
+  connect(ui_theme_folder_button, &QPushButton::clicked, this,
+          [=] {
+    QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
+    if (!dir_exists(p_path)) {
+        return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
 
   row += 1;
   ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);
@@ -149,113 +164,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole,
                               ui_theme_log_divider);
-
-  row += 1;
-  ui_downwards_lbl = new QLabel(ui_form_layout_widget);
-  ui_downwards_lbl->setText(tr("Log goes downwards:"));
-  ui_downwards_lbl->setToolTip(
-      tr("If ticked, new messages will appear at "
-         "the bottom (like the OOC chatlog). The traditional "
-         "(AO1) behaviour is equivalent to this being unticked."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_downwards_lbl);
-
-  ui_downwards_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_downwards_cb);
-
-  row += 1;
-  ui_length_lbl = new QLabel(ui_form_layout_widget);
-  ui_length_lbl->setText(tr("Log length:"));
-  ui_length_lbl->setToolTip(tr(
-      "The amount of message lines the IC chatlog will keep before "
-      "deleting older message lines. A value of 0 or below counts as 'infinite'."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_length_lbl);
-
-  ui_length_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_length_spinbox->setSuffix(" lines");
-  ui_length_spinbox->setMaximum(10000);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_length_spinbox);
-
-  row += 1;
-  ui_log_newline_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_newline_lbl->setText(tr("Log newline:"));
-  ui_log_newline_lbl->setToolTip(
-      tr("If ticked, new messages will appear separated, "
-         "with the message coming on the next line after the name. "
-         "When unticked, it displays it as 'name: message'."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_newline_lbl);
-
-  ui_log_newline_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_newline_cb);
-
-  row += 1;
-  ui_log_margin_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_margin_lbl->setText(tr("Log margin:"));
-  ui_log_margin_lbl->setToolTip(tr(
-      "The distance in pixels between each entry in the IC log. "
-      "Default: 0."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_margin_lbl);
-
-  ui_log_margin_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_log_margin_spinbox->setSuffix(" px");
-  ui_log_margin_spinbox->setMaximum(1000);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_margin_spinbox);
-
-  row += 1;
-  ui_log_timestamp_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_timestamp_lbl->setText(tr("Log timestamp:"));
-  ui_log_timestamp_lbl->setToolTip(
-      tr("If ticked, log will contain a timestamp in UTC before the name."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_lbl);
-
-  ui_log_timestamp_cb = new QCheckBox(ui_form_layout_widget);
-
-  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
-
-  row += 1;
-  ui_log_timestamp_format_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
-
-  ui_log_timestamp_format_combobox = new QComboBox(ui_form_layout_widget);
-  ui_log_timestamp_format_combobox->setEditable(true);
-
-  QString l_current_format = ao_app->get_log_timestamp_format();
-
-  ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
-  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
-  ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
-  ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
-  ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
-
-  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
-
-  if(!ao_app->get_log_timestamp())
-      ui_log_timestamp_format_combobox->setDisabled(true);
-
-  row += 1;
-  ui_log_ic_actions_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
-  ui_log_ic_actions_lbl->setToolTip(
-      tr("If ticked, log will show IC actions such as shouting and presenting evidence."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_ic_actions_lbl);
-
-  ui_log_ic_actions_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
   
   row += 1;
   ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
@@ -271,18 +179,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_stay_time_spinbox->setMaximum(10000);
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stay_time_spinbox);
-
-  row += 1;
-  ui_desync_logs_lbl = new QLabel(ui_form_layout_widget);
-  ui_desync_logs_lbl->setText(tr("Desynchronize IC Logs:"));
-  ui_desync_logs_lbl->setToolTip(
-      tr("If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_desync_logs_lbl);
-
-  ui_desync_logs_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_desync_logs_cb);
 
   row += 1;
   ui_instant_objection_lbl = new QLabel(ui_form_layout_widget);
@@ -584,26 +480,31 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
 
-  //Check whether mass logging is enabled
   row += 1;
-  ui_log_text_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_text_lbl->setText(tr("Log to Text Files:"));
-  ui_log_text_lbl->setToolTip(
-      tr("Text logs of gameplay will be automatically written in the /logs folder."));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_text_lbl);
 
-  ui_log_text_cb = new QCheckBox(ui_form_layout_widget);
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_text_cb);
+  ui_sfx_on_idle_lbl = new QLabel(ui_form_layout_widget);
+  ui_sfx_on_idle_lbl->setText(tr("Always Send SFX:"));
+  ui_sfx_on_idle_lbl->setToolTip(
+      tr("If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_sfx_on_idle_lbl);
+
+  ui_sfx_on_idle_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_sfx_on_idle_cb);
 
   row += 1;
-  ui_log_demo_lbl = new QLabel(ui_form_layout_widget);
-  ui_log_demo_lbl->setText(tr("Log to Demo Files:"));
-  ui_log_demo_lbl->setToolTip(
-      tr("Gameplay will be automatically recorded as demos in the /logs folder."));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_log_demo_lbl);
 
-  ui_log_demo_cb = new QCheckBox(ui_form_layout_widget);
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_log_demo_cb);
+  ui_evidence_double_click_lbl = new QLabel(ui_form_layout_widget);
+  ui_evidence_double_click_lbl->setText(tr("Evidence Double Click:"));
+  ui_evidence_double_click_lbl->setToolTip(
+      tr("If ticked, Evidence needs a double-click to view rather than a single click."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_evidence_double_click_lbl);
+
+  ui_evidence_double_click_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_evidence_double_click_cb);
 
   // Finish gameplay tab
   QScrollArea *scroll = new QScrollArea(this);
@@ -736,6 +637,21 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                              ui_blips_volume_spinbox);
 
   row += 1;
+  ui_suppress_audio_lbl = new QLabel(ui_audio_widget);
+  ui_suppress_audio_lbl->setText(tr("Suppress Audio:"));
+  ui_suppress_audio_lbl->setToolTip(
+      tr("How much of the volume to suppress when client is not in focus."));
+
+  ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_suppress_audio_lbl);
+
+  ui_suppress_audio_spinbox = new QSpinBox(ui_audio_widget);
+  ui_suppress_audio_spinbox->setMaximum(100);
+  ui_suppress_audio_spinbox->setSuffix("%");
+
+  ui_audio_layout->setWidget(row, QFormLayout::FieldRole,
+                             ui_suppress_audio_spinbox);
+
+  row += 1;
   ui_volume_blip_divider = new QFrame(ui_audio_widget);
   ui_volume_blip_divider->setFrameShape(QFrame::HLine);
   ui_volume_blip_divider->setFrameShadow(QFrame::Sunken);
@@ -796,6 +712,16 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_objectmusic_cb);
 
+  row += 1;
+  ui_disablestreams_lbl = new QLabel(ui_audio_widget);
+  ui_disablestreams_lbl->setText(tr("Disable Music Streaming:"));
+  ui_disablestreams_lbl->setToolTip(
+      tr("If true, AO2 will not play any streamed audio and show that streaming is disabled."));
+  ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_disablestreams_lbl);
+
+  ui_disablestreams_cb = new QCheckBox(ui_audio_widget);
+  ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_disablestreams_cb);
+
   // The casing tab!
   ui_casing_tab = new QWidget(this);
   ui_settings_tabs->addTab(ui_casing_tab, tr("Casing"));
@@ -814,7 +740,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   // -- SERVER SUPPORTS CASING
 
   ui_casing_supported_lbl = new QLabel(ui_casing_widget);
-  if (ao_app->casing_alerts_enabled)
+  if (ao_app->casing_alerts_supported)
     ui_casing_supported_lbl->setText(tr("This server supports case alerts."));
   else
     ui_casing_supported_lbl->setText(
@@ -971,12 +897,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_add->setSizePolicy(stretch_btns);
   ui_mount_buttons_layout->addWidget(ui_mount_add, 0, 0, 1, 1);
   connect(ui_mount_add, &QPushButton::clicked, this, [this] {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select a base folder"),
                                                     QApplication::applicationDirPath(),
                                                     QFileDialog::ShowDirsOnly);
-    if (dir.isEmpty())
+    if (path.isEmpty()) {
       return;
-    QListWidgetItem *dir_item = new QListWidgetItem(dir);
+    }
+    QDir dir(QApplication::applicationDirPath());
+    QString relative = dir.relativeFilePath(path);
+    if (!relative.contains("../")) {
+      path = relative;
+    }
+    QListWidgetItem *dir_item = new QListWidgetItem(path);
     ui_mount_list->addItem(dir_item);
     ui_mount_list->setCurrentItem(dir_item);
 
@@ -988,7 +920,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_remove->setSizePolicy(stretch_btns);
   ui_mount_remove->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_remove, 0, 1, 1, 1);
-  connect(ui_mount_remove, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_remove, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -1006,7 +938,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_up->setMaximumWidth(40);
   ui_mount_up->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_up, 0, 3, 1, 1);
-  connect(ui_mount_up, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_up, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -1024,7 +956,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_mount_down->setMaximumWidth(40);
   ui_mount_down->setEnabled(false);
   ui_mount_buttons_layout->addWidget(ui_mount_down, 0, 4, 1, 1);
-  connect(ui_mount_down, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_down, &QPushButton::clicked, this, [this] {
     auto selected = ui_mount_list->selectedItems();
     if (selected.isEmpty())
       return;
@@ -1046,12 +978,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   "Use this when you have added an asset that takes precedence over another "
   "existing asset."));
   ui_mount_buttons_layout->addWidget(ui_mount_clear_cache, 0, 6, 1, 1);
-  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [=] {
+  connect(ui_mount_clear_cache, &QPushButton::clicked, this, [this] {
     asset_cache_dirty = true;
     ui_mount_clear_cache->setEnabled(false);
   });
 
-  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [=] {
+  connect(ui_mount_list, &QListWidget::itemSelectionChanged, this, [this] {
     auto selected_items = ui_mount_list->selectedItems();
     bool row_selected = !ui_mount_list->selectedItems().isEmpty();
     ui_mount_remove->setEnabled(row_selected);
@@ -1067,6 +999,165 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     if (row >= ui_mount_list->count() - 1)
       ui_mount_down->setEnabled(false);
   });
+
+  // Logging tab
+  ui_logging_tab = new QWidget(this);
+  ui_settings_tabs->addTab(ui_logging_tab, tr("Logging"));
+  ui_form_logging_widget = new QWidget(this);
+
+  ui_logging_form = new QFormLayout(ui_form_logging_widget);
+  ui_logging_form->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                     Qt::AlignVCenter);
+  ui_logging_form->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
+                                    Qt::AlignTop);
+  ui_logging_form->setContentsMargins(5, 5, 0, 0);
+  ui_logging_form->setSpacing(4);
+  row = 0;
+
+  ui_downwards_lbl = new QLabel(ui_form_logging_widget);
+  ui_downwards_lbl->setText(tr("Log goes downwards:"));
+  ui_downwards_lbl->setToolTip(
+      tr("If ticked, new messages will appear at "
+         "the bottom (like the OOC chatlog). The traditional "
+         "(AO1) behaviour is equivalent to this being unticked."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_downwards_lbl);
+
+  ui_downwards_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_downwards_cb);
+
+  row += 1;
+  ui_length_lbl = new QLabel(ui_form_logging_widget);
+  ui_length_lbl->setText(tr("Log length:"));
+  ui_length_lbl->setToolTip(tr(
+      "The amount of message lines the IC chatlog will keep before "
+      "deleting older message lines. A value of 0 or below counts as 'infinite'."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_length_lbl);
+
+  ui_length_spinbox = new QSpinBox(ui_form_logging_widget);
+  ui_length_spinbox->setSuffix(" lines");
+  ui_length_spinbox->setMaximum(10000);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_length_spinbox);
+
+  row += 1;
+  ui_log_newline_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_newline_lbl->setText(tr("Log newline:"));
+  ui_log_newline_lbl->setToolTip(
+      tr("If ticked, new messages will appear separated, "
+         "with the message coming on the next line after the name. "
+         "When unticked, it displays it as 'name: message'."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_newline_lbl);
+
+  ui_log_newline_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_newline_cb);
+
+  row += 1;
+  ui_log_margin_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_margin_lbl->setText(tr("Log margin:"));
+  ui_log_margin_lbl->setToolTip(tr(
+      "The distance in pixels between each entry in the IC log. "
+      "Default: 0."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_margin_lbl);
+
+  ui_log_margin_spinbox = new QSpinBox(ui_form_logging_widget);
+  ui_log_margin_spinbox->setSuffix(" px");
+  ui_log_margin_spinbox->setMaximum(1000);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_margin_spinbox);
+
+  row += 1;
+  ui_log_timestamp_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_timestamp_lbl->setText(tr("Log timestamp:"));
+  ui_log_timestamp_lbl->setToolTip(
+      tr("If ticked, log will contain a timestamp in UTC before the name."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_lbl);
+
+  ui_log_timestamp_cb = new QCheckBox(ui_form_logging_widget);
+
+  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_cb);
+
+  row += 1;
+  ui_log_timestamp_format_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
+
+  ui_log_timestamp_format_combobox = new QComboBox(ui_form_logging_widget);
+  ui_log_timestamp_format_combobox->setEditable(true);
+
+  QString l_current_format = ao_app->get_log_timestamp_format();
+
+  ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
+  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
+  ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
+  ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_timestamp_format_combobox);
+
+  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
+
+  if(!ao_app->get_log_timestamp()) {
+    ui_log_timestamp_format_combobox->setDisabled(true);
+  }
+  row += 1;
+  ui_log_ic_actions_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_ic_actions_lbl->setText(tr("Log IC actions:"));
+  ui_log_ic_actions_lbl->setToolTip(
+      tr("If ticked, log will show IC actions such as shouting and presenting evidence."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_ic_actions_lbl);
+
+  ui_log_ic_actions_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_ic_actions_cb);
+
+  row += 1;
+  ui_desync_logs_lbl = new QLabel(ui_form_logging_widget);
+  ui_desync_logs_lbl->setText(tr("Desynchronize IC Logs:"));
+  ui_desync_logs_lbl->setToolTip(
+      tr("If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)."));
+
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_desync_logs_lbl);
+
+  ui_desync_logs_cb = new QCheckBox(ui_form_logging_widget);
+
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_desync_logs_cb);
+
+  //Check whether mass logging is enabled
+  row += 1;
+  ui_log_text_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_text_lbl->setText(tr("Log to Text Files:"));
+  ui_log_text_lbl->setToolTip(
+      tr("Text logs of gameplay will be automatically written in the /logs folder."));
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_text_lbl);
+
+  ui_log_text_cb = new QCheckBox(ui_form_logging_widget);
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_text_cb);
+
+  row += 1;
+  ui_log_demo_lbl = new QLabel(ui_form_logging_widget);
+  ui_log_demo_lbl->setText(tr("Log to Demo Files:"));
+  ui_log_demo_lbl->setToolTip(
+      tr("Gameplay will be automatically recorded as demos in the /logs folder."));
+  ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_demo_lbl);
+
+  ui_log_demo_cb = new QCheckBox(ui_form_logging_widget);
+  ui_logging_form->setWidget(row, QFormLayout::FieldRole, ui_log_demo_cb);
+
+  // Finish logging tab
+  QScrollArea *log_scroll = new QScrollArea(this);
+  log_scroll->setWidget(ui_form_logging_widget);
+  ui_logging_tab->setLayout(new QVBoxLayout);
+  ui_logging_tab->layout()->addWidget(log_scroll);
 
   // Privacy tab
   ui_privacy_tab = new QWidget(this);
@@ -1147,9 +1238,11 @@ void AOOptionsDialog::update_values() {
   ui_sticker_cb->setChecked(ao_app->is_sticker_enabled());
   ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
   ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
+  ui_sfx_on_idle_cb->setChecked(ao_app->get_sfx_on_idle());
   ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());
   ui_loopsfx_cb->setChecked(ao_app->get_looping_sfx());
   ui_objectmusic_cb->setChecked(ao_app->objection_stop_music());
+  ui_disablestreams_cb->setChecked(ao_app->is_streaming_disabled());
   ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
   ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
   ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
@@ -1167,12 +1260,17 @@ void AOOptionsDialog::update_values() {
   ui_music_volume_spinbox->setValue(ao_app->get_default_music());
   ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
   ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
+  ui_suppress_audio_spinbox->setValue(ao_app->get_default_suppress_audio());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
+  ui_evidence_double_click_cb->setChecked(ao_app->get_evidence_double_click());
 
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
+
+  //Clear the list to prevent duplication of default entries.
+  ui_mount_list->clear();
   ui_mount_list->addItem(defaultMount);
   ui_mount_list->addItems(ao_app->get_mount_paths());
 
@@ -1229,6 +1327,8 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("demo_logging_enabled", ui_log_demo_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());
+  configini->setValue("sfx_on_idle", ui_sfx_on_idle_cb->isChecked());
+  configini->setValue("evidence_double_click", ui_evidence_double_click_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |
@@ -1244,10 +1344,12 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("default_music", ui_music_volume_spinbox->value());
   configini->setValue("default_sfx", ui_sfx_volume_spinbox->value());
   configini->setValue("default_blip", ui_blips_volume_spinbox->value());
+  configini->setValue("suppress_audio", ui_suppress_audio_spinbox->value());
   configini->setValue("blip_rate", ui_bliprate_spinbox->value());
   configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
   configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
   configini->setValue("objection_stop_music", ui_objectmusic_cb->isChecked());
+  configini->setValue("streaming_disabled", ui_disablestreams_cb->isChecked());
 
   configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
   configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());

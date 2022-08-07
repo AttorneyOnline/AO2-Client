@@ -24,6 +24,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "eventfilters.h"
+#include "aoemotepreview.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -51,6 +52,9 @@
 #include <QMessageBox>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator> //added in Qt 5.10
+#endif
 #include <QRegExp>
 #include <QScrollBar>
 #include <QTextBoundaryFinder>
@@ -68,6 +72,8 @@ class Courtroom : public QMainWindow {
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+
+  void update_audio_volume();
 
   void append_char(char_type p_char) { char_list.append(p_char); }
   void append_evidence(evi_type p_evi) { evidence_list.append(p_evi); }
@@ -188,8 +194,7 @@ public:
   void set_scene(QString f_desk_mod, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  // sets ui_effects_layer according to the SELF_OFFSET, unless it is overwritten by effects.ini
-  void set_self_offset(QString p_list, QString p_effect);
+  void set_self_offset(const QString& p_list);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -208,7 +213,8 @@ public:
   QString get_current_background() { return current_background; }
 
   // updates character to p_cid and updates necessary ui elements
-  void update_character(int p_cid);
+  // Optional "char_name" is the iniswap we're using
+  void update_character(int p_cid, QString char_name = "", bool reset_emote = false);
 
   // properly sets up some varibles: resets user state
   void enter_courtroom();
@@ -239,10 +245,11 @@ public:
   enum LogMode {
     IO_ONLY,
     DISPLAY_ONLY,
-    DISPLAY_AND_IO
+    DISPLAY_AND_IO,
+    QUEUED,
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
-  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY);
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY, bool sender = false);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
@@ -256,7 +263,7 @@ public:
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
-  
+
   // Display the character.
   void display_character();
 
@@ -286,7 +293,12 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime());
+                      int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime(),
+                      bool ghost = false);
+
+  // clear sent messages that appear on the IC log but haven't been delivered
+  // yet to other players
+  void pop_ic_ghost();
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -338,6 +350,9 @@ public:
   ~Courtroom();
 private:
   AOApplication *ao_app;
+
+  // Percentage of audio that is suppressed when client is not in focus
+  int suppress_audio = 0;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;
@@ -411,6 +426,7 @@ private:
   int rainbow_counter = 0;
   bool rainbow_appended = false;
   bool blank_blip = false;
+  bool chatbox_always_show = false;
 
   // Used for getting the current maximum blocks allowed in the IC chatlog.
   int log_maximum_blocks = 0;
@@ -442,7 +458,7 @@ private:
 
   // delay before chat messages starts ticking
   QTimer *text_delay_timer;
-  
+
   // delay before the next queue entry is going to be processed
   QTimer *text_queue_timer;
 
@@ -474,6 +490,9 @@ private:
 
   // amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
+
+  // amount of ghost blocks
+  int ghost_blocks = 0;
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
@@ -685,6 +704,9 @@ private:
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
 
+  QMenu *emote_menu;
+  AOEmotePreview *emote_preview;
+
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
   AOButton *ui_pos_remove;
@@ -802,6 +824,7 @@ private:
   void set_char_select();
   void set_char_select_page();
   void char_clicked(int n_char);
+  void on_char_button_context_menu_requested(const QPoint &pos);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
@@ -812,6 +835,7 @@ private:
 
   void initialize_evidence();
   void refresh_evidence();
+  void show_evidence(int f_real_id);
   void set_evidence_page();
 
   void reset_ui();
@@ -819,7 +843,6 @@ private:
   void regenerate_ic_chatlog();
 public slots:
   void objection_done();
-  void effect_done();
   void preanim_done();
   void do_screenshake();
   void do_flash();
@@ -871,6 +894,7 @@ private slots:
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(QString p_text);
+  void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);
@@ -883,6 +907,7 @@ private slots:
   void on_sfx_dropdown_custom(QString p_sfx);
   void set_sfx_dropdown();
   void on_sfx_context_menu_requested(const QPoint &pos);
+  void on_sfx_play_clicked();
   void on_sfx_edit_requested();
   void on_sfx_remove_clicked();
 
@@ -914,6 +939,8 @@ private slots:
   void on_custom_objection_clicked();
   void show_custom_objection_menu(const QPoint &pos);
 
+  void show_emote_menu(const QPoint &pos);
+
   void on_realization_clicked();
   void on_screenshake_clicked();
 
@@ -927,6 +954,7 @@ private slots:
   void on_prosecution_plus_clicked();
 
   void on_text_color_changed(int p_color);
+  void on_text_color_context_menu_requested(const QPoint &pos);
   void set_text_color_dropdown();
 
   void on_music_slider_moved(int p_value);
@@ -957,9 +985,10 @@ private slots:
   void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
+  void on_evidence_context_menu_requested(const QPoint &pos);
 
   void on_evidence_delete_clicked();
-  void on_evidence_x_clicked();
+  bool on_evidence_x_clicked();
   void on_evidence_ok_clicked();
   void on_evidence_switch_clicked();
   void on_evidence_transfer_clicked();
@@ -970,6 +999,8 @@ private slots:
   void evidence_switch(bool global);
   void on_evidence_save_clicked();
   void on_evidence_load_clicked();
+  void evidence_save(QString filename);
+  void evidence_load(QString filename);
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
@@ -987,10 +1018,15 @@ private slots:
 
   void on_casing_clicked();
 
+  void on_application_state_changed(Qt::ApplicationState state);
+
   void ping_server();
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
+
+  void preview_emote(QString emote);
+  void update_emote_preview();
 };
 
 #endif // COURTROOM_H
