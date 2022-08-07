@@ -1,6 +1,7 @@
 *~
 *.db
 *.user
+*.exe
 *.dll
 *.so
 *.pro.autosave
@@ -14,7 +15,13 @@ moc*
 base-full/
 logs/
 bass.lib
-bin/
+bin/base/background/
+bin/base/cases/
+bin/base/characters/
+bin/base/evidence/
+bin/base/fonts/
+bin/base/sounds/
+bin/user*
 bins/
 build/
 release/
@@ -25,6 +32,7 @@ base/sounds
 base/callwords.ini
 base/config.ini
 base/serverlist.txt
+*.ini
 
 .qmake.stash
 .vs/
