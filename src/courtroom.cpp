@@ -2463,7 +2463,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
         transition_animation->setDuration(duration);
         int offset = (old_pos_pair.second * ui_element->get_scaling_factor()) - (new_pos_pair.second * ui_element->get_scaling_factor());
         transition_animation->setEndValue(QPoint(ui_element->pos().x() + offset, ui_element->pos().y()));
-        transition_animation->setEasingCurve(QEasingCurve::Linear);
+        transition_animation->setEasingCurve(QEasingCurve::InOutCubic);
         transition_animation_group->addAnimation(transition_animation);
     }
 
@@ -2490,7 +2490,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     ui_vp_sideplayer_animation->setDuration(duration);
     ui_vp_sideplayer_animation->setStartValue(starting_position);
     ui_vp_sideplayer_animation->setEndValue(ui_vp_sideplayer_char->pos());
-    ui_vp_sideplayer_animation->setEasingCurve(QEasingCurve::Linear);
+    ui_vp_sideplayer_animation->setEasingCurve(QEasingCurve::InOutCubic);
     transition_animation_group->addAnimation(ui_vp_sideplayer_animation);
 
     ui_vp_sideplayer_char->move(starting_position.x(), starting_position.y());
