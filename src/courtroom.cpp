@@ -2458,12 +2458,12 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     // Set up the background, desk, and player objects' animations
 
     float scaling_factor = ui_vp_background->get_scaling_factor();
+    int offset = (float(old_pos_pair.second) * scaling_factor) - (float(new_pos_pair.second) * scaling_factor);
 
     for (AOLayer *ui_element : affected_list) {
         QPropertyAnimation *transition_animation = new QPropertyAnimation(ui_element, "pos", this);
         transition_animation->setStartValue(ui_element->pos());
         transition_animation->setDuration(duration);
-        int offset = (float(old_pos_pair.second) * scaling_factor) - (float(new_pos_pair.second) * scaling_factor);
         transition_animation->setEndValue(QPoint(ui_element->pos().x() + offset, ui_element->pos().y()));
         transition_animation->setEasingCurve(QEasingCurve::InOutCubic);
         transition_animation_group->addAnimation(transition_animation);
@@ -2484,9 +2484,8 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     ui_vp_sideplayer_char->set_flipped(m_chatmessage[FLIP].toInt());
     ui_vp_sideplayer_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
     set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_sideplayer_char);
-    int offset = (float(new_pos_pair.second) * scaling_factor) - (float(old_pos_pair.second) * scaling_factor);
 
-    QPoint starting_position = QPoint(ui_vp_player_char->pos().x() + offset, ui_vp_player_char->pos().y());
+    QPoint starting_position = QPoint(ui_vp_player_char->pos().x() - offset, ui_vp_player_char->pos().y());
     QPropertyAnimation *ui_vp_sideplayer_animation = new QPropertyAnimation(ui_vp_sideplayer_char, "pos", this);
 
     ui_vp_sideplayer_animation->setDuration(duration);
