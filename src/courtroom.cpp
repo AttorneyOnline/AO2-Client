@@ -3735,10 +3735,8 @@ void Courtroom::set_self_offset(const QString& p_list, AOLayer* p_layer) {
     }
     else {
       self_offset_v = self_offsets[1].toInt();
-      p_layer->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
-      const int percent = 100;
-      p_layer->move(ui_viewport->width() * self_offset / percent, ui_viewport->height() * self_offset_v / percent);
     }
+    p_layer->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 }
 
 void Courtroom::set_ip_list(QString p_list)
