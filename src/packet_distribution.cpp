@@ -5,10 +5,11 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+#include "options.h"
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
-    if (get_demo_logging_enabled() && !log_filename.isEmpty())
+    if (Options::options->logToDemoFileEnabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         if (!demo_timer.isValid())
@@ -214,7 +215,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_demo_logging_enabled() && server_name != "Demo playback") {
+    if (Options::options->logToDemoFileEnabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
@@ -228,7 +229,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
-    if (is_discord_enabled())
+    if (Options::options->discordEnabled())
       discord->state_server(server_name.toStdString(),
                             hash.result().toBase64().toStdString());
     log_to_demo = false;

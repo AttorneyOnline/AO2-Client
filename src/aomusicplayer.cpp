@@ -1,4 +1,5 @@
 #include "aomusicplayer.h"
+#include "options.h"
 
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
@@ -30,7 +31,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   DWORD newstream;
   if (f_path.startsWith("http")) {
 
-    if (ao_app->is_streaming_disabled()) {
+    if (!Options::options->streamingEnabled()) {
         BASS_ChannelStop(m_stream_list[channel]);
         return QObject::tr("[MISSING] Streaming disabled.");
     }
@@ -56,7 +57,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   int error_code = BASS_ErrorGetCode();
 
-  if (ao_app->get_audio_output_device() != "default")
+  if (Options::options->audioOutputDevice() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
 
   QString d_path = f_path + ".txt";

@@ -4,6 +4,7 @@
 #include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+#include "options.h"
 
 #include "aocaseannouncerdialog.h"
 #include "aooptionsdialog.h"
@@ -33,6 +34,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   setApplicationVersion(get_version_string());
   setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
+
+  options = new Options();
 }
 
 AOApplication::~AOApplication()
@@ -60,7 +63,7 @@ void AOApplication::construct_lobby()
   int y = (geometry.height() - w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (is_discord_enabled())
+  if (Options::options->discordEnabled())
     discord->state_lobby();
 
   if (demo_server)
@@ -124,7 +127,7 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme() { current_theme = read_theme(); }
+void AOApplication::reload_theme() { current_theme = Options::options->theme(); }
 
 void AOApplication::load_favorite_list()
 {
@@ -236,13 +239,13 @@ void AOApplication::initBASS()
   unsigned int a = 0;
   BASS_DEVICEINFO info;
 
-  if (get_audio_output_device() == "default") {
+  if (Options::options->audioOutputDevice() == "default") {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
   else {
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-      if (get_audio_output_device() == info.name) {
+      if (Options::options->audioOutputDevice() == info.name) {
         BASS_SetDevice(a);
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);

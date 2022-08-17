@@ -1,6 +1,7 @@
 #include "aoapplication.h"
 #include "courtroom.h"
 #include "file_functions.h"
+#include "options.h"
 
 #include <QDir>
 #include <QRegExp>
@@ -280,9 +281,9 @@ QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_characte
 {
   QVector<VPath> pathlist;
   // Sounds subfolder is prioritized for organization sake
-  pathlist += get_asset_paths("sounds/" + p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
+  pathlist += get_asset_paths("sounds/" + p_sfx, current_theme, Options::options->subTheme(), default_theme, p_misc, p_character);
   // If sound subfolder not found, search just for SFX
-  pathlist += get_asset_paths(p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
+  pathlist += get_asset_paths(p_sfx, current_theme, Options::options->subTheme(), default_theme, p_misc, p_character);
   // If SFX not found, search base/sounds/general/ folder
   pathlist += get_sounds_path(p_sfx);
   QString ret = get_sfx_path(pathlist);
@@ -346,7 +347,7 @@ QString AOApplication::get_real_path(const VPath &vpath,
   }
 
   // Cache miss; try all known mount paths
-  QStringList bases = get_mount_paths();
+  QStringList bases = Options::options->mountpaths();
   bases.prepend(get_base_path());
   // base
   // content 1

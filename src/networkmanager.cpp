@@ -3,6 +3,7 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "lobby.h"
+#include "options.h"
 
 #include <QAbstractSocket>
 #include <QJsonArray>
@@ -81,7 +82,7 @@ void NetworkManager::send_heartbeat()
   // within a 5 minute window, so that the the number of people playing within
   // that time period can be counted and an accurate player count be displayed.
   // What do I care about your personal information, I really don't want it.
-  if (ao_app->get_player_count_optout())
+  if (Options::options->PlayercountOptout())
     return;
 
   QNetworkRequest req(QUrl(ms_baseurl + "/playing"));

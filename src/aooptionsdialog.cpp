@@ -4,6 +4,7 @@
 #include "lobby.h"
 #include "bass.h"
 #include "networkmanager.h"
+#include "options.h"
 
 #include <QFileDialog>
 
@@ -77,7 +78,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   // Fill the combobox with the names of the themes.
   QSet<QString> themes;
-  QStringList bases = ao_app->get_mount_paths();
+  QStringList bases = Options::options->mountpaths();
   bases.push_front(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
@@ -577,7 +578,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   BASS_DEVICEINFO info;
   for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
     ui_audio_device_combobox->addItem(info.name);
-    if (ao_app->get_audio_output_device() == info.name)
+    if (Options::options->audioOutputDevice() == info.name)
       ui_audio_device_combobox->setCurrentIndex(
           ui_audio_device_combobox->count() - 1);
   }
@@ -1087,13 +1088,13 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   row += 1;
   ui_log_timestamp_format_lbl = new QLabel(ui_form_logging_widget);
-  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ao_app->get_log_timestamp_format()));
+  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(Options::options->logTimestampFormat()));
   ui_logging_form->setWidget(row, QFormLayout::LabelRole, ui_log_timestamp_format_lbl);
 
   ui_log_timestamp_format_combobox = new QComboBox(ui_form_logging_widget);
   ui_log_timestamp_format_combobox->setEditable(true);
 
-  QString l_current_format = ao_app->get_log_timestamp_format();
+  QString l_current_format = Options::options->logTimestampFormat();
 
   ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
   ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
@@ -1105,7 +1106,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
-  if(!ao_app->get_log_timestamp()) {
+  if(!Options::options->logTimestampEnabled()) {
     ui_log_timestamp_format_combobox->setDisabled(true);
   }
   row += 1;
@@ -1189,195 +1190,14 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   setUpdatesEnabled(true);
 }
 
-void AOOptionsDialog::update_values() {
-  for (int i = 0; i < ui_theme_combobox->count(); ++i) {
-    if (ui_theme_combobox->itemText(i) == ao_app->read_theme())
-    {
-      ui_theme_combobox->setCurrentIndex(i);
-      break;
-    }
-  }
-  QString subtheme =
-      ao_app->configini->value("subtheme").value<QString>();
-  for (int i = 0; i < ui_subtheme_combobox->count(); ++i) {
-    if (ui_subtheme_combobox->itemText(i) == subtheme)
-    {
-      ui_subtheme_combobox->setCurrentIndex(i);
-      break;
-    }
-  }
-  Qt::TransformationMode scaling = ao_app->get_scaling(ao_app->get_default_scaling());
-  ui_scaling_combobox->setCurrentIndex(scaling);
+void AOOptionsDialog::update_values()
+{
 
-  // Let's fill the callwords text edit with the already present callwords.
-  ui_callwords_textbox->document()->clear();
-  foreach (QString callword, ao_app->get_call_words()) {
-    ui_callwords_textbox->appendPlainText(callword);
-  }
-  ui_animated_theme_cb->setChecked(ao_app->get_animated_theme());
-  ui_ms_textbox->setText(ao_app->configini->value("master", "").value<QString>());
-  ui_casing_cm_cases_textbox->setText(ao_app->get_casing_can_host_cases());
-  ui_username_textbox->setText(ao_app->get_default_username());
-  ui_downwards_cb->setChecked(ao_app->get_log_goes_downwards());
-  ui_log_newline_cb->setChecked(ao_app->get_log_newline());
-  ui_log_timestamp_cb->setChecked(ao_app->get_log_timestamp());
-  ui_log_timestamp_format_combobox->setCurrentText(ao_app->get_log_timestamp_format());
-  ui_log_ic_actions_cb->setChecked(ao_app->get_log_ic_actions());
-  ui_desync_logs_cb->setChecked(ao_app->is_desyncrhonized_logs_enabled());
-  ui_instant_objection_cb->setChecked(ao_app->is_instant_objection_enabled());
-  ui_showname_cb->setChecked(ao_app->get_showname_enabled_by_default());
-  ui_discord_cb->setChecked(ao_app->is_discord_enabled());
-  ui_shake_cb->setChecked(ao_app->is_shake_enabled());
-  ui_effects_cb->setChecked(ao_app->is_effects_enabled());
-  ui_framenetwork_cb->setChecked(ao_app->is_frame_network_enabled());
-  ui_colorlog_cb->setChecked(ao_app->is_colorlog_enabled());
-  ui_stickysounds_cb->setChecked(ao_app->is_stickysounds_enabled());
-  ui_stickyeffects_cb->setChecked(ao_app->is_stickyeffects_enabled());
-  ui_stickypres_cb->setChecked(ao_app->is_stickypres_enabled());
-  ui_customchat_cb->setChecked(ao_app->is_customchat_enabled());
-  ui_sticker_cb->setChecked(ao_app->is_sticker_enabled());
-  ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
-  ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
-  ui_sfx_on_idle_cb->setChecked(ao_app->get_sfx_on_idle());
-  ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());
-  ui_loopsfx_cb->setChecked(ao_app->get_looping_sfx());
-  ui_objectmusic_cb->setChecked(ao_app->objection_stop_music());
-  ui_disablestreams_cb->setChecked(ao_app->is_streaming_disabled());
-  ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
-  ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
-  ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
-  ui_casing_jud_cb->setChecked(ao_app->get_casing_judge_enabled());
-  ui_casing_jur_cb->setChecked(ao_app->get_casing_juror_enabled());
-  ui_casing_steno_cb->setChecked(ao_app->get_casing_steno_enabled());
-  ui_casing_cm_cb->setChecked(ao_app->get_casing_cm_enabled());
-  ui_log_text_cb->setChecked(ao_app->get_text_logging_enabled());
-  ui_log_demo_cb->setChecked(ao_app->get_demo_logging_enabled());
-  ui_length_spinbox->setValue(ao_app->get_max_log_size());
-  ui_log_margin_spinbox->setValue(ao_app->get_log_margin());
-  ui_stay_time_spinbox->setValue(ao_app->stay_time());
-  ui_text_crawl_spinbox->setValue(ao_app->get_text_crawl());
-  ui_chat_ratelimit_spinbox->setValue(ao_app->get_chat_ratelimit());
-  ui_music_volume_spinbox->setValue(ao_app->get_default_music());
-  ui_sfx_volume_spinbox->setValue(ao_app->get_default_sfx());
-  ui_blips_volume_spinbox->setValue(ao_app->get_default_blip());
-  ui_suppress_audio_spinbox->setValue(ao_app->get_default_suppress_audio());
-  ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
-  ui_default_showname_textbox->setText(ao_app->get_default_showname());
-  ui_evidence_double_click_cb->setChecked(ao_app->get_evidence_double_click());
-
-  auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
-                                           .arg(ao_app->get_base_path()));
-  defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
-
-  //Clear the list to prevent duplication of default entries.
-  ui_mount_list->clear();
-  ui_mount_list->addItem(defaultMount);
-  ui_mount_list->addItems(ao_app->get_mount_paths());
-
-  ui_privacy_optout_cb->setChecked(ao_app->get_player_count_optout());
-
-  ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
-    if (document.isEmpty()) {
-      document = tr("Couldn't get the privacy policy.");
-    }
-    ui_privacy_policy->setHtml(document);
-  });
 }
 
 void AOOptionsDialog::save_pressed()
 {
-  // Save everything into the config.ini.
-  QSettings *configini = ao_app->configini;
 
-  const bool audioChanged = ui_audio_device_combobox->currentText() !=
-      ao_app->get_audio_output_device();
-
-  configini->setValue("theme", ui_theme_combobox->currentText());
-  configini->setValue("subtheme", ui_subtheme_combobox->currentText());
-  configini->setValue("animated_theme", ui_animated_theme_cb->isChecked());
-  configini->setValue("log_goes_downwards", ui_downwards_cb->isChecked());
-  configini->setValue("log_maximum", ui_length_spinbox->value());
-  configini->setValue("log_newline", ui_log_newline_cb->isChecked());
-  configini->setValue("log_margin", ui_log_margin_spinbox->value());
-  configini->setValue("log_timestamp", ui_log_timestamp_cb->isChecked());
-  configini->setValue("log_timestamp_format", ui_log_timestamp_format_combobox->currentText());
-  configini->setValue("log_ic_actions", ui_log_ic_actions_cb->isChecked());
-  configini->setValue("desync_logs", ui_desync_logs_cb->isChecked());
-  configini->setValue("stay_time", ui_stay_time_spinbox->value());
-  configini->setValue("instant_objection", ui_instant_objection_cb->isChecked());
-  configini->setValue("text_crawl", ui_text_crawl_spinbox->value());
-  configini->setValue("chat_ratelimit", ui_chat_ratelimit_spinbox->value());
-  configini->setValue("default_username", ui_username_textbox->text());
-  configini->setValue("show_custom_shownames", ui_showname_cb->isChecked());
-  configini->setValue("default_showname", ui_default_showname_textbox->text());
-  configini->setValue("master", ui_ms_textbox->text());
-  configini->setValue("discord", ui_discord_cb->isChecked());
-  configini->setValue("language", ui_language_combobox->currentText().left(2));
-  configini->setValue("default_scaling", ui_scaling_combobox->currentData());
-  configini->setValue("shake", ui_shake_cb->isChecked());
-  configini->setValue("effects", ui_effects_cb->isChecked());
-  configini->setValue("framenetwork", ui_framenetwork_cb->isChecked());
-  configini->setValue("colorlog", ui_colorlog_cb->isChecked());
-  configini->setValue("stickysounds", ui_stickysounds_cb->isChecked());
-  configini->setValue("stickyeffects", ui_stickyeffects_cb->isChecked());
-  configini->setValue("stickypres", ui_stickypres_cb->isChecked());
-  configini->setValue("customchat", ui_customchat_cb->isChecked());
-  configini->setValue("sticker", ui_sticker_cb->isChecked());
-  configini->setValue("automatic_logging_enabled", ui_log_text_cb->isChecked());
-  configini->setValue("demo_logging_enabled", ui_log_demo_cb->isChecked());
-  configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
-  configini->setValue("category_stop", ui_category_stop_cb->isChecked());
-  configini->setValue("sfx_on_idle", ui_sfx_on_idle_cb->isChecked());
-  configini->setValue("evidence_double_click", ui_evidence_double_click_cb->isChecked());
-  QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
-
-  if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |
-                         QIODevice::Text)) {
-    QTextStream out(callwordsini);
-    out.setCodec("UTF-8");
-    out << ui_callwords_textbox->toPlainText();
-    callwordsini->close();
-  }
-
-  configini->setValue("default_audio_device",
-                      ui_audio_device_combobox->currentText());
-  configini->setValue("default_music", ui_music_volume_spinbox->value());
-  configini->setValue("default_sfx", ui_sfx_volume_spinbox->value());
-  configini->setValue("default_blip", ui_blips_volume_spinbox->value());
-  configini->setValue("suppress_audio", ui_suppress_audio_spinbox->value());
-  configini->setValue("blip_rate", ui_bliprate_spinbox->value());
-  configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
-  configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
-  configini->setValue("objection_stop_music", ui_objectmusic_cb->isChecked());
-  configini->setValue("streaming_disabled", ui_disablestreams_cb->isChecked());
-
-  configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
-  configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
-  configini->setValue("casing_prosecution_enabled",
-                      ui_casing_pro_cb->isChecked());
-  configini->setValue("casing_judge_enabled", ui_casing_jud_cb->isChecked());
-  configini->setValue("casing_juror_enabled", ui_casing_jur_cb->isChecked());
-  configini->setValue("casing_steno_enabled", ui_casing_steno_cb->isChecked());
-  configini->setValue("casing_cm_enabled", ui_casing_cm_cb->isChecked());
-  configini->setValue("casing_can_host_cases",
-                      ui_casing_cm_cases_textbox->text());
-  configini->setValue("player_count_optout", ui_privacy_optout_cb->isChecked());
-
-  QStringList mountPaths;
-  for (int i = 1; i < ui_mount_list->count(); i++)
-    mountPaths.append(ui_mount_list->item(i)->text());
-  configini->setValue("mount_paths", mountPaths);
-
-  if (audioChanged)
-    ao_app->initBASS();
-
-  if (asset_cache_dirty)
-    ao_app->invalidate_lookup_cache();
-
-  // We most probably pressed "Restore defaults" at some point. Since we're saving our settings, remove the temporary file.
-  if (QFile::exists(ao_app->get_base_path() + "config.temp"))
-      QFile::remove(ao_app->get_base_path() + "config.temp");
-  done(0);
 }
 
 void AOOptionsDialog::discard_pressed() {

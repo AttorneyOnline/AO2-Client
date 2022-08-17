@@ -1,4 +1,5 @@
 #include "courtroom.h"
+#include "options.h"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -114,15 +115,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chatlog->setReadOnly(true);
   ui_ic_chatlog->setObjectName("ui_ic_chatlog");
 
-  log_maximum_blocks = ao_app->get_max_log_size();
-  log_goes_downwards = ao_app->get_log_goes_downwards();
-  log_colors = ao_app->is_colorlog_enabled();
-  log_newline = ao_app->get_log_newline();
-  log_margin = ao_app->get_log_margin();
-  log_timestamp = ao_app->get_log_timestamp();
-  log_timestamp_format = ao_app->get_log_timestamp_format();
+  log_maximum_blocks = Options::options->maxLogSize();
+  log_goes_downwards = Options::options->logDirectionDownwards();
+  log_colors = Options::options->colorLogEnabled();
+  log_newline = Options::options->logNewline();
+  log_margin = Options::options->logMargin();
+  log_timestamp = Options::options->logTimestampEnabled();
+  log_timestamp_format = Options::options->logTimestampFormat();
 
-  ui_debug_log = new AOTextArea(this, ao_app->get_max_log_size());
+  ui_debug_log = new AOTextArea(this, Options::options->maxLogSize());
   ui_debug_log->setReadOnly(true);
   ui_debug_log->setOpenExternalLinks(true);
   ui_debug_log->hide();
@@ -176,7 +177,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
-  ui_ic_chat_name->setText(p_ao_app->get_default_showname());
+  ui_ic_chat_name->setText(Options::options->shownameOnJoin());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
 
   ui_ic_chat_message = new QLineEdit(this);
@@ -200,7 +201,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText(tr("Name"));
   ui_ooc_chat_name->setMaxLength(30);
-  ui_ooc_chat_name->setText(p_ao_app->get_default_username());
+  ui_ooc_chat_name->setText(Options::options->username());
   ui_ooc_chat_name->setObjectName("ui_ooc_chat_name");
 
   // ui_area_password = new QLineEdit(this);
@@ -316,13 +317,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_additive->setObjectName("ui_additive");
 
   ui_casing = new QCheckBox(this);
-  ui_casing->setChecked(ao_app->get_casing_enabled());
+  ui_casing->setChecked(Options::options->casingAlertEnabled());
   ui_casing->setText(tr("Casing"));
   ui_casing->hide();
   ui_casing->setObjectName("ui_casing");
 
   ui_showname_enable = new QCheckBox(this);
-  ui_showname_enable->setChecked(ao_app->get_showname_enabled_by_default());
+  ui_showname_enable->setChecked(Options::options->customShownameEnabled());
   ui_showname_enable->setText(tr("Shownames"));
   ui_showname_enable->setObjectName("ui_showname_enable");
 
@@ -365,17 +366,17 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_music_slider = new QSlider(Qt::Horizontal, this);
   ui_music_slider->setRange(0, 100);
-  ui_music_slider->setValue(ao_app->get_default_music());
+  ui_music_slider->setValue(Options::options->musicVolume());
   ui_music_slider->setObjectName("ui_music_slider");
 
   ui_sfx_slider = new QSlider(Qt::Horizontal, this);
   ui_sfx_slider->setRange(0, 100);
-  ui_sfx_slider->setValue(ao_app->get_default_sfx());
+  ui_sfx_slider->setValue(Options::options->sfxVolume());
   ui_sfx_slider->setObjectName("ui_sfx_slider");
 
   ui_blip_slider = new QSlider(Qt::Horizontal, this);
   ui_blip_slider->setRange(0, 100);
-  ui_blip_slider->setValue(ao_app->get_default_blip());
+  ui_blip_slider->setValue(Options::options->blipVolume());
   ui_blip_slider->setObjectName("ui_blip_slider");
 
   ui_mute_list = new QListWidget(this);
@@ -580,7 +581,7 @@ void Courtroom::on_application_state_changed(Qt::ApplicationState state)
   suppress_audio = 0;
   if (state != Qt::ApplicationActive) {
     // Suppressed audio setting
-    suppress_audio = ao_app->get_default_suppress_audio();
+    suppress_audio = Options::options->defaultsuppressaudio();
   }
   update_audio_volume();
 }
@@ -744,20 +745,20 @@ void Courtroom::set_widgets()
   ui_vp_objection->move_and_center(ui_viewport->x(), ui_viewport->y());
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  log_maximum_blocks = ao_app->get_max_log_size();
+  log_maximum_blocks = Options::options->maxLogSize();
 
-  bool regenerate = log_goes_downwards != ao_app->get_log_goes_downwards() ||
-                    log_colors != ao_app->is_colorlog_enabled() ||
-                    log_newline != ao_app->get_log_newline() ||
-                    log_margin != ao_app->get_log_margin() ||
-                    log_timestamp != ao_app->get_log_timestamp() ||
-                    log_timestamp_format != ao_app->get_log_timestamp_format();
-  log_goes_downwards = ao_app->get_log_goes_downwards();
-  log_colors = ao_app->is_colorlog_enabled();
-  log_newline = ao_app->get_log_newline();
-  log_margin = ao_app->get_log_margin();
-  log_timestamp = ao_app->get_log_timestamp();
-  log_timestamp_format = ao_app->get_log_timestamp_format();
+  bool regenerate = log_goes_downwards != Options::options->logDirectionDownwards() ||
+                    log_colors != Options::options->colorLogEnabled() ||
+                    log_newline != Options::options->logNewline() ||
+                    log_margin != Options::options->logMargin() ||
+                    log_timestamp != Options::options->logTimestampEnabled() ||
+                    log_timestamp_format != Options::options->logTimestampFormat();
+  log_goes_downwards = Options::options->logDirectionDownwards();
+  log_colors = Options::options->colorLogEnabled();
+  log_newline = Options::options->logNewline();
+  log_margin = Options::options->logMargin();
+  log_timestamp = Options::options->logTimestampEnabled();
+  log_timestamp_format = Options::options->logTimestampFormat();
   if (regenerate) {
     regenerate_ic_chatlog();
   }
@@ -1386,7 +1387,7 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_message->hide();
     ui_vp_chatbox->setVisible(chatbox_always_show);
     // Show it if chatbox always shows
-    if (ao_app->is_sticker_enabled() && chatbox_always_show) {
+    if (Options::options->characterStickerEnabled() && chatbox_always_show) {
       ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
     }
     // Hide the face sticker
@@ -1487,7 +1488,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   QString f_char;
 
   if (m_cid == -1) {
-    if (ao_app->is_discord_enabled())
+    if (Options::options->discordEnabled())
       ao_app->discord->state_spectate();
     f_char = "";
   }
@@ -1497,7 +1498,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
       f_char = char_list.at(m_cid).name;
     }
 
-    if (ao_app->is_discord_enabled())
+    if (Options::options->discordEnabled())
       ao_app->discord->state_character(f_char.toStdString());
   }
 
@@ -1817,7 +1818,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
 
-  if (ao_app->get_text_logging_enabled() && !ao_app->log_filename.isEmpty()) {
+  if (Options::options->logToTextFileEnabled() && !ao_app->log_filename.isEmpty()) {
     QString full = "[OOC][" + QDateTime::currentDateTimeUtc().toString() + "] " + p_name + ": " + p_message;
     ao_app->append_to_file(full, ao_app->log_filename, true);
   }
@@ -1844,7 +1845,7 @@ void Courtroom::on_chat_return_pressed()
     return;
 
   ui_ic_chat_message->blockSignals(true);
-  QTimer::singleShot(ao_app->get_chat_ratelimit(), this,
+  QTimer::singleShot(Options::options->chatRateLimit(), this,
                      [this] { ui_ic_chat_message->blockSignals(false); });
   // MS#
   // deskmod#
@@ -1948,7 +1949,7 @@ void Courtroom::on_chat_return_pressed()
     f_sfx = get_char_sfx();
     // We have a custom sfx but we're on idle emotes.
     // Turn them into pre so the sound plays if client setting sfx_on_idle is enabled.
-    if (ao_app->get_sfx_on_idle() && (f_emote_mod == IDLE || f_emote_mod == ZOOM)) {
+    if (Options::options->SfxonIdle() && (f_emote_mod == IDLE || f_emote_mod == ZOOM)) {
       // We turn idle into preanim, but make it not send a pre animation
       f_pre = "";
       // Set sfx delay to 0 so the sfx plays immediately
@@ -1988,7 +1989,7 @@ void Courtroom::on_chat_return_pressed()
     f_obj_state = QString::number(objection_state);
 
   // We're doing an Objection (custom objections not yet supported)
-  if (objection_state == 2 && ao_app->objection_stop_music())
+  if (objection_state == 2 && Options::options->objectionStopMusic())
     music_stop(true);
 
   packet_contents.append(f_obj_state);
@@ -2081,7 +2082,7 @@ void Courtroom::on_chat_return_pressed()
       QString packet;
       foreach (QString f_emote, emotes_to_check) {
         packet += f_emote;
-        if (ao_app->is_frame_network_enabled()) {
+        if (Options::options->networkedFrameSfxEnabled()) {
           QString sfx_frames =
               ao_app
                   ->read_ini_tags(
@@ -2112,7 +2113,7 @@ void Courtroom::on_chat_return_pressed()
     }
 
     packet_contents.append(effect + "|" + p_effect_folder + "|" + fx_sound);
-    if (!ao_app->is_stickyeffects_enabled() && !ao_app->get_effect_property(effect, current_char, p_effect_folder, "sticky").startsWith("true")) {
+    if (!Options::options->clearEffectsDropdownOnPlayEnabled() && !ao_app->get_effect_property(effect, current_char, p_effect_folder, "sticky").startsWith("true")) {
       ui_effects_dropdown->blockSignals(true);
       ui_effects_dropdown->setCurrentIndex(0);
       ui_effects_dropdown->blockSignals(false);
@@ -2141,14 +2142,14 @@ void Courtroom::reset_ui()
   ui_evidence_present->set_image("present");
 
   // If sticky sounds is disabled and we either have SFX on Idle enabled, or our Preanim checkbox is checked
-  if (!ao_app->is_stickysounds_enabled() && (ao_app->get_sfx_on_idle() || ui_pre->isChecked())) {
+  if (!Options::options->clearSoundsDropdownOnPlayEnabled() && (Options::options->SfxonIdle() || ui_pre->isChecked())) {
     // Reset the SFX Dropdown to "Default"
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
     custom_sfx = "";
   }
   // If sticky preanims is disabled
-  if (!ao_app->is_stickypres_enabled())
+  if (!Options::options->clearPreOnPlayEnabled())
     // Turn off our Preanim checkbox
     ui_pre->setChecked(false);
 }
@@ -2193,17 +2194,17 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     reset_ui();
   }
   // If we determine we sent this message, or we have desync enabled
-  if (sender || ao_app->is_desyncrhonized_logs_enabled()) {
+  if (sender || Options::options->desynchronisedLogsEnabled()) {
     // Initialize operation "message queue ghost"
     log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(),
                     p_contents[SHOWNAME], p_contents[CHAR_NAME],
                     p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(),
-                    p_contents[TEXT_COLOR].toInt(), QUEUED, sender || ao_app->is_desyncrhonized_logs_enabled());
+                    p_contents[TEXT_COLOR].toInt(), QUEUED, sender || Options::options->desynchronisedLogsEnabled());
   }
 
   bool is_objection = false;
   // If the user wants to clear queue on objection
-  if (ao_app->is_instant_objection_enabled())
+  if (Options::options->objectionSkipQueueEnabled())
   {
     int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
     is_objection = objection_mod >= 1 && objection_mod <= 5;
@@ -2220,7 +2221,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   chatmessage_queue.enqueue(p_contents);
 
   // Our settings disabled queue, or no message is being parsed right now and we're not waiting on one
-  bool start_queue = ao_app->stay_time() <= 0 || (text_state >= 2 && !text_queue_timer->isActive());
+  bool start_queue = Options::options->textStayTime() <= 0 || (text_state >= 2 && !text_queue_timer->isActive());
   // Objections also immediately play the message
   if (start_queue || is_objection)
     chatmessage_dequeue(); // Process the message instantly
@@ -2245,7 +2246,7 @@ void Courtroom::skip_chatmessage_queue()
   while (!chatmessage_queue.isEmpty()) {
     QStringList p_contents = chatmessage_queue.dequeue();
     // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-    bool sender = ao_app->is_desyncrhonized_logs_enabled() || p_contents[CHAR_ID].toInt() == m_cid;
+    bool sender = Options::options->desynchronisedLogsEnabled() || p_contents[CHAR_ID].toInt() == m_cid;
     log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
   }
 }
@@ -2268,7 +2269,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   }
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
-  bool sender = ao_app->is_desyncrhonized_logs_enabled() || m_chatmessage[CHAR_ID].toInt() == m_cid;
+  bool sender = Options::options->desynchronisedLogsEnabled() || m_chatmessage[CHAR_ID].toInt() == m_cid;
 
   // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
   log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
@@ -2504,7 +2505,7 @@ void Courtroom::display_character()
   ui_vp_message->hide();
   ui_vp_chatbox->setVisible(chatbox_always_show);
   // Show it if chatbox always shows
-  if (ao_app->is_sticker_enabled() && chatbox_always_show) {
+  if (Options::options->characterStickerEnabled() && chatbox_always_show) {
     ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
   }
   // Hide the face sticker
@@ -2516,7 +2517,7 @@ void Courtroom::display_character()
 
   // Arrange the netstrings of the frame SFX for the character to know about
   if (!m_chatmessage[FRAME_SFX].isEmpty() &&
-      ao_app->is_frame_network_enabled()) {
+      Options::options->networkedFrameSfxEnabled()) {
     // ORDER IS IMPORTANT!!
     QStringList netstrings = {m_chatmessage[FRAME_SCREENSHAKE],
                               m_chatmessage[FRAME_REALIZATION],
@@ -2675,7 +2676,7 @@ void Courtroom::handle_ic_message()
   }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
-  if (!ao_app->is_instant_objection_enabled() && chatmessage_queue.size() > 0)
+  if (!Options::options->objectionSkipQueueEnabled() && chatmessage_queue.size() > 0)
   {
     QStringList p_contents = chatmessage_queue.head();
     int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
@@ -2688,7 +2689,7 @@ void Courtroom::handle_ic_message()
 
 void Courtroom::do_screenshake()
 {
-  if (!ao_app->is_shake_enabled())
+  if (!Options::options->shakeEnabled())
     return;
 
   // This way, the animation is reset in such a way that last played screenshake
@@ -2737,7 +2738,7 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_flash()
 {
-  if (!ao_app->is_effects_enabled())
+  if (!Options::options->effectsEnabled())
     return;
 
   QString f_char = m_chatmessage[CHAR_NAME];
@@ -2761,7 +2762,7 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char,
   }
 
   // Only check if effects are disabled after playing the sound if it exists
-  if (!ao_app->is_effects_enabled()) {
+  if (!Options::options->effectsEnabled()) {
     return;
   }
   ui_vp_effect->transform_mode = ao_app->get_scaling(
@@ -2858,7 +2859,7 @@ void Courtroom::initialize_chatbox()
     ui_vp_showname->setText(m_chatmessage[SHOWNAME]);
   }
   QString customchar;
-  if (ao_app->is_customchat_enabled())
+  if (Options::options->customChatboxEnabled())
     customchar = m_chatmessage[CHAR_NAME];
   QString p_misc = ao_app->get_chat(customchar);
 
@@ -3300,7 +3301,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname,
 {
   chatlogpiece log_entry(p_name, p_showname, p_message, p_action, p_color, p_selfname);
   ic_chatlog_history.append(log_entry);
-  if (ao_app->get_text_logging_enabled() && !ao_app->log_filename.isEmpty())
+  if (Options::options->logToTextFileEnabled() && !ao_app->log_filename.isEmpty())
     ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
 
   while (ic_chatlog_history.size() > log_maximum_blocks &&
@@ -3619,7 +3620,7 @@ void Courtroom::start_chat_ticking()
       ui_vp_chatbox->setVisible(chatbox_always_show);
       ui_vp_message->hide();
       // Show it if chatbox always shows
-      if (ao_app->is_sticker_enabled() && chatbox_always_show)
+      if (Options::options->characterStickerEnabled() && chatbox_always_show)
         ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
       // Hide the face sticker
       else {
@@ -3627,7 +3628,7 @@ void Courtroom::start_chat_ticking()
       }
     }
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
-    int delay = ao_app->stay_time();
+    int delay = Options::options->textStayTime();
     if (delay > 0 && !text_queue_timer->isActive())
       text_queue_timer->start(delay);
     return;
@@ -3636,7 +3637,7 @@ void Courtroom::start_chat_ticking()
   ui_vp_chatbox->show();
   ui_vp_message->show();
 
-  if (ao_app->is_sticker_enabled())
+  if (Options::options->characterStickerEnabled())
     ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
 
   if (m_chatmessage[ADDITIVE] != "1") {
@@ -3647,9 +3648,9 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_ticker = 0;
-  text_crawl = ao_app->get_text_crawl();
-  blip_rate = ao_app->read_blip_rate();
-  blank_blip = ao_app->get_blank_blip();
+  text_crawl = Options::options->textCrawlSpeed();
+  blip_rate = Options::options->blipRate();
+  blank_blip = Options::options->blankBlip();
 
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
@@ -3710,7 +3711,7 @@ void Courtroom::chat_tick()
       anim_state = 3;
     QString f_char;
     QString f_custom_theme;
-    if (ao_app->is_customchat_enabled()) {
+    if (Options::options->customChatboxEnabled()) {
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
     }
@@ -3726,12 +3727,12 @@ void Courtroom::chat_tick()
 
 
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
-    int delay = ao_app->stay_time();
+    int delay = Options::options->textStayTime();
     if (delay > 0 && !text_queue_timer->isActive())
       text_queue_timer->start(delay);
 
     // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
-    if (!ao_app->is_instant_objection_enabled() && chatmessage_queue.size() > 0)
+    if (!Options::options->objectionSkipQueueEnabled() && chatmessage_queue.size() > 0)
     {
       QStringList p_contents = chatmessage_queue.head();
       int objection_mod = p_contents[OBJECTION_MOD].split("&")[0].toInt();
@@ -3947,7 +3948,7 @@ void Courtroom::play_sfx()
     return;
 
   sfx_player->play(sfx_name);
-  if (ao_app->get_looping_sfx())
+  if (Options::options->loopingSfx())
     sfx_player->set_looping(
         ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
@@ -5012,7 +5013,7 @@ void Courtroom::on_music_list_double_clicked(QTreeWidgetItem *p_item,
 {
   if (is_muted)
     return;
-  if (!ao_app->is_category_stop_enabled() && p_item->parent() == nullptr)
+  if (!Options::options->stopMusicOnCategoryEnabled() && p_item->parent() == nullptr)
     return;
   column = 1; // Column 1 is always the metadata (which we want)
   QString p_song = p_item->text(column);
@@ -5387,7 +5388,7 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
 
   menu->addAction(QString("Open currently used chat_config.ini"), this,
                   [=] {
-    QString p_path = ao_app->get_asset("chat_config.ini", ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, ao_app->get_chat(current_char));
+    QString p_path = ao_app->get_asset("chat_config.ini", ao_app->current_theme, Options::options->subTheme(), ao_app->default_theme, ao_app->get_chat(current_char));
     if (!file_exists(p_path)) {
         return;
     }
@@ -5757,14 +5758,14 @@ void Courtroom::on_casing_clicked()
     if (ui_casing->isChecked()) {
       QStringList f_packet;
 
-      f_packet.append(ao_app->get_casing_can_host_cases());
-      f_packet.append(QString::number(ao_app->get_casing_cm_enabled()));
-      f_packet.append(QString::number(ao_app->get_casing_defence_enabled()));
+      f_packet.append(Options::options->casingCanHostCases());
+      f_packet.append(QString::number(Options::options->casingCmEnabled()));
+      f_packet.append(QString::number(Options::options->casingDefenceEnabled()));
       f_packet.append(
-          QString::number(ao_app->get_casing_prosecution_enabled()));
-      f_packet.append(QString::number(ao_app->get_casing_judge_enabled()));
-      f_packet.append(QString::number(ao_app->get_casing_juror_enabled()));
-      f_packet.append(QString::number(ao_app->get_casing_steno_enabled()));
+          QString::number(Options::options->casingProsecutionEnabled()));
+      f_packet.append(QString::number(Options::options->casingJudgeEnabled()));
+      f_packet.append(QString::number(Options::options->casingJurorEnabled()));
+      f_packet.append(QString::number(Options::options->casingStenoEnabled()));
 
       ao_app->send_server_packet(new AOPacket("SETCASE", f_packet));
     }

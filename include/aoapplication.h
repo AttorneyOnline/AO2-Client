@@ -35,6 +35,7 @@
 class NetworkManager;
 class Lobby;
 class Courtroom;
+class Options;
 
 class VPath : QString {
   using QString::QString;
@@ -176,141 +177,6 @@ public:
 
   // Instead of reinventing the wheel, we'll use a QSettings class.
   QSettings *configini;
-
-  // Reads the theme from config.ini and loads it into the current_theme
-  // variable
-  QString read_theme();
-
-  // Returns the value of ooc_name in config.ini
-  QString get_ooc_name();
-
-  // Returns the blip rate from config.ini (once per X symbols)
-  int read_blip_rate();
-
-  // Returns true if blank blips is enabled in config.ini and false otherwise
-  bool get_blank_blip();
-
-  // Returns true if looping sound effects are enabled in the config.ini
-  bool get_looping_sfx();
-
-  // Returns true if stop music on objection is enabled in the config.ini
-  bool objection_stop_music();
-
-  // Returns true if streaming is enabled in the config.ini
-  bool is_streaming_disabled();
-
-  // Returns the value of default_music in config.ini
-  int get_default_music();
-
-  // Returns the value of default_sfx in config.ini
-  int get_default_sfx();
-
-  // Returns the value of default_blip in config.ini
-  int get_default_blip();
-
-  // Returns the value of suppress_audio in config.ini
-  int get_default_suppress_audio();
-
-  // Returns the value if objections interrupt and skip the message queue
-  // from the config.ini.
-  bool is_instant_objection_enabled();
-
-  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
-  // from the config.ini
-  bool is_desyncrhonized_logs_enabled();
-
-  // Returns the value of whether Discord should be enabled on startup
-  // from the config.ini.
-  bool is_discord_enabled();
-
-  // Returns the value of whether shaking should be enabled.
-  // from the config.ini.
-  bool is_shake_enabled();
-
-  // Returns the value of whether effects should be enabled.
-  // from the config.ini.
-  bool is_effects_enabled();
-
-  // Returns the value of whether frame-specific effects defined in char.ini
-  // should be sent/received over the network. from the config.ini.
-  bool is_frame_network_enabled();
-
-  // Returns the value of whether colored ic log should be a thing.
-  // from the config.ini.
-  bool is_colorlog_enabled();
-
-  // Returns the value of whether sticky sounds should be a thing.
-  // from the config.ini.
-  bool is_stickysounds_enabled();
-
-  // Returns the value of whether sticky effects should be a thing.
-  // from the config.ini.
-  bool is_stickyeffects_enabled();
-
-  // Returns the value of whether sticky preanims should be a thing.
-  // from the config.ini.
-  bool is_stickypres_enabled();
-
-  // Returns the value of whether custom chatboxes should be a thing.
-  // from the config.ini.
-  // I am increasingly maddened by the lack of dynamic auto-generation system
-  // for settings.
-  bool is_customchat_enabled();
-
-  // Returns the value of characer sticker (avatar) setting
-  bool is_sticker_enabled();
-
-  // Returns the value of whether continuous playback should be used
-  // from the config.ini.
-  bool is_continuous_enabled();
-
-  // Returns the value of whether stopping music by double clicking category should be used
-  // from the config.ini.
-  bool is_category_stop_enabled();
-
-  // Returns the value of the maximum amount of lines the IC chatlog
-  // may contain, from config.ini.
-  int get_max_log_size();
-
-  // Current wait time between messages for the queue system
-  int stay_time();
-
-  // Returns the letter display speed during text crawl in in-character messages
-  int get_text_crawl();
-
-  // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
-  int get_chat_ratelimit();
-
-  // Returns whether the log should go upwards (new behaviour)
-  // or downwards (vanilla behaviour).
-  bool get_log_goes_downwards();
-
-  // Returns whether the log should separate name from text via newline or :
-  bool get_log_newline();
-
-  // Get spacing between IC log entries.
-  int get_log_margin();
-
-  // Returns whether the log should have a timestamp.
-  bool get_log_timestamp();
-
-  // Returns the format string for the log timestamp
-  QString get_log_timestamp_format();
-
-  // Returns whether to log IC actions.
-  bool get_log_ic_actions();
-
-  // Returns the username the user may have set in config.ini.
-  QString get_default_username();
-
-  // Returns the audio device used for the client.
-  QString get_audio_output_device();
-
-  // Returns whether the user would like to have custom shownames on by default.
-  bool get_showname_enabled_by_default();
-
-  //Returns the showname the user may have set in config.ini.
-  QString get_default_showname();
 
   // Returns the list of words in callwords.ini
   QStringList get_call_words();
@@ -506,57 +372,6 @@ public:
   // These are all casing-related settings.
   // ======
 
-  // Returns if the user has casing alerts enabled.
-  bool get_casing_enabled();
-
-  // Returns if the user wants to get alerts for the defence role.
-  bool get_casing_defence_enabled();
-
-  // Same for prosecution.
-  bool get_casing_prosecution_enabled();
-
-  // Same for judge.
-  bool get_casing_judge_enabled();
-
-  // Same for juror.
-  bool get_casing_juror_enabled();
-
-  // Same for steno.
-  bool get_casing_steno_enabled();
-
-  // Same for CM.
-  bool get_casing_cm_enabled();
-
-  // Get the message for the CM for casing alerts.
-  QString get_casing_can_host_cases();
-
-  // Get if text file logging is enabled
-  bool get_text_logging_enabled();
-
-  // Get if demo logging is enabled
-  bool get_demo_logging_enabled();
-
-  // Get the subtheme from settings
-  QString get_subtheme();
-
-  // Get if the theme is animated
-  bool get_animated_theme();
-
-  // Get the default scaling method
-  QString get_default_scaling();
-
-  // Get a list of custom mount paths
-  QStringList get_mount_paths();
-
-  // Get whether to opt out of player count metrics sent to the master server
-  bool get_player_count_optout();
-
-  // Get if sfx can be sent to play on idle
-  bool get_sfx_on_idle();
-
-  // Whether opening evidence requires a single or double click
-  bool get_evidence_double_click();
-
   // Currently defined subtheme
   QString subtheme;
 
@@ -595,6 +410,8 @@ private:
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
+
+  Options* options;
 
 public slots:
   void server_disconnected();
