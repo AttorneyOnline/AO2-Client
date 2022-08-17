@@ -9,5 +9,6 @@
         <file>resource/translations/ao_pl.qm</file>
         <file>resource/translations/ao_pt.qm</file>
         <file>resource/translations/ao_ru.qm</file>
+        <file>resource/ui/optionsdialogue.ui</file>
     </qresource>
 </RCC>
