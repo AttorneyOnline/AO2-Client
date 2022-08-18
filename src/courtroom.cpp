@@ -581,7 +581,7 @@ void Courtroom::on_application_state_changed(Qt::ApplicationState state)
   suppress_audio = 0;
   if (state != Qt::ApplicationActive) {
     // Suppressed audio setting
-    suppress_audio = Options::options->defaultsuppressaudio();
+    suppress_audio = Options::options->defaultSuppressAudio();
   }
   update_audio_volume();
 }

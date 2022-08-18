@@ -67,7 +67,8 @@ public:
   void setBlipVolume(int value);
 
   // Returns the value of suppressaudio in config.ini
-  int defaultsuppressaudio();
+  int defaultSuppressAudio();
+  void setDefaultSupressedAudio(int value);
 
   // Returns the value if objections interrupt and skip the message queue
   // from the config.ini.
