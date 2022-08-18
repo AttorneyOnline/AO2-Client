@@ -36,6 +36,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
 
   options = new Options();
+  widget = new AOOptionsDialog();
 }
 
 AOApplication::~AOApplication()
@@ -201,8 +202,7 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-  AOOptionsDialog settings(nullptr, this);
-  settings.exec();
+  widget->show();
 }
 
 void AOApplication::call_announce_menu(Courtroom *court)

@@ -5,14 +5,24 @@
 #include "bass.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "aoapplication.h"
+
+#include <QUiLoader>
 
 #include <QFileDialog>
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
-    : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
+    : QWidget(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
 {
   ao_app = p_ao_app;
 
+
+  QUiLoader loader(this);
+  QFile uiFile(":/resource/ui/optionsdialogue.ui");
+  uiFile.open(QFile::ReadOnly);
+  QWidget *windowWidget = loader.load(&uiFile, this);
+
+  /**
   // Setting up the basics.
   setWindowFlag(Qt::WindowCloseButtonHint);
   setWindowTitle(tr("Settings"));
@@ -512,7 +522,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   scroll->setWidget(ui_form_layout_widget);
   ui_gameplay_tab->setLayout(new QVBoxLayout);
   ui_gameplay_tab->layout()->addWidget(scroll);
-  ui_gameplay_tab->show();
+  ui_gameplay_tab->;
 
   // Here we start the callwords tab.
   ui_callwords_tab = new QWidget(this);
@@ -1188,6 +1198,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   // When we're done, we should continue the updates!
   setUpdatesEnabled(true);
+
+  */
 }
 
 void AOOptionsDialog::update_values()
@@ -1213,7 +1225,6 @@ void AOOptionsDialog::discard_pressed() {
         ao_app->configini =
             new QSettings(ao_app->get_base_path() + "config.ini", QSettings::IniFormat);
     }
-    done(0);
 }
 
 void AOOptionsDialog::button_clicked(QAbstractButton *button) {

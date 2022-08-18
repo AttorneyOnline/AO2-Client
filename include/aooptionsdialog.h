@@ -1,7 +1,6 @@
 #ifndef AOOPTIONSDIALOG_H
 #define AOOPTIONSDIALOG_H
 
-#include "aoapplication.h"
 #include "bass.h"
 
 #include <QtCore/QVariant>
@@ -29,8 +28,9 @@
 
 class Lobby;
 class Courtroom;
+class AOApplication;
 
-class AOOptionsDialog : public QDialog {
+class AOOptionsDialog : public QWidget {
   Q_OBJECT
 public:
   explicit AOOptionsDialog(QWidget *parent = nullptr,

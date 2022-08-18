@@ -1,6 +1,7 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
+#include "aooptionsdialog.h"
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"
@@ -412,6 +413,7 @@ private:
   QSet<uint> dir_listing_exist_cache;
 
   Options* options;
+  AOOptionsDialog* widget;
 
 public slots:
   void server_disconnected();
