@@ -1,7 +1,7 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "aooptionsdialog.h"
+#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"

@@ -7,7 +7,7 @@
 #include "options.h"
 
 #include "aocaseannouncerdialog.h"
-#include "aooptionsdialog.h"
+#include "widgets/aooptionsdialog.h"
 
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;

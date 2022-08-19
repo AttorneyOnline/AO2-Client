@@ -1,4 +1,4 @@
-#include "aooptionsdialog.h"
+#include "widgets/aooptionsdialog.h"
 #include "aoapplication.h"
 #include "courtroom.h"
 #include "lobby.h"

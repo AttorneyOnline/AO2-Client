@@ -23,7 +23,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="gameplay_tab">
       <attribute name="title">
@@ -1063,6 +1063,10 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="toolTip">
+            <string>Clears the lookup cache for assets.
+Use this when you have added an asset that takes precedence over another existing asset.</string>
+           </property>
            <property name="text">
             <string>Clear Cache</string>
            </property>
@@ -1079,6 +1083,9 @@
       <layout class="QFormLayout" name="formLayout_3">
        <item row="0" column="0">
         <widget class="QLabel" name="downwards_lbl">
+         <property name="toolTip">
+          <string>If ticked, new messages will appear at the bottom (like the OOC chatlog). The traditional (AO1) behaviour is equivalent to this being unticked.</string>
+         </property>
          <property name="text">
           <string>Log goes downwards:</string>
          </property>
@@ -1093,6 +1100,9 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="length_lbl">
+         <property name="toolTip">
+          <string>The amount of message lines the IC chatlog will keep before deleting older message lines. A value of 0 or below counts as 'infinite'.</string>
+         </property>
          <property name="text">
           <string>Log length:</string>
          </property>
@@ -1110,6 +1120,10 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="log_newline_lbl">
+         <property name="toolTip">
+          <string>If ticked, new messages will appear separated, with the message coming on the next line after the name. 
+When unticked, it displays it as 'name: message'.</string>
+         </property>
          <property name="text">
           <string>Log newline:</string>
          </property>
@@ -1124,6 +1138,10 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="log_margin_lbl">
+         <property name="toolTip">
+          <string>The distance in pixels between each entry in the IC log. 
+Default: 0.</string>
+         </property>
          <property name="text">
           <string>Log margin:</string>
          </property>
@@ -1141,6 +1159,9 @@
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="log_timestamp_lbl">
+         <property name="toolTip">
+          <string>If ticked, log will contain a timestamp in UTC before the name.</string>
+         </property>
          <property name="text">
           <string>Log timestamp:</string>
          </property>
@@ -1190,6 +1211,9 @@
        </item>
        <item row="6" column="0">
         <widget class="QLabel" name="log_ic_actions_lbl">
+         <property name="toolTip">
+          <string>If ticked, log will show IC actions such as shouting and presenting evidence.</string>
+         </property>
          <property name="text">
           <string>Log IC actions:</string>
          </property>
@@ -1204,6 +1228,9 @@
        </item>
        <item row="7" column="0">
         <widget class="QLabel" name="desync_logs_lbl">
+         <property name="toolTip">
+          <string>If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time).</string>
+         </property>
          <property name="text">
           <string>Desynchronize IC Logs:</string>
          </property>
@@ -1218,6 +1245,9 @@
        </item>
        <item row="8" column="0">
         <widget class="QLabel" name="log_text_lbl">
+         <property name="toolTip">
+          <string>Text logs of gameplay will be automatically written in the /logs folder.</string>
+         </property>
          <property name="text">
           <string>Log to Text Files:</string>
          </property>
@@ -1232,6 +1262,9 @@
        </item>
        <item row="9" column="0">
         <widget class="QLabel" name="log_demo_lbl">
+         <property name="toolTip">
+          <string>Gameplay will be automatically recorded as demos in the /logs folder.</string>
+         </property>
          <property name="text">
           <string>Log to Demo Files:</string>
          </property>

@@ -10,8 +10,8 @@ DESTDIR = $$PWD/bin
 OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
 
-SOURCES += $$files($$PWD/src/*.cpp)
-HEADERS += $$files($$PWD/include/*.h)
+SOURCES += $$files($$PWD/src/*.cpp, true)
+HEADERS += $$files($$PWD/include/*.h, true)
 
 LIBS += -L$$PWD/lib
 QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
