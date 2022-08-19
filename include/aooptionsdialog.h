@@ -264,6 +264,9 @@ private:
   QLabel *ui_log_demo_lbl;
   QCheckBox *ui_log_demo_cb;
 
+  /**
+   * Allows the AO2 master server hoster to go broke.
+   */
   QWidget *ui_privacy_tab;
   QVBoxLayout *ui_privacy_layout;
   QCheckBox *ui_privacy_optout_cb;

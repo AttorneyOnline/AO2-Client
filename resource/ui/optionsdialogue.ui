@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>415</height>
+    <width>398</width>
+    <height>397</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -16,1277 +16,1121 @@
   <property name="windowTitle">
    <string>Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_6">
    <item>
-    <layout class="QVBoxLayout" name="vertical_layout">
-     <item>
-      <widget class="QTabWidget" name="settings_tabs">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="currentIndex">
-        <number>4</number>
-       </property>
-       <widget class="QWidget" name="gameplay_tab">
-        <attribute name="title">
-         <string>Gameplay</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QScrollArea" name="scroll">
-           <property name="widgetResizable">
-            <bool>true</bool>
-           </property>
-           <widget class="QWidget" name="form_layout_widget">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>392</width>
-              <height>797</height>
-             </rect>
-            </property>
-            <layout class="QFormLayout" name="formLayout">
-             <item row="0" column="0">
-              <widget class="QLabel" name="theme_label">
-               <property name="text">
-                <string>Theme:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QComboBox" name="theme_combobox"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="subtheme_label">
-               <property name="text">
-                <string>Subtheme:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QComboBox" name="subtheme_combobox"/>
-             </item>
-             <item row="2" column="1">
-              <widget class="QPushButton" name="theme_reload_button">
-               <property name="text">
-                <string>Reload Theme</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QPushButton" name="theme_folder_button">
-               <property name="text">
-                <string>Open Theme Folder</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="animated_theme_lbl">
-               <property name="text">
-                <string>Animated Theme:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QCheckBox" name="animated_theme_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QFrame" name="theme_log_divider">
-               <property name="frameShape">
-                <enum>QFrame::HLine</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Sunken</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="stay_time_lbl">
-               <property name="text">
-                <string>Text Stay Time:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="QSpinBox" name="stay_time_spinbox">
-               <property name="suffix">
-                <string> ms</string>
-               </property>
-               <property name="maximum">
-                <number>10000</number>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="instant_objection_lbl">
-               <property name="text">
-                <string>Instant Objection:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="1">
-              <widget class="QCheckBox" name="instant_objection_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="0">
-              <widget class="QLabel" name="text_crawl_lbl">
-               <property name="text">
-                <string>Text crawl:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="1">
-              <widget class="QSpinBox" name="text_crawl_spinbox">
-               <property name="suffix">
-                <string> ms</string>
-               </property>
-               <property name="maximum">
-                <number>500</number>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="0">
-              <widget class="QLabel" name="chat_ratelimit_lbl">
-               <property name="text">
-                <string>Chat Rate Limit:</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::AutoText</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="1">
-              <widget class="QSpinBox" name="chat_ratelimit_spinbox">
-               <property name="suffix">
-                <string> ms</string>
-               </property>
-               <property name="maximum">
-                <number>5000</number>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="1">
-              <widget class="QFrame" name="log_names_divider">
-               <property name="frameShape">
-                <enum>QFrame::HLine</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Sunken</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="11" column="0">
-              <widget class="QLabel" name="username_lbl">
-               <property name="text">
-                <string>Default username:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="11" column="1">
-              <widget class="QLineEdit" name="username_textbox">
-               <property name="maxLength">
-                <number>30</number>
-               </property>
-              </widget>
-             </item>
-             <item row="12" column="0">
-              <widget class="QLabel" name="showname_lbl">
-               <property name="text">
-                <string>Custom shownames:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="12" column="1">
-              <widget class="QCheckBox" name="showname_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="13" column="0">
-              <widget class="QLabel" name="default_showname_lbl">
-               <property name="text">
-                <string>Default showname:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="13" column="1">
-              <widget class="QLineEdit" name="default_showname_textbox"/>
-             </item>
-             <item row="14" column="1">
-              <widget class="QFrame" name="net_divider">
-               <property name="frameShape">
-                <enum>QFrame::HLine</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Sunken</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="15" column="0">
-              <widget class="QLabel" name="ms_lbl">
-               <property name="text">
-                <string>Alternate Server List:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="15" column="1">
-              <widget class="QLineEdit" name="ms_textbox"/>
-             </item>
-             <item row="16" column="0">
-              <widget class="QLabel" name="discord_lbl">
-               <property name="text">
-                <string>Discord:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="16" column="1">
-              <widget class="QCheckBox" name="discord_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="17" column="0">
-              <widget class="QLabel" name="language_label">
-               <property name="text">
-                <string>Language:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="17" column="1">
-              <widget class="QComboBox" name="language_combobox">
-               <item>
-                <property name="text">
-                 <string> - Keep current setting -</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>     - Default</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>en - English</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>de - Deutsch</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>es - Español</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>pt - Português</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>pl - Polskie</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>jp - 日本語</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>ru - Русский</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="18" column="0">
-              <widget class="QLabel" name="scaling_label">
-               <property name="text">
-                <string>Scaling:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="18" column="1">
-              <widget class="QComboBox" name="scaling_combobox"/>
-             </item>
-             <item row="19" column="0">
-              <widget class="QLabel" name="shake_lbl">
-               <property name="text">
-                <string>Allow Screenshake:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="19" column="1">
-              <widget class="QCheckBox" name="shake_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="20" column="0">
-              <widget class="QLabel" name="effects_lbl">
-               <property name="text">
-                <string>Allow Effects:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="20" column="1">
-              <widget class="QCheckBox" name="effects_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="21" column="0">
-              <widget class="QLabel" name="framenetwork_lbl">
-               <property name="text">
-                <string>Network Frame Effects:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="21" column="1">
-              <widget class="QCheckBox" name="framenetwork_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="22" column="0">
-              <widget class="QLabel" name="colorlog_lbl">
-               <property name="text">
-                <string>Colors in IC Log:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="22" column="1">
-              <widget class="QCheckBox" name="colorlog_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="23" column="0">
-              <widget class="QLabel" name="stickysounds_lbl">
-               <property name="text">
-                <string>Sticky Sounds:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="23" column="1">
-              <widget class="QCheckBox" name="stickysounds_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="24" column="0">
-              <widget class="QLabel" name="stickyeffects_lbl">
-               <property name="text">
-                <string>Sticky Effects:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="24" column="1">
-              <widget class="QCheckBox" name="stickyeffects_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="25" column="0">
-              <widget class="QLabel" name="stickypres_lbl">
-               <property name="text">
-                <string>Sticky Preanims:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="25" column="1">
-              <widget class="QCheckBox" name="stickypres_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="26" column="0">
-              <widget class="QLabel" name="customchat_lbl">
-               <property name="text">
-                <string>Custom Chatboxes:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="26" column="1">
-              <widget class="QCheckBox" name="customchat_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="27" column="0">
-              <widget class="QLabel" name="sticker_lbl">
-               <property name="text">
-                <string>Stickers:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="27" column="1">
-              <widget class="QCheckBox" name="sticker_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="28" column="0">
-              <widget class="QLabel" name="continuous_lbl">
-               <property name="text">
-                <string>Continuous Playback:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="28" column="1">
-              <widget class="QCheckBox" name="continuous_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="29" column="0">
-              <widget class="QLabel" name="category_stop_lbl">
-               <property name="text">
-                <string>Stop Music w/ Category:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="29" column="1">
-              <widget class="QCheckBox" name="category_stop_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="30" column="0">
-              <widget class="QLabel" name="sfx_on_idle_lbl">
-               <property name="text">
-                <string>Always Send SFX:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="30" column="1">
-              <widget class="QCheckBox" name="sfx_on_idle_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="31" column="0">
-              <widget class="QLabel" name="evidence_double_click_lbl">
-               <property name="text">
-                <string>Evidence Double Click:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="31" column="1">
-              <widget class="QCheckBox" name="evidence_double_click_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="callwords_tab">
-        <attribute name="title">
-         <string>Callwords</string>
-        </attribute>
-        <widget class="QWidget" name="verticalLayoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>401</width>
-           <height>261</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="callwords_layout">
-          <item>
-           <widget class="QPlainTextEdit" name="callwords_textbox"/>
-          </item>
-          <item>
-           <widget class="QLabel" name="callwords_explain_lbl">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br/&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="audio_tab">
-        <attribute name="title">
-         <string>Audio</string>
-        </attribute>
-        <widget class="QWidget" name="audio_widget" native="true">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>361</width>
-           <height>321</height>
-          </rect>
-         </property>
-         <widget class="QWidget" name="formLayoutWidget">
-          <property name="geometry">
-           <rect>
-            <x>-1</x>
-            <y>-1</y>
-            <width>361</width>
-            <height>321</height>
-           </rect>
-          </property>
-          <layout class="QFormLayout" name="audio_layout">
-           <property name="leftMargin">
-            <number>5</number>
-           </property>
-           <property name="topMargin">
-            <number>5</number>
-           </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="audio_device_lbl">
-             <property name="text">
-              <string>Audio device:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QComboBox" name="audio_device_combobox">
-             <item>
-              <property name="text">
-               <string>default</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QFrame" name="audio_volume_divider">
-             <property name="frameShape">
-              <enum>QFrame::HLine</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="music_volume_lbl">
-             <property name="text">
-              <string>Music:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="music_volume_spinbox">
-             <property name="suffix">
-              <string>%</string>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="sfx_volume_lbl">
-             <property name="text">
-              <string>SFX:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QSpinBox" name="sfx_volume_spinbox">
-             <property name="suffix">
-              <string>%</string>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="blips_volume_lbl">
-             <property name="text">
-              <string>Blips:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QSpinBox" name="blips_volume_spinbox">
-             <property name="suffix">
-              <string>%</string>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="suppress_audio_lbl">
-             <property name="text">
-              <string>Suppress Audio:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QSpinBox" name="suppress_audio_spinbox">
-             <property name="suffix">
-              <string>%</string>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QFrame" name="volume_blip_divider">
-             <property name="frameShape">
-              <enum>QFrame::HLine</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="bliprate_lbl">
-             <property name="text">
-              <string>Blip rate:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="1">
-            <widget class="QSpinBox" name="bliprate_spinbox"/>
-           </item>
-           <item row="8" column="0">
-            <widget class="QLabel" name="blank_blips_lbl">
-             <property name="text">
-              <string>Blank blips:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QCheckBox" name="blank_blips_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="0">
-            <widget class="QLabel" name="loopsfx_lbl">
-             <property name="text">
-              <string>Enable Looping SFX:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="1">
-            <widget class="QCheckBox" name="loopsfx_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="objectmusic_lbl">
-             <property name="text">
-              <string>Kill Music On Objection:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="1">
-            <widget class="QCheckBox" name="objectmusic_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="11" column="0">
-            <widget class="QLabel" name="disablestreams_lbl">
-             <property name="text">
-              <string>Disable Music Streaming:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="11" column="1">
-            <widget class="QCheckBox" name="disablestreams_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="casing_tab">
-        <attribute name="title">
-         <string>Casing</string>
-        </attribute>
-        <widget class="QWidget" name="casing_widget" native="true">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>361</width>
-           <height>211</height>
-          </rect>
-         </property>
-         <widget class="QWidget" name="formLayoutWidget_2">
-          <property name="geometry">
-           <rect>
-            <x>-1</x>
-            <y>-1</y>
-            <width>361</width>
-            <height>211</height>
-           </rect>
-          </property>
-          <layout class="QFormLayout" name="casing_layout">
-           <property name="leftMargin">
-            <number>5</number>
-           </property>
-           <item row="1" column="0">
-            <widget class="QLabel" name="casing_enabled_lbl">
-             <property name="text">
-              <string>Casing:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="casing_supported_lbl">
-             <property name="text">
-              <string>This server does not support case alerts.</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QCheckBox" name="casing_enabled_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="casing_def_lbl">
-             <property name="text">
-              <string>Defense:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QCheckBox" name="casing_def_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="casing_pro_lbl">
-             <property name="text">
-              <string>Prosecution:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QCheckBox" name="casing_pro_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="casing_jud_lbl">
-             <property name="text">
-              <string>Judge:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QCheckBox" name="casing_jud_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="casing_jur_lbl">
-             <property name="text">
-              <string>Juror:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QCheckBox" name="casing_jur_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="casing_steno_lbl">
-             <property name="text">
-              <string>Stenographer:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QCheckBox" name="casing_steno_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="casing_cm_lbl">
-             <property name="text">
-              <string>CM:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="1">
-            <widget class="QCheckBox" name="casing_cm_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QLabel" name="casing_cm_cases_lbl">
-             <property name="text">
-              <string>Hosting cases:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QLineEdit" name="casing_cm_cases_textbox"/>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="assets_tab">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <attribute name="title">
-         <string>Assets</string>
-        </attribute>
-        <widget class="QWidget" name="verticalLayoutWidget_2">
-         <property name="geometry">
-          <rect>
-           <x>-1</x>
-           <y>-1</y>
-           <width>431</width>
-           <height>351</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="assets_tab_layout">
-          <property name="leftMargin">
-           <number>5</number>
-          </property>
-          <property name="topMargin">
-           <number>5</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="asset_lbl">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Add or remove base folders for use by assets.
-Base folders on the bottom are prioritized over those above them.</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QListWidget" name="mount_list">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QGridLayout" name="mount_buttons_layout">
-            <item row="2" column="5">
-             <spacer name="mount_buttons_spacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="4">
-             <widget class="QPushButton" name="mount_down">
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>↓</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QPushButton" name="mount_remove">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Remove</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <spacer name="mount_buttons_spacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="3">
-             <widget class="QPushButton" name="mount_up">
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>↑</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QPushButton" name="mount_add">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Add...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="6">
-             <widget class="QPushButton" name="mount_clear_cache">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Clear Cache</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="logging_tab">
-        <attribute name="title">
-         <string>Logging</string>
-        </attribute>
-        <widget class="QScrollArea" name="log_scroll">
-         <property name="geometry">
-          <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>421</width>
-           <height>341</height>
-          </rect>
-         </property>
+    <widget class="QTabWidget" name="settings_tabs">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="gameplay_tab">
+      <attribute name="title">
+       <string>Gameplay</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QScrollArea" name="scroll">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="logging_form">
+         <widget class="QWidget" name="form_layout_widget">
           <property name="geometry">
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>419</width>
-            <height>339</height>
+            <width>342</width>
+            <height>797</height>
            </rect>
           </property>
-          <property name="autoFillBackground">
-           <bool>true</bool>
-          </property>
-          <layout class="QFormLayout" name="formLayout_4">
-           <property name="labelAlignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-           </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="downwards_lbl">
-             <property name="text">
-              <string>Log goes downwards:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QCheckBox" name="downwards_cb">
+          <layout class="QFormLayout" name="formLayout">
+           <item row="23" column="1">
+            <widget class="QCheckBox" name="stickysounds_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="length_lbl">
+           <item row="29" column="0">
+            <widget class="QLabel" name="category_stop_lbl">
              <property name="text">
-              <string>Log length:</string>
+              <string>Stop Music w/ Category:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="30" column="1">
+            <widget class="QCheckBox" name="sfx_on_idle_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="theme_combobox"/>
+           </item>
+           <item row="18" column="0">
+            <widget class="QLabel" name="scaling_label">
+             <property name="text">
+              <string>Scaling:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="26" column="0">
+            <widget class="QLabel" name="customchat_lbl">
+             <property name="text">
+              <string>Custom Chatboxes:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="20" column="0">
+            <widget class="QLabel" name="effects_lbl">
+             <property name="text">
+              <string>Allow Effects:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="1">
+            <widget class="QCheckBox" name="discord_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="theme_folder_button">
+             <property name="text">
+              <string>Open Theme Folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="15" column="0">
+            <widget class="QLabel" name="ms_lbl">
+             <property name="text">
+              <string>Alternate Server List:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="instant_objection_lbl">
+             <property name="text">
+              <string>Instant Objection:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QSpinBox" name="text_crawl_spinbox">
+             <property name="suffix">
+              <string> ms</string>
+             </property>
+             <property name="maximum">
+              <number>500</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="theme_label">
+             <property name="text">
+              <string>Theme:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="17" column="1">
+            <widget class="QComboBox" name="language_combobox">
+             <item>
+              <property name="text">
+               <string> - Keep current setting -</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>     - Default</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>en - English</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>de - Deutsch</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>es - Español</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>pt - Português</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>pl - Polskie</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>jp - 日本語</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ru - Русский</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="15" column="1">
+            <widget class="QLineEdit" name="ms_textbox"/>
+           </item>
+           <item row="21" column="0">
+            <widget class="QLabel" name="framenetwork_lbl">
+             <property name="text">
+              <string>Network Frame Effects:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="chat_ratelimit_lbl">
+             <property name="text">
+              <string>Chat Rate Limit:</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::AutoText</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="1">
+            <widget class="QSpinBox" name="chat_ratelimit_spinbox">
+             <property name="suffix">
+              <string> ms</string>
+             </property>
+             <property name="maximum">
+              <number>5000</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="animated_theme_lbl">
+             <property name="text">
+              <string>Animated Theme:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="text_crawl_lbl">
+             <property name="text">
+              <string>Text crawl:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="theme_reload_button">
+             <property name="text">
+              <string>Reload Theme</string>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="1">
+            <widget class="QComboBox" name="scaling_combobox"/>
+           </item>
+           <item row="22" column="1">
+            <widget class="QCheckBox" name="colorlog_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0">
+            <widget class="QLabel" name="default_showname_lbl">
+             <property name="text">
+              <string>Default showname:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="28" column="1">
+            <widget class="QCheckBox" name="continuous_cb">
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QSpinBox" name="length_spinbox">
+            <widget class="QComboBox" name="subtheme_combobox"/>
+           </item>
+           <item row="27" column="0">
+            <widget class="QLabel" name="sticker_lbl">
+             <property name="text">
+              <string>Stickers:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="25" column="0">
+            <widget class="QLabel" name="stickypres_lbl">
+             <property name="text">
+              <string>Sticky Preanims:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QSpinBox" name="stay_time_spinbox">
              <property name="suffix">
-              <string> entries</string>
+              <string> ms</string>
              </property>
              <property name="maximum">
               <number>10000</number>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="log_newline_lbl">
+           <item row="12" column="0">
+            <widget class="QLabel" name="showname_lbl">
              <property name="text">
-              <string>Log newline:</string>
+              <string>Custom shownames:</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QCheckBox" name="log_newline_cb">
+           <item row="24" column="0">
+            <widget class="QLabel" name="stickyeffects_lbl">
              <property name="text">
-              <string/>
+              <string>Sticky Effects:</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="log_margin_lbl">
-             <property name="text">
-              <string>Log margin:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QSpinBox" name="log_margin_spinbox">
-             <property name="suffix">
-              <string> px</string>
-             </property>
-             <property name="maximum">
-              <number>1000</number>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="log_timestamp_lbl">
-             <property name="text">
-              <string>Log timestamp:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QCheckBox" name="log_timestamp_cb">
+           <item row="27" column="1">
+            <widget class="QCheckBox" name="sticker_cb">
              <property name="text">
               <string/>
              </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="log_timestamp_format_lbl">
-             <property name="text">
-              <string>Log timestamp format:
-</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QComboBox" name="log_timestamp_format_combobox">
-             <property name="editable">
-              <bool>true</bool>
-             </property>
-             <item>
-              <property name="text">
-               <string>h:mm:ss AP</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>hh:mm:ss</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>h:mm AP</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>hh:mm</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QLabel" name="log_ic_actions_lbl">
+            <widget class="QLabel" name="stay_time_lbl">
              <property name="text">
-              <string>Log IC actions:</string>
+              <string>Text Stay Time:</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
-            <widget class="QCheckBox" name="log_ic_actions_cb">
+           <item row="17" column="0">
+            <widget class="QLabel" name="language_label">
              <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="desync_logs_lbl">
-             <property name="text">
-              <string>Desynchronize IC Logs:</string>
+              <string>Language:</string>
              </property>
             </widget>
            </item>
            <item row="7" column="1">
-            <widget class="QCheckBox" name="desync_logs_cb">
+            <widget class="QCheckBox" name="instant_objection_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
-            <widget class="QLabel" name="log_text_lbl">
-             <property name="text">
-              <string>Log to Text Files:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QCheckBox" name="log_text_cb">
+           <item row="25" column="1">
+            <widget class="QCheckBox" name="stickypres_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="9" column="0">
-            <widget class="QLabel" name="log_demo_lbl">
+           <item row="12" column="1">
+            <widget class="QCheckBox" name="showname_cb">
              <property name="text">
-              <string>Log to Demo Files:</string>
+              <string/>
              </property>
             </widget>
            </item>
-           <item row="9" column="1">
-            <widget class="QCheckBox" name="log_demo_cb">
+           <item row="21" column="1">
+            <widget class="QCheckBox" name="framenetwork_cb">
              <property name="text">
               <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="30" column="0">
+            <widget class="QLabel" name="sfx_on_idle_lbl">
+             <property name="text">
+              <string>Always Send SFX:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="23" column="0">
+            <widget class="QLabel" name="stickysounds_lbl">
+             <property name="text">
+              <string>Sticky Sounds:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="1">
+            <widget class="QCheckBox" name="shake_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0">
+            <widget class="QLabel" name="username_lbl">
+             <property name="text">
+              <string>Default username:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="0">
+            <widget class="QLabel" name="shake_lbl">
+             <property name="text">
+              <string>Allow Screenshake:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QCheckBox" name="animated_theme_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="0">
+            <widget class="QLabel" name="discord_lbl">
+             <property name="text">
+              <string>Discord:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="22" column="0">
+            <widget class="QLabel" name="colorlog_lbl">
+             <property name="text">
+              <string>Colors in IC Log:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="subtheme_label">
+             <property name="text">
+              <string>Subtheme:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="20" column="1">
+            <widget class="QCheckBox" name="effects_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="29" column="1">
+            <widget class="QCheckBox" name="category_stop_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="26" column="1">
+            <widget class="QCheckBox" name="customchat_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="1">
+            <widget class="QLineEdit" name="default_showname_textbox"/>
+           </item>
+           <item row="14" column="1">
+            <widget class="QFrame" name="net_divider">
+             <property name="frameShape">
+              <enum>QFrame::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QFrame" name="theme_log_divider">
+             <property name="frameShape">
+              <enum>QFrame::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="24" column="1">
+            <widget class="QCheckBox" name="stickyeffects_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="31" column="0">
+            <widget class="QLabel" name="evidence_double_click_lbl">
+             <property name="text">
+              <string>Evidence Double Click:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="1">
+            <widget class="QFrame" name="log_names_divider">
+             <property name="frameShape">
+              <enum>QFrame::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="31" column="1">
+            <widget class="QCheckBox" name="evidence_double_click_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="28" column="0">
+            <widget class="QLabel" name="continuous_lbl">
+             <property name="text">
+              <string>Continuous Playback:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="1">
+            <widget class="QLineEdit" name="username_textbox">
+             <property name="maxLength">
+              <number>30</number>
              </property>
             </widget>
            </item>
           </layout>
          </widget>
         </widget>
-       </widget>
-       <widget class="QWidget" name="privacy_tab">
-        <attribute name="title">
-         <string>Privacy</string>
-        </attribute>
-        <widget class="QWidget" name="verticalLayoutWidget_3">
-         <property name="geometry">
-          <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>421</width>
-           <height>341</height>
-          </rect>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="callwords_tab">
+      <attribute name="title">
+       <string>Callwords</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QPlainTextEdit" name="callwords_textbox"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="callwords_explain_lbl">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br/&gt;&lt;br/&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <property name="spacing">
-           <number>0</number>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="audio_tab">
+      <attribute name="title">
+       <string>Audio</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="audio_device_lbl">
+         <property name="text">
+          <string>Audio device:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="audio_device_combobox">
+         <item>
+          <property name="text">
+           <string>default</string>
           </property>
-          <item>
-           <widget class="QCheckBox" name="privacy_optout_cb">
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="music_volume_lbl">
+         <property name="text">
+          <string>Music:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="music_volume_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="sfx_volume_lbl">
+         <property name="text">
+          <string>SFX:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSpinBox" name="sfx_volume_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="blips_volume_lbl">
+         <property name="text">
+          <string>Blips:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="blips_volume_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="suppress_audio_lbl">
+         <property name="text">
+          <string>Suppress Audio:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QSpinBox" name="suppress_audio_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="bliprate_lbl">
+         <property name="text">
+          <string>Blip rate:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QSpinBox" name="bliprate_spinbox"/>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="blank_blips_lbl">
+         <property name="text">
+          <string>Blank blips:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QCheckBox" name="blank_blips_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="loopsfx_lbl">
+         <property name="text">
+          <string>Enable Looping SFX:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QCheckBox" name="loopsfx_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="objectmusic_lbl">
+         <property name="text">
+          <string>Kill Music On Objection:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QCheckBox" name="objectmusic_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLabel" name="disablestreams_lbl">
+         <property name="text">
+          <string>Disable Music Streaming:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QCheckBox" name="disablestreams_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QFrame" name="audio_volume_divider">
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QFrame" name="volume_blip_divider">
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="casing_tab">
+      <attribute name="title">
+       <string>Casing</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="casing_supported_lbl">
+         <property name="text">
+          <string>This server does not support case alerts.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Casing</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="casing_def_cb">
             <property name="text">
-             <string>Do not include me in public player counts</string>
+             <string>Defense</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QTextBrowser" name="privacy_policy"/>
-          </item>
-          <item>
-           <widget class="QFrame" name="privacy_separator">
-            <property name="frameShape">
-             <enum>QFrame::HLine</enum>
+          <item row="2" column="1">
+           <widget class="QCheckBox" name="casing_jur_cb">
+            <property name="text">
+             <string>Juror</string>
             </property>
-            <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="casing_steno_cb">
+            <property name="text">
+             <string>Stenographer</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="casing_cm_cb">
+            <property name="text">
+             <string>Case Master</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="casing_cm_cases_lbl">
+              <property name="text">
+               <string>Hosting cases:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="casing_cm_cases_textbox"/>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="casing_pro_cb">
+            <property name="text">
+             <string>Prosecution</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="casing_jud_cb">
+            <property name="text">
+             <string>Judge</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
-       </widget>
-      </widget>
-     </item>
-    </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>338</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="assets_tab">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <attribute name="title">
+       <string>Assets</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="asset_lbl">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add or remove base folders for use by assets.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Base folders on the bottom are prioritized over those above them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="mount_list">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="mount_buttons_layout">
+         <item row="2" column="5">
+          <spacer name="mount_buttons_spacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="4">
+          <widget class="QPushButton" name="mount_down">
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>↓</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="mount_remove">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Remove</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <spacer name="mount_buttons_spacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="3">
+          <widget class="QPushButton" name="mount_up">
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>↑</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="mount_add">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Add...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="6">
+          <widget class="QPushButton" name="mount_clear_cache">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Clear Cache</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="logging_tab">
+      <attribute name="title">
+       <string>Logging</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="downwards_lbl">
+         <property name="text">
+          <string>Log goes downwards:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="downwards_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="length_lbl">
+         <property name="text">
+          <string>Log length:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="length_spinbox">
+         <property name="suffix">
+          <string> entries</string>
+         </property>
+         <property name="maximum">
+          <number>10000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="log_newline_lbl">
+         <property name="text">
+          <string>Log newline:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="log_newline_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="log_margin_lbl">
+         <property name="text">
+          <string>Log margin:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSpinBox" name="log_margin_spinbox">
+         <property name="suffix">
+          <string> px</string>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="log_timestamp_lbl">
+         <property name="text">
+          <string>Log timestamp:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="log_timestamp_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="log_timestamp_format_lbl">
+         <property name="text">
+          <string>Log timestamp format:
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="log_timestamp_format_combobox">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>h:mm:ss AP</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>hh:mm:ss</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>h:mm AP</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>hh:mm</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="log_ic_actions_lbl">
+         <property name="text">
+          <string>Log IC actions:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QCheckBox" name="log_ic_actions_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="desync_logs_lbl">
+         <property name="text">
+          <string>Desynchronize IC Logs:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QCheckBox" name="desync_logs_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="log_text_lbl">
+         <property name="text">
+          <string>Log to Text Files:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QCheckBox" name="log_text_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="log_demo_lbl">
+         <property name="text">
+          <string>Log to Demo Files:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QCheckBox" name="log_demo_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="privacy_tab">
+      <attribute name="title">
+       <string>Privacy</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QCheckBox" name="privacy_optout_cb">
+         <property name="text">
+          <string>Do not include me in public player counts</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="privacy_policy"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="settings_buttons">
