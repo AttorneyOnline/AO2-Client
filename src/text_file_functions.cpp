@@ -224,7 +224,7 @@ QString AOApplication::read_design_ini(QString p_identifier,
 Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 {
   if (p_scaling.isEmpty())
-    p_scaling = Options::options->DefaultScalingMode();
+    p_scaling = Options::options->defaultScalingMode();
 
   if (p_scaling == "smooth")
     return Qt::SmoothTransformation;

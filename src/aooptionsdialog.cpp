@@ -104,11 +104,79 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   FROM_UI(QFrame, log_names_divider)
 
-  FROM_UI(QLineEdit, username_textbox);
+  FROM_UI(QLineEdit, username_textbox)
   registerOption<QLineEdit, QString>("username_textbox", &Options::username, &Options::setUsername);
 
-  FROM_UI(QCheckBox, showname_cb);
+  FROM_UI(QCheckBox, showname_cb)
   registerOption<QCheckBox, bool>("showname_cb", &Options::customShownameEnabled, &Options::setCustomShownameEnabled);
+
+  FROM_UI(QLineEdit, default_showname_textbox);
+  registerOption<QLineEdit, QString>("default_showname_textbox", &Options::shownameOnJoin, &Options::setShownameOnJoin);
+
+  FROM_UI(QFrame, net_divider)
+
+  FROM_UI(QLineEdit, ms_textbox)
+  registerOption<QLineEdit, QString>("ms_textbox", &Options::alternativeMasterserver, &Options::setAlternativeMasterserver);
+
+  FROM_UI(QCheckBox, discord_cb)
+  registerOption<QCheckBox, bool>("discord_cb", &Options::discordEnabled, &Options::setDiscordEnabled);
+
+  FROM_UI(QComboBox, language_combobox)
+  registerOption<QComboBox, QString>("language_combobox", &Options::language, &Options::setLanguage);
+
+  FROM_UI(QComboBox, scaling_combobox)
+  registerOption<QComboBox, QString>("scaling_combobox", &Options::defaultScalingMode, &Options::setDefaultScalingMode);
+  ui_scaling_combobox->addItem(tr("Pixel"), "fast");
+  ui_scaling_combobox->addItem(tr("Smooth"), "smooth");
+
+  FROM_UI(QCheckBox, shake_cb)
+  registerOption<QCheckBox, bool>("shake_cb",  &Options::shakeEnabled, &Options::setShakeEnabled);
+
+  FROM_UI(QCheckBox, effects_cb)
+  registerOption<QCheckBox, bool>("effects_cb", &Options::effectsEnabled, &Options::setEffectsEnabled);
+
+  FROM_UI(QCheckBox, framenetwork_cb)
+  registerOption<QCheckBox, bool>("framenetwork_cb", &Options::networkedFrameSfxEnabled, &Options::setNetworkedFrameSfxEnabled);
+
+  FROM_UI(QCheckBox, colorlog_cb)
+  registerOption<QCheckBox, bool>("colorlog_cb", &Options::colorLogEnabled, &Options::setColorLogEnabled);
+
+  FROM_UI(QCheckBox, stickysounds_cb)
+  registerOption<QCheckBox, bool>("stickysounds_cb", &Options::clearSoundsDropdownOnPlayEnabled, &Options::setClearSoundsDropdownOnPlayEnabled);
+
+  FROM_UI(QCheckBox, stickyeffects_cb)
+  registerOption<QCheckBox, bool>("stickyeffects_cb", &Options::clearEffectsDropdownOnPlayEnabled, &Options::setClearEffectsDropdownOnPlayEnabled);
+
+  FROM_UI(QCheckBox, stickypres_cb)
+  registerOption<QCheckBox, bool>("stickypres_cb", &Options::clearPreOnPlayEnabled, &Options::setClearPreOnPlayEnabled);
+
+  FROM_UI(QCheckBox, customchat_cb)
+  registerOption<QCheckBox, bool>("customchat_cb", &Options::customChatboxEnabled, &Options::setCustomChatboxEnabled);
+
+  FROM_UI(QCheckBox, sticker_cb)
+  registerOption<QCheckBox, bool>("sticker_cb", &Options::characterStickerEnabled, &Options::setCharacterStickerEnabled);
+
+  FROM_UI(QCheckBox, continuous_cb)
+  registerOption<QCheckBox, bool>("continuous_cb", &Options::continuousPlaybackEnabled, &Options::setContinuousPlaybackEnabled);
+
+  FROM_UI(QCheckBox, category_stop_cb)
+  registerOption<QCheckBox, bool>("category_stop_cb", &Options::stopMusicOnCategoryEnabled, &Options::setStopMusicOnCategoryEnabled);
+
+  FROM_UI(QCheckBox, sfx_on_idle_cb)
+  registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::SfxonIdle, &Options::setSfxOnIdle);
+
+  FROM_UI(QCheckBox, evidence_double_click_cb)
+  registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
+
+  FROM_UI(QPlainTextEdit, callwords_textbox)
+
+  const QStringList temp_callword_list = options.callwords();
+  for (const QString &callword : temp_callword_list) {
+    ui_callwords_textbox->appendPlainText(callword);
+  }
+
+
+  update_values();
   /**
 
   ui_theme_label->setToolTip(
@@ -143,307 +211,84 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       tr("Your OOC name will be automatically set to this value "
          "when you join a server."));
 
-  row += 1;
-  ui_showname_lbl = new QLabel(ui_form_layout_widget);
-  ui_showname_lbl->setText(tr("Custom shownames:"));
   ui_showname_lbl->setToolTip(
       tr("Gives the default value for the in-game 'Custom shownames' "
          "tickbox, which in turn determines whether the client should "
          "display custom in-character names."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_showname_lbl);
-
-  ui_showname_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_showname_cb);
-
-  row +=1;
-  ui_default_showname_lbl = new QLabel(ui_form_layout_widget);
-  ui_default_showname_lbl->setText(tr("Default showname:"));
   ui_default_showname_lbl->setToolTip(
               tr("Your showname will be automatically set to this value "
                  "when you join a server."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_default_showname_lbl);
-
-  ui_default_showname_textbox = new QLineEdit(ui_form_layout_widget);
-  ui_default_showname_textbox->setMaxLength(30);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_default_showname_textbox);
-
-  row += 1;
-  ui_net_divider = new QFrame(ui_form_layout_widget);
-  ui_net_divider->setFrameShape(QFrame::HLine);
-  ui_net_divider->setFrameShadow(QFrame::Sunken);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_net_divider);
-
-  row += 1;
-  ui_ms_lbl = new QLabel(ui_form_layout_widget);
-  ui_ms_lbl->setText(tr("Alternate Server List:"));
   ui_ms_lbl->setToolTip(
       tr("Overrides the base URL to retrieve server information from."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_ms_lbl);
-
-  ui_ms_textbox = new QLineEdit(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_ms_textbox);
-
-  row += 1;
-  ui_discord_lbl = new QLabel(ui_form_layout_widget);
-  ui_discord_lbl->setText(tr("Discord:"));
   ui_discord_lbl->setToolTip(
       tr("Allows others on Discord to see what server you are in, "
          "what character are you playing, and how long you have "
          "been playing for."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_discord_lbl);
-
-  ui_discord_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_discord_cb);
-
-  row += 1;
-  ui_language_label = new QLabel(ui_form_layout_widget);
-  ui_language_label->setText(tr("Language:"));
   ui_language_label->setToolTip(
       tr("Sets the language if you don't want to use your system language."));
   ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_language_label);
 
-  ui_language_combobox = new QComboBox(ui_form_layout_widget);
-  ui_language_combobox->addItem(
-      ao_app->configini->value("language", "  ").value<QString>() +
-      tr(" - Keep current setting"));
-  ui_language_combobox->addItem("   - Default");
-  ui_language_combobox->addItem("en - English");
-  ui_language_combobox->addItem("de - Deutsch");
-  ui_language_combobox->addItem("es - Español");
-  ui_language_combobox->addItem("pt - Português");
-  ui_language_combobox->addItem("pl - Polskie");
-  ui_language_combobox->addItem("jp - 日本語");
-  ui_language_combobox->addItem("ru - Русский");
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole,
-                              ui_language_combobox);
-
-  row += 1;
-  ui_scaling_label = new QLabel(ui_form_layout_widget);
-  ui_scaling_label->setText(tr("Scaling:"));
   ui_scaling_label->setToolTip(
         tr("Sets the default scaling method, if there is not one already defined "
            "specifically for the character."));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_scaling_label);
 
-  ui_scaling_combobox = new QComboBox(ui_form_layout_widget);
-  // Corresponds with Qt::TransformationMode enum. Please don't change the order.
-  ui_scaling_combobox->addItem(tr("Pixel"), "fast");
-  ui_scaling_combobox->addItem(tr("Smooth"), "smooth");
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_scaling_combobox);
-
-  row += 1;
-  ui_shake_lbl = new QLabel(ui_form_layout_widget);
-  ui_shake_lbl->setText(tr("Allow Screenshake:"));
   ui_shake_lbl->setToolTip(
       tr("Allows screenshaking. Disable this if you have concerns or issues "
          "with photosensitivity and/or seizures."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_shake_lbl);
-
-  ui_shake_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_shake_cb);
-
-  row += 1;
-  ui_effects_lbl = new QLabel(ui_form_layout_widget);
-  ui_effects_lbl->setText(tr("Allow Effects:"));
   ui_effects_lbl->setToolTip(
       tr("Allows screen effects. Disable this if you have concerns or issues "
          "with photosensitivity and/or seizures."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_effects_lbl);
-
-  ui_effects_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_effects_cb);
-
-  row += 1;
-  ui_framenetwork_lbl = new QLabel(ui_form_layout_widget);
-  ui_framenetwork_lbl->setText(tr("Network Frame Effects:"));
   ui_framenetwork_lbl->setToolTip(tr(
       "Send screen-shaking, flashes and sounds as defined in the char.ini over "
       "the network. Only works for servers that support this functionality."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_framenetwork_lbl);
-
-  ui_framenetwork_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_framenetwork_cb);
-
-  row += 1;
-  ui_colorlog_lbl = new QLabel(ui_form_layout_widget);
-  ui_colorlog_lbl->setText(tr("Colors in IC Log:"));
   ui_colorlog_lbl->setToolTip(
       tr("Use the markup colors in the server IC chatlog."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_colorlog_lbl);
-
-  ui_colorlog_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_colorlog_cb);
-
-  row += 1;
-  ui_stickysounds_lbl = new QLabel(ui_form_layout_widget);
-  ui_stickysounds_lbl->setText(tr("Sticky Sounds:"));
   ui_stickysounds_lbl->setToolTip(
       tr("Turn this on to prevent the sound dropdown from clearing the sound "
          "after playing it."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickysounds_lbl);
-
-  ui_stickysounds_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickysounds_cb);
-
-  row += 1;
-  ui_stickyeffects_lbl = new QLabel(ui_form_layout_widget);
-  ui_stickyeffects_lbl->setText(tr("Sticky Effects:"));
   ui_stickyeffects_lbl->setToolTip(
       tr("Turn this on to prevent the effects dropdown from clearing the "
          "effect after playing it."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole,
-                              ui_stickyeffects_lbl);
-
-  ui_stickyeffects_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickyeffects_cb);
-
-  row += 1;
-  ui_stickypres_lbl = new QLabel(ui_form_layout_widget);
-  ui_stickypres_lbl->setText(tr("Sticky Preanims:"));
   ui_stickypres_lbl->setToolTip(
       tr("Turn this on to prevent preanimation checkbox from clearing after "
          "playing the emote."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stickypres_lbl);
-
-  ui_stickypres_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stickypres_cb);
-
-  row += 1;
-  ui_customchat_lbl = new QLabel(ui_form_layout_widget);
-  ui_customchat_lbl->setText(tr("Custom Chatboxes:"));
   ui_customchat_lbl->setToolTip(
       tr("Turn this on to allow characters to define their own "
          "custom chat box designs."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_customchat_lbl);
-
-  ui_customchat_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_customchat_cb);
-
-  row += 1;
-  ui_sticker_lbl = new QLabel(ui_form_layout_widget);
-  ui_sticker_lbl->setText(tr("Stickers:"));
   ui_sticker_lbl->setToolTip(
       tr("Turn this on to allow characters to define their own "
          "stickers (unique images that show up over the chatbox - like avatars or shownames)."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_sticker_lbl);
-
-  ui_sticker_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_sticker_cb);
-
-  row += 1;
-  ui_continuous_lbl = new QLabel(ui_form_layout_widget);
-  ui_continuous_lbl->setText(tr("Continuous Playback:"));
   ui_continuous_lbl->setToolTip(
       tr("Whether or not to resume playing animations from where they left off. Turning off might reduce lag."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_continuous_lbl);
-
-  ui_continuous_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_continuous_cb);
-
-  row += 1;
-  ui_category_stop_lbl = new QLabel(ui_form_layout_widget);
-  ui_category_stop_lbl->setText(tr("Stop Music w/ Category:"));
   ui_category_stop_lbl->setToolTip(
       tr("Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_category_stop_lbl);
-
-  ui_category_stop_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
-
-  row += 1;
-
-  ui_sfx_on_idle_lbl = new QLabel(ui_form_layout_widget);
-  ui_sfx_on_idle_lbl->setText(tr("Always Send SFX:"));
   ui_sfx_on_idle_lbl->setToolTip(
       tr("If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_sfx_on_idle_lbl);
-
-  ui_sfx_on_idle_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_sfx_on_idle_cb);
-
-  row += 1;
-
-  ui_evidence_double_click_lbl = new QLabel(ui_form_layout_widget);
-  ui_evidence_double_click_lbl->setText(tr("Evidence Double Click:"));
   ui_evidence_double_click_lbl->setToolTip(
       tr("If ticked, Evidence needs a double-click to view rather than a single click."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_evidence_double_click_lbl);
-
-  ui_evidence_double_click_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_evidence_double_click_cb);
-
-  // Finish gameplay tab
-  QScrollArea *scroll = new QScrollArea(this);
-  scroll->setWidget(ui_form_layout_widget);
-  ui_gameplay_tab->setLayout(new QVBoxLayout);
-  ui_gameplay_tab->layout()->addWidget(scroll);
-  ui_gameplay_tab->;
-
-  // Here we start the callwords tab.
-  ui_callwords_tab = new QWidget(this);
-  ui_settings_tabs->addTab(ui_callwords_tab, tr("Callwords"));
-
-  ui_callwords_widget = new QWidget(ui_callwords_tab);
-  ui_callwords_widget->setGeometry(QRect(10, 10, 361, 211));
-
-  ui_callwords_layout = new QVBoxLayout(ui_callwords_widget);
-  ui_callwords_layout->setContentsMargins(0, 0, 0, 0);
-
-  ui_callwords_textbox = new QPlainTextEdit(ui_callwords_widget);
-  QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  sizePolicy.setHorizontalStretch(0);
-  sizePolicy.setVerticalStretch(0);
-  sizePolicy.setHeightForWidth(
-      ui_callwords_textbox->sizePolicy().hasHeightForWidth());
-  ui_callwords_textbox->setSizePolicy(sizePolicy);
-
-  ui_callwords_layout->addWidget(ui_callwords_textbox);
-
-  ui_callwords_explain_lbl = new QLabel(ui_callwords_widget);
-  ui_callwords_explain_lbl->setWordWrap(true);
   ui_callwords_explain_lbl->setText(
       tr("<html><head/><body>Enter as many callwords as you would like. These "
          "are case insensitive. Make sure to leave every callword in its own "
          "line!<br>Do not leave a line with a space at the end -- you will be "
          "alerted everytime someone uses a space in their "
          "messages.</body></html>"));
-
-  ui_callwords_layout->addWidget(ui_callwords_explain_lbl);
 
   // The audio tab.
   ui_audio_tab = new QWidget(this);
@@ -1194,15 +1039,18 @@ void AOOptionsDialog::registerOption(const QString &widgetName,
 
 void AOOptionsDialog::update_values()
 {
-    for (const OptionEntry &entry : optionEntries)
+    for (const OptionEntry &entry : qAsConst(optionEntries))
       entry.load();
     this->hide();
 }
 
 void AOOptionsDialog::save_pressed()
 {
-    for (const OptionEntry &entry : optionEntries)
+    for (const OptionEntry &entry : qAsConst(optionEntries))
       entry.save();
+
+    //TODO : Figure out a way to do this proper.
+    options.setCallwords(ui_callwords_textbox->toPlainText());
     this->hide();
 }
 

@@ -248,7 +248,7 @@ public:
   void setAnimatedThemeEnabled(bool value);
 
   // Get the default scaling method
-  QString DefaultScalingMode() const;
+  QString defaultScalingMode() const;
   void setDefaultScalingMode(QString value);
 
   // Get a list of custom mount paths
@@ -266,6 +266,17 @@ public:
   // Whether opening evidence requires a single or double click
   bool evidenceDoubleClickEdit() const;
   void setEvidenceDoubleClickEdit(bool value);
+
+  //Supplies an alternative masterserver URL
+  QString alternativeMasterserver() const;
+  void setAlternativeMasterserver(QString value);
+
+  // Language the client loads on start.
+  QString language() const;
+  void setLanguage(QString value);
+
+  QStringList callwords() const;
+  void setCallwords(QString value);
 
   /**
    * @brief Static access pointer. Workaround for scope limitations and reduce reliance to AOApplication

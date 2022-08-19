@@ -537,7 +537,7 @@ void Options::setAnimatedThemeEnabled(bool value)
   config.setValue("animated_theme", value);
 }
 
-QString Options::DefaultScalingMode() const
+QString Options::defaultScalingMode() const
 {
   return config.value("default_scaling", "fast").toString();
 }
@@ -587,3 +587,65 @@ void Options::setEvidenceDoubleClickEdit(bool value)
   config.setValue("evidence_double_click", value);
 }
 
+QString Options::alternativeMasterserver() const
+{
+  return config.value("master","").toString();
+}
+
+void Options::setAlternativeMasterserver(QString value)
+{
+  config.setValue("master", value);
+}
+
+QString Options::language() const
+{
+  return config.value("language", "").toString();
+}
+
+void Options::setLanguage(QString value)
+{
+    config.setValue("language", value);
+}
+
+QStringList Options::callwords() const
+{
+    //Bla bla, evil boilerplate.
+  QStringList l_callwords;
+
+  QFile l_file;
+  l_file.setFileName(QCoreApplication::applicationDirPath() + "/base/callwords.ini");
+
+  if (!l_file.open(QIODevice::ReadOnly))
+    return l_callwords;
+
+  QTextStream in(&l_file);
+  in.setCodec("UTF-8");
+
+  while (!in.atEnd()) {
+    QString line = in.readLine();
+    l_callwords.append(line);
+  }
+  return l_callwords;
+}
+
+void Options::setCallwords(QString value)
+{
+  //But why not use (insert function here that needs AOApplication.)
+  //Simple. Fuck AOApplication. Piece of shit class.
+  QFile l_file;
+  l_file.setFileName(QCoreApplication::applicationDirPath() + "/base/callwords.ini");
+
+  if (!l_file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+      qWarning() << "Unable to save callwords into file " << l_file.fileName();
+      return;
+  }
+
+  const QStringList callwords = value.split("\n");
+  QTextStream out(&l_file);
+  out.setCodec("UTF-8");
+  for (const QString &callword : callwords) {
+      out << callword << "\n";
+  }
+  out.flush();
+  l_file.close();
+}
