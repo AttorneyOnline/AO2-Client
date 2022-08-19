@@ -23,7 +23,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="gameplay_tab">
       <attribute name="title">
@@ -39,7 +39,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-498</y>
             <width>342</width>
             <height>797</height>
            </rect>
@@ -54,6 +54,9 @@
            </item>
            <item row="29" column="0">
             <widget class="QLabel" name="category_stop_lbl">
+             <property name="toolTip">
+              <string>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</string>
+             </property>
              <property name="text">
               <string>Stop Music w/ Category:</string>
              </property>
@@ -71,6 +74,9 @@
            </item>
            <item row="18" column="0">
             <widget class="QLabel" name="scaling_label">
+             <property name="toolTip">
+              <string>Sets the default scaling method, if there is not one already defined specifically for the character.</string>
+             </property>
              <property name="text">
               <string>Scaling:</string>
              </property>
@@ -78,6 +84,9 @@
            </item>
            <item row="26" column="0">
             <widget class="QLabel" name="customchat_lbl">
+             <property name="toolTip">
+              <string>Turn this on to allow characters to define their own custom chat box designs.</string>
+             </property>
              <property name="text">
               <string>Custom Chatboxes:</string>
              </property>
@@ -85,6 +94,9 @@
            </item>
            <item row="20" column="0">
             <widget class="QLabel" name="effects_lbl">
+             <property name="toolTip">
+              <string>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
+             </property>
              <property name="text">
               <string>Allow Effects:</string>
              </property>
@@ -99,6 +111,9 @@
            </item>
            <item row="3" column="1">
             <widget class="QPushButton" name="theme_folder_button">
+             <property name="toolTip">
+              <string>Open the theme folder of the currently selected theme.</string>
+             </property>
              <property name="text">
               <string>Open Theme Folder</string>
              </property>
@@ -106,6 +121,9 @@
            </item>
            <item row="15" column="0">
             <widget class="QLabel" name="ms_lbl">
+             <property name="toolTip">
+              <string>Overrides the base URL to retrieve server information from.</string>
+             </property>
              <property name="text">
               <string>Alternate Server List:</string>
              </property>
@@ -130,6 +148,9 @@
            </item>
            <item row="0" column="0">
             <widget class="QLabel" name="theme_label">
+             <property name="toolTip">
+              <string>Sets the theme used in-game. If the new theme changes the lobby's look as well, you'll need to reload the Lobby for the changes to take effect, such as by joining a server and leaving it.</string>
+             </property>
              <property name="text">
               <string>Theme:</string>
              </property>
@@ -189,6 +210,9 @@
            </item>
            <item row="21" column="0">
             <widget class="QLabel" name="framenetwork_lbl">
+             <property name="toolTip">
+              <string>Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality.</string>
+             </property>
              <property name="text">
               <string>Network Frame Effects:</string>
              </property>
@@ -216,6 +240,9 @@
            </item>
            <item row="4" column="0">
             <widget class="QLabel" name="animated_theme_lbl">
+             <property name="toolTip">
+              <string>If ticked, themes will be allowed to have animated elements.</string>
+             </property>
              <property name="text">
               <string>Animated Theme:</string>
              </property>
@@ -223,6 +250,9 @@
            </item>
            <item row="8" column="0">
             <widget class="QLabel" name="text_crawl_lbl">
+             <property name="toolTip">
+              <string>Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed.</string>
+             </property>
              <property name="text">
               <string>Text crawl:</string>
              </property>
@@ -230,6 +260,9 @@
            </item>
            <item row="2" column="1">
             <widget class="QPushButton" name="theme_reload_button">
+             <property name="toolTip">
+              <string>Refresh the theme and update all of the ui elements to match.</string>
+             </property>
              <property name="text">
               <string>Reload Theme</string>
              </property>
@@ -247,6 +280,9 @@
            </item>
            <item row="13" column="0">
             <widget class="QLabel" name="default_showname_lbl">
+             <property name="toolTip">
+              <string>Your showname will be automatically set to this value when you join a server.</string>
+             </property>
              <property name="text">
               <string>Default showname:</string>
              </property>
@@ -264,6 +300,9 @@
            </item>
            <item row="27" column="0">
             <widget class="QLabel" name="sticker_lbl">
+             <property name="toolTip">
+              <string>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</string>
+             </property>
              <property name="text">
               <string>Stickers:</string>
              </property>
@@ -271,6 +310,9 @@
            </item>
            <item row="25" column="0">
             <widget class="QLabel" name="stickypres_lbl">
+             <property name="toolTip">
+              <string>Turn this on to prevent preanimation checkbox from clearing after playing the emote.</string>
+             </property>
              <property name="text">
               <string>Sticky Preanims:</string>
              </property>
@@ -288,6 +330,9 @@
            </item>
            <item row="12" column="0">
             <widget class="QLabel" name="showname_lbl">
+             <property name="toolTip">
+              <string>Gives the default value for the in-game 'Custom shownames' tickbox, which in turn determines whether the client should display custom in-character names.</string>
+             </property>
              <property name="text">
               <string>Custom shownames:</string>
              </property>
@@ -295,6 +340,9 @@
            </item>
            <item row="24" column="0">
             <widget class="QLabel" name="stickyeffects_lbl">
+             <property name="toolTip">
+              <string>Turn this on to prevent the effects dropdown from clearing the effect after playing it.</string>
+             </property>
              <property name="text">
               <string>Sticky Effects:</string>
              </property>
@@ -309,6 +357,9 @@
            </item>
            <item row="6" column="0">
             <widget class="QLabel" name="stay_time_lbl">
+             <property name="toolTip">
+              <string>Minimum amount of time (in miliseconds) an IC message must stay on screen before the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behavior.</string>
+             </property>
              <property name="text">
               <string>Text Stay Time:</string>
              </property>
@@ -316,6 +367,9 @@
            </item>
            <item row="17" column="0">
             <widget class="QLabel" name="language_label">
+             <property name="toolTip">
+              <string>Sets the language if you don't want to use your system language.</string>
+             </property>
              <property name="text">
               <string>Language:</string>
              </property>
@@ -351,6 +405,9 @@
            </item>
            <item row="30" column="0">
             <widget class="QLabel" name="sfx_on_idle_lbl">
+             <property name="toolTip">
+              <string>If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF.</string>
+             </property>
              <property name="text">
               <string>Always Send SFX:</string>
              </property>
@@ -358,6 +415,9 @@
            </item>
            <item row="23" column="0">
             <widget class="QLabel" name="stickysounds_lbl">
+             <property name="toolTip">
+              <string>Turn this on to prevent the sound dropdown from clearing the sound after playing it.</string>
+             </property>
              <property name="text">
               <string>Sticky Sounds:</string>
              </property>
@@ -372,6 +432,9 @@
            </item>
            <item row="11" column="0">
             <widget class="QLabel" name="username_lbl">
+             <property name="toolTip">
+              <string>Your OOC name will be automatically set to this value when you join a server.</string>
+             </property>
              <property name="text">
               <string>Default username:</string>
              </property>
@@ -379,6 +442,9 @@
            </item>
            <item row="19" column="0">
             <widget class="QLabel" name="shake_lbl">
+             <property name="toolTip">
+              <string>Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
+             </property>
              <property name="text">
               <string>Allow Screenshake:</string>
              </property>
@@ -393,6 +459,9 @@
            </item>
            <item row="16" column="0">
             <widget class="QLabel" name="discord_lbl">
+             <property name="toolTip">
+              <string>Allows others on Discord to see what server you are in, what character are you playing, and how long you have been playing for.</string>
+             </property>
              <property name="text">
               <string>Discord:</string>
              </property>
@@ -400,6 +469,9 @@
            </item>
            <item row="22" column="0">
             <widget class="QLabel" name="colorlog_lbl">
+             <property name="toolTip">
+              <string>Use the markup colors in the server IC chatlog.</string>
+             </property>
              <property name="text">
               <string>Colors in IC Log:</string>
              </property>
@@ -407,6 +479,9 @@
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="subtheme_label">
+             <property name="toolTip">
+              <string>Sets a 'subtheme', which will stack on top of the current theme and replace anything it can. Keep it at 'server' to let the server decide. Keep it at 'default' to keep it unchanging.</string>
+             </property>
              <property name="text">
               <string>Subtheme:</string>
              </property>
@@ -465,6 +540,9 @@
            </item>
            <item row="31" column="0">
             <widget class="QLabel" name="evidence_double_click_lbl">
+             <property name="toolTip">
+              <string>If ticked, Evidence needs a double-click to view rather than a single click.</string>
+             </property>
              <property name="text">
               <string>Evidence Double Click:</string>
              </property>
@@ -489,6 +567,9 @@
            </item>
            <item row="28" column="0">
             <widget class="QLabel" name="continuous_lbl">
+             <property name="toolTip">
+              <string>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</string>
+             </property>
              <property name="text">
               <string>Continuous Playback:</string>
              </property>
@@ -544,6 +625,9 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="music_volume_lbl">
+         <property name="toolTip">
+          <string>Sets the music's default volume.</string>
+         </property>
          <property name="text">
           <string>Music:</string>
          </property>
@@ -561,6 +645,9 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="sfx_volume_lbl">
+         <property name="toolTip">
+          <string>Sets the SFX's default volume. Interjections and actual sound effects count as 'SFX'.</string>
+         </property>
          <property name="text">
           <string>SFX:</string>
          </property>
@@ -578,6 +665,9 @@
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="blips_volume_lbl">
+         <property name="toolTip">
+          <string>Sets the volume of the blips, the talking sound effects.</string>
+         </property>
          <property name="text">
           <string>Blips:</string>
          </property>
@@ -595,6 +685,9 @@
        </item>
        <item row="5" column="0">
         <widget class="QLabel" name="suppress_audio_lbl">
+         <property name="toolTip">
+          <string>How much of the volume to suppress when client is not in focus.</string>
+         </property>
          <property name="text">
           <string>Suppress Audio:</string>
          </property>
@@ -612,16 +705,26 @@
        </item>
        <item row="7" column="0">
         <widget class="QLabel" name="bliprate_lbl">
+         <property name="toolTip">
+          <string>Sets the delay between playing the blip sounds.</string>
+         </property>
          <property name="text">
           <string>Blip rate:</string>
          </property>
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QSpinBox" name="bliprate_spinbox"/>
+        <widget class="QSpinBox" name="bliprate_spinbox">
+         <property name="toolTip">
+          <string>Play a blip sound \&quot;once per every X symbols\&quot;, where X is the blip rate. 0 plays a blip sound only once.</string>
+         </property>
+        </widget>
        </item>
        <item row="8" column="0">
         <widget class="QLabel" name="blank_blips_lbl">
+         <property name="toolTip">
+          <string>If true, the game will play a blip sound even when a space is 'being said'.</string>
+         </property>
          <property name="text">
           <string>Blank blips:</string>
          </property>
@@ -636,6 +739,9 @@
        </item>
        <item row="9" column="0">
         <widget class="QLabel" name="loopsfx_lbl">
+         <property name="toolTip">
+          <string>If true, the game will allow looping sound effects to play on preanimations.</string>
+         </property>
          <property name="text">
           <string>Enable Looping SFX:</string>
          </property>
@@ -650,6 +756,9 @@
        </item>
        <item row="10" column="0">
         <widget class="QLabel" name="objectmusic_lbl">
+         <property name="toolTip">
+          <string>If true, AO2 will ask the server to stop music when you use 'Objection!'</string>
+         </property>
          <property name="text">
           <string>Kill Music On Objection:</string>
          </property>
@@ -664,6 +773,9 @@
        </item>
        <item row="11" column="0">
         <widget class="QLabel" name="disablestreams_lbl">
+         <property name="toolTip">
+          <string>If true, AO2 will not play any streamed audio and show that streaming is disabled.</string>
+         </property>
          <property name="text">
           <string>Disable Music Streaming:</string>
          </property>
@@ -705,6 +817,9 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QLabel" name="casing_supported_lbl">
+         <property name="toolTip">
+          <string>Pretty self-explanatory.</string>
+         </property>
          <property name="text">
           <string>This server does not support case alerts.</string>
          </property>
@@ -712,6 +827,9 @@
        </item>
        <item>
         <widget class="QGroupBox" name="casing_enabled_box">
+         <property name="toolTip">
+          <string>If checked, you will get alerts about case announcements.</string>
+         </property>
          <property name="title">
           <string>Casing</string>
          </property>
@@ -724,6 +842,9 @@
          <layout class="QGridLayout" name="gridLayout">
           <item row="1" column="0">
            <widget class="QCheckBox" name="casing_def_cb">
+            <property name="toolTip">
+             <string>If checked, you will get alerts about case announcements if a defense spot is open.</string>
+            </property>
             <property name="text">
              <string>Defense</string>
             </property>
@@ -731,6 +852,9 @@
           </item>
           <item row="2" column="1">
            <widget class="QCheckBox" name="casing_jur_cb">
+            <property name="toolTip">
+             <string>If checked, you will get alerts about case announcements if a juror spot is open.</string>
+            </property>
             <property name="text">
              <string>Juror</string>
             </property>
@@ -738,6 +862,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QCheckBox" name="casing_steno_cb">
+            <property name="toolTip">
+             <string>If checked, you will get alerts about case announcements if a stenographer spot is open.</string>
+            </property>
             <property name="text">
              <string>Stenographer</string>
             </property>
@@ -745,6 +872,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QCheckBox" name="casing_cm_cb">
+            <property name="toolTip">
+             <string>If checked, you will appear amongst the potential CMs on the server.</string>
+            </property>
             <property name="text">
              <string>Case Master</string>
             </property>
@@ -754,6 +884,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
              <widget class="QLabel" name="casing_cm_cases_lbl">
+              <property name="toolTip">
+               <string>If you're a CM, enter what cases you are willing to host.</string>
+              </property>
               <property name="text">
                <string>Hosting cases:</string>
               </property>
@@ -766,6 +899,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QCheckBox" name="casing_pro_cb">
+            <property name="toolTip">
+             <string>If checked, you will get alerts about case announcements if a prosecutor spot is open.</string>
+            </property>
             <property name="text">
              <string>Prosecution</string>
             </property>
@@ -773,6 +909,9 @@
           </item>
           <item row="2" column="0">
            <widget class="QCheckBox" name="casing_jud_cb">
+            <property name="toolTip">
+             <string>If checked, you will get alerts about case announcements if the judge spot is open.</string>
+            </property>
             <property name="text">
              <string>Judge</string>
             </property>
