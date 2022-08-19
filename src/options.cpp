@@ -7,6 +7,31 @@
 #include <QRegularExpression>
 #include <QSize>
 
+void Options::migrateCallwords()
+{
+    //Bla bla, evil boilerplate.
+  QStringList l_callwords;
+
+  QFile l_file;
+  l_file.setFileName(QCoreApplication::applicationDirPath() + "/base/callwords.ini");
+
+  if (!l_file.open(QIODevice::ReadOnly)) {
+   qWarning() << "Unable to migrate callwords : File not open.";
+  }
+
+  QTextStream in(&l_file);
+  in.setCodec("UTF-8");
+
+  while (!in.atEnd()) {
+    QString line = in.readLine();
+    l_callwords.append(line);
+  }
+  l_file.close();
+  l_file.remove();
+
+  setCallwords(l_callwords);
+}
+
 Options::Options() : config(
                          QCoreApplication::applicationDirPath() + "/base/config.ini",
                          QSettings::IniFormat)
@@ -20,6 +45,9 @@ void Options::migrate()
 {
   if (config.contains("show_custom_shownames")) {
     config.remove("show_custom_shownames");
+  }
+  if (QFile::exists(QCoreApplication::applicationDirPath() + "/base/callwords.ini")) {
+      migrateCallwords();
   }
 }
 
@@ -609,43 +637,10 @@ void Options::setLanguage(QString value)
 
 QStringList Options::callwords() const
 {
-    //Bla bla, evil boilerplate.
-  QStringList l_callwords;
-
-  QFile l_file;
-  l_file.setFileName(QCoreApplication::applicationDirPath() + "/base/callwords.ini");
-
-  if (!l_file.open(QIODevice::ReadOnly))
-    return l_callwords;
-
-  QTextStream in(&l_file);
-  in.setCodec("UTF-8");
-
-  while (!in.atEnd()) {
-    QString line = in.readLine();
-    l_callwords.append(line);
-  }
-  return l_callwords;
+  return config.value("callwords", QStringList()).toStringList();
 }
 
-void Options::setCallwords(QString value)
+void Options::setCallwords(QStringList value)
 {
-  //But why not use (insert function here that needs AOApplication.)
-  //Simple. Fuck AOApplication. Piece of shit class.
-  QFile l_file;
-  l_file.setFileName(QCoreApplication::applicationDirPath() + "/base/callwords.ini");
-
-  if (!l_file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-      qWarning() << "Unable to save callwords into file " << l_file.fileName();
-      return;
-  }
-
-  const QStringList callwords = value.split("\n");
-  QTextStream out(&l_file);
-  out.setCodec("UTF-8");
-  for (const QString &callword : callwords) {
-      out << callword << "\n";
-  }
-  out.flush();
-  l_file.close();
+  config.setValue("callwords", value);
 }

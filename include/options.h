@@ -14,6 +14,8 @@ private:
    */
   QSettings config;
 
+  void migrateCallwords();
+
 public:
   /**
    * @brief Constructor for options class.
@@ -276,7 +278,7 @@ public:
   void setLanguage(QString value);
 
   QStringList callwords() const;
-  void setCallwords(QString value);
+  void setCallwords(QStringList value);
 
   /**
    * @brief Static access pointer. Workaround for scope limitations and reduce reliance to AOApplication

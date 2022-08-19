@@ -166,11 +166,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
 
   FROM_UI(QPlainTextEdit, callwords_textbox)
-
-  const QStringList temp_callword_list = options.callwords();
-  for (const QString &callword : temp_callword_list) {
-    ui_callwords_textbox->appendPlainText(callword);
-  }
+  registerOption<QPlainTextEdit, QStringList>("callwords_textbox", &Options::callwords, &Options::setCallwords);
 
   FROM_UI(QComboBox, audio_device_combobox)
   populateAudioDevices();
@@ -525,8 +521,6 @@ void AOOptionsDialog::save_pressed()
     for (const OptionEntry &entry : qAsConst(optionEntries))
       entry.save();
 
-    //TODO : Figure out a way to do this proper.
-    options.setCallwords(ui_callwords_textbox->toPlainText());
     this->hide();
 }
 
