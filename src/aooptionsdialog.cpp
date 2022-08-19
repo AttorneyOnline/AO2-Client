@@ -27,10 +27,10 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     return;
   }
 
-  l_settings_widget = l_loader.load(&l_uiFile, this);
+  ui_settings_widget = l_loader.load(&l_uiFile, this);
 
   auto l_layout = new QVBoxLayout(this);
-  l_layout->addWidget(l_settings_widget);
+  l_layout->addWidget(ui_settings_widget);
 
   FROM_UI(QDialogButtonBox, settings_buttons);
 
@@ -335,16 +335,10 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   FROM_UI(QLabel, log_timestamp_format_lbl)
   ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(Options::options->logTimestampFormat()));
-  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
   FROM_UI(QComboBox, log_timestamp_format_combobox)
   registerOption<QComboBox, QString>("log_timestamp_format_combobox", &Options::logTimestampFormat, &Options::setLogTimestampFormat);
-
-  //TODO : Check if this can be put into the UI file.
-  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP"); // 2:13:09 PM
-  ui_log_timestamp_format_combobox->addItem("hh:mm:ss"); // 14:13:09
-  ui_log_timestamp_format_combobox->addItem("h:mm AP"); // 2:13 PM
-  ui_log_timestamp_format_combobox->addItem("hh:mm"); // 14:13
+  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
   QString l_current_format = Options::options->logTimestampFormat();
 
@@ -738,7 +732,7 @@ template<>
 QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
 {
     QStringList paths;
-    for (auto i =  0; i < widget->count(); i++) {
+    for (auto i =  1; i < widget->count(); i++) {
         paths.append(widget->item(i)->text());
     }
     return paths;

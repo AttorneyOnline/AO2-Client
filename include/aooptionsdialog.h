@@ -48,7 +48,7 @@ private:
   AOApplication *ao_app;
   Options options;
 
-  QWidget* l_settings_widget;
+  QWidget* ui_settings_widget;
 
   QVBoxLayout *ui_vertical_layout;
   QTabWidget *ui_settings_tabs;
