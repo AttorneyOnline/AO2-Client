@@ -12,6 +12,7 @@
 #include <QFileDialog>
 #include <QString>
 #include <QVBoxLayout>
+#include <QCheckBox>
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     : QWidget(parent)
@@ -40,7 +41,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                    &AOOptionsDialog::button_clicked);
 
   FROM_UI(QComboBox, theme_combobox)
-  FROM_UI(QComboBox, subtheme_combobox)
   registerOption<QComboBox, QString>("theme_combobox", &Options::theme, &Options::setTheme);
 
   QSet<QString> themes;
@@ -58,8 +58,10 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     }
   }
 
+  FROM_UI(QComboBox, subtheme_combobox)
   connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
                    &AOOptionsDialog::theme_changed);
+  registerOption<QComboBox, QString>("subtheme_combobox", &Options::subTheme, &Options::setSubTheme);
 
   QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")), QDir::Dirs,
                   QDirIterator::NoIteratorFlags);
@@ -70,236 +72,76 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     }
   }
 
+  FROM_UI(QPushButton, theme_reload_button)
+  connect(ui_theme_reload_button, &QPushButton::clicked, this,
+          &AOOptionsDialog::on_reload_theme_clicked);
+
+  FROM_UI(QPushButton, theme_folder_button)
+  connect(ui_theme_folder_button, &QPushButton::clicked, this,
+    [=] {
+      QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
+      if (!dir_exists(p_path)) {
+        return;
+      }
+      QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+    }
+  );
+
+  FROM_UI(QCheckBox, animated_theme_cb)
+  registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
+
+  FROM_UI(QSpinBox, stay_time_spinbox)
+  registerOption<QSpinBox, int>("stay_time_spinbox", &Options::textStayTime, &Options::setTextStayTime);
+
+  FROM_UI(QCheckBox, instant_objection_cb)
+  registerOption<QCheckBox, bool>("instant_objection_cb", &Options::objectionSkipQueueEnabled, &Options::setObjectionSkipQueueEnabled);
+
+  FROM_UI(QSpinBox, text_crawl_spinbox)
+  registerOption<QSpinBox, int>("text_crawl_spinbox", &Options::textCrawlSpeed, &Options::setTextCrawlSpeed);
+
+  FROM_UI(QSpinBox, chat_ratelimit_spinbox)
+  registerOption<QSpinBox, int>("chat_ratelimit_spinbox", &Options::chatRateLimit, &Options::setChatRateLimit);
+
+  FROM_UI(QFrame, log_names_divider)
+
+  FROM_UI(QLineEdit, username_textbox);
+  registerOption<QLineEdit, QString>("username_textbox", &Options::username, &Options::setUsername);
+
+  FROM_UI(QCheckBox, showname_cb);
+  registerOption<QCheckBox, bool>("showname_cb", &Options::customShownameEnabled, &Options::setCustomShownameEnabled);
   /**
-  // Setting up the basics.
-  setWindowFlag(Qt::WindowCloseButtonHint);
-  setWindowTitle(tr("Settings"));
-  resize(450, 408);
 
-  ui_settings_buttons = new QDialogButtonBox(this);
-
-  QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-  sizePolicy1.setHorizontalStretch(0);
-  sizePolicy1.setVerticalStretch(0);
-  sizePolicy1.setHeightForWidth(
-      ui_settings_buttons->sizePolicy().hasHeightForWidth());
-  ui_settings_buttons->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum));
-  ui_settings_buttons->setOrientation(Qt::Horizontal);
-  ui_settings_buttons->setStandardButtons(QDialogButtonBox::Cancel |
-                                          QDialogButtonBox::Save |
-                                          QDialogButtonBox::RestoreDefaults);
-
-  connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
-                   &AOOptionsDialog::save_pressed);
-  connect(ui_settings_buttons, &QDialogButtonBox::rejected, this,
-                   &AOOptionsDialog::discard_pressed);
-  connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
-                   &AOOptionsDialog::button_clicked);
-
-  // We'll stop updates so that the window won't flicker while it's being made.
-  setUpdatesEnabled(false);
-
-  // First of all, we want a tabbed dialog, so let's add some layout.
-  ui_vertical_layout = new QVBoxLayout(this);
-  ui_settings_tabs = new QTabWidget(this);
-
-  ui_vertical_layout->addWidget(ui_settings_tabs);
-  ui_vertical_layout->addWidget(ui_settings_buttons);
-
-  // Let's add the tabs one by one.
-  // First, we'll start with 'Gameplay'.
-  ui_gameplay_tab = new QWidget(this);
-  ui_gameplay_tab->setSizePolicy(sizePolicy1);
-  ui_settings_tabs->addTab(ui_gameplay_tab, tr("Gameplay"));
-  ui_form_layout_widget = new QWidget(ui_gameplay_tab);
-  ui_form_layout_widget->setSizePolicy(sizePolicy1);
-
-  ui_gameplay_form = new QFormLayout(ui_form_layout_widget);
-  ui_gameplay_form->setLabelAlignment(Qt::AlignLeading | Qt::AlignLeft |
-                                      Qt::AlignVCenter);
-  ui_gameplay_form->setFormAlignment(Qt::AlignLeading | Qt::AlignLeft |
-                                     Qt::AlignTop);
-  ui_gameplay_form->setContentsMargins(0, 0, 0, 0);
-  ui_gameplay_form->setSpacing(4);
-
-  int row = 0;
-
-  ui_theme_label = new QLabel(ui_form_layout_widget);
-  ui_theme_label->setText(tr("Theme:"));
   ui_theme_label->setToolTip(
       tr("Sets the theme used in-game. If the new theme changes "
          "the lobby's look as well, you'll need to reload the "
          "lobby for the changes to take effect, such as by joining "
          "a server and leaving it."));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_theme_label);
-  ui_theme_combobox = new QComboBox(ui_form_layout_widget);
 
-  // Fill the combobox with the names of the themes.
-  QSet<QString> themes;
-  QStringList bases = Options::options->mountpaths();
-  bases.push_front(ao_app->get_base_path());
-  for (const QString &base : bases) {
-    QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
-                    QDirIterator::NoIteratorFlags);
-    while (it.hasNext()) {
-      QString actualname = QDir(it.next()).dirName();
-      if (!themes.contains(actualname)) {
-        ui_theme_combobox->addItem(actualname);
-        themes.insert(actualname);
-      }
-    }
-  }
-
-  connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-                   &AOOptionsDialog::theme_changed);
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_combobox);
-
-  row += 1;
-
-  ui_subtheme_label = new QLabel(ui_form_layout_widget);
-  ui_subtheme_label->setText(tr("Subtheme:"));
   ui_subtheme_label->setToolTip(
       tr("Sets a 'subtheme', which will stack on top of the current theme and replace anything it can."
          "Keep it at 'server' to let the server decide. Keep it at 'default' to keep it unchanging."));
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_subtheme_label);
-  ui_subtheme_combobox = new QComboBox(ui_form_layout_widget);
 
-  // Fill the combobox with the names of the themes.
-  ui_subtheme_combobox->addItem("server");
-  ui_subtheme_combobox->addItem("default");
-  QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")), QDir::Dirs,
-                  QDirIterator::NoIteratorFlags);
-  while (it2.hasNext()) {
-    QString actualname = QDir(it2.next()).dirName();
-    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc") {
-      ui_subtheme_combobox->addItem(actualname);
-    }
-  }
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_subtheme_combobox);
-
-  row += 1;
-  ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
-  ui_theme_reload_button->setText(tr("Reload Theme"));
   ui_theme_reload_button->setToolTip(
       tr("Refresh the theme and update all of the ui elements to match."));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
-  connect(ui_theme_reload_button, &QPushButton::clicked, this,
-          &AOOptionsDialog::on_reload_theme_clicked);
 
-  row += 1;
-  ui_theme_folder_button = new QPushButton(ui_form_layout_widget);
-  ui_theme_folder_button->setText(tr("Open Theme Folder"));
   ui_theme_folder_button->setToolTip(
       tr("Open the theme folder of the currently selected theme."));
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_folder_button);
-  connect(ui_theme_folder_button, &QPushButton::clicked, this,
-          [=] {
-    QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
-    if (!dir_exists(p_path)) {
-        return;
-    }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
-  }
-  );
 
-  row += 1;
-  ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);
-  ui_animated_theme_lbl->setText(tr("Animated Theme:"));
   ui_animated_theme_lbl->setToolTip(
       tr("If ticked, themes will be allowed to have animated elements."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_animated_theme_lbl);
-
-  ui_animated_theme_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_animated_theme_cb);
-
-  row += 1;
-  ui_theme_log_divider = new QFrame(ui_form_layout_widget);
-  ui_theme_log_divider->setMidLineWidth(0);
-  ui_theme_log_divider->setFrameShape(QFrame::HLine);
-  ui_theme_log_divider->setFrameShadow(QFrame::Sunken);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole,
-                              ui_theme_log_divider);
-  
-  row += 1;
-  ui_stay_time_lbl = new QLabel(ui_form_layout_widget);
-  ui_stay_time_lbl->setText(tr("Text Stay Time:"));
   ui_stay_time_lbl->setToolTip(tr(
       "Minimum amount of time (in miliseconds) an IC message must stay on screen before "
       "the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behavior."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_stay_time_lbl);
-
-  ui_stay_time_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_stay_time_spinbox->setSuffix(" ms");
-  ui_stay_time_spinbox->setMaximum(10000);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_stay_time_spinbox);
-
-  row += 1;
-  ui_instant_objection_lbl = new QLabel(ui_form_layout_widget);
-  ui_instant_objection_lbl->setText(tr("Instant Objection:"));
-  ui_instant_objection_lbl->setToolTip(
-      tr("If Text Stay Time is more than 0, instant objection will skip queued messages instead of waiting to catch up."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_instant_objection_lbl);
-
-  ui_instant_objection_cb = new QCheckBox(ui_form_layout_widget);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_instant_objection_cb);
-
-  row += 1;
-  ui_text_crawl_lbl = new QLabel(ui_form_layout_widget);
-  ui_text_crawl_lbl->setText(tr("Text crawl:"));
   ui_text_crawl_lbl->setToolTip(tr(
       "Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed."));
 
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_text_crawl_lbl);
-
-  ui_text_crawl_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_text_crawl_spinbox->setSuffix(" ms");
-  ui_text_crawl_spinbox->setMaximum(500);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_text_crawl_spinbox);
-
-  row += 1;
-  ui_chat_ratelimit_lbl = new QLabel(ui_form_layout_widget);
-  ui_chat_ratelimit_lbl->setText(tr("Chat Rate Limit:"));
-  ui_chat_ratelimit_lbl->setToolTip(tr(
-      "Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_chat_ratelimit_lbl);
-
-  ui_chat_ratelimit_spinbox = new QSpinBox(ui_form_layout_widget);
-  ui_chat_ratelimit_spinbox->setSuffix(" ms");
-  ui_chat_ratelimit_spinbox->setMaximum(5000);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_chat_ratelimit_spinbox);
-
-  row += 1;
-  ui_log_names_divider = new QFrame(ui_form_layout_widget);
-  ui_log_names_divider->setFrameShape(QFrame::HLine);
-  ui_log_names_divider->setFrameShadow(QFrame::Sunken);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole,
-                              ui_log_names_divider);
-
-  row += 1;
-  ui_username_lbl = new QLabel(ui_form_layout_widget);
-  ui_username_lbl->setText(tr("Default username:"));
   ui_username_lbl->setToolTip(
       tr("Your OOC name will be automatically set to this value "
          "when you join a server."));
-
-  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_username_lbl);
-
-  ui_username_textbox = new QLineEdit(ui_form_layout_widget);
-  ui_username_textbox->setMaxLength(30);
-
-  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_username_textbox);
 
   row += 1;
   ui_showname_lbl = new QLabel(ui_form_layout_widget);
