@@ -165,7 +165,7 @@ public:
 
   // Returns whether the log should separate name from text via newline or :
   bool logNewline() const;
-  void setLognewline(bool value);
+  void setLogNewline(bool value);
 
   // Get spacing between IC log entries.
   int logMargin() const;

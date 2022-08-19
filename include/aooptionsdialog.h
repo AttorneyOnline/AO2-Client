@@ -20,6 +20,7 @@
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QWidget>
 
 #include <QDirIterator>
@@ -43,7 +44,6 @@ class AOOptionsDialog : public QWidget {
   Q_OBJECT
 public:
   explicit AOOptionsDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);
-
 private:
   AOApplication *ao_app;
   Options options;
@@ -166,7 +166,7 @@ private:
   QFormLayout *ui_casing_layout;
   QLabel *ui_casing_supported_lbl;
   QLabel *ui_casing_enabled_lbl;
-  QCheckBox *ui_casing_enabled_cb;
+  QGroupBox *ui_casing_enabled_box;
   QLabel *ui_casing_def_lbl;
   QCheckBox *ui_casing_def_cb;
   QLabel *ui_casing_pro_lbl;
@@ -276,6 +276,7 @@ private:
   bool asset_cache_dirty = false;
 
   bool needs_default_audiodev();
+  void populateAudioDevices();
   void update_values();
 
   QVector<OptionEntry> optionEntries;

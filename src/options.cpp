@@ -148,7 +148,7 @@ bool Options::logNewline() const
     return config.value("log_newline", false).toBool();
 }
 
-void Options::setLognewline(bool value)
+void Options::setLogNewline(bool value)
 {
   config.setValue("log_newline", value);
 }
@@ -266,7 +266,7 @@ void Options::setObjectionStopMusic(bool value)
 
 bool Options::streamingEnabled() const
 {
-    return config.value("streaming_disabled", false).toBool();
+    return !config.value("streaming_disabled", false).toBool();
 }
 
 void Options::setStreamingEnabled(bool value)

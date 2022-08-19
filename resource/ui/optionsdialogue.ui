@@ -540,13 +540,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="audio_device_combobox">
-         <item>
-          <property name="text">
-           <string>default</string>
-          </property>
-         </item>
-        </widget>
+        <widget class="QComboBox" name="audio_device_combobox"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="music_volume_lbl">
@@ -717,7 +711,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="casing_enabled_box">
          <property name="title">
           <string>Casing</string>
          </property>
@@ -1122,6 +1116,16 @@
         <widget class="QCheckBox" name="privacy_optout_cb">
          <property name="text">
           <string>Do not include me in public player counts</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="privacy_separator">
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
          </property>
         </widget>
        </item>
