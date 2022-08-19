@@ -35,8 +35,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   setApplicationVersion(get_version_string());
   setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
 
-  options = new Options();
-  widget = new AOOptionsDialog();
+  widget = new AOOptionsDialog(nullptr, this);
 }
 
 AOApplication::~AOApplication()

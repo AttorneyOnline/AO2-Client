@@ -23,7 +23,7 @@ void Options::migrate()
   }
 }
 
-QString Options::theme()
+QString Options::theme() const
 {
   return config.value("theme", "default").toString();
 }
@@ -43,7 +43,7 @@ void Options::setBlipRate(int value)
   config.setValue("blip_rate", value);
 }
 
-QString Options::oocName()
+QString Options::oocName() const
 {
   return config.value("ooc_name").toString();
 }

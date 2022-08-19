@@ -10,17 +10,65 @@
 #include <QUiLoader>
 
 #include <QFileDialog>
+#include <QString>
+#include <QVBoxLayout>
 
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
-    : QWidget(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
+    : QWidget(parent)
 {
   ao_app = p_ao_app;
 
+  QUiLoader l_loader(this);
+  QFile l_uiFile(":/resource/ui/optionsdialogue.ui");
+  if (!l_uiFile.open(QFile::ReadOnly)) {
+    qWarning() << "Unable to open file " << l_uiFile.fileName();
+    return;
+  }
 
-  QUiLoader loader(this);
-  QFile uiFile(":/resource/ui/optionsdialogue.ui");
-  uiFile.open(QFile::ReadOnly);
-  QWidget *windowWidget = loader.load(&uiFile, this);
+  l_settings_widget = l_loader.load(&l_uiFile, this);
+
+  auto l_layout = new QVBoxLayout(this);
+  l_layout->addWidget(l_settings_widget);
+
+  FROM_UI(QDialogButtonBox, settings_buttons);
+
+  connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
+                   &AOOptionsDialog::save_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::rejected, this,
+                   &AOOptionsDialog::discard_pressed);
+  connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
+                   &AOOptionsDialog::button_clicked);
+
+  FROM_UI(QComboBox, theme_combobox)
+  FROM_UI(QComboBox, subtheme_combobox)
+  registerOption<QComboBox, QString>("theme_combobox", &Options::theme, &Options::setTheme);
+
+  QSet<QString> themes;
+  QStringList bases = Options::options->mountpaths();
+  bases.push_front(ao_app->get_base_path());
+  for (const QString &base : bases) {
+    QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
+                    QDirIterator::NoIteratorFlags);
+    while (it.hasNext()) {
+      QString actualname = QDir(it.next()).dirName();
+      if (!themes.contains(actualname)) {
+        ui_theme_combobox->addItem(actualname);
+        themes.insert(actualname);
+      }
+    }
+  }
+
+  connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+                   &AOOptionsDialog::theme_changed);
+
+  QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")), QDir::Dirs,
+                  QDirIterator::NoIteratorFlags);
+  while (it2.hasNext()) {
+    QString actualname = QDir(it2.next()).dirName();
+    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc") {
+      ui_subtheme_combobox->addItem(actualname);
+    }
+  }
 
   /**
   // Setting up the basics.
@@ -1202,14 +1250,118 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   */
 }
 
+template<>
+void AOOptionsDialog::setWidgetData(QCheckBox *widget, const bool &value)
+{
+  widget->setChecked(value);
+}
+
+template<>
+bool AOOptionsDialog::widgetData(QCheckBox *widget) const
+{
+  return widget->isChecked();
+}
+
+template<>
+void AOOptionsDialog::setWidgetData(QLineEdit *widget, const QString &value)
+{
+  widget->setText(value);
+}
+
+template<>
+QString AOOptionsDialog::widgetData(QLineEdit *widget) const
+{
+  return widget->text();
+}
+
+template<>
+void AOOptionsDialog::setWidgetData(QLineEdit *widget, const uint16_t &value)
+{
+  widget->setText(QString::number(value));
+}
+
+template<>
+uint16_t AOOptionsDialog::widgetData(QLineEdit *widget) const
+{
+  return widget->text().toUShort();
+}
+
+template<>
+void AOOptionsDialog::setWidgetData(QPlainTextEdit *widget, const QStringList &value)
+{
+  widget->setPlainText(value.join('\n'));
+}
+
+template<>
+QStringList AOOptionsDialog::widgetData(QPlainTextEdit *widget) const
+{
+  return widget->toPlainText().trimmed().split('\n');
+}
+
+template<>
+void AOOptionsDialog::setWidgetData(QSpinBox *widget, const int &value)
+{
+  widget->setValue(value);
+}
+
+template<>
+int AOOptionsDialog::widgetData(QSpinBox *widget) const
+{
+  return widget->value();
+}
+
+template<>
+void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
+{
+  for (auto i = 0; i < widget->count(); i++) {
+    if (widget->itemText(i) == value) {
+      widget->setCurrentIndex(i);
+      return;
+    }
+  }
+  qWarning() << "value" << value << "not found for widget" << widget->objectName();
+}
+
+template<>
+QString AOOptionsDialog::widgetData(QComboBox *widget) const
+{
+  return widget->currentText();
+}
+
+template<typename T, typename V>
+void AOOptionsDialog::registerOption(const QString &widgetName,
+                                     V (Options::*getter)() const,
+                                     void (Options::*setter)(V))
+{
+  auto *widget = findChild<T *>(widgetName);
+  if (!widget) {
+    qWarning() << "could not find widget" << widgetName;
+    return;
+  }
+
+  OptionEntry entry;
+  entry.load = [=] {
+    setWidgetData<T, V>(widget, (options.*getter)());
+  };
+  entry.save = [=] {
+    (options.*setter)(widgetData<T, V>(widget));
+  };
+
+  optionEntries.append(entry);
+}
+
 void AOOptionsDialog::update_values()
 {
-
+    for (const OptionEntry &entry : optionEntries)
+      entry.load();
+    this->hide();
 }
 
 void AOOptionsDialog::save_pressed()
 {
-
+    for (const OptionEntry &entry : optionEntries)
+      entry.save();
+    this->hide();
 }
 
 void AOOptionsDialog::discard_pressed() {
@@ -1225,6 +1377,7 @@ void AOOptionsDialog::discard_pressed() {
         ao_app->configini =
             new QSettings(ao_app->get_base_path() + "config.ini", QSettings::IniFormat);
     }
+    this->hide();
 }
 
 void AOOptionsDialog::button_clicked(QAbstractButton *button) {

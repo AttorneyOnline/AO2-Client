@@ -2,6 +2,7 @@
 #define AOOPTIONSDIALOG_H
 
 #include "bass.h"
+#include "options.h"
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -26,18 +27,28 @@
 #include <QTextBrowser>
 #include <QTextStream>
 
+#define FROM_UI(type, name); ui_##name = findChild<type *>(#name);
+
 class Lobby;
 class Courtroom;
 class AOApplication;
+class Options;
+
+struct OptionEntry {
+  std::function<void()> load;
+  std::function<void()> save;
+};
 
 class AOOptionsDialog : public QWidget {
   Q_OBJECT
 public:
-  explicit AOOptionsDialog(QWidget *parent = nullptr,
-                           AOApplication *p_ao_app = nullptr);
+  explicit AOOptionsDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);
 
 private:
   AOApplication *ao_app;
+  Options options;
+
+  QWidget* l_settings_widget;
 
   QVBoxLayout *ui_vertical_layout;
   QTabWidget *ui_settings_tabs;
@@ -193,13 +204,15 @@ private:
   QCheckBox *ui_downwards_cb;
 
   /**
-   * Option for log length. Controls how many IC-log entries are kept before it autowraps.
+   * Option for log length. Controls how many IC-log entries are kept before it
+   * autowraps.
    */
   QLabel *ui_length_lbl;
   QSpinBox *ui_length_spinbox;
 
   /**
-   * Option for log newline. Controls if the IC-log contains newlines or as one consecutive string.
+   * Option for log newline. Controls if the IC-log contains newlines or as one
+   * consecutive string.
    */
   QLabel *ui_log_newline_lbl;
   QCheckBox *ui_log_newline_cb;
@@ -224,25 +237,29 @@ private:
   QComboBox *ui_log_timestamp_format_combobox;
 
   /**
-   * Option for desynched IC-log and viewport. Controls if entires are appended to the IC-log before displayed in the viewport.
+   * Option for desynched IC-log and viewport. Controls if entires are appended
+   * to the IC-log before displayed in the viewport.
    */
   QLabel *ui_desync_logs_lbl;
   QCheckBox *ui_desync_logs_cb;
 
   /**
-   * Option for logging IC-actions. Will add shouts, evidence or music changes to the IC-log.
+   * Option for logging IC-actions. Will add shouts, evidence or music changes
+   * to the IC-log.
    */
   QLabel *ui_log_ic_actions_lbl;
   QCheckBox *ui_log_ic_actions_cb;
 
   /**
-   * Option to enable logging. If enabled client will save all messages to the log folder.
+   * Option to enable logging. If enabled client will save all messages to the
+   * log folder.
    */
   QLabel *ui_log_text_lbl;
   QCheckBox *ui_log_text_cb;
 
   /**
-   * Option to enable demo logging. If enabled, client will save a demo file for replay trough the demo server.
+   * Option to enable demo logging. If enabled, client will save a demo file for
+   * replay trough the demo server.
    */
   QLabel *ui_log_demo_lbl;
   QCheckBox *ui_log_demo_cb;
@@ -257,6 +274,17 @@ private:
 
   bool needs_default_audiodev();
   void update_values();
+
+  QVector<OptionEntry> optionEntries;
+
+  template <typename T, typename V>
+  void setWidgetData(T *widget, const V &value);
+
+  template <typename T, typename V> V widgetData(T *widget) const;
+
+  template <typename T, typename V>
+  void registerOption(const QString &widgetName, V (Options::*getter)() const,
+                      void (Options::*setter)(V));
 
 signals:
 

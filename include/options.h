@@ -27,11 +27,11 @@ public:
 
   // Reads the theme from config.ini and loads it into the currenttheme
   // variable
-  QString theme();
+  QString theme() const;
   void setTheme(QString value);
 
   // Returns the value of oocname in config.ini
-  QString oocName();
+  QString oocName() const;
   void setOocName(QString value);
 
   // Returns the blip rate from config.ini (once per X symbols)
