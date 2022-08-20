@@ -629,7 +629,9 @@ void AOApplication::set_char_ini(QString p_char, QString value,
 {
   QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
   settings.beginGroup(target_tag);
   settings.setValue(p_search_line, value);
   settings.endGroup();
