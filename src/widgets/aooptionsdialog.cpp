@@ -517,7 +517,8 @@ void AOOptionsDialog::button_clicked(QAbstractButton *button)
     }
 }
 
-void AOOptionsDialog::on_reload_theme_clicked() {
+void AOOptionsDialog::on_reload_theme_clicked()
+{
     Options::options->setTheme(ui_subtheme_combobox->currentText());
     Options::options->setSubTheme(ui_subtheme_combobox->currentText());
     Options::options->setAnimatedThemeEnabled(ui_animated_theme_cb->isChecked());
@@ -542,9 +543,15 @@ void AOOptionsDialog::theme_changed(int i) {
 
 }
 
-void AOOptionsDialog::on_timestamp_format_edited() { ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_combobox->currentText())); }
+void AOOptionsDialog::on_timestamp_format_edited()
+{
+  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_combobox->currentText()));
+}
 
-void AOOptionsDialog::timestamp_cb_changed(int state) { ui_log_timestamp_format_combobox->setDisabled(state == 0); }
+void AOOptionsDialog::timestamp_cb_changed(int state)
+{
+  ui_log_timestamp_format_combobox->setDisabled(state == 0);
+}
 
 #if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needs_default_audiodev() { return true; }
