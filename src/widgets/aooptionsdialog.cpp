@@ -15,6 +15,8 @@
 #include <QCheckBox>
 #include <QGroupBox>
 
+#define FROM_UI(type, name); ui_##name = findChild<type *>(#name);
+
 AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
     : QWidget(parent)
 {
@@ -41,8 +43,9 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
                    &AOOptionsDialog::button_clicked);
 
+  // Gameplay Tab
+
   FROM_UI(QComboBox, theme_combobox)
-  registerOption<QComboBox, QString>("theme_combobox", &Options::theme, &Options::setTheme);
 
   QSet<QString> themes;
   QStringList bases = Options::options->mountpaths();
@@ -57,7 +60,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
         themes.insert(actualname);
       }
     }
-  }
+  } 
+  registerOption<QComboBox, QString>("theme_combobox", &Options::theme, &Options::setTheme);
 
   FROM_UI(QComboBox, subtheme_combobox)
   connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
@@ -89,141 +93,115 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   );
 
   FROM_UI(QCheckBox, animated_theme_cb)
-  registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
-
   FROM_UI(QSpinBox, stay_time_spinbox)
-  registerOption<QSpinBox, int>("stay_time_spinbox", &Options::textStayTime, &Options::setTextStayTime);
-
   FROM_UI(QCheckBox, instant_objection_cb)
-  registerOption<QCheckBox, bool>("instant_objection_cb", &Options::objectionSkipQueueEnabled, &Options::setObjectionSkipQueueEnabled);
-
   FROM_UI(QSpinBox, text_crawl_spinbox)
-  registerOption<QSpinBox, int>("text_crawl_spinbox", &Options::textCrawlSpeed, &Options::setTextCrawlSpeed);
-
   FROM_UI(QSpinBox, chat_ratelimit_spinbox)
-  registerOption<QSpinBox, int>("chat_ratelimit_spinbox", &Options::chatRateLimit, &Options::setChatRateLimit);
-
   FROM_UI(QLineEdit, username_textbox)
-  registerOption<QLineEdit, QString>("username_textbox", &Options::username, &Options::setUsername);
-
   FROM_UI(QCheckBox, showname_cb)
-  registerOption<QCheckBox, bool>("showname_cb", &Options::customShownameEnabled, &Options::setCustomShownameEnabled);
-
-  FROM_UI(QLineEdit, default_showname_textbox);
-  registerOption<QLineEdit, QString>("default_showname_textbox", &Options::shownameOnJoin, &Options::setShownameOnJoin);
-
+  FROM_UI(QLineEdit, default_showname_textbox)
   FROM_UI(QLineEdit, ms_textbox)
-  registerOption<QLineEdit, QString>("ms_textbox", &Options::alternativeMasterserver, &Options::setAlternativeMasterserver);
-
   FROM_UI(QCheckBox, discord_cb)
-  registerOption<QCheckBox, bool>("discord_cb", &Options::discordEnabled, &Options::setDiscordEnabled);
-
   FROM_UI(QComboBox, language_combobox)
-  registerOption<QComboBox, QString>("language_combobox", &Options::language, &Options::setLanguage);
-
   FROM_UI(QComboBox, scaling_combobox)
+  FROM_UI(QCheckBox, shake_cb)
+  FROM_UI(QCheckBox, effects_cb)
+  FROM_UI(QCheckBox, framenetwork_cb)
+  FROM_UI(QCheckBox, colorlog_cb)
+  FROM_UI(QCheckBox, stickysounds_cb)
+  FROM_UI(QCheckBox, stickyeffects_cb)
+  FROM_UI(QCheckBox, stickypres_cb)
+  FROM_UI(QCheckBox, customchat_cb)
+  FROM_UI(QCheckBox, sticker_cb)
+  FROM_UI(QCheckBox, continuous_cb)
+  FROM_UI(QCheckBox, category_stop_cb)
+  FROM_UI(QCheckBox, sfx_on_idle_cb)
+  FROM_UI(QCheckBox, evidence_double_click_cb)
+
+  registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
+  registerOption<QSpinBox, int>("stay_time_spinbox", &Options::textStayTime, &Options::setTextStayTime);
+  registerOption<QCheckBox, bool>("instant_objection_cb", &Options::objectionSkipQueueEnabled, &Options::setObjectionSkipQueueEnabled);
+  registerOption<QSpinBox, int>("text_crawl_spinbox", &Options::textCrawlSpeed, &Options::setTextCrawlSpeed);
+  registerOption<QSpinBox, int>("chat_ratelimit_spinbox", &Options::chatRateLimit, &Options::setChatRateLimit);
+  registerOption<QLineEdit, QString>("username_textbox", &Options::username, &Options::setUsername);
+  registerOption<QCheckBox, bool>("showname_cb", &Options::customShownameEnabled, &Options::setCustomShownameEnabled);
+  registerOption<QLineEdit, QString>("default_showname_textbox", &Options::shownameOnJoin, &Options::setShownameOnJoin);
+  registerOption<QLineEdit, QString>("ms_textbox", &Options::alternativeMasterserver, &Options::setAlternativeMasterserver);
+  registerOption<QCheckBox, bool>("discord_cb", &Options::discordEnabled, &Options::setDiscordEnabled);
+  registerOption<QComboBox, QString>("language_combobox", &Options::language, &Options::setLanguage);
   registerOption<QComboBox, QString>("scaling_combobox", &Options::defaultScalingMode, &Options::setDefaultScalingMode);
+
+  //Populate scaling dropdown. This is necessary as we need the user data embeeded into the entry.
   ui_scaling_combobox->addItem(tr("Pixel"), "fast");
   ui_scaling_combobox->addItem(tr("Smooth"), "smooth");
 
-  FROM_UI(QCheckBox, shake_cb)
   registerOption<QCheckBox, bool>("shake_cb",  &Options::shakeEnabled, &Options::setShakeEnabled);
-
-  FROM_UI(QCheckBox, effects_cb)
   registerOption<QCheckBox, bool>("effects_cb", &Options::effectsEnabled, &Options::setEffectsEnabled);
-
-  FROM_UI(QCheckBox, framenetwork_cb)
   registerOption<QCheckBox, bool>("framenetwork_cb", &Options::networkedFrameSfxEnabled, &Options::setNetworkedFrameSfxEnabled);
-
-  FROM_UI(QCheckBox, colorlog_cb)
   registerOption<QCheckBox, bool>("colorlog_cb", &Options::colorLogEnabled, &Options::setColorLogEnabled);
-
-  FROM_UI(QCheckBox, stickysounds_cb)
   registerOption<QCheckBox, bool>("stickysounds_cb", &Options::clearSoundsDropdownOnPlayEnabled, &Options::setClearSoundsDropdownOnPlayEnabled);
-
-  FROM_UI(QCheckBox, stickyeffects_cb)
   registerOption<QCheckBox, bool>("stickyeffects_cb", &Options::clearEffectsDropdownOnPlayEnabled, &Options::setClearEffectsDropdownOnPlayEnabled);
-
-  FROM_UI(QCheckBox, stickypres_cb)
   registerOption<QCheckBox, bool>("stickypres_cb", &Options::clearPreOnPlayEnabled, &Options::setClearPreOnPlayEnabled);
-
-  FROM_UI(QCheckBox, customchat_cb)
   registerOption<QCheckBox, bool>("customchat_cb", &Options::customChatboxEnabled, &Options::setCustomChatboxEnabled);
-
-  FROM_UI(QCheckBox, sticker_cb)
   registerOption<QCheckBox, bool>("sticker_cb", &Options::characterStickerEnabled, &Options::setCharacterStickerEnabled);
-
-  FROM_UI(QCheckBox, continuous_cb)
   registerOption<QCheckBox, bool>("continuous_cb", &Options::continuousPlaybackEnabled, &Options::setContinuousPlaybackEnabled);
-
-  FROM_UI(QCheckBox, category_stop_cb)
   registerOption<QCheckBox, bool>("category_stop_cb", &Options::stopMusicOnCategoryEnabled, &Options::setStopMusicOnCategoryEnabled);
-
-  FROM_UI(QCheckBox, sfx_on_idle_cb)
   registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::SfxonIdle, &Options::setSfxOnIdle);
-
-  FROM_UI(QCheckBox, evidence_double_click_cb)
   registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
+
+  //The callwords tab. This could just be a QLineEdit, but no, we decided to allow people to put a billion entries in.
 
   FROM_UI(QPlainTextEdit, callwords_textbox)
   registerOption<QPlainTextEdit, QStringList>("callwords_textbox", &Options::callwords, &Options::setCallwords);
 
+  //The audio tab.
+
   FROM_UI(QComboBox, audio_device_combobox)
   populateAudioDevices();
-
   registerOption<QComboBox, QString>("audio_device_combobox", &Options::audioOutputDevice, &Options::setAudioOutputDevice);
 
   FROM_UI(QSpinBox, music_volume_spinbox)
-  registerOption<QSpinBox, int>("music_volume_spinbox", &Options::musicVolume, &Options::setMusicVolume);
-
   FROM_UI(QSpinBox, sfx_volume_spinbox)
-  registerOption<QSpinBox, int>("sfx_volume_spinbox", &Options::sfxVolume, &Options::setSfxVolume);
-
   FROM_UI(QSpinBox, blips_volume_spinbox)
-  registerOption<QSpinBox, int>("blips_volume_spinbox", &::Options::blipVolume, &Options::setBlipVolume);
-
   FROM_UI(QSpinBox, suppress_audio_spinbox)
-  registerOption<QSpinBox, int>("suppress_audio_spinbox", &::Options::defaultSuppressAudio, &Options::setDefaultSupressedAudio);
-
   FROM_UI(QSpinBox, bliprate_spinbox)
-  registerOption<QSpinBox, int>("bliprate_spinbox", &::Options::blipRate, &Options::setBlipRate);
-
   FROM_UI(QCheckBox, blank_blips_cb)
-  registerOption<QCheckBox, bool>("blank_blips_cb", &Options::blankBlip, &Options::setBlankBlip);
-
   FROM_UI(QCheckBox, loopsfx_cb)
-  registerOption<QCheckBox, bool>("loopsfx_cb", &Options::loopingSfx, &Options::setLoopingSfx);
-
   FROM_UI(QCheckBox, objectmusic_cb)
-  registerOption<QCheckBox, bool>("objectmusic_cb", &Options::objectionStopMusic, &Options::setObjectionStopMusic);
-
   FROM_UI(QCheckBox, disablestreams_cb)
+
+  registerOption<QSpinBox, int>("music_volume_spinbox", &Options::musicVolume, &Options::setMusicVolume);
+  registerOption<QSpinBox, int>("sfx_volume_spinbox", &Options::sfxVolume, &Options::setSfxVolume);
+  registerOption<QSpinBox, int>("blips_volume_spinbox", &::Options::blipVolume, &Options::setBlipVolume);
+  registerOption<QSpinBox, int>("suppress_audio_spinbox", &::Options::defaultSuppressAudio, &Options::setDefaultSupressedAudio);
+  registerOption<QSpinBox, int>("bliprate_spinbox", &::Options::blipRate, &Options::setBlipRate);
+  registerOption<QCheckBox, bool>("blank_blips_cb", &Options::blankBlip, &Options::setBlankBlip);
+  registerOption<QCheckBox, bool>("loopsfx_cb", &Options::loopingSfx, &Options::setLoopingSfx);
+  registerOption<QCheckBox, bool>("objectmusic_cb", &Options::objectionStopMusic, &Options::setObjectionStopMusic);
   registerOption<QCheckBox, bool>("disablestreams_cb", &Options::streamingEnabled, &Options::setStreamingEnabled);
 
+  //The casing tab.
+
   FROM_UI(QGroupBox, casing_enabled_box)
-  registerOption<QGroupBox, bool>("casing_enabled_box", &Options::casingAlertEnabled, &Options::setCasingAlertEnabled);
-
   FROM_UI(QCheckBox, casing_def_cb)
-  registerOption<QCheckBox, bool>("casing_def_cb", &Options::casingDefenceEnabled, &Options::setcasingDefenceEnabled);
-
   FROM_UI(QCheckBox, casing_pro_cb)
-  registerOption<QCheckBox, bool>("casing_pro_cb", &Options::casingProsecutionEnabled, &::Options::setCasingProseuctionEnabled);
-
   FROM_UI(QCheckBox, casing_jud_cb)
-  registerOption<QCheckBox, bool>("casing_jud_cb", &Options::casingJudgeEnabled, &::Options::setCasingJudgeEnabled);
-
   FROM_UI(QCheckBox, casing_jur_cb)
-  registerOption<QCheckBox, bool>("casing_jur_cb", &Options::casingJurorEnabled, &Options::setCasingJurorEnabled);
-
   FROM_UI(QCheckBox, casing_steno_cb)
-  registerOption<QCheckBox, bool>("casing_steno_cb", &Options::casingStenoEnabled, &Options::setCasingStenoEnabled);
-
   FROM_UI(QCheckBox, casing_cm_cb)
-  registerOption<QCheckBox, bool>("casing_cm_cb", &Options::casingCmEnabled, &Options::setCasingCmEnabled);
-
   FROM_UI(QLineEdit, casing_cm_cases_textbox)
+
+  registerOption<QGroupBox, bool>("casing_enabled_box", &Options::casingAlertEnabled, &Options::setCasingAlertEnabled);
+  registerOption<QCheckBox, bool>("casing_def_cb", &Options::casingDefenceEnabled, &Options::setcasingDefenceEnabled);
+  registerOption<QCheckBox, bool>("casing_pro_cb", &Options::casingProsecutionEnabled, &::Options::setCasingProseuctionEnabled);
+  registerOption<QCheckBox, bool>("casing_jud_cb", &Options::casingJudgeEnabled, &::Options::setCasingJudgeEnabled);
+  registerOption<QCheckBox, bool>("casing_jur_cb", &Options::casingJurorEnabled, &Options::setCasingJurorEnabled);
+  registerOption<QCheckBox, bool>("casing_steno_cb", &Options::casingStenoEnabled, &Options::setCasingStenoEnabled);
+  registerOption<QCheckBox, bool>("casing_cm_cb", &Options::casingCmEnabled, &Options::setCasingCmEnabled);
   registerOption<QLineEdit, QString>("casing_cm_cases_textbox", &Options::casingCanHostCases, &Options::setCasingCanHostCases);
 
+
+  //The asset tab
   FROM_UI(QListWidget, mount_list)
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
@@ -313,24 +291,25 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       ui_mount_down->setEnabled(false);
   });
 
+  //The logging tab
+
   FROM_UI(QCheckBox, downwards_cb)
-  registerOption<QCheckBox, bool>("downwards_cb", &Options::logDirectionDownwards, &Options::setLogDirectionDownwards);
-
   FROM_UI(QSpinBox, length_spinbox)
-  registerOption<QSpinBox, int>("length_spinbox", &Options::maxLogSize, &Options::setMaxLogSize);
-
   FROM_UI(QCheckBox, log_newline_cb)
-  registerOption<QCheckBox, bool>("log_newline_cb", &Options::logNewline, &Options::setLogNewline);
-
   FROM_UI(QSpinBox, log_margin_spinbox)
+  FROM_UI(QLabel, log_timestamp_format_lbl)
+  FROM_UI(QComboBox, log_timestamp_format_combobox)
+
+  registerOption<QCheckBox, bool>("downwards_cb", &Options::logDirectionDownwards, &Options::setLogDirectionDownwards);
+  registerOption<QSpinBox, int>("length_spinbox", &Options::maxLogSize, &Options::setMaxLogSize);
+  registerOption<QCheckBox, bool>("log_newline_cb", &Options::logNewline, &Options::setLogNewline);
   registerOption<QSpinBox, int>("log_margin_spinbox", &Options::logMargin, &Options::setLogMargin);
 
   FROM_UI(QCheckBox, log_timestamp_cb)
   registerOption<QCheckBox, bool>("log_timestamp_cb", &Options::logTimestampEnabled, &Options::setLogTimestampEnabled);
   connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
-
-  FROM_UI(QLabel, log_timestamp_format_lbl)
   ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(Options::options->logTimestampFormat()));
+
 
   FROM_UI(QComboBox, log_timestamp_format_combobox)
   registerOption<QComboBox, QString>("log_timestamp_format_combobox", &Options::logTimestampFormat, &Options::setLogTimestampFormat);
@@ -345,16 +324,15 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   }
 
   FROM_UI(QCheckBox, log_ic_actions_cb)
-  registerOption<QCheckBox, bool>("log_ic_actions_cb", &Options::logIcActions, &Options::setLogIcActions);
-
   FROM_UI(QCheckBox, desync_logs_cb)
-  registerOption<QCheckBox, bool>("desync_logs_cb", &Options::desynchronisedLogsEnabled, &Options::setDesynchronisedLogsEnabled);
-
   FROM_UI(QCheckBox, log_text_cb)
-  registerOption<QCheckBox, bool>("log_text_cb", &Options::logToTextFileEnabled, &Options::setLogToTextFileEnabled);
 
-  FROM_UI(QCheckBox, log_demo_cb)
+  registerOption<QCheckBox, bool>("log_ic_actions_cb", &Options::logIcActions, &Options::setLogIcActions);
+  registerOption<QCheckBox, bool>("desync_logs_cb", &Options::desynchronisedLogsEnabled, &Options::setDesynchronisedLogsEnabled);
+  registerOption<QCheckBox, bool>("log_text_cb", &Options::logToTextFileEnabled, &Options::setLogToTextFileEnabled);
   registerOption<QCheckBox, bool>("log_demo_cb", &Options::logToDemoFileEnabled, &Options::setLogToDemoFileEnabled);
+
+  //The DSGVO/Privacy tab
 
   FROM_UI(QTextBrowser, privacy_policy)
   ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));

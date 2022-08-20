@@ -28,8 +28,6 @@
 #include <QTextBrowser>
 #include <QTextStream>
 
-#define FROM_UI(type, name); ui_##name = findChild<type *>(#name);
-
 class Lobby;
 class Courtroom;
 class AOApplication;
