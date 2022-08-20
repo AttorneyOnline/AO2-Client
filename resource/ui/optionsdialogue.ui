@@ -39,7 +39,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-277</y>
             <width>389</width>
             <height>701</height>
            </rect>
@@ -160,47 +160,37 @@
             <widget class="QComboBox" name="language_combobox">
              <item>
               <property name="text">
-               <string> - Keep current setting -</string>
+               <string>en</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>     - Default</string>
+               <string>de</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>en - English</string>
+               <string>es</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>de - Deutsch</string>
+               <string>pt</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>es - Español</string>
+               <string>pl</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>pt - Português</string>
+               <string>jp</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>pl - Polskie</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>jp - 日本語</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>ru - Русский</string>
+               <string>ru</string>
               </property>
              </item>
             </widget>
