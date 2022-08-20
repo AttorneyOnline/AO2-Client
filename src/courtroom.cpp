@@ -409,6 +409,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   initialize_emotes();
   initialize_evidence();
 
+  // TODO : Properly handle widget creation order.
+  // Good enough for 2.10
+  ui_pair_list->raise();
+
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
