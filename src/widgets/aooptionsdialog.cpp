@@ -34,6 +34,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   auto l_layout = new QVBoxLayout(this);
   l_layout->addWidget(ui_settings_widget);
 
+  // General dialog element.
   FROM_UI(QDialogButtonBox, settings_buttons);
 
   connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
@@ -44,7 +45,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                    &AOOptionsDialog::button_clicked);
 
   // Gameplay Tab
-
   FROM_UI(QComboBox, theme_combobox)
 
   QSet<QString> themes;
@@ -149,13 +149,11 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::SfxonIdle, &Options::setSfxOnIdle);
   registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
 
-  //The callwords tab. This could just be a QLineEdit, but no, we decided to allow people to put a billion entries in.
-
+  // Callwords tab. This could just be a QLineEdit, but no, we decided to allow people to put a billion entries in.
   FROM_UI(QPlainTextEdit, callwords_textbox)
   registerOption<QPlainTextEdit, QStringList>("callwords_textbox", &Options::callwords, &Options::setCallwords);
 
-  //The audio tab.
-
+  // Audio tab.
   FROM_UI(QComboBox, audio_device_combobox)
   populateAudioDevices();
   registerOption<QComboBox, QString>("audio_device_combobox", &Options::audioOutputDevice, &Options::setAudioOutputDevice);
@@ -180,8 +178,8 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   registerOption<QCheckBox, bool>("objectmusic_cb", &Options::objectionStopMusic, &Options::setObjectionStopMusic);
   registerOption<QCheckBox, bool>("disablestreams_cb", &Options::streamingEnabled, &Options::setStreamingEnabled);
 
-  //The casing tab.
-
+  // Casing tab.
+  FROM_UI(QLabel, casing_supported_lbl)
   FROM_UI(QGroupBox, casing_enabled_box)
   FROM_UI(QCheckBox, casing_def_cb)
   FROM_UI(QCheckBox, casing_pro_cb)
@@ -201,7 +199,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   registerOption<QLineEdit, QString>("casing_cm_cases_textbox", &Options::casingCanHostCases, &Options::setCasingCanHostCases);
 
 
-  //The asset tab
+  // Asset tab
   FROM_UI(QListWidget, mount_list)
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
@@ -291,8 +289,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
       ui_mount_down->setEnabled(false);
   });
 
-  //The logging tab
-
+  // Logging tab
   FROM_UI(QCheckBox, downwards_cb)
   FROM_UI(QSpinBox, length_spinbox)
   FROM_UI(QCheckBox, log_newline_cb)
@@ -332,7 +329,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   registerOption<QCheckBox, bool>("log_text_cb", &Options::logToTextFileEnabled, &Options::setLogToTextFileEnabled);
   registerOption<QCheckBox, bool>("log_demo_cb", &Options::logToDemoFileEnabled, &Options::setLogToDemoFileEnabled);
 
-  //The DSGVO/Privacy tab
+  // DSGVO/Privacy tab
 
   FROM_UI(QTextBrowser, privacy_policy)
   ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
