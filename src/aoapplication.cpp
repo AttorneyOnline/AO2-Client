@@ -20,9 +20,9 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
+  options = new Options();
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
-  options = new Options();
 
   asset_lookup_cache.reserve(2048);
 
