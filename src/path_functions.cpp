@@ -46,7 +46,6 @@ QString AOApplication::get_base_path()
 #else
   base_path = applicationDirPath() + "/base/";
 #endif
-
   return base_path;
 }
 

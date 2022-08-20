@@ -277,10 +277,15 @@ public:
   QString language() const;
   void setLanguage(QString value);
 
+  // Callwords notify the user when the word/words are used in a game message.
   QStringList callwords() const;
   void setCallwords(QStringList value);
 
+  // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
+
+  // Restores the temporary backup file. This is stupid behaviour.
+  void restoreBackup();
 
   /**
    * @brief Static access pointer. Workaround for scope limitations and reduce reliance to AOApplication

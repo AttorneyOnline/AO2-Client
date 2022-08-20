@@ -501,20 +501,25 @@ void AOOptionsDialog::save_pressed()
 
 void AOOptionsDialog::discard_pressed()
 {
-   this->close();
-   this->deleteLater();
+    // The .temp file exists, meaning we are trying to undo the user clicking on "Restore defaults" and bring back the old settings.
+    if (QFile::exists(ao_app->get_base_path() + "config.temp")) {
+        Options::options->restoreBackup();
+        QFile::remove(ao_app->get_base_path() + "config.temp");
+        update_values();
+    }
+  this->close();
 }
 
 void AOOptionsDialog::button_clicked(QAbstractButton *button)
 {
-    if (ui_settings_buttons->buttonRole(button) == QDialogButtonBox::ResetRole) {
-        // Store the current settings as a .temp file
-        QFile::rename(ao_app->get_base_path() + "config.ini", ao_app->get_base_path() + "config.temp");
-        // Load up the default settings
-        Options::options->clearConfig();
-        // Update the values on the settings ui
-        update_values();
-    }
+  if (ui_settings_buttons->buttonRole(button) == QDialogButtonBox::ResetRole) {
+    // Store the current settings as a .temp file
+    QFile::rename(ao_app->get_base_path() + "config.ini", ao_app->get_base_path() + "config.temp");
+    // Load up the default settings
+    Options::options->clearConfig();
+    // Update the values on the settings ui
+    update_values();
+  }
 }
 
 void AOOptionsDialog::on_reload_theme_clicked()

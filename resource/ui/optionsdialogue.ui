@@ -39,7 +39,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-277</y>
+            <y>0</y>
             <width>389</width>
             <height>701</height>
            </rect>
@@ -1301,7 +1301,7 @@ Default: 0.</string>
    <item>
     <widget class="QDialogButtonBox" name="settings_buttons">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Discard|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
      </property>
     </widget>
    </item>
