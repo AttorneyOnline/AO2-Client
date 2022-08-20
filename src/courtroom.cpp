@@ -1594,9 +1594,6 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
 void Courtroom::enter_courtroom()
 {
-  current_evidence_page = 0;
-  current_evidence = 0;
-
   set_evidence_page();
 
   if (ao_app->flipping_supported)
