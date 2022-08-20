@@ -381,10 +381,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_mute_list = new QListWidget(this);
   ui_mute_list->setObjectName("ui_mute_list");
 
-  // TODO : Properly handle widget creation order.
-  // Good enough for 2.10
-  initialize_emotes();
-
   ui_pair_list = new QListWidget(this);
   ui_pair_list->setObjectName("ui_pair_list");
 
@@ -410,7 +406,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_evidence_button->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_evidence_button->setObjectName("ui_evidence_button");
 
+  initialize_emotes();
   initialize_evidence();
+
+  // TODO : Properly handle widget creation order.
+  // Good enough for 2.10
+  ui_pair_list->raise();
 
   construct_char_select();
 
