@@ -23,7 +23,7 @@ public:
     int max_wait = -1;
 
 private:
-    void handle_packet(AOPacket packet);
+    void handle_packet(AOPacket *packet);
     void load_demo(QString filename);
     void reset_state();
 

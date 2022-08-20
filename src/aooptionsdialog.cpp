@@ -120,7 +120,6 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_subtheme_combobox);
 
   row += 1;
-
   ui_theme_reload_button = new QPushButton(ui_form_layout_widget);
   ui_theme_reload_button->setText(tr("Reload Theme"));
   ui_theme_reload_button->setToolTip(
@@ -128,6 +127,22 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_reload_button);
   connect(ui_theme_reload_button, &QPushButton::clicked, this,
           &AOOptionsDialog::on_reload_theme_clicked);
+
+  row += 1;
+  ui_theme_folder_button = new QPushButton(ui_form_layout_widget);
+  ui_theme_folder_button->setText(tr("Open Theme Folder"));
+  ui_theme_folder_button->setToolTip(
+      tr("Open the theme folder of the currently selected theme."));
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_theme_folder_button);
+  connect(ui_theme_folder_button, &QPushButton::clicked, this,
+          [=] {
+    QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
+    if (!dir_exists(p_path)) {
+        return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
+  }
+  );
 
   row += 1;
   ui_animated_theme_lbl = new QLabel(ui_form_layout_widget);
@@ -465,6 +480,32 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_category_stop_cb);
 
+  row += 1;
+
+  ui_sfx_on_idle_lbl = new QLabel(ui_form_layout_widget);
+  ui_sfx_on_idle_lbl->setText(tr("Always Send SFX:"));
+  ui_sfx_on_idle_lbl->setToolTip(
+      tr("If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_sfx_on_idle_lbl);
+
+  ui_sfx_on_idle_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_sfx_on_idle_cb);
+
+  row += 1;
+
+  ui_evidence_double_click_lbl = new QLabel(ui_form_layout_widget);
+  ui_evidence_double_click_lbl->setText(tr("Evidence Double Click:"));
+  ui_evidence_double_click_lbl->setToolTip(
+      tr("If ticked, Evidence needs a double-click to view rather than a single click."));
+
+  ui_gameplay_form->setWidget(row, QFormLayout::LabelRole, ui_evidence_double_click_lbl);
+
+  ui_evidence_double_click_cb = new QCheckBox(ui_form_layout_widget);
+
+  ui_gameplay_form->setWidget(row, QFormLayout::FieldRole, ui_evidence_double_click_cb);
+
   // Finish gameplay tab
   QScrollArea *scroll = new QScrollArea(this);
   scroll->setWidget(ui_form_layout_widget);
@@ -670,6 +711,16 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ui_objectmusic_cb = new QCheckBox(ui_audio_widget);
 
   ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_objectmusic_cb);
+
+  row += 1;
+  ui_disablestreams_lbl = new QLabel(ui_audio_widget);
+  ui_disablestreams_lbl->setText(tr("Disable Music Streaming:"));
+  ui_disablestreams_lbl->setToolTip(
+      tr("If true, AO2 will not play any streamed audio and show that streaming is disabled."));
+  ui_audio_layout->setWidget(row, QFormLayout::LabelRole, ui_disablestreams_lbl);
+
+  ui_disablestreams_cb = new QCheckBox(ui_audio_widget);
+  ui_audio_layout->setWidget(row, QFormLayout::FieldRole, ui_disablestreams_cb);
 
   // The casing tab!
   ui_casing_tab = new QWidget(this);
@@ -1187,9 +1238,11 @@ void AOOptionsDialog::update_values() {
   ui_sticker_cb->setChecked(ao_app->is_sticker_enabled());
   ui_continuous_cb->setChecked(ao_app->is_continuous_enabled());
   ui_category_stop_cb->setChecked(ao_app->is_category_stop_enabled());
+  ui_sfx_on_idle_cb->setChecked(ao_app->get_sfx_on_idle());
   ui_blank_blips_cb->setChecked(ao_app->get_blank_blip());
   ui_loopsfx_cb->setChecked(ao_app->get_looping_sfx());
   ui_objectmusic_cb->setChecked(ao_app->objection_stop_music());
+  ui_disablestreams_cb->setChecked(ao_app->is_streaming_disabled());
   ui_casing_enabled_cb->setChecked(ao_app->get_casing_enabled());
   ui_casing_def_cb->setChecked(ao_app->get_casing_defence_enabled());
   ui_casing_pro_cb->setChecked(ao_app->get_casing_prosecution_enabled());
@@ -1210,6 +1263,7 @@ void AOOptionsDialog::update_values() {
   ui_suppress_audio_spinbox->setValue(ao_app->get_default_suppress_audio());
   ui_bliprate_spinbox->setValue(ao_app->read_blip_rate());
   ui_default_showname_textbox->setText(ao_app->get_default_showname());
+  ui_evidence_double_click_cb->setChecked(ao_app->get_evidence_double_click());
 
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)")
                                            .arg(ao_app->get_base_path()));
@@ -1273,6 +1327,8 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("demo_logging_enabled", ui_log_demo_cb->isChecked());
   configini->setValue("continuous_playback", ui_continuous_cb->isChecked());
   configini->setValue("category_stop", ui_category_stop_cb->isChecked());
+  configini->setValue("sfx_on_idle", ui_sfx_on_idle_cb->isChecked());
+  configini->setValue("evidence_double_click", ui_evidence_double_click_cb->isChecked());
   QFile *callwordsini = new QFile(ao_app->get_base_path() + "callwords.ini");
 
   if (callwordsini->open(QIODevice::WriteOnly | QIODevice::Truncate |
@@ -1295,6 +1351,7 @@ void AOOptionsDialog::save_pressed()
   configini->setValue("blank_blip", ui_blank_blips_cb->isChecked());
   configini->setValue("looping_sfx", ui_loopsfx_cb->isChecked());
   configini->setValue("objection_stop_music", ui_objectmusic_cb->isChecked());
+  configini->setValue("streaming_disabled", ui_disablestreams_cb->isChecked());
 
   configini->setValue("casing_enabled", ui_casing_enabled_cb->isChecked());
   configini->setValue("casing_defence_enabled", ui_casing_def_cb->isChecked());
