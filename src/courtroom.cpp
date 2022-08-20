@@ -2970,8 +2970,8 @@ void Courtroom::handle_callwords()
 {
   // Quickly check through the message for the word_call (callwords) sfx
   QString f_message = m_chatmessage[MESSAGE];
-  // Obtain the current call words (Really? It does File I/O on every single message???)
-  QStringList call_words = ao_app->get_call_words();
+  //No more file IO on every message.
+  QStringList call_words = Options::options->callwords();
   // Loop through each word in the call words list
   for (const QString &word : qAsConst(call_words)) {
     // If our message contains that specific call word

@@ -176,12 +176,6 @@ public:
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
 
-  // Instead of reinventing the wheel, we'll use a QSettings class.
-  QSettings *configini;
-
-  // Returns the list of words in callwords.ini
-  QStringList get_call_words();
-
   // returns all of the file's lines in a QStringList
   QStringList get_list_file(VPath path);
   QStringList get_list_file(QString p_file);

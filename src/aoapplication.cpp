@@ -20,10 +20,6 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  // Create the QSettings class that points to the config.ini.
-  configini =
-      new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
-
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
   options = new Options();
@@ -42,7 +38,6 @@ AOApplication::~AOApplication()
   destruct_lobby();
   destruct_courtroom();
   delete discord;
-  delete configini;
   delete options;
   qInstallMessageHandler(original_message_handler);
 }

@@ -2,11 +2,6 @@
 #include "aoutils.h"
 #include "options.h"
 
-QStringList AOApplication::get_call_words()
-{
-  return get_list_file(get_base_path() + "callwords.ini");
-}
-
 QStringList AOApplication::get_list_file(VPath path)
 {
   return get_list_file(get_real_path(path));

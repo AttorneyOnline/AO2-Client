@@ -24,8 +24,6 @@ int main(int argc, char *argv[])
   while (it.hasNext())
     fontDatabase.addApplicationFont(it.next());
 
-  QSettings *configini = main_app.configini;
-
   QPluginLoader apngPlugin("qapng");
   if (!apngPlugin.load())
     qCritical() << "QApng plugin could not be loaded";
@@ -35,7 +33,7 @@ int main(int argc, char *argv[])
     qCritical() << "QWebp plugin could not be loaded";
 
   QString p_language =
-      configini->value("language", QLocale::system().name()).toString();
+      Options::options->language();
   if (p_language == "  " || p_language == "")
     p_language = QLocale::system().name();
 

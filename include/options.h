@@ -280,6 +280,8 @@ public:
   QStringList callwords() const;
   void setCallwords(QStringList value);
 
+  void clearConfig();
+
   /**
    * @brief Static access pointer. Workaround for scope limitations and reduce reliance to AOApplication
    */

@@ -524,36 +524,28 @@ void AOOptionsDialog::save_pressed()
     this->hide();
 }
 
-void AOOptionsDialog::discard_pressed() {
-    // The .temp file exists, meaning we are trying to undo the user clicking on "Restore defaults" and bring back the old settings.
-    if (QFile::exists(ao_app->get_base_path() + "config.temp")) {
-        // Delete the QSettings object so it does not interfere with the file
-        delete ao_app->configini;
-        // Remove the current config.ini
-        QFile::remove(ao_app->get_base_path() + "config.ini");
-        // Rename .temp to .ini
-        QFile::rename(ao_app->get_base_path() + "config.temp", ao_app->get_base_path() + "config.ini");
-        // Recreate the QSettings object from the ini file, restoring the settings before the Options Dialog was opened..
-        ao_app->configini =
-            new QSettings(ao_app->get_base_path() + "config.ini", QSettings::IniFormat);
-    }
+void AOOptionsDialog::discard_pressed()
+{
+   this->close();
+   this->deleteLater();
 }
 
-void AOOptionsDialog::button_clicked(QAbstractButton *button) {
+void AOOptionsDialog::button_clicked(QAbstractButton *button)
+{
     if (ui_settings_buttons->buttonRole(button) == QDialogButtonBox::ResetRole) {
         // Store the current settings as a .temp file
         QFile::rename(ao_app->get_base_path() + "config.ini", ao_app->get_base_path() + "config.temp");
         // Load up the default settings
-        ao_app->configini->clear();
+        Options::options->clearConfig();
         // Update the values on the settings ui
         update_values();
     }
 }
 
 void AOOptionsDialog::on_reload_theme_clicked() {
-    ao_app->configini->setValue("theme", ui_theme_combobox->currentText());
-    ao_app->configini->setValue("subtheme", ui_subtheme_combobox->currentText());
-    ao_app->configini->setValue("animated_theme", ui_animated_theme_cb->isChecked());
+    Options::options->setTheme(ui_subtheme_combobox->currentText());
+    Options::options->setSubTheme(ui_subtheme_combobox->currentText());
+    Options::options->setAnimatedThemeEnabled(ui_animated_theme_cb->isChecked());
     if (ao_app->courtroom_constructed)
         ao_app->w_courtroom->on_reload_theme_clicked();
     if (ao_app->lobby_constructed)

@@ -627,7 +627,7 @@ void Options::setAlternativeMasterserver(QString value)
 
 QString Options::language() const
 {
-  return config.value("language", "").toString();
+    return config.value("language", QLocale::system().name()).toString();
 }
 
 void Options::setLanguage(QString value)
@@ -642,5 +642,10 @@ QStringList Options::callwords() const
 
 void Options::setCallwords(QStringList value)
 {
-  config.setValue("callwords", value);
+    config.setValue("callwords", value);
+}
+
+void Options::clearConfig()
+{
+  config.clear();
 }

@@ -18,7 +18,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   heartbeat_timer = new QTimer(this);
 
   QString master_config =
-      ao_app->configini->value("master", "").value<QString>();
+      Options::options->alternativeMasterserver();
   if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
     qInfo() << "using alternate master server" << master_config;
     ms_baseurl = master_config;
@@ -106,7 +106,7 @@ void NetworkManager::request_document(MSDocumentType document_type,
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
 
   QString language =
-      ao_app->configini->value("language").toString();
+      Options::options->language();
   if (language.trimmed().isEmpty())
     language = QLocale::system().name();
 

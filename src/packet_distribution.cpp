@@ -602,7 +602,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     subtheme = f_contents.at(0);
 
     // Check if we have subthemes set to "server"
-    QString p_st = configini->value("subtheme").value<QString>();
+    QString p_st = Options::options->subTheme();
     if (p_st.toLower() != "server")
       // We don't. Simply acknowledge the subtheme sent by the server, but don't do anything else.
       return;
