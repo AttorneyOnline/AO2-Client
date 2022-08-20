@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>optionsdialogue</class>
+ <widget class="QWidget" name="optionsdialogue">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>398</width>
-    <height>397</height>
+    <width>450</width>
+    <height>415</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -39,9 +39,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-498</y>
-            <width>342</width>
-            <height>797</height>
+            <y>0</y>
+            <width>389</width>
+            <height>701</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">

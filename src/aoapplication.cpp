@@ -26,6 +26,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
+  options = new Options();
 
   asset_lookup_cache.reserve(2048);
 
@@ -34,8 +35,6 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   setApplicationVersion(get_version_string());
   setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
-
-  widget = new AOOptionsDialog(nullptr, this);
 }
 
 AOApplication::~AOApplication()
@@ -44,6 +43,7 @@ AOApplication::~AOApplication()
   destruct_courtroom();
   delete discord;
   delete configini;
+  delete options;
   qInstallMessageHandler(original_message_handler);
 }
 
@@ -201,7 +201,9 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-  widget->show();
+  if (settings_widget == nullptr)
+    settings_widget = new AOOptionsDialog(nullptr, this);
+  settings_widget->show();
 }
 
 void AOApplication::call_announce_menu(Courtroom *court)

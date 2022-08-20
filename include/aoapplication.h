@@ -412,8 +412,8 @@ private:
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
 
-  Options* options;
-  AOOptionsDialog* widget;
+  Options* options = nullptr;
+  AOOptionsDialog* settings_widget = nullptr;
 
 public slots:
   void server_disconnected();

@@ -13,6 +13,8 @@ MOC_DIR = $$PWD/build
 SOURCES += $$files($$PWD/src/*.cpp, true)
 HEADERS += $$files($$PWD/include/*.h, true)
 
+FORMS += $$files($$PWD/resource/ui/*.ui)
+
 LIBS += -L$$PWD/lib
 QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 
