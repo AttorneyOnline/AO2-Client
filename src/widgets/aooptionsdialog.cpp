@@ -496,6 +496,9 @@ void AOOptionsDialog::save_pressed()
     for (const OptionEntry &entry : qAsConst(optionEntries))
       entry.save();
 
+    if (QFile::exists(ao_app->get_base_path() + "config.temp")) {
+      QFile::remove(ao_app->get_base_path() + "config.temp");
+    }
     this->hide();
 }
 
