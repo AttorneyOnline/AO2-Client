@@ -284,9 +284,6 @@ public:
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
 
-  // Restores the temporary backup file. This is stupid behaviour.
-  void restoreBackup();
-
   /**
    * @brief Static access pointer. Workaround for scope limitations and reduce reliance to AOApplication
    */

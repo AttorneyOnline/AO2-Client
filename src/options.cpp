@@ -650,16 +650,3 @@ void Options::clearConfig()
 {
     config.clear();
 }
-
-void Options::restoreBackup()
-{
-  //Copies the data back to the original ini.
-  QSettings settings_backup(QCoreApplication::applicationDirPath() + "/base/config.temp", QSettings::IniFormat);
-  settings_backup.setIniCodec("UTF-8");
-  const QStringList backup_key = settings_backup.childKeys();
-
-  for (const QString &key : backup_key) {
-      config.setValue(key, settings_backup.value(key));
-  }
-  config.sync();
-}
