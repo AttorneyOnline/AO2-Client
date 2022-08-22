@@ -1238,7 +1238,7 @@ QString AOApplication::get_subtheme()
 bool AOApplication::get_animated_theme()
 {
   QString result =
-      configini->value("animated_theme", "true").value<QString>();
+      configini->value("animated_theme", "false").value<QString>();
   return result.startsWith("true");
 }
 
