@@ -80,32 +80,35 @@ void DemoServer::recv_data()
     QString in_data = QString::fromUtf8(client_sock->readAll());
 
     // Copypasted from NetworkManager
-    if (!in_data.endsWith("%")) {
-      partial_packet = true;
-      temp_packet += in_data;
-      return;
-    }
-
-    else {
-      if (partial_packet) {
-        in_data = temp_packet + in_data;
-        temp_packet = "";
-        partial_packet = false;
-      }
-    }
-
-    QStringList packet_list =
-        in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+    const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
 
     for (const QString &packet : packet_list) {
-        AOPacket ao_packet(packet);
-        handle_packet(ao_packet);
+        QStringList f_contents;
+        // Packet should *always* end with #
+        if (packet.endsWith("#")) {
+          f_contents = packet.chopped(1).split("#");
+        }
+        // But, if it somehow doesn't, we should still be able to handle it
+        else {
+          f_contents = packet.split("#");
+        }
+        // Empty packets are suspicious!
+        if (f_contents.isEmpty()) {
+          qWarning() << "WARNING: Empty packet received from server, skipping...";
+          continue;
+        }
+        // Take the first arg as the command
+        QString command = f_contents.takeFirst();
+        // The rest is contents of the packet
+        AOPacket *f_packet = new AOPacket(command, f_contents);
+        // Ship it to the server!
+        handle_packet(f_packet);
     }
 }
 
-void DemoServer::handle_packet(AOPacket packet)
+void DemoServer::handle_packet(AOPacket *p_packet)
 {
-    packet.net_decode();
+    p_packet->net_decode();
 
     // This code is literally a barebones AO server
     // It is wise to do it this way, because I can
@@ -115,8 +118,8 @@ void DemoServer::handle_packet(AOPacket packet)
     // Also, at some point, I will make akashit
     // into a shared library.
 
-    QString header = packet.get_header();
-    QStringList contents = packet.get_contents();
+    QString header = p_packet->get_header();
+    QStringList contents = p_packet->get_contents();
 
     if (header == "HI") {
         client_sock->write("ID#0#DEMOINTERNAL#0#%");
@@ -269,6 +272,8 @@ void DemoServer::handle_packet(AOPacket packet)
             client_sock->write(packet.toUtf8());
         }
     }
+
+    delete p_packet;
 }
 
 void DemoServer::load_demo(QString filename)
@@ -386,15 +391,28 @@ void DemoServer::playback()
         current_packet = demo_data.dequeue();
     }
     if (!demo_data.isEmpty()) {
-        AOPacket wait_packet = AOPacket(current_packet);
-
-        int duration = wait_packet.get_contents().at(0).toInt();
+        QStringList f_contents;
+        // Packet should *always* end with #
+        if (current_packet.endsWith("#")) {
+          f_contents = current_packet.chopped(1).split("#");
+        }
+        // But, if it somehow doesn't, we should still be able to handle it
+        else {
+          f_contents = current_packet.split("#");
+        }
+        // Take the first arg as the command
+        QString command = f_contents.takeFirst();
+        int duration = 0;
+        if (!f_contents.isEmpty()) {
+          duration = f_contents.at(0).toInt();
+        }
         // Max wait reached
         if (max_wait != -1 && duration + elapsed_time > max_wait) {
+          int prev_duration = duration;
           duration = qMax(0, max_wait - elapsed_time);
           qDebug() << "Max_wait of " << max_wait << " reached. Forcing duration to " << duration << "ms";
           // Skip the difference on the timers
-          emit skip_timers(wait_packet.get_contents().at(0).toInt() - duration);
+          emit skip_timers(prev_duration - duration);
         }
         // Manual user skip, such as with >
         else if (timer->remainingTime() > 0) {

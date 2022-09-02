@@ -38,6 +38,16 @@ QString get_hdid()
     CloseHandle(hToken);
     return returnHDID;
 }
+#elif defined(ANDROID)
+QString get_hdid()
+{
+    QAndroidJniObject appctx = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative", "activity", "()Landroid/app/Activity;").callObjectMethod("getApplicationContext","()Landroid/content/Context;");
+    QAndroidJniObject androidId = QAndroidJniObject::callStaticObjectMethod("android/provider/Settings$Secure","getString",
+                                                                            "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;",
+                                                                            appctx.callObjectMethod("getContentResolver", "()Landroid/content/ContentResolver;").object<jobject>(),
+                                                                            QAndroidJniObject::fromString("android_id").object<jstring>());
+    return androidId.toString();
+}
 #elif QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 #if (defined(LINUX) || defined(__linux__))
 

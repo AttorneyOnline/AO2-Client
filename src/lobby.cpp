@@ -6,14 +6,14 @@
 #include "demoserver.h"
 #include "networkmanager.h"
 
+#include <QAction>
 #include <QImageReader>
+#include <QMenu>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
 
-
-  //
   this->setWindowTitle(tr("Attorney Online %1").arg(ao_app->applicationVersion()));
   this->setWindowIcon(QIcon(":/logo.png"));
   this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
@@ -28,6 +28,9 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_refresh->setObjectName("ui_refresh");
   ui_add_to_fav = new AOButton(this, ao_app);
   ui_add_to_fav->setObjectName("ui_add_to_fav");
+  ui_remove_from_fav = new AOButton(this, ao_app);
+  ui_remove_from_fav->setObjectName("ui_remove_from_fav");
+  ui_remove_from_fav->hide();
   ui_connect = new AOButton(this, ao_app);
   ui_connect->setObjectName("ui_connect");
   ui_version = new QLabel(this);
@@ -45,6 +48,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_server_list->setColumnWidth(0, 0);
   ui_server_list->setIndentation(0);
   ui_server_list->setObjectName("ui_server_list");
+  ui_server_list->setContextMenuPolicy(Qt::CustomContextMenu);
 
   ui_server_search = new QLineEdit(this);
   ui_server_search->setFrame(false);
@@ -79,6 +83,10 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           &Lobby::on_add_to_fav_pressed);
   connect(ui_add_to_fav, &AOButton::released, this,
           &Lobby::on_add_to_fav_released);
+  connect(ui_remove_from_fav, &AOButton::pressed, this,
+          &Lobby::on_remove_from_fav_pressed);
+  connect(ui_remove_from_fav, &AOButton::released, this,
+          &Lobby::on_remove_from_fav_released);
   connect(ui_connect, &AOButton::pressed, this, &Lobby::on_connect_pressed);
   connect(ui_connect, &AOButton::released, this, &Lobby::on_connect_released);
   connect(ui_about, &AOButton::clicked, this, &Lobby::on_about_clicked);
@@ -87,6 +95,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           &Lobby::on_server_list_clicked);
   connect(ui_server_list, &QTreeWidget::itemDoubleClicked,
           this, &Lobby::on_server_list_doubleclicked);
+  connect(ui_server_list, &QTreeWidget::customContextMenuRequested, this,
+          &Lobby::on_server_list_context_menu_requested);
   connect(ui_server_search, &QLineEdit::textChanged, this,
           &Lobby::on_server_search_edited);
   connect(ui_cancel, &AOButton::clicked, ao_app, &AOApplication::loading_cancelled);
@@ -144,6 +154,9 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_add_to_fav, "add_to_fav");
   ui_add_to_fav->set_image("addtofav");
+
+  set_size_and_pos(ui_remove_from_fav, "remove_from_fav");
+  ui_remove_from_fav->set_image("removefromfav");
 
   set_size_and_pos(ui_connect, "connect");
   ui_connect->set_image("connect");
@@ -212,6 +225,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Lobby::set_fonts()
 {
+  set_font(ui_version, "version");
   set_font(ui_player_count, "player_count");
   set_font(ui_description, "description");
   set_font(ui_chatbox, "chatbox");
@@ -300,26 +314,30 @@ void Lobby::on_public_servers_clicked()
 {
   ui_public_servers->set_image("publicservers_selected");
   ui_favorites->set_image("favorites");
+  ui_add_to_fav->show();
+  ui_remove_from_fav->hide();
 
   reset_selection();
 
-  list_servers();
-
   public_servers_selected = true;
+
+  list_servers();
 }
 
 void Lobby::on_favorites_clicked()
 {
-  ui_favorites->set_image("favorites_selected");
   ui_public_servers->set_image("publicservers");
+  ui_favorites->set_image("favorites_selected");
+  ui_add_to_fav->hide();
+  ui_remove_from_fav->show();
 
   reset_selection();
 
-  ao_app->set_favorite_list();
-
-  list_favorites();
+  ao_app->load_favorite_list();
 
   public_servers_selected = false;
+
+  list_favorites();
 }
 
 void Lobby::reset_selection()
@@ -342,7 +360,7 @@ void Lobby::on_refresh_released()
     ao_app->net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
     get_motd();
   } else {
-    ao_app->set_favorite_list();
+    ao_app->load_favorite_list();
     list_favorites();
   }
 }
@@ -363,6 +381,25 @@ void Lobby::on_add_to_fav_released()
   }
 }
 
+void Lobby::on_remove_from_fav_pressed()
+{
+  ui_remove_from_fav->set_image("removefromfav_pressed");
+}
+
+void Lobby::on_remove_from_fav_released()
+{
+  ui_remove_from_fav->set_image("removefromfav");
+  if (public_servers_selected) {
+    return;
+  }
+
+  int selection = get_selected_server();
+  if (selection > 0) {
+    ao_app->remove_favorite_server(selection);
+    list_favorites();
+  }
+}
+
 void Lobby::on_connect_pressed() { ui_connect->set_image("connect_pressed"); }
 
 void Lobby::on_connect_released()
@@ -371,7 +408,7 @@ void Lobby::on_connect_released()
 
   AOPacket *f_packet;
 
-  f_packet = new AOPacket("askchaa#%");
+  f_packet = new AOPacket("askchaa");
 
   ao_app->send_server_packet(f_packet);
 }
@@ -390,7 +427,7 @@ void Lobby::on_about_clicked()
          "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
          "Crystalwarrior, Iamgoofball, in1tiate"
          "<p><b>Client development:</b><br>"
-         "Cents02, windrammer, skyedeving"
+         "Cents02, windrammer, skyedeving, TrickyLeifa, Salanto"
          "<p><b>QA testing:</b><br>"
          "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
          "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
@@ -400,6 +437,7 @@ void Lobby::on_about_clicked()
          "k-emiko (Русский), Pyraq (Polski), scatterflower (日本語), vintprox (Русский), "
          "windrammer (Español, Português)"
          "<p><b>Special thanks:</b><br>"
+         "Wiso, dyviacat (2.10 release); "
          "CrazyJC (2.8 release director) and MaximumVolty (2.8 release promotion); "
          "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
          "Rue (website); Draxirch (UI design); "
@@ -408,7 +446,7 @@ void Lobby::on_about_clicked()
          "server hosts, game masters, case makers, content creators, "
          "and the whole AO2 community!"
          "<p>The Attorney Online networked visual novel project "
-         "is copyright (c) 2016-2021 Attorney Online developers. Open-source "
+         "is copyright (c) 2016-2022 Attorney Online developers. Open-source "
          "licenses apply. All other assets are the property of their "
          "respective owners."
          "<p>Running on Qt version %2 with the BASS audio engine.<br>"
@@ -479,6 +517,31 @@ void Lobby::on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column)
   //on_connect_released();
 }
 
+void Lobby::on_server_list_context_menu_requested(const QPoint &point)
+{
+  if (public_servers_selected) {
+    return;
+  }
+
+  auto *item = ui_server_list->itemAt(point);
+  if (item == nullptr) {
+    qInfo() << "no favorite server item; skipping context menu";
+    return;
+  }
+  const int server_index = item->data(0, Qt::DisplayRole).toInt();
+  if (server_index == 0) {
+    qInfo() << "demo server has no context menu to display";
+    return;
+  }
+
+  auto *menu = new QMenu(this);
+  menu->addAction(tr("Remove"), ao_app, [this,server_index](){
+    ao_app->remove_favorite_server(server_index);
+    list_favorites();
+  });
+  menu->popup(ui_server_list->mapToGlobal(point));
+}
+
 void Lobby::on_server_search_edited(QString p_text)
 {
   // Iterate through all QTreeWidgetItem items
@@ -502,7 +565,9 @@ void Lobby::on_server_search_edited(QString p_text)
 
 void Lobby::list_servers()
 {
-  public_servers_selected = true;
+  if (!public_servers_selected) {
+    return;
+  }
   ui_favorites->set_image("favorites");
   ui_public_servers->set_image("publicservers_selected");
 
@@ -524,6 +589,9 @@ void Lobby::list_servers()
 
 void Lobby::list_favorites()
 {
+  if (public_servers_selected) {
+    return;
+  }
   ui_server_list->setSortingEnabled(false);
   ui_server_list->clear();
 

@@ -57,6 +57,8 @@ jobs:
            ANDROID_ROOT=/usr/local/lib/android
            ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
            ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
+           SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
+           echo "y" | $SDKMANAGER "ndk;21.4.7075529"
            ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
         
       - uses: Skycoder42/action-setup-qt@master
@@ -73,14 +75,10 @@ jobs:
           chmod +x get_libs.sh
           ./get_libs.sh 1.2.12 1.6.37
           cd ../..
-          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
           ${{steps.qt.outputs.make}} qmake_all
           ${{steps.qt.outputs.make}}
           ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
-
-      - name: Create bin folder
-        run: |
-          mkdir bin
 
       - name: Install Windows Discord RPC
         if: contains(matrix.os, 'windows')
@@ -184,8 +182,14 @@ jobs:
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
+        if: matrix.platform != 'android'
         run: |
-          qmake DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
+          qmake QMAKE_CXXFLAGS+="-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+
+      - name: qmake android
+        if: matrix.platform == 'android'
+        run: |
+          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
       - name: build
         run: |
@@ -209,6 +213,22 @@ jobs:
           rm -r iconengines
           rm -r bearer
           rm -r styles
+
+      - name: Deploy Linux
+        if: matrix.platform == 'gcc_64'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp ../scripts/launch.sh .
+          mkdir imageformats
+          cp ../QtApng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
+          chmod +x launch.sh
+          chmod +x Attorney_Online
+          tar -cf Attorney_Online.tar ./*
+          rm -rf imageformats
+          rm *.so
+          rm *.sh
+          rm Attorney_Online
 
       - name: Deploy Mac
         if: matrix.os == 'macos-latest'
@@ -240,5 +260,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-${{matrix.platform}}
+          name: Attorney_Online-${{matrix.os}}-${{matrix.platform}}
           path: ${{github.workspace}}/bin/

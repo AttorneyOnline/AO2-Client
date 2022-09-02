@@ -12,6 +12,7 @@ void Courtroom::initialize_evidence()
   ui_evidence_name->setAlignment(Qt::AlignCenter);
   ui_evidence_name->setFrame(false);
   ui_evidence_name->setObjectName("ui_evidence_name");
+  ui_evidence_name->setReadOnly(true);
 
   ui_evidence_buttons = new QWidget(ui_evidence);
   ui_evidence_buttons->setObjectName("ui_evidence_buttons");
@@ -102,6 +103,7 @@ void Courtroom::initialize_evidence()
           &Courtroom::on_evidence_edited);
 
   ui_evidence->hide();
+  evidence_load("inventories/autosave.ini");
 }
 
 void Courtroom::refresh_evidence()
@@ -259,13 +261,14 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
   if (ui_evidence_overlay
           ->isVisible()) // Update the currently edited evidence for this user
   {
+    int p_id = current_evidence - (max_evidence_on_page * current_evidence_page);
     if (current_evidence >= local_evidence_list.size()) {
       evidence_close();
       ui_evidence_name->setText("");
     }
     else if (ui_evidence_ok->isHidden()) // We haven't clicked to edit it or anything
     {
-      on_evidence_double_clicked(current_evidence);
+      on_evidence_double_clicked(p_id);
     }
     // Todo: make a function that compares two pieces of evidence for any
     // differences
@@ -296,7 +299,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
         break;
       case QMessageBox::No:
         // "Discard changes and keep theirs"
-        on_evidence_double_clicked(current_evidence);
+        on_evidence_double_clicked(p_id);
         break;
       default:
         // should never be reached
@@ -397,7 +400,7 @@ void Courtroom::on_evidence_image_name_edited()
 
 void Courtroom::on_evidence_image_button_clicked()
 {
-  QDir dir(ao_app->get_real_path(ao_app->get_evidence_path("")));
+  QDir dir("base/evidence/");
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
@@ -417,7 +420,7 @@ void Courtroom::on_evidence_image_button_clicked()
   bases.prepend(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDir baseDir(base);
-    if (filename.startsWith(baseDir.absolutePath())) {
+    if (filename.startsWith(baseDir.absolutePath() + "/")) {
       dir.setPath(baseDir.absolutePath() + "/evidence");
       break;
     }
@@ -434,7 +437,7 @@ void Courtroom::on_evidence_clicked(int p_id)
   if (f_real_id == local_evidence_list.size()) {
     if (current_evidence_global)
       ao_app->send_server_packet(
-          new AOPacket("PE#<name>#<description>#empty.png#%"));
+          new AOPacket("PE", {"<name>", "<description>", "empty.png"}));
     else {
       evi_type f_evi;
       f_evi.name = "<name>";
@@ -449,17 +452,22 @@ void Courtroom::on_evidence_clicked(int p_id)
   }
   else if (f_real_id > local_evidence_list.size())
     return;
+  
+  if (!ao_app->get_evidence_double_click()){
+    on_evidence_double_clicked(p_id);
+    return;
+  }
+
+  if (ui_evidence_overlay->isVisible()) {
+    return;
+  }
 
   ui_evidence_name->setText(local_evidence_list.at(f_real_id).name);
-
   for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
   ui_evidence_list.at(p_id)->set_selected(true);
-
   current_evidence = f_real_id;
-
-  //  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_double_clicked(int p_id)
@@ -469,6 +477,21 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   if (f_real_id >= local_evidence_list.size())
     return;
 
+  if (ui_evidence_overlay->isVisible()) {
+    if (!on_evidence_x_clicked()) {
+      // We're told not to switch over to the other evidence ("cancel" clicked)
+      return;
+    }
+  }
+
+  for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
+    i_button->set_selected(false);
+
+  // We have to check if the ID is on the currently displayed page.
+  // This is because SOMEONE allowed the switching of pages while evidence is still being edited.
+  if (p_id < ui_evidence_list.count()) {
+    ui_evidence_list.at(p_id)->set_selected(true);
+  }
   current_evidence = f_real_id;
 
   evi_type f_evi = local_evidence_list.at(f_real_id);
@@ -477,6 +500,7 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence_description->appendPlainText(f_evi.description);
   ui_evidence_description->setReadOnly(false);
   ui_evidence_description->setToolTip(tr("Click to edit..."));
+  ui_evidence_description->moveCursor(QTextCursor::Start);
 
   ui_evidence_name->setText(f_evi.name);
   ui_evidence_name->setReadOnly(false);
@@ -489,12 +513,15 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   ui_evidence->show();
   ui_evidence_overlay->show();
   ui_evidence_ok->hide();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_hover(int p_id, bool p_state)
 {
+  if (ui_evidence_overlay->isVisible()) {
+    // Ignore hovering behavior if we're in the process of viewing a piece of evidence
+    return;
+  }
+
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
   if (p_state) {
@@ -514,8 +541,6 @@ void Courtroom::on_evidence_left_clicked()
   --current_evidence_page;
 
   set_evidence_page();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_right_clicked()
@@ -523,8 +548,6 @@ void Courtroom::on_evidence_right_clicked()
   ++current_evidence_page;
 
   set_evidence_page();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_evidence_present_clicked()
@@ -549,32 +572,29 @@ void Courtroom::on_evidence_delete_clicked()
   evidence_close();
   if (current_evidence_global)
     ao_app->send_server_packet(
-        new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
+        new AOPacket("DE", {QString::number(current_evidence)}));
   else {
     local_evidence_list.remove(current_evidence);
     private_evidence_list = local_evidence_list;
     set_evidence_page();
+
+    // Autosave private evidence
+    evidence_save("inventories/autosave.ini");
   }
 
   current_evidence = 0;
-
-  ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_evidence_x_clicked()
+bool Courtroom::on_evidence_x_clicked()
 {
   if (current_evidence >=
       local_evidence_list.size()) // Should never happen but you never know.
-    return;
+    return true;
 
-  evi_type fake_evidence;
-  fake_evidence.name = ui_evidence_name->text();
-  fake_evidence.description = ui_evidence_description->toPlainText();
-  fake_evidence.image = ui_evidence_image_name->text();
-  if (!compare_evidence_changed(fake_evidence,
-                                local_evidence_list.at(current_evidence))) {
+  if (ui_evidence_ok->isHidden()) {
+    // Nothing was modified
     evidence_close();
-    return;
+    return true;
   }
   QMessageBox *msgBox = new QMessageBox;
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
@@ -588,16 +608,14 @@ void Courtroom::on_evidence_x_clicked()
   case QMessageBox::Save:
     evidence_close();
     on_evidence_ok_clicked();
-    break;
+    return true;
   case QMessageBox::Discard:
     evidence_close();
-    break;
+    return true;
   case QMessageBox::Cancel:
-    // Cancel was clicked, do nothing
-    break;
   default:
-    // should never be reached
-    break;
+    // Cancel was clicked, report that.
+    return false;
   }
 }
 
@@ -625,32 +643,16 @@ void Courtroom::on_evidence_ok_clicked()
       set_evidence_page();
     }
   }
+
+  // Autosave private evidence
+  if (!current_evidence_global) {
+    evidence_save("inventories/autosave.ini");
+  }
 }
 
 void Courtroom::on_evidence_switch_clicked()
 {
-  evidence_close();
   evidence_switch(!current_evidence_global);
-  if (current_evidence_global) {
-    ui_evidence_switch->set_image("evidence_global");
-    ui_evidence->set_image("evidence_background");
-    ui_evidence_overlay->set_image("evidence_overlay");
-    ui_evidence_transfer->set_image("evidence_transfer");
-    ui_evidence_transfer->setToolTip(
-        tr("Transfer evidence to private inventory."));
-    ui_evidence_switch->setToolTip(
-        tr("Current evidence is global. Click to switch to private."));
-  }
-  else {
-    ui_evidence_switch->set_image("evidence_private");
-    ui_evidence->set_image("evidence_background_private");
-    ui_evidence_overlay->set_image("evidence_overlay_private");
-    ui_evidence_transfer->set_image("evidence_transfer_private");
-    ui_evidence_transfer->setToolTip(
-        tr("Transfer evidence to global inventory."));
-    ui_evidence_switch->setToolTip(
-        tr("Current evidence is private. Click to switch to global."));
-  }
 }
 
 void Courtroom::on_evidence_transfer_clicked()
@@ -676,6 +678,9 @@ void Courtroom::on_evidence_transfer_clicked()
     evi_type f_evi = local_evidence_list.at(current_evidence);
     name = f_evi.name;
     private_evidence_list.append(f_evi);
+
+    // Autosave private evidence
+    evidence_save("inventories/autosave.ini");
   }
 
   QMessageBox *msgBox = new QMessageBox;
@@ -708,11 +713,11 @@ void Courtroom::evidence_close()
   ui_evidence_name->setReadOnly(true);
   ui_evidence_image_name->setReadOnly(true);
   ui_evidence_overlay->hide();
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::evidence_switch(bool global)
 {
+  evidence_close();
   current_evidence_global = global;
   is_presenting_evidence = false;
   ui_evidence_present->set_image("present");
@@ -722,12 +727,28 @@ void Courtroom::evidence_switch(bool global)
     ui_evidence_present->show();
     ui_evidence_save->hide();
     ui_evidence_load->hide();
+    ui_evidence_switch->set_image("evidence_global");
+    ui_evidence->set_image("evidence_background");
+    ui_evidence_overlay->set_image("evidence_overlay");
+    ui_evidence_transfer->set_image("evidence_transfer");
+    ui_evidence_transfer->setToolTip(
+        tr("Transfer evidence to private inventory."));
+    ui_evidence_switch->setToolTip(
+        tr("Current evidence is global. Click to switch to private."));
   }
   else {
     local_evidence_list = private_evidence_list;
     ui_evidence_present->hide();
     ui_evidence_save->show();
     ui_evidence_load->show();
+    ui_evidence_switch->set_image("evidence_private");
+    ui_evidence->set_image("evidence_background_private");
+    ui_evidence_overlay->set_image("evidence_overlay_private");
+    ui_evidence_transfer->set_image("evidence_transfer_private");
+    ui_evidence_transfer->setToolTip(
+        tr("Transfer evidence to global inventory."));
+    ui_evidence_switch->setToolTip(
+        tr("Current evidence is private. Click to switch to global."));
   }
   current_evidence_page = 0;
   set_evidence_page();
@@ -739,25 +760,19 @@ void Courtroom::on_evidence_save_clicked()
     return; // Don't allow saving/loading operations when in global inventory
             // mode for now
 
+  // "Inventories" dir keeps our private evidence data
+  if (!dir_exists("inventories")) {
+    // Create one if it doesn't yet exist
+    QDir("inventories").mkdir("inventories");
+  }
+
   QString p_path = QFileDialog::getSaveFileName(
-      this, tr("Save Inventory"), "base/inventories/", tr("Ini Files (*.ini)"));
-  if (p_path.isEmpty())
-    return;
+      this, tr("Save Inventory"), "inventories/", tr("Ini Files (*.ini)"));
 
   evidence_close();
   ui_evidence_name->setText("");
 
-  QSettings inventory(p_path, QSettings::IniFormat);
-  inventory.setIniCodec("UTF-8");
-  inventory.clear();
-  for (int i = 0; i < local_evidence_list.size(); i++) {
-    inventory.beginGroup(QString::number(i));
-    inventory.setValue("name", local_evidence_list[i].name);
-    inventory.setValue("description", local_evidence_list[i].description);
-    inventory.setValue("image", local_evidence_list[i].image);
-    inventory.endGroup();
-  }
-  inventory.sync();
+  evidence_save(p_path);
 }
 
 void Courtroom::on_evidence_load_clicked()
@@ -767,35 +782,59 @@ void Courtroom::on_evidence_load_clicked()
             // mode for now
 
   QString p_path = QFileDialog::getOpenFileName(
-      this, tr("Open Inventory"), "base/inventories/", tr("Ini Files (*.ini)"));
+      this, tr("Open Inventory"), "inventories/", tr("Ini Files (*.ini)"));
   if (p_path.isEmpty())
     return;
 
   evidence_close();
   ui_evidence_name->setText("");
+  evidence_load(p_path);
+  local_evidence_list = private_evidence_list;
+  set_evidence_page();
+}
 
-  QSettings inventory(p_path, QSettings::IniFormat);
-  inventory.setIniCodec("UTF-8");
-  local_evidence_list.clear();
-  QMap<int, QString> sorted_evi;
-  for (const auto &s : inventory.childGroups()) {
-    sorted_evi[s.toInt()] = s;
+void Courtroom::evidence_load(QString filename)
+{
+  if (!file_exists(filename)) {
+    qWarning() << "Trying to load a non-existant evidence save file:" << filename;
+    return;
   }
-  QStringList evilist(sorted_evi.values());
-  for (const QString &evi : evilist) {
+  QSettings inventory(filename, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
+  private_evidence_list.clear();
+  foreach (QString evi, inventory.childGroups()) {
     if (evi == "General")
       continue;
 
     evi_type f_evi;
-    f_evi.name = inventory.value(evi + "/name", tr("UNKNOWN")).value<QString>();
+    f_evi.name = inventory.value(evi + "/name", "<name>").value<QString>();
     f_evi.description =
-        inventory.value(evi + "/description", tr("UNKNOWN")).value<QString>();
+        inventory.value(evi + "/description", "<description>").value<QString>();
     f_evi.image =
-        inventory.value(evi + "/image", "UNKNOWN.png").value<QString>();
-    local_evidence_list.append(f_evi);
+        inventory.value(evi + "/image", "empty.png").value<QString>();
+    private_evidence_list.append(f_evi);
   }
-  private_evidence_list = local_evidence_list;
-  set_evidence_page();
+}
+
+void Courtroom::evidence_save(QString filename)
+{
+  // "Inventories" dir keeps our private evidence data
+  if (!dir_exists("inventories")) {
+    // Create one if it doesn't yet exist
+    QDir("inventories").mkdir("inventories");
+  }
+
+  QSettings inventory(filename, QSettings::IniFormat);
+  inventory.setIniCodec("UTF-8");
+  inventory.clear();
+  for (int i = 0; i < private_evidence_list.size(); i++) {
+    inventory.beginGroup(QString::number(i));
+    inventory.setValue("name", private_evidence_list[i].name);
+    inventory.setValue("description", private_evidence_list[i].description);
+    inventory.setValue("image", private_evidence_list[i].image);
+    inventory.endGroup();
+  }
+  inventory.sync();
 }
 
 bool Courtroom::compare_evidence_changed(evi_type evi_a, evi_type evi_b)

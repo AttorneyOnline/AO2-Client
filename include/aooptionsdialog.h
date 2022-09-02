@@ -8,7 +8,6 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QFormLayout>
@@ -16,6 +15,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTabWidget>
@@ -45,38 +45,26 @@ private:
   QWidget *ui_gameplay_tab;
   QWidget *ui_form_layout_widget;
   QFormLayout *ui_gameplay_form;
+
   QLabel *ui_theme_label;
   QComboBox *ui_theme_combobox;
   QLabel *ui_subtheme_label;
   QComboBox *ui_subtheme_combobox;
   QPushButton *ui_theme_reload_button;
+  QPushButton *ui_theme_folder_button;
+  QLabel *ui_evidence_double_click_lbl;
+  QCheckBox *ui_evidence_double_click_cb;
   QLabel *ui_animated_theme_lbl;
   QCheckBox *ui_animated_theme_cb;
   QFrame *ui_theme_log_divider;
-  QLabel *ui_downwards_lbl;
-  QCheckBox *ui_downwards_cb;
-  QLabel *ui_length_lbl;
-  QSpinBox *ui_length_spinbox;
-  QLabel *ui_log_newline_lbl;
-  QCheckBox *ui_log_newline_cb;
-  QLabel *ui_log_margin_lbl;
-  QSpinBox *ui_log_margin_spinbox;
-  QLabel *ui_log_timestamp_lbl;
-  QCheckBox *ui_log_timestamp_cb;
-  QLabel *ui_log_timestamp_format_lbl;
-  QComboBox *ui_log_timestamp_format_combobox;
   QLabel *ui_stay_time_lbl;
   QSpinBox *ui_stay_time_spinbox;
-  QLabel *ui_desync_logs_lbl;
-  QCheckBox *ui_desync_logs_cb;
   QLabel *ui_instant_objection_lbl;
   QCheckBox *ui_instant_objection_cb;
   QLabel *ui_text_crawl_lbl;
   QSpinBox *ui_text_crawl_spinbox;
   QLabel *ui_chat_ratelimit_lbl;
   QSpinBox *ui_chat_ratelimit_spinbox;
-  QLabel *ui_log_ic_actions_lbl;
-  QCheckBox *ui_log_ic_actions_cb;
   QFrame *ui_log_names_divider;
   QLineEdit *ui_username_textbox;
   QLabel *ui_username_lbl;
@@ -125,11 +113,8 @@ private:
   QLabel *ui_category_stop_lbl;
   QCheckBox *ui_category_stop_cb;
 
-  QLabel *ui_log_text_lbl;
-  QCheckBox *ui_log_text_cb;
-
-  QLabel *ui_log_demo_lbl;
-  QCheckBox *ui_log_demo_cb;
+  QLabel *ui_sfx_on_idle_lbl;
+  QCheckBox *ui_sfx_on_idle_cb;
 
   QWidget *ui_callwords_tab;
   QWidget *ui_callwords_widget;
@@ -148,8 +133,10 @@ private:
   QLabel *ui_music_volume_lbl;
   QSpinBox *ui_sfx_volume_spinbox;
   QSpinBox *ui_blips_volume_spinbox;
+  QSpinBox *ui_suppress_audio_spinbox;
   QLabel *ui_sfx_volume_lbl;
   QLabel *ui_blips_volume_lbl;
+  QLabel *ui_suppress_audio_lbl;
   QFrame *ui_volume_blip_divider;
   QSpinBox *ui_bliprate_spinbox;
   QLabel *ui_bliprate_lbl;
@@ -159,6 +146,8 @@ private:
   QCheckBox *ui_loopsfx_cb;
   QLabel *ui_objectmusic_lbl;
   QCheckBox *ui_objectmusic_cb;
+  QLabel *ui_disablestreams_lbl;
+  QCheckBox *ui_disablestreams_cb;
   QDialogButtonBox *ui_settings_buttons;
 
   QWidget *ui_casing_tab;
@@ -192,6 +181,71 @@ private:
   QPushButton *ui_mount_up;
   QPushButton *ui_mount_down;
   QPushButton *ui_mount_clear_cache;
+
+  QWidget *ui_logging_tab;
+  QWidget *ui_form_logging_widget;
+  QFormLayout *ui_logging_form;
+
+  /**
+   * Option for log direction. Supported options are downwards and wrong way.
+   */
+  QLabel *ui_downwards_lbl;
+  QCheckBox *ui_downwards_cb;
+
+  /**
+   * Option for log length. Controls how many IC-log entries are kept before it autowraps.
+   */
+  QLabel *ui_length_lbl;
+  QSpinBox *ui_length_spinbox;
+
+  /**
+   * Option for log newline. Controls if the IC-log contains newlines or as one consecutive string.
+   */
+  QLabel *ui_log_newline_lbl;
+  QCheckBox *ui_log_newline_cb;
+
+  /**
+   * Option for log margin. Controls how many pixels are between each log entry.
+   */
+  QLabel *ui_log_margin_lbl;
+  QSpinBox *ui_log_margin_spinbox;
+
+  /**
+   * Option for timestamp format. A checkmark to enable the timestamp dropdown.
+   * Why does this exist? Are we Dorico now?
+   */
+  QLabel *ui_log_timestamp_lbl;
+  QCheckBox *ui_log_timestamp_cb;
+
+  /**
+   * Option for timestamp format. Dropdown to select the preferred format.
+   */
+  QLabel *ui_log_timestamp_format_lbl;
+  QComboBox *ui_log_timestamp_format_combobox;
+
+  /**
+   * Option for desynched IC-log and viewport. Controls if entires are appended to the IC-log before displayed in the viewport.
+   */
+  QLabel *ui_desync_logs_lbl;
+  QCheckBox *ui_desync_logs_cb;
+
+  /**
+   * Option for logging IC-actions. Will add shouts, evidence or music changes to the IC-log.
+   */
+  QLabel *ui_log_ic_actions_lbl;
+  QCheckBox *ui_log_ic_actions_cb;
+
+  /**
+   * Option to enable logging. If enabled client will save all messages to the log folder.
+   */
+  QLabel *ui_log_text_lbl;
+  QCheckBox *ui_log_text_cb;
+
+  /**
+   * Option to enable demo logging. If enabled, client will save a demo file for replay trough the demo server.
+   */
+  QLabel *ui_log_demo_lbl;
+  QCheckBox *ui_log_demo_cb;
 
   QWidget *ui_privacy_tab;
   QVBoxLayout *ui_privacy_layout;
