@@ -261,13 +261,14 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
   if (ui_evidence_overlay
           ->isVisible()) // Update the currently edited evidence for this user
   {
+    int p_id = current_evidence - (max_evidence_on_page * current_evidence_page);
     if (current_evidence >= local_evidence_list.size()) {
       evidence_close();
       ui_evidence_name->setText("");
     }
     else if (ui_evidence_ok->isHidden()) // We haven't clicked to edit it or anything
     {
-      on_evidence_double_clicked(current_evidence);
+      on_evidence_double_clicked(p_id);
     }
     // Todo: make a function that compares two pieces of evidence for any
     // differences
@@ -298,7 +299,7 @@ void Courtroom::set_evidence_list(QVector<evi_type> &p_evi_list)
         break;
       case QMessageBox::No:
         // "Discard changes and keep theirs"
-        on_evidence_double_clicked(current_evidence);
+        on_evidence_double_clicked(p_id);
         break;
       default:
         // should never be reached
@@ -486,7 +487,11 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
-  ui_evidence_list.at(p_id)->set_selected(true);
+  // We have to check if the ID is on the currently displayed page.
+  // This is because SOMEONE allowed the switching of pages while evidence is still being edited.
+  if (p_id < ui_evidence_list.count()) {
+    ui_evidence_list.at(p_id)->set_selected(true);
+  }
   current_evidence = f_real_id;
 
   evi_type f_evi = local_evidence_list.at(f_real_id);

@@ -107,8 +107,8 @@ public:
 
   ///////////////loading info///////////////////
 
-  // player number, it's hardly used but might be needed for some old servers
-  int s_pv = 0;
+  // client ID. Not useful, to be removed eventually
+  int client_id = 0;
 
   QString server_software = "";
 
@@ -138,7 +138,6 @@ public:
   // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
   void remove_favorite_server(int p_server);
-  void prompt_remove_favorite_server(int p_server);
 
   void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }

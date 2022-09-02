@@ -57,6 +57,8 @@ jobs:
            ANDROID_ROOT=/usr/local/lib/android
            ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
            ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
+           SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
+           echo "y" | $SDKMANAGER "ndk;21.4.7075529"
            ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
         
       - uses: Skycoder42/action-setup-qt@master
@@ -77,10 +79,6 @@ jobs:
           ${{steps.qt.outputs.make}} qmake_all
           ${{steps.qt.outputs.make}}
           ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
-
-      - name: Create bin folder
-        run: |
-          mkdir bin
 
       - name: Install Windows Discord RPC
         if: contains(matrix.os, 'windows')

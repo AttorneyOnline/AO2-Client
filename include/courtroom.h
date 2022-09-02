@@ -245,10 +245,11 @@ public:
   enum LogMode {
     IO_ONLY,
     DISPLAY_ONLY,
-    DISPLAY_AND_IO
+    DISPLAY_AND_IO,
+    QUEUED,
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
-  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY);
+  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = "", QString f_char = "", QString f_objection_mod = "", int f_evi_id = 0, int f_color = 0, LogMode f_log_mode=IO_ONLY, bool sender = false);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
@@ -292,7 +293,12 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "", QString action = "",
-                      int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime());
+                      int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime(),
+                      bool ghost = false);
+
+  // clear sent messages that appear on the IC log but haven't been delivered
+  // yet to other players
+  void pop_ic_ghost();
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
@@ -484,6 +490,9 @@ private:
 
   // amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
+
+  // amount of ghost blocks
+  int ghost_blocks = 0;
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
@@ -815,6 +824,7 @@ private:
   void set_char_select();
   void set_char_select_page();
   void char_clicked(int n_char);
+  void on_char_button_context_menu_requested(const QPoint &pos);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
 
@@ -884,6 +894,7 @@ private slots:
   void on_emote_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(QString p_text);
+  void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();
 
   void on_iniswap_dropdown_changed(int p_index);
@@ -943,6 +954,7 @@ private slots:
   void on_prosecution_plus_clicked();
 
   void on_text_color_changed(int p_color);
+  void on_text_color_context_menu_requested(const QPoint &pos);
   void set_text_color_dropdown();
 
   void on_music_slider_moved(int p_value);
@@ -973,6 +985,7 @@ private slots:
   void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
+  void on_evidence_context_menu_requested(const QPoint &pos);
 
   void on_evidence_delete_clicked();
   bool on_evidence_x_clicked();
