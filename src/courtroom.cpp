@@ -2140,8 +2140,12 @@ void Courtroom::on_chat_return_pressed()
   }
 
   if (ao_app->custom_blips_enabled) {
-    if (ui_custom_blips->text().isEmpty()) { packet_contents.append(ui_custom_blips->placeholderText()); }
-    else { packet_contents.append(ui_custom_blips->text()); }
+    if (ui_custom_blips->text().isEmpty()) {
+        packet_contents.append(ui_custom_blips->placeholderText());
+    }
+    else {
+        packet_contents.append(ui_custom_blips->text());
+    }
   }
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
