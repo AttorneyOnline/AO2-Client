@@ -67,7 +67,7 @@ jobs:
         with:
           version: ${{matrix.version}}
           platform: ${{matrix.platform}}
-          packages: qtwebsockets
+          packages: addons.qtwebsockets
 
       - name: Install QtApng
         run: |
