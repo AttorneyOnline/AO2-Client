@@ -1788,7 +1788,7 @@ void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &
   };
   const QString color_id = QString("debug_log_%1_color").arg(colors.value(type, "info"));
   ui_debug_log->append_chatmessage(
-      QString(), qFormatLogMessage(type, context, msg),
+      colors.value(type, "info"), msg,
       QString(), ao_app->get_color(color_id, "courtroom_fonts.ini").name());
 }
 
