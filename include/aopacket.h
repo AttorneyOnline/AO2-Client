@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QString>
 #include <QStringList>
+#include "aoapplication.h"
 
 class AOPacket {
 public:
@@ -23,6 +24,19 @@ private:
 
   QString m_header;
   QStringList m_contents;
+};
+
+class Packet {
+public:
+    QString header;
+};
+
+class MS: public Packet {
+public:
+    QString header = "MS";
+    void handler(AOApplication *p_ao_app, AOPacket *p_packet);
+private:
+    AOApplication *ao_app;
 };
 
 #endif // AOPACKET_H
