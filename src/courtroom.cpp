@@ -1949,7 +1949,7 @@ void Courtroom::on_chat_return_pressed()
     f_sfx = get_char_sfx();
     // We have a custom sfx but we're on idle emotes.
     // Turn them into pre so the sound plays if client setting sfx_on_idle is enabled.
-    if (Options::getInstance().SfxonIdle() && (f_emote_mod == IDLE || f_emote_mod == ZOOM)) {
+    if (Options::getInstance().playSelectedSFXOnIdle() && (f_emote_mod == IDLE || f_emote_mod == ZOOM)) {
       // We turn idle into preanim, but make it not send a pre animation
       f_pre = "";
       // Set sfx delay to 0 so the sfx plays immediately
@@ -2142,7 +2142,7 @@ void Courtroom::reset_ui()
   ui_evidence_present->set_image("present");
 
   // If sticky sounds is disabled and we either have SFX on Idle enabled, or our Preanim checkbox is checked
-  if (!Options::getInstance().clearSoundsDropdownOnPlayEnabled() && (Options::getInstance().SfxonIdle() || ui_pre->isChecked())) {
+  if (!Options::getInstance().clearSoundsDropdownOnPlayEnabled() && (Options::getInstance().playSelectedSFXOnIdle() || ui_pre->isChecked())) {
     // Reset the SFX Dropdown to "Default"
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();

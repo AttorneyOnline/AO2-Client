@@ -575,32 +575,32 @@ void Options::setDefaultScalingMode(QString value)
   config.setValue("default_scaling", value);
 }
 
-QStringList Options::mountpaths() const
+QStringList Options::mountPaths() const
 {
   return config.value("mount_paths").value<QStringList>();
 }
 
-void Options::setMountpaths(QStringList value)
+void Options::setMountPaths(QStringList value)
 {
   config.setValue("mount_paths", value);
 }
 
-bool Options::PlayercountOptout() const
+bool Options::playerCountOptout() const
 {
   return config.value("player_count_optout", false).toBool();
 }
 
-void Options::SetPlayerCountOptout(bool value)
+void Options::setPlayerCountOptout(bool value)
 {
   config.setValue("player_count_optout", value);
 }
 
-bool Options::SfxonIdle() const
+bool Options::playSelectedSFXOnIdle() const
 {
   return config.value("sfx_on_idle", false).toBool();
 }
 
-void Options::setSfxOnIdle(bool value)
+void Options::setPlaySelectedSFXOnIdle(bool value)
 {
   config.setValue("sfx_on_idle", value);
 }

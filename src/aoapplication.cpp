@@ -37,7 +37,6 @@ AOApplication::~AOApplication()
   destruct_lobby();
   destruct_courtroom();
   delete discord;
-  delete options;
   qInstallMessageHandler(original_message_handler);
 }
 
@@ -195,9 +194,9 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-  if (settings_widget == nullptr)
-    settings_widget = new AOOptionsDialog(nullptr, this);
-  settings_widget->show();
+    if (settings_widget == nullptr)
+      settings_widget = new AOOptionsDialog(nullptr, this);
+    settings_widget->show();
 }
 
 void AOApplication::call_announce_menu(Courtroom *court)

@@ -82,7 +82,7 @@ void NetworkManager::send_heartbeat()
   // within a 5 minute window, so that the the number of people playing within
   // that time period can be counted and an accurate player count be displayed.
   // What do I care about your personal information, I really don't want it.
-  if (Options::getInstance().PlayercountOptout())
+  if (Options::getInstance().playerCountOptout())
     return;
 
   QNetworkRequest req(QUrl(ms_baseurl + "/playing"));

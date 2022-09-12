@@ -346,7 +346,7 @@ QString AOApplication::get_real_path(const VPath &vpath,
   }
 
   // Cache miss; try all known mount paths
-  QStringList bases = Options::getInstance().mountpaths();
+  QStringList bases = Options::getInstance().mountPaths();
   bases.prepend(get_base_path());
   // base
   // content 1

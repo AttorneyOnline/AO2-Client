@@ -417,7 +417,7 @@ void Courtroom::on_evidence_image_button_clicked()
     return;
 
   QString filename = filenames.at(0);
-  QStringList bases = Options::getInstance().mountpaths();
+  QStringList bases = Options::getInstance().mountPaths();
   bases.prepend(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDir baseDir(base);

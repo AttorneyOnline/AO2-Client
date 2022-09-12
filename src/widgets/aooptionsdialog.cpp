@@ -48,7 +48,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   FROM_UI(QComboBox, theme_combobox)
 
   QSet<QString> themes;
-  QStringList bases = Options::getInstance().mountpaths();
+  QStringList bases = Options::getInstance().mountPaths();
   bases.push_front(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
@@ -146,7 +146,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   registerOption<QCheckBox, bool>("sticker_cb", &Options::characterStickerEnabled, &Options::setCharacterStickerEnabled);
   registerOption<QCheckBox, bool>("continuous_cb", &Options::continuousPlaybackEnabled, &Options::setContinuousPlaybackEnabled);
   registerOption<QCheckBox, bool>("category_stop_cb", &Options::stopMusicOnCategoryEnabled, &Options::setStopMusicOnCategoryEnabled);
-  registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::SfxonIdle, &Options::setSfxOnIdle);
+  registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::playSelectedSFXOnIdle, &Options::setPlaySelectedSFXOnIdle);
   registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow people to put a billion entries in.
@@ -205,7 +205,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
                                            .arg(ao_app->get_base_path()));
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
   ui_mount_list->addItem(defaultMount);
-  registerOption<QListWidget, QStringList>("mount_list", &Options::mountpaths, &Options::setMountpaths);
+  registerOption<QListWidget, QStringList>("mount_list", &Options::mountPaths, &Options::setMountPaths);
 
   FROM_UI(QPushButton, mount_add)
   connect(ui_mount_add, &QPushButton::clicked, this, [this] {
@@ -502,6 +502,7 @@ void AOOptionsDialog::discard_pressed()
 {
   update_values();
   this->close();
+  this->deleteLater();
 }
 
 void AOOptionsDialog::button_clicked(QAbstractButton *button)

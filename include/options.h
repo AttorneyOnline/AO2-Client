@@ -265,16 +265,16 @@ public:
   void setDefaultScalingMode(QString value);
 
   // Get a list of custom mount paths
-  QStringList mountpaths() const;
-  void setMountpaths(QStringList value);
+  QStringList mountPaths() const;
+  void setMountPaths(QStringList value);
 
   // Get whether to opt out of player count metrics sent to the master server
-  bool PlayercountOptout() const;
-  void SetPlayerCountOptout(bool value);
+  bool playerCountOptout() const;
+  void setPlayerCountOptout(bool value);
 
   // Get if sfx can be sent to play on idle
-  bool SfxonIdle() const;
-  void setSfxOnIdle(bool value);
+  bool playSelectedSFXOnIdle() const;
+  void setPlaySelectedSFXOnIdle(bool value);
 
   // Whether opening evidence requires a single or double click
   bool evidenceDoubleClickEdit() const;
