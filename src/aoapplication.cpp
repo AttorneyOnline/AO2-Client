@@ -194,8 +194,8 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-    if (settings_widget == nullptr)
-      settings_widget = new AOOptionsDialog(nullptr, this);
+    //Nasty memory leak
+    settings_widget = new AOOptionsDialog(nullptr, this);
     settings_widget->show();
 }
 

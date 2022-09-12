@@ -406,7 +406,7 @@ private:
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
 
-  AOOptionsDialog* settings_widget = nullptr;
+  AOOptionsDialog* settings_widget;
 
 public slots:
   void server_disconnected();

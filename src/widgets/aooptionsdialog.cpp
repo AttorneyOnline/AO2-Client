@@ -46,36 +46,12 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
 
   // Gameplay Tab
   FROM_UI(QComboBox, theme_combobox)
-
-  QSet<QString> themes;
-  QStringList bases = Options::getInstance().mountPaths();
-  bases.push_front(ao_app->get_base_path());
-  for (const QString &base : bases) {
-    QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
-                    QDirIterator::NoIteratorFlags);
-    while (it.hasNext()) {
-      QString actualname = QDir(it.next()).dirName();
-      if (!themes.contains(actualname)) {
-        ui_theme_combobox->addItem(actualname);
-        themes.insert(actualname);
-      }
-    }
-  } 
   registerOption<QComboBox, QString>("theme_combobox", &Options::theme, &Options::setTheme);
 
   FROM_UI(QComboBox, subtheme_combobox)
   connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
                    &AOOptionsDialog::theme_changed);
   registerOption<QComboBox, QString>("subtheme_combobox", &Options::subTheme, &Options::setSubTheme);
-
-  QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")), QDir::Dirs,
-                  QDirIterator::NoIteratorFlags);
-  while (it2.hasNext()) {
-    QString actualname = QDir(it2.next()).dirName();
-    if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc") {
-      ui_subtheme_combobox->addItem(actualname);
-    }
-  }
 
   FROM_UI(QPushButton, theme_reload_button)
   connect(ui_theme_reload_button, &QPushButton::clicked, this,
@@ -483,6 +459,30 @@ void AOOptionsDialog::update_values()
     for (const OptionEntry &entry : qAsConst(optionEntries))
       entry.load();
 
+    QSet<QString> themes;
+    QStringList bases = Options::getInstance().mountPaths();
+    bases.push_front(ao_app->get_base_path());
+    for (const QString &base : bases) {
+      QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
+                      QDirIterator::NoIteratorFlags);
+      while (it.hasNext()) {
+        QString actualname = QDir(it.next()).dirName();
+        if (!themes.contains(actualname)) {
+          ui_theme_combobox->addItem(actualname);
+          themes.insert(actualname);
+        }
+      }
+    }
+
+    QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")), QDir::Dirs,
+                    QDirIterator::NoIteratorFlags);
+    while (it2.hasNext()) {
+      QString actualname = QDir(it2.next()).dirName();
+      if (actualname != "." && actualname != ".." && actualname.toLower() != "server" && actualname.toLower() != "default" && actualname.toLower() != "effects" && actualname.toLower() != "misc") {
+        ui_subtheme_combobox->addItem(actualname);
+      }
+    }
+
     ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
       if (document.isEmpty()) {
         document = tr("Couldn't get the privacy policy.");
@@ -500,9 +500,7 @@ void AOOptionsDialog::save_pressed()
 
 void AOOptionsDialog::discard_pressed()
 {
-  update_values();
   this->close();
-  this->deleteLater();
 }
 
 void AOOptionsDialog::button_clicked(QAbstractButton *button)

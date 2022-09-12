@@ -29,7 +29,6 @@ public:
   static Options& getInstance()
   {
       static Options instance;
-
       return instance;
   }
 
