@@ -37,7 +37,6 @@ Options::Options() : config(
                          QSettings::IniFormat)
 {
   config.setIniCodec("UTF-8");
-  Options::options = this;
   migrate();
 }
 

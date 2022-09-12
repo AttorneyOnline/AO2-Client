@@ -20,7 +20,6 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  options = new Options();
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
 
@@ -58,7 +57,7 @@ void AOApplication::construct_lobby()
   int y = (geometry.height() - w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (Options::options->discordEnabled())
+  if (Options::getInstance().discordEnabled())
     discord->state_lobby();
 
   if (demo_server)
@@ -122,7 +121,7 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme() { current_theme = Options::options->theme(); }
+void AOApplication::reload_theme() { current_theme = Options::getInstance().theme(); }
 
 void AOApplication::load_favorite_list()
 {
@@ -235,13 +234,13 @@ void AOApplication::initBASS()
   unsigned int a = 0;
   BASS_DEVICEINFO info;
 
-  if (Options::options->audioOutputDevice() == "default") {
+  if (Options::getInstance().audioOutputDevice() == "default") {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
   else {
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-      if (Options::options->audioOutputDevice() == info.name) {
+      if (Options::getInstance().audioOutputDevice() == info.name) {
         BASS_SetDevice(a);
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);

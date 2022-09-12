@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     qCritical() << "QWebp plugin could not be loaded";
 
   QString p_language =
-      Options::options->language();
+      Options::getInstance().language();
   if (p_language == "  " || p_language == "")
     p_language = QLocale::system().name();
 

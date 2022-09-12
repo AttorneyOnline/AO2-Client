@@ -16,11 +16,22 @@ private:
 
   void migrateCallwords();
 
-public:
   /**
    * @brief Constructor for options class.
    */
   Options();
+
+public:
+
+  Options(Options const&) = delete;
+  void operator=(Options const&)  = delete;
+
+  static Options& getInstance()
+  {
+      static Options instance;
+
+      return instance;
+  }
 
   /**
    * @brief Migrates old configuration files to the most recent format.
@@ -283,11 +294,6 @@ public:
 
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
-
-  /**
-   * @brief Static access pointer. Workaround for scope limitations and reduce reliance to AOApplication
-   */
-  inline static Options* options;
 };
 
 #endif // OPTIONS_H

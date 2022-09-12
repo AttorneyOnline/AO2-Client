@@ -23,7 +23,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 
   QUiLoader l_loader(this);
-  QFile l_uiFile(":/resource/ui/optionsdialogue.ui");
+  QFile l_uiFile(":/resource/ui/options_dialog.ui");
   if (!l_uiFile.open(QFile::ReadOnly)) {
     qWarning() << "Unable to open file " << l_uiFile.fileName();
     return;
@@ -48,7 +48,7 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   FROM_UI(QComboBox, theme_combobox)
 
   QSet<QString> themes;
-  QStringList bases = Options::options->mountpaths();
+  QStringList bases = Options::getInstance().mountpaths();
   bases.push_front(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
@@ -305,18 +305,18 @@ AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
   FROM_UI(QCheckBox, log_timestamp_cb)
   registerOption<QCheckBox, bool>("log_timestamp_cb", &Options::logTimestampEnabled, &Options::setLogTimestampEnabled);
   connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
-  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(Options::options->logTimestampFormat()));
+  ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(Options::getInstance().logTimestampFormat()));
 
 
   FROM_UI(QComboBox, log_timestamp_format_combobox)
   registerOption<QComboBox, QString>("log_timestamp_format_combobox", &Options::logTimestampFormat, &Options::setLogTimestampFormat);
   connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
 
-  QString l_current_format = Options::options->logTimestampFormat();
+  QString l_current_format = Options::getInstance().logTimestampFormat();
 
   ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
 
-  if(!Options::options->logTimestampEnabled()) {
+  if(!Options::getInstance().logTimestampEnabled()) {
     ui_log_timestamp_format_combobox->setDisabled(true);
   }
 
@@ -469,10 +469,10 @@ void AOOptionsDialog::registerOption(const QString &widgetName,
 
   OptionEntry entry;
   entry.load = [=] {
-    setWidgetData<T, V>(widget, (options.*getter)());
+    setWidgetData<T, V>(widget, (Options::getInstance().*getter)());
   };
   entry.save = [=] {
-    (options.*setter)(widgetData<T, V>(widget));
+    (Options::getInstance().*setter)(widgetData<T, V>(widget));
   };
 
   optionEntries.append(entry);
@@ -510,7 +510,7 @@ void AOOptionsDialog::button_clicked(QAbstractButton *button)
     if (QMessageBox::question(this,"","Restore default settings?\nThis can't be undone!",
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         // Destructive operation.
-        Options::options->clearConfig();
+        Options::getInstance().clearConfig();
         update_values();
     }
   }
@@ -518,9 +518,9 @@ void AOOptionsDialog::button_clicked(QAbstractButton *button)
 
 void AOOptionsDialog::on_reload_theme_clicked()
 {
-    Options::options->setTheme(ui_subtheme_combobox->currentText());
-    Options::options->setSubTheme(ui_subtheme_combobox->currentText());
-    Options::options->setAnimatedThemeEnabled(ui_animated_theme_cb->isChecked());
+    Options::getInstance().setTheme(ui_subtheme_combobox->currentText());
+    Options::getInstance().setSubTheme(ui_subtheme_combobox->currentText());
+    Options::getInstance().setAnimatedThemeEnabled(ui_animated_theme_cb->isChecked());
     if (ao_app->courtroom_constructed)
         ao_app->w_courtroom->on_reload_theme_clicked();
     if (ao_app->lobby_constructed)

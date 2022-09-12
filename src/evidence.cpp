@@ -417,7 +417,7 @@ void Courtroom::on_evidence_image_button_clicked()
     return;
 
   QString filename = filenames.at(0);
-  QStringList bases = Options::options->mountpaths();
+  QStringList bases = Options::getInstance().mountpaths();
   bases.prepend(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDir baseDir(base);
@@ -454,7 +454,7 @@ void Courtroom::on_evidence_clicked(int p_id)
   else if (f_real_id > local_evidence_list.size())
     return;
   
-  if (!Options::options->evidenceDoubleClickEdit()){
+  if (!Options::getInstance().evidenceDoubleClickEdit()){
     on_evidence_double_clicked(p_id);
     return;
   }
