@@ -194,7 +194,6 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-    //Nasty memory leak
     AOOptionsDialog(nullptr, this).exec();
 }
 
