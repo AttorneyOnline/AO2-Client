@@ -49,6 +49,12 @@ void Options::migrate()
   if (QFile::exists(QCoreApplication::applicationDirPath() + "/base/callwords.ini")) {
       migrateCallwords();
   }
+  if (config.contains("ooc_name")) {
+      if (username().isEmpty()) {
+          config.setValue("default_showname", config.value("ooc_name"));
+      }
+      config.remove("ooc_name");
+  }
 }
 
 QString Options::theme() const
@@ -69,16 +75,6 @@ int Options::blipRate() const
 void Options::setBlipRate(int value)
 {
   config.setValue("blip_rate", value);
-}
-
-QString Options::oocName() const
-{
-  return config.value("ooc_name").toString();
-}
-
-void Options::setOocName(QString value)
-{
-  config.setValue("ooc_name", value);
 }
 
 int Options::musicVolume() const
@@ -233,13 +229,12 @@ void Options::setCustomShownameEnabled(bool value)
 
 QString Options::username() const
 {
- // Reimplement me!
-    return "";
+  return config.value("default_username", "").value<QString>();
 }
 
 void Options::setUsername(QString value)
 {
-  config.setValue("ooc_name", value);
+  config.setValue("default_username", value);
 }
 
 QString Options::shownameOnJoin() const
