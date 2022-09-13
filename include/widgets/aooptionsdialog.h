@@ -38,10 +38,10 @@ struct OptionEntry {
   std::function<void()> save;
 };
 
-class AOOptionsDialog : public QWidget {
+class AOOptionsDialog : public QDialog {
   Q_OBJECT
 public:
-  explicit AOOptionsDialog(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);
+  explicit AOOptionsDialog(QDialog *parent = nullptr, AOApplication *p_ao_app = nullptr);
 private:
   AOApplication *ao_app;
 

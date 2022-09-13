@@ -195,8 +195,7 @@ void AOApplication::loading_cancelled()
 void AOApplication::call_settings_menu()
 {
     //Nasty memory leak
-    settings_widget = new AOOptionsDialog(nullptr, this);
-    settings_widget->show();
+    AOOptionsDialog(nullptr, this).exec();
 }
 
 void AOApplication::call_announce_menu(Courtroom *court)

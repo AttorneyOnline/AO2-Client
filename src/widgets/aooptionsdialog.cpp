@@ -17,8 +17,8 @@
 
 #define FROM_UI(type, name); ui_##name = findChild<type *>(#name);
 
-AOOptionsDialog::AOOptionsDialog(QWidget *parent, AOApplication *p_ao_app)
-    : QWidget(parent)
+AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
+    : QDialog(parent)
 {
   ao_app = p_ao_app;
 
