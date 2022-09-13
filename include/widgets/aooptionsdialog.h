@@ -12,6 +12,7 @@
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QFrame>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
@@ -20,7 +21,6 @@
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QWidget>
 
 #include <QDirIterator>
@@ -41,15 +41,17 @@ struct OptionEntry {
 class AOOptionsDialog : public QDialog {
   Q_OBJECT
 public:
-  explicit AOOptionsDialog(QDialog *parent = nullptr, AOApplication *p_ao_app = nullptr);
+  explicit AOOptionsDialog(QDialog *parent = nullptr,
+                           AOApplication *p_ao_app = nullptr);
+
 private:
   AOApplication *ao_app;
 
-  //Dialog interaction buttons. Save/Discard/Restore Defaults
+  // Dialog interaction buttons. Save/Discard/Restore Defaults
   QDialogButtonBox *ui_settings_buttons;
 
   // The gameplay tab
-  QWidget* ui_settings_widget;
+  QWidget *ui_settings_widget;
   QComboBox *ui_theme_combobox;
   QComboBox *ui_subtheme_combobox;
   QPushButton *ui_theme_reload_button;
@@ -84,11 +86,11 @@ private:
   QCheckBox *ui_category_stop_cb;
   QCheckBox *ui_sfx_on_idle_cb;
 
-  //The callwords tab
+  // The callwords tab
   QPlainTextEdit *ui_callwords_textbox;
   QCheckBox *ui_callwords_char_textbox;
 
-  //The audio tab
+  // The audio tab
   QWidget *ui_audio_tab;
   QWidget *ui_audio_widget;
   QFormLayout *ui_audio_layout;
@@ -104,7 +106,7 @@ private:
   QCheckBox *ui_objectmusic_cb;
   QCheckBox *ui_disablestreams_cb;
 
-  //The casing tab
+  // The casing tab
   QLabel *ui_casing_supported_lbl;
   QGroupBox *ui_casing_enabled_box;
   QCheckBox *ui_casing_def_cb;
@@ -115,7 +117,7 @@ private:
   QCheckBox *ui_casing_cm_cb;
   QLineEdit *ui_casing_cm_cases_textbox;
 
-  //The asset tab
+  // The asset tab
   QListWidget *ui_mount_list;
   QPushButton *ui_mount_add;
   QPushButton *ui_mount_remove;
@@ -123,7 +125,7 @@ private:
   QPushButton *ui_mount_down;
   QPushButton *ui_mount_clear_cache;
 
-  //The logging tab
+  // The logging tab
   QCheckBox *ui_downwards_cb;
   QSpinBox *ui_length_spinbox;
   QCheckBox *ui_log_newline_cb;

@@ -1,22 +1,23 @@
 #include "options.h"
 
 #include <QCoreApplication>
-#include <QObject>
 #include <QDebug>
 #include <QFile>
+#include <QObject>
 #include <QRegularExpression>
 #include <QSize>
 
 void Options::migrateCallwords()
 {
-    //Bla bla, evil boilerplate.
+  // Bla bla, evil boilerplate.
   QStringList l_callwords;
 
   QFile l_file;
-  l_file.setFileName(QCoreApplication::applicationDirPath() + "/base/callwords.ini");
+  l_file.setFileName(QCoreApplication::applicationDirPath() +
+                     "/base/callwords.ini");
 
   if (!l_file.open(QIODevice::ReadOnly)) {
-   qWarning() << "Unable to migrate callwords : File not open.";
+    qWarning() << "Unable to migrate callwords : File not open.";
   }
 
   QTextStream in(&l_file);
@@ -32,9 +33,9 @@ void Options::migrateCallwords()
   setCallwords(l_callwords);
 }
 
-Options::Options() : config(
-                         QCoreApplication::applicationDirPath() + "/base/config.ini",
-                         QSettings::IniFormat)
+Options::Options()
+    : config(QCoreApplication::applicationDirPath() + "/base/config.ini",
+             QSettings::IniFormat)
 {
   config.setIniCodec("UTF-8");
   migrate();
@@ -46,14 +47,15 @@ void Options::migrate()
   if (config.contains("show_custom_shownames")) {
     config.remove("show_custom_shownames");
   }
-  if (QFile::exists(QCoreApplication::applicationDirPath() + "/base/callwords.ini")) {
-      migrateCallwords();
+  if (QFile::exists(QCoreApplication::applicationDirPath() +
+                    "/base/callwords.ini")) {
+    migrateCallwords();
   }
   if (config.contains("ooc_name")) {
-      if (username().isEmpty()) {
-          config.setValue("default_showname", config.value("ooc_name"));
-      }
-      config.remove("ooc_name");
+    if (username().isEmpty()) {
+      config.setValue("default_showname", config.value("ooc_name"));
+    }
+    config.remove("ooc_name");
   }
 }
 
@@ -62,24 +64,15 @@ QString Options::theme() const
   return config.value("theme", "default").toString();
 }
 
-void Options::setTheme(QString value)
-{
-  config.setValue("theme", value);
-}
+void Options::setTheme(QString value) { config.setValue("theme", value); }
 
-int Options::blipRate() const
-{
-  return config.value("blip_rate", 2).toInt();
-}
+int Options::blipRate() const { return config.value("blip_rate", 2).toInt(); }
 
-void Options::setBlipRate(int value)
-{
-  config.setValue("blip_rate", value);
-}
+void Options::setBlipRate(int value) { config.setValue("blip_rate", value); }
 
 int Options::musicVolume() const
 {
-    return config.value("default_music", 50).toInt();
+  return config.value("default_music", 50).toInt();
 }
 
 void Options::setMusicVolume(int value)
@@ -89,17 +82,14 @@ void Options::setMusicVolume(int value)
 
 int Options::sfxVolume() const
 {
-    return config.value("default_sfx", 50).toInt();
+  return config.value("default_sfx", 50).toInt();
 }
 
-void Options::setSfxVolume(int value)
-{
-  config.setValue("default_sfx", value);
-}
+void Options::setSfxVolume(int value) { config.setValue("default_sfx", value); }
 
 int Options::blipVolume() const
 {
-    return config.value("default_blip", 50).toInt();
+  return config.value("default_blip", 50).toInt();
 }
 
 void Options::setBlipVolume(int value)
@@ -119,7 +109,7 @@ void Options::setDefaultSupressedAudio(int value)
 
 int Options::maxLogSize() const
 {
-    return config.value("log_maximum", 200).toInt();
+  return config.value("log_maximum", 200).toInt();
 }
 
 void Options::setMaxLogSize(int value)
@@ -129,7 +119,7 @@ void Options::setMaxLogSize(int value)
 
 int Options::textStayTime() const
 {
-    return config.value("stay_time", 200).toInt();
+  return config.value("stay_time", 200).toInt();
 }
 
 void Options::setTextStayTime(int value)
@@ -139,7 +129,7 @@ void Options::setTextStayTime(int value)
 
 int Options::textCrawlSpeed() const
 {
-    return config.value("text_crawl", 40).toInt();
+  return config.value("text_crawl", 40).toInt();
 }
 
 void Options::setTextCrawlSpeed(int value)
@@ -149,7 +139,7 @@ void Options::setTextCrawlSpeed(int value)
 
 int Options::chatRateLimit() const
 {
-    return config.value("chat_ratelimit", 300).toInt();
+  return config.value("chat_ratelimit", 300).toInt();
 }
 
 void Options::setChatRateLimit(int value)
@@ -159,7 +149,7 @@ void Options::setChatRateLimit(int value)
 
 bool Options::logDirectionDownwards() const
 {
-    return config.value("log_goes_downwards", true).toBool();
+  return config.value("log_goes_downwards", true).toBool();
 }
 
 void Options::setLogDirectionDownwards(bool value)
@@ -169,7 +159,7 @@ void Options::setLogDirectionDownwards(bool value)
 
 bool Options::logNewline() const
 {
-    return config.value("log_newline", false).toBool();
+  return config.value("log_newline", false).toBool();
 }
 
 void Options::setLogNewline(bool value)
@@ -177,19 +167,13 @@ void Options::setLogNewline(bool value)
   config.setValue("log_newline", value);
 }
 
-int Options::logMargin() const
-{
-    return config.value("log_margin", 0).toInt();
-}
+int Options::logMargin() const { return config.value("log_margin", 0).toInt(); }
 
-void Options::setLogMargin(int value)
-{
-  config.setValue("log_margin", value);
-}
+void Options::setLogMargin(int value) { config.setValue("log_margin", value); }
 
 bool Options::logTimestampEnabled() const
 {
-    return config.value("log_timestamp", false).toBool();
+  return config.value("log_timestamp", false).toBool();
 }
 
 void Options::setLogTimestampEnabled(bool value)
@@ -199,7 +183,7 @@ void Options::setLogTimestampEnabled(bool value)
 
 QString Options::logTimestampFormat() const
 {
-    return config.value("log_timestamp_format", "h:mm:ss AP").toString();
+  return config.value("log_timestamp_format", "h:mm:ss AP").toString();
 }
 
 void Options::setLogTimestampFormat(QString value)
@@ -209,7 +193,7 @@ void Options::setLogTimestampFormat(QString value)
 
 bool Options::logIcActions() const
 {
-    return config.value("log_ic_actions", true).toBool();
+  return config.value("log_ic_actions", true).toBool();
 }
 
 void Options::setLogIcActions(bool value)
@@ -219,7 +203,7 @@ void Options::setLogIcActions(bool value)
 
 bool Options::customShownameEnabled() const
 {
-    return config.value("show_custom_shownames", true).toBool();
+  return config.value("show_custom_shownames", true).toBool();
 }
 
 void Options::setCustomShownameEnabled(bool value)
@@ -239,7 +223,7 @@ void Options::setUsername(QString value)
 
 QString Options::shownameOnJoin() const
 {
-    return config.value("default_showname", "").toString();
+  return config.value("default_showname", "").toString();
 }
 
 void Options::setShownameOnJoin(QString value)
@@ -249,7 +233,7 @@ void Options::setShownameOnJoin(QString value)
 
 QString Options::audioOutputDevice() const
 {
-    return config.value("default_audio_device", "default").toString();
+  return config.value("default_audio_device", "default").toString();
 }
 
 void Options::setAudioOutputDevice(QString value)
@@ -259,17 +243,14 @@ void Options::setAudioOutputDevice(QString value)
 
 bool Options::blankBlip() const
 {
-    return config.value("blank_blip", false).toBool();
+  return config.value("blank_blip", false).toBool();
 }
 
-void Options::setBlankBlip(bool value)
-{
-  config.setValue("blank_blip", value);
-}
+void Options::setBlankBlip(bool value) { config.setValue("blank_blip", value); }
 
 bool Options::loopingSfx() const
 {
-    return config.value("looping_sfx", true).toBool();
+  return config.value("looping_sfx", true).toBool();
 }
 
 void Options::setLoopingSfx(bool value)
@@ -279,7 +260,7 @@ void Options::setLoopingSfx(bool value)
 
 bool Options::objectionStopMusic() const
 {
-    return config.value("objection_stop_music", false).toBool();
+  return config.value("objection_stop_music", false).toBool();
 }
 
 void Options::setObjectionStopMusic(bool value)
@@ -289,7 +270,7 @@ void Options::setObjectionStopMusic(bool value)
 
 bool Options::streamingEnabled() const
 {
-    return !config.value("streaming_disabled", false).toBool();
+  return !config.value("streaming_disabled", false).toBool();
 }
 
 void Options::setStreamingEnabled(bool value)
@@ -299,7 +280,7 @@ void Options::setStreamingEnabled(bool value)
 
 bool Options::objectionSkipQueueEnabled() const
 {
-    return config.value("instant_objection", true).toBool();
+  return config.value("instant_objection", true).toBool();
 }
 
 void Options::setObjectionSkipQueueEnabled(bool value)
@@ -310,7 +291,6 @@ void Options::setObjectionSkipQueueEnabled(bool value)
 bool Options::desynchronisedLogsEnabled() const
 {
   return config.value("desync_logs", false).toBool();
-
 }
 
 void Options::setDesynchronisedLogsEnabled(bool value)
@@ -321,7 +301,6 @@ void Options::setDesynchronisedLogsEnabled(bool value)
 bool Options::discordEnabled() const
 {
   return config.value("discord", true).toBool();
-
 }
 
 void Options::setDiscordEnabled(bool value)
@@ -331,13 +310,10 @@ void Options::setDiscordEnabled(bool value)
 
 bool Options::shakeEnabled() const
 {
-    return config.value("shake", true).toBool();
+  return config.value("shake", true).toBool();
 }
 
-void Options::setShakeEnabled(bool value)
-{
-  config.setValue("shake", value);
-}
+void Options::setShakeEnabled(bool value) { config.setValue("shake", value); }
 
 bool Options::effectsEnabled() const
 {
@@ -389,10 +365,9 @@ void Options::setClearEffectsDropdownOnPlayEnabled(bool value)
   config.setValue("stickyeffects", value);
 }
 
-bool Options::clearPreOnPlayEnabled()  const
+bool Options::clearPreOnPlayEnabled() const
 {
   return config.value("stickypres", true).toBool();
-
 }
 
 void Options::setClearPreOnPlayEnabled(bool value)
@@ -400,7 +375,7 @@ void Options::setClearPreOnPlayEnabled(bool value)
   config.setValue("stickypres", value);
 }
 
-bool Options::customChatboxEnabled()  const
+bool Options::customChatboxEnabled() const
 {
   return config.value("customchat", true).toBool();
 }
@@ -410,7 +385,7 @@ void Options::setCustomChatboxEnabled(bool value)
   config.setValue("customchat", value);
 }
 
-bool Options::characterStickerEnabled()  const
+bool Options::characterStickerEnabled() const
 {
   return config.value("sticker", true).toBool();
 }
@@ -512,7 +487,8 @@ void Options::setCasingCmEnabled(bool value)
 
 QString Options::casingCanHostCases() const
 {
-  return config.value("casing_can_host_cases", "Turnabout Check Your Settings").toString();
+  return config.value("casing_can_host_cases", "Turnabout Check Your Settings")
+      .toString();
 }
 
 void Options::setCasingCanHostCases(QString value)
@@ -545,10 +521,7 @@ QString Options::subTheme() const
   return config.value("subtheme", "server").toString();
 }
 
-void Options::setSubTheme(QString value)
-{
-  config.setValue("subtheme", value);
-}
+void Options::setSubTheme(QString value) { config.setValue("subtheme", value); }
 
 bool Options::animatedThemeEnabled() const
 {
@@ -612,7 +585,7 @@ void Options::setEvidenceDoubleClickEdit(bool value)
 
 QString Options::alternativeMasterserver() const
 {
-  return config.value("master","").toString();
+  return config.value("master", "").toString();
 }
 
 void Options::setAlternativeMasterserver(QString value)
@@ -622,13 +595,10 @@ void Options::setAlternativeMasterserver(QString value)
 
 QString Options::language() const
 {
-    return config.value("language", QLocale::system().name()).toString();
+  return config.value("language", QLocale::system().name()).toString();
 }
 
-void Options::setLanguage(QString value)
-{
-    config.setValue("language", value);
-}
+void Options::setLanguage(QString value) { config.setValue("language", value); }
 
 QStringList Options::callwords() const
 {
@@ -637,10 +607,7 @@ QStringList Options::callwords() const
 
 void Options::setCallwords(QStringList value)
 {
-    config.setValue("callwords", value);
+  config.setValue("callwords", value);
 }
 
-void Options::clearConfig()
-{
-    config.clear();
-}
+void Options::clearConfig() { config.clear(); }

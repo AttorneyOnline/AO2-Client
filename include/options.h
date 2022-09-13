@@ -1,11 +1,9 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#include "datatypes.h"
 
-#include <QSettings>
 #include <QCoreApplication>
-
+#include <QSettings>
 
 class Options {
 private:
@@ -22,14 +20,13 @@ private:
   Options();
 
 public:
+  Options(Options const &) = delete;
+  void operator=(Options const &) = delete;
 
-  Options(Options const&) = delete;
-  void operator=(Options const&)  = delete;
-
-  static Options& getInstance()
+  static Options &getInstance()
   {
-      static Options instance;
-      return instance;
+    static Options instance;
+    return instance;
   }
 
   /**
@@ -87,8 +84,8 @@ public:
   bool objectionSkipQueueEnabled() const;
   void setObjectionSkipQueueEnabled(bool value);
 
-  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
-  // from the config.ini
+  // returns if log will show messages as-received, while viewport will parse
+  // according to the queue (Text Stay Time) from the config.ini
   bool desynchronisedLogsEnabled() const;
   void setDesynchronisedLogsEnabled(bool value);
 
@@ -148,8 +145,8 @@ public:
   bool continuousPlaybackEnabled() const;
   void setContinuousPlaybackEnabled(bool value);
 
-  // Returns the value of whether stopping music by double clicking category should be used
-  // from the config.ini.
+  // Returns the value of whether stopping music by double clicking category
+  // should be used from the config.ini.
   bool stopMusicOnCategoryEnabled() const;
   void setStopMusicOnCategoryEnabled(bool value);
 
@@ -166,7 +163,8 @@ public:
   int textCrawlSpeed() const;
   void setTextCrawlSpeed(int value);
 
-  // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
+  // Returns Minimum amount of time (in miliseconds) that must pass before the
+  // next Enter key press will send your IC message. (new behaviour)
   int chatRateLimit() const;
   void setChatRateLimit(int value);
 
@@ -207,7 +205,7 @@ public:
   bool customShownameEnabled() const;
   void setCustomShownameEnabled(bool value);
 
-  //Returns the showname the user may have set in config.ini.
+  // Returns the showname the user may have set in config.ini.
   QString shownameOnJoin() const;
   void setShownameOnJoin(QString value);
 
@@ -279,7 +277,7 @@ public:
   bool evidenceDoubleClickEdit() const;
   void setEvidenceDoubleClickEdit(bool value);
 
-  //Supplies an alternative masterserver URL
+  // Supplies an alternative masterserver URL
   QString alternativeMasterserver() const;
   void setAlternativeMasterserver(QString value);
 
