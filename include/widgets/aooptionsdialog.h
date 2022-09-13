@@ -147,9 +147,9 @@ private:
 
   bool asset_cache_dirty = false;
 
-  bool needs_default_audiodev();
+  bool needsDefaultAudioDevice();
   void populateAudioDevices();
-  void update_values();
+  void updateValues();
 
   QVector<OptionEntry> optionEntries;
 
@@ -165,13 +165,13 @@ private:
 signals:
 
 public slots:
-  void save_pressed();
-  void discard_pressed();
-  void button_clicked(QAbstractButton *button);
-  void on_timestamp_format_edited();
-  void timestamp_cb_changed(int state);
-  void on_reload_theme_clicked();
-  void theme_changed(int i);
+  void savePressed();
+  void discardPressed();
+  void buttonClicked(QAbstractButton *button);
+  void onTimestampFormatEdited();
+  void timestampCbChanged(int state);
+  void onReloadThemeClicked();
+  void themeChanged(int i);
 };
 
 #endif // AOOPTIONSDIALOG_H

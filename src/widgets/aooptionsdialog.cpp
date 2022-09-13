@@ -38,11 +38,11 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   FROM_UI(QDialogButtonBox, settings_buttons);
 
   connect(ui_settings_buttons, &QDialogButtonBox::accepted, this,
-                   &AOOptionsDialog::save_pressed);
+                   &AOOptionsDialog::savePressed);
   connect(ui_settings_buttons, &QDialogButtonBox::rejected, this,
-                   &AOOptionsDialog::discard_pressed);
+                   &AOOptionsDialog::discardPressed);
   connect(ui_settings_buttons, &QDialogButtonBox::clicked, this,
-                   &AOOptionsDialog::button_clicked);
+                   &AOOptionsDialog::buttonClicked);
 
   // Gameplay Tab
   FROM_UI(QComboBox, theme_combobox)
@@ -50,12 +50,12 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
 
   FROM_UI(QComboBox, subtheme_combobox)
   connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-                   &AOOptionsDialog::theme_changed);
+                   &AOOptionsDialog::themeChanged);
   registerOption<QComboBox, QString>("subtheme_combobox", &Options::subTheme, &Options::setSubTheme);
 
   FROM_UI(QPushButton, theme_reload_button)
   connect(ui_theme_reload_button, &QPushButton::clicked, this,
-          &AOOptionsDialog::on_reload_theme_clicked);
+          &::AOOptionsDialog::onReloadThemeClicked);
 
   FROM_UI(QPushButton, theme_folder_button)
   connect(ui_theme_folder_button, &QPushButton::clicked, this,
@@ -280,13 +280,13 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
 
   FROM_UI(QCheckBox, log_timestamp_cb)
   registerOption<QCheckBox, bool>("log_timestamp_cb", &Options::logTimestampEnabled, &Options::setLogTimestampEnabled);
-  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &AOOptionsDialog::timestamp_cb_changed);
+  connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &::AOOptionsDialog::timestampCbChanged);
   ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(Options::getInstance().logTimestampFormat()));
 
 
   FROM_UI(QComboBox, log_timestamp_format_combobox)
   registerOption<QComboBox, QString>("log_timestamp_format_combobox", &Options::logTimestampFormat, &Options::setLogTimestampFormat);
-  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &AOOptionsDialog::on_timestamp_format_edited);
+  connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &::AOOptionsDialog::onTimestampFormatEdited);
 
   QString l_current_format = Options::getInstance().logTimestampFormat();
 
@@ -310,13 +310,13 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   FROM_UI(QTextBrowser, privacy_policy)
   ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
 
-  update_values();
+  updateValues();
 }
 
 void AOOptionsDialog::populateAudioDevices()
 {
   ui_audio_device_combobox->clear();
-  if (needs_default_audiodev()) {
+  if (needsDefaultAudioDevice()) {
       ui_audio_device_combobox->addItem("default");
   }
 
@@ -454,7 +454,7 @@ void AOOptionsDialog::registerOption(const QString &widgetName,
   optionEntries.append(entry);
 }
 
-void AOOptionsDialog::update_values()
+void AOOptionsDialog::updateValues()
 {
     for (const OptionEntry &entry : qAsConst(optionEntries))
       entry.load();
@@ -491,31 +491,31 @@ void AOOptionsDialog::update_values()
     });
 }
 
-void AOOptionsDialog::save_pressed()
+void AOOptionsDialog::savePressed()
 {
     for (const OptionEntry &entry : qAsConst(optionEntries))
       entry.save();
-    this->hide();
+    this->close();
 }
 
-void AOOptionsDialog::discard_pressed()
+void AOOptionsDialog::discardPressed()
 {
   this->close();
 }
 
-void AOOptionsDialog::button_clicked(QAbstractButton *button)
+void AOOptionsDialog::buttonClicked(QAbstractButton *button)
 {
   if (ui_settings_buttons->buttonRole(button) == QDialogButtonBox::ResetRole) {
     if (QMessageBox::question(this,"","Restore default settings?\nThis can't be undone!",
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         // Destructive operation.
         Options::getInstance().clearConfig();
-        update_values();
+        updateValues();
     }
   }
 }
 
-void AOOptionsDialog::on_reload_theme_clicked()
+void AOOptionsDialog::onReloadThemeClicked()
 {
     Options::getInstance().setTheme(ui_subtheme_combobox->currentText());
     Options::getInstance().setSubTheme(ui_subtheme_combobox->currentText());
@@ -526,7 +526,7 @@ void AOOptionsDialog::on_reload_theme_clicked()
         ao_app->w_lobby->set_widgets();
 }
 
-void AOOptionsDialog::theme_changed(int i) {
+void AOOptionsDialog::themeChanged(int i) {
   ui_subtheme_combobox->clear();
   // Fill the combobox with the names of the themes.
   ui_subtheme_combobox->addItem("server");
@@ -541,22 +541,22 @@ void AOOptionsDialog::theme_changed(int i) {
 
 }
 
-void AOOptionsDialog::on_timestamp_format_edited()
+void AOOptionsDialog::onTimestampFormatEdited()
 {
   ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(ui_log_timestamp_format_combobox->currentText()));
 }
 
-void AOOptionsDialog::timestamp_cb_changed(int state)
+void AOOptionsDialog::timestampCbChanged(int state)
 {
   ui_log_timestamp_format_combobox->setDisabled(state == 0);
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
-bool AOOptionsDialog::needs_default_audiodev() { return true; }
+bool AOOptionsDialog::needsDefaultAudioDevice() { return true; }
 #elif (defined(LINUX) || defined(__linux__))
-bool AOOptionsDialog::needs_default_audiodev() { return false; }
+bool AOOptionsDialog::needsDefaultAudioDevice() { return false; }
 #elif defined __APPLE__
-bool AOOptionsDialog::needs_default_audiodev() { return true; }
+bool AOOptionsDialog::needsDefaultAudioDevice() { return true; }
 #else
 #error This operating system is not supported.
 #endif
