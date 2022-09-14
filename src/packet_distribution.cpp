@@ -28,7 +28,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   QString header = p_packet->get_header();
   QStringList f_contents = p_packet->get_contents();
   QString f_packet = p_packet->to_string();
-
   bool log_to_demo = true;
 
 #ifdef DEBUG_NETWORK
@@ -36,7 +35,16 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     qDebug() << "R:" << f_packet;
 #endif
 
-  if (header == "decryptor") {
+  if (packetMap.contains(header)) {
+      qDebug() << "Im going into the handler";
+      packetMap.value(header)->handler(this, p_packet);
+      qDebug() << "I passed the handler";
+  }
+
+  if(header == "CharsCheck") {
+      log_to_demo = false;
+  }
+  else if (header == "decryptor") {
     if (f_contents.size() == 0)
       goto end;
 
@@ -414,12 +422,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->enter_courtroom();
     w_courtroom->set_courtroom_size();
     w_courtroom->update_character(f_contents.at(2).toInt());
-  }
-  else if (header == "MS") {
-    if (courtroom_constructed && courtroom_loaded)
-    {
-      w_courtroom->chatmessage_enqueue(p_packet->get_contents());
-    }
   }
   else if (header == "MC") {
     if (courtroom_constructed && courtroom_loaded)

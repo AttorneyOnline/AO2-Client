@@ -4,7 +4,7 @@
 #include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
-
+#include "packet.h"
 #include "aocaseannouncerdialog.h"
 #include "aooptionsdialog.h"
 
@@ -256,6 +256,14 @@ void AOApplication::initBASS()
   }
 }
 
+QMap<QString, Packet*> AOApplication::createPacketMap() {
+    QMap<QString, Packet*> map;
+    MS* ms = new MS();
+    CharsCheck* cc = new CharsCheck();
+    map[cc->header] = cc;
+    map[ms->header] = ms;
+    return map;
+}
 #if (defined(_WIN32) || defined(_WIN64))
 void AOApplication::load_bass_plugins()
 {
