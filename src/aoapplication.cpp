@@ -258,10 +258,14 @@ void AOApplication::initBASS()
 
 QMap<QString, Packet*> AOApplication::createPacketMap() {
     QMap<QString, Packet*> map;
-    MS* ms = new MS();
-    CharsCheck* cc = new CharsCheck();
-    map[cc->header] = cc;
+    MS* ms = new MS;
+    CharsCheck* charsCheck = new CharsCheck;
+    Decryptor* decryptor = new Decryptor;
+    ID* id = new ID;
+    map[id->header] = id;
+    map[charsCheck->header] = charsCheck;
     map[ms->header] = ms;
+    map[decryptor->header] = decryptor;
     return map;
 }
 #if (defined(_WIN32) || defined(_WIN64))

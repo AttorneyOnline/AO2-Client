@@ -40,51 +40,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       packetMap.value(header)->handler(this, p_packet);
       qDebug() << "I passed the handler";
   }
-
-  if(header == "CharsCheck") {
-      log_to_demo = false;
-  }
-  else if (header == "decryptor") {
-    if (f_contents.size() == 0)
-      goto end;
-
-    // default(legacy) values
-    yellow_text_supported = false;
-    prezoom_supported = false;
-    flipping_supported = false;
-    custom_objection_supported = false;
-    desk_mod_supported = false;
-    evidence_supported = false;
-    cccc_ic_supported = false;
-    arup_supported = false;
-    casing_alerts_supported = false;
-    modcall_reason_supported = false;
-    looping_sfx_supported = false;
-    additive_text_supported = false;
-    effects_supported = false;
-    y_offset_supported = false;
-
-    QString f_hdid;
-    f_hdid = get_hdid();
-
-    QStringList f_contents = {f_hdid};
-    AOPacket *hi_packet = new AOPacket("HI", f_contents);
-    send_server_packet(hi_packet);
-    log_to_demo = false;
-  }
-  else if (header == "ID") {
-    if (f_contents.size() < 2)
-      goto end;
-
-    client_id = f_contents.at(0).toInt();
-    server_software = f_contents.at(1);
-
-    if (lobby_constructed)
-      w_lobby->enable_connect_button();
-
-    QStringList f_contents = {"AO2", get_version_string()};
-    send_server_packet(new AOPacket("ID", f_contents));
-  }
   else if (header == "CT") {
     if (!courtroom_constructed || f_contents.size() < 2) {
       goto end;
@@ -241,19 +196,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                             hash.result().toBase64().toStdString());
     log_to_demo = false;
   }
-  else if (header == "CharsCheck") {
-    if (!courtroom_constructed)
-      goto end;
-
-    for (int n_char = 0; n_char < f_contents.size(); ++n_char) {
-      if (f_contents.at(n_char) == "-1")
-        w_courtroom->set_taken(n_char, true);
-      else
-        w_courtroom->set_taken(n_char, false);
-    }
-    log_to_demo = false;
-  }
-
   else if (header == "SC") {
     if (!courtroom_constructed)
       goto end;

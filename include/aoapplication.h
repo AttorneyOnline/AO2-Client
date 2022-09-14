@@ -5,6 +5,7 @@
 #include "datatypes.h"
 #include "demoserver.h"
 #include "discord_rich_presence.h"
+#include "packet.h"
 
 #include "bass.h"
 #include "bassmidi.h"
@@ -576,6 +577,7 @@ public:
    */
   QString asset_url;
 
+
   void initBASS();
   static void load_bass_plugins();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
@@ -595,10 +597,13 @@ private:
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
+  const QMap<QString, Packet*> packetMap = createPacketMap();
+  QMap<QString, Packet*> createPacketMap();
 
 public slots:
   void server_disconnected();
   void loading_cancelled();
+
 
 signals:
   void qt_log_message(QtMsgType type, const QMessageLogContext &context,
