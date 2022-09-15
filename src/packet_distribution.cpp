@@ -40,85 +40,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       packetMap.value(header)->handler(this, p_packet);
       qDebug() << "I passed the handler";
   }
-  else if (header == "CT") {
-    if (!courtroom_constructed || f_contents.size() < 2) {
-      goto end;
-}
 
-    if (f_contents.size() == 3)
-      w_courtroom->append_server_chatmessage(
-          f_contents.at(0), f_contents.at(1), f_contents.at(2));
-    else
-      w_courtroom->append_server_chatmessage(f_contents.at(0),
-                                             f_contents.at(1), "0");
-  }
-  else if (header == "FL") {
-    yellow_text_supported = false;
-    prezoom_supported = false;
-    flipping_supported = false;
-    custom_objection_supported = false;
-    desk_mod_supported = false;
-    evidence_supported = false;
-    cccc_ic_supported = false;
-    arup_supported = false;
-    casing_alerts_supported = false;
-    modcall_reason_supported = false;
-    looping_sfx_supported = false;
-    additive_text_supported = false;
-    effects_supported = false;
-    expanded_desk_mods_supported = false;
-    auth_packet_supported = false;
-    if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
-      yellow_text_supported = true;
-    if (f_packet.contains("prezoom", Qt::CaseInsensitive))
-      prezoom_supported = true;
-    if (f_packet.contains("flipping", Qt::CaseInsensitive))
-      flipping_supported = true;
-    if (f_packet.contains("customobjections", Qt::CaseInsensitive))
-      custom_objection_supported = true;
-    if (f_packet.contains("deskmod", Qt::CaseInsensitive))
-      desk_mod_supported = true;
-    if (f_packet.contains("evidence", Qt::CaseInsensitive))
-      evidence_supported = true;
-    if (f_packet.contains("cccc_ic_support", Qt::CaseInsensitive))
-      cccc_ic_supported = true;
-    if (f_packet.contains("arup", Qt::CaseInsensitive))
-      arup_supported = true;
-    if (f_packet.contains("casing_alerts", Qt::CaseInsensitive))
-      casing_alerts_supported = true;
-    if (f_packet.contains("modcall_reason", Qt::CaseInsensitive))
-      modcall_reason_supported = true;
-    if (f_packet.contains("looping_sfx", Qt::CaseInsensitive))
-      looping_sfx_supported = true;
-    if (f_packet.contains("additive", Qt::CaseInsensitive))
-      additive_text_supported = true;
-    if (f_packet.contains("effects", Qt::CaseInsensitive))
-      effects_supported = true;
-    if (f_packet.contains("y_offset", Qt::CaseInsensitive))
-        y_offset_supported = true;
-    if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
-      expanded_desk_mods_supported = true;
-    if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
-      auth_packet_supported = true;
-    log_to_demo = false;
-  }
-  else if (header == "PN") {
-    if (!lobby_constructed || f_contents.size() < 2)
-      goto end;
 
-    w_lobby->set_player_count(f_contents.at(0).toInt(),
-                              f_contents.at(1).toInt());
-
-    if (f_contents.size() >= 3) {
-        w_lobby->set_server_description(f_contents.at(2));
-    }
-
-    if (w_lobby->doubleclicked) {
-      send_server_packet(new AOPacket("askchaa"));
-      w_lobby->doubleclicked = false;
-    }
-    log_to_demo = false;
-  }
   else if (header == "SI") {
     if (!lobby_constructed || f_contents.size() != 3) {
       goto end;

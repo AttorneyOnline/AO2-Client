@@ -262,6 +262,12 @@ QMap<QString, Packet*> AOApplication::createPacketMap() {
     CharsCheck* charsCheck = new CharsCheck;
     Decryptor* decryptor = new Decryptor;
     ID* id = new ID;
+    CT* ct = new CT;
+    FL* fl = new FL;
+    PN* pn = new PN;
+    map[pn->header] = pn;
+    map[fl->header] = fl;
+    map[ct->header] = ct;
     map[id->header] = id;
     map[charsCheck->header] = charsCheck;
     map[ms->header] = ms;
