@@ -63,5 +63,12 @@ public:
     void handler(AOApplication *, AOPacket *);
 };
 
+class SI : public Packet {
+public:
+    const QString header = "SI";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
 
 #endif // PACKET_H

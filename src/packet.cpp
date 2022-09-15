@@ -154,3 +154,85 @@ void PN::handler(AOApplication* app, AOPacket* packet){
       logToDemo = false;
 
 }
+void SI::handler(AOApplication* app, AOPacket* packet){
+      QStringList f_contents = packet->get_contents();
+      if (!app->lobby_constructed || f_contents.size() != 3) {
+        return;
+      }
+
+      app->char_list_size = f_contents.at(0).toInt();
+      app->evidence_list_size = f_contents.at(1).toInt();
+      app->music_list_size = f_contents.at(2).toInt();
+
+      if (app->char_list_size < 0 || app->evidence_list_size < 0 || app->music_list_size < 0)
+        return;
+
+      app->loaded_chars = 0;
+      app->loaded_evidence = 0;
+      app->loaded_music = 0;
+      app->generated_chars = 0;
+
+      app->destruct_courtroom();
+      app->construct_courtroom();
+
+      app->courtroom_loaded = false;
+
+      int selected_server = app->w_lobby->get_selected_server();
+
+      QString server_address = "", server_name = "";
+      if (app->w_lobby->public_servers_selected) {
+        if (selected_server >= 0 && selected_server < app->get_server_list().size()) {
+          auto info = app->get_server_list().at(selected_server);
+          server_name = info.name;
+          server_address =
+              QString("%1:%2").arg(info.ip, QString::number(info.port));
+          app->window_title = server_name;
+        }
+      }
+      else {
+        if (selected_server >= 0 && selected_server < app->get_favorite_list().size()) {
+          auto info = app->get_favorite_list().at(selected_server);
+          server_name = info.name;
+          server_address =
+              QString("%1:%2").arg(info.ip, QString::number(info.port));
+          app->window_title = server_name;
+        }
+      }
+
+      if (app->courtroom_constructed)
+        app->w_courtroom->set_window_title(app->window_title);
+
+      app->w_lobby->show_loading_overlay();
+      app->w_lobby->set_loading_text(app->tr("Loading"));
+      app->w_lobby->set_loading_value(0);
+
+      AOPacket *f_packet;
+
+      f_packet = new AOPacket("RC");
+      app->send_server_packet(f_packet);
+
+      // Remove any characters not accepted in folder names for the server_name
+      // here
+      if (app->get_demo_logging_enabled() && server_name != "Demo playback") {
+        app->log_filename = QDateTime::currentDateTime().toUTC().toString(
+            "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
+            "/'yyyy-MM-dd hh-mm-ss t'.log'");
+        app->write_to_file("Joined server " + server_name + " hosted on address " +
+                                server_address + " on " +
+                                QDateTime::currentDateTime().toUTC().toString(),
+                            app->log_filename, true);
+      }
+      else
+        app->log_filename = "";
+
+      QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
+      hash.addData(server_address.toUtf8());
+      if (app->is_discord_enabled())
+        app->discord->state_server(server_name.toStdString(),
+                              hash.result().toBase64().toStdString());
+      logToDemo = false;
+    }
+
+
+
+
