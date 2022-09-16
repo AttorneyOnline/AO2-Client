@@ -70,5 +70,39 @@ public:
     void handler(AOApplication *, AOPacket *);
 };
 
+class SC : public Packet {
+public:
+    const QString header = "SC";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class SM : public Packet {
+public:
+    const QString header = "SM";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class FM : public Packet {
+public:
+    const QString header = "FM";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class FA : public Packet {
+public:
+    const QString header = "FA";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class DONE : public Packet {
+public:
+    const QString header = "DONE";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
 
 #endif // PACKET_H

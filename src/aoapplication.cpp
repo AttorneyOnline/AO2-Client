@@ -265,6 +265,16 @@ QMap<QString, Packet*> AOApplication::createPacketMap() {
     CT* ct = new CT;
     FL* fl = new FL;
     PN* pn = new PN;
+    SC* sc = new SC;
+    SM* sm = new SM;
+    SI* si = new SI;
+    FM* fm = new FM;
+    DONE* done = new DONE;
+    map[done->header] = done;
+    map[fm->header] = fm;
+    map[si->header] = si;
+    map[sm->header] = sm;
+    map[sc->header] = sc;
     map[pn->header] = pn;
     map[fl->header] = fl;
     map[ct->header] = ct;
