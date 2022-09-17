@@ -105,4 +105,60 @@ public:
     void handler(AOApplication *, AOPacket *);
 };
 
+class BN : public Packet {
+public:
+    const QString header = "BN";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class SP : public Packet {
+public:
+    const QString header = "SP";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class SD : public Packet {
+public:
+    const QString header = "SD";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class PV : public Packet {
+public:
+    const QString header = "PV";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class MC : public Packet {
+public:
+    const QString header = "MC";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+class RT : public Packet {
+public:
+    const QString header = "RT";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
+class HP : public Packet {
+public:
+    const QString header = "HP";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+
+};
+
+class LE : public Packet {
+public:
+    const QString header = "LE";
+    bool logToDemo = true;
+    void handler(AOApplication *, AOPacket *);
+};
+
 #endif // PACKET_H

@@ -375,7 +375,95 @@ void DONE::handler(AOApplication* app, AOPacket* packet) {
 
         app->destruct_lobby();
         logToDemo = false;
+}
 
+void BN::handler(AOApplication* app, AOPacket* packet) {
+    QStringList f_contents = packet->get_contents();
+        if (!app->courtroom_constructed || f_contents.isEmpty())
+          return;
+
+        if (f_contents.size() >= 2) {
+          // We have a pos included in the background packet!
+          app->w_courtroom->set_side(f_contents.at(1));
+        }
+        app->w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
+      }
+void SP::handler(AOApplication* app, AOPacket* packet) {
+    QStringList f_contents = packet->get_contents();
+        if (!app->courtroom_constructed || f_contents.isEmpty())
+          return
+
+        // We were sent a "set position" packet
+        app->w_courtroom->set_side(f_contents.at(0));
+}
+void SD::handler(AOApplication* app, AOPacket* packet) {
+    QStringList f_contents = packet->get_contents();
+        if (!app->courtroom_constructed || f_contents.isEmpty())
+          return;
+
+        app->w_courtroom->set_pos_dropdown(f_contents.at(0).split("*"));
+}
+void PV::handler(AOApplication* app, AOPacket* packet) {
+    QStringList f_contents = packet->get_contents();
+    if (!app->courtroom_constructed || f_contents.size() < 3)
+      return;
+        // For some reason, args 0 and 1 are not used (from tsu3 they're client ID and a string "CID")
+    app->w_courtroom->enter_courtroom();
+    app->w_courtroom->set_courtroom_size();
+    app->w_courtroom->update_character(f_contents.at(2).toInt());
+}
+
+void MC::handler(AOApplication* app, AOPacket* packet) {
+        if (app->courtroom_constructed && app->courtroom_loaded)
+        {
+          app->w_courtroom->handle_song(&packet->get_contents());
+        }
+}
+void RT::handler(AOApplication* app, AOPacket* packet) {
+    QStringList f_contents = packet->get_contents();
+        if (f_contents.isEmpty())
+          return;
+        if (app->courtroom_constructed) {
+          if (f_contents.size() == 1)
+            app->w_courtroom->handle_wtce(f_contents.at(0), 0);
+          else if (f_contents.size() >= 2)
+            app->w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
+        }
+}
+void HP::handler(AOApplication* app, AOPacket* packet) {
+    QStringList f_contents = packet->get_contents();
+        if (app->courtroom_constructed && f_contents.size() >= 2)
+        {
+          app->w_courtroom->set_hp_bar(f_contents.at(0).toInt(),
+                                  f_contents.at(1).toInt());
+        }
+}
+
+void LE::handler(AOApplication* app, AOPacket* packet) {
+    QStringList f_contents_encoded = packet->get_contents();
+
+        if (app->courtroom_constructed) {
+          QVector<evi_type> f_evi_list;
+
+          for (QString f_string : f_contents_encoded) {
+            QStringList sub_contents = f_string.split("&");
+
+            if (sub_contents.size() < 3)
+              continue;
+
+            // decoding has to be done here instead of on reception
+            // because this packet uses & as a delimiter for some reason
+            AOPacket::unescape(sub_contents);
+
+            evi_type f_evi;
+            f_evi.name = sub_contents.at(0);
+            f_evi.description = sub_contents.at(1);
+            f_evi.image = sub_contents.at(2);
+            f_evi_list.append(f_evi);
+          }
+
+          app->w_courtroom->set_evidence_list(f_evi_list);
+        }
 
 }
 
