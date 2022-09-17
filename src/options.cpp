@@ -53,7 +53,7 @@ void Options::migrate()
   }
   if (config.contains("ooc_name")) {
     if (username().isEmpty()) {
-      config.setValue("default_showname", config.value("ooc_name"));
+      config.setValue("default_username", config.value("ooc_name"));
     }
     config.remove("ooc_name");
   }
