@@ -14,7 +14,9 @@
 #include <QString>
 #include <QVBoxLayout>
 
-#define FROM_UI(type, name); ui_##name = findChild<type *>(#name);
+#define FROM_UI(type, name)                                                    \
+  ;                                                                            \
+  ui_##name = findChild<type *>(#name);
 
 AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
     : QDialog(parent)
@@ -554,6 +556,10 @@ void AOOptionsDialog::updateValues()
       }
     }
   }
+  int l_theme_index =
+      ui_theme_combobox->findText(Options::getInstance().theme());
+  if (l_theme_index != -1) // Data found
+    ui_theme_combobox->setCurrentIndex(l_theme_index);
 
   QDirIterator it2(ao_app->get_real_path(ao_app->get_theme_path("")),
                    QDir::Dirs, QDirIterator::NoIteratorFlags);
@@ -565,6 +571,10 @@ void AOOptionsDialog::updateValues()
       ui_subtheme_combobox->addItem(actualname);
     }
   }
+  int l_subTheme_index =
+      ui_subtheme_combobox->findText(Options::getInstance().subTheme());
+  if (l_theme_index != -1) // Data found
+    ui_subtheme_combobox->setCurrentIndex(l_subTheme_index);
 
   ao_app->net_manager->request_document(
       MSDocumentType::PrivacyPolicy, [this](QString document) {
