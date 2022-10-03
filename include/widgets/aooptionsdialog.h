@@ -160,6 +160,9 @@ private:
   void registerOption(const QString &widgetName, V (Options::*getter)() const,
                       void (Options::*setter)(V));
 
+signals:
+  void reloadThemeRequest();
+
 private slots:
   void savePressed();
   void discardPressed();

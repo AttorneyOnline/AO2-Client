@@ -194,7 +194,18 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-    AOOptionsDialog(nullptr, this).exec();
+    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this);
+    if (courtroom_constructed) {
+        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
+                w_courtroom, &Courtroom::on_reload_theme_clicked);
+    }
+
+    if(lobby_constructed) {
+        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
+                w_lobby, &Lobby::set_widgets);
+    }
+    l_dialog->exec();
+    delete l_dialog;
 }
 
 void AOApplication::call_announce_menu(Courtroom *court)

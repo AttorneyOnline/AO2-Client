@@ -1,8 +1,8 @@
 #include "widgets/aooptionsdialog.h"
 #include "aoapplication.h"
 #include "bass.h"
-#include "courtroom.h"
-#include "lobby.h"
+#include "file_functions.h"
+#include "QDesktopServices"
 #include "networkmanager.h"
 #include "options.h"
 
@@ -603,13 +603,11 @@ void AOOptionsDialog::buttonClicked(QAbstractButton *button)
 
 void AOOptionsDialog::onReloadThemeClicked()
 {
-  Options::getInstance().setTheme(ui_subtheme_combobox->currentText());
+  Options::getInstance().setTheme(ui_theme_combobox->currentText());
   Options::getInstance().setSubTheme(ui_subtheme_combobox->currentText());
   Options::getInstance().setAnimatedThemeEnabled(
       ui_animated_theme_cb->isChecked());
-  if (ao_app->courtroom_constructed)
-    ao_app->w_courtroom->on_reload_theme_clicked();
-  if (ao_app->lobby_constructed) ao_app->w_lobby->set_widgets();
+  emit reloadThemeRequest();
 }
 
 void AOOptionsDialog::themeChanged(int i)
