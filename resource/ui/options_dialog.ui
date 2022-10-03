@@ -23,7 +23,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="gameplay_tab">
       <attribute name="title">
@@ -767,7 +767,7 @@
           <string>If true, AO2 will not play any streamed audio and show that streaming is disabled.</string>
          </property>
          <property name="text">
-          <string>Disable Music Streaming:</string>
+          <string>Music Streaming enabled:</string>
          </property>
         </widget>
        </item>

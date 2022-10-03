@@ -270,12 +270,12 @@ void Options::setObjectionStopMusic(bool value)
 
 bool Options::streamingEnabled() const
 {
-  return !config.value("streaming_disabled", false).toBool();
+  return config.value("streaming_enabled", true).toBool();
 }
 
 void Options::setStreamingEnabled(bool value)
 {
-  config.setValue("streaming_disabled", value);
+  config.setValue("streaming_enabled", value);
 }
 
 bool Options::objectionSkipQueueEnabled() const
@@ -602,7 +602,14 @@ void Options::setLanguage(QString value) { config.setValue("language", value); }
 
 QStringList Options::callwords() const
 {
-  return config.value("callwords", QStringList()).toStringList();
+  QStringList l_callwords =
+      config.value("callwords", QStringList{}).toStringList();
+
+  // Please someone explain to me how tf I am supposed to create an empty
+  // QStringList using QSetting defaults.
+  if (l_callwords.size() == 1 && l_callwords.at(0).isEmpty())
+    l_callwords.clear();
+  return l_callwords;
 }
 
 void Options::setCallwords(QStringList value)
