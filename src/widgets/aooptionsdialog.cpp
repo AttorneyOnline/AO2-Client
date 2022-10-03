@@ -8,12 +8,6 @@
 
 #include <QUiLoader>
 
-#include <QCheckBox>
-#include <QFileDialog>
-#include <QGroupBox>
-#include <QString>
-#include <QVBoxLayout>
-
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \
   ui_##name = findChild<type *>(#name);

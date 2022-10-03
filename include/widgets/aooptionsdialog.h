@@ -1,7 +1,6 @@
 #ifndef AOOPTIONSDIALOG_H
 #define AOOPTIONSDIALOG_H
 
-#include "bass.h"
 #include "options.h"
 
 #include <QtCore/QVariant>
@@ -28,10 +27,7 @@
 #include <QTextBrowser>
 #include <QTextStream>
 
-class Lobby;
-class Courtroom;
 class AOApplication;
-class Options;
 
 struct OptionEntry {
   std::function<void()> load;
@@ -164,9 +160,7 @@ private:
   void registerOption(const QString &widgetName, V (Options::*getter)() const,
                       void (Options::*setter)(V));
 
-signals:
-
-public slots:
+private slots:
   void savePressed();
   void discardPressed();
   void buttonClicked(QAbstractButton *button);
