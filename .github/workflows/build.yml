@@ -65,7 +65,7 @@ jobs:
       - uses: stonedDiscord/action-setup-qt@master
         id: qt
         with:
-          version: ${{matrix.version}}
+          version: 5.15.1
           platform: ${{matrix.platform}}
           packages: qt.qt6.630.addons.qtwebsockets
 
