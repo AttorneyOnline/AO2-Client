@@ -665,9 +665,6 @@ void Courtroom::set_pair_list()
 void Courtroom::set_widgets()
 {
   QString filename = "courtroom_design.ini";
-  // Update the default theme from the courtroom_design.ini, if it's not defined it will be 'default'.
-  QSettings settings(ao_app->get_real_path(ao_app->get_theme_path(filename, ao_app->current_theme)), QSettings::IniFormat);
-  ao_app->default_theme = settings.value("default_theme", "default").toString();
 
   set_fonts();
   set_size_and_pos(ui_viewport, "viewport");
@@ -5388,7 +5385,7 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
 
   menu->addAction(QString("Open currently used chat_config.ini"), this,
                   [=] {
-    QString p_path = ao_app->get_asset("chat_config.ini", ao_app->current_theme, Options::getInstance().subTheme(), ao_app->default_theme, ao_app->get_chat(current_char));
+    QString p_path = ao_app->get_asset("chat_config.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, ao_app->get_chat(current_char));
     if (!file_exists(p_path)) {
         return;
     }

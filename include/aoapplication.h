@@ -144,9 +144,6 @@ public:
   void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
 
-  // reads the theme from config.ini and sets it accordingly
-  void reload_theme();
-
   // Returns the character the player has currently selected
   QString get_current_char();
 
@@ -370,8 +367,8 @@ public:
   // Currently defined subtheme
   QString subtheme;
 
-  QString default_theme = "default";
-  QString current_theme = default_theme;
+  //Default is always default.
+  const QString default_theme = "default";
 
   // The file name of the log file in base/logs.
   QString log_filename;

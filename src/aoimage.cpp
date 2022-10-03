@@ -29,7 +29,7 @@ AOImage::~AOImage() {}
 
 bool AOImage::set_image(QString p_image, QString p_misc)
 {
-  QString p_image_resolved = ao_app->get_image(p_image, ao_app->current_theme, Options::getInstance().subTheme(),
+  QString p_image_resolved = ao_app->get_image(p_image, Options::getInstance().theme(), Options::getInstance().subTheme(),
                                                ao_app->default_theme, p_misc, "", "",
                                                is_static || !Options::getInstance().animatedThemeEnabled());
 

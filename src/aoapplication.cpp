@@ -120,8 +120,6 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme() { current_theme = Options::getInstance().theme(); }
-
 void AOApplication::load_favorite_list()
 {
   favorite_list = read_favorite_servers();

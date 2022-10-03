@@ -235,7 +235,7 @@ void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, Options::getInstance().subTheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
+  QString final_image = ao_app->get_image(p_filename, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
   start_playback(final_image);
   play();
 }
@@ -258,7 +258,7 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
   last_path = "";
   stretch = true;
-  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, Options::getInstance().subTheme(), ao_app->default_theme, p_miscname);
+  QString final_image = ao_app->get_image(p_filename, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
   play();
 }
@@ -269,7 +269,7 @@ void StickerLayer::load_image(QString p_charname)
   if (Options::getInstance().customChatboxEnabled())
     p_miscname = ao_app->get_chat(p_charname);
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, Options::getInstance().subTheme(), ao_app->default_theme, p_miscname);
+  QString final_image = ao_app->get_image("sticker/" + p_charname, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
   play();
 }

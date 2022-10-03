@@ -21,7 +21,7 @@ void AOButton::set_image(QString p_path, QString p_misc)
 {
   movie->stop();
   QString p_image;
-  p_image = ao_app->get_image(p_path, ao_app->current_theme, Options::getInstance().subTheme(),
+  p_image = ao_app->get_image(p_path, Options::getInstance().theme(), Options::getInstance().subTheme(),
                               ao_app->default_theme, p_misc, "", "", !Options::getInstance().animatedThemeEnabled());
   if (p_image.isEmpty()) {
       this->setIcon(QIcon());
