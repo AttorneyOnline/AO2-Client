@@ -806,16 +806,6 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QLabel" name="casing_supported_lbl">
-         <property name="toolTip">
-          <string>Pretty self-explanatory.</string>
-         </property>
-         <property name="text">
-          <string>This server does not support case alerts.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QGroupBox" name="casing_enabled_box">
          <property name="toolTip">
           <string>If checked, you will get alerts about case announcements.</string>

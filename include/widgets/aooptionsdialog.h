@@ -103,7 +103,6 @@ private:
   QCheckBox *ui_disablestreams_cb;
 
   // The casing tab
-  QLabel *ui_casing_supported_lbl;
   QGroupBox *ui_casing_enabled_box;
   QCheckBox *ui_casing_def_cb;
   QCheckBox *ui_casing_pro_cb;

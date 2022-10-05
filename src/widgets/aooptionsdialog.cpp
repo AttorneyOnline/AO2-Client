@@ -211,7 +211,6 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
                                   &Options::setStreamingEnabled);
 
   // Casing tab.
-  FROM_UI(QLabel, casing_supported_lbl)
   FROM_UI(QGroupBox, casing_enabled_box)
   FROM_UI(QCheckBox, casing_def_cb)
   FROM_UI(QCheckBox, casing_pro_cb)
