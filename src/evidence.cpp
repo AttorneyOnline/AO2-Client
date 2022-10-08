@@ -488,7 +488,11 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
-  ui_evidence_list.at(p_id)->set_selected(true);
+  // We have to check if the ID is on the currently displayed page.
+  // This is because SOMEONE allowed the switching of pages while evidence is still being edited.
+  if (p_id < ui_evidence_list.count()) {
+    ui_evidence_list.at(p_id)->set_selected(true);
+  }
   current_evidence = f_real_id;
 
   evi_type f_evi = local_evidence_list.at(f_real_id);

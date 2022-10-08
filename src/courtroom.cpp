@@ -410,6 +410,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   initialize_emotes();
   initialize_evidence();
 
+  // TODO : Properly handle widget creation order.
+  // Good enough for 2.10
+  ui_pair_list->raise();
+
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -1588,9 +1592,6 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
 void Courtroom::enter_courtroom()
 {
-  current_evidence_page = 0;
-  current_evidence = 0;
-
   set_evidence_page();
 
   if (ao_app->flipping_supported)
@@ -3974,10 +3975,9 @@ void Courtroom::set_self_offset(const QString& p_list) {
     }
     else {
       self_offset_v = self_offsets[1].toInt();
-      ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
-      const int percent = 100;
-      ui_vp_player_char->move(ui_viewport->width() * self_offset / percent, ui_viewport->height() * self_offset_v / percent);
     }
+    ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100,
+                                       ui_viewport->height() * self_offset_v / 100);
 }
 
 void Courtroom::set_ip_list(QString p_list)
