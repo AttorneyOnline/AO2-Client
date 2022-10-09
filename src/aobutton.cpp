@@ -3,6 +3,7 @@
 #include "debug_functions.h"
 #include "file_functions.h"
 #include "options.h"
+#include "aopath.h"
 
 AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
     : QPushButton(parent)
@@ -17,12 +18,18 @@ AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
 
 AOButton::~AOButton() {}
 
-void AOButton::set_image(QString p_path, QString p_misc)
+void AOButton::set_image(QString p_path, QString p_misc, bool use_qrc)
 {
   movie->stop();
   QString p_image;
-  p_image = ao_app->get_image(p_path, Options::getInstance().theme(), Options::getInstance().subTheme(),
+
+  if(use_qrc) {
+    p_image = AOPath().getUIAsset(p_path);
+  }
+  else {
+    p_image = ao_app->get_image(p_path, Options::getInstance().theme(), Options::getInstance().subTheme(),
                               ao_app->default_theme, p_misc, "", "", !Options::getInstance().animatedThemeEnabled());
+  }
   if (p_image.isEmpty()) {
       this->setIcon(QIcon());
       this->setIconSize(this->size());

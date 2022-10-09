@@ -1,6 +1,7 @@
 #include "text_file_functions.h"
 #include "aoutils.h"
 #include "options.h"
+#include "aopath.h"
 
 QStringList AOApplication::get_list_file(VPath path)
 {

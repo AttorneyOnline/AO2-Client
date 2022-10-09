@@ -24,7 +24,7 @@ public:
 
   bool masked = false;
 
-  bool set_image(QString p_image, QString p_misc = "");
+  bool set_image(QString p_image, QString p_misc = "", bool use_qrc = false);
   void set_size_and_pos(QString identifier);
 };
 

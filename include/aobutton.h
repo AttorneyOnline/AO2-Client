@@ -17,7 +17,7 @@ public:
   AOApplication *ao_app;
   QMovie *movie;
 
-  void set_image(QString p_image, QString p_misc="");
+  void set_image(QString p_image, QString p_misc="", bool use_qrc = false);
 };
 
 #endif // AOBUTTON_H

@@ -10,5 +10,18 @@
         <file>resource/translations/ao_pt.qm</file>
         <file>resource/translations/ao_ru.qm</file>
         <file>base/themes/default/ui/options_dialog.ui</file>
+        <file>base/themes/default/lobby_design.ini</file>
+        <file>base/themes/default/about.png</file>
+        <file>base/themes/default/addtofav.png</file>
+        <file>base/themes/default/addtofav_pressed.png</file>
+        <file>base/themes/default/connect.png</file>
+        <file>base/themes/default/connect_pressed.png</file>
+        <file>base/themes/default/lobbybackground.png</file>
+        <file>base/themes/default/publicservers.png</file>
+        <file>base/themes/default/publicservers_selected.png</file>
+        <file>base/themes/default/refresh.png</file>
+        <file>base/themes/default/refresh_pressed.png</file>
+        <file>base/themes/default/removefromfav.png</file>
+        <file>base/themes/default/removefromfav_pressed.png</file>
     </qresource>
 </RCC>

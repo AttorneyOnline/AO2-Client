@@ -5,6 +5,7 @@
 #include "lobby.h"
 #include "networkmanager.h"
 #include "options.h"
+#include <QResource>
 
 #include "aocaseannouncerdialog.h"
 #include "widgets/aooptionsdialog.h"
@@ -30,6 +31,9 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   setApplicationVersion(get_version_string());
   setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
+
+  //Load current themes ressources.
+  QResource::registerResource(get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 }
 
 AOApplication::~AOApplication()

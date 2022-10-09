@@ -5,6 +5,7 @@
 #include "debug_functions.h"
 #include "demoserver.h"
 #include "networkmanager.h"
+#include "aopath.h"
 
 #include <QAction>
 #include <QImageReader>
@@ -115,8 +116,7 @@ void Lobby::set_widgets()
 {
   QString filename = "lobby_design.ini";
 
-  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
-
+  pos_size_type f_lobby = AOPath().getDesignDimensions(filename, "lobby");
   if (f_lobby.width < 0 || f_lobby.height < 0) {
     qWarning() << "did not find lobby width or height in " << filename;
 
@@ -139,35 +139,35 @@ void Lobby::set_widgets()
   }
 
   set_size_and_pos(ui_background, "lobby");
-  ui_background->set_image("lobbybackground");
+  ui_background->set_image("lobbybackground", "", true);
 
   set_size_and_pos(ui_public_servers, "public_servers");
-  ui_public_servers->set_image("publicservers_selected");
+  ui_public_servers->set_image("publicservers_selected", "", true);
 
   set_size_and_pos(ui_favorites, "favorites");
-  ui_favorites->set_image("favorites");
+  ui_favorites->set_image("favorites", "", true);
 
   set_size_and_pos(ui_refresh, "refresh");
-  ui_refresh->set_image("refresh");
+  ui_refresh->set_image("refresh", "", true);
 
   set_size_and_pos(ui_add_to_fav, "add_to_fav");
-  ui_add_to_fav->set_image("addtofav");
+  ui_add_to_fav->set_image("addtofav", "", true);
 
   set_size_and_pos(ui_remove_from_fav, "remove_from_fav");
-  ui_remove_from_fav->set_image("removefromfav");
+  ui_remove_from_fav->set_image("removefromfav", "", true);
 
   set_size_and_pos(ui_connect, "connect");
-  ui_connect->set_image("connect");
+  ui_connect->set_image("connect", "", true);
 
   set_size_and_pos(ui_version, "version");
   ui_version->setText(tr("Version: %1").arg(ao_app->get_version_string()));
 
   set_size_and_pos(ui_about, "about");
-  ui_about->set_image("about");
+  ui_about->set_image("about", "", true);
 
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText(tr("Settings"));
-  ui_settings->set_image("lobby_settings");
+  ui_settings->set_image("lobby_settings", "", true);
   ui_settings->setToolTip(
       tr("Allows you to change various aspects of the client."));
 
@@ -185,7 +185,7 @@ void Lobby::set_widgets()
   ui_chatbox->setReadOnly(true);
 
   ui_loading_background->resize(this->width(), this->height());
-  ui_loading_background->set_image("loadingbackground");
+  ui_loading_background->set_image("loadingbackground", "", true);
 
   set_size_and_pos(ui_loading_text, "loading_label");
   ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
@@ -209,7 +209,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   QString filename = "lobby_design.ini";
 
   pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename);
+      AOPath().getDesignDimensions(filename, p_identifier);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0) {
     qWarning() << "could not find" << p_identifier << "in" << filename;

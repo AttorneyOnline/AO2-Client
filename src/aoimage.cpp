@@ -2,6 +2,7 @@
 
 #include "aoimage.h"
 #include "options.h"
+#include "aopath.h"
 
 #include <QBitmap>
 
@@ -27,11 +28,17 @@ AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static) : Q
 
 AOImage::~AOImage() {}
 
-bool AOImage::set_image(QString p_image, QString p_misc)
+bool AOImage::set_image(QString p_image, QString p_misc, bool use_qrc)
 {
-  QString p_image_resolved = ao_app->get_image(p_image, Options::getInstance().theme(), Options::getInstance().subTheme(),
-                                               ao_app->default_theme, p_misc, "", "",
-                                               is_static || !Options::getInstance().animatedThemeEnabled());
+  QString p_image_resolved;
+  if (use_qrc) {
+    AOPath().getUIAsset(p_image);
+  }
+  else {
+    p_image_resolved = ao_app->get_image(p_image, Options::getInstance().theme(), Options::getInstance().subTheme(),
+                                                 ao_app->default_theme, p_misc, "", "",
+                                                 is_static || !Options::getInstance().animatedThemeEnabled());
+  }
 
   if (!file_exists(p_image_resolved)) {
     qWarning() << "could not find image" << p_image;

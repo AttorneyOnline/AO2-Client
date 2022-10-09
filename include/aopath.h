@@ -2,6 +2,7 @@
 #define AOPATH_H
 
 #include <QString>
+#include "datatypes.h"
 /**
  * @brief Main Pathing Class
  *
@@ -19,7 +20,9 @@ public:
      * @details This function considers theme inheritance and will always prefer the active subtheme over the
      * select theme or default theme.
      */
-    QString getUIAsset(const QString& f_asset_name);
+    QString getUIAsset(const QString& f_asset_name) const;
+
+    pos_size_type getDesignDimensions(const QString& f_asset_name, const QString f_key) const;
 };
 
 #endif //AOPATH_H
