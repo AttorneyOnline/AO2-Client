@@ -5,6 +5,7 @@
 #include "QDesktopServices"
 #include "networkmanager.h"
 #include "options.h"
+#include "aopath.h"
 
 #include <QUiLoader>
 
@@ -18,7 +19,7 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 
   QUiLoader l_loader(this);
-  QFile l_uiFile(":/resource/ui/options_dialog.ui");
+  QFile l_uiFile(AOPath().getUIAsset("ui/options_dialog.ui"));
   if (!l_uiFile.open(QFile::ReadOnly)) {
     qWarning() << "Unable to open file " << l_uiFile.fileName();
     return;

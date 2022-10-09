@@ -12,12 +12,20 @@ private:
    */
   QSettings config;
 
+  /**
+   * @brief Migrates callwords to config.ini
+   */
   void migrateCallwords();
 
   /**
    * @brief Constructor for options class.
    */
   Options();
+
+  /**
+   * @brief Subtheme selected by the server.
+   */
+  QString serverSubtheme;
 
 public:
   Options(Options const &) = delete;
@@ -252,6 +260,10 @@ public:
   // Get the subtheme from settings
   QString subTheme() const;
   void setSubTheme(QString value);
+
+  // Get the server selected subtheme
+  QString serverSubTheme() const;
+  void setServerSubTheme(QString value);
 
   // Get if the theme is animated
   bool animatedThemeEnabled() const;

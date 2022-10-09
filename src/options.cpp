@@ -523,6 +523,16 @@ QString Options::subTheme() const
 
 void Options::setSubTheme(QString value) { config.setValue("subtheme", value); }
 
+QString Options::serverSubTheme() const
+{
+  return serverSubtheme;
+}
+
+void Options::setServerSubTheme(QString value)
+{
+  serverSubtheme = value;
+}
+
 bool Options::animatedThemeEnabled() const
 {
   return config.value("animated_theme", true).toBool();
