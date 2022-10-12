@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QImageReader>
 #include <QMenu>
+#include <QUiLoader>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -202,6 +203,15 @@ void Lobby::set_widgets()
 
   set_fonts();
   set_stylesheets();
+
+  QUiLoader l_loader(this);
+  QFile l_uiFile(":/resource/ui/lobby.ui");
+  if (!l_uiFile.open(QFile::ReadOnly)) {
+    qWarning() << "Unable to open file " << l_uiFile.fileName();
+    return;
+  }
+
+  l_loader.load(&l_uiFile, nullptr)->show();
 }
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)

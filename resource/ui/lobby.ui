@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string/>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget#lobby {
@@ -198,7 +198,7 @@
              <property name="spacing">
               <number>0</number>
              </property>
-             <item row="0" column="0">
+             <item row="1" column="0">
               <widget class="QTreeWidget" name="serverlist_tree">
                <property name="styleSheet">
                 <string notr="true">QTreeWidget {
@@ -216,6 +216,13 @@
                  <string>Name</string>
                 </property>
                </column>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="serverlist_search">
+               <property name="placeholderText">
+                <string>Search</string>
+               </property>
               </widget>
              </item>
             </layout>
@@ -240,7 +247,7 @@
              <property name="spacing">
               <number>0</number>
              </property>
-             <item row="0" column="0">
+             <item row="1" column="0">
               <widget class="QTreeWidget" name="favorites_tree">
                <property name="styleSheet">
                 <string notr="true">QTreeWidget {
@@ -248,9 +255,6 @@
 	color:white;
 }</string>
                </property>
-               <attribute name="headerVisible">
-                <bool>false</bool>
-               </attribute>
                <column>
                 <property name="text">
                  <string>#</string>
@@ -261,6 +265,13 @@
                  <string>Name</string>
                 </property>
                </column>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="favorites_search">
+               <property name="placeholderText">
+                <string>Search</string>
+               </property>
               </widget>
              </item>
             </layout>
