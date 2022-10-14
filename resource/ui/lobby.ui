@@ -163,14 +163,11 @@
              <strikeout>false</strikeout>
             </font>
            </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="tabPosition">
-            <enum>QTabWidget::North</enum>
-           </property>
-           <property name="tabShape">
-            <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
             <number>0</number>
@@ -269,6 +266,42 @@
              </item>
              <item row="0" column="0">
               <widget class="QLineEdit" name="favorites_search">
+               <property name="placeholderText">
+                <string>Search</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="demo_tab">
+            <attribute name="title">
+             <string>Demos</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item row="1" column="0">
+              <widget class="QListView" name="demo_list">
+               <property name="textElideMode">
+                <enum>Qt::ElideNone</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="demo_search">
                <property name="placeholderText">
                 <string>Search</string>
                </property>
