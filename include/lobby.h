@@ -17,6 +17,7 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QHeaderView>
+
 #ifdef ANDROID
 #include <QtAndroidExtras/QtAndroid>
 #endif
@@ -70,11 +71,6 @@ private:
   AOButton *ui_remove_from_fav;
   AOButton *ui_connect;
 
-  QLabel *ui_version;
-  AOButton *ui_about;
-
-  AOButton *ui_settings;
-
   QTreeWidget *ui_server_list;
   QLineEdit *ui_server_search;
 
@@ -91,6 +87,35 @@ private:
   int last_index = -1;
 
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
+
+  //UI-file Lobby
+
+  //Top Row
+  QLabel* ui_game_version_lbl;
+  QPushButton* ui_settings_button;
+  QPushButton* ui_about_button;
+
+  // Server, Favs and Demo lists
+  QTabWidget* ui_connections_tabview;
+
+  QTreeWidget* ui_serverlist_tree;
+  QLineEdit* ui_serverlist_search;
+
+  QTreeWidget* ui_favorites_tree;
+  QLineEdit* ui_favorites_search;
+
+  QListView* ui_demo_list;
+  QLineEdit* ui_demo_search;
+
+  QPushButton* ui_add_to_favorite_button;
+  QPushButton* ui_remove_from_favorites;
+  QPushButton* ui_refresh_button;
+
+  // Serverinfo / MOTD Horizontal Row
+  QTextBrowser* ui_motd_text;
+
+  QTextBrowser* ui_server_description_text;
+  QPushButton* ui_connect_button;
 
 private slots:
   void on_public_servers_clicked();

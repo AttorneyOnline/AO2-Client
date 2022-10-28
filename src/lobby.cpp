@@ -11,6 +11,10 @@
 #include <QMenu>
 #include <QUiLoader>
 
+#define FROM_UI(type, name)                                                    \
+  ;                                                                            \
+  ui_##name = findChild<type *>(#name);
+
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
@@ -34,12 +38,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_remove_from_fav->hide();
   ui_connect = new AOButton(this, ao_app);
   ui_connect->setObjectName("ui_connect");
-  ui_version = new QLabel(this);
-  ui_version->setObjectName("ui_version");
-  ui_about = new AOButton(this, ao_app);
-  ui_about->setObjectName("ui_about");
-  ui_settings = new AOButton(this, ao_app);
-  ui_settings->setObjectName("ui_settings");
 
   ui_server_list = new QTreeWidget(this);
   ui_server_list->setHeaderLabels({"#", "Name"});
@@ -90,8 +88,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           &Lobby::on_remove_from_fav_released);
   connect(ui_connect, &AOButton::pressed, this, &Lobby::on_connect_pressed);
   connect(ui_connect, &AOButton::released, this, &Lobby::on_connect_released);
-  connect(ui_about, &AOButton::clicked, this, &Lobby::on_about_clicked);
-  connect(ui_settings, &AOButton::clicked, this, &Lobby::on_settings_clicked);
   connect(ui_server_list, &QTreeWidget::itemClicked, this,
           &Lobby::on_server_list_clicked);
   connect(ui_server_list, &QTreeWidget::itemDoubleClicked,
@@ -160,18 +156,6 @@ void Lobby::set_widgets()
   set_size_and_pos(ui_connect, "connect");
   ui_connect->set_image("connect");
 
-  set_size_and_pos(ui_version, "version");
-  ui_version->setText(tr("Version: %1").arg(ao_app->get_version_string()));
-
-  set_size_and_pos(ui_about, "about");
-  ui_about->set_image("about");
-
-  set_size_and_pos(ui_settings, "settings");
-  ui_settings->setText(tr("Settings"));
-  ui_settings->set_image("lobby_settings");
-  ui_settings->setToolTip(
-      tr("Allows you to change various aspects of the client."));
-
   set_size_and_pos(ui_server_list, "server_list");
 
   set_size_and_pos(ui_server_search, "server_search");
@@ -207,11 +191,36 @@ void Lobby::set_widgets()
   QUiLoader l_loader(this);
   QFile l_uiFile(":/resource/ui/lobby.ui");
   if (!l_uiFile.open(QFile::ReadOnly)) {
-    qWarning() << "Unable to open file " << l_uiFile.fileName();
+    qCritical() << "Unable to open file " << l_uiFile.fileName();
     return;
   }
 
-  l_loader.load(&l_uiFile, nullptr)->show();
+  l_loader.load(&l_uiFile, this);
+
+  FROM_UI(QLabel,game_version_lbl);
+  FROM_UI(QPushButton,settings_button);
+  FROM_UI(QPushButton,about_button);
+
+  ui_game_version_lbl->setText(tr("Version: %1").arg(ao_app->get_version_string()));
+  connect(ui_settings_button, &QPushButton::clicked, this, &Lobby::on_settings_clicked);
+  connect(ui_about_button, &QPushButton::clicked, this, &Lobby::on_about_clicked);
+
+  FROM_UI(QTabWidget,connections_tabview);
+
+  FROM_UI(QTreeWidget,serverlist_tree);
+  FROM_UI(QLineEdit, serverlist_search);
+
+  FROM_UI(QTreeWidget, favorites_tree);
+  FROM_UI(QLineEdit, favorites_search);
+
+  FROM_UI(QListWidget, demo_list);
+  FROM_UI(QLineEdit, demo_search);
+
+  FROM_UI(QPushButton, about_button);
+
+  if (ui_connections_tabview) {
+    ui_connections_tabview->tabBar()->setExpanding(true);
+  }
 }
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
@@ -233,7 +242,6 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Lobby::set_fonts()
 {
-  set_font(ui_version, "version");
   set_font(ui_player_count, "player_count");
   set_font(ui_description, "description");
   set_font(ui_chatbox, "chatbox");
@@ -631,8 +639,8 @@ void Lobby::check_for_updates()
                                         [this](QString version) {
     const QString current_version = ao_app->get_version_string();
     if (!version.isEmpty() && version != current_version) {
-      ui_version->setText(tr("Version: %1 (!)").arg(current_version));
-      ui_version->setToolTip(tr("New version available: %1").arg(version));
+      ui_game_version_lbl->setText(tr("Version: %1 (!)").arg(current_version));
+      ui_game_version_lbl->setToolTip(tr("New version available: %1").arg(version));
     }
   });
 }

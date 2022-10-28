@@ -97,14 +97,14 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="settings">
+          <widget class="QPushButton" name="settings_button">
            <property name="text">
             <string>Settings</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="about">
+          <widget class="QPushButton" name="about_button">
            <property name="text">
             <string>About</string>
            </property>
@@ -330,16 +330,23 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="refresh">
+             <widget class="QPushButton" name="refresh_button">
               <property name="text">
                <string>Refresh</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="add_to_favorite">
+             <widget class="QPushButton" name="add_to_favorite_button">
               <property name="text">
                <string>Add To Favorites</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="remove_from_favorites">
+              <property name="text">
+               <string>Remove From Favorites</string>
               </property>
              </widget>
             </item>
@@ -451,7 +458,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="connect">
+             <widget class="QPushButton" name="connect_button">
               <property name="text">
                <string>Connect</string>
               </property>
