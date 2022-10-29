@@ -371,10 +371,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    if (lobby_constructed)
-      w_courtroom->append_server_chatmessage(tr("[Global log]"),
-                                             w_lobby->get_chatlog(), "0");
-
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 

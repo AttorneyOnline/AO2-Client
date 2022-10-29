@@ -61,23 +61,7 @@ public:
 private:
   AOApplication *ao_app;
 
-  AOImage *ui_background;
-
-  AOButton *ui_public_servers;
-  AOButton *ui_favorites;
-
-  AOButton *ui_refresh;
-  AOButton *ui_add_to_fav;
   AOButton *ui_remove_from_fav;
-  AOButton *ui_connect;
-
-  QTreeWidget *ui_server_list;
-  QLineEdit *ui_server_search;
-
-  QLabel *ui_player_count;
-  AOTextArea *ui_description;
-
-  AOTextArea *ui_chatbox;
 
   AOImage *ui_loading_background;
   QTextEdit *ui_loading_text;
@@ -108,12 +92,13 @@ private:
   QLineEdit* ui_demo_search;
 
   QPushButton* ui_add_to_favorite_button;
-  QPushButton* ui_remove_from_favorites;
+  QPushButton* ui_remove_from_favorites_button;
   QPushButton* ui_refresh_button;
 
   // Serverinfo / MOTD Horizontal Row
   QTextBrowser* ui_motd_text;
 
+  QLabel* ui_server_player_count_lbl;
   QTextBrowser* ui_server_description_text;
   QPushButton* ui_connect_button;
 
