@@ -1,4 +1,5 @@
 #include "courtroom.h"
+#include "options.h"
 
 void Courtroom::initialize_evidence()
 {
@@ -416,7 +417,7 @@ void Courtroom::on_evidence_image_button_clicked()
     return;
 
   QString filename = filenames.at(0);
-  QStringList bases = ao_app->get_mount_paths();
+  QStringList bases = Options::getInstance().mountPaths();
   bases.prepend(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDir baseDir(base);
@@ -453,7 +454,7 @@ void Courtroom::on_evidence_clicked(int p_id)
   else if (f_real_id > local_evidence_list.size())
     return;
   
-  if (!ao_app->get_evidence_double_click()){
+  if (!Options::getInstance().evidenceDoubleClickEdit()){
     on_evidence_double_clicked(p_id);
     return;
   }
@@ -487,7 +488,11 @@ void Courtroom::on_evidence_double_clicked(int p_id)
   for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
-  ui_evidence_list.at(p_id)->set_selected(true);
+  // We have to check if the ID is on the currently displayed page.
+  // This is because SOMEONE allowed the switching of pages while evidence is still being edited.
+  if (p_id < ui_evidence_list.count()) {
+    ui_evidence_list.at(p_id)->set_selected(true);
+  }
   current_evidence = f_real_id;
 
   evi_type f_evi = local_evidence_list.at(f_real_id);

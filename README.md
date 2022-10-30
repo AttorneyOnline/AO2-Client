@@ -1,5 +1,7 @@
 # Attorney Online
 
+![CI build](https://github.com/AttorneyOnline/AO2-Client/actions/workflows/build.yml/badge.svg?event=push) ![license](https://img.shields.io/github/license/AttorneyOnline/AO2-Client?color=blue) ![contributors](https://img.shields.io/github/contributors/AttorneyOnline/AO2-Client)<br>
+
 [Attorney Online](https://aceattorneyonline.com) is an online version of the world-renowned courtroom drama simulator that allows you to create and play out cases in an off-the-cuff format.
 
 **[Refer to the docs](https://github.com/AttorneyOnline/docs/blob/master/docs/index.md) for more information.**
