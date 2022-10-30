@@ -4,9 +4,10 @@
 #include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+#include "options.h"
 
 #include "aocaseannouncerdialog.h"
-#include "aooptionsdialog.h"
+#include "widgets/aooptionsdialog.h"
 
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
@@ -19,10 +20,6 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  // Create the QSettings class that points to the config.ini.
-  configini =
-      new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
-
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
 
@@ -40,7 +37,6 @@ AOApplication::~AOApplication()
   destruct_lobby();
   destruct_courtroom();
   delete discord;
-  delete configini;
   qInstallMessageHandler(original_message_handler);
 }
 
@@ -60,7 +56,7 @@ void AOApplication::construct_lobby()
   int y = (geometry.height() - w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (is_discord_enabled())
+  if (Options::getInstance().discordEnabled())
     discord->state_lobby();
 
   if (demo_server)
@@ -123,8 +119,6 @@ QString AOApplication::get_version_string()
   return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
          QString::number(MINOR_VERSION);
 }
-
-void AOApplication::reload_theme() { current_theme = read_theme(); }
 
 void AOApplication::load_favorite_list()
 {
@@ -200,8 +194,18 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-  AOOptionsDialog settings(nullptr, this);
-  settings.exec();
+    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this);
+    if (courtroom_constructed) {
+        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
+                w_courtroom, &Courtroom::on_reload_theme_clicked);
+    }
+
+    if(lobby_constructed) {
+        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
+                w_lobby, &Lobby::set_widgets);
+    }
+    l_dialog->exec();
+    delete l_dialog;
 }
 
 void AOApplication::call_announce_menu(Courtroom *court)
@@ -238,13 +242,13 @@ void AOApplication::initBASS()
   unsigned int a = 0;
   BASS_DEVICEINFO info;
 
-  if (get_audio_output_device() == "default") {
+  if (Options::getInstance().audioOutputDevice() == "default") {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
   else {
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-      if (get_audio_output_device() == info.name) {
+      if (Options::getInstance().audioOutputDevice() == info.name) {
         BASS_SetDevice(a);
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);

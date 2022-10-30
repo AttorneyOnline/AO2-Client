@@ -12,7 +12,7 @@
 #include "aoimage.h"
 #include "aolayer.h"
 #include "aomusicplayer.h"
-#include "aooptionsdialog.h"
+#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"

@@ -1,4 +1,4 @@
-QT += core gui widgets network websockets
+QT += core gui widgets network websockets uitools
 
 TARGET = Attorney_Online
 TEMPLATE = app
@@ -10,8 +10,10 @@ DESTDIR = $$PWD/bin
 OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
 
-SOURCES += $$files($$PWD/src/*.cpp)
-HEADERS += $$files($$PWD/include/*.h)
+SOURCES += $$files($$PWD/src/*.cpp, true)
+HEADERS += $$files($$PWD/include/*.h, true)
+
+FORMS += $$files($$PWD/resource/ui/*.ui)
 
 LIBS += -L$$PWD/lib
 QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
@@ -57,7 +59,8 @@ TRANSLATIONS = resource/translations/ao_en.ts \
                resource/translations/ao_es.ts \
                resource/translations/ao_pt.ts \
                resource/translations/ao_pl.ts \
-               resource/translations/ao_it.ts
+               resource/translations/ao_it.ts \
+               ressource/ui/
 
 win32:RC_ICONS = resource/logo_ao2.ico
 macx:ICON = resource/logo_ao2.icns
