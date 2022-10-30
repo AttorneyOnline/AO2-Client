@@ -73,7 +73,7 @@ jobs:
           cd QtApng
           cd src/3rdparty
           chmod +x get_libs.sh
-          ./get_libs.sh 1.2.12 1.6.37
+          ./get_libs.sh 1.2.13 1.6.37
           cd ../..
           qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
           ${{steps.qt.outputs.make}} qmake_all
