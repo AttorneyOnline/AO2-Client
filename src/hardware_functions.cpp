@@ -50,30 +50,14 @@ QString get_hdid()
 }
 #elif QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 #if (defined(LINUX) || defined(__linux__))
+#include <QSysInfo>
 
-#include <QFile>
-#include <QTextStream>
+QByteArray machineId;
 
 QString get_hdid()
 {
-  QFile fstab_file("/etc/fstab");
-  if (!fstab_file.open(QIODevice::ReadOnly))
-    return "uxcps32sa9fnwic92mfbs0";
-
-  QTextStream in(&fstab_file);
-
-  while (!in.atEnd()) {
-    QString line = in.readLine();
-
-    if (line.startsWith("UUID")) {
-      QStringList line_elements = line.split("=");
-
-      if (line_elements.size() > 1)
-        return line_elements.at(1).left(23).trimmed();
-    }
-  }
-
-  return "uxcpz32sa9fnwic92mfbs1";
+  machineId = QSysInfo::machineUniqueId();
+  return QString(machineId);
 }
 
 #elif defined __APPLE__
