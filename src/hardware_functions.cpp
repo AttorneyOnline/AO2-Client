@@ -36,7 +36,7 @@ QString get_hdid()
     ConvertSidToStringSidW(pToken->User.Sid, &HDIDParam);
     QString returnHDID = QString::fromWCharArray(HDIDParam);
     CloseHandle(hToken);
-    return returnHDID;
+    return returnHDID;     
 }
 #elif defined(ANDROID)
 QString get_hdid()
@@ -57,6 +57,10 @@ QByteArray machineId;
 QString get_hdid()
 {
   machineId = QSysInfo::machineUniqueId();
+
+  if (machineId.isEmpty()) {
+    return "gxsps32sa9fnwic92mfbs2";
+  }
   return QString(machineId);
 }
 
