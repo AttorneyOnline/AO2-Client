@@ -195,6 +195,25 @@ QVector<server_type> AOApplication::read_legacy_favorite_servers()
   return serverlist;
 }
 
+QMultiMap<QString, QString> AOApplication::load_demo_logs_list() const
+{
+    QString l_log_path = applicationDirPath() + "/logs/";
+    QDir l_log_folder(l_log_path);
+    l_log_folder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
+
+    QMultiMap<QString,QString> l_demo_logs;
+    for (const QString &l_demo_folder_name : l_log_folder.entryList()) {
+        QDir l_demo_folder(l_log_path + l_demo_folder_name);
+        l_demo_folder.setFilter(QDir::Files);
+        l_demo_folder.setNameFilters(QStringList() << "*.demo");
+
+        for (QString l_demo_name : l_demo_folder.entryList()) {
+            l_demo_logs.insert(l_demo_folder_name, l_demo_name);
+        }
+    }
+    return l_demo_logs;
+}
+
 QString AOApplication::read_design_ini(QString p_identifier,
                                        VPath p_design_path)
 {

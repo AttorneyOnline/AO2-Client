@@ -299,18 +299,34 @@
              <property name="spacing">
               <number>0</number>
              </property>
-             <item row="1" column="0">
-              <widget class="QListView" name="demo_list">
-               <property name="textElideMode">
-                <enum>Qt::ElideNone</enum>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="0">
               <widget class="QLineEdit" name="demo_search">
                <property name="placeholderText">
                 <string>Search</string>
                </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QTreeWidget" name="demo_tree">
+               <property name="styleSheet">
+                <string notr="true">QTreeWidget {
+	background-color:black;
+	color:white;
+}</string>
+               </property>
+               <property name="indentation">
+                <number>0</number>
+               </property>
+               <column>
+                <property name="text">
+                 <string>Server</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Name</string>
+                </property>
+               </column>
               </widget>
              </item>
             </layout>

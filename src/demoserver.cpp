@@ -12,6 +12,11 @@ DemoServer::DemoServer(QObject *parent) : QObject(parent)
     connect(timer, &QTimer::timeout, this, &DemoServer::playback);
 }
 
+void DemoServer::set_demo_file(QString filepath)
+{
+    filename = filepath;
+}
+
 void DemoServer::start_server()
 {
     if (server_started) return;
@@ -35,13 +40,12 @@ void DemoServer::destroy_connection()
 
 void DemoServer::accept_connection()
 {
-    QString path = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
-    if (path.isEmpty())
+    if (filename.isEmpty())
     {
         destroy_connection();
         return;
     }
-    load_demo(path);
+    load_demo(filename);
 
     if (demo_data.isEmpty())
     {

@@ -33,6 +33,7 @@ public:
   void set_widgets();
   void list_servers();
   void list_favorites();
+  void list_demos();
   void get_motd();
   void check_for_updates();
   void append_chatmessage(QString f_name, QString f_message);
@@ -88,7 +89,7 @@ private:
   QTreeWidget* ui_favorites_tree;
   QLineEdit* ui_favorites_search;
 
-  QListView* ui_demo_list;
+  QTreeWidget* ui_demo_tree;
   QLineEdit* ui_demo_search;
 
   QPushButton* ui_add_to_favorite_button;
@@ -120,6 +121,7 @@ private slots:
   void on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column);
   void on_server_list_context_menu_requested(const QPoint &point);
   void on_server_search_edited(QString p_text);
+  void on_demo_doubleclicked(QTreeWidgetItem *item, int column);
 };
 
 #endif // LOBBY_H

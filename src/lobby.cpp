@@ -49,11 +49,21 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   FROM_UI(QTreeWidget,serverlist_tree);
   FROM_UI(QLineEdit, serverlist_search);
+  connect(ui_serverlist_tree, &QTreeWidget::itemClicked, this,
+          &Lobby::on_server_list_clicked);
+  connect(ui_serverlist_tree, &QTreeWidget::itemDoubleClicked,
+          this, &Lobby::on_server_list_doubleclicked);
+  connect(ui_serverlist_tree, &QTreeWidget::customContextMenuRequested, this,
+          &Lobby::on_server_list_context_menu_requested);
+  connect(ui_serverlist_search, &QLineEdit::textChanged, this,
+          &Lobby::on_server_search_edited);
 
   FROM_UI(QTreeWidget, favorites_tree);
   FROM_UI(QLineEdit, favorites_search);
 
-  FROM_UI(QListWidget, demo_list);
+  FROM_UI(QTreeWidget, demo_tree);
+  connect(ui_demo_tree, &QTreeWidget::itemDoubleClicked, this, &Lobby::on_demo_doubleclicked);
+
   FROM_UI(QLineEdit, demo_search);
 
   FROM_UI(QPushButton, refresh_button);
@@ -95,18 +105,11 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           &Lobby::on_remove_from_fav_pressed);
   connect(ui_remove_from_fav, &AOButton::released, this,
           &Lobby::on_remove_from_fav_released);
-  connect(ui_serverlist_tree, &QTreeWidget::itemClicked, this,
-          &Lobby::on_server_list_clicked);
-  connect(ui_serverlist_tree, &QTreeWidget::itemDoubleClicked,
-          this, &Lobby::on_server_list_doubleclicked);
-  connect(ui_serverlist_tree, &QTreeWidget::customContextMenuRequested, this,
-          &Lobby::on_server_list_context_menu_requested);
-  connect(ui_serverlist_search, &QLineEdit::textChanged, this,
-          &Lobby::on_server_search_edited);
   connect(ui_cancel, &AOButton::clicked, ao_app, &AOApplication::loading_cancelled);
 
   list_servers();
   list_favorites();
+  list_demos();
   get_motd();
   check_for_updates();
 
@@ -432,15 +435,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
     ui_connect_button->setEnabled(false);
 
-    if (f_server.port == 99999 && f_server.ip == "127.0.0.1") {
-        // Demo playback server selected
-        ao_app->demo_server->start_server();
-        server_type demo_server;
-        demo_server.ip = "127.0.0.1";
-        demo_server.port = ao_app->demo_server->port;
-        ao_app->net_manager->connect_to_server(demo_server);
-    }
-    else ao_app->net_manager->connect_to_server(f_server);
+    ao_app->net_manager->connect_to_server(f_server);
   }
 }
 
@@ -498,6 +493,24 @@ void Lobby::on_server_search_edited(QString p_text)
   }
 }
 
+void Lobby::on_demo_doubleclicked(QTreeWidgetItem *item, int column)
+{
+  Q_UNUSED(column)
+
+  if (item == nullptr) {
+    return;
+  }
+
+  QString l_filepath = (QApplication::applicationDirPath()+"/logs/%1/%2").arg(
+              item->data(0,Qt::DisplayRole).toString(), item->data(1, Qt::DisplayRole).toString());
+  ao_app->demo_server->start_server();
+  server_type demo_server;
+  demo_server.ip = "127.0.0.1";
+  demo_server.port = ao_app->demo_server->port;
+  ao_app->demo_server->set_demo_file(l_filepath);
+  ao_app->net_manager->connect_to_server(demo_server);
+}
+
 void Lobby::list_servers()
 {
   if (!public_servers_selected) {
@@ -534,6 +547,22 @@ void Lobby::list_favorites()
     i++;
   }
   ui_favorites_tree->setSortingEnabled(true);
+}
+
+void Lobby::list_demos()
+{
+  ui_demo_tree->setSortingEnabled(false);
+  ui_demo_tree->clear();
+
+  QMultiMap<QString,QString> m_demo_entries = ao_app->load_demo_logs_list();
+  for (const QString &l_key : m_demo_entries.uniqueKeys()) {
+    for (const QString &l_entry : m_demo_entries.values(l_key)) {
+        QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_demo_tree);
+        treeItem->setData(0, Qt::DisplayRole, l_key);
+        treeItem->setData(1, Qt::DisplayRole, l_entry);
+    }
+  }
+  ui_demo_tree->setSortingEnabled(true);
 }
 
 void Lobby::get_motd()
