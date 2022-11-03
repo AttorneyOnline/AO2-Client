@@ -131,8 +131,7 @@ void AOApplication::save_favorite_list()
   favorite_servers_ini.setIniCodec("UTF-8");
 
   favorite_servers_ini.clear();
-  // skip demo server entry, demo server entry is always at index 0
-  for(int i = 1; i < favorite_list.size(); ++i) {
+  for(int i = 0; i < favorite_list.size(); ++i) {
     auto fav_server = favorite_list.at(i);
     favorite_servers_ini.beginGroup(QString::number(i));
     favorite_servers_ini.setValue("name", fav_server.name);

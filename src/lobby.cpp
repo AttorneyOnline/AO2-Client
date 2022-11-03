@@ -21,7 +21,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   this->setWindowTitle(tr("Attorney Online %1").arg(ao_app->applicationVersion()));
   this->setWindowIcon(QIcon(":/logo.png"));
-  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint));
 
   QUiLoader l_loader(this);
   QFile l_uiFile(":/resource/ui/lobby.ui");
@@ -53,12 +53,13 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
           &Lobby::on_server_list_clicked);
   connect(ui_serverlist_tree, &QTreeWidget::itemDoubleClicked,
           this, &Lobby::on_server_list_doubleclicked);
-  connect(ui_serverlist_tree, &QTreeWidget::customContextMenuRequested, this,
-          &Lobby::on_server_list_context_menu_requested);
   connect(ui_serverlist_search, &QLineEdit::textChanged, this,
           &Lobby::on_server_search_edited);
 
   FROM_UI(QTreeWidget, favorites_tree);
+  connect(ui_favorites_tree, &QTreeWidget::customContextMenuRequested, this,
+          &Lobby::on_favorite_list_context_menu_requested);
+
   FROM_UI(QLineEdit, favorites_search);
 
   FROM_UI(QTreeWidget, demo_tree);
@@ -447,22 +448,14 @@ void Lobby::on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column)
   //on_connect_released();
 }
 
-void Lobby::on_server_list_context_menu_requested(const QPoint &point)
+void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
 {
-  if (public_servers_selected) {
-    return;
-  }
-
   auto *item = ui_serverlist_tree->itemAt(point);
   if (item == nullptr) {
     qInfo() << "no favorite server item; skipping context menu";
     return;
   }
   const int server_index = item->data(0, Qt::DisplayRole).toInt();
-  if (server_index == 0) {
-    qInfo() << "demo server has no context menu to display";
-    return;
-  }
 
   auto *menu = new QMenu(this);
   menu->addAction(tr("Remove"), ao_app, [this,server_index](){

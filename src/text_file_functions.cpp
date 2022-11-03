@@ -106,14 +106,6 @@ QVector<server_type> AOApplication::read_favorite_servers()
 {
   QVector<server_type> serverlist;
 
-  // demo server is always at the top
-  server_type demo_server;
-  demo_server.ip = "127.0.0.1";
-  demo_server.port = 99999;
-  demo_server.name = tr("Demo playback");
-  demo_server.desc = tr("Play back demos you have previously recorded");
-  serverlist.append(demo_server);
-
   QString fav_servers_ini_path(get_base_path() + "favorite_servers.ini");
   if (!QFile::exists(fav_servers_ini_path)) {
     qWarning() << "failed to locate favorite_servers.ini, falling back to legacy serverlist.txt";
