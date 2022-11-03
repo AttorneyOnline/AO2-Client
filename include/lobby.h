@@ -28,7 +28,7 @@ class Lobby : public QMainWindow {
   Q_OBJECT
 
 public:
-  Lobby(AOApplication *p_ao_app);
+  Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr);
 
   void set_widgets();
   void list_servers();
@@ -61,6 +61,7 @@ public:
 
 private:
   AOApplication *ao_app;
+  NetworkManager *net_manager;
 
   AOButton *ui_remove_from_fav;
 
@@ -121,7 +122,7 @@ private slots:
   void on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column);
   void on_favorite_list_context_menu_requested(const QPoint &point);
   void on_server_search_edited(QString p_text);
-  void on_demo_doubleclicked(QTreeWidgetItem *item, int column);
+  void on_demo_clicked(QTreeWidgetItem *item, int column);
 };
 
 #endif // LOBBY_H

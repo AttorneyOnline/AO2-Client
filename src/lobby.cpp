@@ -15,9 +15,10 @@
   ;                                                                            \
   ui_##name = findChild<type *>(#name);
 
-Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
+Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager) : QMainWindow()
 {
   ao_app = p_ao_app;
+  net_manager = p_net_manager;
 
   this->setWindowTitle(tr("Attorney Online %1").arg(ao_app->applicationVersion()));
   this->setWindowIcon(QIcon(":/logo.png"));
@@ -63,7 +64,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   FROM_UI(QLineEdit, favorites_search);
 
   FROM_UI(QTreeWidget, demo_tree);
-  connect(ui_demo_tree, &QTreeWidget::itemDoubleClicked, this, &Lobby::on_demo_doubleclicked);
+  connect(ui_demo_tree, &QTreeWidget::itemClicked, this, &Lobby::on_demo_clicked);
 
   FROM_UI(QLineEdit, demo_search);
 
@@ -303,7 +304,7 @@ void Lobby::on_refresh_released()
   //ui_refresh->set_image("refresh");
 
   if (public_servers_selected) {
-    ao_app->net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
+    net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
     get_motd();
   } else {
     ao_app->load_favorite_list();
@@ -436,7 +437,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
     ui_connect_button->setEnabled(false);
 
-    ao_app->net_manager->connect_to_server(f_server);
+    net_manager->connect_to_server(f_server);
   }
 }
 
@@ -486,7 +487,7 @@ void Lobby::on_server_search_edited(QString p_text)
   }
 }
 
-void Lobby::on_demo_doubleclicked(QTreeWidgetItem *item, int column)
+void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
 {
   Q_UNUSED(column)
 
@@ -501,7 +502,7 @@ void Lobby::on_demo_doubleclicked(QTreeWidgetItem *item, int column)
   demo_server.ip = "127.0.0.1";
   demo_server.port = ao_app->demo_server->port;
   ao_app->demo_server->set_demo_file(l_filepath);
-  ao_app->net_manager->connect_to_server(demo_server);
+  net_manager->connect_to_server(demo_server);
 }
 
 void Lobby::list_servers()
@@ -536,7 +537,6 @@ void Lobby::list_favorites()
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_favorites_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
-    //    treeItem->setText(2, "-");
     i++;
   }
   ui_favorites_tree->setSortingEnabled(true);
@@ -548,7 +548,7 @@ void Lobby::list_demos()
   ui_demo_tree->clear();
 
   QMultiMap<QString,QString> m_demo_entries = ao_app->load_demo_logs_list();
-  for (const QString &l_key : m_demo_entries.uniqueKeys()) {
+  for (auto &l_key : m_demo_entries.uniqueKeys()) {
     for (const QString &l_entry : m_demo_entries.values(l_key)) {
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_demo_tree);
         treeItem->setData(0, Qt::DisplayRole, l_key);
@@ -560,7 +560,7 @@ void Lobby::list_demos()
 
 void Lobby::get_motd()
 {
-  ao_app->net_manager->request_document(MSDocumentType::Motd,
+  net_manager->request_document(MSDocumentType::Motd,
                                         [this](QString document) {
     if (document.isEmpty()) {
       document = tr("Couldn't get the message of the day.");
@@ -571,7 +571,7 @@ void Lobby::get_motd()
 
 void Lobby::check_for_updates()
 {
-  ao_app->net_manager->request_document(MSDocumentType::ClientVersion,
+  net_manager->request_document(MSDocumentType::ClientVersion,
                                         [this](QString version) {
     const QString current_version = ao_app->get_version_string();
     if (!version.isEmpty() && version != current_version) {
