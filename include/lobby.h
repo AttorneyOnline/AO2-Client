@@ -74,6 +74,9 @@ private:
   QTextBrowser *ui_server_description_text;
   QPushButton *ui_connect_button;
 
+signals:
+  void settings_requested();
+
 private slots:
   void on_tab_changed(int index);
   void on_refresh_released();
@@ -81,7 +84,6 @@ private slots:
   void on_remove_from_fav_released();
   void on_connect_released();
   void on_about_clicked();
-  void on_settings_clicked();
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_list_doubleclicked(QTreeWidgetItem *p_item, int column);
   void on_favorite_list_context_menu_requested(const QPoint &point);

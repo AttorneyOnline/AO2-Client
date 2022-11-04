@@ -63,6 +63,7 @@ void AOApplication::construct_lobby()
       demo_server->deleteLater();
   demo_server = new DemoServer(this);
 
+  connect(w_lobby, &Lobby::settings_requested, this, &AOApplication::call_settings_menu);
   w_lobby->show();
 }
 
