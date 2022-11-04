@@ -1,8 +1,6 @@
 #include "lobby.h"
 
 #include "aoapplication.h"
-#include "aosfxplayer.h"
-#include "debug_functions.h"
 #include "demoserver.h"
 #include "networkmanager.h"
 
@@ -68,23 +66,19 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager) : QMainWind
   FROM_UI(QLineEdit, demo_search);
 
   FROM_UI(QPushButton, refresh_button);
-  connect(ui_refresh_button, &QPushButton::pressed, this, &Lobby::on_refresh_pressed);
   connect(ui_refresh_button, &QPushButton::released, this, &Lobby::on_refresh_released);
 
   FROM_UI(QPushButton, add_to_favorite_button)
-  connect(ui_add_to_favorite_button, &QPushButton::pressed, this, &Lobby::on_add_to_fav_pressed);
   connect(ui_add_to_favorite_button, &QPushButton::released, this, &Lobby::on_add_to_fav_released);
 
 
   FROM_UI(QPushButton, remove_from_favorites_button)
   ui_remove_from_favorites_button->setVisible(false);
-  connect(ui_remove_from_favorites_button, &QPushButton::pressed, this, &Lobby::on_remove_from_fav_pressed);
   connect(ui_remove_from_favorites_button, &QPushButton::released, this, &Lobby::on_remove_from_fav_released);
 
   FROM_UI(QLabel, server_player_count_lbl)
   FROM_UI(QTextBrowser, server_description_text)
   FROM_UI(QPushButton, connect_button);
-  connect(ui_connect_button, &QPushButton::pressed, this, &Lobby::on_connect_pressed);
   connect(ui_connect_button, &QPushButton::released, this, &Lobby::on_connect_released);
 
   FROM_UI(QTextBrowser, motd_text);
@@ -102,14 +96,17 @@ void Lobby::on_tab_changed(int index)
     case SERVER:
         ui_add_to_favorite_button->setVisible(true);
         ui_remove_from_favorites_button->setVisible(false);
+        reset_selection();
         break;
     case FAVORITES:
         ui_add_to_favorite_button->setVisible(false);
         ui_remove_from_favorites_button->setVisible(true);
+        reset_selection();
         break;
     case DEMOS :
         ui_add_to_favorite_button->setVisible(false);
         ui_remove_from_favorites_button->setVisible(false);
+        reset_selection();
         break;
     default:
         break;
@@ -138,14 +135,11 @@ int Lobby::get_selected_server()
 void Lobby::reset_selection()
 {
   last_index = -1;
-  ui_serverlist_tree->clearSelection();
   ui_server_player_count_lbl->setText(tr("Offline"));
   ui_server_description_text->clear();
 
   ui_connect_button->setEnabled(false);
 }
-
-void Lobby::on_refresh_pressed() { /**ui_refresh->set_image("refresh_pressed");*/ }
 
 void Lobby::on_refresh_released()
 {
@@ -155,21 +149,12 @@ void Lobby::on_refresh_released()
     list_favorites();
 }
 
-void Lobby::on_add_to_fav_pressed()
-{
-}
-
 void Lobby::on_add_to_fav_released()
 {
   int selection = get_selected_server();
   if (selection > -1) {
     ao_app->add_favorite_server(selection);
   }
-}
-
-void Lobby::on_remove_from_fav_pressed()
-{
-  //ui_remove_from_favorites_button->set_image("removefromfav_pressed");
 }
 
 void Lobby::on_remove_from_fav_released()
@@ -181,16 +166,9 @@ void Lobby::on_remove_from_fav_released()
   }
 }
 
-void Lobby::on_connect_pressed() { }
-
 void Lobby::on_connect_released()
 {
-
-  AOPacket *f_packet;
-
-  f_packet = new AOPacket("askchaa");
-
-  ao_app->send_server_packet(f_packet);
+  net_manager->join_to_server();
 }
 
 void Lobby::on_about_clicked()

@@ -8,6 +8,7 @@
 #include <QAbstractSocket>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QNetworkReply>
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
