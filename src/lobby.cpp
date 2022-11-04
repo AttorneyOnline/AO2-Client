@@ -90,8 +90,10 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
   FROM_UI(QLabel, server_player_count_lbl)
   FROM_UI(QTextBrowser, server_description_text)
   FROM_UI(QPushButton, connect_button);
-  connect(ui_connect_button, &QPushButton::released, this,
-          &Lobby::on_connect_released);
+  connect(ui_connect_button, &QPushButton::released, net_manager,
+          &NetworkManager::join_to_server);
+  connect(net_manager, &NetworkManager::server_connected,
+          ui_connect_button, &QPushButton::setEnabled);
 
   FROM_UI(QTextBrowser, motd_text);
 
@@ -164,6 +166,7 @@ void Lobby::on_add_to_fav_released()
   int selection = get_selected_server();
   if (selection > -1) {
     ao_app->add_favorite_server(selection);
+    list_favorites();
   }
 }
 
@@ -175,8 +178,6 @@ void Lobby::on_remove_from_fav_released()
     list_favorites();
   }
 }
-
-void Lobby::on_connect_released() { net_manager->join_to_server(); }
 
 void Lobby::on_about_clicked()
 {
@@ -414,7 +415,5 @@ void Lobby::set_server_description(const QString &server_description)
                                 "<a href='\\1'>\\1</a>");
   ui_server_description_text->insertHtml(result);
 }
-
-void Lobby::enable_connect_button() { ui_connect_button->setEnabled(true); }
 
 Lobby::~Lobby() {}

@@ -24,11 +24,14 @@ public:
   Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr);
   ~Lobby();
 
-  void enable_connect_button();
   void set_player_count(int players_online, int max_players);
   void set_server_description(const QString &server_description);
   void list_servers();
   int get_selected_server();
+
+signals:
+  void settings_requested();
+
 
 private:
   AOApplication *ao_app;
@@ -74,15 +77,11 @@ private:
   QTextBrowser *ui_server_description_text;
   QPushButton *ui_connect_button;
 
-signals:
-  void settings_requested();
-
 private slots:
   void on_tab_changed(int index);
   void on_refresh_released();
   void on_add_to_fav_released();
   void on_remove_from_fav_released();
-  void on_connect_released();
   void on_about_clicked();
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_list_doubleclicked(QTreeWidgetItem *p_item, int column);
