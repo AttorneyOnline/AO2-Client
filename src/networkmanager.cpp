@@ -8,6 +8,7 @@
 #include <QAbstractSocket>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QNetworkReply>
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
@@ -191,6 +192,11 @@ void NetworkManager::connect_to_server(server_type p_server)
 
   connected = true;
   active_connection_type = p_server.socket_type;
+}
+
+void NetworkManager::join_to_server()
+{
+    ship_server_packet(AOPacket("askchaa").to_string());
 }
 
 void NetworkManager::disconnect_from_server()

@@ -72,8 +72,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     client_id = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
-    if (lobby_constructed)
-      w_lobby->enable_connect_button();
+    net_manager->server_connected(true);
 
     QStringList f_contents = {"AO2", get_version_string()};
     send_server_packet(new AOPacket("ID", f_contents));
@@ -151,10 +150,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_lobby->set_server_description(f_contents.at(2));
     }
 
-    if (w_lobby->doubleclicked) {
-      send_server_packet(new AOPacket("askchaa"));
-      w_lobby->doubleclicked = false;
-    }
     log_to_demo = false;
   }
   else if (header == "SI") {
@@ -182,7 +177,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
-    if (w_lobby->public_servers_selected) {
+    if (true) {
       if (selected_server >= 0 && selected_server < server_list.size()) {
         auto info = server_list.at(selected_server);
         server_name = info.name;
@@ -203,10 +198,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (courtroom_constructed)
       w_courtroom->set_window_title(window_title);
-
-    w_lobby->show_loading_overlay();
-    w_lobby->set_loading_text(tr("Loading"));
-    w_lobby->set_loading_value(0);
 
     AOPacket *f_packet;
 
@@ -265,21 +256,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       f_char.taken = false;
 
       w_courtroom->append_char(f_char);
-
-      if (!courtroom_loaded) {
-        ++loaded_chars;
-        w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
-                                      .arg(QString::number(loaded_chars))
-                                      .arg(QString::number(char_list_size)));
-
-        int total_loading_size =
-            char_list_size * 2 + evidence_list_size + music_list_size;
-        int loading_value = int(
-            ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-             static_cast<double>(total_loading_size)) *
-            100);
-        w_lobby->set_loading_value(loading_value);
-      }
     }
 
     if (!courtroom_loaded)
@@ -296,11 +272,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       ++loaded_music;
-
-      w_lobby->set_loading_text(tr("Loading music:\n%1/%2")
-                                    .arg(QString::number(loaded_music))
-                                    .arg(QString::number(music_list_size)));
-
       if (musics_time) {
         w_courtroom->append_music(f_contents.at(n_element));
       }
@@ -320,14 +291,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           areas++;
         }
       }
-
-      int total_loading_size =
-          char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(
-          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-           static_cast<double>(total_loading_size)) *
-          100);
-      w_lobby->set_loading_value(loading_value);
     }
 
     for (int area_n = 0; area_n < areas; area_n++) {
@@ -370,10 +333,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "DONE") {
     if (!courtroom_constructed)
       goto end;
-
-    if (lobby_constructed)
-      w_courtroom->append_server_chatmessage(tr("[Global log]"),
-                                             w_lobby->get_chatlog(), "0");
 
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();

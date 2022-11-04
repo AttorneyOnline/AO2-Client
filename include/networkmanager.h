@@ -51,9 +51,13 @@ public:
   void connect_to_server(server_type p_server);
   void disconnect_from_server();
 
+signals:
+  void server_connected(bool state);
+
 public slots:
   void get_server_list(const std::function<void()> &cb);
   void ship_server_packet(QString p_packet);
+  void join_to_server();
   void handle_server_packet(const QString& p_data);
 
   void request_document(MSDocumentType document_type,

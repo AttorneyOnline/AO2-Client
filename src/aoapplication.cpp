@@ -48,7 +48,7 @@ void AOApplication::construct_lobby()
   }
 
   load_favorite_list();
-  w_lobby = new Lobby(this);
+  w_lobby = new Lobby(this, net_manager);
   lobby_constructed = true;
 
   QRect geometry = QGuiApplication::primaryScreen()->geometry();
@@ -63,6 +63,7 @@ void AOApplication::construct_lobby()
       demo_server->deleteLater();
   demo_server = new DemoServer(this);
 
+  connect(w_lobby, &Lobby::settings_requested, this, &AOApplication::call_settings_menu);
   w_lobby->show();
 }
 
@@ -131,8 +132,7 @@ void AOApplication::save_favorite_list()
   favorite_servers_ini.setIniCodec("UTF-8");
 
   favorite_servers_ini.clear();
-  // skip demo server entry, demo server entry is always at index 0
-  for(int i = 1; i < favorite_list.size(); ++i) {
+  for(int i = 0; i < favorite_list.size(); ++i) {
     auto fav_server = favorite_list.at(i);
     favorite_servers_ini.beginGroup(QString::number(i));
     favorite_servers_ini.setValue("name", fav_server.name);
@@ -186,8 +186,6 @@ void AOApplication::server_disconnected()
 void AOApplication::loading_cancelled()
 {
   destruct_courtroom();
-
-  w_lobby->hide_loading_overlay();
 }
 
 void AOApplication::call_settings_menu()
@@ -199,8 +197,6 @@ void AOApplication::call_settings_menu()
     }
 
     if(lobby_constructed) {
-        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
-                w_lobby, &Lobby::set_widgets);
     }
     l_dialog->exec();
     delete l_dialog;
