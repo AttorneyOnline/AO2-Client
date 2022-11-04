@@ -44,16 +44,15 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager) : QMainWind
 
   //Serverlist elements
   FROM_UI(QTabWidget,connections_tabview);
-  if (ui_connections_tabview) {
-    ui_connections_tabview->tabBar()->setExpanding(true);
-  }
+  ui_connections_tabview->tabBar()->setExpanding(true);
+  connect(ui_connections_tabview, &QTabWidget::currentChanged, this, &Lobby::on_tab_changed);
 
   FROM_UI(QTreeWidget,serverlist_tree);
   FROM_UI(QLineEdit, serverlist_search);
   connect(ui_serverlist_tree, &QTreeWidget::itemClicked, this,
           &Lobby::on_server_list_clicked);
   connect(ui_serverlist_tree, &QTreeWidget::itemDoubleClicked,
-          this, &Lobby::on_server_list_doubleclicked);
+          this, &Lobby::on_list_doubleclicked);
   connect(ui_serverlist_search, &QLineEdit::textChanged, this,
           &Lobby::on_server_search_edited);
 
@@ -69,28 +68,26 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager) : QMainWind
   FROM_UI(QLineEdit, demo_search);
 
   FROM_UI(QPushButton, refresh_button);
-  connect(ui_refresh_button, &AOButton::pressed, this, &Lobby::on_refresh_pressed);
-  connect(ui_refresh_button, &AOButton::released, this, &Lobby::on_refresh_released);
+  connect(ui_refresh_button, &QPushButton::pressed, this, &Lobby::on_refresh_pressed);
+  connect(ui_refresh_button, &QPushButton::released, this, &Lobby::on_refresh_released);
 
   FROM_UI(QPushButton, add_to_favorite_button)
-  connect(ui_add_to_favorite_button, &AOButton::pressed, this, &Lobby::on_add_to_fav_pressed);
-  connect(ui_add_to_favorite_button, &AOButton::released, this, &Lobby::on_add_to_fav_released);
+  connect(ui_add_to_favorite_button, &QPushButton::pressed, this, &Lobby::on_add_to_fav_pressed);
+  connect(ui_add_to_favorite_button, &QPushButton::released, this, &Lobby::on_add_to_fav_released);
 
 
   FROM_UI(QPushButton, remove_from_favorites_button)
   ui_remove_from_favorites_button->setVisible(false);
+  connect(ui_remove_from_favorites_button, &QPushButton::pressed, this, &Lobby::on_remove_from_fav_pressed);
+  connect(ui_remove_from_favorites_button, &QPushButton::released, this, &Lobby::on_remove_from_fav_released);
 
   FROM_UI(QLabel, server_player_count_lbl)
   FROM_UI(QTextBrowser, server_description_text)
   FROM_UI(QPushButton, connect_button);
-  connect(ui_connect_button, &AOButton::pressed, this, &Lobby::on_connect_pressed);
-  connect(ui_connect_button, &AOButton::released, this, &Lobby::on_connect_released);
+  connect(ui_connect_button, &QPushButton::pressed, this, &Lobby::on_connect_pressed);
+  connect(ui_connect_button, &QPushButton::released, this, &Lobby::on_connect_released);
 
   FROM_UI(QTextBrowser, motd_text);
-
-  ui_remove_from_fav = new AOButton(this, ao_app);
-  ui_remove_from_fav->setObjectName("ui_remove_from_fav");
-  ui_remove_from_fav->hide();
 
   ui_loading_background = new AOImage(this, ao_app);
   ui_loading_background->setObjectName("ui_loading_background");
@@ -102,11 +99,6 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager) : QMainWind
   ui_progress_bar->setObjectName("ui_progress_bar");
   ui_cancel = new AOButton(ui_loading_background, ao_app);
   ui_cancel->setObjectName("ui_cancel");
-
-  connect(ui_remove_from_fav, &AOButton::pressed, this,
-          &Lobby::on_remove_from_fav_pressed);
-  connect(ui_remove_from_fav, &AOButton::released, this,
-          &Lobby::on_remove_from_fav_released);
   connect(ui_cancel, &AOButton::clicked, ao_app, &AOApplication::loading_cancelled);
 
   list_servers();
@@ -121,34 +113,6 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager) : QMainWind
 // sets images, position and size
 void Lobby::set_widgets()
 {
-  QString filename = "lobby_design.ini";
-
-  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
-
-  if (f_lobby.width < 0 || f_lobby.height < 0) {
-    qWarning() << "did not find lobby width or height in " << filename;
-
-    #ifdef ANDROID
-    if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE")==QtAndroid::PermissionResult::Denied) {
-        QtAndroid::requestPermissionsSync({"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"});
-    }
-    #endif
-
-    // Most common symptom of bad config files and missing assets.
-    call_notice(
-        tr("It doesn't look like your client is set up correctly.\n"
-           "Did you download all resources correctly from tiny.cc/getao, "
-           "including the large 'base' folder?"));
-
-    this->setFixedSize(517, 666);
-  }
-  else {
-    //this->setFixedSize(f_lobby.width, f_lobby.height);
-  }
-
-  set_size_and_pos(ui_remove_from_fav, "remove_from_fav");
-  ui_remove_from_fav->set_image("removefromfav");
-
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground");
 
@@ -164,9 +128,6 @@ void Lobby::set_widgets()
   ui_cancel->setText(tr("Cancel"));
 
   ui_loading_background->hide();
-
-  set_fonts();
-  set_stylesheets();
 }
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
@@ -186,59 +147,24 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   }
 }
 
-void Lobby::set_fonts()
+void Lobby::on_tab_changed(int index)
 {
-  set_font(ui_loading_text, "loading_text");
-}
-
-void Lobby::set_stylesheet(QWidget *widget)
-{
-  QString f_file = "lobby_stylesheets.css";
-  QString style_sheet_string = ao_app->get_stylesheet(f_file);
-  if (style_sheet_string != "")
-    widget->setStyleSheet(style_sheet_string);
-}
-
-void Lobby::set_stylesheets()
-{
-  set_stylesheet(this);
-  this->setStyleSheet(
-    "QFrame { background-color:transparent; } "
-    "QAbstractItemView { background-color: transparent; color: black; } "
-    "QLineEdit { background-color:transparent; }"
-    + this->styleSheet()
-  );
-}
-
-void Lobby::set_font(QWidget *widget, QString p_identifier)
-{
-  QString design_file = "lobby_fonts.ini";
-  int f_weight = ao_app->get_font_size(p_identifier, design_file);
-  QString class_name = widget->metaObject()->className();
-  QString font_name =
-      ao_app->get_design_element(p_identifier + "_font", design_file);
-  QFont font(font_name, f_weight);
-  bool use = ao_app->get_font_size("use_custom_fonts", design_file) == 1;
-  if (use) {
-    bool bold = ao_app->get_font_size(p_identifier + "_bold", design_file) ==
-                1; // is the font bold or not?
-    font.setBold(bold);
-    widget->setFont(font);
-    QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
-    bool center =
-        ao_app->get_font_size(p_identifier + "_center", design_file) ==
-        1; // should it be centered?
-    QString is_center = "";
-    if (center)
-      is_center = "qproperty-alignment: AlignCenter;";
-    QString style_sheet_string =
-        class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
-        "color: rgba(" + QString::number(f_color.red()) + ", " +
-        QString::number(f_color.green()) + ", " +
-        QString::number(f_color.blue()) + ", 255);\n" + is_center + "}";
-    widget->setStyleSheet(style_sheet_string);
-  }
-  return;
+    switch (index) { //Implicit conversion cause FUCK ALL OF YOU.
+    case SERVER:
+        ui_add_to_favorite_button->setVisible(true);
+        ui_remove_from_favorites_button->setVisible(false);
+        break;
+    case FAVORITES:
+        ui_add_to_favorite_button->setVisible(false);
+        ui_remove_from_favorites_button->setVisible(true);
+        break;
+    case DEMOS :
+        ui_add_to_favorite_button->setVisible(false);
+        ui_remove_from_favorites_button->setVisible(false);
+        break;
+    default:
+        break;
+    }
 }
 
 void Lobby::set_loading_text(QString p_text)
@@ -250,41 +176,26 @@ void Lobby::set_loading_text(QString p_text)
 
 int Lobby::get_selected_server()
 {
-  if (auto item = ui_serverlist_tree->currentItem()) {
-    return item->text(0).toInt();
-  }
+    switch (ui_connections_tabview->currentIndex()) {
+    case SERVER:
+        if (auto item = ui_serverlist_tree->currentItem()) {
+          return item->text(0).toInt();
+        }
+        break;
+    case FAVORITES:
+        if (auto item = ui_favorites_tree->currentItem()) {
+          return item->text(0).toInt();
+        }
+        break;
+    default:
+        break;
+    }
   return -1;
 }
 
 void Lobby::set_loading_value(int p_value)
 {
   ui_progress_bar->setValue(p_value);
-}
-
-void Lobby::on_public_servers_clicked()
-{
-  ui_add_to_favorite_button->show();
-  ui_remove_from_fav->hide();
-
-  reset_selection();
-
-  public_servers_selected = true;
-
-  list_servers();
-}
-
-void Lobby::on_favorites_clicked()
-{
-  ui_add_to_favorite_button->hide();
-  ui_remove_from_fav->show();
-
-  reset_selection();
-
-  ao_app->load_favorite_list();
-
-  public_servers_selected = false;
-
-  list_favorites();
 }
 
 void Lobby::reset_selection()
@@ -301,15 +212,10 @@ void Lobby::on_refresh_pressed() { /**ui_refresh->set_image("refresh_pressed");*
 
 void Lobby::on_refresh_released()
 {
-  //ui_refresh->set_image("refresh");
-
-  if (public_servers_selected) {
     net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
     get_motd();
-  } else {
     ao_app->load_favorite_list();
     list_favorites();
-  }
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -326,18 +232,13 @@ void Lobby::on_add_to_fav_released()
 
 void Lobby::on_remove_from_fav_pressed()
 {
-  ui_remove_from_fav->set_image("removefromfav_pressed");
+  //ui_remove_from_favorites_button->set_image("removefromfav_pressed");
 }
 
 void Lobby::on_remove_from_fav_released()
 {
-  ui_remove_from_fav->set_image("removefromfav");
-  if (public_servers_selected) {
-    return;
-  }
-
   int selection = get_selected_server();
-  if (selection > 0) {
+  if (selection >= 0) {
     ao_app->remove_favorite_server(selection);
     list_favorites();
   }
@@ -358,7 +259,6 @@ void Lobby::on_connect_released()
 void Lobby::on_about_clicked()
 {
   const bool hasApng = QImageReader::supportedImageFormats().contains("apng");
-
   QString msg =
       tr("<h2>Attorney Online %1</h2>"
          "The courtroom drama simulator."
@@ -407,51 +307,46 @@ void Lobby::on_settings_clicked() { ao_app->call_settings_menu(); }
 void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0;
-  if (p_item->text(column).toInt() != last_index || !public_servers_selected) {
-    server_type f_server;
-    int n_server = p_item->text(column).toInt();
-    last_index = n_server;
+  server_type f_server;
+  int n_server = p_item->text(column).toInt();
 
-    if (n_server < 0)
+  if (n_server == last_index) {
       return;
-
-    if (public_servers_selected) {
-      QVector<server_type> f_server_list = ao_app->get_server_list();
-
-      if (n_server >= f_server_list.size())
-        return;
-
-      f_server = f_server_list.at(n_server);
-    }
-    else {
-      if (n_server >= ao_app->get_favorite_list().size())
-        return;
-
-      f_server = ao_app->get_favorite_list().at(n_server);
-    }
-
-    set_server_description(f_server.desc);
-
-    ui_server_description_text->moveCursor(QTextCursor::Start);
-    ui_server_description_text->ensureCursorVisible();
-
-    ui_connect_button->setEnabled(false);
-
-    net_manager->connect_to_server(f_server);
   }
+  last_index = n_server;
+
+  if (n_server < 0)
+    return;
+
+  QVector<server_type> f_server_list = ao_app->get_server_list();
+
+  if (n_server >= f_server_list.size())
+    return;
+
+  f_server = f_server_list.at(n_server);
+
+  set_server_description(f_server.desc);
+
+  ui_server_description_text->moveCursor(QTextCursor::Start);
+  ui_server_description_text->ensureCursorVisible();
+  ui_server_player_count_lbl->setText(tr("Connecting..."));
+
+  ui_connect_button->setEnabled(false);
+
+  net_manager->connect_to_server(f_server);
 }
 
 // doubleclicked on an item in the serverlist so we'll connect right away
-void Lobby::on_server_list_doubleclicked(QTreeWidgetItem *p_item, int column)
+void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 {
-  doubleclicked = true;
-  on_server_list_clicked(p_item, column);
-  //on_connect_released();
+   Q_UNUSED(p_item)
+   Q_UNUSED(column)
+   net_manager->join_to_server();
 }
 
 void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
 {
-  auto *item = ui_serverlist_tree->itemAt(point);
+  auto *item = ui_favorites_tree->itemAt(point);
   if (item == nullptr) {
     qInfo() << "no favorite server item; skipping context menu";
     return;
@@ -463,7 +358,7 @@ void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
     ao_app->remove_favorite_server(server_index);
     list_favorites();
   });
-  menu->popup(ui_serverlist_tree->mapToGlobal(point));
+  menu->popup(ui_favorites_tree->mapToGlobal(point));
 }
 
 void Lobby::on_server_search_edited(QString p_text)
@@ -507,10 +402,6 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
 
 void Lobby::list_servers()
 {
-  if (!public_servers_selected) {
-    return;
-  }
-
   ui_serverlist_tree->setSortingEnabled(false);
   ui_serverlist_tree->clear();
 
@@ -540,6 +431,7 @@ void Lobby::list_favorites()
     i++;
   }
   ui_favorites_tree->setSortingEnabled(true);
+  ui_favorites_tree->sortItems(0, Qt::SortOrder::AscendingOrder);
 }
 
 void Lobby::list_demos()
@@ -556,6 +448,7 @@ void Lobby::list_demos()
     }
   }
   ui_demo_tree->setSortingEnabled(true);
+  ui_demo_tree->sortItems(0, Qt::SortOrder::AscendingOrder);
 }
 
 void Lobby::get_motd()

@@ -151,10 +151,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_lobby->set_server_description(f_contents.at(2));
     }
 
-    if (w_lobby->doubleclicked) {
-      send_server_packet(new AOPacket("askchaa"));
-      w_lobby->doubleclicked = false;
-    }
     log_to_demo = false;
   }
   else if (header == "SI") {
@@ -182,7 +178,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int selected_server = w_lobby->get_selected_server();
 
     QString server_address = "", server_name = "";
-    if (w_lobby->public_servers_selected) {
+    if (true) {
       if (selected_server >= 0 && selected_server < server_list.size()) {
         auto info = server_list.at(selected_server);
         server_name = info.name;

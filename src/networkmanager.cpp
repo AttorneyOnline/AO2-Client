@@ -193,6 +193,11 @@ void NetworkManager::connect_to_server(server_type p_server)
   active_connection_type = p_server.socket_type;
 }
 
+void NetworkManager::join_to_server()
+{
+    ship_server_packet(AOPacket("askchaa").to_string());
+}
+
 void NetworkManager::disconnect_from_server()
 {
   if (!connected)

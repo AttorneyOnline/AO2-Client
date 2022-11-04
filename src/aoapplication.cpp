@@ -48,7 +48,7 @@ void AOApplication::construct_lobby()
   }
 
   load_favorite_list();
-  w_lobby = new Lobby(this);
+  w_lobby = new Lobby(this, net_manager);
   lobby_constructed = true;
 
   QRect geometry = QGuiApplication::primaryScreen()->geometry();

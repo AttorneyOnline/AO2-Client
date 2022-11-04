@@ -49,6 +49,7 @@ public:
   ~NetworkManager() = default;
 
   void connect_to_server(server_type p_server);
+  void join_to_server();
   void disconnect_from_server();
 
 public slots:
