@@ -30,7 +30,6 @@ class Lobby : public QMainWindow {
 public:
   Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr);
 
-  void set_widgets();
   void list_servers();
   void list_favorites();
   void list_demos();
@@ -38,14 +37,9 @@ public:
   void check_for_updates();
   void set_player_count(int players_online, int max_players);
   void set_server_description(const QString& server_description);
-  void set_loading_text(QString p_text);
   int get_selected_server();
   void enable_connect_button();
   void reset_selection();
-
-  void set_loading_value(int p_value);
-  void show_loading_overlay() { ui_loading_background->show(); }
-  void hide_loading_overlay() { ui_loading_background->hide(); }
 
   ~Lobby();
 
@@ -53,14 +47,7 @@ private:
   AOApplication *ao_app;
   NetworkManager *net_manager;
 
-  AOImage *ui_loading_background;
-  QTextEdit *ui_loading_text;
-  QProgressBar *ui_progress_bar;
-  AOButton *ui_cancel;
-
   int last_index = -1;
-
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
   enum TabPage {
       SERVER,

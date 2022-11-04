@@ -185,8 +185,6 @@ void AOApplication::server_disconnected()
 void AOApplication::loading_cancelled()
 {
   destruct_courtroom();
-
-  w_lobby->hide_loading_overlay();
 }
 
 void AOApplication::call_settings_menu()
@@ -198,8 +196,7 @@ void AOApplication::call_settings_menu()
     }
 
     if(lobby_constructed) {
-        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
-                w_lobby, &Lobby::set_widgets);
+
     }
     l_dialog->exec();
     delete l_dialog;

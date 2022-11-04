@@ -89,62 +89,11 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager) : QMainWind
 
   FROM_UI(QTextBrowser, motd_text);
 
-  ui_loading_background = new AOImage(this, ao_app);
-  ui_loading_background->setObjectName("ui_loading_background");
-  ui_loading_text = new QTextEdit(ui_loading_background);
-  ui_loading_text->setObjectName("ui_loading_text");
-  ui_progress_bar = new QProgressBar(ui_loading_background);
-  ui_progress_bar->setMinimum(0);
-  ui_progress_bar->setMaximum(100);
-  ui_progress_bar->setObjectName("ui_progress_bar");
-  ui_cancel = new AOButton(ui_loading_background, ao_app);
-  ui_cancel->setObjectName("ui_cancel");
-  connect(ui_cancel, &AOButton::clicked, ao_app, &AOApplication::loading_cancelled);
-
   list_servers();
   list_favorites();
   list_demos();
   get_motd();
   check_for_updates();
-
-  set_widgets();
-}
-
-// sets images, position and size
-void Lobby::set_widgets()
-{
-  ui_loading_background->resize(this->width(), this->height());
-  ui_loading_background->set_image("loadingbackground");
-
-  set_size_and_pos(ui_loading_text, "loading_label");
-  ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
-  ui_loading_text->setReadOnly(true);
-  ui_loading_text->setAlignment(Qt::AlignCenter);
-  ui_loading_text->setFrameStyle(QFrame::NoFrame);
-  ui_loading_text->append(tr("Loading"));
-
-  set_size_and_pos(ui_progress_bar, "progress_bar");
-  set_size_and_pos(ui_cancel, "cancel");
-  ui_cancel->setText(tr("Cancel"));
-
-  ui_loading_background->hide();
-}
-
-void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
-{
-  QString filename = "lobby_design.ini";
-
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename);
-
-  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qWarning() << "could not find" << p_identifier << "in" << filename;
-    p_widget->hide();
-  }
-  else {
-    p_widget->move(design_ini_result.x, design_ini_result.y);
-    p_widget->resize(design_ini_result.width, design_ini_result.height);
-  }
 }
 
 void Lobby::on_tab_changed(int index)
@@ -167,13 +116,6 @@ void Lobby::on_tab_changed(int index)
     }
 }
 
-void Lobby::set_loading_text(QString p_text)
-{
-  ui_loading_text->clear();
-  ui_loading_text->setAlignment(Qt::AlignCenter);
-  ui_loading_text->append(p_text);
-}
-
 int Lobby::get_selected_server()
 {
     switch (ui_connections_tabview->currentIndex()) {
@@ -191,11 +133,6 @@ int Lobby::get_selected_server()
         break;
     }
   return -1;
-}
-
-void Lobby::set_loading_value(int p_value)
-{
-  ui_progress_bar->setValue(p_value);
 }
 
 void Lobby::reset_selection()
