@@ -209,6 +209,19 @@ public:
    */
   QVector<server_type> read_legacy_favorite_servers();
 
+  /**
+   * @brief Reads the clients log folder and locates potential demo files to populate the demoserver list.
+   *
+   * @return A seperated list of servernames and demo logfile filenames.
+   *
+   * @details This is to remove the need of delimiters or deal with potential
+   * harmfully encoding or plattform differences. We always get a combo of servername and filename.
+   *
+   * Do note this function assumes all demo files have the .demo extension.
+   *
+   */
+  QMultiMap<QString, QString> load_demo_logs_list() const;
+
   // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, VPath p_design_path);
   QString read_design_ini(QString p_identifier, QString p_design_path);

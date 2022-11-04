@@ -106,14 +106,6 @@ QVector<server_type> AOApplication::read_favorite_servers()
 {
   QVector<server_type> serverlist;
 
-  // demo server is always at the top
-  server_type demo_server;
-  demo_server.ip = "127.0.0.1";
-  demo_server.port = 99999;
-  demo_server.name = tr("Demo playback");
-  demo_server.desc = tr("Play back demos you have previously recorded");
-  serverlist.append(demo_server);
-
   QString fav_servers_ini_path(get_base_path() + "favorite_servers.ini");
   if (!QFile::exists(fav_servers_ini_path)) {
     qWarning() << "failed to locate favorite_servers.ini, falling back to legacy serverlist.txt";
@@ -193,6 +185,25 @@ QVector<server_type> AOApplication::read_legacy_favorite_servers()
   }
 
   return serverlist;
+}
+
+QMultiMap<QString, QString> AOApplication::load_demo_logs_list() const
+{
+    QString l_log_path = applicationDirPath() + "/logs/";
+    QDir l_log_folder(l_log_path);
+    l_log_folder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
+
+    QMultiMap<QString,QString> l_demo_logs;
+    for (const QString &l_demo_folder_name : l_log_folder.entryList()) {
+        QDir l_demo_folder(l_log_path + l_demo_folder_name);
+        l_demo_folder.setFilter(QDir::Files);
+        l_demo_folder.setNameFilters(QStringList() << "*.demo");
+
+        for (QString l_demo_name : l_demo_folder.entryList()) {
+            l_demo_logs.insert(l_demo_folder_name, l_demo_name);
+        }
+    }
+    return l_demo_logs;
 }
 
 QString AOApplication::read_design_ini(QString p_identifier,
