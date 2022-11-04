@@ -197,7 +197,6 @@ void AOApplication::call_settings_menu()
     }
 
     if(lobby_constructed) {
-
     }
     l_dialog->exec();
     delete l_dialog;
