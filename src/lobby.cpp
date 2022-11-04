@@ -61,18 +61,16 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
           &Lobby::on_server_search_edited);
 
   FROM_UI(QTreeWidget, favorites_tree);
+  connect(ui_favorites_tree, &QTreeWidget::itemClicked, this,
+          &Lobby::on_favorite_tree_clicked);
   connect(ui_favorites_tree, &QTreeWidget::itemDoubleClicked, this,
           &Lobby::on_list_doubleclicked);
   connect(ui_favorites_tree, &QTreeWidget::customContextMenuRequested, this,
           &Lobby::on_favorite_list_context_menu_requested);
 
-  FROM_UI(QLineEdit, favorites_search);
-
   FROM_UI(QTreeWidget, demo_tree);
   connect(ui_demo_tree, &QTreeWidget::itemClicked, this,
           &Lobby::on_demo_clicked);
-
-  FROM_UI(QLineEdit, demo_search);
 
   FROM_UI(QPushButton, refresh_button);
   connect(ui_refresh_button, &QPushButton::released, this,
@@ -281,6 +279,36 @@ void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
   });
   menu->popup(ui_favorites_tree->mapToGlobal(point));
 }
+
+void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
+{
+    column = 0;
+    server_type f_server;
+    int n_server = p_item->text(column).toInt();
+
+    if (n_server == last_index) {
+      return;
+    }
+    last_index = n_server;
+
+    if (n_server < 0) return;
+
+    QVector<server_type> f_server_list = ao_app->get_favorite_list();
+
+    if (n_server >= f_server_list.size()) return;
+
+    f_server = f_server_list.at(n_server);
+
+    set_server_description(f_server.desc);
+
+    ui_server_description_text->moveCursor(QTextCursor::Start);
+    ui_server_description_text->ensureCursorVisible();
+    ui_server_player_count_lbl->setText(tr("Connecting..."));
+
+    ui_connect_button->setEnabled(false);
+
+    net_manager->connect_to_server(f_server);
+  }
 
 void Lobby::on_server_search_edited(QString p_text)
 {

@@ -86,6 +86,7 @@ private slots:
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_list_doubleclicked(QTreeWidgetItem *p_item, int column);
   void on_favorite_list_context_menu_requested(const QPoint &point);
+  void on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_search_edited(QString p_text);
   void on_demo_clicked(QTreeWidgetItem *item, int column);
 };
