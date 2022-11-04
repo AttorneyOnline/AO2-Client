@@ -71,6 +71,8 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
   FROM_UI(QTreeWidget, demo_tree);
   connect(ui_demo_tree, &QTreeWidget::itemClicked, this,
           &Lobby::on_demo_clicked);
+  connect(ui_demo_tree, &QTreeWidget::itemDoubleClicked, this,
+          &Lobby::on_list_doubleclicked);
 
   FROM_UI(QPushButton, refresh_button);
   connect(ui_refresh_button, &QPushButton::released, this,
