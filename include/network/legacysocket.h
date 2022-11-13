@@ -2,7 +2,7 @@
 #define LEGACYSOCKET_H
 
 #include <QTcpSocket>
-#include <contrib/QtPromise>
+#include <QtPromise>
 
 using namespace QtPromise;
 

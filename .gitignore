@@ -43,3 +43,4 @@ object_script*
 /attorney_online_*_plugin_import.cpp
 server/__pycache__
 discord/
+external/qtpromise/*

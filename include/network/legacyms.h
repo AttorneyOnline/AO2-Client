@@ -1,7 +1,7 @@
 #ifndef LEGACYMS_H
 #define LEGACYMS_H
 
-#include <contrib/QtPromise>
+#include <QtPromise>
 
 #include "legacysocket.h"
 #include "masterserver.h"

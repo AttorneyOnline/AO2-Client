@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QVector>
-#include <contrib/QtPromise>
+#include "QtPromise"
 
 #include "datatypes.h"
 

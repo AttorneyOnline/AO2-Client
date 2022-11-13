@@ -4,7 +4,7 @@
 #include <QString>
 #include <QTcpSocket>
 #include <QVector>
-#include <contrib/QtPromise>
+#include <QtPromise>
 
 #include "legacysocket.h"
 #include "client.h"

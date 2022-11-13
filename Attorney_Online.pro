@@ -6,8 +6,10 @@ TEMPLATE = app
 VERSION = 2.10.0.0
 
 INCLUDEPATH += $$PWD/include
-INCLUDEPATH += $$PWD/include/contrib/discord
-INCLUDEPATH += $$PWD/include/contrib/bass
+INCLUDEPATH += $$PWD/external/discord
+INCLUDEPATH += $$PWD/external/bass
+INCLUDEPATH += $$PWD/external/qtpromise/include
+
 DESTDIR = $$PWD/bin
 OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
