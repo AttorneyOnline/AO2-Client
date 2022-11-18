@@ -7,12 +7,12 @@
 
 namespace AttorneyOnline {
 
-template <typename T> T toEnum(const int &f_int)
+template <typename T> T toDataType(const int &f_int)
 {
   return QVariant(f_int).value<T>();
 }
 
-template <typename T> T toEnum(const QString &f_string)
+template <typename T> T toDataType(const QString &f_string)
 {
   return QVariant(f_string).value<T>();
 }
@@ -92,35 +92,35 @@ public:
   Q_ENUM(TEXT_COLOR);
 
   struct IncomingMSPacket {
-    DESKMOD desk_mod;
-    QString pre_animation;
-    QString character;
-    QString emote;
-    QString side;
-    QString sfx_name;
-    EMOTE_MODIFIER emote_mod;
-    int char_id;
-    int sfx_delay;
-    SHOUT_MODIFIER shout_mod;
-    QString evidence;
-    bool flip;
-    bool realization;
-    TEXT_COLOR text_color;
+    DESKMOD desk_mod = DESKMOD::HIDDEN;
+    QString pre_animation = "";
+    QString character ="Unknown";
+    QString emote = "default";
+    QString side = "wit";
+    QString sfx_name = "";
+    EMOTE_MODIFIER emote_mod = EMOTE_MODIFIER::NONE;
+    int char_id = -1;
+    int sfx_delay = 0;
+    SHOUT_MODIFIER shout_mod = SHOUT_MODIFIER::NOTHING;
+    QString evidence = "";
+    bool flip = false;
+    bool realization = false;
+    TEXT_COLOR text_color = TEXT_COLOR::WHITE;
     //2.6 Network Extension.
-    QString showname;
-    int other_char_id;
-    QString other_char_name;
-    QPair<int,int> character_offset;
-    QPair<int,int> other_offset;
-    bool other_flip;
-    bool noninterruptpre;
+    QString showname = character;
+    int other_char_id = -1;
+    QString other_char_name = "";
+    QPair<int,int> character_offset = {0,0};
+    QPair<int,int> other_offset = {0,0};
+    bool other_flip = false;
+    bool noninterruptpre = false;
     //2.8 Network Extension
-    bool sfx_looping;
-    bool screenshake;
-    QVector<int> frames_realization;
-    QVector<int> frames_sfx;
-    bool additive;
-    QString effect;
+    bool sfx_looping = false;
+    bool screenshake = false;
+    QVector<int> frames_realization = QVector<int>{};
+    QVector<int> frames_sfx = QVector<int>{};
+    bool additive = false;
+    QString effect = "";
 
     enum indices {
         DESK_MOD = 0,
@@ -157,6 +157,17 @@ public:
 
     IncomingMSPacket(QStringList packet){
         Q_UNUSED(packet)
+        desk_mod = toDataType<DESKMOD>(packet.at(DESK_MOD).toInt());
+        pre_animation = packet.at(PRE_EMOTE);
+        character = packet.at(CHAR_NAME);
+        emote = packet.at(EMOTE);
+        side = packet.at(SIDE);
+        sfx_name = packet.at(SFX_NAME);
+        emote_mod = toDataType<EMOTE_MODIFIER>(packet.at(EMOTE_MOD).toInt());
+        char_id = packet.at(CHAR_ID).toInt();
+        sfx_delay = packet.at(SFX_DELAY).toInt();
+        shout_mod = toDataType<SHOUT_MODIFIER>(packet.at(OBJECTION_MOD));
+        evidence = packet.at(EVIDENCE_ID).toInt();
     }
 
     QStringList serialise() {
