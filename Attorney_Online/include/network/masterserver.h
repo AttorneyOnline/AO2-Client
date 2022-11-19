@@ -1,7 +1,7 @@
 #ifndef MASTERSERVER_H
 #define MASTERSERVER_H
 
-#include <contrib/QtPromise>
+#include <QtPromise>
 
 #include "datatypes.h"
 

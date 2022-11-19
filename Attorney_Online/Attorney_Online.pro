@@ -10,7 +10,7 @@ INCLUDEPATH += $$PWD/external/discord
 INCLUDEPATH += $$PWD/external/bass
 INCLUDEPATH += $$PWD/external/qtpromise/include
 
-DESTDIR = $$PWD/bin
+DESTDIR = $$PWD/../bin
 OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
 

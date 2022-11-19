@@ -2,5 +2,5 @@
 	path = bin/base/themes
 	url = https://github.com/AttorneyOnline/AO2-Themes.git
 [submodule "include/contrib/qtpromise"]
-	path = include/contrib/qtpromise
+	path = Attorney_Online/include/contrib/qtpromise
 	url = https://github.com/simonbrunel/qtpromise.git
