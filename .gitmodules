@@ -1,3 +1,6 @@
 [submodule "bin/base/themes"]
 	path = bin/base/themes
 	url = https://github.com/AttorneyOnline/AO2-Themes.git
+[submodule "Attorney_Online/external/qtpromise"]
+	path = Attorney_Online/external/qtpromise
+	url = https://github.com/simonbrunel/qtpromise.git
