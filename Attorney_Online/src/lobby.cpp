@@ -137,6 +137,7 @@ int Lobby::get_selected_server()
   case FAVORITES:
     if (auto item = ui_favorites_tree->currentItem()) {
       return item->text(0).toInt();
+      break;
     }
   default:
     break;

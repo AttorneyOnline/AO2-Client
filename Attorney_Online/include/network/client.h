@@ -39,7 +39,7 @@ public:
 
   virtual void callMod(const QString &message = QStringLiteral()) = 0;
 
-  virtual QPromise<void> sendIC(const chat_message_type &message) = 0;
+  virtual QPromise<void> sendIC(const DataTypes::MSPacket &message) = 0;
   virtual void sendOOC(const QString &oocName,
                        const QString &message) = 0;
 
@@ -59,7 +59,7 @@ public:
 signals:
   void connectProgress(int current, int max, const QString &message);
 
-  void icReceived(const chat_message_type &message);
+  void icReceived(const DataTypes::MSPacket &message);
   void oocReceived(const QString &name, const QString &message);
 
   void wtceReceived(WTCE_TYPE type);

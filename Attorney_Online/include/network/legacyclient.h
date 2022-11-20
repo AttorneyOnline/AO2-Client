@@ -76,7 +76,7 @@ public:
 
   void callMod(const QString &message) override;
 
-  QPromise<void> sendIC(const chat_message_type &message) override;
+  QPromise<void> sendIC(const DataTypes::MSPacket &message);
   void sendOOC(const QString &oocName,
                const QString &message) override;
 

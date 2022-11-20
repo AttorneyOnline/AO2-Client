@@ -3,14 +3,17 @@
 #include "network/hdid.h"
 
 #include <QApplication>
+#include <QDebug>
+
+using HEADER = AttorneyOnline::DataTypes::HEADER;
+Q_DECLARE_METATYPE(HEADER)
 
 namespace AttorneyOnline {
 
-#define ENFORCE_MIN_LENGTH(minimum) \
-  if (args.size() < minimum) \
-  { \
-    qWarning() << "Incoming message" << header << "too short"; \
-    return; \
+#define ENFORCE_MIN_LENGTH(minimum)                                            \
+  if (args.size() < minimum) {                                                 \
+    qWarning() << "Incoming message" << header << "too short";                 \
+    return;                                                                    \
   }
 
 /*!
@@ -18,242 +21,220 @@ namespace AttorneyOnline {
  */
 void LegacyClient::mapSignals()
 {
-  QObject::connect(&socket, &LegacySocket::messageReceived,
-                   [&](const QString &header, const QStringList &args) {
-    if (header == "FL")
-    {
-      if (args.contains("cccc_ic_support"))
-        caseCafeFeatures = true;
-    }
-    else if (header == "PN")
-    {
-      ENFORCE_MIN_LENGTH(2)
-
-      curPlayers = args[0].toInt();
-      maxPlayers = args[1].toInt();
-    }
-    else if (header == "SC")
-    {
-      charsList.clear();
-      for (const QString &character : args)
-      {
-        QStringList charInfo = character.split("&");
-        char_type charEntry;
-        charEntry.name = charInfo[0];
-        if (charInfo.size() > 1)
-          charEntry.description = charInfo[1];
-        charsList.append(std::move(charEntry));
-      }
-
-      qInfo() << "Got" << charsList.count() << "playable characters.";
-    }
-    else if (header == "CharsCheck")
-    {
-      for (int i = 0; i < charsList.length() && i < args.length(); i++)
-      {
-        charsList[i].taken = args[i].toInt() == -1;
-      }
-
-      emit takenCharsChanged();
-    }
-    else if (header == "PV")
-    {
-      ENFORCE_MIN_LENGTH(3)
-
-      // The only useful thing from this packet is the index of the character
-      // assigned. The rest is meaningless.
-      bool ok = false;
-      currentCharId = args[2].toInt(&ok);
-
-      if (!ok)
-      {
-        qWarning() << "Server issued us an unknown character ID: " << args[2];
-        currentCharId = -1;
-      }
-
-      emit characterChanged(currentCharId);
-    }
-    else if (header == "DONE")
-    {
-      // Usually, this packet is used outside of the handshake process
-      // to kick people off the current character.
-      currentCharId = -1;
-      emit characterChanged(currentCharId);
-    }
-    else if (header == "SM")
-    {
-      tracksList.clear();
-      areasList.clear();
-
-      int musicStart = args.indexOf(QRegExp("(\\=.+|.+\\.(wav|mp3|ogg|opus))"));
-      tracksList.append(args.mid(musicStart));
-
-      for (int i = 0; i < musicStart; i++)
-      {
-        area_type area;
-        area.id = i;
-        area.name = args[i];
-        area.players = 0;
-        area.status = "Unknown";
-        area.cm = "Unknown";
-        area.locked = "Unknown";
-        areasList.append(area);
-      }
-
-      qInfo() << "Got" << tracksList.count() << "tracks and"
-              << areasList.count() << "areas.";
-
-      emit tracksChanged();
-    }
-    else if (header == "LE")
-    {
-      evidenceList.clear();
-      for (const QString &evi : args)
-      {
-        QStringList eviInfo = evi.split("&");
-        evi_type eviEntry;
-        eviEntry.name = eviInfo[0];
-        eviEntry.description = eviInfo[1];
-        eviEntry.image = eviInfo[2];
-        evidenceList.append(eviEntry);
-      }
-
-      emit evidenceChanged();
-    }
-    else if (header == "MS")
-    {
-      ENFORCE_MIN_LENGTH(15)
-      chat_message_type message(args);
-      emit icReceived(message);
-    }
-    else if (header == "CT")
-    {
-      ENFORCE_MIN_LENGTH(1)
-
-      QString name, message;
-      if (args.size() == 1)
-      {
-        message = args[0];
-      }
-      else if (args.size() >= 2)
-      {
-        name = args[0];
-        message = args[1];
-      }
-
-      emit oocReceived(name, message);
-    }
-    else if (header == "MC")
-    {
-      ENFORCE_MIN_LENGTH(2)
-
-      bool ok;
-      int charId = args[1].toInt(&ok);
-
-      QString character;
-      if (args.size() >= 3)
-      {
-        // Use custom showname
-        character = args[2];
-      }
-      else if (ok && charId >= 0 && charId < charsList.size())
-      {
-        // Use character's default name
-        character = charsList[charId].name;
-      }
-
-      // Trim extension from filename
-      QString trackName = args[0].left(args[0].lastIndexOf('.'));
-
-      emit trackChanged(trackName, character);
-    }
-    else if (header == "HP")
-    {
-      ENFORCE_MIN_LENGTH(2)
-      emit healthChanged(static_cast<HEALTH_TYPE>(args[0].toInt()), args[1].toInt());
-    }
-    else if (header == "BN")
-    {
-      ENFORCE_MIN_LENGTH(1)
-      emit backgroundChanged(args[0]);
-    }
-    else if (header == "RT")
-    {
-      ENFORCE_MIN_LENGTH(1)
-
-      WTCE_TYPE wtce;
-      if (args[0] == "testimony1")
-        wtce = WITNESS_TESTIMONY;
-      else if (args[0] == "testimony2")
-        wtce = CROSS_EXAMINATION;
-      else if (args[0] == "judgeruling" && args[1] == "0")
-        wtce = NOT_GUILTY;
-      else if (args[0] == "judgeruling" && args[1] == "1")
-        wtce = GUILTY;
-      else
-      {
-        qWarning() << QStringLiteral("unknown WTCE type %1").arg(args[0]);
-        return;
-      }
-
-      emit wtceReceived(wtce);
-    }
-    else if (header == "ARUP")
-    {
-      ENFORCE_MIN_LENGTH(1)
-
-      int updateType = args[0].toInt();
-
-      for (int i = 0; i < areasList.length() && i < args.length() - 1; i++)
-      {
-        area_type &area = areasList[i];
-        const QString &value = args[i + 1];
-
-        switch (updateType)
-        {
-        case ARUP_PARAM::PLAYERS:
-          area.players = value.toInt();
+  QObject::connect(
+      &socket, &LegacySocket::messageReceived,
+      [&](const QString &header, const QStringList &args) {
+        switch (toDataType<HEADER>(header)) {
+        case HEADER::FL:
+          qInfo() << "Server supports the following features :" << args
+                  << Qt::endl << "We don't care tho. Enable all features!";
           break;
-        case ARUP_PARAM::STATUS:
-          area.status = value;
+
+        case HEADER::PN:
+          ENFORCE_MIN_LENGTH(2)
+
+          curPlayers = args[0].toInt();
+          maxPlayers = args[1].toInt();
           break;
-        case ARUP_PARAM::CM:
-          area.cm = value;
+
+        case HEADER::SC:
+          charsList.clear();
+          for (const QString &character : args) {
+            QStringList charInfo = character.split("&");
+            char_type charEntry;
+            charEntry.name = charInfo[0];
+            if (charInfo.size() > 1) charEntry.description = charInfo[1];
+            charsList.append(std::move(charEntry));
+          }
+
+          qInfo() << "Got" << charsList.count() << "playable characters.";
           break;
-        case ARUP_PARAM::LOCKED:
-          area.locked = value;
-          break;
-        default:
-          qWarning() << tr("Unknown ARUP parameter %1").arg(updateType);
-          return;
         }
-      }
 
-      emit areasUpdated();
-    }
-    else if (header == "SP")
-    {
-      ENFORCE_MIN_LENGTH(1)
-      emit positionChanged(args[0]);
-    }
-    else if (header == "KK")
-    {
-      const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
-      kicked = true;
-      emit connectionLost(KICKED, msg);
-    }
-    else if (header == "KB" || header == "BD")
-    {
-      const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
-      kicked = true;
-      emit connectionLost(BANNED, msg);
-    }
-    else if (header == "ZZ")
-    {
-      ENFORCE_MIN_LENGTH(1)
-      emit modCalled(args[0]);
-    }
-  });
+        if (header == "CharsCheck") {
+          for (int i = 0; i < charsList.length() && i < args.length(); i++) {
+            charsList[i].taken = args[i].toInt() == -1;
+          }
+
+          emit takenCharsChanged();
+        }
+        else if (header == "PV") {
+          ENFORCE_MIN_LENGTH(3)
+
+          // The only useful thing from this packet is the index of the
+          // character assigned. The rest is meaningless.
+          bool ok = false;
+          currentCharId = args[2].toInt(&ok);
+
+          if (!ok) {
+            qWarning() << "Server issued us an unknown character ID: "
+                       << args[2];
+            currentCharId = -1;
+          }
+
+          emit characterChanged(currentCharId);
+        }
+        else if (header == "DONE") {
+          // Usually, this packet is used outside of the handshake process
+          // to kick people off the current character.
+          currentCharId = -1;
+          emit characterChanged(currentCharId);
+        }
+        else if (header == "SM") {
+          tracksList.clear();
+          areasList.clear();
+
+          int musicStart =
+              args.indexOf(QRegExp("(\\=.+|.+\\.(wav|mp3|ogg|opus))"));
+          tracksList.append(args.mid(musicStart));
+
+          for (int i = 0; i < musicStart; i++) {
+            area_type area;
+            area.id = i;
+            area.name = args[i];
+            area.players = 0;
+            area.status = "Unknown";
+            area.cm = "Unknown";
+            area.locked = "Unknown";
+            areasList.append(area);
+          }
+
+          qInfo() << "Got" << tracksList.count() << "tracks and"
+                  << areasList.count() << "areas.";
+
+          emit tracksChanged();
+        }
+        else if (header == "LE") {
+          evidenceList.clear();
+          for (const QString &evi : args) {
+            QStringList eviInfo = evi.split("&");
+            evi_type eviEntry;
+            eviEntry.name = eviInfo[0];
+            eviEntry.description = eviInfo[1];
+            eviEntry.image = eviInfo[2];
+            evidenceList.append(eviEntry);
+          }
+
+          emit evidenceChanged();
+        }
+        else if (header == "MS") {
+          ENFORCE_MIN_LENGTH(15)
+          DataTypes::MSPacket message(args);
+          emit icReceived(message);
+        }
+        else if (header == "CT") {
+          ENFORCE_MIN_LENGTH(1)
+
+          QString name, message;
+          if (args.size() == 1) {
+            message = args[0];
+          }
+          else if (args.size() >= 2) {
+            name = args[0];
+            message = args[1];
+          }
+
+          emit oocReceived(name, message);
+        }
+        else if (header == "MC") {
+          ENFORCE_MIN_LENGTH(2)
+
+          bool ok;
+          int charId = args[1].toInt(&ok);
+
+          QString character;
+          if (args.size() >= 3) {
+            // Use custom showname
+            character = args[2];
+          }
+          else if (ok && charId >= 0 && charId < charsList.size()) {
+            // Use character's default name
+            character = charsList[charId].name;
+          }
+
+          // Trim extension from filename
+          QString trackName = args[0].left(args[0].lastIndexOf('.'));
+
+          emit trackChanged(trackName, character);
+        }
+        else if (header == "HP") {
+          ENFORCE_MIN_LENGTH(2)
+          emit healthChanged(static_cast<HEALTH_TYPE>(args[0].toInt()),
+                             args[1].toInt());
+        }
+        else if (header == "BN") {
+          ENFORCE_MIN_LENGTH(1)
+          emit backgroundChanged(args[0]);
+        }
+        else if (header == "RT") {
+          ENFORCE_MIN_LENGTH(1)
+
+          WTCE_TYPE wtce;
+          if (args[0] == "testimony1")
+            wtce = WITNESS_TESTIMONY;
+          else if (args[0] == "testimony2")
+            wtce = CROSS_EXAMINATION;
+          else if (args[0] == "judgeruling" && args[1] == "0")
+            wtce = NOT_GUILTY;
+          else if (args[0] == "judgeruling" && args[1] == "1")
+            wtce = GUILTY;
+          else {
+            qWarning() << QStringLiteral("unknown WTCE type %1").arg(args[0]);
+            return;
+          }
+
+          emit wtceReceived(wtce);
+        }
+        else if (header == "ARUP") {
+          ENFORCE_MIN_LENGTH(1)
+
+          int updateType = args[0].toInt();
+
+          for (int i = 0; i < areasList.length() && i < args.length() - 1;
+               i++) {
+            area_type &area = areasList[i];
+            const QString &value = args[i + 1];
+
+            switch (updateType) {
+            case ARUP_PARAM::PLAYERS:
+              area.players = value.toInt();
+              break;
+            case ARUP_PARAM::STATUS:
+              area.status = value;
+              break;
+            case ARUP_PARAM::CM:
+              area.cm = value;
+              break;
+            case ARUP_PARAM::LOCKED:
+              area.locked = value;
+              break;
+            default:
+              qWarning() << tr("Unknown ARUP parameter %1").arg(updateType);
+              return;
+            }
+          }
+
+          emit areasUpdated();
+        }
+        else if (header == "SP") {
+          ENFORCE_MIN_LENGTH(1)
+          emit positionChanged(args[0]);
+        }
+        else if (header == "KK") {
+          const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
+          kicked = true;
+          emit connectionLost(KICKED, msg);
+        }
+        else if (header == "KB" || header == "BD") {
+          const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
+          kicked = true;
+          emit connectionLost(BANNED, msg);
+        }
+        else if (header == "ZZ") {
+          ENFORCE_MIN_LENGTH(1)
+          emit modCalled(args[0]);
+        }
+      });
 }
 
 /*!
@@ -267,76 +248,73 @@ QPromise<void> LegacyClient::connect(const QString &address,
                                      const uint16_t &port,
                                      const bool &probeOnly)
 {
-  qInfo().noquote() << "Connecting to"
-                    << QStringLiteral("%1:%2").arg(address).arg(port)
-                    << QStringLiteral("(probe: %1)").arg(probeOnly ? "yes" : "no");
+  qInfo().noquote()
+      << "Connecting to" << QStringLiteral("%1:%2").arg(address).arg(port)
+      << QStringLiteral("(probe: %1)").arg(probeOnly ? "yes" : "no");
 
   emit connectProgress(0, 100, tr("Connecting to server..."));
 
   QObject::connect(&socket, &LegacySocket::connectionLost, this, [&] {
-    if (kicked)
-      return;
+    if (kicked) return;
     emit connectionLost(CONNECTION_RESET, QStringLiteral());
   });
 
-  auto promise = socket.connect(address, port)
-      .then([&](void) {
+  auto promise = socket.connect(address, port).then([&](void) {
     // Once we map the signals, we don't need to parse any more
     // messages explicitly here.
     mapSignals();
     emit connectProgress(10, 100, tr("Getting player information..."));
     // Send HDID. Ignore fantacrypt - no AO server requires communicating
     // over fantacrypt anymore.
-    socket.send("HI", { hdid() });
+    socket.send("HI", {hdid()});
     // TODO: fix application version
-    socket.send("ID", { "AO2", QCoreApplication::applicationVersion() });
+    socket.send("ID", {"AO2", QCoreApplication::applicationVersion()});
     return socket.waitForMessage("PN");
   });
 
-  if (probeOnly)
-    return promise.then(&QPromise<void>::resolve);
+  if (probeOnly) return promise.then(&QPromise<void>::resolve);
 
-  return promise.then([&] {
-    emit connectProgress(15, 100, tr("Getting characters..."));
-    socket.send("askchaa");
-    return socket.waitForMessage("SI");
-  }).then([&] {
-    socket.send("RC");
-    return socket.waitForMessage("SC");
-  }).then([&] {
-    emit connectProgress(50, 100, tr("Getting music..."));
-    socket.send("RM");
-    return socket.waitForMessage("SM");
-  }).then([&] {
-    emit connectProgress(80, 100, tr("Loading courtroom..."));
-    socket.send("RD");
-    return socket.waitForMessage("DONE");
-  }).then([&] {
-    QObject::connect(&keepaliveTimer, &QTimer::timeout,
-                     this, &LegacyClient::sendKeepalive);
-    keepaliveTimer.setInterval(KEEPALIVE_INTERVAL);
-    keepaliveTimer.start();
-  });
+  return promise
+      .then([&] {
+        emit connectProgress(15, 100, tr("Getting characters..."));
+        socket.send("askchaa");
+        return socket.waitForMessage("SI");
+      })
+      .then([&] {
+        socket.send("RC");
+        return socket.waitForMessage("SC");
+      })
+      .then([&] {
+        emit connectProgress(50, 100, tr("Getting music..."));
+        socket.send("RM");
+        return socket.waitForMessage("SM");
+      })
+      .then([&] {
+        emit connectProgress(80, 100, tr("Loading courtroom..."));
+        socket.send("RD");
+        return socket.waitForMessage("DONE");
+      })
+      .then([&] {
+        QObject::connect(&keepaliveTimer, &QTimer::timeout, this,
+                         &LegacyClient::sendKeepalive);
+        keepaliveTimer.setInterval(KEEPALIVE_INTERVAL);
+        keepaliveTimer.start();
+      });
 }
 
 /*!
  * Sends a keepalive packet to the server to prevent the client from being
  * disconnected automatically.
  */
-void LegacyClient::sendKeepalive()
-{
-  socket.send("CH");
-}
+void LegacyClient::sendKeepalive() { socket.send("CH"); }
 
 char_type LegacyClient::character()
 {
-  if (currentCharId >= 0)
-  {
+  if (currentCharId >= 0) {
     return charsList[currentCharId];
   }
-  else
-  {
-    return { QStringLiteral(), QStringLiteral(), QStringLiteral(), false };
+  else {
+    return {QStringLiteral(), QStringLiteral(), QStringLiteral(), false};
   }
 }
 
@@ -352,7 +330,7 @@ char_type LegacyClient::character()
  */
 void LegacyClient::joinRoom(const QString &name)
 {
-  socket.send("MC", { name, "0" });
+  socket.send("MC", {name, "0"});
 }
 
 /*!
@@ -362,10 +340,9 @@ void LegacyClient::joinRoom(const QString &name)
  */
 void LegacyClient::setCharacter(int charId)
 {
-  socket.send("CC", { "0", QString::number(charId), hdid() });
+  socket.send("CC", {"0", QString::number(charId), hdid()});
 
-  if (charId == -1)
-  {
+  if (charId == -1) {
     // Don't wait for response. Server usually does not respond to spectate
     // requests, so just emulate a response.
     // Note that there is a common server-side bug where the character
@@ -385,8 +362,9 @@ void LegacyClient::setCharacter(int charId)
 void LegacyClient::callMod(const QString &message)
 {
   if (!message.isEmpty()) {
-    socket.send("ZZ", { message });
-  } else {
+    socket.send("ZZ", {message});
+  }
+  else {
     socket.send("ZZ");
   }
 }
@@ -398,37 +376,39 @@ void LegacyClient::callMod(const QString &message)
  * \return promise that resolves when the server confirms that the IC message
  * was received
  */
-QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
+QPromise<void> LegacyClient::sendIC(const DataTypes::MSPacket &message)
 {
   auto msgCopy = message;
   msgCopy.char_id = currentCharId;
 
   // We send over whom we're paired with, unless we have chosen ourselves.
   // Or a charid of -1 or lower, through some means.
-  if (msgCopy.pair_char_id == -1 || msgCopy.pair_char_id == msgCopy.char_id)
-  {
-    msgCopy.pair_char_id = -1;
-    msgCopy.pair_offset = 0;
+  if (msgCopy.other_char_id == -1 || msgCopy.other_char_id == msgCopy.char_id) {
+    msgCopy.other_char_id = -1;
+    msgCopy.other_offset = {0, 0};
   }
 
-  socket.send("MS", msgCopy.serialize(caseCafeFeatures));
+  socket.send("MS", msgCopy.serialize());
 
-  return QPromise<void>([&](const QPromiseResolve<void>& resolve) {
-    std::shared_ptr<QMetaObject::Connection> connection {
-      new QMetaObject::Connection
-    };
+  return QPromise<void>([&](const QPromiseResolve<void> &resolve) {
+           std::shared_ptr<QMetaObject::Connection> connection{
+               new QMetaObject::Connection};
 
-    *connection = QObject::connect(this, &LegacyClient::icReceived,
-                                   [=](const chat_message_type &message) {
-      // If you ever design a protocol, don't do this - this is a really bad
-      // heuristic. There could be various players in the room with the same
-      // character, or your messages might be being intentionally delayed.
-      if (message.char_id == currentCharId) {
-        QObject::disconnect(*connection);
-        resolve();
-      }
-    });
-  }).timeout(IC_ECHO_TIMEOUT);
+           *connection =
+               QObject::connect(this, &LegacyClient::icReceived,
+                                [=](const DataTypes::MSPacket &message) {
+                                  // If you ever design a protocol, don't do
+                                  // this - this is a really bad heuristic.
+                                  // There could be various players in the room
+                                  // with the same character, or your messages
+                                  // might be being intentionally delayed.
+                                  if (message.char_id == currentCharId) {
+                                    QObject::disconnect(*connection);
+                                    resolve();
+                                  }
+                                });
+         })
+      .timeout(IC_ECHO_TIMEOUT);
 }
 
 /*!
@@ -439,7 +419,7 @@ QPromise<void> LegacyClient::sendIC(const chat_message_type &message)
  */
 void LegacyClient::sendOOC(const QString &oocName, const QString &message)
 {
-  socket.send("CT", { oocName, message });
+  socket.send("CT", {oocName, message});
 }
 
 /*!
@@ -451,15 +431,13 @@ void LegacyClient::sendOOC(const QString &oocName, const QString &message)
 void LegacyClient::sendWTCE(WTCE_TYPE type)
 {
   const QMap<WTCE_TYPE, QStringList> packets = {
-    {WITNESS_TESTIMONY, {"testimony1"}},
-    {CROSS_EXAMINATION, {"testimony2"}},
-    {NOT_GUILTY, {"judgeruling", "0"}},
-    {GUILTY, {"judgeruling", "1"}}
-  };
+      {WITNESS_TESTIMONY, {"testimony1"}},
+      {CROSS_EXAMINATION, {"testimony2"}},
+      {NOT_GUILTY, {"judgeruling", "0"}},
+      {GUILTY, {"judgeruling", "1"}}};
 
   QStringList packet = packets.value(type);
-  if (packet.isEmpty())
-  {
+  if (packet.isEmpty()) {
     qWarning() << "out-of-range WTCE_TYPE" << type;
     return;
   }
@@ -476,10 +454,9 @@ void LegacyClient::sendWTCE(WTCE_TYPE type)
  */
 void LegacyClient::sendHealth(HEALTH_TYPE type, int value)
 {
-  if (value > 10 || value < 0)
-    return;
+  if (value > 10 || value < 0) return;
 
-  socket.send("HP", { QString::number(type), QString::number(value) });
+  socket.send("HP", {QString::number(type), QString::number(value)});
 }
 
 /*!
@@ -499,7 +476,7 @@ void LegacyClient::addEvidence(const evi_type &evidence)
  */
 void LegacyClient::editEvidence(const int index, const evi_type &evidence)
 {
-  QStringList packet = { QString::number(index) };
+  QStringList packet = {QString::number(index)};
   packet.append(evidence);
 
   socket.send("EE", packet);
@@ -512,7 +489,7 @@ void LegacyClient::editEvidence(const int index, const evi_type &evidence)
  */
 void LegacyClient::removeEvidence(const int index)
 {
-  socket.send("DE", { QString::number(index) });
+  socket.send("DE", {QString::number(index)});
 }
 
 /*!
@@ -523,7 +500,7 @@ void LegacyClient::removeEvidence(const int index)
  */
 void LegacyClient::playTrack(const QString &trackName, const QString &showname)
 {
-  socket.send("MC", { trackName, "0", showname });
+  socket.send("MC", {trackName, "0", showname});
 }
 
 /*!
@@ -533,7 +510,7 @@ void LegacyClient::playTrack(const QString &trackName, const QString &showname)
  */
 std::pair<int, int> LegacyClient::playerCount() const
 {
-  return { curPlayers, maxPlayers };
+  return {curPlayers, maxPlayers};
 }
 
 } // namespace AttorneyOnline
