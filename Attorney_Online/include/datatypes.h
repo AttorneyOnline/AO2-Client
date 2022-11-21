@@ -1,6 +1,7 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include "options.h"
 #include <QMap>
 #include <QString>
 #include <QVariant>
@@ -169,9 +170,7 @@ public:
     // 2.8 Network Extension
     bool sfx_looping = false;
     bool screenshake = false;
-    QVector<int> frames_shake = QVector<int>{};
-    QVector<int> frames_realization = QVector<int>{};
-    QVector<int> frames_sfx = QVector<int>{};
+    QStringList frame_fx_netstrings = QStringList{};
     bool additive = false;
     QString effect = "";
 
@@ -208,9 +207,17 @@ public:
       EFFECTS,
     };
 
-    MSPacket(QStringList packet)
+    /**
+     * @brief Constructor for an incoming IC-Chat packet
+     *
+     * @details Due to the way AO messages are encoded, there is no way to
+     * safely determine what contents are in the packet without doing overly
+     * many size checks.
+     * So you get a KFO and CCCC packet extension check.
+     * If you decide to not send your arguments correctly, that's on you.
+     */
+    MSPacket(QStringList packet, bool cccc_features, bool kfo_features)
     {
-      Q_UNUSED(packet)
       desk_mod = toDataType<DESKMOD>(packet.at(DESK_MOD));
       pre_animation = packet.at(PRE_EMOTE);
       character = packet.at(CHAR_NAME);
@@ -226,30 +233,43 @@ public:
       flip = toDataType<bool>(packet.at(FLIP));
       realization = toDataType<bool>(packet.at(REALIZATION));
       text_color = toDataType<TEXT_COLOR>(packet.at(COLOR));
-      showname = packet.at(SHOWNAME);
-      other_char_id = packet.at(OTHER_CHARID).toInt();
-      other_char_name = packet.at(OTHER_NAME);
-      other_char_emote = packet.at(OTHER_EMOTE);
+      if (cccc_features) {
+        showname = packet.at(SHOWNAME);
+        other_char_id = packet.at(OTHER_CHARID).toInt();
+        other_char_name = packet.at(OTHER_NAME);
+        other_char_emote = packet.at(OTHER_EMOTE);
 
-      QStringList offset = packet.at(SELF_OFFSET).split("&");
-      if (offset.size() == 2) {
-        character_offset = {offset[0].toInt(), offset[1].toInt()};
-      }
-      else {
-        character_offset = {offset[0].toInt(), 0};
-      }
+        QStringList offset = packet.at(SELF_OFFSET).split("&");
+        if (offset.size() == 2) {
+          character_offset = {offset[0].toInt(), offset[1].toInt()};
+        }
+        else {
+          character_offset = {offset[0].toInt(), 0};
+        }
 
-      offset = packet.at(OTHER_OFFSET).split("&");
-      if (offset.size() == 2) {
-        other_offset = {offset[0].toInt(), offset[1].toInt()};
+        offset = packet.at(OTHER_OFFSET).split("&");
+        if (offset.size() == 2) {
+          other_offset = {offset[0].toInt(), offset[1].toInt()};
+        }
+        else {
+          other_offset = {offset[0].toInt(), 0};
+        }
+        other_flip = toDataType<bool>(packet.at(OTHER_FLIP));
+        immediate = toDataType<bool>(packet.at(IMMEDIATE));
       }
-      else {
-        other_offset = {offset[0].toInt(), 0};
+      if (kfo_features) {
+        sfx_looping = toDataType<bool>(packet.at(LOOPING_SFX));
+        screenshake = toDataType<bool>(packet.at(SCREENSHAKE));
+        if (!packet.at(FRAME_SFX).isEmpty() &&
+            Options::getInstance().networkedFrameSfxEnabled()) {
+          QStringList netstrings = {packet.at(FRAME_SCREENSHAKE),
+                                    packet.at(FRAME_REALIZATION),
+                                    packet.at(FRAME_SFX)};
+          frame_fx_netstrings = netstrings;
+        }
+        additive = toDataType<bool>(packet.at(ADDITIVE));
+        effect = packet.at(EFFECTS);
       }
-      other_flip = toDataType<bool>(packet.at(OTHER_FLIP));
-      immediate = toDataType<bool>(packet.at(IMMEDIATE));
-      sfx_looping = toDataType<bool>(packet.at(LOOPING_SFX));
-      screenshake = toDataType<bool>(packet.at(SCREENSHAKE));
     }
 
     QStringList serialize()
@@ -270,11 +290,45 @@ public:
       return packet_content;
     }
   };
+
+  struct IDPacket {
+      int current_player;
+      int max_players;
+      QString server_description = "";
+
+
+      IDPacket(const QStringList f_packet) {
+          current_player = f_packet.at(0).toInt();
+          max_players = f_packet.at(1).toInt();
+          if (f_packet.size() >= 3) {
+              server_description = f_packet.at(2);
+          }
+      };
+  };
+
+  struct SUBTHEME {
+      QString subtheme;
+      bool reload_theme;
+
+      SUBTHEME(const QStringList f_packet) {
+        subtheme = f_packet.at(0);
+        if (f_packet.size() >= 2)
+          reload_theme = toDataType<bool>(f_packet.at(1));
+      }
+  };
+
+  enum class AUTHENTICATION {
+      LOGOUT = -1, //!< Log-out. Hides the guard button.
+      LOGIN_FAIL, //!< Unsuccessful log-in attempt.
+      LOGIN_SUCCESS //!< Successful log-in. Displays the guard button.
+  };
+  Q_ENUM(AUTHENTICATION);
 };
 
 } // namespace AttorneyOnline
 
 //@{
+
 /** Server Connection Shenanigans **/
 enum connection_type {
   TCP,

@@ -19,13 +19,12 @@ namespace AttorneyOnline {
  * This implementation of an AO2 client represents the protocol in its final
  * form. It does not include backward compatibility for unmaintained server
  * software, such as the official 1.7.5 server or serverD; as such, it is
- * intentionally missing Fantacrypt. Its only backward compatibiltiy check is
- * verifying whether or not the server supports 2.6/Case Cafe features, since
- * old versions of tsuserver are strict about the layout of the CT packet.
+ * intentionally missing Fantacrypt.
  */
 class LegacyClient : public Client {
 private:
   bool caseCafeFeatures = false;
+  bool killingFeverOnlineFeatures = false;
 
   int pairCharId = -1;
   int pairOffset = 0;
@@ -76,7 +75,7 @@ public:
 
   void callMod(const QString &message) override;
 
-  QPromise<void> sendIC(const DataTypes::MSPacket &message);
+  QPromise<void> sendIC(const DataTypes::MSPacket &message) override;
   void sendOOC(const QString &oocName,
                const QString &message) override;
 

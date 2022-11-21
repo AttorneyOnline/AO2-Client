@@ -4,6 +4,8 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QUrl>
+#include <QtGlobal>
 
 using HEADER = AttorneyOnline::DataTypes::HEADER;
 Q_DECLARE_METATYPE(HEADER)
@@ -23,11 +25,28 @@ void LegacyClient::mapSignals()
 {
   QObject::connect(
       &socket, &LegacySocket::messageReceived,
-      [&](const QString &header, const QStringList &args) {
+      [this](const QString &header, const QStringList &args) {
         switch (toDataType<HEADER>(header)) {
+        case HEADER::ID: {
+          DataTypes::IDPacket server_info(args);
+          emit idReceived(server_info);
+        } break;
+
+        case HEADER::ASS: {
+          if (args.isEmpty()) {
+            break;
+          }
+          QUrl t_asset_url = QUrl::fromPercentEncoding(args.at(0).toUtf8());
+          if (t_asset_url.isValid()) {
+            emit assReceived(t_asset_url.toString());
+          }
+        } break;
+
         case HEADER::FL:
           qInfo() << "Server supports the following features :" << args
-                  << Qt::endl << "We don't care tho. Enable all features!";
+                  << Qt::endl;
+          if (args.contains("cccc_ic_support")) caseCafeFeatures = true;
+          if (args.contains("looping_sfx")) killingFeverOnlineFeatures = true;
           break;
 
         case HEADER::PN:
@@ -49,38 +68,35 @@ void LegacyClient::mapSignals()
 
           qInfo() << "Got" << charsList.count() << "playable characters.";
           break;
-        }
 
-        if (header == "CharsCheck") {
+        case HEADER::CHARSCHECK:
           for (int i = 0; i < charsList.length() && i < args.length(); i++) {
             charsList[i].taken = args[i].toInt() == -1;
           }
-
           emit takenCharsChanged();
-        }
-        else if (header == "PV") {
-          ENFORCE_MIN_LENGTH(3)
+          break;
 
+        case HEADER::PV: {
+          ENFORCE_MIN_LENGTH(3)
+          bool ok = false;
           // The only useful thing from this packet is the index of the
           // character assigned. The rest is meaningless.
-          bool ok = false;
           currentCharId = args[2].toInt(&ok);
-
           if (!ok) {
             qWarning() << "Server issued us an unknown character ID: "
                        << args[2];
             currentCharId = -1;
           }
-
           emit characterChanged(currentCharId);
-        }
-        else if (header == "DONE") {
+        } break;
+
+        case HEADER::DONE:
           // Usually, this packet is used outside of the handshake process
           // to kick people off the current character.
           currentCharId = -1;
           emit characterChanged(currentCharId);
-        }
-        else if (header == "SM") {
+          break;
+        case HEADER::SM: {
           tracksList.clear();
           areasList.clear();
 
@@ -103,8 +119,36 @@ void LegacyClient::mapSignals()
                   << areasList.count() << "areas.";
 
           emit tracksChanged();
-        }
-        else if (header == "LE") {
+        } break;
+
+        case HEADER::FM:
+          // Like SM, just without areas.
+          tracksList.clear();
+          tracksList = args;
+          qInfo() << "Got" << tracksList.count() << "tracks.";
+
+          emit musicChanged();
+          break;
+
+        case HEADER::FA:
+          // Like SM, just without music.
+          areasList.clear();
+          for (int i = 0; i < args.size(); i++) {
+            area_type area;
+            area.id = i;
+            area.name = args[i];
+            area.players = 0;
+            area.status = "Unknown";
+            area.cm = "Unknown";
+            area.locked = "Unknown";
+            areasList.append(area);
+          }
+
+          qInfo() << "Got" << areasList.count() << "areas.";
+          areasChanged();
+          break;
+
+        case HEADER::LE:
           evidenceList.clear();
           for (const QString &evi : args) {
             QStringList eviInfo = evi.split("&");
@@ -114,15 +158,17 @@ void LegacyClient::mapSignals()
             eviEntry.image = eviInfo[2];
             evidenceList.append(eviEntry);
           }
-
           emit evidenceChanged();
-        }
-        else if (header == "MS") {
+          break;
+
+        case HEADER::MS: {
           ENFORCE_MIN_LENGTH(15)
-          DataTypes::MSPacket message(args);
+          DataTypes::MSPacket message(args, caseCafeFeatures,
+                                      killingFeverOnlineFeatures);
           emit icReceived(message);
-        }
-        else if (header == "CT") {
+        } break;
+
+        case HEADER::CT: {
           ENFORCE_MIN_LENGTH(1)
 
           QString name, message;
@@ -135,8 +181,9 @@ void LegacyClient::mapSignals()
           }
 
           emit oocReceived(name, message);
-        }
-        else if (header == "MC") {
+        } break;
+
+        case HEADER::MC: {
           ENFORCE_MIN_LENGTH(2)
 
           bool ok;
@@ -156,17 +203,19 @@ void LegacyClient::mapSignals()
           QString trackName = args[0].left(args[0].lastIndexOf('.'));
 
           emit trackChanged(trackName, character);
-        }
-        else if (header == "HP") {
+        } break;
+
+        case HEADER::HP:
           ENFORCE_MIN_LENGTH(2)
           emit healthChanged(static_cast<HEALTH_TYPE>(args[0].toInt()),
                              args[1].toInt());
-        }
-        else if (header == "BN") {
+          break;
+        case HEADER::BN:
           ENFORCE_MIN_LENGTH(1)
           emit backgroundChanged(args[0]);
-        }
-        else if (header == "RT") {
+          break;
+
+        case HEADER::RT: {
           ENFORCE_MIN_LENGTH(1)
 
           WTCE_TYPE wtce;
@@ -184,8 +233,9 @@ void LegacyClient::mapSignals()
           }
 
           emit wtceReceived(wtce);
-        }
-        else if (header == "ARUP") {
+        } break;
+
+        case HEADER::ARUP: {
           ENFORCE_MIN_LENGTH(1)
 
           int updateType = args[0].toInt();
@@ -215,24 +265,62 @@ void LegacyClient::mapSignals()
           }
 
           emit areasUpdated();
-        }
-        else if (header == "SP") {
+        } break;
+
+        case HEADER::SP:
           ENFORCE_MIN_LENGTH(1)
           emit positionChanged(args[0]);
-        }
-        else if (header == "KK") {
-          const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
+          break;
+
+        case HEADER::KK: {
+          const QString msg = args.isEmpty() ? QLatin1String() : args[0];
           kicked = true;
           emit connectionLost(KICKED, msg);
         }
-        else if (header == "KB" || header == "BD") {
-          const QString msg = args.isEmpty() ? QStringLiteral() : args[0];
+
+        break;
+
+        case HEADER::KB:
+          Q_FALLTHROUGH();
+        case HEADER::BD: {
+          const QString msg = args.isEmpty() ? QLatin1String() : args[0];
           kicked = true;
           emit connectionLost(BANNED, msg);
-        }
-        else if (header == "ZZ") {
+        } break;
+        case HEADER::ZZ:
           ENFORCE_MIN_LENGTH(1)
           emit modCalled(args[0]);
+          break;
+
+        case HEADER::SD: {
+          // All positions are transmitted in the first argument.
+          // Horray to random delimiters which will SURELY not cause issues
+          // later.
+          const QStringList pos = args.at(0).split("*");
+          emit posDropdownReceived(pos);
+        } break;
+
+        case HEADER::ST: {
+          DataTypes::SUBTHEME subtheme(args);
+          emit subthemeChanged(subtheme);
+        } break;
+
+        case HEADER::JD:
+            emit splashControlChanged(args.at(0).toInt());
+            break;
+
+        case HEADER::AUTH:
+            emit authenticationStateReceived(toDataType<DataTypes::AUTHENTICATION>(args.at(0)));
+            break;
+
+        case HEADER::CHECK:
+            //No fucking clue how this works.
+            break;
+        case HEADER::BB:
+            emit messageBoxReceived(args.at(0));
+            break;
+        //default:
+            break;
         }
       });
 }

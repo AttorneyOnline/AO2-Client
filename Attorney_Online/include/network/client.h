@@ -37,7 +37,7 @@ public:
   virtual void joinRoom(const QString &name) = 0;
   virtual void setCharacter(int charId) = 0;
 
-  virtual void callMod(const QString &message = QStringLiteral()) = 0;
+  virtual void callMod(const QString &message = QLatin1String()) = 0;
 
   virtual QPromise<void> sendIC(const DataTypes::MSPacket &message) = 0;
   virtual void sendOOC(const QString &oocName,
@@ -59,23 +59,33 @@ public:
 signals:
   void connectProgress(int current, int max, const QString &message);
 
+  void idReceived(const DataTypes::IDPacket &server_info);
+  void assReceived(const QString &asset_url);
+  void posDropdownReceived(const QStringList &positions);
+  void messageBoxReceived(const QString &message);
+
   void icReceived(const DataTypes::MSPacket &message);
   void oocReceived(const QString &name, const QString &message);
 
   void wtceReceived(WTCE_TYPE type);
   void healthChanged(HEALTH_TYPE type, int value);
   void backgroundChanged(const QString &background);
+  void subthemeChanged(DataTypes::SUBTHEME subtheme);
   void trackChanged(const QString &track, const QString &showname);
 
   void takenCharsChanged();
   void characterChanged(int charId);
   void tracksChanged();
+  void musicChanged();
+  void areasChanged();
   void evidenceChanged();
   void areasUpdated();
 
   void positionChanged(const QString &pos);
+  void splashControlChanged(const int state);
+  void authenticationStateReceived(DataTypes::AUTHENTICATION auth_state);
 
-  void connectionLost(DisconnectReason code, const QString &message);
+  void connectionLost(AttorneyOnline::DisconnectReason code, const QString &message);
   void modCalled(const QString &message);
 };
 
