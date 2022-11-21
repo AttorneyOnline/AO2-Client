@@ -67,6 +67,7 @@ public:
     TI,         //!< Timers
     JD          //!< Judge Controls
   };
+  Q_ENUM(HEADER)
 
   /**
    * @brief Controls when the "desk" image is shown in the viewport.
@@ -85,7 +86,7 @@ public:
     SHOWPREANIM_NOPAIR = 5 //!< The desk is shown during preanim, when it ends
                            //!< character is centered and pairing is ignored
   };
-  Q_ENUM(DESKMOD);
+  Q_ENUM(DESKMOD)
 
   /**
    * @brief Controls wether special emote effects are used.
@@ -100,7 +101,7 @@ public:
     ZOOM = 5,   //!< No preanimation and apply zoom background.
     OBJECT_ZOOM //!< Play objection and apply zoom background after.
   };
-  Q_ENUM(EMOTE_MODIFIER);
+  Q_ENUM(EMOTE_MODIFIER)
 
   /**
    * @brief Controls which shout is used.
@@ -118,7 +119,7 @@ public:
     TAKE_THAT,
     CUSTOM
   };
-  Q_ENUM(SHOUT_MODIFIER);
+  Q_ENUM(SHOUT_MODIFIER)
 
   /**
    * @brief Controls which color a text message appears in.
@@ -140,7 +141,7 @@ public:
     YELLOW,
     RAINBOW //!< DEPRECATED! Removed in 2.8!
   };
-  Q_ENUM(TEXT_COLOR);
+  Q_ENUM(TEXT_COLOR)
 
   struct MSPacket {
     DESKMOD desk_mod = DESKMOD::HIDDEN;
@@ -292,37 +293,91 @@ public:
   };
 
   struct IDPacket {
-      int current_player;
-      int max_players;
-      QString server_description = "";
+    int current_player;
+    int max_players;
+    QString server_description = "";
 
-
-      IDPacket(const QStringList f_packet) {
-          current_player = f_packet.at(0).toInt();
-          max_players = f_packet.at(1).toInt();
-          if (f_packet.size() >= 3) {
-              server_description = f_packet.at(2);
-          }
-      };
+    IDPacket(const QStringList f_packet)
+    {
+      current_player = f_packet.at(0).toInt();
+      max_players = f_packet.at(1).toInt();
+      if (f_packet.size() >= 3) {
+        server_description = f_packet.at(2);
+      }
+    };
   };
 
-  struct SUBTHEME {
-      QString subtheme;
-      bool reload_theme;
+  struct STPacket {
+    QString subtheme;
+    bool reload_theme;
 
-      SUBTHEME(const QStringList f_packet) {
-        subtheme = f_packet.at(0);
-        if (f_packet.size() >= 2)
-          reload_theme = toDataType<bool>(f_packet.at(1));
-      }
+    STPacket(const QStringList f_packet)
+    {
+      subtheme = f_packet.at(0);
+      if (f_packet.size() >= 2) reload_theme = toDataType<bool>(f_packet.at(1));
+    }
   };
 
   enum class AUTHENTICATION {
-      LOGOUT = -1, //!< Log-out. Hides the guard button.
-      LOGIN_FAIL, //!< Unsuccessful log-in attempt.
-      LOGIN_SUCCESS //!< Successful log-in. Displays the guard button.
+    LOGOUT = -1,  //!< Log-out. Hides the guard button.
+    LOGIN_FAIL,   //!< Unsuccessful log-in attempt.
+    LOGIN_SUCCESS //!< Successful log-in. Displays the guard button.
   };
-  Q_ENUM(AUTHENTICATION);
+  Q_ENUM(AUTHENTICATION)
+
+  /**
+   * @brief The TIMER_ACTION enum
+   *
+   *  @details Allan, please add details.
+   */
+  enum class TIMER_ACTION {
+    START, //!< Starts/Resumes/Syncs the timer given the time provided
+    PAUSE, //!< Pauses the timer given the time provided
+    SHOW,  //!< Shows timer UI element.
+    HIDE   //!< Hides timer UI element.
+  };
+  Q_ENUM(TIMER_ACTION)
+
+  struct TIPacket {
+      int timer_id;
+      TIMER_ACTION action;
+      int timer_duration;
+
+      TIPacket(QStringList f_packet) {
+          timer_id = f_packet.at(0).toInt();
+          action = toDataType<TIMER_ACTION>(f_packet.at(1));
+          timer_duration = f_packet.at(2).toInt();
+      };
+  };
+
+  struct CASEAPacket {
+      QString message;
+      bool need_def;
+      bool need_pro;
+      bool need_jud;
+      bool need_jur;
+      bool need_steno;
+
+      CASEAPacket(QStringList f_packet) {
+          message = f_packet.at(0);
+          need_def = toDataType<bool>(f_packet.at(1));
+          need_pro = toDataType<bool>(f_packet.at(2));
+          need_jud = toDataType<bool>(f_packet.at(4));
+          need_jur = toDataType<bool>(f_packet.at(5));
+          need_steno = toDataType<bool>(f_packet.at(6));
+      }
+
+      QStringList serialize() {
+          QStringList l_packet;
+          l_packet << message;
+          l_packet << QString::number(static_cast<int>(need_def));
+          l_packet << QString::number(static_cast<int>(need_pro));
+          l_packet << QString::number(static_cast<int>(need_jud));
+          l_packet << QString::number(static_cast<int>(need_jur));
+          l_packet << QString::number(static_cast<int>(need_steno));
+          return l_packet;
+      }
+  };
 };
 
 } // namespace AttorneyOnline

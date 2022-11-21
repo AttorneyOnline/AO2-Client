@@ -33,9 +33,7 @@ void LegacyClient::mapSignals()
         } break;
 
         case HEADER::ASS: {
-          if (args.isEmpty()) {
-            break;
-          }
+          ENFORCE_MIN_LENGTH(1)
           QUrl t_asset_url = QUrl::fromPercentEncoding(args.at(0).toUtf8());
           if (t_asset_url.isValid()) {
             emit assReceived(t_asset_url.toString());
@@ -276,9 +274,7 @@ void LegacyClient::mapSignals()
           const QString msg = args.isEmpty() ? QLatin1String() : args[0];
           kicked = true;
           emit connectionLost(KICKED, msg);
-        }
-
-        break;
+        } break;
 
         case HEADER::KB:
           Q_FALLTHROUGH();
@@ -287,6 +283,7 @@ void LegacyClient::mapSignals()
           kicked = true;
           emit connectionLost(BANNED, msg);
         } break;
+
         case HEADER::ZZ:
           ENFORCE_MIN_LENGTH(1)
           emit modCalled(args[0]);
@@ -301,26 +298,41 @@ void LegacyClient::mapSignals()
         } break;
 
         case HEADER::ST: {
-          DataTypes::SUBTHEME subtheme(args);
+          ENFORCE_MIN_LENGTH(2)
+          DataTypes::STPacket subtheme(args);
           emit subthemeChanged(subtheme);
         } break;
 
         case HEADER::JD:
-            emit splashControlChanged(args.at(0).toInt());
-            break;
+          ENFORCE_MIN_LENGTH(1)
+          emit splashControlChanged(args.at(0).toInt());
+          break;
 
         case HEADER::AUTH:
-            emit authenticationStateReceived(toDataType<DataTypes::AUTHENTICATION>(args.at(0)));
-            break;
+          ENFORCE_MIN_LENGTH(1)
+          emit authenticationStateReceived(
+              toDataType<DataTypes::AUTHENTICATION>(args.at(0)));
+          break;
 
         case HEADER::CHECK:
-            //No fucking clue how this works.
-            break;
+          // No fucking clue how this works.
+          break;
+
         case HEADER::BB:
-            emit messageBoxReceived(args.at(0));
-            break;
-        //default:
-            break;
+          ENFORCE_MIN_LENGTH(1)
+          emit messageBoxReceived(args.at(0));
+          break;
+
+        case HEADER::TI:
+          ENFORCE_MIN_LENGTH(3)
+          break;
+          // default:
+          break;
+
+        case HEADER::CASEA:
+          ENFORCE_MIN_LENGTH(6)
+          emit caseAlertReceived(DataTypes::CASEAPacket(args));
+          break;
         }
       });
 }

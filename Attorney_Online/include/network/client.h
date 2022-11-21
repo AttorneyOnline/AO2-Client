@@ -70,8 +70,10 @@ signals:
   void wtceReceived(WTCE_TYPE type);
   void healthChanged(HEALTH_TYPE type, int value);
   void backgroundChanged(const QString &background);
-  void subthemeChanged(DataTypes::SUBTHEME subtheme);
+  void subthemeChanged(DataTypes::STPacket subtheme);
   void trackChanged(const QString &track, const QString &showname);
+  void timerReceived(DataTypes::TIPacket timer);
+  void caseAlertReceived(DataTypes::CASEAPacket alert);
 
   void takenCharsChanged();
   void characterChanged(int charId);
