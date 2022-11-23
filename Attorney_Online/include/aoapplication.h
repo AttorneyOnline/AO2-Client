@@ -73,6 +73,7 @@ public:
   bool courtroom_constructed = false;
 
   void construct_lobby();
+  void open_lobby();
   void destruct_lobby();
 
   void construct_courtroom();

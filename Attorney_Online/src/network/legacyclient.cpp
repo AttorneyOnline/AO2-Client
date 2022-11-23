@@ -25,7 +25,7 @@ void LegacyClient::mapSignals()
 {
   QObject::connect(
       &socket, &LegacySocket::messageReceived,
-      [this](const QString &header, const QStringList &args) {
+      [=](const QString &header, const QStringList &args) {
         switch (toDataType<HEADER>(header)) {
         case HEADER::ID: {
           DataTypes::IDPacket server_info(args);
