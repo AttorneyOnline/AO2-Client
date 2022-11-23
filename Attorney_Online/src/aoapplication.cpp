@@ -67,23 +67,6 @@ void AOApplication::construct_lobby()
   w_lobby->show();
 }
 
-void AOApplication::open_lobby()
-{
-  auto lobby = new Lobby(this, net_manager);
-  lobby->setAttribute(Qt::WA_DeleteOnClose);
-
-  if (Options::getInstance().discordEnabled())
-    discord->state_lobby();
-
-  if (demo_server)
-      demo_server->deleteLater();
-  demo_server = new DemoServer(this);
-
-  connect(lobby, &Lobby::settings_requested, this, &AOApplication::call_settings_menu);
-  net_manager->get_server_list(std::bind(&Lobby::list_servers, lobby));
-  lobby->show();
-}
-
 void AOApplication::destruct_lobby()
 {
   if (!lobby_constructed) {

@@ -1,6 +1,8 @@
 #include "networkmanager.h"
 
 #include "datatypes.h"
+#include "debug_functions.h"
+#include "lobby.h"
 #include "options.h"
 
 #include <QAbstractSocket>
@@ -9,16 +11,12 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 
-using namespace AttorneyOnline;
-
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;
 
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
-
-  socket = std::make_shared<LegacyClient>(this);
 
   QString master_config =
       Options::getInstance().alternativeMasterserver();
@@ -218,11 +216,6 @@ void NetworkManager::disconnect_from_server()
   }
 
   connected = false;
-}
-
-std::weak_ptr<Client> NetworkManager::get_server_socket()
-{
-    return std::weak_ptr<AttorneyOnline::Client>(socket);
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)

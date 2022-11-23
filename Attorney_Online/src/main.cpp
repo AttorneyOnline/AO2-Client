@@ -47,7 +47,9 @@ int main(int argc, char *argv[])
   appTranslator.load("ao_" + p_language, ":/resource/translations/");
   main_app.installTranslator(&appTranslator);
 
-  main_app.open_lobby();
+  main_app.construct_lobby();
+  main_app.net_manager->get_server_list(std::bind(&Lobby::list_servers, main_app.w_lobby));
   main_app.net_manager->send_heartbeat();
+  main_app.w_lobby->show();
   return main_app.exec();
 }

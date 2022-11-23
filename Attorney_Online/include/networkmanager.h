@@ -2,7 +2,7 @@
 #define NETWORKMANAGER_H
 
 #include "aoapplication.h"
-#include "network/legacyclient.h"
+#include "aopacket.h"
 
 #include <QDnsLookup>
 #include <QNetworkAccessManager>
@@ -29,9 +29,6 @@ private:
     QWebSocket *ws;
     QTcpSocket *tcp;
   } server_socket;
-
-  std::shared_ptr<AttorneyOnline::Client> socket;
-
   connection_type active_connection_type;
   bool connected = false;
 
@@ -53,8 +50,6 @@ public:
 
   void connect_to_server(server_type p_server);
   void disconnect_from_server();
-
-  std::weak_ptr<AttorneyOnline::Client> get_server_socket();
 
 signals:
   void server_connected(bool state);

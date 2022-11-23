@@ -2,9 +2,7 @@
 #define LEGACYSOCKET_H
 
 #include <QTcpSocket>
-#include <QtWebSockets/QWebSocket>
 #include <QtPromise>
-#include "datatypes.h"
 
 using namespace QtPromise;
 
@@ -14,14 +12,7 @@ class LegacySocket : public QObject {
   Q_OBJECT
 
 private:
-
-  connection_type active_connection_type;
-
-  // This is to support both TCP and Websockets on client.
-  union {
-    QWebSocket *ws;
-    QTcpSocket *tcp;
-  } socket;
+  QTcpSocket socket;
 
   // This buffer is not limited in its storage capacity.
   // However, messages longer than 1024K are discarded.
@@ -31,14 +22,13 @@ private:
   const int TIMEOUT_MILLISECS = 4000;
 
 private slots:
-  void packetReceived(QByteArray message);
+  void packetReceived();
 
 public:
   explicit LegacySocket(QObject *parent = nullptr)
-    : QObject(parent) {
-  }
+    : QObject(parent) {}
 
-  QPromise<void> connect(const QString &address, const uint16_t &port, const connection_type &type = WEBSOCKETS);
+  QPromise<void> connect(const QString &address, const uint16_t &port);
   void send(const QString &header, QStringList args = {});
 
   QPromise<QStringList> waitForMessage(const QString &header);
