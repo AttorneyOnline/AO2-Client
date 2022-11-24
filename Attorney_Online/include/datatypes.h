@@ -34,14 +34,17 @@ public:
    * the ol reliable if/else chain.
    */
   enum class HEADER {
-    ID,         //!< Software name and version
-    PN,         //!< Playercount, maximum players and description
-    FL,         //!< Feature list
-    ASS,        //!< Asset URL
-    SC,         //!< Character list
-    LE,         //!< Evidence list
-    SM,         //!< Musiclist, categories and areas
-    DONE,       //!< Handshake finished confirmation
+    UNKNOWN, //!< Packet is either a packet send to a server or unknown/invalid.
+             //!< This includes packet that were formerly valid, but are now
+             //!< deprecated, such as decryptor.
+    ID,      //!< Software name and version
+    PN,      //!< Playercount, maximum players and description
+    FL,      //!< Feature list
+    ASS,     //!< Asset URL
+    SC,      //!< Character list
+    LE,      //!< Evidence list
+    SM,      //!< Musiclist, categories and areas
+    DONE,    //!< Handshake finished confirmation
     CHARSCHECK, //!< Update taken characters
     PV,         //!< Selected character
     MS,         //!< IC-Message
@@ -339,44 +342,47 @@ public:
   Q_ENUM(TIMER_ACTION)
 
   struct TIPacket {
-      int timer_id;
-      TIMER_ACTION action;
-      int timer_duration;
+    int timer_id;
+    TIMER_ACTION action;
+    int timer_duration;
 
-      TIPacket(QStringList f_packet) {
-          timer_id = f_packet.at(0).toInt();
-          action = toDataType<TIMER_ACTION>(f_packet.at(1));
-          timer_duration = f_packet.at(2).toInt();
-      };
+    TIPacket(QStringList f_packet)
+    {
+      timer_id = f_packet.at(0).toInt();
+      action = toDataType<TIMER_ACTION>(f_packet.at(1));
+      timer_duration = f_packet.at(2).toInt();
+    };
   };
 
   struct CASEAPacket {
-      QString message;
-      bool need_def;
-      bool need_pro;
-      bool need_jud;
-      bool need_jur;
-      bool need_steno;
+    QString message;
+    bool need_def;
+    bool need_pro;
+    bool need_jud;
+    bool need_jur;
+    bool need_steno;
 
-      CASEAPacket(QStringList f_packet) {
-          message = f_packet.at(0);
-          need_def = toDataType<bool>(f_packet.at(1));
-          need_pro = toDataType<bool>(f_packet.at(2));
-          need_jud = toDataType<bool>(f_packet.at(4));
-          need_jur = toDataType<bool>(f_packet.at(5));
-          need_steno = toDataType<bool>(f_packet.at(6));
-      }
+    CASEAPacket(QStringList f_packet)
+    {
+      message = f_packet.at(0);
+      need_def = toDataType<bool>(f_packet.at(1));
+      need_pro = toDataType<bool>(f_packet.at(2));
+      need_jud = toDataType<bool>(f_packet.at(4));
+      need_jur = toDataType<bool>(f_packet.at(5));
+      need_steno = toDataType<bool>(f_packet.at(6));
+    }
 
-      QStringList serialize() {
-          QStringList l_packet;
-          l_packet << message;
-          l_packet << QString::number(static_cast<int>(need_def));
-          l_packet << QString::number(static_cast<int>(need_pro));
-          l_packet << QString::number(static_cast<int>(need_jud));
-          l_packet << QString::number(static_cast<int>(need_jur));
-          l_packet << QString::number(static_cast<int>(need_steno));
-          return l_packet;
-      }
+    QStringList serialize()
+    {
+      QStringList l_packet;
+      l_packet << message;
+      l_packet << QString::number(static_cast<int>(need_def));
+      l_packet << QString::number(static_cast<int>(need_pro));
+      l_packet << QString::number(static_cast<int>(need_jud));
+      l_packet << QString::number(static_cast<int>(need_jur));
+      l_packet << QString::number(static_cast<int>(need_steno));
+      return l_packet;
+    }
   };
 };
 

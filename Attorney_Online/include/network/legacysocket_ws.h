@@ -25,7 +25,7 @@ private:
   const int TIMEOUT_MILLISECS = 4000;
 
 private slots:
-  void packetReceived(QByteArray message);
+  void packetReceived(QString message);
 
 public:
   explicit LegacySocket_WS(QObject *parent = nullptr)

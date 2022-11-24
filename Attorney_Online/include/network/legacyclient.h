@@ -7,6 +7,7 @@
 #include <QtPromise>
 
 #include "legacysocket.h"
+#include "legacysocket_ws.h"
 #include "client.h"
 
 using namespace QtPromise;
@@ -53,13 +54,22 @@ private:
   // twice, once by the server and again by the socket.
   bool kicked = false;
 
-  std::shared_ptr<Socket> socket;
+  std::unique_ptr<Socket> socket;
 
   void mapSignals();
 
 public:
-  explicit LegacyClient(QObject *parent)
-    : Client(parent) {}
+  explicit LegacyClient(QObject *parent, connection_type con_type = WEBSOCKETS)
+    : Client(parent) {
+      switch (con_type) {
+      case TCP:
+          socket = std::make_unique<LegacySocket>(this);
+          break;
+      case WEBSOCKETS:
+          socket = std::make_unique<LegacySocket_WS>(this);
+          break;
+      }
+  }
   QPromise<void> connect(const QString &address,
                          const uint16_t &port,
                          const bool &probeOnly) override;

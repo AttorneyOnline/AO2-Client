@@ -11,9 +11,9 @@ namespace AttorneyOnline {
  * \param header  the header of the message
  * \param args  a list of arguments
  */
-void LegacySocket_WS::packetReceived(QByteArray message)
+void LegacySocket_WS::packetReceived(QString message)
 {
-  buffer.append(message);
+  buffer.append(message.toUtf8());
 
   if (buffer.size() >= BUFFER_SOFT_LIMIT)
   {
@@ -66,7 +66,7 @@ QPromise<void> LegacySocket_WS::connect(const QString &address,
                                      const uint16_t &port)
 {
   qInfo() << "using Websocket backend.";
-  QObject::connect(&socket, &QWebSocket::binaryMessageReceived,
+  QObject::connect(&socket, &QWebSocket::textMessageReceived,
                    this, &LegacySocket_WS::packetReceived);
 
   // (QTcpSocket::error is overloaded, so we have to select the right one)
@@ -82,11 +82,12 @@ QPromise<void> LegacySocket_WS::connect(const QString &address,
   });
 
   // Connect Websocket socket, bringing the promise chain above into motion.
-  QUrl url(address);
-  url.setPort(port);
+  QUrl url;
   url.setScheme("ws");
-          QNetworkRequest req(url);
-          req.setHeader(QNetworkRequest::UserAgentHeader, "FOO");
+  url.setHost(address);
+  url.setPort(port);
+  QNetworkRequest req(url);
+  req.setHeader(QNetworkRequest::UserAgentHeader, "FOO");
   socket.open(req);
 
   return promise;
@@ -101,7 +102,7 @@ void LegacySocket_WS::send(const QString &header, QStringList args)
 
   auto bytes = (header % "#" % args.join('#') % "#%").toUtf8();
   qDebug().noquote() << bytes;
-  socket.sendBinaryMessage(bytes);
+  socket.sendTextMessage(bytes);
 }
 
 /*!

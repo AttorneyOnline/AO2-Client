@@ -3,9 +3,6 @@
 #include "datatypes.h"
 #include "options.h"
 
-#include "include/network/legacysocket.h"
-#include "include/network/legacysocket_ws.h"
-
 #include <QAbstractSocket>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -135,15 +132,8 @@ void NetworkManager::request_document(MSDocumentType document_type,
 void NetworkManager::connect_to_server(server_type p_server)
 {
     active_connection_type = p_server.socket_type;
-    switch (active_connection_type) {
-    case TCP:
-        socket = std::make_shared<AttorneyOnline::LegacySocket>();
-        break;
-    case WEBSOCKETS:
-    socket = std::make_shared<AttorneyOnline::LegacySocket_WS>();
-        break;
-    }
-    socket->connect(p_server.ip, p_server.port);
+    client = std::make_shared<AttorneyOnline::LegacyClient>(this, p_server.socket_type);
+    client->connect(p_server.ip, p_server.port, true);
 }
 
 void NetworkManager::join_to_server()

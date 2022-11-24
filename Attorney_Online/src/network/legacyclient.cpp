@@ -324,14 +324,15 @@ void LegacyClient::mapSignals()
           break;
 
         case HEADER::TI:
-          ENFORCE_MIN_LENGTH(3)
-          break;
-          // default:
+          ENFORCE_MIN_LENGTH(2)
           break;
 
         case HEADER::CASEA:
           ENFORCE_MIN_LENGTH(6)
           emit caseAlertReceived(DataTypes::CASEAPacket(args));
+          break;
+
+        default:
           break;
         }
       });
@@ -381,18 +382,18 @@ QPromise<void> LegacyClient::connect(const QString &address,
         return socket->waitForMessage("SI");
       })
       .then([&] {
-      socket->send("RC");
-      return socket->waitForMessage("SC");
+        socket->send("RC");
+        return socket->waitForMessage("SC");
       })
       .then([&] {
         emit connectProgress(50, 100, tr("Getting music..."));
-      socket->send("RM");
-      return socket->waitForMessage("SM");
+        socket->send("RM");
+        return socket->waitForMessage("SM");
       })
       .then([&] {
         emit connectProgress(80, 100, tr("Loading courtroom..."));
-      socket->send("RD");
-      return socket->waitForMessage("DONE");
+        socket->send("RD");
+        return socket->waitForMessage("DONE");
       })
       .then([&] {
         QObject::connect(&keepaliveTimer, &QTimer::timeout, this,
@@ -430,7 +431,7 @@ char_type LegacyClient::character()
  */
 void LegacyClient::joinRoom(const QString &name)
 {
-    socket->send("MC", {name, "0"});
+  socket->send("MC", {name, "0"});
 }
 
 /*!
@@ -462,10 +463,10 @@ void LegacyClient::setCharacter(int charId)
 void LegacyClient::callMod(const QString &message)
 {
   if (!message.isEmpty()) {
-      socket->send("ZZ", {message});
+    socket->send("ZZ", {message});
   }
   else {
-      socket->send("ZZ");
+    socket->send("ZZ");
   }
 }
 
