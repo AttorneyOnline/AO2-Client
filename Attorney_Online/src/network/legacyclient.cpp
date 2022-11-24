@@ -24,7 +24,7 @@ namespace AttorneyOnline {
 void LegacyClient::mapSignals()
 {
   QObject::connect(
-      &socket, &LegacySocket::messageReceived,
+      socket.get(), &Socket::messageReceived,
       [this](const QString &header, const QStringList &args) {
         switch (toDataType<HEADER>(header)) {
         case HEADER::ID: {
@@ -354,22 +354,22 @@ QPromise<void> LegacyClient::connect(const QString &address,
 
   emit connectProgress(0, 100, tr("Connecting to server..."));
 
-  QObject::connect(&socket, &LegacySocket::connectionLost, this, [&] {
+  QObject::connect(socket.get(), &Socket::connectionLost, this, [&] {
     if (kicked) return;
     emit connectionLost(CONNECTION_RESET, QStringLiteral());
   });
 
-  auto promise = socket.connect(address, port).then([&](void) {
+  auto promise = socket->connect(address, port).then([&](void) {
     // Once we map the signals, we don't need to parse any more
     // messages explicitly here.
     mapSignals();
     emit connectProgress(10, 100, tr("Getting player information..."));
     // Send HDID. Ignore fantacrypt - no AO server requires communicating
     // over fantacrypt anymore.
-    socket.send("HI", {hdid()});
+    socket->send("HI", {hdid()});
     // TODO: fix application version
-    socket.send("ID", {"AO2", QCoreApplication::applicationVersion()});
-    return socket.waitForMessage("PN");
+    socket->send("ID", {"AO2", QCoreApplication::applicationVersion()});
+    return socket->waitForMessage("PN");
   });
 
   if (probeOnly) return promise.then(&QPromise<void>::resolve);
@@ -377,22 +377,22 @@ QPromise<void> LegacyClient::connect(const QString &address,
   return promise
       .then([&] {
         emit connectProgress(15, 100, tr("Getting characters..."));
-        socket.send("askchaa");
-        return socket.waitForMessage("SI");
+        socket->send("askchaa");
+        return socket->waitForMessage("SI");
       })
       .then([&] {
-        socket.send("RC");
-        return socket.waitForMessage("SC");
+      socket->send("RC");
+      return socket->waitForMessage("SC");
       })
       .then([&] {
         emit connectProgress(50, 100, tr("Getting music..."));
-        socket.send("RM");
-        return socket.waitForMessage("SM");
+      socket->send("RM");
+      return socket->waitForMessage("SM");
       })
       .then([&] {
         emit connectProgress(80, 100, tr("Loading courtroom..."));
-        socket.send("RD");
-        return socket.waitForMessage("DONE");
+      socket->send("RD");
+      return socket->waitForMessage("DONE");
       })
       .then([&] {
         QObject::connect(&keepaliveTimer, &QTimer::timeout, this,
@@ -406,7 +406,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
  * Sends a keepalive packet to the server to prevent the client from being
  * disconnected automatically.
  */
-void LegacyClient::sendKeepalive() { socket.send("CH"); }
+void LegacyClient::sendKeepalive() { socket->send("CH"); }
 
 char_type LegacyClient::character()
 {
@@ -430,7 +430,7 @@ char_type LegacyClient::character()
  */
 void LegacyClient::joinRoom(const QString &name)
 {
-  socket.send("MC", {name, "0"});
+    socket->send("MC", {name, "0"});
 }
 
 /*!
@@ -440,7 +440,7 @@ void LegacyClient::joinRoom(const QString &name)
  */
 void LegacyClient::setCharacter(int charId)
 {
-  socket.send("CC", {"0", QString::number(charId), hdid()});
+  socket->send("CC", {"0", QString::number(charId), hdid()});
 
   if (charId == -1) {
     // Don't wait for response. Server usually does not respond to spectate
@@ -462,10 +462,10 @@ void LegacyClient::setCharacter(int charId)
 void LegacyClient::callMod(const QString &message)
 {
   if (!message.isEmpty()) {
-    socket.send("ZZ", {message});
+      socket->send("ZZ", {message});
   }
   else {
-    socket.send("ZZ");
+      socket->send("ZZ");
   }
 }
 
@@ -488,7 +488,7 @@ QPromise<void> LegacyClient::sendIC(const DataTypes::MSPacket &message)
     msgCopy.other_offset = {0, 0};
   }
 
-  socket.send("MS", msgCopy.serialize());
+  socket->send("MS", msgCopy.serialize());
 
   return QPromise<void>([&](const QPromiseResolve<void> &resolve) {
            std::shared_ptr<QMetaObject::Connection> connection{
@@ -519,7 +519,7 @@ QPromise<void> LegacyClient::sendIC(const DataTypes::MSPacket &message)
  */
 void LegacyClient::sendOOC(const QString &oocName, const QString &message)
 {
-  socket.send("CT", {oocName, message});
+  socket->send("CT", {oocName, message});
 }
 
 /*!
@@ -542,7 +542,7 @@ void LegacyClient::sendWTCE(WTCE_TYPE type)
     return;
   }
 
-  socket.send("RT", packet);
+  socket->send("RT", packet);
 }
 
 /*!
@@ -556,7 +556,7 @@ void LegacyClient::sendHealth(HEALTH_TYPE type, int value)
 {
   if (value > 10 || value < 0) return;
 
-  socket.send("HP", {QString::number(type), QString::number(value)});
+  socket->send("HP", {QString::number(type), QString::number(value)});
 }
 
 /*!
@@ -565,7 +565,7 @@ void LegacyClient::sendHealth(HEALTH_TYPE type, int value)
  */
 void LegacyClient::addEvidence(const evi_type &evidence)
 {
-  socket.send("PE", evidence);
+  socket->send("PE", evidence);
 }
 
 /*!
@@ -579,7 +579,7 @@ void LegacyClient::editEvidence(const int index, const evi_type &evidence)
   QStringList packet = {QString::number(index)};
   packet.append(evidence);
 
-  socket.send("EE", packet);
+  socket->send("EE", packet);
 }
 
 /*!
@@ -589,7 +589,7 @@ void LegacyClient::editEvidence(const int index, const evi_type &evidence)
  */
 void LegacyClient::removeEvidence(const int index)
 {
-  socket.send("DE", {QString::number(index)});
+  socket->send("DE", {QString::number(index)});
 }
 
 /*!
@@ -600,7 +600,7 @@ void LegacyClient::removeEvidence(const int index)
  */
 void LegacyClient::playTrack(const QString &trackName, const QString &showname)
 {
-  socket.send("MC", {trackName, "0", showname});
+  socket->send("MC", {trackName, "0", showname});
 }
 
 /*!

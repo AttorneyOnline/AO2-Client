@@ -1,9 +1,10 @@
 #include "networkmanager.h"
 
 #include "datatypes.h"
-#include "debug_functions.h"
-#include "lobby.h"
 #include "options.h"
+
+#include "include/network/legacysocket.h"
+#include "include/network/legacysocket_ws.h"
 
 #include <QAbstractSocket>
 #include <QJsonArray>
@@ -133,65 +134,16 @@ void NetworkManager::request_document(MSDocumentType document_type,
 
 void NetworkManager::connect_to_server(server_type p_server)
 {
-  disconnect_from_server();
-
-  qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
-                              << p_server.port;
-
-  switch (p_server.socket_type) {
-  default:
-    p_server.socket_type = TCP;
-    [[fallthrough]];
-  case TCP:
-    qInfo() << "using TCP backend";
-    server_socket.tcp = new QTcpSocket(this);
-
-    connect(server_socket.tcp, &QAbstractSocket::connected, this, [] {
-      qDebug() << "established connection to server";
-    });
-    connect(server_socket.tcp, &QIODevice::readyRead, this, [this] {
-      handle_server_packet(QString::fromUtf8(server_socket.tcp->readAll()));
-    });
-    connect(server_socket.tcp, &QAbstractSocket::disconnected, ao_app,
-            &AOApplication::server_disconnected);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(server_socket.tcp, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [this] {
-#else
-    connect(server_socket.tcp, &QAbstractSocket::errorOccurred, this, [this] {
-#endif
-      qCritical() << "TCP socket error:" << server_socket.tcp->errorString();
-    });
-
-    server_socket.tcp->connectToHost(p_server.ip, p_server.port);
-    break;
-  case WEBSOCKETS:
-    qInfo() << "using WebSockets backend";
-    server_socket.ws = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
-
-    connect(server_socket.ws, &QWebSocket::connected, this, [] {
-      qDebug() << "established connection to server";
-    });
-    connect(server_socket.ws, &QWebSocket::textMessageReceived, this,
-            &NetworkManager::handle_server_packet);
-    connect(server_socket.ws, &QWebSocket::disconnected, ao_app,
-            &AOApplication::server_disconnected);
-    connect(server_socket.ws, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
-            this, [this] {
-      qCritical() << "WebSockets error:" << server_socket.ws->errorString();
-    });
-
-    QUrl url;
-    url.setScheme("ws");
-    url.setHost(p_server.ip);
-    url.setPort(p_server.port);
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
-    server_socket.ws->open(req);
-    break;
-  }
-
-  connected = true;
-  active_connection_type = p_server.socket_type;
+    active_connection_type = p_server.socket_type;
+    switch (active_connection_type) {
+    case TCP:
+        socket = std::make_shared<AttorneyOnline::LegacySocket>();
+        break;
+    case WEBSOCKETS:
+    socket = std::make_shared<AttorneyOnline::LegacySocket_WS>();
+        break;
+    }
+    socket->connect(p_server.ip, p_server.port);
 }
 
 void NetworkManager::join_to_server()

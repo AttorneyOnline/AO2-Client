@@ -1,4 +1,4 @@
-#include "network/legacysocket.h"
+#include "network/legacysocket_ws.h"
 
 #include <QRegularExpression>
 #include <QStringBuilder>
@@ -11,9 +11,9 @@ namespace AttorneyOnline {
  * \param header  the header of the message
  * \param args  a list of arguments
  */
-void LegacySocket::packetReceived()
+void LegacySocket_WS::packetReceived(QByteArray message)
 {
-  buffer.append(socket.readAll());
+  buffer.append(message);
 
   if (buffer.size() >= BUFFER_SOFT_LIMIT)
   {
@@ -62,32 +62,37 @@ void LegacySocket::packetReceived()
   }
 }
 
-QPromise<void> LegacySocket::connect(const QString &address,
+QPromise<void> LegacySocket_WS::connect(const QString &address,
                                      const uint16_t &port)
 {
-    qInfo() << "using TCP backend.";
-  QObject::connect(&socket, &QTcpSocket::readyRead,
-                   this, &LegacySocket::packetReceived);
+  qInfo() << "using Websocket backend.";
+  QObject::connect(&socket, &QWebSocket::binaryMessageReceived,
+                   this, &LegacySocket_WS::packetReceived);
 
   // (QTcpSocket::error is overloaded, so we have to select the right one)
-  auto errorFunc = static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>
-      (&QTcpSocket::errorOccurred);
+  auto errorFunc = static_cast<void (QWebSocket::*)(QAbstractSocket::SocketError)>
+          (&QWebSocket::error);
 
-  auto promise = QtPromise::connect(&socket, &QTcpSocket::connected, errorFunc)
+  auto promise = QtPromise::connect(&socket, &QWebSocket::connected, errorFunc)
       .then([&] {
-    QObject::connect(&socket, &QTcpSocket::disconnected,
-                     this, &LegacySocket::connectionLost);
+    QObject::connect(&socket, &QWebSocket::disconnected,
+                     this, &LegacySocket_WS::connectionLost);
   }).timeout(TIMEOUT_MILLISECS).fail([&](const QPromiseTimeoutException &) {
-    socket.disconnectFromHost();
+    socket.close(QWebSocketProtocol::CloseCodeAbnormalDisconnection);
   });
 
-  // Connect TCP socket, bringing the promise chain above into motion.
-  socket.connectToHost(address, port);
+  // Connect Websocket socket, bringing the promise chain above into motion.
+  QUrl url(address);
+  url.setPort(port);
+  url.setScheme("ws");
+          QNetworkRequest req(url);
+          req.setHeader(QNetworkRequest::UserAgentHeader, "FOO");
+  socket.open(req);
 
   return promise;
 }
 
-void LegacySocket::send(const QString &header, QStringList args)
+void LegacySocket_WS::send(const QString &header, QStringList args)
 {
   args.replaceInStrings("#", "<num>")
       .replaceInStrings("%", "<percent>")
@@ -96,7 +101,7 @@ void LegacySocket::send(const QString &header, QStringList args)
 
   auto bytes = (header % "#" % args.join('#') % "#%").toUtf8();
   qDebug().noquote() << bytes;
-  socket.write(bytes, bytes.length());
+  socket.sendBinaryMessage(bytes);
 }
 
 /*!
@@ -105,7 +110,7 @@ void LegacySocket::send(const QString &header, QStringList args)
  * \param header  the header to wait for
  * \return a list of parameters sent with the message
  */
-QPromise<QStringList> LegacySocket::waitForMessage(const QString &header)
+QPromise<QStringList> LegacySocket_WS::waitForMessage(const QString &header)
 {
   qDebug().noquote() << "Waiting for" << header;
 
@@ -114,7 +119,7 @@ QPromise<QStringList> LegacySocket::waitForMessage(const QString &header)
     std::shared_ptr<QMetaObject::Connection> connection =
         std::make_shared<QMetaObject::Connection>();
 
-    *connection = QObject::connect(this, &LegacySocket::messageReceived,
+    *connection = QObject::connect(this, &LegacySocket_WS::messageReceived,
                                    [=](const QString &recvHeader,
                                    const QStringList &args) {
       if (recvHeader == header)
@@ -127,12 +132,12 @@ QPromise<QStringList> LegacySocket::waitForMessage(const QString &header)
   });
 }
 
-bool LegacySocket::isConnected()
+bool LegacySocket_WS::isConnected()
 {
   return socket.state() == QAbstractSocket::ConnectedState;
 }
 
-bool LegacySocket::isConnecting()
+bool LegacySocket_WS::isConnecting()
 {
   return socket.state() == QAbstractSocket::ConnectingState;
 }

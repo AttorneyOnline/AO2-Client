@@ -1,14 +1,17 @@
 #ifndef LEGACYSOCKET_H
 #define LEGACYSOCKET_H
 
+
 #include <QTcpSocket>
 #include <QtPromise>
+
+#include "socket.h"
 
 using namespace QtPromise;
 
 namespace AttorneyOnline {
 
-class LegacySocket : public QObject {
+class LegacySocket : public Socket {
   Q_OBJECT
 
 private:
@@ -26,19 +29,15 @@ private slots:
 
 public:
   explicit LegacySocket(QObject *parent = nullptr)
-    : QObject(parent) {}
+      : Socket(parent) {}
 
-  QPromise<void> connect(const QString &address, const uint16_t &port);
-  void send(const QString &header, QStringList args = {});
+  QPromise<void> connect(const QString &address, const uint16_t &port) override;
+  void send(const QString &header, QStringList args = {}) override;
 
-  QPromise<QStringList> waitForMessage(const QString &header);
+  QPromise<QStringList> waitForMessage(const QString &header) override;
 
-  bool isConnected();
-  bool isConnecting();
-
-signals:
-  void messageReceived(const QString &header, const QStringList &args);
-  void connectionLost();
+  bool isConnected() override;
+  bool isConnecting() override;
 };
 
 } // namespace AttorneyOnline

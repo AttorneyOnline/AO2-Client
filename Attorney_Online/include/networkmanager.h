@@ -9,6 +9,7 @@
 #include <QtWebSockets/QWebSocket>
 #include <QTime>
 #include <QTimer>
+#include "include/network/socket.h"
 
 #include <cstring>
 
@@ -30,6 +31,9 @@ private:
     QTcpSocket *tcp;
   } server_socket;
   connection_type active_connection_type;
+
+  std::shared_ptr<AttorneyOnline::Socket> socket;
+
   bool connected = false;
 
   QTimer *heartbeat_timer;

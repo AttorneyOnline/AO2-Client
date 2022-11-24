@@ -53,7 +53,7 @@ private:
   // twice, once by the server and again by the socket.
   bool kicked = false;
 
-  LegacySocket socket;
+  std::shared_ptr<Socket> socket;
 
   void mapSignals();
 
