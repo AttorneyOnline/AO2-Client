@@ -15,13 +15,15 @@
 #include <QtAndroidExtras/QtAndroid>
 #endif
 
+using namespace AttorneyOnline;
+
 class AOApplication;
 
 class Lobby : public QMainWindow {
   Q_OBJECT
 
 public:
-  Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr);
+  Lobby(AOApplication *p_ao_app, NetworkManager* p_net_manager);
   ~Lobby();
 
   void set_player_count(int players_online, int max_players);
@@ -35,7 +37,8 @@ signals:
 
 private:
   AOApplication *ao_app;
-  NetworkManager *net_manager;
+  NetworkManager* net_manager;
+  std::shared_ptr<AttorneyOnline::Client>* client;
 
   void list_favorites();
   void list_demos();
@@ -89,6 +92,7 @@ private slots:
   void on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_search_edited(QString p_text);
   void on_demo_clicked(QTreeWidgetItem *item, int column);
+  void on_PNPacket_received(DataTypes::PNPacket f_packet);
 };
 
 #endif // LOBBY_H

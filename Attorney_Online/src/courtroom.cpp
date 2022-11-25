@@ -4013,7 +4013,7 @@ void Courtroom::set_ban(int p_cid)
 
   call_notice(tr("You have been banned."));
 
-  ao_app->construct_lobby();
+  ao_app->open_lobby();
   ao_app->destruct_courtroom();
 }
 
@@ -5587,7 +5587,7 @@ void Courtroom::on_reload_theme_clicked()
 
 void Courtroom::on_back_to_lobby_clicked()
 {
-  ao_app->construct_lobby();
+  ao_app->open_lobby();
   ao_app->destruct_courtroom();
 }
 

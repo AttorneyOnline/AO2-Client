@@ -26,7 +26,8 @@ public:
 
   virtual QPromise<void> connect(const QString &address,
                                  const uint16_t &port,
-                                 const bool &probeOnly = false) = 0;
+                                 const bool &probeOnly = false,
+                                 const connection_type &backend = WEBSOCKETS) = 0;
   virtual void sendKeepalive() = 0;
 
   virtual QVector<char_type> characters() = 0;
@@ -54,12 +55,10 @@ public:
   virtual QStringList tracks() = 0;
   virtual void playTrack(const QString &trackName, const QString &showname) = 0;
 
-  virtual std::pair<int, int> playerCount() const = 0;
-
 signals:
   void connectProgress(int current, int max, const QString &message);
 
-  void idReceived(const DataTypes::IDPacket &server_info);
+  void pnReceived(const DataTypes::PNPacket &server_info);
   void assReceived(const QString &asset_url);
   void posDropdownReceived(const QStringList &positions);
   void messageBoxReceived(const QString &message);

@@ -466,7 +466,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && !f_contents.isEmpty()) {
       call_notice(tr("You have been kicked from the server.\nReason: %1")
                       .arg(f_contents.at(0)));
-      construct_lobby();
+      open_lobby();
       destruct_courtroom();
     }
     log_to_demo = false;
@@ -475,7 +475,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && !f_contents.isEmpty()) {
       call_notice(tr("You have been banned from the server.\nReason: %1")
                       .arg(f_contents.at(0)));
-      construct_lobby();
+      open_lobby();
       destruct_courtroom();
     }
     log_to_demo = false;

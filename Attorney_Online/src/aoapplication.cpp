@@ -40,31 +40,21 @@ AOApplication::~AOApplication()
   qInstallMessageHandler(original_message_handler);
 }
 
-void AOApplication::construct_lobby()
+void AOApplication::open_lobby()
 {
-  if (lobby_constructed) {
-    qWarning() << "lobby was attempted constructed when it already exists";
-    return;
-  }
+    auto lobby = new Lobby(this, net_manager);
+      lobby->setAttribute(Qt::WA_DeleteOnClose);
 
-  load_favorite_list();
-  w_lobby = new Lobby(this, net_manager);
-  lobby_constructed = true;
+      if (Options::getInstance().discordEnabled())
+        discord->state_lobby();
 
-  QRect geometry = QGuiApplication::primaryScreen()->geometry();
-  int x = (geometry.width() - w_lobby->width()) / 2;
-  int y = (geometry.height() - w_lobby->height()) / 2;
-  w_lobby->move(x, y);
+      if (demo_server)
+          demo_server->deleteLater();
+      demo_server = new DemoServer(this);
 
-  if (Options::getInstance().discordEnabled())
-    discord->state_lobby();
-
-  if (demo_server)
-      demo_server->deleteLater();
-  demo_server = new DemoServer(this);
-
-  connect(w_lobby, &Lobby::settings_requested, this, &AOApplication::call_settings_menu);
-  w_lobby->show();
+      connect(lobby, &Lobby::settings_requested, this, &AOApplication::call_settings_menu);
+      net_manager->get_server_list(std::bind(&Lobby::list_servers, lobby));
+      lobby->show();
 }
 
 void AOApplication::destruct_lobby()
@@ -178,7 +168,7 @@ void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {
     call_notice(tr("Disconnected from server."));
-    construct_lobby();
+    open_lobby();
     destruct_courtroom();
   }
 }

@@ -15,6 +15,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
+  client = std::make_shared<AttorneyOnline::LegacyClient>(this);
 
   QString master_config =
       Options::getInstance().alternativeMasterserver();
@@ -25,6 +26,11 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
+}
+
+std::shared_ptr<AttorneyOnline::Client> *NetworkManager::getClientSocket()
+{
+    return &client;
 }
 
 void NetworkManager::get_server_list(const std::function<void()> &cb)
@@ -129,52 +135,21 @@ void NetworkManager::request_document(MSDocumentType document_type,
   });
 }
 
-void NetworkManager::connect_to_server(server_type p_server)
-{
-    active_connection_type = p_server.socket_type;
-    client = std::make_shared<AttorneyOnline::LegacyClient>(this, p_server.socket_type);
-    client->connect(p_server.ip, p_server.port, true);
-}
-
-void NetworkManager::join_to_server()
-{
-    ship_server_packet(AOPacket("askchaa").to_string());
-}
-
-void NetworkManager::disconnect_from_server()
-{
-  if (!connected)
-    return;
-
-  switch (active_connection_type) {
-  case TCP:
-    server_socket.tcp->close();
-    server_socket.tcp->deleteLater();
-    break;
-  case WEBSOCKETS:
-    server_socket.ws->close(QWebSocketProtocol::CloseCodeGoingAway);
-    server_socket.ws->deleteLater();
-    break;
-  }
-
-  connected = false;
-}
-
 void NetworkManager::ship_server_packet(QString p_packet)
 {
-  switch (active_connection_type) {
-  case TCP:
-    server_socket.tcp->write(p_packet.toUtf8());
-    break;
-  case WEBSOCKETS:
-    server_socket.ws->sendTextMessage(p_packet);
-    break;
-  }
+    switch (active_connection_type) {
+    case TCP:
+        server_socket.tcp->write(p_packet.toUtf8());
+        break;
+    case WEBSOCKETS:
+        server_socket.ws->sendTextMessage(p_packet);
+        break;
+    }
 }
 
 void NetworkManager::handle_server_packet(const QString& p_data)
 {
-  QString in_data = p_data;
+    QString in_data = p_data;
 
   if (!p_data.endsWith("%")) {
     partial_packet = true;

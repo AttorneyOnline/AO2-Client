@@ -295,12 +295,12 @@ public:
     }
   };
 
-  struct IDPacket {
+  struct PNPacket {
     int current_player;
     int max_players;
     QString server_description = "";
 
-    IDPacket(const QStringList f_packet)
+    PNPacket(const QStringList f_packet)
     {
       current_player = f_packet.at(0).toInt();
       max_players = f_packet.at(1).toInt();

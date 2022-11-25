@@ -1,6 +1,8 @@
 #include "network/legacyclient.h"
 
 #include "network/hdid.h"
+#include "network/legacysocket.h"
+#include "network/legacysocket_ws.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -25,11 +27,10 @@ void LegacyClient::mapSignals()
 {
   QObject::connect(
       socket.get(), &Socket::messageReceived,
-      [this](const QString &header, const QStringList &args) {
+      [=](const QString &header, const QStringList &args) {
         switch (toDataType<HEADER>(header)) {
         case HEADER::ID: {
-          DataTypes::IDPacket server_info(args);
-          emit idReceived(server_info);
+          // Who cares, nothing in here is used.
         } break;
 
         case HEADER::ASS: {
@@ -47,12 +48,11 @@ void LegacyClient::mapSignals()
           if (args.contains("looping_sfx")) killingFeverOnlineFeatures = true;
           break;
 
-        case HEADER::PN:
+        case HEADER::PN: {
           ENFORCE_MIN_LENGTH(2)
-
-          curPlayers = args[0].toInt();
-          maxPlayers = args[1].toInt();
-          break;
+          DataTypes::PNPacket server_info(args);
+          emit pnReceived(server_info);
+        } break;
 
         case HEADER::SC:
           charsList.clear();
@@ -347,8 +347,18 @@ void LegacyClient::mapSignals()
  */
 QPromise<void> LegacyClient::connect(const QString &address,
                                      const uint16_t &port,
-                                     const bool &probeOnly)
+                                     const bool &probeOnly,
+                                     const connection_type &backend)
 {
+  switch (backend) {
+  case TCP:
+    socket = std::make_unique<AttorneyOnline::LegacySocket>();
+    break;
+  case WEBSOCKETS:
+    socket = std::make_unique<AttorneyOnline::LegacySocket_WS>();
+    break;
+  }
+
   qInfo().noquote()
       << "Connecting to" << QStringLiteral("%1:%2").arg(address).arg(port)
       << QStringLiteral("(probe: %1)").arg(probeOnly ? "yes" : "no");
@@ -602,16 +612,6 @@ void LegacyClient::removeEvidence(const int index)
 void LegacyClient::playTrack(const QString &trackName, const QString &showname)
 {
   socket->send("MC", {trackName, "0", showname});
-}
-
-/*!
- * Gets a player count. This count is usually only updated on initial server
- * connect; additional requests for server info may be required for an
- * up-to-date count.
- */
-std::pair<int, int> LegacyClient::playerCount() const
-{
-  return {curPlayers, maxPlayers};
 }
 
 } // namespace AttorneyOnline

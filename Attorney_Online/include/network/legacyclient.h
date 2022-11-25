@@ -6,9 +6,8 @@
 #include <QVector>
 #include <QtPromise>
 
-#include "legacysocket.h"
-#include "legacysocket_ws.h"
 #include "client.h"
+#include "network/socket.h"
 
 using namespace QtPromise;
 
@@ -37,9 +36,6 @@ private:
 
   int currentCharId = -1;
 
-  int curPlayers;
-  int maxPlayers;
-
   // tsuserver3 enjoys kicking players that do not send the keepalive
   // packet within a server-configured timeout.
   const int KEEPALIVE_INTERVAL = 60 * 1000;
@@ -59,20 +55,12 @@ private:
   void mapSignals();
 
 public:
-  explicit LegacyClient(QObject *parent, connection_type con_type = WEBSOCKETS)
-    : Client(parent) {
-      switch (con_type) {
-      case TCP:
-          socket = std::make_unique<LegacySocket>(this);
-          break;
-      case WEBSOCKETS:
-          socket = std::make_unique<LegacySocket_WS>(this);
-          break;
-      }
-  }
+  explicit LegacyClient(QObject *parent)
+    : Client(parent) {}
   QPromise<void> connect(const QString &address,
                          const uint16_t &port,
-                         const bool &probeOnly) override;
+                         const bool &probeOnly,
+                         const connection_type &backend) override;
   void sendKeepalive() override;
 
   QVector<char_type> characters() override { return charsList; }
@@ -99,8 +87,6 @@ public:
 
   QStringList tracks() override { return tracksList; }
   void playTrack(const QString &trackName, const QString &showname) override;
-
-  std::pair<int, int> playerCount() const override;
 
   int currentPair() const { return pairCharId; }
   void setPair(int cid) { pairCharId = cid; }

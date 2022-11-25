@@ -18,6 +18,7 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
 {
   ao_app = p_ao_app;
   net_manager = p_net_manager;
+  client = p_net_manager->getClientSocket();
 
   this->setWindowTitle(
       tr("Attorney Online %1").arg(ao_app->applicationVersion()));
@@ -90,12 +91,11 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
   FROM_UI(QLabel, server_player_count_lbl)
   FROM_UI(QTextBrowser, server_description_text)
   FROM_UI(QPushButton, connect_button);
-  connect(ui_connect_button, &QPushButton::released, net_manager,
-          &NetworkManager::join_to_server);
-  connect(net_manager, &NetworkManager::server_connected,
-          ui_connect_button, &QPushButton::setEnabled);
 
   FROM_UI(QTextBrowser, motd_text);
+
+  connect(client->get(), &AttorneyOnline::Client::pnReceived,
+          this, &Lobby::on_PNPacket_received);
 
   list_servers();
   list_favorites();
@@ -256,7 +256,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
   ui_connect_button->setEnabled(false);
 
-  net_manager->connect_to_server(f_server);
+  client->get()->connect(f_server.ip, f_server.port, true, f_server.socket_type);
 }
 
 // doubleclicked on an item in the serverlist so we'll connect right away
@@ -264,7 +264,6 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 {
   Q_UNUSED(p_item)
   Q_UNUSED(column)
-  net_manager->join_to_server();
 }
 
 void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
@@ -311,7 +310,7 @@ void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
 
     ui_connect_button->setEnabled(false);
 
-    net_manager->connect_to_server(f_server);
+    client->get()->connect(f_server.ip, f_server.port, true, f_server.socket_type);
   }
 
 void Lobby::on_server_search_edited(QString p_text)
@@ -351,8 +350,22 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
   server_type demo_server;
   demo_server.ip = "127.0.0.1";
   demo_server.port = ao_app->demo_server->port;
+  demo_server.socket_type = TCP;
   ao_app->demo_server->set_demo_file(l_filepath);
-  net_manager->connect_to_server(demo_server);
+  client->get()->connect(demo_server.ip, demo_server.port, true, demo_server.socket_type);
+}
+
+void Lobby::on_PNPacket_received(DataTypes::PNPacket f_packet)
+{
+    QString f_string =
+        tr("Online: %1/%2")
+            .arg(QString::number(f_packet.current_player), QString::number(f_packet.max_players));
+    ui_server_player_count_lbl->setText(f_string);
+
+    if(!f_packet.server_description.isEmpty()) {
+        set_server_description(f_packet.server_description);
+    }
+    ui_connect_button->setEnabled(true);
 }
 
 void Lobby::list_servers()
