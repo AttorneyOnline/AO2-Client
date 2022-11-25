@@ -29,9 +29,9 @@ AOImage::~AOImage() {}
 
 bool AOImage::set_image(QString p_image, QString p_misc)
 {
-  QString p_image_resolved = ao_app->get_image(p_image, Options::getInstance().theme(), Options::getInstance().subTheme(),
+  QString p_image_resolved = ao_app->get_image(p_image, options.theme(), options.subTheme(),
                                                ao_app->default_theme, p_misc, "", "",
-                                               is_static || !Options::getInstance().animatedThemeEnabled());
+                                               is_static || !options.animatedThemeEnabled());
 
   if (!file_exists(p_image_resolved)) {
     qWarning() << "could not find image" << p_image;
@@ -42,11 +42,11 @@ bool AOImage::set_image(QString p_image, QString p_misc)
   if (!is_static) {
     movie->stop();
     movie->setFileName(path);
-    if (Options::getInstance().animatedThemeEnabled() && movie->frameCount() > 1) {
+    if (options.animatedThemeEnabled() && movie->frameCount() > 1) {
       movie->start();
     }
   }
-  if (is_static || !Options::getInstance().animatedThemeEnabled() || movie->frameCount() <= 1) {
+  if (is_static || !options.animatedThemeEnabled() || movie->frameCount() <= 1) {
     QPixmap f_pixmap(path);
 
     f_pixmap =

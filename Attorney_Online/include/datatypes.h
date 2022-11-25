@@ -265,7 +265,7 @@ public:
         sfx_looping = toDataType<bool>(packet.at(LOOPING_SFX));
         screenshake = toDataType<bool>(packet.at(SCREENSHAKE));
         if (!packet.at(FRAME_SFX).isEmpty() &&
-            Options::getInstance().networkedFrameSfxEnabled()) {
+            Options().networkedFrameSfxEnabled()) {
           QStringList netstrings = {packet.at(FRAME_SCREENSHAKE),
                                     packet.at(FRAME_REALIZATION),
                                     packet.at(FRAME_SFX)};

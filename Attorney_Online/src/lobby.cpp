@@ -94,8 +94,8 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
 
   FROM_UI(QTextBrowser, motd_text);
 
-  connect(client->get(), &AttorneyOnline::Client::pnReceived,
-          this, &Lobby::on_PNPacket_received);
+  connect(client->get(), &AttorneyOnline::Client::pnReceived, this,
+          &Lobby::on_PNPacket_received);
 
   list_servers();
   list_favorites();
@@ -148,11 +148,25 @@ int Lobby::get_selected_server()
 
 void Lobby::reset_selection()
 {
-  last_index = -1;
+  selected_server = server_type();
   ui_server_player_count_lbl->setText(tr("Offline"));
   ui_server_description_text->clear();
 
   ui_connect_button->setEnabled(false);
+}
+
+void Lobby::probe_server()
+{
+  set_server_description(selected_server.desc);
+
+  ui_server_description_text->moveCursor(QTextCursor::Start);
+  ui_server_description_text->ensureCursorVisible();
+  ui_server_player_count_lbl->setText(tr("Connecting..."));
+
+  ui_connect_button->setEnabled(false);
+
+  client->get()->connect(selected_server.ip, selected_server.port, true,
+                         selected_server.socket_type);
 }
 
 void Lobby::on_refresh_released()
@@ -232,31 +246,19 @@ void Lobby::on_about_clicked()
 void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0;
-  server_type f_server;
   int n_server = p_item->text(column).toInt();
-
-  if (n_server == last_index) {
-    return;
-  }
-  last_index = n_server;
-
-  if (n_server < 0) return;
-
   QVector<server_type> f_server_list = ao_app->get_server_list();
 
-  if (n_server >= f_server_list.size()) return;
+  if (n_server < 0 || n_server >= f_server_list.size()) return;
 
-  f_server = f_server_list.at(n_server);
+  server_type f_server = f_server_list.at(n_server);
 
-  set_server_description(f_server.desc);
-
-  ui_server_description_text->moveCursor(QTextCursor::Start);
-  ui_server_description_text->ensureCursorVisible();
-  ui_server_player_count_lbl->setText(tr("Connecting..."));
-
-  ui_connect_button->setEnabled(false);
-
-  client->get()->connect(f_server.ip, f_server.port, true, f_server.socket_type);
+  // We are already connected to this IP.
+  if (selected_server.ip == f_server.ip) {
+    return;
+  }
+  selected_server = f_server;
+  probe_server();
 }
 
 // doubleclicked on an item in the serverlist so we'll connect right away
@@ -264,6 +266,13 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 {
   Q_UNUSED(p_item)
   Q_UNUSED(column)
+  on_connect_clicked();
+}
+
+void Lobby::on_connect_clicked()
+{
+  client->get()->connect(selected_server.ip, selected_server.port
+                         , false, selected_server.socket_type);
 }
 
 void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
@@ -285,33 +294,21 @@ void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
 
 void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
 {
-    column = 0;
-    server_type f_server;
-    int n_server = p_item->text(column).toInt();
+  column = 0;
+  int n_server = p_item->text(column).toInt();
+  QVector<server_type> f_server_list = ao_app->get_server_list();
 
-    if (n_server == last_index) {
-      return;
-    }
-    last_index = n_server;
+  if (n_server < 0 || n_server >= f_server_list.size()) return;
 
-    if (n_server < 0) return;
+  server_type f_server = f_server_list.at(n_server);
 
-    QVector<server_type> f_server_list = ao_app->get_favorite_list();
-
-    if (n_server >= f_server_list.size()) return;
-
-    f_server = f_server_list.at(n_server);
-
-    set_server_description(f_server.desc);
-
-    ui_server_description_text->moveCursor(QTextCursor::Start);
-    ui_server_description_text->ensureCursorVisible();
-    ui_server_player_count_lbl->setText(tr("Connecting..."));
-
-    ui_connect_button->setEnabled(false);
-
-    client->get()->connect(f_server.ip, f_server.port, true, f_server.socket_type);
+  // We are already connected to this IP.
+  if (selected_server.ip == f_server.ip) {
+    return;
   }
+  selected_server = f_server;
+  probe_server();
+}
 
 void Lobby::on_server_search_edited(QString p_text)
 {
@@ -352,20 +349,21 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
   demo_server.port = ao_app->demo_server->port;
   demo_server.socket_type = TCP;
   ao_app->demo_server->set_demo_file(l_filepath);
-  client->get()->connect(demo_server.ip, demo_server.port, true, demo_server.socket_type);
+  client->get()->connect(demo_server.ip, demo_server.port, true,
+                         demo_server.socket_type);
 }
 
 void Lobby::on_PNPacket_received(DataTypes::PNPacket f_packet)
 {
-    QString f_string =
-        tr("Online: %1/%2")
-            .arg(QString::number(f_packet.current_player), QString::number(f_packet.max_players));
-    ui_server_player_count_lbl->setText(f_string);
+  QString f_string = tr("Online: %1/%2")
+                         .arg(QString::number(f_packet.current_player),
+                              QString::number(f_packet.max_players));
+  ui_server_player_count_lbl->setText(f_string);
 
-    if(!f_packet.server_description.isEmpty()) {
-        set_server_description(f_packet.server_description);
-    }
-    ui_connect_button->setEnabled(true);
+  if (!f_packet.server_description.isEmpty()) {
+    set_server_description(f_packet.server_description);
+  }
+  ui_connect_button->setEnabled(true);
 }
 
 void Lobby::list_servers()

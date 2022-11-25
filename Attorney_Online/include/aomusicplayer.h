@@ -46,6 +46,8 @@ private:
   QWidget *m_parent;
   AOApplication *ao_app;
 
+  Options options;
+
   bool m_looping = false;
   bool m_muted = false;
   int m_volume[4] = {0, 0, 0, 0};

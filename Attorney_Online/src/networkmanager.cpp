@@ -18,7 +18,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   client = std::make_shared<AttorneyOnline::LegacyClient>(this);
 
   QString master_config =
-      Options::getInstance().alternativeMasterserver();
+      options.alternativeMasterserver();
   if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
     qInfo() << "using alternate master server" << master_config;
     ms_baseurl = master_config;
@@ -87,7 +87,7 @@ void NetworkManager::send_heartbeat()
   // within a 5 minute window, so that the the number of people playing within
   // that time period can be counted and an accurate player count be displayed.
   // What do I care about your personal information, I really don't want it.
-  if (Options::getInstance().playerCountOptout())
+  if (options.playerCountOptout())
     return;
 
   QNetworkRequest req(QUrl(ms_baseurl + "/playing"));
@@ -111,7 +111,7 @@ void NetworkManager::request_document(MSDocumentType document_type,
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
 
   QString language =
-      Options::getInstance().language();
+      options.language();
   if (language.trimmed().isEmpty())
     language = QLocale::system().name();
 

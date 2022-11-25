@@ -31,7 +31,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   DWORD newstream;
   if (f_path.startsWith("http")) {
 
-    if (!Options::getInstance().streamingEnabled()) {
+    if (!options.streamingEnabled()) {
         BASS_ChannelStop(m_stream_list[channel]);
         return QObject::tr("[MISSING] Streaming disabled.");
     }
@@ -57,7 +57,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   int error_code = BASS_ErrorGetCode();
 
-  if (Options::getInstance().audioOutputDevice() != "default")
+  if (options.audioOutputDevice() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
 
   QString d_path = f_path + ".txt";

@@ -25,6 +25,7 @@ class NetworkManager : public QObject {
 private:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
+  Options options;
 
   union {
     QWebSocket *ws;

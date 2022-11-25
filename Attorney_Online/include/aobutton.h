@@ -18,6 +18,8 @@ public:
   QMovie *movie;
 
   void set_image(QString p_image, QString p_misc="");
+private:
+  Options options;
 };
 
 #endif // AOBUTTON_H

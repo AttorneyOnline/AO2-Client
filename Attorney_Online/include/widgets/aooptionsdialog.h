@@ -42,6 +42,7 @@ public:
 
 private:
   AOApplication *ao_app;
+  Options options;
 
   // Dialog interaction buttons. Save/Discard/Restore Defaults
   QDialogButtonBox *ui_settings_buttons;

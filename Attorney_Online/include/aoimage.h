@@ -26,6 +26,9 @@ public:
 
   bool set_image(QString p_image, QString p_misc = "");
   void set_size_and_pos(QString identifier);
+
+ private:
+  Options options;
 };
 
 #endif // AOIMAGE_H

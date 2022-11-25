@@ -48,12 +48,12 @@ void LegacySocket_WS::packetReceived(QString message)
     // characters.
     if (msg[msg.size() - 1] == '#')
       args.removeLast();
-
+#if DEBUG_NETWORK
     QStringList debugArgs = args;
     debugArgs.replaceInStrings(QRegularExpression("(.{60}).+(.{60})"),
                                "\\1...\\2");
     qDebug() << header << debugArgs;
-
+#endif
     emit messageReceived(header, args);
 
     // (Unfortunately QByteArray is not a circular buffer. You wish it were,

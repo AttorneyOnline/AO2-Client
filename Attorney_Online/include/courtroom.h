@@ -350,6 +350,7 @@ public:
   ~Courtroom();
 private:
   AOApplication *ao_app;
+  Options options;
 
   // Percentage of audio that is suppressed when client is not in focus
   int suppress_audio = 0;

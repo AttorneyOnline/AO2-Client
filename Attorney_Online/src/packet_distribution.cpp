@@ -9,7 +9,7 @@
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
-    if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
+    if (options.logToDemoFileEnabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         if (!demo_timer.isValid())
@@ -206,7 +206,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (Options::getInstance().logToDemoFileEnabled() && server_name != "Demo playback") {
+    if (options.logToDemoFileEnabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
@@ -220,7 +220,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
-    if (Options::getInstance().discordEnabled())
+    if (options.discordEnabled())
       discord->state_server(server_name.toStdString(),
                             hash.result().toBase64().toStdString());
     log_to_demo = false;
@@ -561,7 +561,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     subtheme = f_contents.at(0);
 
     // Check if we have subthemes set to "server"
-    QString p_st = Options::getInstance().subTheme();
+    QString p_st = options.subTheme();
     if (p_st.toLower() != "server")
       // We don't. Simply acknowledge the subtheme sent by the server, but don't do anything else.
       return;

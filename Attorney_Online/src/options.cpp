@@ -33,14 +33,6 @@ void Options::migrateCallwords()
   setCallwords(l_callwords);
 }
 
-Options::Options()
-    : config(QCoreApplication::applicationDirPath() + "/base/config.ini",
-             QSettings::IniFormat)
-{
-  config.setIniCodec("UTF-8");
-  migrate();
-}
-
 /*! Migrate old configuration keys/values to a relevant format. */
 void Options::migrate()
 {

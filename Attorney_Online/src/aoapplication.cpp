@@ -45,7 +45,7 @@ void AOApplication::open_lobby()
     auto lobby = new Lobby(this, net_manager);
       lobby->setAttribute(Qt::WA_DeleteOnClose);
 
-      if (Options::getInstance().discordEnabled())
+      if (options.discordEnabled())
         discord->state_lobby();
 
       if (demo_server)
@@ -226,13 +226,13 @@ void AOApplication::initBASS()
   unsigned int a = 0;
   BASS_DEVICEINFO info;
 
-  if (Options::getInstance().audioOutputDevice() == "default") {
+  if (options.audioOutputDevice() == "default") {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
   else {
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-      if (Options::getInstance().audioOutputDevice() == info.name) {
+      if (options.audioOutputDevice() == info.name) {
         BASS_SetDevice(a);
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);

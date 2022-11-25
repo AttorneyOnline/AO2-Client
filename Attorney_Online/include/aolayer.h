@@ -10,6 +10,7 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QMutex>
 #include <QWaitCondition>
+#include "options.h"
 
 class AOApplication;
 class VPath;
@@ -153,6 +154,8 @@ private:
   QMutex mutex;
   QWaitCondition frameAdded;
 
+  Options options;
+
 
 signals:
   void done();
@@ -229,6 +232,8 @@ class SplashLayer : public AOLayer {
 public:
   SplashLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, QString p_charname, QString p_miscname);
+  private:
+  Options options;
 };
 
 class EffectLayer : public AOLayer {
@@ -236,6 +241,8 @@ class EffectLayer : public AOLayer {
 public:
   EffectLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, bool p_looping);
+private:
+  Options options;
 };
 
 class InterfaceLayer : public AOLayer {
@@ -243,6 +250,9 @@ class InterfaceLayer : public AOLayer {
 public:
   InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, QString p_miscname);
+
+private:
+  Options options;
 };
 
 class StickerLayer : public AOLayer {
@@ -250,6 +260,8 @@ class StickerLayer : public AOLayer {
 public:
   StickerLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_charname);
+private:
+  Options options;
 };
 
 #endif // AOLAYER_H

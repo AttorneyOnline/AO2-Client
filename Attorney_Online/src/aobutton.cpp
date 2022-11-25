@@ -21,8 +21,8 @@ void AOButton::set_image(QString p_path, QString p_misc)
 {
   movie->stop();
   QString p_image;
-  p_image = ao_app->get_image(p_path, Options::getInstance().theme(), Options::getInstance().subTheme(),
-                              ao_app->default_theme, p_misc, "", "", !Options::getInstance().animatedThemeEnabled());
+  p_image = ao_app->get_image(p_path, options.theme(), options.subTheme(),
+                              ao_app->default_theme, p_misc, "", "", !options.animatedThemeEnabled());
   if (p_image.isEmpty()) {
       this->setIcon(QIcon());
       this->setIconSize(this->size());
@@ -34,7 +34,7 @@ void AOButton::set_image(QString p_path, QString p_misc)
   movie->setFileName(p_image);
   // We double-check if the user wants animated themes, so even if an animated image slipped through,
   // we still set it static
-  if (Options::getInstance().animatedThemeEnabled() && movie->frameCount() > 1) {
+  if (options.animatedThemeEnabled() && movie->frameCount() > 1) {
     movie->start();
   }
   else {

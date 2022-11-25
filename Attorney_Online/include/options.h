@@ -13,20 +13,12 @@ private:
   QSettings config;
 
   void migrateCallwords();
-
-  /**
-   * @brief Constructor for options class.
-   */
-  Options();
-
 public:
-  Options(Options const &) = delete;
-  void operator=(Options const &) = delete;
-
-  static Options &getInstance()
-  {
-    static Options instance;
-    return instance;
+  Options() : config(
+        QCoreApplication::applicationDirPath() + "/base/config.ini",
+        QSettings::IniFormat) {
+      config.setIniCodec("UTF-8");
+      migrate();
   }
 
   /**

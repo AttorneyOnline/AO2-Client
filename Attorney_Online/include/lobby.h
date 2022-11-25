@@ -39,14 +39,16 @@ private:
   AOApplication *ao_app;
   NetworkManager* net_manager;
   std::shared_ptr<AttorneyOnline::Client>* client;
+  Options options;
 
   void list_favorites();
   void list_demos();
   void get_motd();
   void check_for_updates();
   void reset_selection();
+  void probe_server();
 
-  int last_index = -1;
+  server_type selected_server;
 
   enum TabPage { SERVER, FAVORITES, DEMOS };
 
@@ -88,6 +90,7 @@ private slots:
   void on_about_clicked();
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_list_doubleclicked(QTreeWidgetItem *p_item, int column);
+  void on_connect_clicked();
   void on_favorite_list_context_menu_requested(const QPoint &point);
   void on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_search_edited(QString p_text);

@@ -354,7 +354,7 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   ui_log_timestamp_format_lbl->setText(
       tr("Log timestamp format:\n") +
       QDateTime::currentDateTime().toString(
-          Options::getInstance().logTimestampFormat()));
+          options.logTimestampFormat()));
 
   FROM_UI(QComboBox, log_timestamp_format_combobox)
   registerOption<QComboBox, QString>("log_timestamp_format_combobox",
@@ -363,11 +363,11 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged,
           this, &::AOOptionsDialog::onTimestampFormatEdited);
 
-  QString l_current_format = Options::getInstance().logTimestampFormat();
+  QString l_current_format = options.logTimestampFormat();
 
   ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
 
-  if (!Options::getInstance().logTimestampEnabled()) {
+  if (!options.logTimestampEnabled()) {
     ui_log_timestamp_format_combobox->setDisabled(true);
   }
 
@@ -521,10 +521,10 @@ void AOOptionsDialog::registerOption(const QString &widgetName,
 
   OptionEntry entry;
   entry.load = [=] {
-    setWidgetData<T, V>(widget, (Options::getInstance().*getter)());
+    setWidgetData<T, V>(widget, (options.*getter)());
   };
   entry.save = [=] {
-    (Options::getInstance().*setter)(widgetData<T, V>(widget));
+    (options.*setter)(widgetData<T, V>(widget));
   };
 
   optionEntries.append(entry);
@@ -536,7 +536,7 @@ void AOOptionsDialog::updateValues()
     entry.load();
 
   QSet<QString> themes;
-  QStringList bases = Options::getInstance().mountPaths();
+  QStringList bases = options.mountPaths();
   bases.push_front(ao_app->get_base_path());
   for (const QString &base : bases) {
     QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
@@ -550,7 +550,7 @@ void AOOptionsDialog::updateValues()
     }
   }
   int l_theme_index =
-      ui_theme_combobox->findText(Options::getInstance().theme());
+      ui_theme_combobox->findText(options.theme());
   if (l_theme_index != -1) // Data found
     ui_theme_combobox->setCurrentIndex(l_theme_index);
 
@@ -565,7 +565,7 @@ void AOOptionsDialog::updateValues()
     }
   }
   int l_subTheme_index =
-      ui_subtheme_combobox->findText(Options::getInstance().subTheme());
+      ui_subtheme_combobox->findText(options.subTheme());
   if (l_theme_index != -1) // Data found
     ui_subtheme_combobox->setCurrentIndex(l_subTheme_index);
 
@@ -594,7 +594,7 @@ void AOOptionsDialog::buttonClicked(QAbstractButton *button)
             this, "", "Restore default settings?\nThis can't be undone!",
             QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
       // Destructive operation.
-      Options::getInstance().clearConfig();
+      options.clearConfig();
       updateValues();
     }
   }
@@ -602,9 +602,9 @@ void AOOptionsDialog::buttonClicked(QAbstractButton *button)
 
 void AOOptionsDialog::onReloadThemeClicked()
 {
-  Options::getInstance().setTheme(ui_theme_combobox->currentText());
-  Options::getInstance().setSubTheme(ui_subtheme_combobox->currentText());
-  Options::getInstance().setAnimatedThemeEnabled(
+  options.setTheme(ui_theme_combobox->currentText());
+  options.setSubTheme(ui_subtheme_combobox->currentText());
+  options.setAnimatedThemeEnabled(
       ui_animated_theme_cb->isChecked());
   emit reloadThemeRequest();
 }

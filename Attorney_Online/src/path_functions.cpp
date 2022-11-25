@@ -52,7 +52,7 @@ QString AOApplication::get_base_path()
 VPath AOApplication::get_theme_path(QString p_file, QString p_theme)
 {
   if (p_theme == "")
-      p_theme = Options::getInstance().theme();
+      p_theme = options.theme();
   return VPath("themes/" + p_theme + "/" + p_file);
 }
 
@@ -280,9 +280,9 @@ QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_characte
 {
   QVector<VPath> pathlist;
   // Sounds subfolder is prioritized for organization sake
-  pathlist += get_asset_paths("sounds/" + p_sfx, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_misc, p_character);
+  pathlist += get_asset_paths("sounds/" + p_sfx, options.theme(), options.subTheme(), default_theme, p_misc, p_character);
   // If sound subfolder not found, search just for SFX
-  pathlist += get_asset_paths(p_sfx, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_misc, p_character);
+  pathlist += get_asset_paths(p_sfx, options.theme(), options.subTheme(), default_theme, p_misc, p_character);
   // If SFX not found, search base/sounds/general/ folder
   pathlist += get_sounds_path(p_sfx);
   QString ret = get_sfx_path(pathlist);
@@ -346,7 +346,7 @@ QString AOApplication::get_real_path(const VPath &vpath,
   }
 
   // Cache miss; try all known mount paths
-  QStringList bases = Options::getInstance().mountPaths();
+  QStringList bases = options.mountPaths();
   bases.prepend(get_base_path());
   // base
   // content 1
