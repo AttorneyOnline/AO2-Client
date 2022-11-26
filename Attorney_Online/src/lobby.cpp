@@ -271,8 +271,8 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 
 void Lobby::on_connect_clicked()
 {
-  client->get()->connect(selected_server.ip, selected_server.port
-                         , false, selected_server.socket_type);
+  client->get()->connect(selected_server.ip, selected_server.port, false,
+                         selected_server.socket_type);
 }
 
 void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)

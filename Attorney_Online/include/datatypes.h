@@ -8,7 +8,7 @@
 
 template <typename T> T toDataType(const QString &f_string)
 {
-  return QVariant(f_string).value<T>();
+  return QVariant(f_string.toUpper()).value<T>();
 }
 
 template <typename T> QString fromDataType(const T &f_t)
@@ -17,6 +17,8 @@ template <typename T> QString fromDataType(const T &f_t)
 }
 
 namespace AttorneyOnline {
+
+Q_NAMESPACE
 
 class DataTypes {
   Q_GADGET
@@ -146,6 +148,26 @@ public:
   };
   Q_ENUM(TEXT_COLOR)
 
+  enum class AUTHENTICATION {
+    LOGOUT = -1,  //!< Log-out. Hides the guard button.
+    LOGIN_FAIL,   //!< Unsuccessful log-in attempt.
+    LOGIN_SUCCESS //!< Successful log-in. Displays the guard button.
+  };
+  Q_ENUM(AUTHENTICATION)
+
+  /**
+   * @brief The TIMER_ACTION enum
+   *
+   *  @details Allan, please add details.
+   */
+  enum class TIMER_ACTION {
+    START, //!< Starts/Resumes/Syncs the timer given the time provided
+    PAUSE, //!< Pauses the timer given the time provided
+    SHOW,  //!< Shows timer UI element.
+    HIDE   //!< Hides timer UI element.
+  };
+  Q_ENUM(TIMER_ACTION)
+
   struct MSPacket {
     DESKMOD desk_mod = DESKMOD::HIDDEN;
     QString pre_animation = "";
@@ -233,10 +255,18 @@ public:
       char_id = packet.at(CHAR_ID).toInt();
       sfx_delay = packet.at(SFX_DELAY).toInt();
       shout_mod = toDataType<SHOUT_MODIFIER>(packet.at(OBJECTION_MOD));
+      if (shout_mod != SHOUT_MODIFIER::NOTHING &&
+          emote_mod == EMOTE_MODIFIER::NONE) {
+        emote_mod = EMOTE_MODIFIER::OBJECTION;
+      }
       evidence = packet.at(EVIDENCE_ID).toInt();
       flip = toDataType<bool>(packet.at(FLIP));
       realization = toDataType<bool>(packet.at(REALIZATION));
       text_color = toDataType<TEXT_COLOR>(packet.at(COLOR));
+      if (text_color == TEXT_COLOR::RAINBOW) {
+        text_color = TEXT_COLOR::WHITE;
+      }
+
       if (cccc_features) {
         showname = packet.at(SHOWNAME);
         other_char_id = packet.at(OTHER_CHARID).toInt();
@@ -320,26 +350,6 @@ public:
       if (f_packet.size() >= 2) reload_theme = toDataType<bool>(f_packet.at(1));
     }
   };
-
-  enum class AUTHENTICATION {
-    LOGOUT = -1,  //!< Log-out. Hides the guard button.
-    LOGIN_FAIL,   //!< Unsuccessful log-in attempt.
-    LOGIN_SUCCESS //!< Successful log-in. Displays the guard button.
-  };
-  Q_ENUM(AUTHENTICATION)
-
-  /**
-   * @brief The TIMER_ACTION enum
-   *
-   *  @details Allan, please add details.
-   */
-  enum class TIMER_ACTION {
-    START, //!< Starts/Resumes/Syncs the timer given the time provided
-    PAUSE, //!< Pauses the timer given the time provided
-    SHOW,  //!< Shows timer UI element.
-    HIDE   //!< Hides timer UI element.
-  };
-  Q_ENUM(TIMER_ACTION)
 
   struct TIPacket {
     int timer_id;
