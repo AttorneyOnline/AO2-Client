@@ -341,8 +341,8 @@ public:
   };
 
   struct STPacket {
-    QString subtheme;
-    bool reload_theme;
+    QString subtheme = "";
+    bool reload_theme = false;
 
     STPacket(const QStringList f_packet)
     {
