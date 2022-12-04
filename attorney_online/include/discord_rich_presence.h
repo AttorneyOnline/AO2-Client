@@ -7,7 +7,7 @@
 #include <ctime>
 #include <string>
 
-#include <discord-rpc.h>
+#include <discord_rpc.h>
 #include <string>
 
 #include <cstring>
