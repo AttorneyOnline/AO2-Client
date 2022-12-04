@@ -85,44 +85,44 @@ jobs:
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
           unzip discord_rpc.zip
-          cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./lib/
+          cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./attorney_online/lib/
           cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./bin/
-          cp ./discord-rpc/win32-dynamic/include/discord*.h ./include/
+          cp ./discord-rpc/win32-dynamic/include/discord*.h ./attorney_online/include/
 
       - name: Install Linux Discord RPC
         if: matrix.platform == 'gcc_64'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
           unzip discord_rpc.zip
-          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib/
+          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./attorney_online/lib/
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
-          cp ./discord-rpc/linux-dynamic/include/discord*.h ./include/
+          cp ./discord-rpc/linux-dynamic/include/discord*.h ./attorney_online/include/
 
       - name: Install Mac Discord RPC
         if: matrix.os == 'macos-latest'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc.zip
           unzip discord_rpc.zip
-          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib/
+          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./attorney_online/lib/
           cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin/
-          cp ./discord-rpc/osx-dynamic/include/discord*.h ./include/
+          cp ./discord-rpc/osx-dynamic/include/discord*.h ./attorney_online/include/
 
       - name: Install Windows BASS
         if: contains(matrix.os, 'windows')
         run: |
           curl http://www.un4seen.com/files/bass24.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/c/bass.lib ./lib/
+          cp ./bass/c/bass.lib ./attorney_online/lib/
           cp ./bass/bass.dll ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/c/bassmidi.lib ./lib/
+          cp ./bass/c/bassmidi.lib ./attorney_online/lib/
           cp ./bass/bassmidi.dll ./bin/
 
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/c/bassopus.lib ./lib/
+          cp ./bass/c/bassopus.lib ./attorney_online/lib/
           cp ./bass/bassopus.dll ./bin/
 
       - name: Install Linux BASS
@@ -130,17 +130,17 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/x64/libbass.so ./lib/
+          cp ./bass/x64/libbass.so ./attorney_online/lib/
           cp ./bass/x64/libbass.so ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/x64/libbassmidi.so ./lib/
+          cp ./bass/x64/libbassmidi.so ./attorney_online/lib/
           cp ./bass/x64/libbassmidi.so ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/x64/libbassopus.so ./lib/
+          cp ./bass/x64/libbassopus.so ./attorney_online/lib/
           cp ./bass/x64/libbassopus.so ./bin/
 
       - name: Install Mac BASS
@@ -148,17 +148,17 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/libbass.dylib ./lib/
+          cp ./bass/libbass.dylib ./attorney_online/lib/
           cp ./bass/libbass.dylib ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24-osx.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/libbassmidi.dylib ./lib/
+          cp ./bass/libbassmidi.dylib ./attorney_online/lib/
           cp ./bass/libbassmidi.dylib ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/libbassopus.dylib ./lib/
+          cp ./bass/libbassopus.dylib ./attorney_online/lib/
           cp ./bass/libbassopus.dylib ./bin/
 
       - name: Install Android BASS
@@ -168,17 +168,17 @@ jobs:
           mkdir ./android/libs/armeabi-v7a/
           curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbass.so ./attorney_online/lib/
           cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./attorney_online/lib/
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
+          cp ./bass/libs/armeabi-v7a/libbassopus.so ./attorney_online/lib/
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
