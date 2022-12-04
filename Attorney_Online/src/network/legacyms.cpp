@@ -6,7 +6,7 @@ namespace AttorneyOnline {
 
 void LegacyMasterServer::mapSignals()
 {
-  QObject::connect(&socket, &LegacySocket::messageReceived,
+  QObject::connect(&socket, &LegacySocket::messageReceived, this,
                    [&](const QString &header, const QStringList &args) {
     if (header == "ALL")
     {
@@ -37,7 +37,7 @@ void LegacyMasterServer::mapSignals()
     {
       if (args.size() == 1)
       {
-        emit chatReceived(QStringLiteral(), args[0]);
+        emit chatReceived(QLatin1String(), args[0]);
       }
       else
       {
