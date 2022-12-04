@@ -1,9 +1,6 @@
 
 #include "aoapplication.h"
 
-#include "courtroom.h"
-#include "datatypes.h"
-#include "lobby.h"
 #include "networkmanager.h"
 #include <QDebug>
 #include <QLibraryInfo>
