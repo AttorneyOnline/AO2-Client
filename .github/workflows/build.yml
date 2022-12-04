@@ -73,7 +73,7 @@ jobs:
           cd QtApng
           cd src/3rdparty
           chmod +x get_libs.sh
-          ./get_libs.sh 1.2.12 1.6.37
+          ./get_libs.sh 1.2.13 1.6.37
           cd ../..
           qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
           ${{steps.qt.outputs.make}} qmake_all
@@ -130,18 +130,18 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/x64/libbass.so ./lib/
-          cp ./bass/x64/libbass.so ./bin/
+          cp ./bass/libs/x86_64/libbass.so ./lib/
+          cp ./bass/libs/x86_64/libbass.so ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/x64/libbassmidi.so ./lib/
-          cp ./bass/x64/libbassmidi.so ./bin/
+          cp ./bass/libs/x86_64/libbassmidi.so ./lib/
+          cp ./bass/libs/x86_64/libbassmidi.so ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/x64/libbassopus.so ./lib/
-          cp ./bass/x64/libbassopus.so ./bin/
+          cp ./bass/libs/x86_64/libbassopus.so ./lib/
+          cp ./bass/libs/x86_64/libbassopus.so ./bin/
 
       - name: Install Mac BASS
         if: matrix.os == 'macos-latest'
