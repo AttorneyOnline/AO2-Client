@@ -32,18 +32,11 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 # CONFIG += debug
 
 # Uncomment to enable Discord Rich Presence
-# DEFINES += DISCORD
-
-contains(DEFINES, DISCORD) {
-  win32:LIBS            += -ldiscord-rpc
-  linux:!android:LIBS   += -ldiscord-rpc
-  mac:LIBS              += -ldiscord-rpc
-}
+LIBS += -ldiscord_game_sdk.dll
 
 # As of 2.8.5, BASS and BASSOPUS are required for all platforms. Qt Multimedia
 # is no longer an option due to outdated code and lack of versatility.
 # Download at un4seen.com and place the DLLs in the "lib" and "bin" folders.
-DEFINES += BASSAUDIO
 LIBS += -lbass
 LIBS += -lbassopus
 LIBS += -lbassmidi

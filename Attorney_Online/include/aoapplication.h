@@ -67,7 +67,7 @@ public:
   NetworkManager *net_manager;
   Lobby *w_lobby;
   Courtroom *w_courtroom;
-  AttorneyOnline::Discord *discord;
+  AttorneyOnline::AORPC *discord;
 
   bool lobby_constructed = false;
   bool courtroom_constructed = false;

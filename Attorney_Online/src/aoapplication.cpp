@@ -21,7 +21,7 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
-  discord = new AttorneyOnline::Discord();
+  discord = new AttorneyOnline::AORPC();
 
   asset_lookup_cache.reserve(2048);
 

@@ -7,27 +7,21 @@
 #include <ctime>
 #include <string>
 
-#include <discord_rpc.h>
-#include <string>
-
-#include <cstring>
-#include <ctime>
-
-#include <QDebug>
+#include "discord.h"
 
 namespace AttorneyOnline {
 
-class Discord {
-  Q_DECLARE_TR_FUNCTIONS(Discord)
+class AORPC {
+  discord::Core *core;
 
 private:
-  const char *APPLICATION_ID = "399779271737868288";
+  const std::int64_t APPLICATION_ID = 399779271737868288;
   std::string server_name, server_id;
   int64_t timestamp;
 
 public:
-  Discord();
-  ~Discord();
+  AORPC();
+  ~AORPC();
 
   void state_lobby();
   void state_server(std::string name, std::string server_id);
