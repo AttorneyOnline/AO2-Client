@@ -7,13 +7,9 @@
 #include <ctime>
 #include <string>
 
+#if defined(DISCORD) && !defined(ANDROID)
 #include <discord_rpc.h>
-#include <string>
-
-#include <cstring>
-#include <ctime>
-
-#include <QDebug>
+#endif
 
 namespace AttorneyOnline {
 
