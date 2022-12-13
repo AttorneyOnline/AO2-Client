@@ -165,6 +165,7 @@ jobs:
       - name: Install Android BASS
         if: matrix.platform == 'android'
         run: |
+          mkdir ./android/
           mkdir ./android/libs/
           mkdir ./android/libs/armeabi-v7a/
           curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
