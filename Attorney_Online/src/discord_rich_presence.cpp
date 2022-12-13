@@ -8,7 +8,11 @@ Discord::Discord()
   DiscordEventHandlers handlers;
   std::memset(&handlers, 0, sizeof(handlers));
   handlers = {};
-  handlers.ready = [] { qInfo() << "Discord RPC ready"; };
+  handlers.ready = [](const DiscordUser *connectedUser) {
+    qInfo() << QString("Discord: connected to user %1#%2 - %3")
+                   .arg(connectedUser->username, connectedUser->discriminator,
+                        connectedUser->userId);
+  };
   handlers.disconnected = [](int errorCode, const char *message) {
     qInfo() << "Discord RPC disconnected! " << message << errorCode;
   };
@@ -63,8 +67,8 @@ void Discord::state_character(std::string name)
       QString(name.c_str()).toLower().replace(' ', '_').toStdString();
   auto name_friendly = QString(name.c_str()).replace('_', ' ').toStdString();
   const std::string playing_as = "Playing as " + name_friendly;
-  qDebug().nospace() << "Discord RPC: Setting character state (\"" << playing_as.c_str()
-                     << "\")";
+  qDebug().nospace() << "Discord RPC: Setting character state (\""
+                     << playing_as.c_str() << "\")";
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
