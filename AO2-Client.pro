@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
-SUBDIRS = Attorney_Online tests
+SUBDIRS = attorney_online tests
 
 CONFIG += ordered
