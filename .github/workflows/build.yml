@@ -12,7 +12,6 @@ jobs:
       matrix:
         version:
           - 5.15.1
-          - 6.3.0
         platform:
           - gcc_64
           - android
@@ -62,20 +61,19 @@ jobs:
            echo "y" | $SDKMANAGER "ndk;21.4.7075529"
            ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
         
-      - uses: stonedDiscord/action-setup-qt@master
+      - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
           version: ${{matrix.version}}
           platform: ${{matrix.platform}}
-          packages: qt.qt6.630.addons.qtwebsockets
 
       - name: Install QtApng
         run: |
-          git clone https://github.com/stonedDiscord/QtApng.git
+          git clone https://github.com/Skycoder42/QtApng.git
           cd QtApng
           cd src/3rdparty
           chmod +x get_libs.sh
-          ./get_libs.sh 1.2.12 1.6.37
+          ./get_libs.sh 1.2.13 1.6.37
           cd ../..
           qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
           ${{steps.qt.outputs.make}} qmake_all
@@ -132,18 +130,18 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/x64/libbass.so ./lib/
-          cp ./bass/x64/libbass.so ./bin/
+          cp ./bass/libs/x86_64/libbass.so ./lib/
+          cp ./bass/libs/x86_64/libbass.so ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/x64/libbassmidi.so ./lib/
-          cp ./bass/x64/libbassmidi.so ./bin/
+          cp ./bass/libs/x86_64/libbassmidi.so ./lib/
+          cp ./bass/libs/x86_64/libbassmidi.so ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/x64/libbassopus.so ./lib/
-          cp ./bass/x64/libbassopus.so ./bin/
+          cp ./bass/libs/x86_64/libbassopus.so ./lib/
+          cp ./bass/libs/x86_64/libbassopus.so ./bin/
 
       - name: Install Mac BASS
         if: matrix.os == 'macos-latest'
@@ -262,5 +260,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-${{matrix.version}}-${{matrix.os}}-${{matrix.platform}}
+          name: Attorney_Online-${{matrix.os}}-${{matrix.platform}}
           path: ${{github.workspace}}/bin/
