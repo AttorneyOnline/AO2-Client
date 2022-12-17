@@ -49,7 +49,7 @@ int AOApplication::get_default_suppress_audio()
 
 int AOApplication::get_max_log_size()
 {
-  int result = configini->value("log_maximum", 200).toInt();
+  int result = configini->value("log_maximum", 1000).toInt();
   return result;
 }
 
@@ -1093,7 +1093,7 @@ bool AOApplication::is_instant_objection_enabled()
 
 bool AOApplication::is_desyncrhonized_logs_enabled()
 {
-  QString result = configini->value("desync_logs", "false").value<QString>();
+  QString result = configini->value("desync_logs", "true").value<QString>();
   return result.startsWith("true");
 }
 
@@ -1159,13 +1159,13 @@ bool AOApplication::is_sticker_enabled()
 
 bool AOApplication::is_continuous_enabled()
 {
-  QString result = configini->value("continuous_playback", "true").value<QString>();
+  QString result = configini->value("continuous_playback", "false").value<QString>();
   return result.startsWith("true");
 }
 
 bool AOApplication::is_category_stop_enabled()
 {
-  QString result = configini->value("category_stop", "true").value<QString>();
+  QString result = configini->value("category_stop", "false").value<QString>();
   return result.startsWith("true");
 }
 
@@ -1256,7 +1256,7 @@ QString AOApplication::get_subtheme()
 bool AOApplication::get_animated_theme()
 {
   QString result =
-      configini->value("animated_theme", "true").value<QString>();
+      configini->value("animated_theme", "false").value<QString>();
   return result.startsWith("true");
 }
 
@@ -1278,12 +1278,12 @@ bool AOApplication::get_player_count_optout()
 
 bool AOApplication::get_sfx_on_idle()
 {
-  return configini->value("sfx_on_idle", "false").value<QString>()
+  return configini->value("sfx_on_idle", "true").value<QString>()
       .startsWith("true");
 }
 
 bool AOApplication::get_evidence_double_click()
 {
-  return configini->value("evidence_double_click", "true").value<QString>()
+  return configini->value("evidence_double_click", "false").value<QString>()
       .startsWith("true");
 }
