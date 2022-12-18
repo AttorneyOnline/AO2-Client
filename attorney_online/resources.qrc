@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/fonts/Ace-Attorney.ttf</file>
+        <file>resource/logo_ao2.png</file>
+        <file>resource/translations/ao_de.qm</file>
+        <file>resource/translations/ao_en.qm</file>
+        <file>resource/translations/ao_es.qm</file>
+        <file>resource/translations/ao_jp.qm</file>
+        <file>resource/translations/ao_pl.qm</file>
+        <file>resource/translations/ao_pt.qm</file>
+        <file>resource/translations/ao_ru.qm</file>
+        <file>resource/translations/about_en.html</file>
+        <file>resource/ui/options_dialog.ui</file>
+        <file>resource/ui/lobby.ui</file>
+    </qresource>
+</RCC>
