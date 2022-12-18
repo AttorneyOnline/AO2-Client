@@ -49,7 +49,7 @@ jobs:
 
       - name: Add msbuild to PATH
         if: matrix.platform == 'msvc2019'
-        uses: microsoft/setup-msbuild@master
+        uses: microsoft/setup-msbuild@main
         
       - name: Downgrade Android NDK
         if: matrix.platform == 'android'
