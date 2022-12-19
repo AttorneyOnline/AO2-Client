@@ -15,13 +15,9 @@ moc*
 base-full/
 logs/
 bass.lib
-bin/base/background/
-bin/base/cases/
-bin/base/characters/
-bin/base/evidence/
-bin/base/fonts/
-bin/base/sounds/
-bin/user*
+
+bin/*
+
 bins/
 build/
 release/
