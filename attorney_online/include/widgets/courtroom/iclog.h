@@ -1,20 +1,24 @@
 #ifndef ICLOG_H
 #define ICLOG_H
 
-#include <QFuture>
+#include <QDateTime>
 #include <QWidget>
 
 class chatlogpiece;
 
 class ICLog : QWidget {
+  Q_OBJECT
 public:
   explicit ICLog();
   virtual ~ICLog() = default;
 
-  void setupUI();
+  /**
+   * @brief Loads the widget and handles the creation of
+   */
+  virtual void setupUI() = 0;
 
   /**
-   * @brief Meatgrinder function to append a message to the IC log.
+   * @brief Not to be confused with appendICText
    * @param p_name
    * @param p_showname
    * @param p_message
@@ -22,16 +26,32 @@ public:
    * @param p_color
    * @param p_selfname
    */
-  virtual void log_ic_text(QString p_name, QString p_showname,
-                           QString p_message, QString p_action, int p_color,
-                           bool p_selfname) = 0;
+  virtual void logICText(QString p_name, QString p_showname, QString p_message,
+                         QString p_action = "", int p_color = 0,
+                         bool p_selfname = false) = 0;
+
+    /**
+   * @brief Not to be confused with logICText
+   * @param p_text
+   * @param p_name
+   * @param action
+   * @param color
+   * @param selfname
+   * @param timestamp
+   * @param ghost
+   */
+  virtual void
+  appendICText(QString p_text, QString p_name = "", QString action = "",
+                 int color = 0, bool selfname = false,
+                 QDateTime timestamp = QDateTime::currentDateTime(),
+                 bool ghost = false) = 0;
 
   /**
    * @brief Returns the history buffer.
    *
    * @return Returns the current IC log history
    */
-  const QVector<chatlogpiece> getHistory() { return history; }
+  const virtual QVector<chatlogpiece> getHistory() = 0;
 
   /**
    * @brief Regenerates the IC log from the history buffer.
@@ -44,16 +64,11 @@ public:
    * @param f_history
    * @param showname
    */
-  void setHistory(const QVector<chatlogpiece> &f_history, const bool &showname)
-  {
-    history = f_history;
-    regenerateLog(showname);
-  };
-
-private:
+  virtual void setHistory(const QVector<chatlogpiece> &f_history,
+                          const bool &showname) = 0;
   /**
    * @brief Appends the latest log entry to history and trims old entries.
-   * You'd want it to be a circular buffer, but this is not so easy.
+   *
    */
   virtual void appendToHistory(chatlogpiece history_entry) = 0;
 

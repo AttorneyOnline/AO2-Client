@@ -1,7 +1,6 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
-#include "options.h"
 #include <QMap>
 #include <QString>
 #include <QVariant>
@@ -294,13 +293,10 @@ public:
       if (kfo_features) {
         sfx_looping = toDataType<bool>(packet.at(LOOPING_SFX));
         screenshake = toDataType<bool>(packet.at(SCREENSHAKE));
-        if (!packet.at(FRAME_SFX).isEmpty() &&
-            Options().networkedFrameSfxEnabled()) {
-          QStringList netstrings = {packet.at(FRAME_SCREENSHAKE),
-                                    packet.at(FRAME_REALIZATION),
-                                    packet.at(FRAME_SFX)};
-          frame_fx_netstrings = netstrings;
-        }
+        QStringList netstrings = {packet.at(FRAME_SCREENSHAKE),
+                                  packet.at(FRAME_REALIZATION),
+                                  packet.at(FRAME_SFX)};
+        frame_fx_netstrings = netstrings;
         additive = toDataType<bool>(packet.at(ADDITIVE));
         effect = packet.at(EFFECTS);
       }
