@@ -30,7 +30,7 @@ public:
                          QString p_action = "", int p_color = 0,
                          bool p_selfname = false) = 0;
 
-    /**
+  /**
    * @brief Not to be confused with logICText
    * @param p_text
    * @param p_name
@@ -40,18 +40,11 @@ public:
    * @param timestamp
    * @param ghost
    */
-  virtual void
-  appendICText(QString p_text, QString p_name = "", QString action = "",
-                 int color = 0, bool selfname = false,
-                 QDateTime timestamp = QDateTime::currentDateTime(),
-                 bool ghost = false) = 0;
-
-  /**
-   * @brief Returns the history buffer.
-   *
-   * @return Returns the current IC log history
-   */
-  const virtual QVector<chatlogpiece> getHistory() = 0;
+  virtual void appendICText(QString p_text, QString p_name = "",
+                            QString action = "", int color = 0,
+                            bool selfname = false,
+                            QDateTime timestamp = QDateTime::currentDateTime(),
+                            bool ghost = false) = 0;
 
   /**
    * @brief Regenerates the IC log from the history buffer.
@@ -60,17 +53,21 @@ public:
   virtual void regenerateLog(bool showname_enabled) = 0;
 
   /**
-   * @brief Sets the history buffer and regeneratesd the IC log.
-   * @param f_history
-   * @param showname
-   */
-  virtual void setHistory(const QVector<chatlogpiece> &f_history,
-                          const bool &showname) = 0;
-  /**
    * @brief Appends the latest log entry to history and trims old entries.
    *
    */
   virtual void appendToHistory(chatlogpiece history_entry) = 0;
+
+  /**
+   * @brief Filters out the common CC inline text trickery, for appending to the
+   * IC chatlog.
+   * @param p_text
+   * @param colorize
+   * @param pos
+   * @param default_color
+   */
+  virtual void filterICText(QString p_text, bool colorize = false, int pos = -1,
+                            int default_color = 0);
 
   /**
    * @brief Stores every chatlog message up to the maximum buffer size.
@@ -79,6 +76,12 @@ public:
    * with the showname or vise versa.
    */
   QVector<chatlogpiece> history;
+
+public slots:
+  /**
+   * @brief Closes the visible UI and redraws the widget with the new UI file.
+   */
+  virtual void reloadUI() = 0;
 };
 
 #endif // ICLOG_H
