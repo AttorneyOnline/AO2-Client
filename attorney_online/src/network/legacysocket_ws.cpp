@@ -62,7 +62,7 @@ void LegacySocket_WS::packetReceived(QString message)
   }
 }
 
-QPromise<void> LegacySocket_WS::connect(const QString &address,
+QtPromise::QPromise<void> LegacySocket_WS::connect(const QString &address,
                                      const uint16_t &port)
 {
   qInfo() << "using Websocket backend.";
@@ -77,7 +77,7 @@ QPromise<void> LegacySocket_WS::connect(const QString &address,
       .then([&] {
     QObject::connect(&socket, &QWebSocket::disconnected,
                      this, &LegacySocket_WS::connectionLost);
-  }).timeout(TIMEOUT_MILLISECS).fail([&](const QPromiseTimeoutException &) {
+  }).timeout(TIMEOUT_MILLISECS).fail([&](const QtPromise::QPromiseTimeoutException &) {
     socket.close(QWebSocketProtocol::CloseCodeAbnormalDisconnection);
   });
 
@@ -111,12 +111,12 @@ void LegacySocket_WS::send(const QString &header, QStringList args)
  * \param header  the header to wait for
  * \return a list of parameters sent with the message
  */
-QPromise<QStringList> LegacySocket_WS::waitForMessage(const QString &header)
+QtPromise::QPromise<QStringList> LegacySocket_WS::waitForMessage(const QString &header)
 {
   qDebug().noquote() << "Waiting for" << header;
 
-  return QPromise<QStringList>(
-        [&](const QPromiseResolve<QStringList>& resolve) {
+  return QtPromise::QPromise<QStringList>(
+        [&](const QtPromise::QPromiseResolve<QStringList>& resolve) {
     std::shared_ptr<QMetaObject::Connection> connection =
         std::make_shared<QMetaObject::Connection>();
 

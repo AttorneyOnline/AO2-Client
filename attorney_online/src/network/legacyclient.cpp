@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QUrl>
 #include <QtGlobal>
+#include <QRegularExpression>
 
 using HEADER = AttorneyOnline::DataTypes::HEADER;
 Q_DECLARE_METATYPE(HEADER)
@@ -99,7 +100,7 @@ void LegacyClient::mapSignals()
           areasList.clear();
 
           int musicStart =
-              args.indexOf(QRegExp("(\\=.+|.+\\.(wav|mp3|ogg|opus))"));
+              args.indexOf(QRegularExpression("(\\=.+|.+\\.(wav|mp3|ogg|opus))"));
           tracksList.append(args.mid(musicStart));
 
           for (int i = 0; i < musicStart; i++) {
@@ -345,7 +346,7 @@ void LegacyClient::mapSignals()
  *
  * \return a promise that is resolved when the handshake is complete
  */
-QPromise<void> LegacyClient::connect(const QString &address,
+QtPromise::QPromise<void> LegacyClient::connect(const QString &address,
                                      const uint16_t &port,
                                      const bool &probeOnly,
                                      const connection_type &backend)
@@ -383,7 +384,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
     return socket->waitForMessage("PN");
   });
 
-  if (probeOnly) return promise.then(&QPromise<void>::resolve);
+  if (probeOnly) return promise.then(&QtPromise::QPromise<void>::resolve);
 
   return promise
       .then([&] {
@@ -487,7 +488,7 @@ void LegacyClient::callMod(const QString &message)
  * \return promise that resolves when the server confirms that the IC message
  * was received
  */
-QPromise<void> LegacyClient::sendIC(const DataTypes::MSPacket &message)
+QtPromise::QPromise<void> LegacyClient::sendIC(const DataTypes::MSPacket &message)
 {
   auto msgCopy = message;
   msgCopy.char_id = currentCharId;
@@ -501,7 +502,7 @@ QPromise<void> LegacyClient::sendIC(const DataTypes::MSPacket &message)
 
   socket->send("MS", msgCopy.serialize());
 
-  return QPromise<void>([&](const QPromiseResolve<void> &resolve) {
+  return QtPromise::QPromise<void>([&](const QtPromise::QPromiseResolve<void> &resolve) {
            std::shared_ptr<QMetaObject::Connection> connection{
                new QMetaObject::Connection};
 
