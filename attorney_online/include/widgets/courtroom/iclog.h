@@ -6,7 +6,7 @@
 
 class chatlogpiece;
 
-class ICLog : QWidget {
+class ICLog : public QWidget {
   Q_OBJECT
 public:
   explicit ICLog();
@@ -16,35 +16,6 @@ public:
    * @brief Loads the widget and handles the creation of
    */
   virtual void setupUI() = 0;
-
-  /**
-   * @brief Not to be confused with appendICText
-   * @param p_name
-   * @param p_showname
-   * @param p_message
-   * @param p_action
-   * @param p_color
-   * @param p_selfname
-   */
-  virtual void logICText(QString p_name, QString p_showname, QString p_message,
-                         QString p_action = "", int p_color = 0,
-                         bool p_selfname = false) = 0;
-
-  /**
-   * @brief Not to be confused with logICText
-   * @param p_text
-   * @param p_name
-   * @param action
-   * @param color
-   * @param selfname
-   * @param timestamp
-   * @param ghost
-   */
-  virtual void appendICText(QString p_text, QString p_name = "",
-                            QString action = "", int color = 0,
-                            bool selfname = false,
-                            QDateTime timestamp = QDateTime::currentDateTime(),
-                            bool ghost = false) = 0;
 
   /**
    * @brief Regenerates the IC log from the history buffer.
@@ -82,6 +53,35 @@ public slots:
    * @brief Closes the visible UI and redraws the widget with the new UI file.
    */
   virtual void reloadUI() = 0;
+
+  /**
+   * @brief Not to be confused with appendICText
+   * @param p_name
+   * @param p_showname
+   * @param p_message
+   * @param p_action
+   * @param p_color
+   * @param p_selfname
+   */
+  virtual void logICText(QString p_name, QString p_showname, QString p_message,
+                         QString p_action = "", int p_color = 0,
+                         bool p_selfname = false) = 0;
+
+  /**
+   * @brief Not to be confused with logICText
+   * @param p_text
+   * @param p_name
+   * @param action
+   * @param color
+   * @param selfname
+   * @param timestamp
+   * @param ghost
+   */
+  virtual void appendICText(QString p_text, QString p_name = "",
+                            QString action = "", int color = 0,
+                            bool selfname = false,
+                            QDateTime timestamp = QDateTime::currentDateTime(),
+                            bool ghost = false) = 0;
 };
 
 #endif // ICLOG_H
