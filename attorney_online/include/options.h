@@ -17,7 +17,9 @@ public:
   Options() : config(
         QCoreApplication::applicationDirPath() + "/base/config.ini",
         QSettings::IniFormat) {
+      #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
       config.setIniCodec("UTF-8");
+      #endif
       migrate();
   }
 
