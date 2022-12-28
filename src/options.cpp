@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QRegularExpression>
 #include <QSize>
+#include <QLocale>
 
 void Options::migrateCallwords()
 {
