@@ -425,7 +425,7 @@ void Lobby::set_server_description(const QString &server_description)
   ui_server_description_text->clear();
   QString result = server_description.toHtmlEscaped()
                        .replace("\n", "<br>")
-                       .replace(QRegExp("\\b(https?://\\S+\\.\\S+)\\b"),
+                       .replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"),
                                 "<a href='\\1'>\\1</a>");
   ui_server_description_text->insertHtml(result);
 }
