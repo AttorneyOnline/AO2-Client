@@ -83,8 +83,11 @@ void DemoServer::recv_data()
 {
     QString in_data = QString::fromUtf8(client_sock->readAll());
 
-    // Copypasted from NetworkManager
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    const QStringList packet_list = in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+#else
     const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
+#endif
 
     for (const QString &packet : packet_list) {
         QStringList f_contents;
@@ -292,7 +295,9 @@ void DemoServer::load_demo(QString filename)
     p_path = filename;
     // Process the demo file
     QTextStream demo_stream(&demo_file);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     demo_stream.setCodec("UTF-8");
+#endif
     QString line = demo_stream.readLine();
     while (!line.isNull()) {
         while (!line.endsWith("%")) {
@@ -334,7 +339,9 @@ void DemoServer::load_demo(QString filename)
           if (demo_file.open(QIODevice::WriteOnly | QIODevice::Text |
                          QIODevice::Truncate)) {
             QTextStream out(&demo_file);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             out.setCodec("UTF-8");
+#endif
             out << p_demo_data.dequeue();
             for (const QString &line : qAsConst(p_demo_data)) {
               out << "\n" << line;

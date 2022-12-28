@@ -119,7 +119,9 @@ void AOApplication::load_favorite_list()
 void AOApplication::save_favorite_list()
 {
   QSettings favorite_servers_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   favorite_servers_ini.setIniCodec("UTF-8");
+#endif
 
   favorite_servers_ini.clear();
   for(int i = 0; i < favorite_list.size(); ++i) {

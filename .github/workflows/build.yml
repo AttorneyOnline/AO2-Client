@@ -64,7 +64,7 @@ jobs:
       - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
-          version: 5.15.1
+          version: ${{matrix.version}}
           platform: ${{matrix.platform}}
 
       - name: Install QtApng

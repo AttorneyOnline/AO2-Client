@@ -208,7 +208,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // here
     if (options.logToDemoFileEnabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
-          "'logs/" + server_name.remove(QRegExp("[\\\\/:*?\"<>|\']")) +
+          "'logs/" + server_name.remove(QRegularExpression("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name + " hosted on address " +
                               server_address + " on " +

@@ -2,7 +2,7 @@
 #define AOTEXTAREA_H
 
 #include <QDebug>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QScrollBar>
 #include <QTextBrowser>
 #include <QTextCursor>
@@ -17,7 +17,7 @@ public:
   void append_error(QString p_message);
 
 private:
-  const QRegExp url_parser_regex = QRegExp("\\b(https?://\\S+\\.\\S+)\\b");
+  const QRegularExpression url_parser_regex = QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b");
 
   void auto_scroll(QTextCursor old_cursor, int scrollbar_value,
                    bool is_scrolled_down);
