@@ -49,7 +49,7 @@ jobs:
 
       - name: Add msbuild to PATH
         if: matrix.platform == 'msvc2019'
-        uses: microsoft/setup-msbuild@master
+        uses: microsoft/setup-msbuild@main
         
       - name: Downgrade Android NDK
         if: matrix.platform == 'android'
@@ -64,7 +64,7 @@ jobs:
       - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
-          version: 5.15.1
+          version: ${{matrix.version}}
           platform: ${{matrix.platform}}
 
       - name: Install QtApng

@@ -800,7 +800,9 @@ void Courtroom::evidence_load(QString filename)
     return;
   }
   QSettings inventory(filename, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   inventory.setIniCodec("UTF-8");
+#endif
   private_evidence_list.clear();
   foreach (QString evi, inventory.childGroups()) {
     if (evi == "General")
@@ -825,7 +827,9 @@ void Courtroom::evidence_save(QString filename)
   }
 
   QSettings inventory(filename, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   inventory.setIniCodec("UTF-8");
+#endif
   inventory.clear();
   for (int i = 0; i < private_evidence_list.size(); i++) {
     inventory.beginGroup(QString::number(i));

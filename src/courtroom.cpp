@@ -1788,7 +1788,7 @@ void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &
   };
   const QString color_id = QString("debug_log_%1_color").arg(colors.value(type, "info"));
   ui_debug_log->append_chatmessage(
-      QString(), qFormatLogMessage(type, context, msg),
+      colors.value(type, "info"), msg,
       QString(), ao_app->get_color(color_id, "courtroom_fonts.ini").name());
 }
 
@@ -2479,7 +2479,7 @@ bool Courtroom::handle_objection()
             ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       break;
-      m_chatmessage[EMOTE_MOD] = PREANIM;
+      m_chatmessage[EMOTE_MOD] = QChar(PREANIM);
     }
     ui_vp_objection->load_image(
         filename, m_chatmessage[CHAR_NAME],
@@ -4091,8 +4091,13 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
     ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
   }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   music_player->music_watcher.setFuture(QtConcurrent::run(music_player, &AOMusicPlayer::play, f_song, channel,
                                                           looping, effect_flags));
+#else
+  music_player->music_watcher.setFuture(QtConcurrent::run(&AOMusicPlayer::play, music_player, f_song, channel,
+                                                          looping, effect_flags));
+#endif
 }
 
 void Courtroom::update_ui_music_name()

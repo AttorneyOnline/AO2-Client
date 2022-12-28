@@ -16,7 +16,6 @@
 #include <QVector>
 
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QRect>
 
 #include <QCryptographicHash>
