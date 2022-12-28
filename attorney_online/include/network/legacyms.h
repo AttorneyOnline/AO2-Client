@@ -27,7 +27,7 @@ private:
 public:
   explicit LegacyMasterServer(QObject *parent)
     : MasterServer(parent) {}
-  QPromise<void> connect(const QString &address,
+  QtPromise::QPromise<void> connect(const QString &address,
                          const uint16_t &port) override;
   void sendKeepalive() override;
   void sendChat(const QString &name, const QString &message) override;

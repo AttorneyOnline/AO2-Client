@@ -62,7 +62,7 @@ void LegacySocket::packetReceived()
   }
 }
 
-QPromise<void> LegacySocket::connect(const QString &address,
+QtPromise::QPromise<void> LegacySocket::connect(const QString &address,
                                      const uint16_t &port)
 {
     qInfo() << "using TCP backend.";
@@ -77,7 +77,7 @@ QPromise<void> LegacySocket::connect(const QString &address,
       .then([&] {
     QObject::connect(&socket, &QTcpSocket::disconnected,
                      this, &LegacySocket::connectionLost);
-  }).timeout(TIMEOUT_MILLISECS).fail([&](const QPromiseTimeoutException &) {
+  }).timeout(TIMEOUT_MILLISECS).fail([&](const QtPromise::QPromiseTimeoutException &) {
     socket.disconnectFromHost();
   });
 
@@ -105,12 +105,12 @@ void LegacySocket::send(const QString &header, QStringList args)
  * \param header  the header to wait for
  * \return a list of parameters sent with the message
  */
-QPromise<QStringList> LegacySocket::waitForMessage(const QString &header)
+QtPromise::QPromise<QStringList> LegacySocket::waitForMessage(const QString &header)
 {
   qDebug().noquote() << "Waiting for" << header;
 
-  return QPromise<QStringList>(
-        [&](const QPromiseResolve<QStringList>& resolve) {
+  return QtPromise::QPromise<QStringList>(
+        [&](const QtPromise::QPromiseResolve<QStringList>& resolve) {
     std::shared_ptr<QMetaObject::Connection> connection =
         std::make_shared<QMetaObject::Connection>();
 

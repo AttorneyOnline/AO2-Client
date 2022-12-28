@@ -5,8 +5,6 @@
 
 #include "datatypes.h"
 
-using namespace QtPromise;
-
 namespace AttorneyOnline {
 
 class MasterServer : public QObject
@@ -18,7 +16,7 @@ public:
     : QObject(parent) {}
   virtual ~MasterServer() = default;
 
-  virtual QPromise<void> connect(const QString &address,
+  virtual QtPromise::QPromise<void> connect(const QString &address,
                                  const uint16_t &port) = 0;
   virtual void sendKeepalive() = 0;
   virtual void sendChat(const QString &name, const QString &message) = 0;

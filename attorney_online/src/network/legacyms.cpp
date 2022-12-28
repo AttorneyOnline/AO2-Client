@@ -63,13 +63,13 @@ void LegacyMasterServer::mapSignals()
  *
  * \return a promise that is resolved when the connection is successful
  */
-QPromise<void> LegacyMasterServer::connect(const QString &address,
+QtPromise::QPromise<void> LegacyMasterServer::connect(const QString &address,
                                            const uint16_t &port)
 {
   if (socket.isConnected() || socket.isConnecting())
   {
     qWarning() << "connect call while still connecting to master server!";
-    return QPromise<void>::resolve();
+    return QtPromise::QPromise<void>::resolve();
   }
 
   return socket.connect(address, port)

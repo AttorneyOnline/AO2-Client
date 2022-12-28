@@ -7,8 +7,6 @@
 
 #include "socket.h"
 
-using namespace QtPromise;
-
 namespace AttorneyOnline {
 
 class LegacySocket_WS: public Socket {
@@ -31,10 +29,10 @@ public:
   explicit LegacySocket_WS(QObject *parent = nullptr)
       : Socket(parent) {}
 
-  QPromise<void> connect(const QString &address, const uint16_t &port) override;;
+  QtPromise::QPromise<void> connect(const QString &address, const uint16_t &port) override;;
   void send(const QString &header, QStringList args = {}) override;;
 
-  QPromise<QStringList> waitForMessage(const QString &header) override;;
+  QtPromise::QPromise<QStringList> waitForMessage(const QString &header) override;;
 
   bool isConnected() override;;
   bool isConnecting() override;;
