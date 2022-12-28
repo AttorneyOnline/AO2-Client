@@ -3,11 +3,9 @@
 
 #include <QString>
 #include <QVector>
-#include "QtPromise"
+#include <QtPromise>
 
 #include "datatypes.h"
-
-using namespace QtPromise;
 
 namespace AttorneyOnline {
 
@@ -24,7 +22,7 @@ public:
   explicit Client(QObject *parent = nullptr) : QObject(parent) {}
   virtual ~Client() = default;
 
-  virtual QPromise<void> connect(const QString &address,
+  virtual QtPromise::QPromise<void> connect(const QString &address,
                                  const uint16_t &port,
                                  const bool &probeOnly = false,
                                  const connection_type &backend = WEBSOCKETS) = 0;
@@ -40,7 +38,7 @@ public:
 
   virtual void callMod(const QString &message = QLatin1String()) = 0;
 
-  virtual QPromise<void> sendIC(const DataTypes::MSPacket &message) = 0;
+  virtual QtPromise::QPromise<void> sendIC(const DataTypes::MSPacket &message) = 0;
   virtual void sendOOC(const QString &oocName,
                        const QString &message) = 0;
 

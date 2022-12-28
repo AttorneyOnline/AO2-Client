@@ -9,8 +9,6 @@
 #include "client.h"
 #include "network/socket.h"
 
-using namespace QtPromise;
-
 namespace AttorneyOnline {
 
 /*!
@@ -57,7 +55,7 @@ private:
 public:
   explicit LegacyClient(QObject *parent)
     : Client(parent) {}
-  QPromise<void> connect(const QString &address,
+  QtPromise::QPromise<void> connect(const QString &address,
                          const uint16_t &port,
                          const bool &probeOnly,
                          const connection_type &backend) override;
@@ -73,7 +71,7 @@ public:
 
   void callMod(const QString &message) override;
 
-  QPromise<void> sendIC(const DataTypes::MSPacket &message) override;
+  QtPromise::QPromise<void> sendIC(const DataTypes::MSPacket &message) override;
   void sendOOC(const QString &oocName,
                const QString &message) override;
 

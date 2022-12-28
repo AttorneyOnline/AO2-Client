@@ -3,8 +3,6 @@
 
 #include <QtPromise>
 
-using namespace QtPromise;
-
 namespace AttorneyOnline {
 
 class Socket : public QObject {
@@ -15,10 +13,10 @@ public:
     : QObject(parent) {}
   virtual ~Socket() = default;
 
-  virtual QPromise<void> connect(const QString &address, const uint16_t &port) = 0;
+  virtual QtPromise::QPromise<void> connect(const QString &address, const uint16_t &port) = 0;
   virtual void send(const QString &header, QStringList args = {}) = 0;
 
-  virtual QPromise<QStringList> waitForMessage(const QString &header) = 0;
+  virtual QtPromise::QPromise<QStringList> waitForMessage(const QString &header) = 0;
 
   virtual bool isConnected() = 0;
   virtual bool isConnecting() = 0;
