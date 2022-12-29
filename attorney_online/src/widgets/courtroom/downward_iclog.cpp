@@ -17,7 +17,7 @@ void DownwardICLog::setupUI() {
     ui_ic_chatlog->document()->setMaximumBlockCount(options.maxLogSize());
 }
 
-void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString action = "",
+void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString p_action = "",
                                  int color = 0, bool selfname = false,
                                  QDateTime timestamp = QDateTime::currentDateTime(),
                                  bool ghost = false)
@@ -40,7 +40,7 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString ac
     other_name.setForeground(ao_app->get_color("ic_chatlog_showname_color", "courtroom_fonts.ini"));
     timestamp_format.setForeground(ao_app->get_color("ic_chatlog_timestamp_color", "courtroom_fonts.ini"));
     selftimestamp_format.setForeground(ao_app->get_color("ic_chatlog_selftimestamp_color", "courtroom_fonts.ini"));
-    format.setTopMargin(log_margin);
+    format.setTopMargin(options.logMargin());
     const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
     const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
     const bool need_newline = !ui_ic_chatlog->document()->isEmpty();
@@ -56,7 +56,7 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString ac
       italics.setForeground(chatlog_color);
     }
     else {
-      last_ic_message = p_name + ":" + p_text;
+      lastICMessage = p_name + ":" + p_text;
     }
 
     ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End
@@ -97,12 +97,12 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString ac
       ui_ic_chatlog->textCursor().insertText(" " + p_action + ".", normal);
     }
     // Make shout text bold
-    else if (p_action == tr("shouts") && log_ic_actions) {
+    else if (p_action == tr("shouts") && options.logIcActions()) {
       ui_ic_chatlog->textCursor().insertText(" " + p_action + " ", normal);
-      if (log_colors && !ghost) {
+      if (options.colorLogEnabled() && !ghost) {
         ui_ic_chatlog->textCursor().insertHtml(
             "<b>" +
-            filter_ic_text(p_text, true, -1, 0)
+            filterICText(p_text, true, -1, 0)
                 .replace(
                     "$c0",
                     chatlog_color.name(QColor::HexArgb)) +
@@ -112,10 +112,10 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString ac
         ui_ic_chatlog->textCursor().insertText(" " + p_text, italics);
     }
     // If action not blank:
-    else if (p_action != "" && log_ic_actions) {
+    else if (p_action != "" && options.logIcActions()) {
       // Format the action in normal
       ui_ic_chatlog->textCursor().insertText(" " + p_action, normal);
-      if (log_newline)
+      if (options.logNewline())
           // For some reason, we're forced to use <br> instead of the more sensible
           // \n. Why? Because \n is treated as a new Block instead of a soft newline
         // within a paragraph!
@@ -126,7 +126,7 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString ac
       ui_ic_chatlog->textCursor().insertText(p_text + ".", italics);
     }
     else {
-      if (log_newline)
+      if (options.colorLogEnabled())
         // For some reason, we're forced to use <br> instead of the more sensible
         // \n. Why? Because \n is treated as a new Block instead of a soft newline
         // within a paragraph!
@@ -134,8 +134,8 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString ac
       else
         ui_ic_chatlog->textCursor().insertText(": ", normal);
       // Format the result according to html
-      if (log_colors) {
-        QString p_text_filtered = filter_ic_text(p_text, true, -1, color);
+      if (options.colorLogEnabled()) {
+        QString p_text_filtered = filterICText(p_text, true, -1, color);
         p_text_filtered = p_text_filtered.replace("$c0", chatlog_color.name(QColor::HexArgb));
         for (int c = 1; c < max_colors; ++c) {
           QColor color_result = default_color_rgb_list.at(c);
@@ -147,7 +147,7 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString ac
         ui_ic_chatlog->textCursor().insertHtml(p_text_filtered);
       }
       else
-        ui_ic_chatlog->textCursor().insertText(filter_ic_text(p_text, false), normal);
+        ui_ic_chatlog->textCursor().insertText(filterICText(p_text, false), normal);
     }
 
     // Only append with newline if log goes upwards
@@ -201,14 +201,11 @@ void DownwardICLog::reloadUI()
 
 void DownwardICLog::logICText(QString p_name, QString p_showname, QString p_message, QString p_action, int p_color, bool p_selfname)
 {
+    chatlogpiece log_entry(p_name, p_showname, p_message, p_action, p_color, p_selfname);
     if (options.logToTextFileEnabled())
-        emit appendToFile(log_entry.get_full());
-      ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
+        emit appendToFile(log_entry.get_full(), true);
 
-    while (ic_chatlog_history.size() > log_maximum_blocks &&
-           log_maximum_blocks > 0) {
-      ic_chatlog_history.removeFirst();
-    }
+    appendToHistory(log_entry);
 }
 
 void DownwardICLog::appendToHistory(chatlogpiece history_entry)

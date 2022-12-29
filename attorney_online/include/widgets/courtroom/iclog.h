@@ -37,7 +37,7 @@ public:
    * @param pos
    * @param default_color
    */
-  virtual void filterICText(QString p_text, bool colorize = false, int pos = -1,
+  virtual QString filterICText(QString p_text, bool colorize = false, int pos = -1,
                             int default_color = 0);
 
   /**
