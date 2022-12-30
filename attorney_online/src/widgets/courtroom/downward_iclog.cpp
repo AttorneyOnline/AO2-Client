@@ -150,24 +150,7 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString p_
         ui_ic_chatlog->textCursor().insertText(filterICText(p_text, false), normal);
     }
 
-    // Only append with newline if log goes upwards
-    if (!log_goes_downwards && need_newline) {
-      ui_ic_chatlog->textCursor().insertBlock(format);
-    }
-
-    // If we got too many blocks in the current log, delete some.
-    while (ui_ic_chatlog->document()->blockCount() > log_maximum_blocks &&
-           log_maximum_blocks > 0) {
-      QTextCursor temp_curs = ui_ic_chatlog->textCursor();
-      temp_curs.movePosition(log_goes_downwards ? QTextCursor::Start
-                                                   : QTextCursor::End);
-      temp_curs.select(QTextCursor::BlockUnderCursor);
-      temp_curs.removeSelectedText();
-      if (log_goes_downwards)
-        temp_curs.deleteChar();
-      else
-        temp_curs.deletePreviousChar();
-    }
+    // Manually deleting blocks is not necessary when the logging direction is correct.
 
     // Finally, scroll the scrollbar to the correct position.
     if (old_cursor.hasSelection() ||

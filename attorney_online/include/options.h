@@ -281,6 +281,10 @@ public:
   QStringList callwords() const;
   void setCallwords(QStringList value);
 
+  // Returns the user configured color code in config.ini
+  QColor getColor(QString name) const;
+  void setColor(QString name, int red, int green, int blue);
+
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
 };
