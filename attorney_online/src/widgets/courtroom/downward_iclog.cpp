@@ -22,6 +22,7 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString p_
                                  QDateTime timestamp = QDateTime::currentDateTime(),
                                  bool ghost = false)
 {
+    /**
     QColor chatlog_color = ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini");
     QTextCharFormat bold;
     QTextCharFormat normal;
@@ -164,6 +165,7 @@ void DownwardICLog::appendICText(QString p_text, QString p_name = "", QString p_
       ui_ic_chatlog->verticalScrollBar()->setValue(
           log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : 0);
     }
+    */
 }
 
 void DownwardICLog::regenerateLog(bool showname_enabled)
@@ -197,4 +199,9 @@ void DownwardICLog::appendToHistory(chatlogpiece history_entry)
     history.removeFirst();
   }
   history.append(history_entry);
+}
+
+QString DownwardICLog::filterICText(QString p_text, bool colorize, int pos, int default_color)
+{
+
 }

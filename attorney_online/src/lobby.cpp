@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "demoserver.h"
 #include "networkmanager.h"
+#include "courtroom2.h"
 
 #include <QAction>
 #include <QImageReader>
@@ -91,10 +92,12 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
   FROM_UI(QLabel, server_player_count_lbl)
   FROM_UI(QTextBrowser, server_description_text)
   FROM_UI(QPushButton, connect_button);
+  connect(ui_connect_button, &QPushButton::released,
+          this, &Lobby::on_connect_clicked);
 
   FROM_UI(QTextBrowser, motd_text);
 
-  connect(client->get(), &AttorneyOnline::Client::pnReceived, this,
+  connect(client.get(), &AttorneyOnline::Client::pnReceived, this,
           &Lobby::on_PNPacket_received);
 
   list_servers();
@@ -165,7 +168,7 @@ void Lobby::probe_server()
 
   ui_connect_button->setEnabled(false);
 
-  client->get()->connect(selected_server.ip, selected_server.port, true,
+  client->connect(selected_server.ip, selected_server.port, true,
                          selected_server.socket_type);
 }
 
@@ -242,8 +245,9 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 
 void Lobby::on_connect_clicked()
 {
-  client->get()->connect(selected_server.ip, selected_server.port, false,
+  client->connect(selected_server.ip, selected_server.port, false,
                          selected_server.socket_type);
+  new Courtroom2(client);
 }
 
 void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
@@ -320,7 +324,7 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
   demo_server.port = ao_app->demo_server->port;
   demo_server.socket_type = TCP;
   ao_app->demo_server->set_demo_file(l_filepath);
-  client->get()->connect(demo_server.ip, demo_server.port, true,
+  client->connect(demo_server.ip, demo_server.port, true,
                          demo_server.socket_type);
 }
 

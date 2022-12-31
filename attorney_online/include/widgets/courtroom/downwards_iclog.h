@@ -10,8 +10,8 @@ class QWidget;
 class DownwardICLog : public ICLog {
     Q_OBJECT
 public:
-  DownwardICLog() = default;
-  ~DownwardICLog();
+  DownwardICLog();
+  ~DownwardICLog() = default;
 
   void setupUI() override;
 

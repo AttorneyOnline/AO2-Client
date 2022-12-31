@@ -3,13 +3,12 @@
 
 #include <QDateTime>
 #include <QWidget>
-
-class chatlogpiece;
+#include "chatlogpiece.h"
 
 class ICLog : public QWidget {
   Q_OBJECT
 public:
-  explicit ICLog();
+  explicit ICLog(){};
   virtual ~ICLog() = default;
 
   /**
@@ -38,7 +37,7 @@ public:
    * @param default_color
    */
   virtual QString filterICText(QString p_text, bool colorize = false, int pos = -1,
-                            int default_color = 0);
+                            int default_color = 0) = 0;
 
   /**
    * @brief Stores every chatlog message up to the maximum buffer size.

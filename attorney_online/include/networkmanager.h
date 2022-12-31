@@ -53,7 +53,7 @@ public:
   explicit NetworkManager(AOApplication *parent);
   ~NetworkManager() = default;
 
-  std::shared_ptr<AttorneyOnline::Client>* getClientSocket();
+  std::shared_ptr<AttorneyOnline::Client> getClientSocket();
 
 signals:
   void server_connected(bool state);

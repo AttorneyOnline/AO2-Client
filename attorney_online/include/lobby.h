@@ -38,7 +38,7 @@ signals:
 private:
   AOApplication *ao_app;
   NetworkManager* net_manager;
-  std::shared_ptr<AttorneyOnline::Client>* client;
+  std::shared_ptr<AttorneyOnline::Client> client;
   Options options;
 
   void list_favorites();

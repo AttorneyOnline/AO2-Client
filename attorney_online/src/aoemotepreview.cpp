@@ -5,7 +5,7 @@ AOEmotePreview::AOEmotePreview(QWidget *parent, AOApplication *p_ao_app) : QWidg
   ao_app = p_ao_app;
 
   ui_viewport = new QWidget(this);
-  ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_player_char = new CharLayer(ui_viewport, nullptr);
   ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
   ui_size_label = new QLabel(this);

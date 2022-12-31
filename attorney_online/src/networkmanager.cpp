@@ -28,9 +28,9 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   heartbeat_timer->start(heartbeat_interval);
 }
 
-std::shared_ptr<AttorneyOnline::Client> *NetworkManager::getClientSocket()
+std::shared_ptr<AttorneyOnline::Client> NetworkManager::getClientSocket()
 {
-    return &client;
+    return client;
 }
 
 void NetworkManager::get_server_list(const std::function<void()> &cb)
