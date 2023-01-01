@@ -246,8 +246,14 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 void Lobby::on_connect_clicked()
 {
   client->connect(selected_server.ip, selected_server.port, false,
-                         selected_server.socket_type);
-  new Courtroom2(client);
+                         selected_server.socket_type).then([&] {
+      auto courtroom = new Courtroom2(client, ao_app);
+      courtroom->setupCourtroom();
+      courtroom->show();
+      hide();
+
+      deleteLater();
+    });
 }
 
 void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
