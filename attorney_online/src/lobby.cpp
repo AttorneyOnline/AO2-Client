@@ -248,7 +248,7 @@ void Lobby::on_connect_clicked()
   client->connect(selected_server.ip, selected_server.port, false,
                          selected_server.socket_type).then([&] {
       auto courtroom = new Courtroom2(client, ao_app);
-      courtroom->setupCourtroom();
+      courtroom->setupCourtroom(selected_server.name);
       courtroom->show();
       hide();
 

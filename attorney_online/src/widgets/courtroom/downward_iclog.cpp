@@ -203,5 +203,5 @@ void DownwardICLog::appendToHistory(chatlogpiece history_entry)
 
 QString DownwardICLog::filterICText(QString p_text, bool colorize, int pos, int default_color)
 {
-
+    return QString();
 }

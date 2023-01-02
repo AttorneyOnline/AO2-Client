@@ -12,5 +12,6 @@
         <file>resource/translations/about_en.html</file>
         <file>resource/ui/options_dialog.ui</file>
         <file>resource/ui/lobby.ui</file>
+        <file>resource/ui/courtroom.ui</file>
     </qresource>
 </RCC>

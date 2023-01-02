@@ -39,7 +39,7 @@ public:
     Courtroom2(std::shared_ptr<Client> client, AOApplication* p_ao_app = nullptr);
     ~Courtroom2();
 
-    void setupCourtroom();
+    void setupCourtroom(QString p_server_name = "NoName");
 
 private:
     AOApplication* ao_app;
@@ -59,6 +59,7 @@ private:
 
     QMainWindow *windowWidget;
 
+    // Registers dockedWidget to the QMenu Action for the widget to hide/show it.
     template<typename T>
     void registerWindow(T *&widget, const QString &name,
                         QDockWidget *&dockWidget, QAction *&toggleAction);
