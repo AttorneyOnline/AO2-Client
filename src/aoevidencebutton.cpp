@@ -104,7 +104,7 @@ void AOEvidenceButton::dragEnterEvent(QMouseEvent *e)
 }
 */
 
-void AOEvidenceButton::enterEvent(QEvent *e)
+void AOEvidenceButton::enterEvent(QEnterEvent *e)
 {
   ui_selector->show();
 

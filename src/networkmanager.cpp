@@ -240,8 +240,11 @@ void NetworkManager::handle_server_packet(const QString& p_data)
       partial_packet = false;
     }
   }
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
+#else
   const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
+#endif
 
   for (const QString &packet : packet_list) {
     QStringList f_contents;

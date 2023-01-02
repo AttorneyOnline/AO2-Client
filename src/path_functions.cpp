@@ -3,7 +3,7 @@
 #include "file_functions.h"
 
 #include <QDir>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QStringBuilder>
 
@@ -235,14 +235,14 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
         path = get_real_path(p);
         if (!path.isEmpty()) {
             QSettings settings(path, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             settings.setIniCodec("UTF-8");
+#endif
             QVariant value = settings.value(p_identifier);
             if (value.type() == QVariant::StringList) {
-//              qDebug() << "got" << p << "is a string list, returning" << value.toStringList().join(",");
               return value.toStringList().join(",");
             }
             else if (!value.isNull()){
-//              qDebug() << "got" << p << "is a string, returning" << value.toString();
               return value.toString();
             }
         }
