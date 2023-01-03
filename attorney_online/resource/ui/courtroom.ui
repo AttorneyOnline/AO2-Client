@@ -29,14 +29,21 @@
     <property name="title">
      <string>Player</string>
     </property>
+    <addaction name="actionMute"/>
+    <addaction name="actionPair_With"/>
+    <addaction name="actionCall_Mod"/>
     <addaction name="separator"/>
-    <addaction name="actionYoloooo"/>
+    <addaction name="actionChange_Character"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
      <string>Options</string>
     </property>
+    <addaction name="actionSettings"/>
     <addaction name="separator"/>
+    <addaction name="actionShow_Shownames"/>
+    <addaction name="actionPing_on_modcall"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -45,6 +52,7 @@
     <addaction name="actionTranscript"/>
     <addaction name="actionEvidence"/>
     <addaction name="actionServer_Chat"/>
+    <addaction name="actionChat_Options"/>
     <addaction name="separator"/>
     <addaction name="actionRoom_Controls"/>
     <addaction name="actionRoom_List"/>
@@ -120,6 +128,51 @@
   <action name="actionEmotion_Preview">
    <property name="text">
     <string>Emotion Preview</string>
+   </property>
+  </action>
+  <action name="actionChat_Options">
+   <property name="text">
+    <string>Chat Options</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings...</string>
+   </property>
+  </action>
+  <action name="actionShow_Shownames">
+   <property name="text">
+    <string>Enable Shownames</string>
+   </property>
+  </action>
+  <action name="actionPing_on_modcall">
+   <property name="text">
+    <string>Ping on Mod Call</string>
+   </property>
+  </action>
+  <action name="actionMute">
+   <property name="text">
+    <string>Mute...</string>
+   </property>
+  </action>
+  <action name="actionPair_With">
+   <property name="text">
+    <string>Pair With...</string>
+   </property>
+  </action>
+  <action name="actionCall_Mod">
+   <property name="text">
+    <string>Call Mod...</string>
+   </property>
+  </action>
+  <action name="actionChange_Character">
+   <property name="text">
+    <string>Change Character...</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
    </property>
   </action>
  </widget>
