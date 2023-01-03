@@ -24,7 +24,7 @@ void Courtroom2::setupCourtroom(QString p_server_name)
     QUiLoader l_loader(this);
     QFile uiFile(":/resource/ui/courtroom.ui");
     if (!uiFile.open(QFile::ReadOnly)) {
-        QMessageBox::critical(this, "Unable to open Courtroom", "Unable to open Courtrrom UI file. Aborting operation.");
+        QMessageBox::critical(this, "Unable to open Courtroom", "Unable to open Courtroom UI file. Aborting operation.");
         int kill = 0 / 0;
         return;
     }
