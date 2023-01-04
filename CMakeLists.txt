@@ -42,6 +42,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 # Subdirectories
-add_subdirectory(test)
+if (AO_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
 add_subdirectory(src)
 add_subdirectory(include)
