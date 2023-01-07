@@ -621,3 +621,8 @@ void AOLayer::shfx_timer_done()
   // signal connected to courtroom object, let it figure out what to do
   emit done();
 }
+
+void ChatboxLayer::tick_chat()
+{
+
+}

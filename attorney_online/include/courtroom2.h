@@ -32,6 +32,7 @@
 using namespace AttorneyOnline;
 
 class AOApplication;
+class AOViewport;
 
 class Courtroom2 : public QMainWindow {
     Q_OBJECT
@@ -58,6 +59,7 @@ private:
     const int LAYOUT_AUTOSAVE_INTERVAL = 30000;
 
     QMainWindow *windowWidget;
+    AOViewport* viewport;
 
     // Registers dockedWidget to the QMenu Action for the widget to hide/show it.
     template<typename T>

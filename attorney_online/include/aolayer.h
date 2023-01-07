@@ -10,6 +10,7 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QTextEdit>
 #include "options.h"
 
 class AOApplication;
@@ -20,13 +21,13 @@ class VPath;
 // AOLayer handles all animations both inside and outside
 // the viewport. It was originally devised as a layering
 // system, but turned into a full refactor of the existing
-// animation code. 
+// animation code.
 //
 // AOLayer has six subclasses, all of which differ mainly in
 // how they handle path resolution.
 //
 //  - BackgroundLayer: self-explanatory, handles files found in base/background
-//  - CharLayer: handles all the "wonderful" quirks of character path resolution 
+//  - CharLayer: handles all the "wonderful" quirks of character path resolution
 //  - SplashLayer: handles elements that can either be provided by a misc/ directory
 //    or by the theme - speedlines, shouts, WT/CE, et cetera
 //  - EffectLayer: this is basically a dummy layer since effects do their own wonky
@@ -50,7 +51,7 @@ public:
   bool play_once = false; // Whether to loop this animation or not
   bool cull_image = true; // if we're done playing this animation, should we
                           // hide it? also controls durational culling
-  // Are we loading this from the same frame we left off on? 
+  // Are we loading this from the same frame we left off on?
   bool continuous = false;
   // Whether or not to forcibly bypass the simple check done by start_playback
   // and use the existent value of continuous instead
@@ -262,6 +263,16 @@ public:
   void load_image(QString p_charname);
 private:
   Options options;
+};
+
+class ChatboxLayer : public QWidget {
+    Q_OBJECT
+    ChatboxLayer(QWidget * p_parent);
+    QLabel showname;
+    QTextEdit ic_message;
+
+    public slots:
+    void tick_chat();
 };
 
 #endif // AOLAYER_H
