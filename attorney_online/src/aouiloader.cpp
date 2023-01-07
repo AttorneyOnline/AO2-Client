@@ -28,6 +28,7 @@ QWidget *AOUiLoader::createWidget(const QString &className, QWidget *parent,
                           tr("There was an error loading the UI file:\n"
                              "Unrecognized widget class %1")
                               .arg(className));
+    return widget;
   }
   widget->setObjectName(name);
   return widget;
