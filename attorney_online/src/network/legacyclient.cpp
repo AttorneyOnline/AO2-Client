@@ -367,7 +367,7 @@ QPromise<void> LegacyClient::connect(const QString &address,
 
   QObject::connect(socket.get(), &Socket::connectionLost, this, [&] {
     if (kicked) return;
-    emit connectionLost(CONNECTION_RESET, QStringLiteral());
+    emit connectionLost(CONNECTION_RESET, QLatin1String());
   });
 
   auto promise = socket->connect(address, port).then([&](void) {
@@ -425,7 +425,7 @@ char_type LegacyClient::character()
     return charsList[currentCharId];
   }
   else {
-    return {QStringLiteral(), QStringLiteral(), QStringLiteral(), false};
+    return {QLatin1String(), QLatin1String(), QLatin1String(), false};
   }
 }
 

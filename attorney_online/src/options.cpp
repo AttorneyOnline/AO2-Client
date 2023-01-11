@@ -6,8 +6,8 @@
 #include <QFile>
 #include <QObject>
 #include <QRegularExpression>
-#include <QSize>
 #include <QRgb>
+#include <QSize>
 
 void Options::migrateCallwords()
 {
@@ -608,27 +608,54 @@ QStringList Options::callwords() const
 
 void Options::setCallwords(QStringList value)
 {
-    config.setValue("callwords", value);
+  config.setValue("callwords", value);
 }
+
+bool Options::expandServerlistTabBar() const
+{
+  return config.value("visuals/expand_lobby_tabbar", true).toBool();
+}
+
+void Options::setExpandServerlistTabBar(bool value)
+{
+  config.setValue("visuals/expand_lobby_tabbar", value);
+}
+
+QSize Options::viewportScale() const
+{
+  return config.value("visuals/viewport_scale", QSize(256, 192)).toSize();
+}
+
+void Options::setViewportScale(QSize value)
+{
+  config.setValue("visuals/viewport_scale", value);
+}
+
 
 QColor Options::getColor(QString name) const
 {
-    QStringList color = config.value(QString("color/%1").arg(name),QStringList{"255","255","255"}).toStringList();
-    /**
-     * Index is organised by RGB convention
-     * 0 : Red
-     * 1 : Green
-     * 2 : Blue
-     *
-     * In theory we could support Alpha Channel too, but the default value of 255 works for about any reason we may need it.
-     */
-    return QColor((color.at(0).toInt()), color.at(1).toInt(), color.at(2).toInt());
+  QStringList color = config
+                          .value(QString("color/%1").arg(name),
+                                 QStringList{"255", "255", "255"})
+                          .toStringList();
+  /**
+   * Index is organised by RGB convention
+   * 0 : Red
+   * 1 : Green
+   * 2 : Blue
+   *
+   * In theory we could support Alpha Channel too, but the default value of 255
+   * works for about any reason we may need it.
+   */
+  return QColor((color.at(0).toInt()), color.at(1).toInt(),
+                color.at(2).toInt());
 }
 
 void Options::setColor(QString name, int red, int green, int blue)
 {
-    QStringList rgb{QString::number(red), QString::number(green), QString::number(blue)};
-    config.setValue(QString("color/%1").arg(name), rgb);
+  QStringList rgb{QString::number(red), QString::number(green),
+                  QString::number(blue)};
+  config.setValue(QString("color/%1").arg(name), rgb);
 }
 
 void Options::clearConfig() { config.clear(); }

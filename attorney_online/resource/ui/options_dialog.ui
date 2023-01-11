@@ -800,6 +800,148 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Visuals</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QGroupBox" name="visuals_lobby_group">
+         <property name="title">
+          <string>Lobby</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="visuals_lobby_expand_tabview_cb">
+            <property name="text">
+             <string>Expand Serverlist Tabbar</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="visuals_courtroom_group">
+         <property name="title">
+          <string>Courtroom</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="scale_lbl">
+            <property name="text">
+             <string>Viewport scale:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLineEdit" name="visuals_viewport_width_edit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>3</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maxLength">
+               <number>4</number>
+              </property>
+              <property name="placeholderText">
+               <string>256</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>x</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="visuals_viewport_height_edit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>3</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maxLength">
+               <number>4</number>
+              </property>
+              <property name="placeholderText">
+               <string>192</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="ratio_lbl">
+            <property name="text">
+             <string>Calculated aspect ratio:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="visuals_ratio_calculated_lbl">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>n:n</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="visuals_horizontal_spacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="casing_tab">
       <attribute name="title">
        <string>Casing</string>
@@ -1060,202 +1202,185 @@ Use this when you have added an asset that takes precedence over another existin
       <attribute name="title">
        <string>Logging</string>
       </attribute>
-      <layout class="QFormLayout" name="formLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="downwards_lbl">
-         <property name="toolTip">
-          <string>If ticked, new messages will appear at the bottom (like the OOC chatlog). The traditional (AO1) behaviour is equivalent to this being unticked.</string>
-         </property>
-         <property name="text">
-          <string>Log goes downwards:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="downwards_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="length_lbl">
-         <property name="toolTip">
-          <string>The amount of message lines the IC chatlog will keep before deleting older message lines. A value of 0 or below counts as 'infinite'.</string>
-         </property>
-         <property name="text">
-          <string>Log length:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QSpinBox" name="length_spinbox">
-         <property name="suffix">
-          <string> entries</string>
-         </property>
-         <property name="maximum">
-          <number>10000</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="log_newline_lbl">
-         <property name="toolTip">
-          <string>If ticked, new messages will appear separated, with the message coming on the next line after the name. 
-When unticked, it displays it as 'name: message'.</string>
-         </property>
-         <property name="text">
-          <string>Log newline:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QCheckBox" name="log_newline_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="log_margin_lbl">
-         <property name="toolTip">
-          <string>The distance in pixels between each entry in the IC log. 
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="fields_widgets" native="true">
+         <layout class="QFormLayout" name="formLayout_3">
+          <property name="verticalSpacing">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <item row="1" column="0">
+           <widget class="QLabel" name="length_lbl">
+            <property name="toolTip">
+             <string>The amount of message lines the IC chatlog will keep before deleting older message lines. A value of 0 or below counts as 'infinite'.</string>
+            </property>
+            <property name="text">
+             <string>Max entries:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="length_spinbox">
+            <property name="suffix">
+             <string> entries</string>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="log_timestamp_format_lbl">
+            <property name="text">
+             <string>Timestamp Format:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="log_margin_lbl">
+            <property name="toolTip">
+             <string>The distance in pixels between each entry in the IC log. 
 Default: 0.</string>
-         </property>
-         <property name="text">
-          <string>Log margin:</string>
-         </property>
+            </property>
+            <property name="text">
+             <string>Log margin:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="log_margin_spinbox">
+            <property name="suffix">
+             <string> px</string>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="log_timestamp_format_combobox">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>h:mm:ss AP</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>hh:mm:ss</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>h:mm AP</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>hh:mm</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QSpinBox" name="log_margin_spinbox">
-         <property name="suffix">
-          <string> px</string>
+       <item>
+        <widget class="QGroupBox" name="options_group">
+         <property name="title">
+          <string>Options</string>
          </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="log_timestamp_lbl">
-         <property name="toolTip">
-          <string>If ticked, log will contain a timestamp in UTC before the name.</string>
-         </property>
-         <property name="text">
-          <string>Log timestamp:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QCheckBox" name="log_timestamp_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="log_timestamp_format_lbl">
-         <property name="text">
-          <string>Log timestamp format:
-</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QComboBox" name="log_timestamp_format_combobox">
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-         <item>
-          <property name="text">
-           <string>h:mm:ss AP</string>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <property name="bottomMargin">
+           <number>4</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hh:mm:ss</string>
+          <property name="horizontalSpacing">
+           <number>4</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>h:mm AP</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hh:mm</string>
-          </property>
-         </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="log_newline_cb">
+            <property name="text">
+             <string>Format use newline</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="log_timestamp_cb">
+            <property name="text">
+             <string>Display timestamp</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="desync_logs_cb">
+            <property name="text">
+             <string>Desynchronize Logs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="log_ic_actions_cb">
+            <property name="text">
+             <string>Display IC actiosn</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="downwards_cb">
+            <property name="text">
+             <string>Log goes downward</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="log_ic_actions_lbl">
-         <property name="toolTip">
-          <string>If ticked, log will show IC actions such as shouting and presenting evidence.</string>
+       <item>
+        <widget class="QGroupBox" name="logging_saving_box">
+         <property name="title">
+          <string>Save Logfiles</string>
          </property>
-         <property name="text">
-          <string>Log IC actions:</string>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QCheckBox" name="log_demo_cb">
+            <property name="text">
+             <string>Save to Demo</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="log_text_cb">
+            <property name="text">
+             <string>Save to Plain File</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="6" column="1">
-        <widget class="QCheckBox" name="log_ic_actions_cb">
-         <property name="text">
-          <string/>
+       <item>
+        <spacer name="logging_tab_spacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="desync_logs_lbl">
-         <property name="toolTip">
-          <string>If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time).</string>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
          </property>
-         <property name="text">
-          <string>Desynchronize IC Logs:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QCheckBox" name="desync_logs_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="log_text_lbl">
-         <property name="toolTip">
-          <string>Text logs of gameplay will be automatically written in the /logs folder.</string>
-         </property>
-         <property name="text">
-          <string>Log to Text Files:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QCheckBox" name="log_text_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="log_demo_lbl">
-         <property name="toolTip">
-          <string>Gameplay will be automatically recorded as demos in the /logs folder.</string>
-         </property>
-         <property name="text">
-          <string>Log to Demo Files:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QCheckBox" name="log_demo_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </widget>

@@ -1,8 +1,8 @@
 #include "widgets/aooptionsdialog.h"
+#include "QDesktopServices"
 #include "aoapplication.h"
 #include "bass.h"
 #include "file_functions.h"
-#include "QDesktopServices"
 #include "networkmanager.h"
 #include "options.h"
 
@@ -210,6 +210,45 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
                                   &Options::streamingEnabled,
                                   &Options::setStreamingEnabled);
 
+  // Visuals tab.
+  FROM_UI(QCheckBox, visuals_lobby_expand_tabview_cb)
+          registerOption<QCheckBox, bool>("visuals_lobby_expand_tabview_cb",
+                                         &Options::expandServerlistTabBar,
+                                         &Options::setExpandServerlistTabBar);
+
+  FROM_UI(QLineEdit, visuals_viewport_width_edit)
+  FROM_UI(QLineEdit, visuals_viewport_height_edit)
+  FROM_UI(QLabel, visuals_ratio_calculated_lbl)
+
+  qDebug() << ui_visuals_viewport_width_edit << ui_visuals_viewport_height_edit
+           << ui_visuals_ratio_calculated_lbl;
+
+  if (ui_visuals_viewport_width_edit && ui_visuals_viewport_height_edit &&
+      ui_visuals_ratio_calculated_lbl) {
+    optionEntries.append(
+        {[=] {
+           QSize size = options.viewportScale();
+           ui_visuals_viewport_width_edit->setText(
+               QString::number(size.width()));
+           ui_visuals_viewport_height_edit->setText(
+               QString::number(size.height()));
+         },
+         [=] {
+           int w = ui_visuals_viewport_width_edit->text().toInt();
+           int h = ui_visuals_viewport_height_edit->text().toInt();
+           if (w <= 100 || h <= 100) {
+             qWarning() << "invalid viewport scale" << w << "x" << h;
+             w = 256;
+             h = 192;
+           }
+           options.setViewportScale(QSize(w, h));
+         }});
+    connect(ui_visuals_viewport_width_edit, &QLineEdit::textEdited, this,
+            &AOOptionsDialog::calculateViewportRatio);
+    connect(ui_visuals_viewport_height_edit, &QLineEdit::textEdited, this,
+            &AOOptionsDialog::calculateViewportRatio);
+  }
+
   // Casing tab.
   FROM_UI(QGroupBox, casing_enabled_box)
   FROM_UI(QCheckBox, casing_def_cb)
@@ -353,8 +392,7 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
           &::AOOptionsDialog::timestampCbChanged);
   ui_log_timestamp_format_lbl->setText(
       tr("Log timestamp format:\n") +
-      QDateTime::currentDateTime().toString(
-          options.logTimestampFormat()));
+      QDateTime::currentDateTime().toString(options.logTimestampFormat()));
 
   FROM_UI(QComboBox, log_timestamp_format_combobox)
   registerOption<QComboBox, QString>("log_timestamp_format_combobox",
@@ -520,12 +558,8 @@ void AOOptionsDialog::registerOption(const QString &widgetName,
   }
 
   OptionEntry entry;
-  entry.load = [=] {
-    setWidgetData<T, V>(widget, (options.*getter)());
-  };
-  entry.save = [=] {
-    (options.*setter)(widgetData<T, V>(widget));
-  };
+  entry.load = [=] { setWidgetData<T, V>(widget, (options.*getter)()); };
+  entry.save = [=] { (options.*setter)(widgetData<T, V>(widget)); };
 
   optionEntries.append(entry);
 }
@@ -549,8 +583,7 @@ void AOOptionsDialog::updateValues()
       }
     }
   }
-  int l_theme_index =
-      ui_theme_combobox->findText(options.theme());
+  int l_theme_index = ui_theme_combobox->findText(options.theme());
   if (l_theme_index != -1) // Data found
     ui_theme_combobox->setCurrentIndex(l_theme_index);
 
@@ -564,8 +597,7 @@ void AOOptionsDialog::updateValues()
       ui_subtheme_combobox->addItem(actualname);
     }
   }
-  int l_subTheme_index =
-      ui_subtheme_combobox->findText(options.subTheme());
+  int l_subTheme_index = ui_subtheme_combobox->findText(options.subTheme());
   if (l_theme_index != -1) // Data found
     ui_subtheme_combobox->setCurrentIndex(l_subTheme_index);
 
@@ -576,6 +608,35 @@ void AOOptionsDialog::updateValues()
         }
         ui_privacy_policy->setHtml(document);
       });
+
+  calculateViewportRatio();
+}
+
+size_t AOOptionsDialog::gdc(size_t a, size_t b)
+{
+  if (a > b) std::swap(a, b);
+  size_t r = b % a;
+  if (r == 0)
+    return a;
+  else
+    return std::gcd(r, a);
+}
+
+void AOOptionsDialog::calculateViewportRatio()
+{
+  size_t w = ui_visuals_viewport_width_edit->text().toInt();
+  size_t h = ui_visuals_viewport_height_edit->text().toInt();
+  if (w <= 0 || h <= 0) {
+    ui_visuals_ratio_calculated_lbl->setText("???");
+    return;
+  }
+  // This will work for the common aspect ratios, which are expressed
+  // as integers with no leftover fractional part.
+  size_t d = std::gcd(w, h);
+  w /= d;
+  h /= d;
+  ui_visuals_ratio_calculated_lbl->setText(
+      QStringLiteral("%1:%2").arg(w).arg(h));
 }
 
 void AOOptionsDialog::savePressed()
@@ -604,8 +665,7 @@ void AOOptionsDialog::onReloadThemeClicked()
 {
   options.setTheme(ui_theme_combobox->currentText());
   options.setSubTheme(ui_subtheme_combobox->currentText());
-  options.setAnimatedThemeEnabled(
-      ui_animated_theme_cb->isChecked());
+  options.setAnimatedThemeEnabled(ui_animated_theme_cb->isChecked());
   emit reloadThemeRequest();
 }
 

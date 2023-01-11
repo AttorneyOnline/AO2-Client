@@ -38,6 +38,9 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-image: url(:/resource/logo_ao2.png)</string>
+      </property>
      </widget>
     </item>
    </layout>

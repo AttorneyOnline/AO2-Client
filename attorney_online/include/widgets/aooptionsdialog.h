@@ -103,6 +103,12 @@ private:
   QCheckBox *ui_objectmusic_cb;
   QCheckBox *ui_disablestreams_cb;
 
+  // The visuals tab
+  QCheckBox *ui_visuals_lobby_expand_tabview_cb;
+  QLineEdit *ui_visuals_viewport_width_edit;
+  QLineEdit *ui_visuals_viewport_height_edit;
+  QLabel *ui_visuals_ratio_calculated_lbl;
+
   // The casing tab
   QGroupBox *ui_casing_enabled_box;
   QCheckBox *ui_casing_def_cb;
@@ -148,6 +154,9 @@ private:
   bool needsDefaultAudioDevice();
   void populateAudioDevices();
   void updateValues();
+
+  static size_t gdc(size_t a, size_t b);
+  void calculateViewportRatio();
 
   QVector<OptionEntry> optionEntries;
 

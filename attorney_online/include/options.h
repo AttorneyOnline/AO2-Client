@@ -281,6 +281,14 @@ public:
   QStringList callwords() const;
   void setCallwords(QStringList value);
 
+  // Controls if the tabbar in lobby is expanded to fir the widget width or adjusts to text size.
+  bool expandServerlistTabBar() const;
+  void setExpandServerlistTabBar(bool value);
+
+  // Sets the size of the viewport.
+  QSize viewportScale() const;
+  void setViewportScale(QSize value);
+
   // Returns the user configured color code in config.ini
   QColor getColor(QString name) const;
   void setColor(QString name, int red, int green, int blue);

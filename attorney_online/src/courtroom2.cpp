@@ -40,7 +40,7 @@ void Courtroom2::setupCourtroom(QString p_server_name)
     windowWidget->setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     viewport = findChild<AOViewport*>("viewport");
-    qDebug() << viewport->sizePolicy();
+
 }
 
 void Courtroom2::initBass()
