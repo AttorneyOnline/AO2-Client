@@ -17,6 +17,7 @@ logs/
 bass.lib
 
 bin/*
+lib/*
 
 bins/
 build/
