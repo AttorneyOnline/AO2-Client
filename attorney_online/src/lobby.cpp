@@ -49,7 +49,7 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
 
   // Serverlist elements
   FROM_UI(QTabWidget, connections_tabview);
-  ui_connections_tabview->tabBar()->setExpanding(true);
+  ui_connections_tabview->tabBar()->setExpanding(options.expandServerlistTabBar());
   connect(ui_connections_tabview, &QTabWidget::currentChanged, this,
           &Lobby::on_tab_changed);
 
