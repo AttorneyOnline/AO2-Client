@@ -8,7 +8,6 @@
 class chatlogpiece {
     Q_DECLARE_TR_FUNCTIONS(chatlogpiece)
 public:
-  chatlogpiece();
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
                QString p_action,int color, bool selfname);
   chatlogpiece(QString p_name, QString p_showname, QString p_message,

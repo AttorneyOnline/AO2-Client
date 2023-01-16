@@ -27,6 +27,7 @@
 #include <QAction>
 
 #include "network/client.h"
+#include "aochatqueue.h"
 #include "options.h"
 
 using namespace AttorneyOnline;
@@ -68,11 +69,19 @@ private:
 
     void initBass();
 
+    AOChatQueue m_chat_queue;
+
+    //char id, muted or not
+    // XXX: needs rework
+    QMap<int, bool> mute_map;
+
     QMenu *ui_window_menu;
     QAction *ui_load_layout;
     QAction *ui_save_layout;
 
 private slots:
+
+    void onICMessage(DataTypes::MSPacket f_packet);
 };
 
 #endif

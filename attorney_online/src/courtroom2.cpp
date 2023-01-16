@@ -77,6 +77,27 @@ void Courtroom2::initBass()
   }
 }
 
+void Courtroom2::onICMessage(DataTypes::MSPacket f_packet)
+{
+    // Note on default behaviour
+
+    // All messages are being queues after being checked for validity.
+    // We only dequeue them in this method if our viewport is done ticking and our text-stay time has finished.
+    // See : Viewport busy state.
+
+    // If our viewport is busy ticking we keep it queued and call a dedicated dequeue trough a signal from the viewport.
+
+    // You can ignore the above if shout skips queue is enabled and a shout is used.
+    // In which case we just yolo all messages and load the incoming one into viewport regardless.
+
+    // Wohooo to inconsistent behaviour!
+
+    if (f_packet.char_id < 0 || f_packet.char_id >= client->characters().size() ||
+        mute_map.value(f_packet.char_id))
+      return;
+    m_chat_queue.enqueue(f_packet);
+}
+
 template <typename T>
 void Courtroom2::registerWindow(T *&widget, const QString &name,
                                 QDockWidget *&dockWidget,

@@ -1,15 +1,5 @@
 #include "chatlogpiece.h"
 
-chatlogpiece::chatlogpiece()
-{
-  name = tr("UNKNOWN");
-  showname = tr("UNKNOWN");
-  message = tr("UNKNOWN");
-  color = 0;
-  action = "";
-  datetime = QDateTime::currentDateTimeUtc();
-}
-
 chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
                            QString p_message, QString p_action, int p_color, bool p_selfname)
 {

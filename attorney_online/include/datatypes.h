@@ -179,6 +179,7 @@ public:
     int char_id = -1;
     int sfx_delay = 0;
     SHOUT_MODIFIER shout_mod = SHOUT_MODIFIER::NOTHING;
+    QString custom_shout;
     int evidence = 0;
     bool flip = false;
     bool realization = false;
@@ -198,6 +199,9 @@ public:
     QStringList frame_fx_netstrings = QStringList{};
     bool additive = false;
     QString effect = "";
+
+    //Set locally. The server does not tell us, so we need to figure that out on our own.
+    bool selfmessage = false;
 
     enum indices {
       DESK_MOD = 0,
@@ -253,10 +257,18 @@ public:
       emote_mod = toDataType<EMOTE_MODIFIER>(packet.at(EMOTE_MOD));
       char_id = packet.at(CHAR_ID).toInt();
       sfx_delay = packet.at(SFX_DELAY).toInt();
-      shout_mod = toDataType<SHOUT_MODIFIER>(packet.at(OBJECTION_MOD));
-      if (shout_mod != SHOUT_MODIFIER::NOTHING &&
-          emote_mod == EMOTE_MODIFIER::NONE) {
-        emote_mod = EMOTE_MODIFIER::OBJECTION;
+      {
+          //Shout modifier needs extra parsing.
+          QStringList shout_data = packet.at(OBJECTION_MOD).split("&");
+          shout_mod = toDataType<SHOUT_MODIFIER>(shout_data.at(0));
+
+          if (shout_mod != SHOUT_MODIFIER::NOTHING && emote_mod == EMOTE_MODIFIER::NONE) {
+              emote_mod = EMOTE_MODIFIER::OBJECTION;
+          }
+
+          if (shout_mod == SHOUT_MODIFIER::CUSTOM && shout_data.size() == 2) {
+              custom_shout = shout_data.at(1);
+          }
       }
       evidence = packet.at(EVIDENCE_ID).toInt();
       flip = toDataType<bool>(packet.at(FLIP));

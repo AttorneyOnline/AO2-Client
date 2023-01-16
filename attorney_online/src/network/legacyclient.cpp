@@ -163,6 +163,7 @@ void LegacyClient::mapSignals()
           ENFORCE_MIN_LENGTH(15)
           DataTypes::MSPacket message(args, caseCafeFeatures,
                                       killingFeverOnlineFeatures);
+          message.selfmessage = message.char_id == currentCharId;
           emit icReceived(message);
         } break;
 
