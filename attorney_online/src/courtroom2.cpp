@@ -41,6 +41,7 @@ void Courtroom2::setupCourtroom(QString p_server_name)
 
     viewport = findChild<AOViewport*>("viewport");
 
+    connect(this, &Courtroom2::onICMessageDequeue, viewport->getTextStayTimer(), &QTimer::timeout);
 }
 
 void Courtroom2::initBass()
@@ -95,7 +96,62 @@ void Courtroom2::onICMessage(DataTypes::MSPacket f_packet)
     if (f_packet.char_id < 0 || f_packet.char_id >= client->characters().size() ||
         mute_map.value(f_packet.char_id))
       return;
+
+    // Salanto : Is there any point to this?
+    if (f_packet.message.trimmed().isEmpty()) {
+        f_packet.message = "";
+    }
+
+    if (f_packet.selfmessage) {
+        // XXX : Not implemented - Reset Input UI here.
+        // This is necessary since the server does not tell us if a message was accepted.
+        // Alright then, keep your secrets.
+    }
+
+    if (f_packet.selfmessage || options.desynchronisedLogsEnabled()) {
+        // XXX : Here it gets fuzzy. We have an incoming packet that is not processed yet.
+        // This means we will add it to our ghost queue when its ours or if we desynchronise logs,
+        // Which makes any message become a ghost?
+
+        // XXX : Chatlog not implemented. IC log Ghost Message here.
+    }
+
+    bool is_objection_interrupt = false;
+    if (options.objectionSkipQueueEnabled()) {
+        // XXX : Here we are at the most outrageous part of the queue.
+        // The ability to skip this entire shitshow entirely.
+
+        if (f_packet.shout_mod != DataTypes::SHOUT_MODIFIER::NOTHING) {
+            viewport->ObjectionInterrupt();
+            is_objection_interrupt = true;
+
+            for(const DataTypes::MSPacket &l_packet : m_chat_queue.dequeueAll()) {
+                Q_UNUSED(l_packet) // Mute warning, we know.
+                // XXX : Not implemented. We write all messages to the viewport.
+            }
+        }
+    }
+
+    //We would now log it to the IO file? Just call it chathistory, goddamnit.
+
+    // The queue is cleared and the viewport has been halted.
+    // We can now add this in, only to grab it back later.
     m_chat_queue.enqueue(f_packet);
+
+    if (is_objection_interrupt || !viewport->isBusy()) {
+      onICMessageDequeue();
+    }
+}
+
+void Courtroom2::onICMessageDequeue()
+{
+  // This can be called from two places. Either when the viewport stops ticking or
+  // when we have an interrupt on the playing message.
+
+  if (m_chat_queue.isEmpty()) {
+    return;
+  }
+  viewport->startChat(m_chat_queue.dequeue());
 }
 
 template <typename T>

@@ -85,4 +85,40 @@ AOViewport::AOViewport(QWidget *p_parent, AOApplication* p_ao_app) :
     ui_vp_objection->setObjectName("ui_vp_objection");
     ui_vp_objection->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
     ui_vp_objection->resize(options.viewportScale());
+
+
+    m_text_stay.setSingleShot(true);
+    m_text_stay.setInterval(options.textStayTime());
+}
+
+void AOViewport::setEffectLayerPosition(QString effect_layer_option)
+{
+    QMap<QString, AOLayer*> layer_map {
+        {"behind", ui_vp_player_char},
+        {"character", ui_vp_player_char},
+        {"over", ui_vp_player_char},
+        {"chat", ui_vp_player_char}
+    };
+    ui_vp_effect->stackUnder(layer_map.value(effect_layer_option));
+}
+
+bool AOViewport::isBusy()
+{
+    return anim_state != AnimationState::IDLE || text_state != AnimationState::IDLE || m_text_stay.isActive();
+}
+
+void AOViewport::startChat(DataTypes::MSPacket f_packet)
+{
+    Q_UNUSED(f_packet)
+}
+
+QTimer *AOViewport::getTextStayTimer()
+{
+  return &m_text_stay;
+}
+
+void AOViewport::ObjectionInterrupt()
+{
+  // The queue is being skipped!
+
 }

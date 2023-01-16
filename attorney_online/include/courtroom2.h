@@ -79,9 +79,17 @@ private:
     QAction *ui_load_layout;
     QAction *ui_save_layout;
 
+    enum LogMode {
+      IO_ONLY,
+      DISPLAY_ONLY,
+      DISPLAY_AND_IO,
+      QUEUED,
+    };
+
 private slots:
 
     void onICMessage(DataTypes::MSPacket f_packet);
+    void onICMessageDequeue();
 };
 
 #endif

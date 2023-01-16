@@ -7,39 +7,27 @@
 using namespace AttorneyOnline;
 
 /**
- * @brief Simple wrapper for QQeueue. Just adds a dequeueAll and might become useful in the future.
+ * @brief Small extension of QQueue.
  */
-class AOChatQueue {
-public :
-    AOChatQueue() = default;
-    ~AOChatQueue() = default;
-
-    void enqueue(DataTypes::MSPacket packet);
-
-    /**
-     * @brief Dequeues the oldest entry in the queue for viewport processing.
-     *
-     * @return A single MSPacket that was queued.
-     */
-    DataTypes::MSPacket dequeue();
-
-    /**
-     * @brief Dequeues all available queue entries.
-     *
-     * @details This function is only called if objection skip the queue.
-     *
-     * @return
-     */
-    QVector<DataTypes::MSPacket> dequeueAll();
-
-    /**
-     * @brief Checks if we have any pending entries in the queue.
-     * @return
-     */
-    bool isEmpty();
-
-private:
-    QQueue<DataTypes::MSPacket> m_ms_queue;
+class AOChatQueue : public QQueue<DataTypes::MSPacket> {
+public:
+  AOChatQueue() = default;
+  ~AOChatQueue() = default;
+  /**
+   * @brief Dequeues all available queue entries.
+   *
+   * @details This function is only called if objection skip the queue.
+   *
+   * @return QVector of all pending MS Packets.
+   */
+  const QVector<DataTypes::MSPacket> dequeueAll()
+  {
+    QVector<DataTypes::MSPacket> l_packets;
+    while (!isEmpty()) {
+      l_packets.append(dequeue());
+    }
+    return l_packets;
+  }
 };
 
 #endif // AOCHATQUEUE_H)

@@ -3,16 +3,33 @@
 
 #include "aoapplication.h"
 #include "aoevidencedisplay.h"
+#include "datatypes.h"
 #include "aolayer.h"
+
+using namespace AttorneyOnline;
 
 class AOViewport : public QWidget {
   Q_OBJECT
 
 public:
-  AOViewport(QWidget *p_parent, AOApplication* p_ao_app = nullptr);
+  AOViewport(QWidget *p_parent, AOApplication *p_ao_app = nullptr);
   ~AOViewport(){};
 
   void setEffectLayerPosition(QString effect_layer_option);
+
+  bool isBusy();
+
+  void startChat(DataTypes::MSPacket f_packet);
+
+  QTimer* getTextStayTimer();
+
+public slots:
+
+  /**
+   * @brief onObjectionInterrupt resets the viewport to interrupt the ongoing
+   * tick cycle to display the latest incoming message.
+   */
+  void ObjectionInterrupt();
 
 private:
   BackgroundLayer *ui_vp_background;
@@ -29,6 +46,21 @@ private:
   EffectLayer *ui_vp_effect;
   SplashLayer *ui_vp_objection;
   StickerLayer *ui_vp_sticker;
+
+  QTimer m_text_stay;
+
+  enum class AnimationState {
+    OBJECTION,
+    PREANIM,
+    TALKING,
+    IDLE,
+    NOINT_PREANIM,
+    POST_ANIM
+  };
+  AnimationState anim_state = AnimationState::IDLE;
+
+  enum class TextState { IDLE, TICKING, TICK_DONE };
+  AnimationState text_state = AnimationState::IDLE;
 
   AOApplication *ao_app;
 };
