@@ -3,8 +3,8 @@
 
 #include "aoapplication.h"
 #include "aoevidencedisplay.h"
-#include "datatypes.h"
 #include "aolayer.h"
+#include "datatypes.h"
 
 using namespace AttorneyOnline;
 
@@ -21,7 +21,7 @@ public:
 
   void startChat(DataTypes::MSPacket f_packet);
 
-  QTimer* getTextStayTimer();
+  QTimer *getTextStayTimer();
 
 public slots:
 

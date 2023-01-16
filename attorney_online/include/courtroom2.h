@@ -1,33 +1,33 @@
 #ifndef COURTROOM2_H
 #define COURTROOM2_H
 
-#include <QMainWindow>
-#include <QLineEdit>
-#include <QPlainTextEdit>
-#include <QListWidget>
-#include <QDockWidget>
 #include <QCheckBox>
-#include <QComboBox>
-#include <QSlider>
-#include <QVector>
 #include <QCloseEvent>
-#include <QSignalMapper>
+#include <QComboBox>
+#include <QDockWidget>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QMainWindow>
 #include <QMap>
-#include <QTextBrowser>
+#include <QPlainTextEdit>
+#include <QSignalMapper>
+#include <QSlider>
 #include <QSpinBox>
+#include <QTextBrowser>
+#include <QVector>
 
-#include <QDebug>
-#include <QScrollBar>
-#include <QRegExp>
+#include <QAction>
 #include <QBrush>
-#include <QTextCharFormat>
+#include <QDebug>
+#include <QFileDialog>
 #include <QFont>
 #include <QInputDialog>
-#include <QFileDialog>
-#include <QAction>
+#include <QRegExp>
+#include <QScrollBar>
+#include <QTextCharFormat>
 
-#include "network/client.h"
 #include "aochatqueue.h"
+#include "network/client.h"
 #include "options.h"
 
 using namespace AttorneyOnline;
@@ -36,60 +36,60 @@ class AOApplication;
 class AOViewport;
 
 class Courtroom2 : public QMainWindow {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    Courtroom2(std::shared_ptr<Client> client, AOApplication* p_ao_app = nullptr);
-    ~Courtroom2();
+  Courtroom2(std::shared_ptr<Client> client, AOApplication *p_ao_app = nullptr);
+  ~Courtroom2();
 
-    void setupCourtroom(QString p_server_name = "NoName");
+  void setupCourtroom(QString p_server_name = "NoName");
 
 private:
-    AOApplication* ao_app;
-    std::shared_ptr<Client> client;
-    Options options;
+  AOApplication *ao_app;
+  std::shared_ptr<Client> client;
+  Options options;
 
-    QString previous_ic_message = "";
+  QString previous_ic_message = "";
 
-    // Whether or not the character selection screen will quit the server
-    // when canceling.
-    bool quitOnCancel = true;
+  // Whether or not the character selection screen will quit the server
+  // when canceling.
+  bool quitOnCancel = true;
 
-    // List of registered windows; used for saving/loading layout
-    QSet<QWidget *> windows;
-    const QString LAYOUT_AUTOSAVE_FILE = "autosave_layout.dat";
-    const int LAYOUT_AUTOSAVE_INTERVAL = 30000;
+  // List of registered windows; used for saving/loading layout
+  QSet<QWidget *> windows;
+  const QString LAYOUT_AUTOSAVE_FILE = "autosave_layout.dat";
+  const int LAYOUT_AUTOSAVE_INTERVAL = 30000;
 
-    QMainWindow *windowWidget;
-    AOViewport* viewport;
+  QMainWindow *windowWidget;
+  AOViewport *viewport;
 
-    // Registers dockedWidget to the QMenu Action for the widget to hide/show it.
-    template<typename T>
-    void registerWindow(T *&widget, const QString &name,
-                        QDockWidget *&dockWidget, QAction *&toggleAction);
+  // Registers dockedWidget to the QMenu Action for the widget to hide/show it.
+  template <typename T>
+  void registerWindow(T *&widget, const QString &name, QDockWidget *&dockWidget,
+                      QAction *&toggleAction);
 
-    void initBass();
+  void initBass();
 
-    AOChatQueue m_chat_queue;
+  AOChatQueue m_chat_queue;
 
-    //char id, muted or not
-    // XXX: needs rework
-    QMap<int, bool> mute_map;
+  // char id, muted or not
+  //  XXX: needs rework
+  QMap<int, bool> mute_map;
 
-    QMenu *ui_window_menu;
-    QAction *ui_load_layout;
-    QAction *ui_save_layout;
+  QMenu *ui_window_menu;
+  QAction *ui_load_layout;
+  QAction *ui_save_layout;
 
-    enum LogMode {
-      IO_ONLY,
-      DISPLAY_ONLY,
-      DISPLAY_AND_IO,
-      QUEUED,
-    };
+  enum LogMode {
+    IO_ONLY,
+    DISPLAY_ONLY,
+    DISPLAY_AND_IO,
+    QUEUED,
+  };
 
 private slots:
 
-    void onICMessage(DataTypes::MSPacket f_packet);
-    void onICMessageDequeue();
+  void onICMessage(DataTypes::MSPacket f_packet);
+  void onICMessageDequeue();
 };
 
 #endif
