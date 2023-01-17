@@ -89,6 +89,7 @@ public:
   // This is somewhat pointless now as there's no "QMovie" object to resize, aka
   // no "combo" to speak of
   void combo_resize(int w, int h);
+  void comboResize(QSize size);
 
   // Return the frame delay adjusted for speed
   int get_frame_delay(int delay);

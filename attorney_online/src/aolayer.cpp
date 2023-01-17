@@ -120,6 +120,13 @@ void AOLayer::combo_resize(int w, int h)
   this->resize(f_size);
 }
 
+void AOLayer::comboResize(QSize f_size)
+{
+    f_w = f_size.width();
+    f_h = f_size.height();
+    this->resize(f_size);
+}
+
 int AOLayer::get_frame_delay(int delay)
 {
   return static_cast<int>(double(delay) * double(speed / 100));
@@ -175,7 +182,7 @@ void BackgroundLayer::loadImage(QString f_background, QString f_side)
   #ifdef DEBUG_MOVIE
     qDebug() << "[BackgroundLayer] BG loaded: " << f_background;
   #endif
-    QString final_path = ao_app->get_image_suffix(ao_app->getBackgroundPath("default", f_side));
+    QString final_path = ao_app->get_image_suffix(ao_app->getBackgroundPath(f_background, f_side));
 
     if (final_path == last_path) {
       // Don't restart background if background is unchanged
