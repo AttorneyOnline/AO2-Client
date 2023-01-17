@@ -31,6 +31,12 @@ public slots:
    */
   void ObjectionInterrupt();
 
+  /**
+   * @brief Sets the background if the viewport is not busy.
+   * Otherwise we set it on the next IC message.
+   */
+  void onBackgroundChanged(QString f_background);
+
 private:
   BackgroundLayer *ui_vp_background;
   SplashLayer *ui_vp_speedlines;
@@ -46,6 +52,8 @@ private:
   EffectLayer *ui_vp_effect;
   SplashLayer *ui_vp_objection;
   StickerLayer *ui_vp_sticker;
+
+  QString m_current_background;
 
   QTimer m_text_stay;
 

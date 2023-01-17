@@ -27,7 +27,7 @@ void LegacyClient::mapSignals()
 {
   QObject::connect(
       socket.get(), &Socket::messageReceived,
-      [=](const QString &header, const QStringList &args) {
+      [this](const QString &header, const QStringList &args) {
         switch (toDataType<HEADER>(header)) {
         case HEADER::ID: {
           // Who cares, nothing in here is used.
@@ -211,7 +211,14 @@ void LegacyClient::mapSignals()
           break;
         case HEADER::BN:
           ENFORCE_MIN_LENGTH(1)
-          emit backgroundChanged(args[0]);
+          current_background = args[0];
+          emit backgroundChanged(current_background);
+          if (args.size() >= 2) {
+              // We got a position too!
+              if (!args.at(1).isEmpty()) {
+                  emit positionChanged(args.at(1));
+              }
+          }
           break;
 
         case HEADER::RT: {

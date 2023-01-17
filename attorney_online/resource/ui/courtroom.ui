@@ -14,24 +14,25 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <item row="0" column="0">
-     <widget class="AOViewport" name="viewport" native="true"/>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="3">
+     <widget class="QWidget" name="widget" native="true"/>
+    </item>
+    <item row="0" column="1">
+     <widget class="QWidget" name="widget_2" native="true"/>
+    </item>
+    <item row="0" column="2">
+     <widget class="AOViewport" name="viewport" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>256</width>
+        <height>192</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

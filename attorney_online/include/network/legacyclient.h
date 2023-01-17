@@ -34,6 +34,8 @@ private:
   QVector<evi_type> evidenceList;
   QVector<area_type> areasList;
 
+  QString current_background;
+
   int currentCharId = -1;
 
   // tsuserver3 enjoys kicking players that do not send the keepalive
@@ -70,6 +72,8 @@ public:
   QVector<area_type> rooms() override { return areasList; }
   void joinRoom(const QString &name) override;
   void setCharacter(int charId) override;
+
+  QString background() override  {return current_background;}
 
   void callMod(const QString &message) override;
 

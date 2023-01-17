@@ -34,6 +34,8 @@ public:
   virtual char_type character() = 0;
   virtual bool spectating() = 0;
 
+  virtual QString background() = 0;
+
   virtual QVector<area_type> rooms() = 0;
   virtual void joinRoom(const QString &name) = 0;
   virtual void setCharacter(int charId) = 0;

@@ -155,6 +155,7 @@ public:
   VPath get_sounds_path(QString p_file);
   VPath get_music_path(QString p_song);
   VPath get_background_path(QString p_file);
+  VPath getBackgroundPath(QString f_background, QString f_side);
   VPath get_default_background_path(QString p_file);
   VPath get_evidence_path(QString p_file);
   QVector<VPath> get_asset_paths(QString p_element, QString p_theme="", QString p_subtheme="", QString p_default_theme="", QString p_misc="", QString p_character="", QString p_placeholder="");

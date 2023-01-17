@@ -220,9 +220,6 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   FROM_UI(QLineEdit, visuals_viewport_height_edit)
   FROM_UI(QLabel, visuals_ratio_calculated_lbl)
 
-  qDebug() << ui_visuals_viewport_width_edit << ui_visuals_viewport_height_edit
-           << ui_visuals_ratio_calculated_lbl;
-
   if (ui_visuals_viewport_width_edit && ui_visuals_viewport_height_edit &&
       ui_visuals_ratio_calculated_lbl) {
     optionEntries.append(

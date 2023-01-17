@@ -42,10 +42,12 @@ void Courtroom2::setupCourtroom(QString p_server_name)
   windowWidget->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   windowWidget->setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-  viewport = findChild<AOViewport *>("viewport");
+  FROM_UI(AOViewport, viewport);
 
-  connect(this, &Courtroom2::onICMessageDequeue, viewport->getTextStayTimer(),
-          &QTimer::timeout);
+  connect(ui_viewport->getTextStayTimer(),
+          &QTimer::timeout, this, &Courtroom2::onICMessageDequeue);
+  connect(client.get(), &Client::backgroundChanged, ui_viewport, &AOViewport::onBackgroundChanged);
+  ui_viewport->onBackgroundChanged(client.get()->background());
 }
 
 void Courtroom2::initBass()
@@ -127,7 +129,7 @@ void Courtroom2::onICMessage(DataTypes::MSPacket f_packet)
     // The ability to skip this entire shitshow entirely.
 
     if (f_packet.shout_mod != DataTypes::SHOUT_MODIFIER::NOTHING) {
-      viewport->ObjectionInterrupt();
+      ui_viewport->ObjectionInterrupt();
       is_objection_interrupt = true;
 
       for (const DataTypes::MSPacket &l_packet : m_chat_queue.dequeueAll()) {
@@ -143,7 +145,7 @@ void Courtroom2::onICMessage(DataTypes::MSPacket f_packet)
   // We can now add this in, only to grab it back later.
   m_chat_queue.enqueue(f_packet);
 
-  if (is_objection_interrupt || !viewport->isBusy()) {
+  if (is_objection_interrupt || !ui_viewport->isBusy()) {
     onICMessageDequeue();
   }
 }
@@ -156,7 +158,7 @@ void Courtroom2::onICMessageDequeue()
   if (m_chat_queue.isEmpty()) {
     return;
   }
-  viewport->startChat(m_chat_queue.dequeue());
+  ui_viewport->startChat(m_chat_queue.dequeue());
 }
 
 template <typename T>

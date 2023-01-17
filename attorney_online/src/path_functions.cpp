@@ -87,6 +87,14 @@ VPath AOApplication::get_background_path(QString p_file)
   return get_default_background_path(p_file);
 }
 
+VPath AOApplication::getBackgroundPath(QString f_background, QString f_side)
+{
+    if (!f_background.isEmpty()) {
+      return VPath("background/" + f_background + "/" + f_side);
+    }
+    return get_default_background_path(f_side);
+}
+
 VPath AOApplication::get_default_background_path(QString p_file)
 {
   return VPath("background/default/" + p_file);

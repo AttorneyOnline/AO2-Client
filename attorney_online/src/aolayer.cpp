@@ -164,6 +164,28 @@ void BackgroundLayer::load_image(QString p_filename)
   play();
 }
 
+void BackgroundLayer::loadImage(QString f_background, QString f_side)
+{
+    play_once = false;
+    cull_image = false;
+    VPath design_path = ao_app->getBackgroundPath(f_background, "design.ini");
+    transform_mode =
+        ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
+    stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
+  #ifdef DEBUG_MOVIE
+    qDebug() << "[BackgroundLayer] BG loaded: " << f_background;
+  #endif
+    QString final_path = ao_app->get_image_suffix(ao_app->getBackgroundPath("default", f_side));
+
+    if (final_path == last_path) {
+      // Don't restart background if background is unchanged
+      return;
+    }
+
+    start_playback(final_path);
+    play();
+}
+
 void CharLayer::load_image(QString p_filename, QString p_charname,
                            int p_duration, bool p_is_preanim)
 {
