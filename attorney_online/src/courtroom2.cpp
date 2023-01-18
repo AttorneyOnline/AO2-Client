@@ -44,10 +44,17 @@ void Courtroom2::setupCourtroom(QString p_server_name)
 
   FROM_UI(AOViewport, viewport);
 
+  connect(client.get(), &Client::icReceived, this, &Courtroom2::onICMessage);
   connect(ui_viewport->getTextStayTimer(),
           &QTimer::timeout, this, &Courtroom2::onICMessageDequeue);
-  connect(client.get(), &Client::backgroundChanged, ui_viewport, &AOViewport::onBackgroundChanged);
+  connect(client.get(), &Client::backgroundChanged, ui_viewport,
+          qOverload<QString>(&AOViewport::onBackgroundChanged));
+  connect(client.get(), &Client::comboBackgroundChanged, ui_viewport, qOverload<QString,QString>(&AOViewport::onBackgroundChanged));
   ui_viewport->onBackgroundChanged(client.get()->background());
+
+  FROM_UI(QAction, actionSettings)
+          connect(ui_actionSettings, &QAction::triggered, this, &Courtroom2::onCourtroomOpenSettingsTriggered);
+
 }
 
 void Courtroom2::initBass()
@@ -81,6 +88,11 @@ void Courtroom2::initBass()
     BASS_PluginLoad("bassopus.dll", 0);
     BASS_PluginLoad("bassmidi.dll", 0);
   }
+}
+
+void Courtroom2::onCourtroomOpenSettingsTriggered()
+{
+  AOOptionsDialog(nullptr, ao_app).exec();
 }
 
 void Courtroom2::onICMessage(DataTypes::MSPacket f_packet)

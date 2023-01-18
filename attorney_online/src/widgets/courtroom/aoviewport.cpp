@@ -90,10 +90,15 @@ void AOViewport::setEffectLayerPosition(QString effect_layer_option)
 bool AOViewport::isBusy()
 {
   return anim_state != AnimationState::IDLE ||
-         text_state != AnimationState::IDLE || m_text_stay.isActive();
+         text_state != TextState::IDLE || m_text_stay.isActive();
 }
 
-void AOViewport::startChat(DataTypes::MSPacket f_packet) { Q_UNUSED(f_packet) }
+void AOViewport::startChat(DataTypes::MSPacket f_packet)
+{
+  Q_UNUSED(f_packet)
+    setScene(f_packet.desk_mod, f_packet.side);
+
+}
 
 QTimer *AOViewport::getTextStayTimer() { return &m_text_stay; }
 
@@ -105,8 +110,36 @@ void AOViewport::ObjectionInterrupt()
 void AOViewport::onBackgroundChanged(QString f_background)
 {
     m_current_background = f_background;
+    ui_vp_background->background = m_current_background;
 
     if(!isBusy()) {
-        ui_vp_background->loadImage(f_background, "witnessempty");
+        ui_vp_background->loadImage();
+    }
+}
+
+void AOViewport::onBackgroundChanged(QString f_background, QString f_side)
+{
+    m_current_background = f_background;
+    ui_vp_background->background = m_current_background;
+    ui_vp_background->side = f_side;
+
+    if(!isBusy()) {
+        ui_vp_background->loadImage();
+    }
+}
+
+void AOViewport::setScene(DataTypes::DESKMOD f_deskmod, QString f_side)
+{
+    ui_vp_background->side = f_side;
+    ui_vp_background->loadImage();
+    ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
+
+    if (f_deskmod == DataTypes::DESKMOD::HIDDEN ||
+        (f_deskmod != DataTypes::DESKMOD::SHOWN &&
+         (f_side == "jud" || f_side == "hld" || f_side == "hlp"))) {
+      ui_vp_desk->hide();
+    }
+    else {
+      ui_vp_desk->show();
     }
 }

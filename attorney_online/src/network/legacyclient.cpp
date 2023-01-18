@@ -211,13 +211,14 @@ void LegacyClient::mapSignals()
           break;
         case HEADER::BN:
           ENFORCE_MIN_LENGTH(1)
-          if(args.size() > 2) {
-              if (!args[1].isEmpty()) {
-                  emit comboBackgroundChanged(args[0],args[1]);
-                  emit sideChanged(args[1]);
+          if (!args[0].isEmpty()) {
+              current_background = args[0];
+              if (args.size() >= 2 && !args[1].isEmpty()) {
+                emit comboBackgroundChanged(current_background, args[1]);
+                emit sideChanged(args[1]);
               }
               else {
-                  emit backgroundChanged(args[0]);
+                emit backgroundChanged(current_background);
               }
           }
           break;

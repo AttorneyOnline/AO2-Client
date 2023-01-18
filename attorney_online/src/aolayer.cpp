@@ -2,7 +2,6 @@
 
 #include "aoapplication.h"
 #include "file_functions.h"
-#include "misc_functions.h"
 #include "options.h"
 
 static QThreadPool *thread_pool;
@@ -171,18 +170,18 @@ void BackgroundLayer::load_image(QString p_filename)
   play();
 }
 
-void BackgroundLayer::loadImage(QString f_background, QString f_side)
+void BackgroundLayer::loadImage()
 {
     play_once = false;
     cull_image = false;
-    VPath design_path = ao_app->getBackgroundPath(f_background, "design.ini");
+    VPath design_path = ao_app->getBackgroundPath(background, "design.ini");
     transform_mode =
         ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path));
     stretch = ao_app->read_design_ini("stretch", design_path).startsWith("true");
   #ifdef DEBUG_MOVIE
     qDebug() << "[BackgroundLayer] BG loaded: " << f_background;
   #endif
-    QString final_path = ao_app->get_image_suffix(ao_app->getBackgroundPath(f_background, f_side));
+    QString final_path = ao_app->get_image_suffix(ao_app->getBackgroundPath(background, ao_app->get_pos_path(side)));
 
     if (final_path == last_path) {
       // Don't restart background if background is unchanged

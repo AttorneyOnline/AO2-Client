@@ -36,6 +36,9 @@ public slots:
    * Otherwise we set it on the next IC message.
    */
   void onBackgroundChanged(QString f_background);
+  void onBackgroundChanged(QString f_background, QString f_side);
+
+  void setScene(DataTypes::DESKMOD f_deskmod, QString f_side);
 
 private:
   BackgroundLayer *ui_vp_background;
@@ -68,7 +71,7 @@ private:
   AnimationState anim_state = AnimationState::IDLE;
 
   enum class TextState { IDLE, TICKING, TICK_DONE };
-  AnimationState text_state = AnimationState::IDLE;
+  TextState text_state = TextState::IDLE;
 
   AOApplication *ao_app;
 };

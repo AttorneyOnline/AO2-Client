@@ -62,6 +62,8 @@ private:
   QMainWindow *windowWidget;
   AOViewport *ui_viewport;
 
+  QAction *ui_actionSettings;
+
   // Registers dockedWidget to the QMenu Action for the widget to hide/show it.
   template <typename T>
   void registerWindow(T *&widget, const QString &name, QDockWidget *&dockWidget,
@@ -87,6 +89,8 @@ private:
   };
 
 private slots:
+
+  void onCourtroomOpenSettingsTriggered();
 
   void onICMessage(DataTypes::MSPacket f_packet);
   void onICMessageDequeue();

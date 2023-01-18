@@ -173,7 +173,10 @@ class BackgroundLayer : public AOLayer {
 public:
   BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename);
-  void loadImage(QString f_background, QString f_side);
+  void loadImage();
+
+  QString background;
+  QString side;
 };
 
 class CharLayer : public AOLayer {
