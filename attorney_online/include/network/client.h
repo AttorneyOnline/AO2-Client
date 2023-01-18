@@ -71,6 +71,7 @@ signals:
   void wtceReceived(WTCE_TYPE type);
   void healthChanged(HEALTH_TYPE type, int value);
   void backgroundChanged(const QString &background);
+  void comboBackgroundChanged(const QString &background, const QString &side);
   void subthemeChanged(DataTypes::STPacket subtheme);
   void trackChanged(const QString &track, const QString &showname);
   void timerReceived(DataTypes::TIPacket timer);
@@ -84,7 +85,7 @@ signals:
   void evidenceChanged();
   void areasUpdated();
 
-  void positionChanged(const QString &pos);
+  void sideChanged(const QString &pos);
   void splashControlChanged(const int state);
   void authenticationStateReceived(DataTypes::AUTHENTICATION auth_state);
 

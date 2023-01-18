@@ -211,12 +211,13 @@ void LegacyClient::mapSignals()
           break;
         case HEADER::BN:
           ENFORCE_MIN_LENGTH(1)
-          current_background = args[0];
-          emit backgroundChanged(current_background);
-          if (args.size() >= 2) {
-              // We got a position too!
-              if (!args.at(1).isEmpty()) {
-                  emit positionChanged(args.at(1));
+          if(args.size() > 2) {
+              if (!args[1].isEmpty()) {
+                  emit comboBackgroundChanged(args[0],args[1]);
+                  emit sideChanged(args[1]);
+              }
+              else {
+                  emit backgroundChanged(args[0]);
               }
           }
           break;
@@ -275,7 +276,7 @@ void LegacyClient::mapSignals()
 
         case HEADER::SP:
           ENFORCE_MIN_LENGTH(1)
-          emit positionChanged(args[0]);
+          emit sideChanged(args[0]);
           break;
 
         case HEADER::KK: {
