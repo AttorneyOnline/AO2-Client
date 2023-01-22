@@ -1,11 +1,5 @@
 #ifndef AOMUSICPLAYER_H
 #define AOMUSICPLAYER_H
-#include "file_functions.h"
-
-#include "bass.h"
-#include "bassmidi.h"
-#include "bassopus.h"
-
 #include "aoapplication.h"
 
 #include <QDebug>
@@ -23,17 +17,6 @@ public:
   void set_muted(bool toggle);
 
   const int m_channelmax = 4;
-
-  // These have to be public for the stupid sync thing
-  /**
-   * @brief The starting sample of the AB-Loop.
-   */
-  unsigned int loop_start[4] = {0, 0, 0, 0};
-
-  /**
-   * @brief The end sample of the AB-Loop.
-   */
-  unsigned int loop_end[4] = {0, 0, 0, 0};
 
   QFutureWatcher<QString> music_watcher;
 
@@ -56,6 +39,16 @@ private:
   // Channel 3 = extra
   HSTREAM m_stream_list[4];
   HSYNC loop_sync[4];
+
+  /**
+   * @brief The starting sample of the AB-Loop.
+   */
+  unsigned int loop_start[4] = {0, 0, 0, 0};
+
+  /**
+   * @brief The end sample of the AB-Loop.
+   */
+  unsigned int loop_end[4] = {0, 0, 0, 0};
 };
 
 #endif // AOMUSICPLAYER_H

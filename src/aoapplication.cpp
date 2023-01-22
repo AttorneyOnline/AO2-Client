@@ -250,12 +250,14 @@ void AOApplication::initBASS()
                   nullptr);
         load_bass_plugins();
         qInfo() << info.name << "was set as the default audio output device.";
+        BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
         return;
       }
     }
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
+  BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
