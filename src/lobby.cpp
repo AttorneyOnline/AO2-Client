@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "demoserver.h"
 #include "networkmanager.h"
+#include "widgets/add_server_dialog.h"
 
 #include <QAction>
 #include <QImageReader>
@@ -82,8 +83,13 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
   connect(ui_add_to_favorite_button, &QPushButton::released, this,
           &Lobby::on_add_to_fav_released);
 
-  FROM_UI(QPushButton, remove_from_favorites_button)
-  ui_remove_from_favorites_button->setVisible(false);
+  FROM_UI(QPushButton, add_server_button);
+  ui_add_server_button->setVisible(false);
+  connect(ui_add_server_button, &QPushButton::released, this,
+          &Lobby::on_add_server_to_fave_released)
+
+      FROM_UI(QPushButton, remove_from_favorites_button)
+          ui_remove_from_favorites_button->setVisible(false);
   connect(ui_remove_from_favorites_button, &QPushButton::released, this,
           &Lobby::on_remove_from_fav_released);
 
@@ -92,8 +98,8 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
   FROM_UI(QPushButton, connect_button);
   connect(ui_connect_button, &QPushButton::released, net_manager,
           &NetworkManager::join_to_server);
-  connect(net_manager, &NetworkManager::server_connected,
-          ui_connect_button, &QPushButton::setEnabled);
+  connect(net_manager, &NetworkManager::server_connected, ui_connect_button,
+          &QPushButton::setEnabled);
 
   FROM_UI(QTextBrowser, motd_text);
 
@@ -110,15 +116,18 @@ void Lobby::on_tab_changed(int index)
   case SERVER:
     ui_add_to_favorite_button->setVisible(true);
     ui_remove_from_favorites_button->setVisible(false);
+    ui_add_server_button->setVisible(false);
     reset_selection();
     break;
   case FAVORITES:
     ui_add_to_favorite_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(true);
+    ui_add_server_button->setVisible(true);
     reset_selection();
     break;
   case DEMOS:
     ui_add_to_favorite_button->setVisible(false);
+    ui_add_server_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(false);
     reset_selection();
     break;
@@ -157,7 +166,6 @@ void Lobby::on_refresh_released()
 {
   net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
   get_motd();
-  ao_app->load_favorite_list();
   list_favorites();
 }
 
@@ -165,16 +173,23 @@ void Lobby::on_add_to_fav_released()
 {
   int selection = get_selected_server();
   if (selection > -1) {
-    ao_app->add_favorite_server(selection);
+    Options::getInstance().addFavorite(ao_app->get_server_list().at(selection));
     list_favorites();
   }
+}
+
+void Lobby::on_add_server_to_fave_released()
+{
+  AddServerDialog l_dialog;
+  l_dialog.exec();
+  list_favorites();
 }
 
 void Lobby::on_remove_from_fav_released()
 {
   int selection = get_selected_server();
   if (selection >= 0) {
-    ao_app->remove_favorite_server(selection);
+    Options::getInstance().removeFavorite(selection);
     list_favorites();
   }
 }
@@ -276,7 +291,7 @@ void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
 
   auto *menu = new QMenu(this);
   menu->addAction(tr("Remove"), ao_app, [this, server_index]() {
-    ao_app->remove_favorite_server(server_index);
+    Options::getInstance().removeFavorite(server_index);
     list_favorites();
   });
   menu->popup(ui_favorites_tree->mapToGlobal(point));
@@ -284,33 +299,33 @@ void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
 
 void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
 {
-    column = 0;
-    server_type f_server;
-    int n_server = p_item->text(column).toInt();
+  column = 0;
+  server_type f_server;
+  int n_server = p_item->text(column).toInt();
 
-    if (n_server == last_index) {
-      return;
-    }
-    last_index = n_server;
-
-    if (n_server < 0) return;
-
-    QVector<server_type> f_server_list = ao_app->get_favorite_list();
-
-    if (n_server >= f_server_list.size()) return;
-
-    f_server = f_server_list.at(n_server);
-
-    set_server_description(f_server.desc);
-
-    ui_server_description_text->moveCursor(QTextCursor::Start);
-    ui_server_description_text->ensureCursorVisible();
-    ui_server_player_count_lbl->setText(tr("Connecting..."));
-
-    ui_connect_button->setEnabled(false);
-
-    net_manager->connect_to_server(f_server);
+  if (n_server == last_index) {
+    return;
   }
+  last_index = n_server;
+
+  if (n_server < 0) return;
+
+  QVector<server_type> f_server_list = Options::getInstance().favorites();
+
+  if (n_server >= f_server_list.size()) return;
+
+  f_server = f_server_list.at(n_server);
+
+  set_server_description(f_server.desc);
+
+  ui_server_description_text->moveCursor(QTextCursor::Start);
+  ui_server_description_text->ensureCursorVisible();
+  ui_server_player_count_lbl->setText(tr("Connecting..."));
+
+  ui_connect_button->setEnabled(false);
+
+  net_manager->connect_to_server(f_server);
+}
 
 void Lobby::on_server_search_edited(QString p_text)
 {
@@ -377,7 +392,7 @@ void Lobby::list_favorites()
   ui_favorites_tree->clear();
 
   int i = 0;
-  for (const server_type &i_server : qAsConst(ao_app->get_favorite_list())) {
+  for (const server_type &i_server : Options::getInstance().favorites()) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_favorites_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
@@ -439,10 +454,11 @@ void Lobby::set_player_count(int players_online, int max_players)
 void Lobby::set_server_description(const QString &server_description)
 {
   ui_server_description_text->clear();
-  QString result = server_description.toHtmlEscaped()
-                       .replace("\n", "<br>")
-                       .replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"),
-                                "<a href='\\1'>\\1</a>");
+  QString result =
+      server_description.toHtmlEscaped()
+          .replace("\n", "<br>")
+          .replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"),
+                   "<a href='\\1'>\\1</a>");
   ui_server_description_text->insertHtml(result);
 }
 

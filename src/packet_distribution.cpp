@@ -187,6 +187,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
     }
     else {
+      QVector<server_type> favorite_list = Options::getInstance().favorites();
       if (selected_server >= 0 && selected_server < favorite_list.size()) {
         auto info = favorite_list.at(selected_server);
         server_name = info.name;

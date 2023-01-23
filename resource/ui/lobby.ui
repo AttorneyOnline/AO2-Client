@@ -85,7 +85,7 @@
          <item>
           <widget class="QLabel" name="game_version_lbl">
            <property name="text">
-            <string>Version: 2.11.0</string>
+            <string>Version: 2.10.1</string>
            </property>
           </widget>
          </item>
@@ -373,9 +373,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="add_server_button">
+              <property name="text">
+               <string>Add </string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="remove_from_favorites_button">
               <property name="text">
-               <string>Remove From Favorites</string>
+               <string>Remove</string>
               </property>
              </widget>
             </item>

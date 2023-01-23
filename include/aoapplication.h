@@ -132,10 +132,6 @@ public:
 
   ///////////////////////////////////////////
 
-  void load_favorite_list();
-  void save_favorite_list();
-  QVector<server_type> &get_favorite_list() { return favorite_list; }
-
   // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
   void remove_favorite_server(int p_server);
@@ -189,25 +185,6 @@ public:
 
   // Append to the currently open demo file if there is one
   void append_to_demofile(QString packet_string);
-
-  /**
-   * @brief Reads favorite_servers.ini and returns a list of servers.
-   *
-   * The demo server entry is always present at the top of the list.
-   *
-   * If the server list returned was to be empty (exluding the demo server entry),
-   * will return a list of servers from the legacy serverlist.txt file.
-   *
-   * @return A list of servers.
-   */
-  QVector<server_type> read_favorite_servers();
-
-  /**
-   * @brief Reads serverlist.txt and returns a list of servers.
-   *
-   * @return A list of servers.
-   */
-  QVector<server_type> read_legacy_favorite_servers();
 
   /**
    * @brief Reads the clients log folder and locates potential demo files to populate the demoserver list.
@@ -410,7 +387,6 @@ private:
   const int MINOR_VERSION = 0;
 
   QVector<server_type> server_list;
-  QVector<server_type> favorite_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;

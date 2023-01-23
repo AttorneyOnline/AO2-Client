@@ -4,6 +4,7 @@
 
 #include <QCoreApplication>
 #include <QSettings>
+#include <datatypes.h>
 
 class Options {
 private:
@@ -11,6 +12,12 @@ private:
    * @brief QSettings object for config.ini
    */
   QSettings config;
+
+  /**
+   * @brief QSettings object for favorite_servers.ini
+   */
+  QSettings favorite;
+
 
   void migrateCallwords();
 
@@ -259,6 +266,14 @@ public:
 
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
+
+  // Loads the favorite servers
+  QVector<server_type> favorites();
+  void setFavorites(QVector<server_type> value);
+
+  // Interactions with favorite servers
+  void removeFavorite(int index);
+  void addFavorite(server_type server);
 };
 
 #endif // OPTIONS_H

@@ -46,7 +46,6 @@ void AOApplication::construct_lobby()
     return;
   }
 
-  load_favorite_list();
   w_lobby = new Lobby(this, net_manager);
   lobby_constructed = true;
 
@@ -118,61 +117,6 @@ QString AOApplication::get_version_string()
 {
   return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
          QString::number(MINOR_VERSION);
-}
-
-void AOApplication::load_favorite_list()
-{
-  favorite_list = read_favorite_servers();
-}
-
-void AOApplication::save_favorite_list()
-{
-  QSettings favorite_servers_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  favorite_servers_ini.setIniCodec("UTF-8");
-#endif
-
-  favorite_servers_ini.clear();
-  for(int i = 0; i < favorite_list.size(); ++i) {
-    auto fav_server = favorite_list.at(i);
-    favorite_servers_ini.beginGroup(QString::number(i));
-    favorite_servers_ini.setValue("name", fav_server.name);
-    favorite_servers_ini.setValue("address", fav_server.ip);
-    favorite_servers_ini.setValue("port", fav_server.port);
-    favorite_servers_ini.setValue("desc", fav_server.desc);
-
-    if (fav_server.socket_type == TCP) {
-      favorite_servers_ini.setValue("protocol", "tcp");
-    } else {
-      favorite_servers_ini.setValue("protocol", "ws");
-    }
-    favorite_servers_ini.endGroup();
-  }
-  favorite_servers_ini.sync();
-}
-
-QString AOApplication::get_current_char()
-{
-  if (courtroom_constructed)
-    return w_courtroom->get_current_char();
-  else
-    return "";
-}
-
-void AOApplication::add_favorite_server(int p_server)
-{
-  if (p_server < 0 || p_server >= server_list.size())
-    return;
-  favorite_list.append(server_list.at(p_server));
-  save_favorite_list();
-}
-
-void AOApplication::remove_favorite_server(int p_server)
-{
-  if (p_server < 0 || p_server >= favorite_list.size())
-    return;
-  favorite_list.removeAt(p_server);
-  save_favorite_list();
 }
 
 void AOApplication::server_disconnected()

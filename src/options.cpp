@@ -3,10 +3,10 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
+#include <QLocale>
 #include <QObject>
 #include <QRegularExpression>
 #include <QSize>
-#include <QLocale>
 
 void Options::migrateCallwords()
 {
@@ -19,12 +19,13 @@ void Options::migrateCallwords()
 
   if (!l_file.open(QIODevice::ReadOnly)) {
     qWarning() << "Unable to migrate callwords : File not open.";
+    return;
   }
 
   QTextStream in(&l_file);
-  #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    in.setCodec("UTF-8");
-  #endif
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  in.setCodec("UTF-8");
+#endif
 
   while (!in.atEnd()) {
     QString line = in.readLine();
@@ -38,10 +39,19 @@ void Options::migrateCallwords()
 
 Options::Options()
     : config(QCoreApplication::applicationDirPath() + "/base/config.ini",
-             QSettings::IniFormat)
+             QSettings::IniFormat, nullptr),
+      favorite(QCoreApplication::applicationDirPath() +
+                   "/base/favorite_servers.ini",
+               QSettings::IniFormat, nullptr)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   config.setIniCodec("UTF-8");
+#endif
   migrate();
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  favorite.setIniCodec("UTF-8");
+#endif
 }
 
 /*! Migrate old configuration keys/values to a relevant format. */
@@ -551,3 +561,88 @@ void Options::setCallwords(QStringList value)
 }
 
 void Options::clearConfig() { config.clear(); }
+
+QVector<server_type> Options::favorites()
+{
+  QVector<server_type> serverlist;
+
+  auto grouplist = favorite.childGroups();
+  { // remove all negative and non-numbers
+    auto filtered_grouplist = grouplist;
+    for (const QString &group : qAsConst(grouplist)) {
+      bool ok = false;
+      const int l_num = group.toInt(&ok);
+      if (ok && l_num >= 0) {
+        continue;
+      }
+      filtered_grouplist.append(group);
+    }
+    std::sort(filtered_grouplist.begin(), filtered_grouplist.end(),
+              [](const auto &a, const auto &b) -> bool {
+                return a.toInt() < b.toInt();
+              });
+    grouplist = std::move(filtered_grouplist);
+  }
+
+  for (const QString &group : qAsConst(grouplist)) {
+    server_type f_server;
+    favorite.beginGroup(group);
+    f_server.ip = favorite.value("address", "127.0.0.1").toString();
+    f_server.port = favorite.value("port", 27016).toInt();
+    f_server.name = favorite.value("name", "Missing Name").toString();
+    f_server.desc = favorite.value("desc", "No description").toString();
+    f_server.socket_type =
+        to_connection_type.value(favorite.value("protocol", "tcp").toString());
+    serverlist.append(std::move(f_server));
+    favorite.endGroup();
+  }
+
+  return serverlist;
+}
+
+void Options::setFavorites(QVector<server_type> value)
+{
+  favorite.clear();
+  for (int i = 0; i < value.size(); ++i) {
+    auto fav_server = value.at(i);
+    favorite.beginGroup(QString::number(i));
+    favorite.setValue("name", fav_server.name);
+    favorite.setValue("address", fav_server.ip);
+    favorite.setValue("port", fav_server.port);
+    favorite.setValue("desc", fav_server.desc);
+
+    if (fav_server.socket_type == TCP) {
+      favorite.setValue("protocol", "tcp");
+    }
+    else {
+      favorite.setValue("protocol", "ws");
+    }
+    favorite.endGroup();
+  }
+  favorite.sync();
+}
+
+void Options::removeFavorite(int index)
+{
+    QVector<server_type> l_favorites = favorites();
+    l_favorites.remove(index);
+    setFavorites(l_favorites);
+}
+
+void Options::addFavorite(server_type server)
+{
+    int index = favorites().size();
+    favorite.beginGroup(QString::number(index));
+    favorite.setValue("name", server.name);
+    favorite.setValue("address", server.ip);
+    favorite.setValue("port", server.port);
+    favorite.setValue("desc", server.desc);
+    if (server.socket_type == TCP) {
+      favorite.setValue("protocol", "tcp");
+    }
+    else {
+      favorite.setValue("protocol", "ws");
+    }
+    favorite.endGroup();
+    favorite.sync();
+}
