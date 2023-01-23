@@ -102,16 +102,6 @@ private:
   QCheckBox *ui_objectmusic_cb;
   QCheckBox *ui_disablestreams_cb;
 
-  // The casing tab
-  QGroupBox *ui_casing_enabled_box;
-  QCheckBox *ui_casing_def_cb;
-  QCheckBox *ui_casing_pro_cb;
-  QCheckBox *ui_casing_jud_cb;
-  QCheckBox *ui_casing_jur_cb;
-  QCheckBox *ui_casing_steno_cb;
-  QCheckBox *ui_casing_cm_cb;
-  QLineEdit *ui_casing_cm_cases_textbox;
-
   // The asset tab
   QListWidget *ui_mount_list;
   QPushButton *ui_mount_add;

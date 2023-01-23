@@ -291,9 +291,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_settings = new AOButton(this, ao_app);
   ui_settings->setObjectName("ui_settings");
 
-  ui_announce_casing = new AOButton(this, ao_app);
-  ui_announce_casing->setObjectName("ui_announce_casing");
-
   ui_switch_area_music = new AOButton(this, ao_app);
   ui_switch_area_music->setObjectName("ui_switch_area_music");
 
@@ -315,12 +312,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_additive->setText(tr("Additive"));
   ui_additive->hide();
   ui_additive->setObjectName("ui_additive");
-
-  ui_casing = new QCheckBox(this);
-  ui_casing->setChecked(Options::getInstance().casingAlertEnabled());
-  ui_casing->setText(tr("Casing"));
-  ui_casing->hide();
-  ui_casing->setObjectName("ui_casing");
 
   ui_showname_enable = new QCheckBox(this);
   ui_showname_enable->setChecked(Options::getInstance().customShownameEnabled());
@@ -540,8 +531,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           &Courtroom::on_reload_theme_clicked);
   connect(ui_call_mod, &AOButton::clicked, this, &Courtroom::on_call_mod_clicked);
   connect(ui_settings, &AOButton::clicked, this, &Courtroom::on_settings_clicked);
-  connect(ui_announce_casing, &AOButton::clicked, this,
-          &Courtroom::on_announce_casing_clicked);
   connect(ui_switch_area_music, &AOButton::clicked, this,
           &Courtroom::on_switch_area_music_clicked);
 
@@ -549,7 +538,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_flip, &AOButton::clicked, this, &Courtroom::on_flip_clicked);
   connect(ui_additive, &AOButton::clicked, this, &Courtroom::on_additive_clicked);
   connect(ui_guard, &AOButton::clicked, this, &Courtroom::on_guard_clicked);
-  connect(ui_casing, &AOButton::clicked, this, &Courtroom::on_casing_clicked);
 
   connect(ui_showname_enable, &AOButton::clicked, this,
           &Courtroom::on_showname_enable_clicked);
@@ -689,15 +677,6 @@ void Courtroom::set_widgets()
     ui_showname_enable->hide();
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
-  }
-
-  if (ao_app->casing_alerts_supported) {
-    ui_announce_casing->show();
-    ui_casing->show();
-  }
-  else {
-    ui_announce_casing->hide();
-    ui_casing->hide();
   }
 
   // We also show the non-server-dependent client additions.
@@ -1012,13 +991,6 @@ void Courtroom::set_widgets()
   ui_settings->setToolTip(
       tr("Allows you to change various aspects of the client."));
 
-  set_size_and_pos(ui_announce_casing, "casing_button");
-  ui_announce_casing->setText(tr("Casing"));
-  ui_announce_casing->set_image("casing_button");
-  ui_announce_casing->setToolTip(
-      tr("An interface to help you announce a case (you have to be a CM first "
-         "to be able to announce cases)"));
-
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
   ui_switch_area_music->setText(tr("A/M"));
   ui_switch_area_music->set_image("switch_area_music");
@@ -1058,10 +1030,6 @@ void Courtroom::set_widgets()
   ui_guard->setToolTip(
       tr("Do not listen to mod calls when checked, preventing them from "
          "playing sounds or focusing attention on the window."));
-
-  set_size_and_pos(ui_casing, "casing");
-  ui_casing->setToolTip(tr("Lets you receive case alerts when enabled.\n"
-                           "(You can set your preferences in the Settings!)"));
 
   set_size_and_pos(ui_showname_enable, "showname_enable");
   ui_showname_enable->setToolTip(
@@ -1599,11 +1567,6 @@ void Courtroom::enter_courtroom()
     ui_additive->show();
   else
     ui_additive->hide();
-
-  if (ao_app->casing_alerts_supported)
-    ui_casing->show();
-  else
-    ui_casing->hide();
 
   list_music();
   list_areas();
@@ -4243,21 +4206,6 @@ void Courtroom::mod_called(QString p_ip)
   }
 }
 
-void Courtroom::case_called(QString msg, bool def, bool pro, bool jud, bool jur,
-                            bool steno)
-{
-  Q_UNUSED(def);
-  Q_UNUSED(pro);
-  Q_UNUSED(jud);
-  Q_UNUSED(jur);
-  Q_UNUSED(steno);
-  if (ui_casing->isChecked()) {
-    ui_server_chatlog->append(msg);
-    modcall_player->play(ao_app->get_court_sfx("case_call"));
-    ao_app->alert(this);
-  }
-}
-
 void Courtroom::on_ooc_return_pressed()
 {
   QString ooc_message = ui_ooc_chat_message->text();
@@ -5644,11 +5592,6 @@ void Courtroom::on_call_mod_clicked()
 
 void Courtroom::on_settings_clicked() { ao_app->call_settings_menu(); }
 
-void Courtroom::on_announce_casing_clicked()
-{
-  ao_app->call_announce_menu(this);
-}
-
 void Courtroom::on_pre_clicked() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
@@ -5746,45 +5689,6 @@ qint64 Courtroom::pong()
 
   is_pinging = false;
   return ping_timer.elapsed();
-}
-
-void Courtroom::on_casing_clicked()
-{
-  if (ao_app->casing_alerts_supported) {
-    if (ui_casing->isChecked()) {
-      QStringList f_packet;
-
-      f_packet.append(Options::getInstance().casingCanHostCases());
-      f_packet.append(QString::number(Options::getInstance().casingCmEnabled()));
-      f_packet.append(QString::number(Options::getInstance().casingDefenceEnabled()));
-      f_packet.append(
-          QString::number(Options::getInstance().casingProsecutionEnabled()));
-      f_packet.append(QString::number(Options::getInstance().casingJudgeEnabled()));
-      f_packet.append(QString::number(Options::getInstance().casingJurorEnabled()));
-      f_packet.append(QString::number(Options::getInstance().casingStenoEnabled()));
-
-      ao_app->send_server_packet(new AOPacket("SETCASE", f_packet));
-    }
-    else
-      ao_app->send_server_packet(new AOPacket("SETCASE", {"","0","0","0","0","0","0"}));
-  }
-}
-
-void Courtroom::announce_case(QString title, bool def, bool pro, bool jud,
-                              bool jur, bool steno)
-{
-  if (ao_app->casing_alerts_supported) {
-    QStringList f_packet;
-
-    f_packet.append(title);
-    f_packet.append(QString::number(def));
-    f_packet.append(QString::number(pro));
-    f_packet.append(QString::number(jud));
-    f_packet.append(QString::number(jur));
-    f_packet.append(QString::number(steno));
-
-    ao_app->send_server_packet(new AOPacket("CASEA", f_packet));
-  }
 }
 
 void Courtroom::start_clock(int id)

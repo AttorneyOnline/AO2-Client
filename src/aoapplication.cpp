@@ -6,7 +6,6 @@
 #include "networkmanager.h"
 #include "options.h"
 
-#include "aocaseannouncerdialog.h"
 #include "widgets/aooptionsdialog.h"
 
 static QtMessageHandler original_message_handler;
@@ -202,12 +201,6 @@ void AOApplication::call_settings_menu()
     }
     l_dialog->exec();
     delete l_dialog;
-}
-
-void AOApplication::call_announce_menu(Courtroom *court)
-{
-  AOCaseAnnouncerDialog announcer(nullptr, this, court);
-  announcer.exec();
 }
 
 // Callback for when BASS device is lost

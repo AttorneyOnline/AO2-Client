@@ -209,38 +209,6 @@ public:
   QString shownameOnJoin() const;
   void setShownameOnJoin(QString value);
 
-  // Returns if the user has casing alerts Enabled.
-  bool casingAlertEnabled() const;
-  void setCasingAlertEnabled(bool value);
-
-  // Returns if the user wants to get alerts for the defence role.
-  bool casingDefenceEnabled() const;
-  void setcasingDefenceEnabled(bool value);
-
-  // Same for prosecution.
-  bool casingProsecutionEnabled() const;
-  void setCasingProseuctionEnabled(bool value);
-
-  // Same for judge.
-  bool casingJudgeEnabled() const;
-  void setCasingJudgeEnabled(bool value);
-
-  // Same for juror.
-  bool casingJurorEnabled() const;
-  void setCasingJurorEnabled(bool value);
-
-  // Same for steno.
-  bool casingStenoEnabled() const;
-  void setCasingStenoEnabled(bool value);
-
-  // Same for CM.
-  bool casingCmEnabled() const;
-  void setCasingCmEnabled(bool value);
-
-  // Get the message for the CM for casing alerts.
-  QString casingCanHostCases() const;
-  void setCasingCanHostCases(QString value);
-
   // Get if text file logging is Enabled
   bool logToTextFileEnabled() const;
   void setLogToTextFileEnabled(bool value);

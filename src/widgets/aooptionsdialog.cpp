@@ -210,38 +210,6 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
                                   &Options::streamingEnabled,
                                   &Options::setStreamingEnabled);
 
-  // Casing tab.
-  FROM_UI(QGroupBox, casing_enabled_box)
-  FROM_UI(QCheckBox, casing_def_cb)
-  FROM_UI(QCheckBox, casing_pro_cb)
-  FROM_UI(QCheckBox, casing_jud_cb)
-  FROM_UI(QCheckBox, casing_jur_cb)
-  FROM_UI(QCheckBox, casing_steno_cb)
-  FROM_UI(QCheckBox, casing_cm_cb)
-  FROM_UI(QLineEdit, casing_cm_cases_textbox)
-
-  registerOption<QGroupBox, bool>("casing_enabled_box",
-                                  &Options::casingAlertEnabled,
-                                  &Options::setCasingAlertEnabled);
-  registerOption<QCheckBox, bool>("casing_def_cb",
-                                  &Options::casingDefenceEnabled,
-                                  &Options::setcasingDefenceEnabled);
-  registerOption<QCheckBox, bool>("casing_pro_cb",
-                                  &Options::casingProsecutionEnabled,
-                                  &::Options::setCasingProseuctionEnabled);
-  registerOption<QCheckBox, bool>("casing_jud_cb", &Options::casingJudgeEnabled,
-                                  &::Options::setCasingJudgeEnabled);
-  registerOption<QCheckBox, bool>("casing_jur_cb", &Options::casingJurorEnabled,
-                                  &Options::setCasingJurorEnabled);
-  registerOption<QCheckBox, bool>("casing_steno_cb",
-                                  &Options::casingStenoEnabled,
-                                  &Options::setCasingStenoEnabled);
-  registerOption<QCheckBox, bool>("casing_cm_cb", &Options::casingCmEnabled,
-                                  &Options::setCasingCmEnabled);
-  registerOption<QLineEdit, QString>("casing_cm_cases_textbox",
-                                     &Options::casingCanHostCases,
-                                     &Options::setCasingCanHostCases);
-
   // Asset tab
   FROM_UI(QListWidget, mount_list)
   auto *defaultMount =

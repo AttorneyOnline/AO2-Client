@@ -494,13 +494,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->mod_called(f_contents.at(0));
   }
-  else if (header == "CASEA") {
-    if (courtroom_constructed && f_contents.size() >= 6)
-      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1",
-                               f_contents.at(2) == "1", f_contents.at(3) == "1",
-                               f_contents.at(4) == "1",
-                               f_contents.at(5) == "1");
-  }
   else if (header == "TI") { // Timer packet
     if (!courtroom_constructed || f_contents.size() < 2)
       goto end;

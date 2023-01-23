@@ -60,6 +60,17 @@ void Options::migrate()
     }
     config.remove("ooc_name");
   }
+
+  if (config.contains("casing_enabled")) {
+    config.remove("casing_enabled");
+    config.remove("casing_defence_enabled");
+    config.remove("casing_prosecution_enabled");
+    config.remove("casing_judge_enabled");
+    config.remove("casing_juror_enabled");
+    config.remove("casing_steno_enabled");
+    config.remove("casing_cm_enabled");
+    config.remove("casing_can_host_cases");
+  }
 }
 
 QString Options::theme() const
@@ -416,87 +427,6 @@ bool Options::stopMusicOnCategoryEnabled() const
 void Options::setStopMusicOnCategoryEnabled(bool value)
 {
   config.setValue("category_stop", value);
-}
-
-bool Options::casingAlertEnabled() const
-{
-  return config.value("casing_enabled", false).toBool();
-}
-
-void Options::setCasingAlertEnabled(bool value)
-{
-  config.setValue("casing_enabled", value);
-}
-
-bool Options::casingDefenceEnabled() const
-{
-  return config.value("casing_defence_enabled", false).toBool();
-}
-
-void Options::setcasingDefenceEnabled(bool value)
-{
-  config.setValue("casing_defence_enabled", value);
-}
-
-bool Options::casingProsecutionEnabled() const
-{
-  return config.value("casing_prosecution_enabled", false).toBool();
-}
-
-void Options::setCasingProseuctionEnabled(bool value)
-{
-  config.setValue("casing_prosecution_enabled", value);
-}
-
-bool Options::casingJudgeEnabled() const
-{
-  return config.value("casing_judge_enabled", false).toBool();
-}
-
-void Options::setCasingJudgeEnabled(bool value)
-{
-  config.setValue("casing_judge_enabled", value);
-}
-
-bool Options::casingJurorEnabled() const
-{
-  return config.value("casing_juror_enabled", false).toBool();
-}
-
-void Options::setCasingJurorEnabled(bool value)
-{
-  config.setValue("casing_juror_enabled", value);
-}
-
-bool Options::casingStenoEnabled() const
-{
-  return config.value("casing_steno_enabled", false).toBool();
-}
-
-void Options::setCasingStenoEnabled(bool value)
-{
-  config.setValue("casing_steno_enabled", value);
-}
-
-bool Options::casingCmEnabled() const
-{
-  return config.value("casing_cm_enabled", false).toBool();
-}
-
-void Options::setCasingCmEnabled(bool value)
-{
-  config.setValue("casing_cm_enabled", value);
-}
-
-QString Options::casingCanHostCases() const
-{
-  return config.value("casing_can_host_cases", "Turnabout Check Your Settings")
-      .toString();
-}
-
-void Options::setCasingCanHostCases(QString value)
-{
-  config.setValue("casing_can_host_cases", value);
 }
 
 bool Options::logToTextFileEnabled() const
