@@ -122,18 +122,21 @@ void Lobby::on_tab_changed(int index)
     ui_add_to_favorite_button->setVisible(true);
     ui_remove_from_favorites_button->setVisible(false);
     ui_add_server_button->setVisible(false);
+    ui_direct_connect_button->setVisible(true);
     reset_selection();
     break;
   case FAVORITES:
     ui_add_to_favorite_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(true);
     ui_add_server_button->setVisible(true);
+    ui_direct_connect_button->setVisible(true);
     reset_selection();
     break;
   case DEMOS:
     ui_add_to_favorite_button->setVisible(false);
     ui_add_server_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(false);
+    ui_direct_connect_button->setVisible(false);
     reset_selection();
     break;
   default:

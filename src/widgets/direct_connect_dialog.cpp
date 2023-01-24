@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QComboBox>
+#include <QLabel>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \
@@ -31,6 +32,8 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
     FROM_UI(QLineEdit, direct_hostname_edit)
     FROM_UI(QSpinBox, direct_port_box)
 
+    FROM_UI(QLabel, direct_connection_status_lbl)
+
     FROM_UI(QPushButton, direct_connect_button);
     connect(ui_direct_connect_button, &QPushButton::pressed,
             this, &DirectConnectDialog::onConnectPressed);
@@ -40,6 +43,10 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
 
     connect(net_manager, &NetworkManager::server_connected,
             this, &DirectConnectDialog::onServerConnected);
+
+    connect(&connect_timeout, &QTimer::timeout, this,
+            &DirectConnectDialog::onConnectTimeout);
+    connect_timeout.setSingleShot(true);
 }
 
 void DirectConnectDialog::onConnectPressed()
@@ -52,10 +59,22 @@ void DirectConnectDialog::onConnectPressed()
 
   net_manager->connect_to_server(l_server);
   ui_direct_connect_button->setEnabled(false);
+  ui_direct_connection_status_lbl->setText("Connecting...");
+  ui_direct_connection_status_lbl->setStyleSheet("color : rgb(0,64,156)");
+  connect_timeout.start(CONNECT_TIMEOUT);
 }
 
 void DirectConnectDialog::onServerConnected()
 {
   net_manager->join_to_server();
+  ui_direct_connection_status_lbl->setText("Connected!");
+  ui_direct_connection_status_lbl->setStyleSheet("color: rgb(0,128,0)");
   close();
+}
+
+void DirectConnectDialog::onConnectTimeout()
+{
+  ui_direct_connect_button->setEnabled(true);
+  ui_direct_connection_status_lbl->setText("Connection Timeout!");
+  ui_direct_connection_status_lbl->setStyleSheet("color: rgb(255,0,0)");
 }

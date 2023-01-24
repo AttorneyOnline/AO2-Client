@@ -2,12 +2,14 @@
 #define DIRECT_CONNECT_DIALOG_H
 
 #include <QDialog>
+#include <QTimer>
 
 class QLabel;
 class QSpinBox;
 class QLineEdit;
 class QPushButton;
 class QComboBox;
+class QLabel;
 class NetworkManager;
 
 class DirectConnectDialog : public QDialog {
@@ -19,6 +21,7 @@ public:
 private slots:
     void onConnectPressed();
     void onServerConnected();
+    void onConnectTimeout();
 
 private:
     NetworkManager* net_manager;
@@ -27,12 +30,15 @@ private:
     QLineEdit* ui_direct_hostname_edit;
     QSpinBox* ui_direct_port_box;
 
+    QLabel* ui_direct_connection_status_lbl;
     QPushButton* ui_direct_connect_button;
     QPushButton* ui_direct_cancel_button;
 
     QWidget* ui_widget;
+    QTimer connect_timeout;
 
     const int TCP_INDEX = 0;
+    const int CONNECT_TIMEOUT = 5 * 1000;
     const QString DEFAULT_UI = ":/resource/ui/direct_connect_dialog.ui";;
 
 };
