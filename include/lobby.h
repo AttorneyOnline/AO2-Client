@@ -69,6 +69,7 @@ private:
   QPushButton *ui_add_to_favorite_button;
   QPushButton *ui_add_server_button;
   QPushButton *ui_remove_from_favorites_button;
+  QPushButton *ui_direct_connect_button;
   QPushButton *ui_refresh_button;
 
   // Serverinfo / MOTD Horizontal Row
@@ -81,6 +82,7 @@ private:
 private slots:
   void on_tab_changed(int index);
   void on_refresh_released();
+  void on_direct_connect_released();
   void on_add_to_fav_released();
   void on_add_server_to_fave_released();
   void on_remove_from_fav_released();

@@ -16,7 +16,7 @@ class AddServerDialog : public QDialog {
     Q_OBJECT
 public :
     AddServerDialog();
-    ~AddServerDialog();
+    ~AddServerDialog() = default;
 
 private:
     QWidget* ui_widget;

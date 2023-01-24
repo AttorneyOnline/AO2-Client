@@ -4,6 +4,7 @@
 #include "demoserver.h"
 #include "networkmanager.h"
 #include "widgets/add_server_dialog.h"
+#include "widgets/direct_connect_dialog.h"
 
 #include <QAction>
 #include <QImageReader>
@@ -78,6 +79,10 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
   FROM_UI(QPushButton, refresh_button);
   connect(ui_refresh_button, &QPushButton::released, this,
           &Lobby::on_refresh_released);
+
+  FROM_UI(QPushButton, direct_connect_button);
+  connect(ui_direct_connect_button, &QPushButton::released,
+          this, &Lobby::on_direct_connect_released);
 
   FROM_UI(QPushButton, add_to_favorite_button)
   connect(ui_add_to_favorite_button, &QPushButton::released, this,
@@ -167,6 +172,12 @@ void Lobby::on_refresh_released()
   net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
   get_motd();
   list_favorites();
+}
+
+void Lobby::on_direct_connect_released()
+{
+    DirectConnectDialog connect_dialog(net_manager);
+    connect_dialog.exec();
 }
 
 void Lobby::on_add_to_fav_released()

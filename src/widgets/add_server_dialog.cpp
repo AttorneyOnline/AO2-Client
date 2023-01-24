@@ -7,7 +7,7 @@
 #include <QDialogButtonBox>
 #include <QFile>
 #include <QLineEdit>
-#include <QPLainTextEdit>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QUiLoader>
@@ -47,8 +47,6 @@ AddServerDialog::AddServerDialog()
   connect(ui_server_legacy_load_button, &QPushButton::released, this,
           &AddServerDialog::parseLegacyServerEntry);
 }
-
-AddServerDialog::~AddServerDialog() {}
 
 void AddServerDialog::savePressed()
 {

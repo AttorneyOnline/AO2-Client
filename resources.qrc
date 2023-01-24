@@ -11,6 +11,7 @@
         <file>resource/translations/ao_ru.qm</file>
         <file>resource/ui/options_dialog.ui</file>
         <file>resource/ui/add_server_dialog.ui</file>
+        <file>resource/ui/direct_connect_dialog.ui</file>
         <file>resource/ui/lobby.ui</file>
     </qresource>
 </RCC>
