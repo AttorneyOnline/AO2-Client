@@ -466,6 +466,10 @@ QString Options::subTheme() const
 
 void Options::setSubTheme(QString value) { config.setValue("subtheme", value); }
 
+QString Options::serverSubTheme() const { return m_server_subtheme; }
+
+void Options::setServerSubTheme(QString value) { m_server_subtheme = value; }
+
 bool Options::animatedThemeEnabled() const
 {
   return config.value("animated_theme", true).toBool();
@@ -624,25 +628,51 @@ void Options::setFavorites(QVector<server_type> value)
 
 void Options::removeFavorite(int index)
 {
-    QVector<server_type> l_favorites = favorites();
-    l_favorites.remove(index);
-    setFavorites(l_favorites);
+  QVector<server_type> l_favorites = favorites();
+  l_favorites.remove(index);
+  setFavorites(l_favorites);
 }
 
 void Options::addFavorite(server_type server)
 {
-    int index = favorites().size();
-    favorite.beginGroup(QString::number(index));
-    favorite.setValue("name", server.name);
-    favorite.setValue("address", server.ip);
-    favorite.setValue("port", server.port);
-    favorite.setValue("desc", server.desc);
-    if (server.socket_type == TCP) {
-      favorite.setValue("protocol", "tcp");
+  int index = favorites().size();
+  favorite.beginGroup(QString::number(index));
+  favorite.setValue("name", server.name);
+  favorite.setValue("address", server.ip);
+  favorite.setValue("port", server.port);
+  favorite.setValue("desc", server.desc);
+  if (server.socket_type == TCP) {
+    favorite.setValue("protocol", "tcp");
+  }
+  else {
+    favorite.setValue("protocol", "ws");
+  }
+  favorite.endGroup();
+  favorite.sync();
+}
+
+QString Options::getUIAsset(QString f_asset_name)
+{
+  QStringList l_paths{":/base/themes/" + Options::getInstance().theme() + "/" +
+                          f_asset_name};
+
+  if (Options::getInstance().subTheme() == "server") {
+    if (!Options::getInstance().serverSubTheme().isEmpty()) {
+      l_paths.prepend(":/base/themes/" + Options::getInstance().theme() + "/" +
+                     Options::getInstance().subTheme() + "/" + f_asset_name);
     }
-    else {
-      favorite.setValue("protocol", "ws");
+  }
+  else {
+    l_paths.prepend(":/base/themes/" + Options::getInstance().theme() + "/" +
+                   Options::getInstance().subTheme() + "/" + f_asset_name);
+  }
+
+  for (const QString &l_path : qAsConst(l_paths)) {
+    if (QFile::exists(l_path)) {
+      return l_path;
     }
-    favorite.endGroup();
-    favorite.sync();
+  }
+  qWarning() << "Unable to locate ui-asset" << f_asset_name << "in theme"
+             << theme() << "Defaulting to embeeded asset.";
+  return QString(":/resource/ui/" + f_asset_name);
 }

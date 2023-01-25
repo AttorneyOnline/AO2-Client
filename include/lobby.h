@@ -30,12 +30,13 @@ public:
   int get_selected_server();
 
 signals:
-  void settings_requested();
 
 
 private:
   AOApplication *ao_app;
   NetworkManager *net_manager;
+
+  const QString DEFAULT_UI = "lobby.ui";
 
   void list_favorites();
   void list_demos();
@@ -79,6 +80,8 @@ private:
   QTextBrowser *ui_server_description_text;
   QPushButton *ui_connect_button;
 
+  void loadUI();
+
 private slots:
   void on_tab_changed(int index);
   void on_refresh_released();
@@ -93,6 +96,8 @@ private slots:
   void on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_search_edited(QString p_text);
   void on_demo_clicked(QTreeWidgetItem *item, int column);
+  void onReloadThemeRequested(); // Oh boy.
+  void onSettingsRequested();
 };
 
 #endif // LOBBY_H

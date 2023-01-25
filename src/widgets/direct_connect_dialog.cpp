@@ -1,6 +1,7 @@
 #include "widgets/direct_connect_dialog.h"
 
 #include "networkmanager.h"
+#include "options.h"
 
 #include <QUiLoader>
 #include <QSpinBox>
@@ -17,7 +18,7 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
     net_manager(p_net_manager)
 {
     QUiLoader l_loader(this);
-    QFile l_uiFile(DEFAULT_UI);
+    QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
 
     if (!l_uiFile.open(QFile::ReadOnly)) {
       qCritical() << "Unable to open file " << l_uiFile.fileName();

@@ -20,7 +20,7 @@
 AddServerDialog::AddServerDialog()
 {
   QUiLoader l_loader(this);
-  QFile l_uiFile(DEFAULT_UI);
+  QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
 
   if (!l_uiFile.open(QFile::ReadOnly)) {
     qCritical() << "Unable to open file " << l_uiFile.fileName();

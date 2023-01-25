@@ -9,6 +9,7 @@
 #include <QLibraryInfo>
 #include <QPluginLoader>
 #include <QTranslator>
+#include <QResource>
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +18,7 @@ int main(int argc, char *argv[])
   AOApplication main_app(argc, argv);
 
   AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
+  QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
   QFontDatabase fontDatabase;
   QDirIterator it(main_app.get_base_path() + "fonts",

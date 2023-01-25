@@ -1,11 +1,12 @@
 #include "widgets/aooptionsdialog.h"
+#include "QDesktopServices"
 #include "aoapplication.h"
 #include "bass.h"
 #include "file_functions.h"
-#include "QDesktopServices"
 #include "networkmanager.h"
 #include "options.h"
 
+#include <QResource>
 #include <QUiLoader>
 
 #define FROM_UI(type, name)                                                    \
@@ -592,6 +593,16 @@ void AOOptionsDialog::themeChanged(int i)
         actualname.toLower() != "server" && actualname.toLower() != "default" &&
         actualname.toLower() != "effects" && actualname.toLower() != "misc")
       ui_subtheme_combobox->addItem(actualname);
+
+    QString l_resource = ao_app->get_asset(
+        "themes/" + ui_theme_combobox->currentText() + ".rcc");
+    if (l_resource.isEmpty()) {
+      QResource::unregisterResource(ao_app->get_asset(
+          "themes/" + Options::getInstance().theme() + ".rcc"));
+      qDebug() << "Unable to locate ressource file" << l_resource;
+      return;
+    }
+    QResource::registerResource(l_resource);
   }
 }
 

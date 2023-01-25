@@ -26,6 +26,8 @@ private:
    */
   Options();
 
+  QString m_server_subtheme;
+
 public:
   Options(Options const &) = delete;
   void operator=(Options const &) = delete;
@@ -228,6 +230,10 @@ public:
   QString subTheme() const;
   void setSubTheme(QString value);
 
+  // Returns the server-
+  QString serverSubTheme() const;
+  void setServerSubTheme(QString value);
+
   // Get if the theme is animated
   bool animatedThemeEnabled() const;
   void setAnimatedThemeEnabled(bool value);
@@ -274,6 +280,9 @@ public:
   // Interactions with favorite servers
   void removeFavorite(int index);
   void addFavorite(server_type server);
+
+  // Theming Nonesense!
+  QString getUIAsset(QString f_asset_name);
 };
 
 #endif // OPTIONS_H

@@ -37,7 +37,7 @@ private:
 
     const int TCP_INDEX = 0;
 
-    const QString DEFAULT_UI = ":/resource/ui/add_server_dialog.ui";
+    const QString DEFAULT_UI = "add_server_dialog.ui";
 
 private slots:
     void savePressed();

@@ -15,104 +15,22 @@
   ;                                                                            \
   ui_##name = findChild<type *>(#name);
 
+#define COMBO_RELOAD()                                                         \
+  list_servers();                                                              \
+  list_favorites();                                                            \
+  list_demos();                                                                \
+  get_motd();                                                                  \
+  check_for_updates();                                                         \
+  reset_selection();
+
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
     : QMainWindow()
 {
   ao_app = p_ao_app;
   net_manager = p_net_manager;
 
-  this->setWindowTitle(
-      tr("Attorney Online %1").arg(ao_app->applicationVersion()));
-  this->setWindowIcon(QIcon(":/logo.png"));
-  this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint));
-
-  QUiLoader l_loader(this);
-  QFile l_uiFile(":/resource/ui/lobby.ui");
-  if (!l_uiFile.open(QFile::ReadOnly)) {
-    qCritical() << "Unable to open file " << l_uiFile.fileName();
-    return;
-  }
-
-  l_loader.load(&l_uiFile, this);
-
-  FROM_UI(QLabel, game_version_lbl);
-  ui_game_version_lbl->setText(
-      tr("Version: %1").arg(ao_app->get_version_string()));
-
-  FROM_UI(QPushButton, settings_button);
-  connect(ui_settings_button, &QPushButton::clicked, this,
-          &Lobby::settings_requested);
-
-  FROM_UI(QPushButton, about_button);
-  connect(ui_about_button, &QPushButton::clicked, this,
-          &Lobby::on_about_clicked);
-
-  // Serverlist elements
-  FROM_UI(QTabWidget, connections_tabview);
-  ui_connections_tabview->tabBar()->setExpanding(true);
-  connect(ui_connections_tabview, &QTabWidget::currentChanged, this,
-          &Lobby::on_tab_changed);
-
-  FROM_UI(QTreeWidget, serverlist_tree);
-  FROM_UI(QLineEdit, serverlist_search);
-  connect(ui_serverlist_tree, &QTreeWidget::itemClicked, this,
-          &Lobby::on_server_list_clicked);
-  connect(ui_serverlist_tree, &QTreeWidget::itemDoubleClicked, this,
-          &Lobby::on_list_doubleclicked);
-  connect(ui_serverlist_search, &QLineEdit::textChanged, this,
-          &Lobby::on_server_search_edited);
-
-  FROM_UI(QTreeWidget, favorites_tree);
-  connect(ui_favorites_tree, &QTreeWidget::itemClicked, this,
-          &Lobby::on_favorite_tree_clicked);
-  connect(ui_favorites_tree, &QTreeWidget::itemDoubleClicked, this,
-          &Lobby::on_list_doubleclicked);
-  connect(ui_favorites_tree, &QTreeWidget::customContextMenuRequested, this,
-          &Lobby::on_favorite_list_context_menu_requested);
-
-  FROM_UI(QTreeWidget, demo_tree);
-  connect(ui_demo_tree, &QTreeWidget::itemClicked, this,
-          &Lobby::on_demo_clicked);
-  connect(ui_demo_tree, &QTreeWidget::itemDoubleClicked, this,
-          &Lobby::on_list_doubleclicked);
-
-  FROM_UI(QPushButton, refresh_button);
-  connect(ui_refresh_button, &QPushButton::released, this,
-          &Lobby::on_refresh_released);
-
-  FROM_UI(QPushButton, direct_connect_button);
-  connect(ui_direct_connect_button, &QPushButton::released,
-          this, &Lobby::on_direct_connect_released);
-
-  FROM_UI(QPushButton, add_to_favorite_button)
-  connect(ui_add_to_favorite_button, &QPushButton::released, this,
-          &Lobby::on_add_to_fav_released);
-
-  FROM_UI(QPushButton, add_server_button);
-  ui_add_server_button->setVisible(false);
-  connect(ui_add_server_button, &QPushButton::released, this,
-          &Lobby::on_add_server_to_fave_released)
-
-      FROM_UI(QPushButton, remove_from_favorites_button)
-          ui_remove_from_favorites_button->setVisible(false);
-  connect(ui_remove_from_favorites_button, &QPushButton::released, this,
-          &Lobby::on_remove_from_fav_released);
-
-  FROM_UI(QLabel, server_player_count_lbl)
-  FROM_UI(QTextBrowser, server_description_text)
-  FROM_UI(QPushButton, connect_button);
-  connect(ui_connect_button, &QPushButton::released, net_manager,
-          &NetworkManager::join_to_server);
-  connect(net_manager, &NetworkManager::server_connected, ui_connect_button,
-          &QPushButton::setEnabled);
-
-  FROM_UI(QTextBrowser, motd_text);
-
-  list_servers();
-  list_favorites();
-  list_demos();
-  get_motd();
-  check_for_updates();
+  loadUI();
+  COMBO_RELOAD()
 }
 
 void Lobby::on_tab_changed(int index)
@@ -170,6 +88,96 @@ void Lobby::reset_selection()
   ui_connect_button->setEnabled(false);
 }
 
+void Lobby::loadUI()
+{
+  this->setWindowTitle(
+      tr("Attorney Online %1").arg(ao_app->applicationVersion()));
+  this->setWindowIcon(QIcon(":/logo.png"));
+  this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint));
+
+  QUiLoader l_loader(this);
+  QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
+  if (!l_uiFile.open(QFile::ReadOnly)) {
+    qCritical() << "Unable to open file " << l_uiFile.fileName();
+    return;
+  }
+
+  l_loader.load(&l_uiFile, this);
+
+  FROM_UI(QLabel, game_version_lbl);
+  ui_game_version_lbl->setText(
+      tr("Version: %1").arg(ao_app->get_version_string()));
+
+  FROM_UI(QPushButton, settings_button);
+  connect(ui_settings_button, &QPushButton::clicked, this,
+          &Lobby::onSettingsRequested);
+
+  FROM_UI(QPushButton, about_button);
+  connect(ui_about_button, &QPushButton::clicked, this,
+          &Lobby::on_about_clicked);
+
+  // Serverlist elements
+  FROM_UI(QTabWidget, connections_tabview);
+  ui_connections_tabview->tabBar()->setExpanding(true);
+  connect(ui_connections_tabview, &QTabWidget::currentChanged, this,
+          &Lobby::on_tab_changed);
+
+  FROM_UI(QTreeWidget, serverlist_tree);
+  FROM_UI(QLineEdit, serverlist_search);
+  connect(ui_serverlist_tree, &QTreeWidget::itemClicked, this,
+          &Lobby::on_server_list_clicked);
+  connect(ui_serverlist_tree, &QTreeWidget::itemDoubleClicked, this,
+          &Lobby::on_list_doubleclicked);
+  connect(ui_serverlist_search, &QLineEdit::textChanged, this,
+          &Lobby::on_server_search_edited);
+
+  FROM_UI(QTreeWidget, favorites_tree);
+  connect(ui_favorites_tree, &QTreeWidget::itemClicked, this,
+          &Lobby::on_favorite_tree_clicked);
+  connect(ui_favorites_tree, &QTreeWidget::itemDoubleClicked, this,
+          &Lobby::on_list_doubleclicked);
+  connect(ui_favorites_tree, &QTreeWidget::customContextMenuRequested, this,
+          &Lobby::on_favorite_list_context_menu_requested);
+
+  FROM_UI(QTreeWidget, demo_tree);
+  connect(ui_demo_tree, &QTreeWidget::itemClicked, this,
+          &Lobby::on_demo_clicked);
+  connect(ui_demo_tree, &QTreeWidget::itemDoubleClicked, this,
+          &Lobby::on_list_doubleclicked);
+
+  FROM_UI(QPushButton, refresh_button);
+  connect(ui_refresh_button, &QPushButton::released, this,
+          &Lobby::on_refresh_released);
+
+  FROM_UI(QPushButton, direct_connect_button);
+  connect(ui_direct_connect_button, &QPushButton::released, this,
+          &Lobby::on_direct_connect_released);
+
+  FROM_UI(QPushButton, add_to_favorite_button)
+  connect(ui_add_to_favorite_button, &QPushButton::released, this,
+          &Lobby::on_add_to_fav_released);
+
+  FROM_UI(QPushButton, add_server_button);
+  ui_add_server_button->setVisible(false);
+  connect(ui_add_server_button, &QPushButton::released, this,
+          &Lobby::on_add_server_to_fave_released)
+
+      FROM_UI(QPushButton, remove_from_favorites_button)
+          ui_remove_from_favorites_button->setVisible(false);
+  connect(ui_remove_from_favorites_button, &QPushButton::released, this,
+          &Lobby::on_remove_from_fav_released);
+
+  FROM_UI(QLabel, server_player_count_lbl)
+  FROM_UI(QTextBrowser, server_description_text)
+  FROM_UI(QPushButton, connect_button);
+  connect(ui_connect_button, &QPushButton::released, net_manager,
+          &NetworkManager::join_to_server);
+  connect(net_manager, &NetworkManager::server_connected, ui_connect_button,
+          &QPushButton::setEnabled);
+
+  FROM_UI(QTextBrowser, motd_text);
+}
+
 void Lobby::on_refresh_released()
 {
   net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
@@ -179,8 +187,8 @@ void Lobby::on_refresh_released()
 
 void Lobby::on_direct_connect_released()
 {
-    DirectConnectDialog connect_dialog(net_manager);
-    connect_dialog.exec();
+  DirectConnectDialog connect_dialog(net_manager);
+  connect_dialog.exec();
 }
 
 void Lobby::on_add_to_fav_released()
@@ -380,6 +388,23 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
   demo_server.port = ao_app->demo_server->port;
   ao_app->demo_server->set_demo_file(l_filepath);
   net_manager->connect_to_server(demo_server);
+}
+
+void Lobby::onReloadThemeRequested()
+{
+  // This is destructive to the active widget data.
+  // Whatever, this is lobby. Nothing here is worth saving.
+  delete centralWidget();
+  loadUI();
+  COMBO_RELOAD()
+}
+
+void Lobby::onSettingsRequested()
+{
+  AOOptionsDialog options(nullptr, ao_app);
+  connect(&options, &AOOptionsDialog::reloadThemeRequest, this,
+          &Lobby::onReloadThemeRequested);
+  options.exec();
 }
 
 void Lobby::list_servers()

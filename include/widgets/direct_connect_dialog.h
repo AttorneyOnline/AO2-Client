@@ -39,7 +39,7 @@ private:
 
     const int TCP_INDEX = 0;
     const int CONNECT_TIMEOUT = 5 * 1000;
-    const QString DEFAULT_UI = ":/resource/ui/direct_connect_dialog.ui";;
+    const QString DEFAULT_UI = "direct_connect_dialog.ui";;
 
 };
 
