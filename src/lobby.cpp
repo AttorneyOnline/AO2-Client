@@ -87,7 +87,6 @@ void Lobby::reset_selection()
   ui_server_player_count_lbl->setText(tr("Offline"));
   ui_server_description_text->clear();
 
-  ui_add_server_button->setEnabled(false);
   ui_edit_favorite_button->setEnabled(false);
   ui_remove_from_favorites_button->setEnabled(false);
   ui_connect_button->setEnabled(false);
