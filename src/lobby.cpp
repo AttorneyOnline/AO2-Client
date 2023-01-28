@@ -3,12 +3,11 @@
 #include "aoapplication.h"
 #include "demoserver.h"
 #include "networkmanager.h"
+#include "qimagereader.h"
 #include "widgets/add_server_dialog.h"
 #include "widgets/direct_connect_dialog.h"
+#include "widgets/edit_server_dialog.h"
 
-#include <QAction>
-#include <QImageReader>
-#include <QMenu>
 #include <QUiLoader>
 
 #define FROM_UI(type, name)                                                    \
@@ -35,11 +34,12 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
 
 void Lobby::on_tab_changed(int index)
 {
-  switch (index) { // Implicit conversion cause FUCK ALL OF YOU.
+  switch (index) {
   case SERVER:
     ui_add_to_favorite_button->setVisible(true);
     ui_remove_from_favorites_button->setVisible(false);
     ui_add_server_button->setVisible(false);
+    ui_edit_favorite_button->setVisible(false);
     ui_direct_connect_button->setVisible(true);
     reset_selection();
     break;
@@ -47,13 +47,15 @@ void Lobby::on_tab_changed(int index)
     ui_add_to_favorite_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(true);
     ui_add_server_button->setVisible(true);
-    ui_direct_connect_button->setVisible(true);
+    ui_edit_favorite_button->setVisible(true);
+    ui_direct_connect_button->setVisible(false);
     reset_selection();
     break;
   case DEMOS:
     ui_add_to_favorite_button->setVisible(false);
     ui_add_server_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(false);
+    ui_edit_favorite_button->setVisible(false);
     ui_direct_connect_button->setVisible(false);
     reset_selection();
     break;
@@ -85,6 +87,9 @@ void Lobby::reset_selection()
   ui_server_player_count_lbl->setText(tr("Offline"));
   ui_server_description_text->clear();
 
+  ui_add_server_button->setEnabled(false);
+  ui_edit_favorite_button->setEnabled(false);
+  ui_remove_from_favorites_button->setEnabled(false);
   ui_connect_button->setEnabled(false);
 }
 
@@ -136,8 +141,6 @@ void Lobby::loadUI()
           &Lobby::on_favorite_tree_clicked);
   connect(ui_favorites_tree, &QTreeWidget::itemDoubleClicked, this,
           &Lobby::on_list_doubleclicked);
-  connect(ui_favorites_tree, &QTreeWidget::customContextMenuRequested, this,
-          &Lobby::on_favorite_list_context_menu_requested);
 
   FROM_UI(QTreeWidget, demo_tree);
   connect(ui_demo_tree, &QTreeWidget::itemClicked, this,
@@ -157,10 +160,15 @@ void Lobby::loadUI()
   connect(ui_add_to_favorite_button, &QPushButton::released, this,
           &Lobby::on_add_to_fav_released);
 
-  FROM_UI(QPushButton, add_server_button);
+  FROM_UI(QPushButton, add_server_button)
   ui_add_server_button->setVisible(false);
   connect(ui_add_server_button, &QPushButton::released, this,
-          &Lobby::on_add_server_to_fave_released)
+          &Lobby::on_add_server_to_fave_released);
+
+  FROM_UI(QPushButton, edit_favorite_button)
+  ui_edit_favorite_button->setVisible(false);
+  connect(ui_edit_favorite_button, &QPushButton::released, this,
+          &Lobby::on_edit_favorite_released)
 
       FROM_UI(QPushButton, remove_from_favorites_button)
           ui_remove_from_favorites_button->setVisible(false);
@@ -205,6 +213,15 @@ void Lobby::on_add_server_to_fave_released()
   AddServerDialog l_dialog;
   l_dialog.exec();
   list_favorites();
+  reset_selection();
+}
+
+void Lobby::on_edit_favorite_released()
+{
+  EditServerDialog l_dialog(get_selected_server());
+  l_dialog.exec();
+  list_favorites();
+  reset_selection();
 }
 
 void Lobby::on_remove_from_fav_released()
@@ -302,23 +319,6 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
   net_manager->join_to_server();
 }
 
-void Lobby::on_favorite_list_context_menu_requested(const QPoint &point)
-{
-  auto *item = ui_favorites_tree->itemAt(point);
-  if (item == nullptr) {
-    qInfo() << "no favorite server item; skipping context menu";
-    return;
-  }
-  const int server_index = item->data(0, Qt::DisplayRole).toInt();
-
-  auto *menu = new QMenu(this);
-  menu->addAction(tr("Remove"), ao_app, [this, server_index]() {
-    Options::getInstance().removeFavorite(server_index);
-    list_favorites();
-  });
-  menu->popup(ui_favorites_tree->mapToGlobal(point));
-}
-
 void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0;
@@ -332,6 +332,10 @@ void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
 
   if (n_server < 0) return;
 
+  ui_add_server_button->setEnabled(true);
+  ui_edit_favorite_button->setEnabled(true);
+  ui_remove_from_favorites_button->setEnabled(true);
+
   QVector<server_type> f_server_list = Options::getInstance().favorites();
 
   if (n_server >= f_server_list.size()) return;
@@ -339,7 +343,6 @@ void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
   f_server = f_server_list.at(n_server);
 
   set_server_description(f_server.desc);
-
   ui_server_description_text->moveCursor(QTextCursor::Start);
   ui_server_description_text->ensureCursorVisible();
   ui_server_player_count_lbl->setText(tr("Connecting..."));

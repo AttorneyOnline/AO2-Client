@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef ADD_SERVER_DIALOG_H
-#define ADD_SERVER_DIALOG_H
+#ifndef EDIT_SERVER_DIALOG_H
+#define EDIT_SERVER_DIALOG_H
 
 #include "interfaces/server_dialog.h"
 
@@ -14,11 +14,11 @@ class QSpinBox;
 class QPlainTextEdit;
 class QDialogButtonBox;
 
-class AddServerDialog : public AttorneyOnline::UI::FavoriteServerDialog {
+class EditServerDialog : public AttorneyOnline::UI::FavoriteServerDialog {
   Q_OBJECT
 public:
-  AddServerDialog();
-  ~AddServerDialog() = default;
+    EditServerDialog(int index);
+    ~EditServerDialog() = default;
 
 private:
   QWidget *ui_widget;
@@ -35,10 +35,12 @@ private:
   QLineEdit *ui_server_legacy_edit;
   QPushButton *ui_server_legacy_load_button;
 
+  int index;
+  void loadEntry();
+
 private slots:
   void onSavePressed() override;
   void onCancelPressed() override;
-  void parseLegacyServerEntry();
 };
 
-#endif // ADD_SERVER_DIALOG_H
+#endif // EDIT_SERVER_DIALOG_H

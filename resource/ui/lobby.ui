@@ -328,6 +328,31 @@
          <item>
           <layout class="QHBoxLayout" name="common_controls">
            <item>
+            <widget class="QPushButton" name="add_server_button">
+             <property name="text">
+              <string>Add Server</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="remove_from_favorites_button">
+             <property name="text">
+              <string>Remove Server</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="edit_favorite_button">
+             <property name="text">
+              <string>Edit Server</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
             <widget class="QPushButton" name="direct_connect_button">
              <property name="text">
               <string>Direct Connect</string>
@@ -338,20 +363,6 @@
             <widget class="QPushButton" name="add_to_favorite_button">
              <property name="text">
               <string>Add To Favorites</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="add_server_button">
-             <property name="text">
-              <string>Add</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="remove_from_favorites_button">
-             <property name="text">
-              <string>Remove</string>
              </property>
             </widget>
            </item>

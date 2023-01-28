@@ -7,6 +7,7 @@
 #include <QDialogButtonBox>
 #include <QFile>
 #include <QLineEdit>
+#include <QLabel>
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSpinBox>
@@ -38,17 +39,18 @@ AddServerDialog::AddServerDialog()
   FROM_UI(QPlainTextEdit, server_description_edit);
   FROM_UI(QDialogButtonBox, server_dialog_button);
   connect(ui_server_dialog_button, &QDialogButtonBox::accepted, this,
-          &AddServerDialog::savePressed);
+          &::AddServerDialog::onSavePressed);
   connect(ui_server_dialog_button, &QDialogButtonBox::rejected, this,
-          &AddServerDialog::discardPressed);
+          &AddServerDialog::onCancelPressed);
 
+  FROM_UI(QLabel, server_legacy_lbl);
   FROM_UI(QLineEdit, server_legacy_edit);
   FROM_UI(QPushButton, server_legacy_load_button);
   connect(ui_server_legacy_load_button, &QPushButton::released, this,
           &AddServerDialog::parseLegacyServerEntry);
 }
 
-void AddServerDialog::savePressed()
+void AddServerDialog::onSavePressed()
 {
   server_type server;
   server.name = ui_server_display_name_edit->text();
@@ -61,7 +63,11 @@ void AddServerDialog::savePressed()
   close();
 }
 
-void AddServerDialog::discardPressed() { close(); }
+void AddServerDialog::onCancelPressed()
+{
+    close();
+    deleteLater();
+}
 
 void AddServerDialog::parseLegacyServerEntry()
 {

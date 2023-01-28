@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="0">
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="server_legacy_layout">
      <item>
       <widget class="QLabel" name="server_legacy_lbl">
@@ -35,17 +35,7 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
-    <widget class="Line" name="line">
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
+   <item row="0" column="0">
     <layout class="QFormLayout" name="server_new_layout">
      <item row="0" column="0">
       <widget class="QLabel" name="server_display_name_lbl">
@@ -88,13 +78,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="server_description_lbl">
-       <property name="text">
-        <string>Description:</string>
-       </property>
-      </widget>
-     </item>
      <item row="3" column="1">
       <widget class="QComboBox" name="server_protocol_box">
        <item>
@@ -109,6 +92,13 @@
        </item>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="server_description_lbl">
+       <property name="text">
+        <string>Description:</string>
+       </property>
+      </widget>
+     </item>
      <item row="4" column="1">
       <widget class="QPlainTextEdit" name="server_description_edit">
        <property name="sizePolicy">
@@ -121,24 +111,20 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Add your server to your favorites :</string>
+   <item row="1" column="0">
+    <widget class="Line" name="server_legacy_bar">
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
      </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QDialogButtonBox" name="server_dialog_button">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Close|QDialogButtonBox::Save</set>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Convert legacy favorite entries:</string>
+    <widget class="QDialogButtonBox" name="server_dialog_button">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close|QDialogButtonBox::Save</set>
      </property>
     </widget>
    </item>

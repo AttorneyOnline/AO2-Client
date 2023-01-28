@@ -70,6 +70,7 @@ private:
   QPushButton *ui_add_to_favorite_button;
   QPushButton *ui_add_server_button;
   QPushButton *ui_remove_from_favorites_button;
+  QPushButton *ui_edit_favorite_button;
   QPushButton *ui_direct_connect_button;
   QPushButton *ui_refresh_button;
 
@@ -88,11 +89,11 @@ private slots:
   void on_direct_connect_released();
   void on_add_to_fav_released();
   void on_add_server_to_fave_released();
+  void on_edit_favorite_released();
   void on_remove_from_fav_released();
   void on_about_clicked();
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_list_doubleclicked(QTreeWidgetItem *p_item, int column);
-  void on_favorite_list_context_menu_requested(const QPoint &point);
   void on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column);
   void on_server_search_edited(QString p_text);
   void on_demo_clicked(QTreeWidgetItem *item, int column);

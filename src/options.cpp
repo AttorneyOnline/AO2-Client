@@ -651,20 +651,37 @@ void Options::addFavorite(server_type server)
   favorite.sync();
 }
 
+void Options::updateFavorite(server_type server, int index)
+{
+  favorite.beginGroup(QString::number(index));
+  favorite.setValue("name", server.name);
+  favorite.setValue("address", server.ip);
+  favorite.setValue("port", server.port);
+  favorite.setValue("desc", server.desc);
+  if (server.socket_type == TCP) {
+    favorite.setValue("protocol", "tcp");
+  }
+  else {
+    favorite.setValue("protocol", "ws");
+  }
+  favorite.endGroup();
+  favorite.sync();
+}
+
 QString Options::getUIAsset(QString f_asset_name)
 {
   QStringList l_paths{":/base/themes/" + Options::getInstance().theme() + "/" +
-                          f_asset_name};
+                      f_asset_name};
 
   if (Options::getInstance().subTheme() == "server") {
     if (!Options::getInstance().serverSubTheme().isEmpty()) {
       l_paths.prepend(":/base/themes/" + Options::getInstance().theme() + "/" +
-                     Options::getInstance().subTheme() + "/" + f_asset_name);
+                      Options::getInstance().subTheme() + "/" + f_asset_name);
     }
   }
   else {
     l_paths.prepend(":/base/themes/" + Options::getInstance().theme() + "/" +
-                   Options::getInstance().subTheme() + "/" + f_asset_name);
+                    Options::getInstance().subTheme() + "/" + f_asset_name);
   }
 
   for (const QString &l_path : qAsConst(l_paths)) {

@@ -280,6 +280,7 @@ public:
   // Interactions with favorite servers
   void removeFavorite(int index);
   void addFavorite(server_type server);
+  void updateFavorite(server_type server, int index);
 
   // Theming Nonesense!
   QString getUIAsset(QString f_asset_name);
