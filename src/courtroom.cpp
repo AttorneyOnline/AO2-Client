@@ -1420,17 +1420,13 @@ void Courtroom::set_background(QString p_background, bool display)
 
 void Courtroom::set_side(QString p_side)
 {
-  QString f_side;
-  if (p_side == ao_app->get_char_side(current_char))
-      p_side = "";
-  current_side = p_side;
-  if (current_side == "") {
-    f_side = ao_app->get_char_side(current_char);
-    ui_pos_remove->hide();
+  if (p_side.isEmpty() || p_side == ao_app->get_char_side(current_char)) {
+      ui_pos_remove->hide();
+      current_side = ao_app->get_char_side(current_char);
   }
   else {
-    f_side = current_side;
-    ui_pos_remove->show();
+      ui_pos_remove->show();
+      current_side = p_side;
   }
 
   set_judge_buttons();
@@ -1440,7 +1436,7 @@ void Courtroom::set_side(QString p_side)
   ui_pos_dropdown->blockSignals(true);
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
-    if (pos == f_side) {
+    if (pos == current_side) {
 
       // Set the index on dropdown ui element to let you know what pos you're on
       // right now
@@ -1453,7 +1449,7 @@ void Courtroom::set_side(QString p_side)
     }
   }
   // We will only get there if we failed the last step
-  ui_pos_dropdown->setEditText(f_side);
+  ui_pos_dropdown->setEditText(current_side);
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
 }
@@ -1479,7 +1475,6 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
 
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
-  set_side(current_side);
 }
 
 void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
@@ -1506,6 +1501,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
 
   current_char = f_char;
+  current_side = ao_app->get_char_side(current_char);
   set_side(current_side);
 
   set_text_color_dropdown();
