@@ -36,6 +36,7 @@ void Lobby::on_tab_changed(int index)
 {
   switch (index) {
   case SERVER:
+      current_page = SERVER;
     ui_add_to_favorite_button->setVisible(true);
     ui_remove_from_favorites_button->setVisible(false);
     ui_add_server_button->setVisible(false);
@@ -44,6 +45,7 @@ void Lobby::on_tab_changed(int index)
     reset_selection();
     break;
   case FAVORITES:
+      current_page = FAVORITES;
     ui_add_to_favorite_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(true);
     ui_add_server_button->setVisible(true);
@@ -52,6 +54,7 @@ void Lobby::on_tab_changed(int index)
     reset_selection();
     break;
   case DEMOS:
+      current_page = DEMOS;
     ui_add_to_favorite_button->setVisible(false);
     ui_add_server_button->setVisible(false);
     ui_remove_from_favorites_button->setVisible(false);
@@ -79,6 +82,11 @@ int Lobby::get_selected_server()
     break;
   }
   return -1;
+}
+
+int Lobby::pageSelected()
+{
+    return current_page;
 }
 
 void Lobby::reset_selection()

@@ -19,7 +19,6 @@ class AOApplication;
 
 class Lobby : public QMainWindow {
   Q_OBJECT
-
 public:
   Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr);
   ~Lobby();
@@ -28,9 +27,7 @@ public:
   void set_server_description(const QString &server_description);
   void list_servers();
   int get_selected_server();
-
-signals:
-
+  int pageSelected();
 
 private:
   AOApplication *ao_app;
@@ -82,6 +79,8 @@ private:
   QPushButton *ui_connect_button;
 
   void loadUI();
+
+  TabPage current_page = SERVER;
 
 private slots:
   void on_tab_changed(int index);

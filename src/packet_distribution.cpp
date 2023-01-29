@@ -175,26 +175,34 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     courtroom_loaded = false;
 
     int selected_server = w_lobby->get_selected_server();
-
     QString server_address = "", server_name = "";
-    if (true) {
-      if (selected_server >= 0 && selected_server < server_list.size()) {
-        auto info = server_list.at(selected_server);
-        server_name = info.name;
-        server_address =
-            QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title = server_name;
-      }
+    switch (w_lobby->pageSelected()) {
+    case 0:
+        if (selected_server >= 0 && selected_server < server_list.size()) {
+                auto info = server_list.at(selected_server);
+                server_name = info.name;
+                server_address =
+                    QString("%1:%2").arg(info.ip, QString::number(info.port));
+                window_title = server_name;
+              }
+        break;
+    case 1:
+    {
+        QVector<server_type> favorite_list = Options::getInstance().favorites();
+              if (selected_server >= 0 && selected_server < favorite_list.size()) {
+                auto info = favorite_list.at(selected_server);
+                server_name = info.name;
+                server_address =
+                    QString("%1:%2").arg(info.ip, QString::number(info.port));
+                window_title = server_name;
+              }
     }
-    else {
-      QVector<server_type> favorite_list = Options::getInstance().favorites();
-      if (selected_server >= 0 && selected_server < favorite_list.size()) {
-        auto info = favorite_list.at(selected_server);
-        server_name = info.name;
-        server_address =
-            QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title = server_name;
-      }
+        break;
+    case 2:
+        window_title = "Local Demo Recording";
+        break;
+    default:
+        break;
     }
 
     if (courtroom_constructed)
