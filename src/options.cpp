@@ -676,7 +676,7 @@ QString Options::getUIAsset(QString f_asset_name)
   if (Options::getInstance().subTheme() == "server") {
     if (!Options::getInstance().serverSubTheme().isEmpty()) {
       l_paths.prepend(":/base/themes/" + Options::getInstance().theme() + "/" +
-                      Options::getInstance().subTheme() + "/" + f_asset_name);
+                      Options::getInstance().serverSubTheme() + "/" + f_asset_name);
     }
   }
   else {
