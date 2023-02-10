@@ -8,8 +8,6 @@
 #include "discord_rich_presence.h"
 
 #include "bass.h"
-#include "bassmidi.h"
-#include "bassopus.h"
 
 #include <QApplication>
 #include <QFile>

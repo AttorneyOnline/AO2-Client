@@ -5,14 +5,14 @@
 
 #include "interfaces/server_dialog.h"
 
-class QPushButton;
+class QComboBox;
 class QDialogButton;
+class QDialogButtonBox;
 class QLabel;
 class QLineEdit;
-class QComboBox;
-class QSpinBox;
 class QPlainTextEdit;
-class QDialogButtonBox;
+class QPushButton;
+class QSpinBox;
 
 class AddServerDialog : public AttorneyOnline::UI::FavoriteServerDialog {
   Q_OBJECT

@@ -1,5 +1,6 @@
 #include "aoapplication.h"
 
+#include "bassmidi.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "lobby.h"

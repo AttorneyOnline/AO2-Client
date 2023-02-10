@@ -3,12 +3,13 @@
 #include "networkmanager.h"
 #include "options.h"
 
-#include <QUiLoader>
-#include <QSpinBox>
-#include <QLineEdit>
-#include <QPushButton>
 #include <QComboBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QUiLoader>
+#include <QVBoxLayout>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \

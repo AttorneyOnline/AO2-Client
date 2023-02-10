@@ -1,13 +1,23 @@
-#include "widgets/aooptionsdialog.h"
 #include "QDesktopServices"
 #include "aoapplication.h"
 #include "bass.h"
 #include "file_functions.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "widgets/aooptionsdialog.h"
 
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QPushButton>
 #include <QResource>
+#include <QSpinBox>
 #include <QUiLoader>
+#include <QVBoxLayout>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \

@@ -5,23 +5,20 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QComboBox>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QDialogButtonBox>
-#include <QtWidgets/QFormLayout>
-#include <QtWidgets/QFrame>
-#include <QtWidgets/QGroupBox>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QPlainTextEdit>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QScrollArea>
-#include <QtWidgets/QSpinBox>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
 
+class QCheckBox;
+class QComboBox;
+class QDialogButtonBox;
+class QLineEdit;
+class QPlainTextEdit;
+class QScrollArea;
+class QSpinBox;
+class QTabWidget;
+class QLabel;
+class QAbstractButton;
+
+
+#include <QtWidgets/QDialog>
 #include <QDirIterator>
 #include <QListWidget>
 #include <QTextBrowser>
@@ -89,7 +86,6 @@ private:
   // The audio tab
   QWidget *ui_audio_tab;
   QWidget *ui_audio_widget;
-  QFormLayout *ui_audio_layout;
   QComboBox *ui_audio_device_combobox;
   QSpinBox *ui_music_volume_spinbox;
   QSpinBox *ui_sfx_volume_spinbox;
@@ -127,7 +123,6 @@ private:
    * Allows the AO2 master server hoster to go broke.
    */
   QWidget *ui_privacy_tab;
-  QVBoxLayout *ui_privacy_layout;
   QCheckBox *ui_privacy_optout_cb;
   QFrame *ui_privacy_separator;
   QTextBrowser *ui_privacy_policy;

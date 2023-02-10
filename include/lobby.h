@@ -1,14 +1,14 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include <QDebug>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QTextBrowser>
-#include <QTreeWidget>
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QTextBrowser;
+class QTreeWidget;
+class QTreeWidgetItem;
 
+#include <QMainWindow>
 #include "networkmanager.h"
 
 #ifdef ANDROID
