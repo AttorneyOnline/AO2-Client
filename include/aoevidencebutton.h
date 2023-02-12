@@ -32,7 +32,11 @@ private:
   int m_id = 0;
 
 protected:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  void enterEvent(QEvent *e);
+#else
   void enterEvent(QEnterEvent *e);
+#endif
   void leaveEvent(QEvent *e);
   void mouseDoubleClickEvent(QMouseEvent *e);
   /*

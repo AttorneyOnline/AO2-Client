@@ -104,6 +104,17 @@ void AOEvidenceButton::dragEnterEvent(QMouseEvent *e)
 }
 */
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+void AOEvidenceButton::enterEvent(QEvent *e)
+{
+  ui_selector->show();
+
+  emit on_hover(m_id, true);
+
+  setFlat(false);
+  QPushButton::enterEvent(e);
+}
+#else
 void AOEvidenceButton::enterEvent(QEnterEvent *e)
 {
   ui_selector->show();
@@ -113,6 +124,7 @@ void AOEvidenceButton::enterEvent(QEnterEvent *e)
   setFlat(false);
   QPushButton::enterEvent(e);
 }
+#endif
 
 void AOEvidenceButton::leaveEvent(QEvent *e)
 {
