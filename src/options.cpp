@@ -673,15 +673,15 @@ QString Options::getUIAsset(QString f_asset_name)
   QStringList l_paths{":/base/themes/" + Options::getInstance().theme() + "/" +
                       f_asset_name};
 
-  if (Options::getInstance().subTheme() == "server") {
-    if (!Options::getInstance().serverSubTheme().isEmpty()) {
-      l_paths.prepend(":/base/themes/" + Options::getInstance().theme() + "/" +
-                      Options::getInstance().serverSubTheme() + "/" + f_asset_name);
+  if (subTheme() == "server") {
+    if (serverSubTheme().isEmpty()) {
+      l_paths.prepend(":/base/themes/" + theme() + "/" + serverSubTheme() +
+                      "/" + f_asset_name);
     }
   }
   else {
-    l_paths.prepend(":/base/themes/" + Options::getInstance().theme() + "/" +
-                    Options::getInstance().subTheme() + "/" + f_asset_name);
+    l_paths.prepend(":/base/themes/" + theme() + "/" + subTheme() + "/" +
+                    f_asset_name);
   }
 
   for (const QString &l_path : qAsConst(l_paths)) {
