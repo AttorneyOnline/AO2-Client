@@ -23,7 +23,7 @@ jobs:
           - platform: gcc_64
             os: ubuntu-latest
           - platform: android
-            os: ubuntu-latest
+            os: ubuntu-20.04
           - platform: msvc2019
             os: windows-2019
           - platform: mingw81_32
