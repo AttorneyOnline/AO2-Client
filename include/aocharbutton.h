@@ -38,8 +38,12 @@ private:
   AOImage *ui_selector;
 
 protected:
-  void enterEvent(QEnterEvent *e);
-  void leaveEvent(QEvent *e);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  void enterEvent(QEvent *e) override;
+#else
+  void enterEvent(QEnterEvent *e) override;
+#endif
+  void leaveEvent(QEvent *e) override;
 };
 
 #endif // AOCHARBUTTON_H
