@@ -255,7 +255,7 @@ jobs:
           mkdir ./build/libs/armeabi-v7a/
           mv ./bin/*.so ./build/libs/armeabi-v7a/
           cp ./QtApng/plugins/imageformats/libplugins_imageformats_qapng_armeabi-v7a.so ./build/libs/armeabi-v7a/
-          androiddeployqt --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
+          androiddeployqt --android-platform android-21 --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
