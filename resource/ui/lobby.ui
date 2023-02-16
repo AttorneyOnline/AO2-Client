@@ -22,12 +22,117 @@
     <height>550</height>
    </size>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::CustomContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string/>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget#lobby {
-	background-color: gray;
+   <string notr="true">QWidget#lobby_form {
+    background-color : rgba(102, 102, 102, 255);
+}
+
+QLabel {
+    color: white;
+	font: 8pt &quot;MS Sans Serif&quot;;
+}
+
+QLineEdit {
+    background-color: rgb(102,102,102);
+	color: rgb(255, 255, 255);
+	font: 8pt &quot;MS Sans Serif&quot;;
+}
+
+QTreeWidget {
+    background-color: rgb(102,102,102);
+    color: white
+}
+
+QWidget#demo_tab {
+    border: 1px solid white
+}
+
+QPushButton {
+    border: 1px solid lightgray;
+    background-color: rgb(84,33,0);
+    color: white;
+    padding: 3;
+    margin-right: 2px;
+    margin-left: 2px;
+	font: 8pt &quot;MS Sans Serif&quot;;
+}
+
+QPushButton:hover {
+    border: 1px solid white;
+    background-color: rgb(122,40,0);
+}
+
+QPushButton:pressed {
+    border: 1px solid white;
+    background-color: rgb(125,41,0);
+    color: white;
+}
+
+QTabBar {
+	font: 8pt &quot;MS Sans Serif&quot;;
+}
+
+QTabBar::tab {
+    border: 2px solid lightgray;
+    background-color: rgb(100,41,0);
+    color: lightgray;
+    padding: 2;
+    margin-right: 1px;
+    margin-left: 1px;
+	border-bottom: 0;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+    color: white;
+    background-color: rgb(122,40,0);
+}
+
+QTabBar::tab:selected {
+    background-color: rgb(122,40,0);
+    border: 2px solid white;
+	border-bottom: 0;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px; /* make non-selected tabs look smaller */
+}
+
+QHeaderView::section {
+    border: 1px solid white;
+    background-color: rgb(122,40,0);
+    margin-right: 2px;
+	padding: 1;
+	font: 8pt &quot;MS Sans Serif&quot;;
+}
+
+QHeaderView::section:pressed {
+    background-color: rgb(84,33,0);
+}
+
+QHeaderView::up-arrow
+{
+    image: url(&quot;:/resource/ui/lobby_assets/up-arrow.png&quot;);
+}
+
+QHeaderView::down-arrow
+{
+    image: url(&quot;:/resource/ui/lobby_assets/down-arrow.png&quot;);
+}
+
+QScrollBar:vertical {
+  background-color: rgba(140,140,140, 255);
+  color : white
+}
+
+QScrollBar:horizontall {
+  background-color: rgba(140,140,140, 255);
+  color : white
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -94,6 +199,9 @@
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
@@ -104,6 +212,18 @@
          </item>
          <item>
           <widget class="QPushButton" name="settings_button">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>Settings</string>
            </property>
@@ -111,6 +231,18 @@
          </item>
          <item>
           <widget class="QPushButton" name="about_button">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>About</string>
            </property>
@@ -160,6 +292,9 @@
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -186,13 +321,18 @@
              <property name="spacing">
               <number>0</number>
              </property>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="serverlist_search">
+               <property name="placeholderText">
+                <string>Search</string>
+               </property>
+              </widget>
+             </item>
              <item row="1" column="0">
               <widget class="QTreeWidget" name="serverlist_tree">
                <property name="styleSheet">
-                <string notr="true">QTreeWidget {
-	background-color:black;
-	color:white;
-}</string>
+                <string notr="true">background-color: rgba(140, 140, 140, 255);
+color: rgb(255, 255, 255);</string>
                </property>
                <property name="textElideMode">
                 <enum>Qt::ElideNone</enum>
@@ -210,13 +350,6 @@
                  <string>Name</string>
                 </property>
                </column>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLineEdit" name="serverlist_search">
-               <property name="placeholderText">
-                <string>Search</string>
-               </property>
               </widget>
              </item>
             </layout>
@@ -247,10 +380,8 @@
                 <enum>Qt::CustomContextMenu</enum>
                </property>
                <property name="styleSheet">
-                <string notr="true">QTreeWidget {
-	background-color:black;
-	color:white;
-}</string>
+                <string notr="true">background-color: rgba(140, 140, 140, 255);
+color: rgb(255, 255, 255);</string>
                </property>
                <property name="textElideMode">
                 <enum>Qt::ElideNone</enum>
@@ -295,10 +426,8 @@
              <item row="0" column="0">
               <widget class="QTreeWidget" name="demo_tree">
                <property name="styleSheet">
-                <string notr="true">QTreeWidget {
-	background-color:black;
-	color:white;
-}</string>
+                <string notr="true">background-color: rgba(140, 140, 140, 255);
+color: rgb(255, 255, 255);</string>
                </property>
                <property name="textElideMode">
                 <enum>Qt::ElideNone</enum>
@@ -448,6 +577,12 @@
             </property>
             <item>
              <widget class="QLabel" name="server_info_lbl">
+              <property name="styleSheet">
+               <string notr="true">color: #F8A818;
+background-color: #383838;
+border: 1px solid white;
+margin: 1</string>
+              </property>
               <property name="text">
                <string>Server Info</string>
               </property>
@@ -458,6 +593,12 @@
             </item>
             <item>
              <widget class="QLabel" name="server_player_count_lbl">
+              <property name="styleSheet">
+               <string notr="true">color: #F8A818;
+background-color: #383838;
+border: 1px solid white;
+margin: 1</string>
+              </property>
               <property name="text">
                <string>Offline</string>
               </property>
@@ -468,18 +609,25 @@
             </item>
             <item>
              <widget class="QTextBrowser" name="server_description_text">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="styleSheet">
-               <string notr="true">QTextBrowser {
-    background-color:back;
-	color:white;
-}</string>
+               <string notr="true">background-color: rgba(140, 140, 140, 255);
+color: rgb(255, 255, 255);</string>
               </property>
               <property name="html">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;No description provided.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;No description provided.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
              </widget>
             </item>
@@ -522,6 +670,12 @@ p, li { white-space: pre-wrap; }
             </property>
             <item>
              <widget class="QLabel" name="motd_lbl">
+              <property name="styleSheet">
+               <string notr="true">color: #F8A818;
+background-color: #383838;
+border: 1px solid white;
+margin: 1</string>
+              </property>
               <property name="text">
                <string>Message of the Day</string>
               </property>
@@ -533,17 +687,18 @@ p, li { white-space: pre-wrap; }
             <item>
              <widget class="QTextBrowser" name="motd_text">
               <property name="styleSheet">
-               <string notr="true">QTextBrowser {
-    background-color:back;
-	color:white;
-}</string>
+               <string notr="true">background-color: rgba(140, 140, 140, 255);
+color: rgb(255, 255, 255);</string>
               </property>
               <property name="html">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="openExternalLinks">
                <bool>true</bool>
