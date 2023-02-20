@@ -78,6 +78,9 @@ private:
   QTextBrowser *ui_server_description_text;
   QPushButton *ui_connect_button;
 
+  // Optional Widget
+  QTextBrowser *ui_game_changelog_text;
+
   void loadUI();
 
   TabPage current_page = SERVER;

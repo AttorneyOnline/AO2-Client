@@ -193,6 +193,18 @@ void Lobby::loadUI()
           &QPushButton::setEnabled);
 
   FROM_UI(QTextBrowser, motd_text);
+  FROM_UI(QTextBrowser, game_changelog_text)
+  if (ui_game_changelog_text != nullptr) {
+      QString l_changelog_text = "No changelog found.";
+      QFile l_changelog(ao_app->get_base_path() + "changelog.md");
+      if (!l_changelog.open(QFile::ReadOnly)) {
+          qDebug() << "Unable to locate changelog file. Does it even exist?";
+          ui_game_changelog_text->setMarkdown(l_changelog_text);
+          return;
+      }
+      ui_game_changelog_text->setMarkdown(l_changelog.readAll());
+      l_changelog.close();
+  }
 }
 
 void Lobby::on_refresh_released()
