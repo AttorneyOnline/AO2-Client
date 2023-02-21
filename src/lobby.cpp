@@ -204,6 +204,11 @@ void Lobby::loadUI()
       }
       ui_game_changelog_text->setMarkdown(l_changelog.readAll());
       l_changelog.close();
+
+      QTabWidget* l_tabbar = findChild<QTabWidget*>("motd_changelog_tab");
+      if (l_tabbar != nullptr) {
+          l_tabbar->tabBar()->setExpanding(true);
+      }
   }
 }
 
