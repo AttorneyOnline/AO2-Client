@@ -452,6 +452,7 @@ void Lobby::list_servers()
   }
   ui_serverlist_tree->setSortingEnabled(true);
   ui_serverlist_tree->sortItems(0, Qt::SortOrder::AscendingOrder);
+  ui_serverlist_tree->resizeColumnToContents(0);
 }
 
 void Lobby::list_favorites()
@@ -468,6 +469,7 @@ void Lobby::list_favorites()
   }
   ui_favorites_tree->setSortingEnabled(true);
   ui_favorites_tree->sortItems(0, Qt::SortOrder::AscendingOrder);
+  ui_favorites_tree->resizeColumnToContents(0);
 }
 
 void Lobby::list_demos()
@@ -485,6 +487,7 @@ void Lobby::list_demos()
   }
   ui_demo_tree->setSortingEnabled(true);
   ui_demo_tree->sortItems(0, Qt::SortOrder::AscendingOrder);
+  ui_demo_tree->resizeColumnToContents(0);
 }
 
 void Lobby::get_motd()
