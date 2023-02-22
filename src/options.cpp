@@ -1,4 +1,5 @@
 #include "options.h"
+#include "file_functions.h"
 
 #include <QCoreApplication>
 #include <QDebug>
