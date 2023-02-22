@@ -224,7 +224,7 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   // Asset tab
   FROM_UI(QListWidget, mount_list)
   auto *defaultMount =
-      new QListWidgetItem(tr("%1 (default)").arg(ao_app->get_base_path()));
+      new QListWidgetItem(tr("%1 (default)").arg(get_base_path()));
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
   ui_mount_list->addItem(defaultMount);
   registerOption<QListWidget, QStringList>("mount_list", &Options::mountPaths,
@@ -516,7 +516,7 @@ void AOOptionsDialog::updateValues()
 
   QSet<QString> themes;
   QStringList bases = Options::getInstance().mountPaths();
-  bases.push_front(ao_app->get_base_path());
+  bases.push_front(get_base_path());
   for (const QString &base : bases) {
     QDirIterator it(base + "/themes", QDir::Dirs | QDir::NoDotAndDotDot,
                     QDirIterator::NoIteratorFlags);
