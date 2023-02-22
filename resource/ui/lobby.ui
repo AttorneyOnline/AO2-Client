@@ -56,8 +56,6 @@ QPushButton {
     background-color: rgb(84,33,0);
     color: white;
     padding: 3;
-    margin-right: 2px;
-    margin-left: 2px;
 }
 
 QPushButton:hover {
@@ -76,8 +74,8 @@ QTabBar::tab {
     background-color: rgb(100,41,0);
     color: lightgray;
     padding: 2;
-    margin-right: 1px;
-    margin-left: 1px;
+    margin-right: 5px;
+    margin-left: 5px;
 	border-bottom: 0;
 }
 
@@ -331,6 +329,9 @@ color: rgb(255, 255, 255);</string>
                 <property name="text">
                  <string>#</string>
                 </property>
+                <property name="textAlignment">
+                 <set>AlignTrailing|AlignVCenter</set>
+                </property>
                </column>
                <column>
                 <property name="text">
@@ -442,7 +443,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="common_controls">
+          <layout class="QHBoxLayout" name="server_controls">
            <item>
             <widget class="QPushButton" name="add_server_button">
              <property name="text">
@@ -467,7 +468,7 @@ color: rgb(255, 255, 255);</string>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <layout class="QHBoxLayout" name="favorite_controls">
            <item>
             <widget class="QPushButton" name="direct_connect_button">
              <property name="text">
@@ -567,8 +568,7 @@ color: rgb(255, 255, 255);</string>
               <property name="styleSheet">
                <string notr="true">color: #F8A818;
 background-color: #383838;
-border: 1px solid white;
-margin: 1</string>
+border: 1px solid white;</string>
               </property>
               <property name="text">
                <string>Server Info</string>
@@ -583,8 +583,7 @@ margin: 1</string>
               <property name="styleSheet">
                <string notr="true">color: #F8A818;
 background-color: #383838;
-border: 1px solid white;
-margin: 1</string>
+border: 1px solid white;</string>
               </property>
               <property name="text">
                <string>Offline</string>
@@ -597,7 +596,7 @@ margin: 1</string>
             <item>
              <widget class="QTextBrowser" name="server_description_text">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -636,7 +635,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
-             <verstretch>4</verstretch>
+             <verstretch>3</verstretch>
             </sizepolicy>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -660,8 +659,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
               <property name="styleSheet">
                <string notr="true">color: #F8A818;
 background-color: #383838;
-border: 1px solid white;
-margin: 1</string>
+border: 1px solid white;</string>
               </property>
               <property name="text">
                <string>Message of the Day</string>
