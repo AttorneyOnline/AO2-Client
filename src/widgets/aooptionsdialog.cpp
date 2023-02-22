@@ -29,7 +29,7 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 
   QUiLoader l_loader(this);
-  QFile l_uiFile(":/resource/ui/options_dialog.ui");
+  QFile l_uiFile(Options::getInstance().getUIAsset("options_dialog.ui"));
   if (!l_uiFile.open(QFile::ReadOnly)) {
     qWarning() << "Unable to open file " << l_uiFile.fileName();
     return;
