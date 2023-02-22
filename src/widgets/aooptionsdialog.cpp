@@ -1,10 +1,10 @@
+#include "widgets/aooptionsdialog.h"
 #include "QDesktopServices"
 #include "aoapplication.h"
 #include "bass.h"
 #include "file_functions.h"
 #include "networkmanager.h"
 #include "options.h"
-#include "widgets/aooptionsdialog.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -52,13 +52,14 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
 
   // Gameplay Tab
   FROM_UI(QComboBox, theme_combobox)
+  connect(ui_theme_combobox,
+          QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+          &AOOptionsDialog::themeChanged);
+
   registerOption<QComboBox, QString>("theme_combobox", &Options::theme,
                                      &Options::setTheme);
 
   FROM_UI(QComboBox, subtheme_combobox)
-  connect(ui_theme_combobox,
-          QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-          &AOOptionsDialog::themeChanged);
   registerOption<QComboBox, QString>("subtheme_combobox", &Options::subTheme,
                                      &Options::setSubTheme);
 
@@ -596,11 +597,11 @@ void AOOptionsDialog::themeChanged(int i)
   ui_subtheme_combobox->addItem("default");
   QDirIterator it(ao_app->get_real_path(ao_app->get_theme_path(
                       "", ui_theme_combobox->itemText(i))),
-                  QDir::Dirs, QDirIterator::NoIteratorFlags);
+                  QDir::Dirs | QDir::NoDotAndDotDot,
+                  QDirIterator::NoIteratorFlags);
   while (it.hasNext()) {
     QString actualname = QDir(it.next()).dirName();
-    if (actualname != "." && actualname != ".." &&
-        actualname.toLower() != "server" && actualname.toLower() != "default" &&
+    if (actualname.toLower() != "server" && actualname.toLower() != "default" &&
         actualname.toLower() != "effects" && actualname.toLower() != "misc")
       ui_subtheme_combobox->addItem(actualname);
 
