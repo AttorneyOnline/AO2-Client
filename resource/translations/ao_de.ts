@@ -1085,7 +1085,7 @@ Hast du ALLES von tiny.cc/getao heruntergeladen und entpackt, auch den großen &
     <message>
         <location filename="../../src/lobby.cpp" line="627"/>
         <source>New version available: %1</source>
-        <translation>Neue Version verfügbar:%1</translation>
+        <translation>Neue Version verfügbar: %1</translation>
     </message>
     <message>
         <location filename="../../src/lobby.cpp" line="457"/>
