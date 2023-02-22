@@ -155,6 +155,8 @@ private slots:
   void timestampCbChanged(int state);
   void onReloadThemeClicked();
   void themeChanged(int i);
+  void setupUI();
+
 };
 
 #endif // AOOPTIONSDIALOG_H
