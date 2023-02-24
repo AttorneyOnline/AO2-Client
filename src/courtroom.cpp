@@ -4329,7 +4329,7 @@ void Courtroom::on_ooc_return_pressed()
 #endif
     QDir casefolder(get_base_path() + "cases");
     if (!casefolder.exists()) {
-      QDir::current().mkdir(get_base_path() + casefolder.dirName());
+      QDir(get_base_path()).mkdir(casefolder.dirName());
       append_server_chatmessage(
           "CLIENT",
           tr("You don't have a `base/cases/` folder! It was just made for you, "
