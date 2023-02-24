@@ -165,22 +165,21 @@ jobs:
       - name: Install Android BASS
         if: matrix.platform == 'android'
         run: |
-          mkdir ./android/libs/
-          mkdir ./android/libs/armeabi-v7a/
+          mkdir -p ./android/libs/armeabi-v7a/
           curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
-          unzip -d bass -o bass.zip
+          unzip -o bass.zip -d bass
           cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
-          cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
+          unzip -o bass.zip "libs/*" -d "./android/libs/"
 
           curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
-          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
+          unzip -o bassmidi.zip "libs/*" -d "./android/libs/"
 
           curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
-          cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
+          unzip -o bassopus.zip "libs/*" -d "./android/libs/"
 
       - name: qmake
         if: matrix.platform != 'android'
@@ -221,7 +220,7 @@ jobs:
         shell: bash
         run: |
           cp ../scripts/launch.sh .
-          mkdir imageformats
+          mkdir -p imageformats
           cp ../QtApng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
           chmod +x launch.sh
           chmod +x Attorney_Online
@@ -252,8 +251,7 @@ jobs:
         working-directory: ${{github.workspace}}/
         shell: bash
         run: |
-          mkdir ./build/libs/
-          mkdir ./build/libs/armeabi-v7a/
+          mkdir -p ./build/libs/armeabi-v7a/
           mv ./bin/*.so ./build/libs/armeabi-v7a/
           cp ./QtApng/plugins/imageformats/libplugins_imageformats_qapng_armeabi-v7a.so ./build/libs/armeabi-v7a/
           androiddeployqt --android-platform android-24 --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
