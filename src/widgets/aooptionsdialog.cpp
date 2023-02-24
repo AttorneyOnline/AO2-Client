@@ -475,7 +475,7 @@ void AOOptionsDialog::setupUI()
     // Asset tab
     FROM_UI(QListWidget, mount_list)
     auto *defaultMount =
-        new QListWidgetItem(tr("%1 (default)").arg(ao_app->get_base_path()));
+        new QListWidgetItem(tr("%1 (default)").arg(get_base_path()));
     defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
     ui_mount_list->addItem(defaultMount);
     registerOption<QListWidget, QStringList>("mount_list", &Options::mountPaths,
