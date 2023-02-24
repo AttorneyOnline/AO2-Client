@@ -196,7 +196,7 @@ void Lobby::loadUI()
   FROM_UI(QTextBrowser, game_changelog_text)
   if (ui_game_changelog_text != nullptr) {
       QString l_changelog_text = "No changelog found.";
-      QFile l_changelog(ao_app->get_base_path() + "changelog.md");
+      QFile l_changelog(get_base_path() + "changelog.md");
       if (!l_changelog.open(QFile::ReadOnly)) {
           qDebug() << "Unable to locate changelog file. Does it even exist?";
           ui_game_changelog_text->setMarkdown(l_changelog_text);

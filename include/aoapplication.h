@@ -141,7 +141,6 @@ public:
   QString get_current_char();
 
   // implementation in path_functions.cpp
-  QString get_base_path();
   VPath get_theme_path(QString p_file, QString p_theme="");
   VPath get_character_path(QString p_char, QString p_file);
   VPath get_misc_path(QString p_misc, QString p_file);

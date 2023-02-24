@@ -26,3 +26,23 @@ bool exists(QString p_path)
 
   return file.exists();
 }
+
+QString get_base_path()
+{
+  QString base_path = "";
+#ifdef ANDROID
+  QString sdcard_storage = getenv("SECONDARY_STORAGE");
+  if (dir_exists(sdcard_storage + "/base/")) {
+    base_path = sdcard_storage + "/base/";
+  }
+  else {
+    QString external_storage = getenv("EXTERNAL_STORAGE");
+    base_path = external_storage + "/base/";
+  }
+#elif defined(__APPLE__)
+  base_path = QCoreApplication::applicationDirPath() + "/../../../base/";
+#else
+  base_path = QCoreApplication::applicationDirPath() + "/base/";
+#endif
+  return base_path;
+}

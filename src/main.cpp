@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
   QFontDatabase fontDatabase;
-  QDirIterator it(main_app.get_base_path() + "fonts",
+  QDirIterator it(get_base_path() + "fonts",
                   QDirIterator::Subdirectories);
   while (it.hasNext())
     fontDatabase.addApplicationFont(it.next());

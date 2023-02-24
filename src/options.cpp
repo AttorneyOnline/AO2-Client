@@ -1,4 +1,5 @@
 #include "options.h"
+#include "file_functions.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -14,8 +15,7 @@ void Options::migrateCallwords()
   QStringList l_callwords;
 
   QFile l_file;
-  l_file.setFileName(QCoreApplication::applicationDirPath() +
-                     "/base/callwords.ini");
+  l_file.setFileName(get_base_path() + "callwords.ini");
 
   if (!l_file.open(QIODevice::ReadOnly)) {
     qWarning() << "Unable to migrate callwords : File not open.";
@@ -38,10 +38,10 @@ void Options::migrateCallwords()
 }
 
 Options::Options()
-    : config(QCoreApplication::applicationDirPath() + "/base/config.ini",
+    : config(get_base_path() + "config.ini",
              QSettings::IniFormat, nullptr),
-      favorite(QCoreApplication::applicationDirPath() +
-                   "/base/favorite_servers.ini",
+      favorite(get_base_path() +
+                   "favorite_servers.ini",
                QSettings::IniFormat, nullptr)
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -60,8 +60,8 @@ void Options::migrate()
   if (config.contains("show_custom_shownames")) {
     config.remove("show_custom_shownames");
   }
-  if (QFile::exists(QCoreApplication::applicationDirPath() +
-                    "/base/callwords.ini")) {
+  if (QFile::exists(get_base_path() + 
+                    "callwords.ini")) {
     migrateCallwords();
   }
   if (config.contains("ooc_name")) {

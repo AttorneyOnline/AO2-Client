@@ -4227,9 +4227,9 @@ void Courtroom::on_ooc_return_pressed()
 #else
     QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
 #endif
-    QDir casefolder("base/cases");
+    QDir casefolder(get_base_path()+"/cases");
     if (!casefolder.exists()) {
-      QDir::current().mkdir("base/" + casefolder.dirName());
+      QDir::current().mkdir(get_base_path() + casefolder.dirName());
       append_server_chatmessage(
           "CLIENT",
           tr("You don't have a `base/cases/` folder! It was just made for you, "
@@ -4266,7 +4266,7 @@ void Courtroom::on_ooc_return_pressed()
       return;
     }
 
-    QSettings casefile("base/cases/" + command[1] + ".ini",
+    QSettings casefile(get_base_path() + "/cases/" + command[1] + ".ini",
                        QSettings::IniFormat);
 
     QString caseauth = casefile.value("author", "").value<QString>();
@@ -4327,9 +4327,9 @@ void Courtroom::on_ooc_return_pressed()
 #else
     QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
 #endif
-    QDir casefolder("base/cases");
+    QDir casefolder(get_base_path() + "cases");
     if (!casefolder.exists()) {
-      QDir::current().mkdir("base/" + casefolder.dirName());
+      QDir(get_base_path()).mkdir(casefolder.dirName());
       append_server_chatmessage(
           "CLIENT",
           tr("You don't have a `base/cases/` folder! It was just made for you, "
@@ -4363,7 +4363,7 @@ void Courtroom::on_ooc_return_pressed()
       ui_ooc_chat_message->clear();
       return;
     }
-    QSettings casefile("base/cases/" + command[1] + ".ini",
+    QSettings casefile(get_base_path() + "/cases/" + command[1] + ".ini",
                        QSettings::IniFormat);
     casefile.setValue("author", ui_ooc_chat_name->text());
     casefile.setValue("cmdoc", "");
@@ -4583,7 +4583,7 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   }
   QString p_path = ao_app->get_real_path(VPath("iniswaps.ini"));
   if (!file_exists(p_path)) {
-    p_path = ao_app->get_base_path() + "iniswaps.ini";
+    p_path = get_base_path() + "iniswaps.ini";
   }
   ao_app->write_to_file(swaplist.join("\n"), p_path);
   ui_iniswap_dropdown->blockSignals(true);
@@ -4733,7 +4733,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
   menu->addSeparator();
   menu->addAction(QString("Open base sounds folder"), this,
                   [=] {
-    QString p_path = ao_app->get_base_path() + "sounds/general/";
+    QString p_path = get_base_path() + "sounds/general/";
     if (!dir_exists(p_path)) {
       return;
     }
@@ -4760,7 +4760,7 @@ void Courtroom::on_sfx_edit_requested()
   }
 
   if (!file_exists(p_path)) {
-    p_path = ao_app->get_base_path() + "soundlist.ini";
+    p_path = get_base_path() + "soundlist.ini";
   }
   QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
 }
@@ -5008,7 +5008,7 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->addSeparator();
   menu->addAction(QString("Open base music folder"), this,
                   [=] {
-    QString p_path = ao_app->get_base_path() + "sounds/music/";
+    QString p_path = get_base_path() + "sounds/music/";
     if (!dir_exists(p_path)) {
       return;
     }
@@ -5646,7 +5646,7 @@ void Courtroom::on_evidence_context_menu_requested(const QPoint &pos)
   QMenu *menu = new QMenu(this);
   menu->addAction(QString("Open base evidence folder"), this,
                   [=] {
-    QString p_path = ao_app->get_base_path() + "evidence/";
+    QString p_path = get_base_path() + "evidence/";
     if (!dir_exists(p_path)) {
       return;
     }

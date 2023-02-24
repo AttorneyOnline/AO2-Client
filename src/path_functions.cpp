@@ -29,26 +29,6 @@ static bool is_power_2(unsigned int n) {
   return r == 1;
 }
 
-QString AOApplication::get_base_path()
-{
-  QString base_path = "";
-#ifdef ANDROID
-  QString sdcard_storage = getenv("SECONDARY_STORAGE");
-  if (dir_exists(sdcard_storage + "/base/")) {
-    base_path = sdcard_storage + "/base/";
-  }
-  else {
-    QString external_storage = getenv("EXTERNAL_STORAGE");
-    base_path = external_storage + "/base/";
-  }
-#elif defined(__APPLE__)
-  base_path = applicationDirPath() + "/../../../base/";
-#else
-  base_path = applicationDirPath() + "/base/";
-#endif
-  return base_path;
-}
-
 VPath AOApplication::get_theme_path(QString p_file, QString p_theme)
 {
   if (p_theme == "")
