@@ -245,6 +245,7 @@ void AOOptionsDialog::onReloadThemeClicked()
       ui_animated_theme_cb->isChecked());
   emit reloadThemeRequest();
   delete ui_settings_widget;
+  optionEntries.clear();
   setupUI();
 }
 
