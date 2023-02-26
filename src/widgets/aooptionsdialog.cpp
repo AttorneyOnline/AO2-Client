@@ -7,6 +7,7 @@
 #include "options.h"
 
 #include <QCheckBox>
+#include <QCollator>
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QGroupBox>
@@ -176,6 +177,12 @@ void AOOptionsDialog::updateValues()
   for (const QString &base : bases) {
     QStringList l_themes =
         QDir(base + "themes").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    // Resorts list to match numeric sorting found in Windows.
+    QCollator l_sorting;
+    l_sorting.setNumericMode(true);
+    std::sort(l_themes.begin(), l_themes.end(), l_sorting);
+
     for (const QString &l_theme : qAsConst(l_themes)) {
       if (!themes.contains(l_theme)) {
         ui_theme_combobox->addItem(l_theme);
