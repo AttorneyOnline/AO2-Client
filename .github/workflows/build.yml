@@ -170,16 +170,19 @@ jobs:
           unzip -o bass.zip -d bass
           cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
           unzip -o bass.zip "libs/*" -d "./android/libs/"
+          cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
           unzip -o bassmidi.zip "libs/*" -d "./android/libs/"
+          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
           unzip -o bassopus.zip "libs/*" -d "./android/libs/"
+          cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
         if: matrix.platform != 'android'
