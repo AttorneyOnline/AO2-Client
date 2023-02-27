@@ -217,6 +217,13 @@ jobs:
           rm -r bearer
           rm -r styles
 
+      - name: Copy MingW DLL
+        if: matrix.platform == 'mingw81_32'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp /cygdrive/c/Qt/Tools/mingw810_32/bin/libgcc_s_dw2-1.dll .
+
       - name: Deploy Linux
         if: matrix.platform == 'gcc_64'
         working-directory: ${{github.workspace}}/bin/
