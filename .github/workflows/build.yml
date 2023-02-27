@@ -222,9 +222,9 @@ jobs:
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
-          cp /cygdrive/c/Qt/Tools/mingw810_32/bin/libgcc_s_dw2-1.dll .
-          cp /cygdrive/c/Qt/Tools/mingw810_32/bin/libstdc++-6.dll .
-          cp /cygdrive/c/Qt/Tools/mingw810_32/bin/libwinpthread-1.dll .
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libgcc_s_dw2-1.dll .
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libstdc++-6.dll .
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libwinpthread-1.dll .
 
       - name: Deploy Linux
         if: matrix.platform == 'gcc_64'
