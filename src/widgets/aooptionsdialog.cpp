@@ -239,7 +239,7 @@ void AOOptionsDialog::buttonClicked(QAbstractButton *button)
 void AOOptionsDialog::onReloadThemeClicked()
 {
   Options::getInstance().setTheme(ui_theme_combobox->currentText());
-  Options::getInstance().setSubTheme(ui_subtheme_combobox->currentText());
+  Options::getInstance().setSettingsSubTheme(ui_subtheme_combobox->currentText());
   Options::getInstance().setAnimatedThemeEnabled(
       ui_animated_theme_cb->isChecked());
   emit reloadThemeRequest();
@@ -314,8 +314,8 @@ void AOOptionsDialog::setupUI()
                                      &Options::setTheme);
 
   FROM_UI(QComboBox, subtheme_combobox)
-  registerOption<QComboBox, QString>("subtheme_combobox", &Options::subTheme,
-                                     &Options::setSubTheme);
+  registerOption<QComboBox, QString>("subtheme_combobox", &Options::settingsSubTheme,
+                                     &Options::setSettingsSubTheme);
 
   FROM_UI(QPushButton, theme_reload_button)
   connect(ui_theme_reload_button, &QPushButton::clicked, this,

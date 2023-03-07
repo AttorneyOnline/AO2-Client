@@ -228,7 +228,8 @@ public:
 
   // Get the subtheme from settings
   QString subTheme() const;
-  void setSubTheme(QString value);
+  QString settingsSubTheme() const;
+  void setSettingsSubTheme(QString value);
 
   // Returns the server-
   QString serverSubTheme() const;

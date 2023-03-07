@@ -125,6 +125,7 @@ void AOApplication::server_disconnected()
     construct_lobby();
     destruct_courtroom();
   }
+  Options::getInstance().setServerSubTheme(QString());
 }
 
 void AOApplication::loading_cancelled()

@@ -38,11 +38,9 @@ void Options::migrateCallwords()
 }
 
 Options::Options()
-    : config(get_base_path() + "config.ini",
-             QSettings::IniFormat, nullptr),
-      favorite(get_base_path() +
-                   "favorite_servers.ini",
-               QSettings::IniFormat, nullptr)
+    : config(get_base_path() + "config.ini", QSettings::IniFormat, nullptr),
+      favorite(get_base_path() + "favorite_servers.ini", QSettings::IniFormat,
+               nullptr)
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   config.setIniCodec("UTF-8");
@@ -60,8 +58,7 @@ void Options::migrate()
   if (config.contains("show_custom_shownames")) {
     config.remove("show_custom_shownames");
   }
-  if (QFile::exists(get_base_path() + 
-                    "callwords.ini")) {
+  if (QFile::exists(get_base_path() + "callwords.ini")) {
     migrateCallwords();
   }
   if (config.contains("ooc_name")) {
@@ -461,10 +458,21 @@ void Options::setLogToDemoFileEnabled(bool value)
 
 QString Options::subTheme() const
 {
+  if (settingsSubTheme() == "server" && !m_server_subtheme.isEmpty()) {
+    return m_server_subtheme;
+  }
+  return settingsSubTheme();
+}
+
+QString Options::settingsSubTheme() const
+{
   return config.value("subtheme", "server").toString();
 }
 
-void Options::setSubTheme(QString value) { config.setValue("subtheme", value); }
+void Options::setSettingsSubTheme(QString value)
+{
+  config.setValue("subtheme", value);
+}
 
 QString Options::serverSubTheme() const { return m_server_subtheme; }
 
