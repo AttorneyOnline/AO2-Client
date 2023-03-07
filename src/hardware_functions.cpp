@@ -3,6 +3,12 @@
 #include <QDebug>
 #include <QtGlobal>
 
+#include <stdio.h>
+
+#ifdef ANDROID
+#include <QtAndroidExtras/QtAndroid>
+#endif
+
 #if (defined(_WIN32) || defined(_WIN64))
 #include <windows.h>
 #include <sddl.h>
@@ -36,7 +42,7 @@ QString get_hdid()
     ConvertSidToStringSidW(pToken->User.Sid, &HDIDParam);
     QString returnHDID = QString::fromWCharArray(HDIDParam);
     CloseHandle(hToken);
-    return returnHDID;     
+    return returnHDID;
 }
 #elif defined(ANDROID)
 QString get_hdid()
