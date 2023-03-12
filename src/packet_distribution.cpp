@@ -69,10 +69,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 2)
       goto end;
 
-    client_id = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
-    net_manager->server_connected(true);
+    emit net_manager->server_connected(true);
 
     QStringList f_contents = {"AO2", get_version_string()};
     send_server_packet(new AOPacket("ID", f_contents));
