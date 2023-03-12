@@ -105,10 +105,6 @@ public:
   bool auth_packet_supported = false;
 
   ///////////////loading info///////////////////
-
-  // client ID. Not useful, to be removed eventually
-  int client_id = 0;
-
   QString server_software = "";
 
   int char_list_size = 0;
