@@ -177,8 +177,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString server_address = "", server_name = "";
     switch (w_lobby->pageSelected()) {
     case 0:
-        if (selected_server >= 0 && selected_server < server_list.size()) {
-                auto info = server_list.at(selected_server);
+        if (selected_server >= 0 && selected_server < w_lobby->serverList().size()) {
+                auto info = w_lobby->serverList().at(selected_server);
                 server_name = info.name;
                 server_address =
                     QString("%1:%2").arg(info.ip, QString::number(info.port));
