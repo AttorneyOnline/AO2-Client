@@ -126,9 +126,6 @@ public:
 
   ///////////////////////////////////////////
 
-  void set_server_list(QVector<server_type> &servers) { server_list = servers; }
-  QVector<server_type> &get_server_list() { return server_list; }
-
   // Returns the character the player has currently selected
   QString get_current_char();
 
@@ -375,7 +372,6 @@ private:
   const int MAJOR_VERSION = 10;
   const int MINOR_VERSION = 1;
 
-  QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;

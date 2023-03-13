@@ -32,6 +32,9 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
 {
   ao_app = p_ao_app;
   net_manager = p_net_manager;
+  connect(net_manager, &NetworkManager::server_list_received, this,
+          &Lobby::setServerList);
+  net_manager->get_server_list();
 
   loadUI();
   COMBO_RELOAD()
@@ -229,7 +232,7 @@ void Lobby::loadUI()
 
 void Lobby::on_refresh_released()
 {
-  net_manager->get_server_list(std::bind(&Lobby::list_servers, this));
+  net_manager->get_server_list();
   get_motd();
   list_favorites();
 }
@@ -244,7 +247,7 @@ void Lobby::on_add_to_fav_released()
 {
   int selection = get_selected_server();
   if (selection > -1) {
-    Options::getInstance().addFavorite(ao_app->get_server_list().at(selection));
+    Options::getInstance().addFavorite(serverList().at(selection));
     list_favorites();
   }
 }
@@ -335,7 +338,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
   if (n_server < 0) return;
 
-  QVector<server_type> f_server_list = ao_app->get_server_list();
+  QVector<server_type> f_server_list = serverList();
 
   if (n_server >= f_server_list.size()) return;
 
@@ -460,7 +463,7 @@ void Lobby::list_servers()
   ui_serverlist_search->setText("");
 
   int i = 0;
-  for (const server_type &i_server : qAsConst(ao_app->get_server_list())) {
+  for (const server_type &i_server : serverList()) {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
@@ -547,6 +550,14 @@ void Lobby::set_server_description(const QString &server_description)
           .replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"),
                    "<a href='\\1'>\\1</a>");
   ui_server_description_text->insertHtml(result);
+}
+
+const QVector<server_type> Lobby::serverList() { return m_serverList; }
+
+void Lobby::setServerList(QVector<server_type> f_serverList)
+{
+  m_serverList = f_serverList;
+  list_servers();
 }
 
 Lobby::~Lobby() {}
