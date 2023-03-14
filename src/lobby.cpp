@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "demoserver.h"
 #include "networkmanager.h"
+#include "widgets/aooptionsdialog.h"
 #include "widgets/add_server_dialog.h"
 #include "widgets/direct_connect_dialog.h"
 #include "widgets/edit_server_dialog.h"
@@ -12,6 +13,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTreeWidget>
+#include <QTextBrowser>
 
 #include <QUiLoader>
 

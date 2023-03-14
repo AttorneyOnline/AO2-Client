@@ -215,12 +215,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Remove any characters not accepted in folder names for the server_name
     // here
     if (Options::getInstance().logToDemoFileEnabled() && server_name != "Demo playback") {
-      this->log_filename = QDateTime::currentDateTime().toUTC().toString(
+      this->log_filename = QDateTime::currentDateTimeUtc().toString(
           "'logs/" + server_name.remove(QRegularExpression("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name + " hosted on address " +
                               server_address + " on " +
-                              QDateTime::currentDateTime().toUTC().toString(),
+                              QDateTime::currentDateTimeUtc().toString(),
                           log_filename, true);
     }
     else
@@ -229,8 +229,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
     if (Options::getInstance().discordEnabled())
-      discord->state_server(server_name.toStdString(),
-                            hash.result().toBase64().toStdString());
+      discord->state_server(server_name,
+                            hash.result().toBase64());
     log_to_demo = false;
   }
   else if (header == "CharsCheck") {
