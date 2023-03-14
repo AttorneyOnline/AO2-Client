@@ -122,4 +122,6 @@ enum EMOTE_MOD_TYPE {
 
 enum MUSIC_EFFECT { FADE_IN = 1, FADE_OUT = 2, SYNC_POS = 4 };
 
+enum class EffectLayer { BEHIND, CHARACTER, OVER, CHAT };
+
 #endif // DATATYPES_H
