@@ -1,4 +1,4 @@
-#ifndef AOEFFECT_H
+﻿#ifndef AOEFFECT_H
 #define AOEFFECT_H
 #pragma once
 
@@ -15,7 +15,7 @@ public:
     QString name() override;
     QString sound() override;
     bool cull() override;
-    EffectLayer layer() override;
+    EffectLayerLocation layer() override;
     bool loop() override;
     int maxDuration() override;
     bool applyFlip() override;
