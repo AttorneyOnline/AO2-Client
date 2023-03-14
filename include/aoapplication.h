@@ -1,11 +1,10 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"
-#include "discord_rich_presence.h"
+#include "include/network/aodiscord.hpp"
 
 #include "bass.h"
 
@@ -64,7 +63,7 @@ public:
   NetworkManager *net_manager;
   Lobby *w_lobby;
   Courtroom *w_courtroom;
-  AttorneyOnline::Discord *discord;
+  AODiscord *discord;
 
   bool lobby_constructed = false;
   bool courtroom_constructed = false;

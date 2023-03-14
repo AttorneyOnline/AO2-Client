@@ -11,7 +11,7 @@ OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
 
 SOURCES += $$files($$PWD/src/*.cpp, true)
-HEADERS += $$files($$PWD/include/*.h, true)
+HEADERS += $$files($$PWD/include/*.h*, true)
 
 FORMS += $$files($$PWD/resource/ui/*.ui)
 
@@ -28,7 +28,7 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 # CONFIG += debug
 
 # Uncomment to enable Discord Rich Presence
-# DEFINES += DISCORD
+DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {
   win32:LIBS            += -ldiscord-rpc
