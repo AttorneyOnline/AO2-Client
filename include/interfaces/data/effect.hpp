@@ -3,7 +3,7 @@
 #pragma once
 
 #include <QString>
-#include <datatypes.h>
+#include <include/data/datatypes_animation.hpp>
 
 namespace AttorneyOnline {
   namespace Core {
@@ -15,7 +15,7 @@ namespace AttorneyOnline {
       virtual QString name() = 0;
       virtual QString sound() = 0;
       virtual bool cull() = 0;
-      virtual EffectLayerLocation layer() = 0;
+      virtual DataTypesAnimation::EffectLayer layer() = 0;
       virtual bool loop() = 0;
       virtual int maxDuration() = 0;
       virtual bool applyFlip() = 0;

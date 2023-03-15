@@ -27,9 +27,10 @@ bool AOEffect::cull()
   return m_effect_ini.value("config/cull", true).toBool();
 }
 
-EffectLayerLocation AOEffect::layer()
+DataTypesAnimation::EffectLayer AOEffect::layer()
 {
-  return QVariant(m_effect_ini.value("config/foo", "chat")).value<EffectLayerLocation>();
+  return DataTypesAnimation().toDataType<DataTypesAnimation::EffectLayer>(
+      m_effect_ini.value("config/layer", "behind").toString().toUpper());
 }
 
 bool AOEffect::loop()
