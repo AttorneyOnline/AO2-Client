@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QObject>
+#include <cstring>
 
 AODiscord::AODiscord(QObject *parent) : Discord(parent)
 {
