@@ -5,6 +5,7 @@
 #include <QObject>
 #include <cstring>
 
+#if defined(DISCORD) && !defined(ANDROID)
 AODiscord::AODiscord(QObject *parent) : Discord(parent)
 {
   DiscordEventHandlers handlers;
@@ -88,3 +89,26 @@ void AODiscord::state_character(QString character_name)
 }
 
 void AODiscord::state_spectate() {}
+#else
+void AODiscord::state_lobby()
+{
+  // NOOP
+}
+
+void AODiscord::state_server(QString server_name, QString server_id)
+{
+  Q_UNUSED(server_name);
+  Q_UNUSED(server_id);
+}
+
+void AODiscord::state_character(QString character_name)
+{
+  Q_UNUSED(character_name);
+}
+
+void AODiscord::state_spectate()
+{
+  // NOOP
+}
+
+#endif
