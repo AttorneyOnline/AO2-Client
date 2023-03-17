@@ -28,7 +28,7 @@ QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 # CONFIG += debug
 
 # Uncomment to enable Discord Rich Presence
-DEFINES += DISCORD
+# DEFINES += DISCORD
 
 contains(DEFINES, DISCORD) {
   win32:LIBS            += -ldiscord-rpc
