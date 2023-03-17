@@ -90,6 +90,8 @@ void AODiscord::state_character(QString character_name)
 
 void AODiscord::state_spectate() {}
 #else
+AODiscord::AODiscord(QObject *parent) : Discord(parent) {}
+
 void AODiscord::state_lobby()
 {
   // NOOP
