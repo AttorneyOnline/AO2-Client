@@ -199,10 +199,18 @@ void Lobby::loadUI()
       QFile l_changelog(get_base_path() + "changelog.md");
       if (!l_changelog.open(QFile::ReadOnly)) {
           qDebug() << "Unable to locate changelog file. Does it even exist?";
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
           ui_game_changelog_text->setMarkdown(l_changelog_text);
+#else
+          ui_game_changelog_text->setPlainText(l_changelog_text); // imperfect solution, but implementing Markdown ourselves for this edge case is out of scope
+#endif
           return;
       }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
       ui_game_changelog_text->setMarkdown(l_changelog.readAll());
+#else
+      ui_game_changelog_text->setPlainText((l_changelog.readAll()));
+#endif
       l_changelog.close();
 
       QTabWidget* l_tabbar = findChild<QTabWidget*>("motd_changelog_tab");
