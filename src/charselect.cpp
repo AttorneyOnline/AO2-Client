@@ -240,6 +240,7 @@ void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   }
   );
+  connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
   menu->popup(button->mapToGlobal(pos));
 }
 
