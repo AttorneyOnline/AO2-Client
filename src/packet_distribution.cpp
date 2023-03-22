@@ -178,8 +178,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString server_address = "", server_name = "";
     switch (w_lobby->pageSelected()) {
     case 0:
-        if (selected_server >= 0 && selected_server < server_list.size()) {
-                auto info = server_list.at(selected_server);
+        if (selected_server >= 0 && selected_server < w_lobby->serverList().size()) {
+                auto info = w_lobby->serverList().at(selected_server);
                 server_name = info.name;
                 server_address =
                     QString("%1:%2").arg(info.ip, QString::number(info.port));
@@ -216,12 +216,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Remove any characters not accepted in folder names for the server_name
     // here
     if (Options::getInstance().logToDemoFileEnabled() && server_name != "Demo playback") {
-      this->log_filename = QDateTime::currentDateTime().toUTC().toString(
+      this->log_filename = QDateTime::currentDateTimeUtc().toString(
           "'logs/" + server_name.remove(QRegularExpression("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name + " hosted on address " +
                               server_address + " on " +
-                              QDateTime::currentDateTime().toUTC().toString(),
+                              QDateTime::currentDateTimeUtc().toString(),
                           log_filename, true);
     }
     else
@@ -230,8 +230,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
     if (Options::getInstance().discordEnabled())
-      discord->state_server(server_name.toStdString(),
-                            hash.result().toBase64().toStdString());
+      discord->state_server(server_name,
+                            hash.result().toBase64());
     log_to_demo = false;
   }
   else if (header == "CharsCheck") {

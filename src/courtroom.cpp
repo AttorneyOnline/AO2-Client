@@ -1463,7 +1463,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
     }
 
     if (Options::getInstance().discordEnabled())
-      ao_app->discord->state_character(f_char.toStdString());
+      ao_app->discord->state_character(f_char);
   }
 
   current_char = f_char;

@@ -53,9 +53,10 @@ public:
 
 signals:
   void server_connected(bool state);
+  void server_list_received(QVector<server_type> serverlist);
 
 public slots:
-  void get_server_list(const std::function<void()> &cb);
+  void get_server_list();
   void ship_server_packet(QString p_packet);
   void join_to_server();
   void handle_server_packet(const QString& p_data);
@@ -64,8 +65,7 @@ public slots:
                         const std::function<void(QString)> &cb);
   void send_heartbeat();
 private slots:
-  void ms_request_finished(QNetworkReply *reply,
-                           const std::function<void()> &cb);
+  void ms_request_finished(QNetworkReply *reply);
 
 private:
   QString get_user_agent() const {

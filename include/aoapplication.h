@@ -1,11 +1,10 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"
-#include "discord_rich_presence.h"
+#include "include/network/aodiscord.hpp"
 
 #include "bass.h"
 
@@ -64,7 +63,7 @@ public:
   NetworkManager *net_manager;
   Lobby *w_lobby;
   Courtroom *w_courtroom;
-  AttorneyOnline::Discord *discord;
+  AODiscord *discord;
 
   bool lobby_constructed = false;
   bool courtroom_constructed = false;
@@ -129,13 +128,6 @@ public:
   QString get_version_string();
 
   ///////////////////////////////////////////
-
-  // Adds the server to favorite_servers.ini
-  void add_favorite_server(int p_server);
-  void remove_favorite_server(int p_server);
-
-  void set_server_list(QVector<server_type> &servers) { server_list = servers; }
-  QVector<server_type> &get_server_list() { return server_list; }
 
   // Returns the character the player has currently selected
   QString get_current_char();
@@ -383,7 +375,6 @@ private:
   const int MAJOR_VERSION = 10;
   const int MINOR_VERSION = 1;
 
-  QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;

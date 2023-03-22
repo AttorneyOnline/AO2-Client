@@ -26,7 +26,7 @@ public:
 
   void set_player_count(int players_online, int max_players);
   void set_server_description(const QString &server_description);
-  void list_servers();
+  const QVector<server_type> serverList();
   int get_selected_server();
   int pageSelected();
 
@@ -35,12 +35,15 @@ private:
   NetworkManager *net_manager;
 
   const QString DEFAULT_UI = "lobby.ui";
+  QVector<server_type> m_serverList;
+  void setServerList(QVector<server_type> f_serverList);
 
   void list_favorites();
   void list_demos();
   void get_motd();
   void check_for_updates();
   void reset_selection();
+  void list_servers();
 
   int last_index = -1;
 

@@ -11,7 +11,7 @@ OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
 
 SOURCES += $$files($$PWD/src/*.cpp, true)
-HEADERS += $$files($$PWD/include/*.h, true)
+HEADERS += $$files($$PWD/include/*.h*, true)
 
 FORMS += $$files($$PWD/resource/ui/*.ui)
 
