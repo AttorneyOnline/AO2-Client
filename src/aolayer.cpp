@@ -339,8 +339,9 @@ void AOLayer::start_playback(QString p_image)
   }
   #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
-  #endif
+  #else
   frame_loader = QtConcurrent::run(thread_pool, &AOLayer::populate_vectors, this);
+  #endif
   last_path = p_image;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
