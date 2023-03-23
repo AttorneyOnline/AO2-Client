@@ -7,11 +7,11 @@
 #include "widgets/direct_connect_dialog.h"
 #include "widgets/edit_server_dialog.h"
 
-#include <QTreeWidget>
-#include <QPushButton>
+#include <QImageReader>
 #include <QLabel>
 #include <QLineEdit>
-#include <QImageReader>
+#include <QPushButton>
+#include <QTreeWidget>
 
 #include <QUiLoader>
 
@@ -195,28 +195,30 @@ void Lobby::loadUI()
   FROM_UI(QTextBrowser, motd_text);
   FROM_UI(QTextBrowser, game_changelog_text)
   if (ui_game_changelog_text != nullptr) {
-      QString l_changelog_text = "No changelog found.";
-      QFile l_changelog(get_base_path() + "changelog.md");
-      if (!l_changelog.open(QFile::ReadOnly)) {
-          qDebug() << "Unable to locate changelog file. Does it even exist?";
+    QString l_changelog_text = "No changelog found.";
+    QFile l_changelog(get_base_path() + "changelog.md");
+    if (!l_changelog.open(QFile::ReadOnly)) {
+      qDebug() << "Unable to locate changelog file. Does it even exist?";
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-          ui_game_changelog_text->setMarkdown(l_changelog_text);
+      ui_game_changelog_text->setMarkdown(l_changelog_text);
 #else
-          ui_game_changelog_text->setPlainText(l_changelog_text); // imperfect solution, but implementing Markdown ourselves for this edge case is out of scope
+      ui_game_changelog_text->setPlainText(
+          l_changelog_text); // imperfect solution, but implementing Markdown
+                             // ourselves for this edge case is out of scope
 #endif
-          return;
-      }
+      return;
+    }
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-      ui_game_changelog_text->setMarkdown(l_changelog.readAll());
+    ui_game_changelog_text->setMarkdown(l_changelog.readAll());
 #else
-      ui_game_changelog_text->setPlainText((l_changelog.readAll()));
+    ui_game_changelog_text->setPlainText((l_changelog.readAll()));
 #endif
-      l_changelog.close();
+    l_changelog.close();
 
-      QTabWidget* l_tabbar = findChild<QTabWidget*>("motd_changelog_tab");
-      if (l_tabbar != nullptr) {
-          l_tabbar->tabBar()->setExpanding(true);
-      }
+    QTabWidget *l_tabbar = findChild<QTabWidget *>("motd_changelog_tab");
+    if (l_tabbar != nullptr) {
+      l_tabbar->tabBar()->setExpanding(true);
+    }
   }
 }
 

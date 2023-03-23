@@ -62,7 +62,9 @@ bool AOApplication::write_to_file(QString p_text, QString p_file, bool make_dir)
                  QIODevice::Truncate)) {
     QTextStream out(&f_log);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     out.setCodec("UTF-8");
+#endif
     out << p_text;
 
     f_log.flush();
@@ -92,7 +94,9 @@ bool AOApplication::append_to_file(QString p_text, QString p_file,
   if (f_log.open(QIODevice::WriteOnly | QIODevice::Append)) {
     QTextStream out(&f_log);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     out.setCodec("UTF-8");
+#endif
     out << "\r\n" << p_text;
 
     f_log.flush();
@@ -131,7 +135,9 @@ QString AOApplication::read_design_ini(QString p_identifier,
                                        QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
   QVariant value = settings.value(p_identifier);
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
@@ -392,8 +398,10 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
 {
   QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
-  settings.beginGroup(target_tag);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
+  settings.beginGroup(target_tag);
   QString value = settings.value(p_search_line).value<QString>();
   settings.endGroup();
   return value;
@@ -404,7 +412,10 @@ void AOApplication::set_char_ini(QString p_char, QString value,
 {
   QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
   settings.beginGroup(target_tag);
   settings.setValue(p_search_line, value);
   settings.endGroup();
@@ -415,7 +426,9 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
 {
   QStringList r_values;
   QSettings settings(get_real_path(p_path), QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
   if (!target_tag.isEmpty())
     settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
@@ -711,8 +724,9 @@ QStringList AOApplication::get_effects(QString p_char)
     }
 
     QSettings l_effects_ini(i_filepath, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     l_effects_ini.setIniCodec("UTF-8");
-
+#endif
          // port legacy effects
     if (!l_effects_ini.contains("version/major") || l_effects_ini.value("version/major").toInt() < 2)
     {
@@ -791,7 +805,9 @@ QString AOApplication::get_effect_property(QString fx_name, QString p_char,
     path = get_real_path(p);
     if (!path.isEmpty()) {
       QSettings settings(path, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
       settings.setIniCodec("UTF-8");
+#endif
       QStringList char_effects = settings.childGroups();
       for (int i = 0; i < char_effects.size(); ++i) {
         QString effect = settings.value(char_effects[i] + "/name").toString();
