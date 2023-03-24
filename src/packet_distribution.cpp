@@ -451,22 +451,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
     log_to_demo = false;
   }
-  else if (header == "IL") {
-    if (courtroom_constructed && !f_contents.isEmpty())
-      w_courtroom->set_ip_list(f_contents.at(0));
-    log_to_demo = false;
-  }
-  else if (header == "MU") {
-    if (courtroom_constructed && !f_contents.isEmpty())
-      w_courtroom->set_mute(true, f_contents.at(0).toInt());
-    log_to_demo = false;
-  }
-  else if (header == "UM") {
-    if (courtroom_constructed && !f_contents.isEmpty()) {
-      w_courtroom->set_mute(false, f_contents.at(0).toInt());
-    log_to_demo = false;
-}
-  }
   else if (header == "BB") {
     if (courtroom_constructed && !f_contents.isEmpty()) {
       call_notice(f_contents.at(0));
@@ -568,7 +552,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString p_st = Options::getInstance().subTheme();
     if (p_st.toLower() != "server")
       // We don't. Simply acknowledge the subtheme sent by the server, but don't do anything else.
-      return;
+      goto end;
 
     // Reload theme request
     if (f_contents.size() > 1 && f_contents.at(1) == "1") {
