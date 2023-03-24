@@ -196,17 +196,6 @@ public:
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
   void set_self_offset(const QString& p_list);
 
-  // takes in serverD-formatted IP list as prints a converted version to server
-  // OOC admittedly poorly named
-  void set_ip_list(QString p_list);
-
-  // disables chat if current cid matches second argument
-  // enables if p_muted is false
-  void set_mute(bool p_muted, int p_cid);
-
-  // send a message that the player is banned and quits the server
-  void set_ban(int p_cid);
-
   // cid = character id, returns the cid of the currently selected character
   int get_cid() { return m_cid; }
   QString get_current_char() { return current_char; }

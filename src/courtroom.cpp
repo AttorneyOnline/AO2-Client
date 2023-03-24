@@ -3932,43 +3932,6 @@ void Courtroom::set_self_offset(const QString& p_list) {
                                        ui_viewport->height() * self_offset_v / 100);
 }
 
-void Courtroom::set_ip_list(QString p_list)
-{
-  QString f_list = p_list.replace("|", ":").replace("*", "\n");
-
-  ui_server_chatlog->append(f_list);
-}
-
-void Courtroom::set_mute(bool p_muted, int p_cid)
-{
-  if (p_cid != m_cid && p_cid != -1)
-    return;
-
-  if (p_muted)
-    ui_muted->show();
-  else {
-    ui_muted->hide();
-    ui_ic_chat_message->setFocus();
-  }
-
-  ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
-  ui_muted->set_image("muted");
-
-  is_muted = p_muted;
-  ui_ic_chat_message->setEnabled(!p_muted);
-}
-
-void Courtroom::set_ban(int p_cid)
-{
-  if (p_cid != m_cid && p_cid != -1)
-    return;
-
-  call_notice(tr("You have been banned."));
-
-  ao_app->construct_lobby();
-  ao_app->destruct_courtroom();
-}
-
 void Courtroom::handle_song(QStringList *p_contents)
 {
   QStringList f_contents = *p_contents;
