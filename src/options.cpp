@@ -237,12 +237,12 @@ void Options::setCustomShownameEnabled(bool value)
 
 QString Options::username() const
 {
-  return config.value("default_username", "").value<QString>();
+  return config.value("default_username", "").toString();
 }
 
 void Options::setUsername(QString value)
 {
-  config.setValue("default_username", value);
+  config.setValue("default_username", value.toUtf8());
 }
 
 QString Options::shownameOnJoin() const
@@ -252,7 +252,7 @@ QString Options::shownameOnJoin() const
 
 void Options::setShownameOnJoin(QString value)
 {
-  config.setValue("default_showname", value);
+  config.setValue("default_showname", value.toUtf8());
 }
 
 QString Options::audioOutputDevice() const
