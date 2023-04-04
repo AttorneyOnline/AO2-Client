@@ -3,7 +3,7 @@
 #ifndef ADD_SERVER_DIALOG_H
 #define ADD_SERVER_DIALOG_H
 
-#include "interfaces/server_dialog.h"
+#include "interfaces/widgets/server_dialog.hpp"
 
 class QComboBox;
 class QDialogButton;

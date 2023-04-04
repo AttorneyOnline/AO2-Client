@@ -3,7 +3,7 @@
 #ifndef EDIT_SERVER_DIALOG_H
 #define EDIT_SERVER_DIALOG_H
 
-#include "interfaces/server_dialog.h"
+#include "interfaces/widgets/server_dialog.hpp"
 
 class QPushButton;
 class QDialogButton;
