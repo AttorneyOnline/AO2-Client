@@ -19,10 +19,9 @@ public:
 
   AOApplication *ao_app;
 
-  void refresh();
   void reset();
   void set_taken(bool is_taken);
-  void set_passworded();
+  bool isTaken();
 
   void apply_taken_image();
 
@@ -34,7 +33,6 @@ private:
   QWidget *m_parent;
 
   AOImage *ui_taken;
-  AOImage *ui_passworded;
   AOImage *ui_selector;
 
 protected:
