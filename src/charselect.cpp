@@ -7,7 +7,8 @@
 
 void Courtroom::construct_char_select()
 {
-  this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) &
+                       ~Qt::WindowMaximizeButtonHint);
 
   ui_char_select_background = new AOImage(this, ao_app);
   ui_char_select_background->setObjectName("ui_char_select_background");
@@ -52,8 +53,8 @@ void Courtroom::construct_char_select()
   ui_char_taken->setText(tr("Taken"));
   ui_char_taken->setObjectName("ui_char_taken");
 
-  connect(ui_char_list, &QTreeWidget::itemDoubleClicked,
-          this, &Courtroom::on_char_list_double_clicked);
+  connect(ui_char_list, &QTreeWidget::itemDoubleClicked, this,
+          &Courtroom::on_char_list_double_clicked);
 
   connect(ui_back_to_lobby, &AOButton::clicked, this,
           &Courtroom::on_back_to_lobby_clicked);
@@ -63,15 +64,15 @@ void Courtroom::construct_char_select()
   connect(ui_char_select_right, &AOButton::clicked, this,
           &Courtroom::on_char_select_right_clicked);
 
-  connect(ui_spectator, &AOButton::clicked, this, &Courtroom::on_spectator_clicked);
+  connect(ui_spectator, &AOButton::clicked, this,
+          &Courtroom::on_spectator_clicked);
 
-  connect(ui_char_search, &QLineEdit::textEdited,this,
+  connect(ui_char_search, &QLineEdit::textEdited, this,
           &Courtroom::on_char_search_changed);
   connect(ui_char_passworded, &QCheckBox::stateChanged, this,
           &Courtroom::on_char_passworded_clicked);
   connect(ui_char_taken, &QCheckBox::stateChanged, this,
-           &Courtroom::on_char_taken_clicked);
-
+          &Courtroom::on_char_taken_clicked);
 }
 
 void Courtroom::set_char_select()
@@ -83,7 +84,7 @@ void Courtroom::set_char_select()
 
   if (f_charselect.width < 0 || f_charselect.height < 0) {
     qWarning() << "did not find char_select width or height in "
-                "courtroom_design.ini!";
+                  "courtroom_design.ini!";
     this->setFixedSize(714, 668);
   }
   else
@@ -98,8 +99,8 @@ void Courtroom::set_char_select()
   set_size_and_pos(ui_char_taken, "char_taken");
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
-  // Silence emission. This causes the signal to be emitted TWICE during server join!
-  // Fuck this. Performance Sandwich.
+  // Silence emission. This causes the signal to be emitted TWICE during server
+  // join! Fuck this. Performance Sandwich.
   ui_char_taken->blockSignals(true);
   ui_char_passworded->blockSignals(true);
   ui_char_taken->setChecked(true);
@@ -142,18 +143,16 @@ void Courtroom::set_char_select_page()
   else
     chars_on_page = max_chars_on_page;
 
-  if (total_pages > current_char_page + 1)
-    ui_char_select_right->show();
+  if (total_pages > current_char_page + 1) ui_char_select_right->show();
 
-  if (current_char_page > 0)
-    ui_char_select_left->show();
+  if (current_char_page > 0) ui_char_select_left->show();
 
   QPoint f_spacing =
       ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
 
-  char_columns =
-      ((ui_char_buttons->width() - button_width) / (f_spacing.x() + button_width)) +
-      1;
+  char_columns = ((ui_char_buttons->width() - button_width) /
+                  (f_spacing.x() + button_width)) +
+                 1;
   char_rows = ((ui_char_buttons->height() - button_height) /
                (f_spacing.y() + button_height)) +
               1;
@@ -180,14 +179,14 @@ void Courtroom::on_char_list_double_clicked(QTreeWidgetItem *p_item, int column)
 
 void Courtroom::char_clicked(int n_char)
 {
-  if (n_char != -1)
-  {
+  if (n_char != -1) {
     QString char_name = char_list.at(n_char).name;
     QString char_ini_path = ao_app->get_real_path(
-          ao_app->get_character_path(char_name, "char.ini"));
+        ao_app->get_character_path(char_name, "char.ini"));
 
     if (!file_exists(char_ini_path)) {
-      call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
+      call_error(
+          tr("Could not find character (char.ini) for %1").arg(char_name));
       return;
     }
 
@@ -195,8 +194,7 @@ void Courtroom::char_clicked(int n_char)
   }
 
   if (n_char != m_cid || n_char == -1) {
-    ao_app->send_server_packet(
-        new AOPacket("PW", {ui_char_password->text()}));
+    ao_app->send_server_packet(new AOPacket("PW", {ui_char_password->text()}));
     ao_app->send_server_packet(
         new AOPacket("CC", {QString::number(ao_app->client_id),
                             QString::number(n_char), get_hdid()}));
@@ -208,18 +206,17 @@ void Courtroom::char_clicked(int n_char)
   }
 }
 
-void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
+void Courtroom::on_char_button_context_menu_requested(const QPoint &f_position)
 {
-  AOCharButton* button = qobject_cast<AOCharButton*>(sender());
+  AOCharButton *button = qobject_cast<AOCharButton *>(sender());
   int n_char = ui_char_button_list.indexOf(button);
-  if (n_char == -1)
-  {
+  if (n_char == -1) {
     return;
   }
 
   QString char_name = char_list.at(n_char).name;
-  QString char_ini_path = ao_app->get_real_path(
-        ao_app->get_character_path(char_name, "char.ini"));
+  QString char_ini_path =
+      ao_app->get_real_path(ao_app->get_character_path(char_name, "char.ini"));
 
   if (!file_exists(char_ini_path)) {
     call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
@@ -227,27 +224,25 @@ void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
   }
 
   QMenu *menu = new QMenu(this);
-  menu->addAction(QString("Edit " + char_name + "/char.ini"), this,
-                  [=] { QDesktopServices::openUrl(QUrl::fromLocalFile(char_ini_path)); }
-  );
+  menu->addAction(QString("Edit " + char_name + "/char.ini"), this, [=] {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(char_ini_path));
+  });
   menu->addSeparator();
-  menu->addAction(QString("Open character folder " + char_name), this,
-                  [=] {
-    QString p_path = ao_app->get_real_path(VPath("characters/" + char_name + "/"));
+  menu->addAction(QString("Open character folder " + char_name), this, [=] {
+    QString p_path =
+        ao_app->get_real_path(VPath("characters/" + char_name + "/"));
     if (!dir_exists(p_path)) {
       return;
     }
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
-  }
-  );
+  });
   connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
-  menu->popup(button->mapToGlobal(pos));
+  menu->popup(button->mapToGlobal(f_position));
 }
 
 void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 {
-  if (ui_char_button_list_filtered.size() == 0)
-    return;
+  if (ui_char_button_list_filtered.size() == 0) return;
 
   QPoint f_spacing =
       ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
@@ -298,12 +293,14 @@ void Courtroom::character_loading_finished()
     char_button->setToolTip(char_list.at(n).name);
     ui_char_button_list.append(char_button);
     QString char_category = ao_app->get_category(char_list.at(n).name);
-    QList<QTreeWidgetItem*> matching_list = ui_char_list->findItems(char_category, Qt::MatchFixedString, 0);
+    QList<QTreeWidgetItem *> matching_list =
+        ui_char_list->findItems(char_category, Qt::MatchFixedString, 0);
     // create the character tree item
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
     treeItem->setText(0, char_list.at(n).name);
-    treeItem->setIcon(0, QIcon(ao_app->get_image_suffix(
-      ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
+    treeItem->setIcon(
+        0, QIcon(ao_app->get_image_suffix(
+               ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
     treeItem->setText(1, QString::number(n));
     // category logic
     QTreeWidgetItem *category;
@@ -317,15 +314,16 @@ void Courtroom::character_loading_finished()
       category = new QTreeWidgetItem();
       category->setText(0, char_category);
       category->setText(1, "-1");
-      category->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicatorWhenChildless);
+      category->setChildIndicatorPolicy(
+          QTreeWidgetItem::DontShowIndicatorWhenChildless);
       ui_char_list->insertTopLevelItem(0, category);
       category->addChild(treeItem);
     }
-      
-    
+
     connect(char_button, &AOCharButton::clicked,
             [this, n]() { this->char_clicked(n); });
-    connect(char_button, &AOCharButton::customContextMenuRequested, this, &Courtroom::on_char_button_context_menu_requested);
+    connect(char_button, &AOCharButton::customContextMenuRequested, this,
+            &Courtroom::on_char_button_context_menu_requested);
 
     // This part here serves as a way of showing to the player that the game is
     // still running, it is just loading the pictures of the characters.
@@ -341,9 +339,8 @@ void Courtroom::filter_character_list()
   ui_char_button_list_filtered.clear();
   for (int i = 0; i < char_list.size(); i++) {
     AOCharButton *current_char = ui_char_button_list.at(i);
-    QTreeWidgetItem* current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchExactly | Qt::MatchRecursive, 1)[0];
-
-
+    QTreeWidgetItem *current_char_list_item = ui_char_list->findItems(
+        QString::number(i), Qt::MatchExactly | Qt::MatchRecursive, 1)[0];
 
     // It seems passwording characters is unimplemented yet?
     // Until then, this will stay here, I suppose.
@@ -359,7 +356,7 @@ void Courtroom::filter_character_list()
                                        Qt::CaseInsensitive)) {
       current_char_list_item->setHidden(true);
       continue;
-  }
+    }
 
     // We only really need to update the fact that a character is taken
     // for the buttons that actually appear.

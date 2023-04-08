@@ -21,12 +21,6 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
   ui_taken->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken->hide();
 
-  ui_passworded = new AOImage(this, ao_app, true);
-  ui_passworded->resize(60, 60);
-  ui_passworded->set_image("char_passworded");
-  ui_passworded->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_passworded->hide();
-
   ui_selector = new AOImage(parent, ao_app, true);
   ui_selector->resize(62, 62);
   ui_selector->move(x_pos - 1, y_pos - 1);
@@ -38,7 +32,6 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
 void AOCharButton::reset()
 {
   ui_taken->hide();
-  ui_passworded->hide();
   ui_selector->hide();
 }
 
@@ -54,8 +47,6 @@ void AOCharButton::apply_taken_image()
     ui_taken->hide();
   }
 }
-
-void AOCharButton::set_passworded() { ui_passworded->show(); }
 
 void AOCharButton::set_image(QString p_character)
 {
@@ -76,6 +67,11 @@ void AOCharButton::set_image(QString p_character)
                         "background-color: #ffffff; border: 0px; }");
     this->setText(p_character);
   }
+}
+
+bool AOCharButton::isTaken()
+{
+  return taken;
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
