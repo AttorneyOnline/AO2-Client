@@ -9,7 +9,7 @@ class AOCharButton : public AttorneyOnline::UI::CharButton {
   Q_OBJECT
 public:
   explicit AOCharButton(QWidget *parent, AOApplication *f_ao_app,
-                        const bool &f_id, const bool &f_taken, const QString &f_name);
+                        const int &f_id, const bool &f_taken, const QString &f_name);
   ~AOCharButton();
 
   void setTaken(const bool &f_state) override;

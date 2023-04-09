@@ -66,6 +66,7 @@
 #include <stack>
 
 class AOApplication;
+class AOCharSelect;
 
 class Courtroom : public QMainWindow {
   Q_OBJECT
@@ -126,7 +127,7 @@ public:
     }
   }
 
-  void character_loading_finished();
+  void open_charselect();
   void on_back_to_lobby_clicked();
 
   //
@@ -336,6 +337,7 @@ public:
   ~Courtroom();
 private:
   AOApplication *ao_app;
+  AOCharSelect* ui_charselect = nullptr;
 
   // Percentage of audio that is suppressed when client is not in focus
   int suppress_audio = 0;

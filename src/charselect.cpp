@@ -19,10 +19,15 @@ void Courtroom::char_clicked(int n_char)
   }
 }
 
-void Courtroom::character_loading_finished()
+void Courtroom::open_charselect()
 {
-  AOCharSelect* l_charselect = new AOCharSelect(centralWidget(), ao_app);
-  l_charselect->loadUI(char_list);
-  connect(l_charselect, &AOCharSelect::characterSelected, this, &Courtroom::char_clicked);
-  l_charselect->show();
+  if (ui_charselect == nullptr) {
+    ui_charselect = new AOCharSelect(centralWidget(), ao_app);
+    ui_charselect->loadUI(char_list);
+    connect(ui_charselect, &AOCharSelect::characterSelected, this, &Courtroom::char_clicked);
+    connect(ui_charselect, &AOCharSelect::destroyed, this, [=]{
+      ui_charselect = nullptr;
+    });
+    ui_charselect->show();
+  }
 }
