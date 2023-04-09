@@ -1,5 +1,6 @@
 #include "courtroom.h"
 #include "options.h"
+#include "widgets/aocharselect.hpp"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow(nullptr)
 {
@@ -1529,6 +1530,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
 void Courtroom::enter_courtroom()
 {
+  emit closeCharselect();
   set_evidence_page();
 
   if (ao_app->flipping_supported)

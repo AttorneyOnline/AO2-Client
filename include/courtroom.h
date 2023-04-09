@@ -791,6 +791,10 @@ private:
   void reset_ui();
 
   void regenerate_ic_chatlog();
+
+signals:
+  void closeCharselect();
+
 public slots:
   void objection_done();
   void preanim_done();
