@@ -157,7 +157,6 @@ void AOCharSelect::buildCharacterList(const QVector<char_type> &f_characters)
     ui_char_name_tree->clear();
   }
 
-  QList<QTreeWidgetItem *> l_category_list;
   for (int l_character_id = 0; l_character_id < f_characters.size();
        l_character_id++) {
     char_type l_character = f_characters.at(l_character_id);

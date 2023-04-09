@@ -24,11 +24,12 @@ void Courtroom::open_charselect()
   if (ui_charselect == nullptr) {
     ui_charselect = new AOCharSelect(centralWidget(), ao_app);
     ui_charselect->loadUI(char_list);
-    connect(ui_charselect, &AOCharSelect::characterSelected, this, &Courtroom::char_clicked);
-
-    connect(ui_charselect, &AOCharSelect::destroyed, this, [=]{
-      ui_charselect = nullptr;
-    });
+    connect(ui_charselect, &AOCharSelect::characterSelected, this,
+            &Courtroom::char_clicked);
+    connect(this, &Courtroom::closeCharselect, ui_charselect,
+            &AOCharSelect::close);
+    connect(ui_charselect, &AOCharSelect::destroyed, this,
+            [=] { ui_charselect = nullptr; });
     ui_charselect->show();
   }
 }
