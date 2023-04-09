@@ -238,12 +238,18 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
+    QVector<bool> l_taken_characters;
     for (int n_char = 0; n_char < f_contents.size(); ++n_char) {
-      if (f_contents.at(n_char) == "-1")
+      if (f_contents.at(n_char) == "-1") {
         w_courtroom->set_taken(n_char, true);
-      else
+        l_taken_characters.append(true);
+      }
+      else {
         w_courtroom->set_taken(n_char, false);
+        l_taken_characters.append(false);
+      }
     }
+    w_courtroom->set_taken_charselect(l_taken_characters);
     log_to_demo = false;
   }
 

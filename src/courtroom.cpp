@@ -1,5 +1,6 @@
 #include "courtroom.h"
 #include "options.h"
+#include "widgets/aocharselect.hpp"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow(nullptr)
 {
@@ -1249,6 +1250,13 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   f_char.evidence_string = char_list.at(n_char).evidence_string;
 
   char_list.replace(n_char, f_char);
+}
+
+void Courtroom::set_taken_charselect(const QVector<bool> &f_taken_characters)
+{
+  if (ui_charselect != nullptr) {
+    ui_charselect->setTakenCharacters(f_taken_characters);
+  }
 }
 
 QPoint Courtroom::get_theme_pos(QString p_identifier)
@@ -5730,6 +5738,34 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
   qDebug().nospace() << "Truncated label text from " << label_text_tr << " ("
                      << label_px_width << "px) to " << truncated_label << " ("
                      << truncated_px_width << "px)";
+}
+
+void Courtroom::char_clicked(int n_char)
+{
+  if (n_char != m_cid || n_char == -1) {
+    ao_app->send_server_packet(
+        new AOPacket("CC", {QString::number(ao_app->client_id),
+                            QString::number(n_char), get_hdid()}));
+  }
+  if (n_char == m_cid || n_char == -1) {
+    update_character(n_char);
+    enter_courtroom();
+  }
+}
+
+void Courtroom::open_charselect()
+{
+  if (ui_charselect == nullptr) {
+    ui_charselect = new AOCharSelect(centralWidget(), ao_app);
+    ui_charselect->loadUI(char_list);
+    connect(ui_charselect, &AOCharSelect::characterSelected, this,
+            &Courtroom::char_clicked);
+    connect(this, &Courtroom::closeCharselect, ui_charselect,
+            &AOCharSelect::close);
+    connect(ui_charselect, &AOCharSelect::destroyed, this,
+            [=] { ui_charselect = nullptr; });
+    ui_charselect->show();
+  }
 }
 
 Courtroom::~Courtroom()
