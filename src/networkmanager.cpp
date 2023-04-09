@@ -217,6 +217,7 @@ void NetworkManager::disconnect_from_server()
 
 void NetworkManager::ship_server_packet(QString p_packet)
 {
+  qDebug() << "S:" << p_packet;
   switch (active_connection_type) {
   case TCP:
     server_socket.tcp->write(p_packet.toUtf8());
@@ -229,6 +230,7 @@ void NetworkManager::ship_server_packet(QString p_packet)
 
 void NetworkManager::handle_server_packet(const QString& p_data)
 {
+  qDebug() << "R:" << p_data;
   QString in_data = p_data;
 
   if (!p_data.endsWith("%")) {

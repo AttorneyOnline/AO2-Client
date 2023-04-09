@@ -1,7 +1,7 @@
 #include "courtroom.h"
 #include "options.h"
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow(nullptr)
 {
   ao_app = p_ao_app;
 
@@ -405,9 +405,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // TODO : Properly handle widget creation order.
   // Good enough for 2.10
   ui_pair_list->raise();
-
-  construct_char_select();
-
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
 
   connect(ui_vp_objection, &SplashLayer::done, this, &Courtroom::objection_done);
@@ -564,8 +561,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
 
   set_widgets();
-
-  set_char_select();
 }
 
 void Courtroom::on_application_state_changed(Qt::ApplicationState state)
@@ -1089,24 +1084,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_sfx_slider, "sfx_slider");
   set_size_and_pos(ui_blip_slider, "blip_slider");
 
-  set_size_and_pos(ui_back_to_lobby, "back_to_lobby");
-  ui_back_to_lobby->setText(tr("Back to Lobby"));
-  ui_back_to_lobby->setToolTip(tr("Return back to the server list."));
-
-  set_size_and_pos(ui_char_password, "char_password");
-
-  set_size_and_pos(ui_char_buttons, "char_buttons");
-
-  set_size_and_pos(ui_char_select_left, "char_select_left");
-  ui_char_select_left->set_image("arrow_left");
-
-  set_size_and_pos(ui_char_select_right, "char_select_right");
-  ui_char_select_right->set_image("arrow_right");
-
-  set_size_and_pos(ui_spectator, "spectator");
-  ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
-                              "interact with the in-character screen."));
-
   // QCheckBox
   truncate_label_text(ui_guard, "guard");
   truncate_label_text(ui_pre, "pre");
@@ -1293,10 +1270,10 @@ QPoint Courtroom::get_theme_pos(QString p_identifier)
 void Courtroom::done_received()
 {
   m_cid = -1;
-
+  qDebug() << char_list.size();
   if (char_list.size() > 0)
   {
-    set_char_select();
+    character_loading_finished();
   }
   else
   {
@@ -1309,8 +1286,6 @@ void Courtroom::done_received()
   set_pair_list();
 
   show();
-
-  ui_spectator->show();
 }
 
 void Courtroom::set_background(QString p_background, bool display)
@@ -1547,7 +1522,6 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   else {
     ui_ic_chat_name->setPlaceholderText("Spectator");
   }
-  ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
   update_audio_volume();
@@ -5472,10 +5446,6 @@ void Courtroom::on_change_character_clicked()
 {
   sfx_player->set_muted(true);
   blip_player->set_muted(true);
-
-  set_char_select();
-
-  ui_char_select_background->show();
 }
 
 void Courtroom::on_reload_theme_clicked()
@@ -5494,21 +5464,9 @@ void Courtroom::on_back_to_lobby_clicked()
 {
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
-}
 
-void Courtroom::on_char_select_left_clicked()
-{
-  --current_char_page;
-  set_char_select_page();
+  character_loading_finished();
 }
-
-void Courtroom::on_char_select_right_clicked()
-{
-  ++current_char_page;
-  set_char_select_page();
-}
-
-void Courtroom::on_spectator_clicked() { char_clicked(-1); }
 
 void Courtroom::on_call_mod_clicked()
 {

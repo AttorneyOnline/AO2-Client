@@ -4,7 +4,6 @@
 #include "aoapplication.h"
 #include "aoblipplayer.h"
 #include "aobutton.h"
-#include "aocharbutton.h"
 #include "aoclocklabel.h"
 #include "aoemotebutton.h"
 #include "aoevidencebutton.h"
@@ -128,6 +127,7 @@ public:
   }
 
   void character_loading_finished();
+  void on_back_to_lobby_clicked();
 
   //
   void set_courtroom_size();
@@ -582,11 +582,6 @@ private:
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
 
-  int current_char_page = 0;
-  int char_columns = 10;
-  int char_rows = 9;
-  int max_chars_on_page = 90;
-
   const int button_width = 60;
   const int button_height = 60;
 
@@ -779,38 +774,7 @@ private:
   AOButton *ui_evidence_load;
   QPlainTextEdit *ui_evidence_description;
 
-
-  AOImage *ui_char_select_background;
-
-  // pretty list of characters
-  QTreeWidget *ui_char_list;
-
-  // abstract widget to hold char buttons
-  QWidget *ui_char_buttons;
-
-  QVector<AOCharButton *> ui_char_button_list;
-  QVector<AOCharButton *> ui_char_button_list_filtered;
-
-  AOButton *ui_back_to_lobby;
-
-  QLineEdit *ui_char_password;
-
-  AOButton *ui_char_select_left;
-  AOButton *ui_char_select_right;
-
-  AOButton *ui_spectator;
-
-  QLineEdit *ui_char_search;
-  QCheckBox *ui_char_passworded;
-  QCheckBox *ui_char_taken;
-
-  void construct_char_select();
-  void set_char_select();
-  void set_char_select_page();
   void char_clicked(int n_char);
-  void on_char_button_context_menu_requested(const QPoint &pos);
-  void put_button_in_place(int starting, int chars_on_this_page);
-  void filter_character_list();
 
   void initialize_emotes();
   void refresh_emotes();
@@ -983,17 +947,6 @@ private slots:
   void evidence_save(QString filename);
   void evidence_load(QString filename);
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
-
-  void on_back_to_lobby_clicked();
-
-  void on_char_list_double_clicked(QTreeWidgetItem *p_item, int column);
-  void on_char_select_left_clicked();
-  void on_char_select_right_clicked();
-  void on_char_search_changed();
-  void on_char_taken_clicked();
-  void on_char_passworded_clicked();
-
-  void on_spectator_clicked();
 
   void on_switch_area_music_clicked();
 
