@@ -165,9 +165,11 @@ public:
   // reads theme inis and returns the size and pos as defined by it
   QPoint get_theme_pos(QString p_identifier);
 
-  // sets status as taken on character with cid n_char and places proper shading
-  // on charselect
+  // sets status as taken on character with cid n_char
   void set_taken(int n_char, bool p_taken);
+
+  // passes status of taken or free characters to the charselect.
+  void set_taken_charselect(const QVector<bool> &f_taken_characters);
 
   // sets the current background to argument. also does some checks to see if
   // it's a legacy bg
