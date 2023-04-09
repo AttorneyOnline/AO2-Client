@@ -11,7 +11,7 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *f_ao_app,
                            const int &f_id, const bool &f_taken,
                            const QString &f_name)
     : AttorneyOnline::UI::CharButton(parent), ao_app(f_ao_app),
-      m_character_id(f_id), m_taken(f_taken), m_character_name(f_name)
+      ui_taken_overlay(new QWidget(this)), m_character_id(f_id), m_taken(f_taken), m_character_name(f_name)
 {
   connect(this, &AOCharButton::pressed, this,
           [=]() { emit characterSelected(m_character_id); });
@@ -28,12 +28,10 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *f_ao_app,
     setText(f_name);
   }
 
-  if (f_taken) {
-    setStyleSheet("background-color: rgba(0, 0, 0, 128)");
-  }
-  else {
-    setStyleSheet("");
-  }
+  ui_taken_overlay->setStyleSheet("background-color: rgba(0, 0, 0, 64)");
+  ui_taken_overlay->setVisible(m_taken);
+  ui_taken_overlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_taken_overlay->setFixedSize(QSize(fixed_height, fixed_width));
 }
 
 AOCharButton::~AOCharButton() {}
@@ -41,12 +39,7 @@ AOCharButton::~AOCharButton() {}
 void AOCharButton::setTaken(const bool &f_state)
 {
   m_taken = f_state;
-  if (isTaken()) {
-    setStyleSheet("background-color: rgba(0, 0, 0, 128)");
-  }
-  else {
-    setStyleSheet("");
-  }
+  ui_taken_overlay->setVisible(isTaken());
 }
 
 bool AOCharButton::isTaken() { return m_taken; }

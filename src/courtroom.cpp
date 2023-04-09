@@ -1,6 +1,5 @@
 #include "courtroom.h"
 #include "options.h"
-#include "widgets/aocharselect.hpp"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow(nullptr)
 {
