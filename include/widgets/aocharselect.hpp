@@ -24,32 +24,38 @@ public:
   void setTakenCharacters(const QVector<bool> &f_taken_state) override;
 
 private slots:
-  void onSearchChanged(const QString &f_string) override;
-  void onShowTakenChanged(const bool &f_state) override;
-  void onCharacterSelected(const int &f_character_index) override;
-  void onCharacterListDoubleClicked(QTreeWidgetItem *p_item, int column) override;
-  void onCharacterContextMenuRequested(const QPoint &pos) override;
+  void onSearchChanged(const QString &f_string) ;
+  void onShowTakenChanged(int f_state) ;
+  void onCharacterSelected(const int &f_character_index) ;
+  void onCharacterListDoubleClicked(QTreeWidgetItem *p_item,
+                                    int column) ;
+  void onCharacterButtonContextMenuRequested(const QPoint &f_pos);
+  void onCharacterItemContextMenuRequested(const QPoint &f_pos);
 
 signals:
   void characterSelected(const int &f_character_index);
 
 private:
-  void filterCharacterList();
   void buildCharacterList(const QVector<char_type> &f_characters) override;
+  void filterCharacterList();
+  void showCharacterContextMenu(int f_character_index, bool f_taken,
+                                const QString &f_character,
+                                const QPoint &f_pos);
 
   const QString DEFAULT_UI = "charselect.ui";
   const int SPECTATOR_INDEX = -1;
 
   QWidget *ui_main_widget;
-  QTreeWidget* ui_char_name_tree;
+  QTreeWidget *ui_char_name_tree;
   QPushButton *ui_back_to_lobby_button;
-  QLineEdit* ui_char_name_edit;
-  QCheckBox* ui_show_taken_char_button;
-  QWidget* ui_button_area_widget;
-  QPushButton* ui_spectator_button;
-  FlowLayout* ui_flow_layout;
+  QLineEdit *ui_char_name_edit;
+  QCheckBox *ui_show_taken_char_button;
+  QWidget *ui_button_area_widget;
+  QPushButton *ui_spectator_button;
+  FlowLayout *ui_flow_layout;
 
-  QVector<AOCharButton *> m_char_button_list;
+  QVector<AOCharButton *> m_character_button_list;
+  QVector<QTreeWidgetItem *> m_character_item_list;
   AOApplication *ao_app;
 };
 

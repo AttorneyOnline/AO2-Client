@@ -68,35 +68,3 @@ void AOCharButton::enterEvent(QEnterEvent *e)
 }
 
 void AOCharButton::leaveEvent(QEvent *e) { QPushButton::leaveEvent(e); }
-
-void AOCharButton::contextMenuEvent(QContextMenuEvent *event)
-{
-  qDebug() << "Context menu invoked on AOCharButton by" << event->reason();
-  QMenu *l_context_menu = new QMenu(this);
-  connect(l_context_menu, &QMenu::aboutToHide, l_context_menu,
-          &QMenu::deleteLater);
-
-  QString char_ini_path = ao_app->get_real_path(
-      ao_app->get_character_path(characterName(), "char.ini"));
-  if (!QFile::exists(char_ini_path)) {
-    call_error(
-        tr("Could not find character (char.ini) for %1").arg(characterName()));
-    return;
-  }
-  QMenu *menu = new QMenu(this);
-  menu->addAction(QString("Edit " + characterName() + "/char.ini"), this, [=] {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(char_ini_path));
-  });
-  menu->addSeparator();
-  menu->addAction(
-      QString("Open character folder " + characterName()), this, [=] {
-        QString p_path =
-            ao_app->get_real_path(VPath("characters/" + characterName() + "/"));
-        if (!dir_exists(p_path)) {
-          return;
-        }
-        QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
-      });
-  connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
-  l_context_menu->popup(event->pos());
-}
