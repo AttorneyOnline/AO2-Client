@@ -269,8 +269,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (!courtroom_loaded)
       send_server_packet(new AOPacket("RM"));
-    else
-      w_courtroom->character_loading_finished();
   }
   else if (header == "SM") {
     if (!courtroom_constructed || courtroom_loaded)
@@ -340,6 +338,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     log_to_demo = false;
   }
   else if (header == "DONE") {
+    qDebug() << "done received";
     if (!courtroom_constructed)
       goto end;
 

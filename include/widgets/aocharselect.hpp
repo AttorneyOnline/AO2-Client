@@ -7,6 +7,9 @@
 class QTreeWidget;
 class QLineEdit;
 class QCheckBox;
+class QPushButton;
+class QScrollArea;
+class FlowLayout;
 class AOApplication;
 class AOCharButton;
 
@@ -34,15 +37,18 @@ private:
   void filterCharacterList();
   void buildCharacterList(const QVector<char_type> &f_characters) override;
 
-  const QString DEFAULT_UI = "lobby.ui";
+  const QString DEFAULT_UI = "charselect.ui";
   const int SPECTATOR_INDEX = -1;
 
-  QWidget *main_widget;
-  QTreeWidget *ui_char_list;
-  QLineEdit *ui_name_edit;
-  QCheckBox *ui_taken_box;
+  QWidget *ui_main_widget;
+  QTreeWidget* ui_char_name_tree;
+  QPushButton *ui_back_to_lobby_button;
+  QLineEdit* ui_char_name_edit;
+  QCheckBox* ui_show_taken_char_button;
+  QWidget* ui_button_area_widget;
+  QPushButton* ui_spectator_button;
+  FlowLayout* ui_flow_layout;
 
-  QVector<char_type> m_character_list;
   QVector<AOCharButton *> m_char_button_list;
   AOApplication *ao_app;
 };

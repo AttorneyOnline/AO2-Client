@@ -2,7 +2,7 @@
 #define CHARSELECT_H
 #pragma once
 
-#include <QWidget>
+#include <QDialog>
 #include "datatypes.h"
 
 class QTreeWidgetItem;
