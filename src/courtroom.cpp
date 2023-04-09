@@ -1272,7 +1272,7 @@ void Courtroom::done_received()
   qDebug() << char_list.size();
   if (char_list.size() > 0)
   {
-    character_loading_finished();
+    open_charselect();
   }
   else
   {
@@ -5453,6 +5453,7 @@ void Courtroom::on_change_character_clicked()
 {
   sfx_player->set_muted(true);
   blip_player->set_muted(true);
+  open_charselect();
 }
 
 void Courtroom::on_reload_theme_clicked()
@@ -5471,8 +5472,6 @@ void Courtroom::on_back_to_lobby_clicked()
 {
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
-
-  character_loading_finished();
 }
 
 void Courtroom::on_call_mod_clicked()

@@ -8,7 +8,7 @@
 #include <file_functions.h>
 
 AOCharButton::AOCharButton(QWidget *parent, AOApplication *f_ao_app,
-                           const bool &f_id, const bool &f_taken,
+                           const int &f_id, const bool &f_taken,
                            const QString &f_name)
     : AttorneyOnline::UI::CharButton(parent), ao_app(f_ao_app),
       m_character_id(f_id), m_taken(f_taken), m_character_name(f_name)
@@ -18,7 +18,7 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *f_ao_app,
   setFixedSize(QSize(fixed_height, fixed_width));
 
   QString image_path = ao_app->get_image_suffix(
-      ao_app->get_character_path(m_character_name, "char_icon"));
+      ao_app->get_character_path(m_character_name, "char_icon"), true);
 
   if (QFile::exists(image_path)) {
     setIcon(QIcon(image_path));

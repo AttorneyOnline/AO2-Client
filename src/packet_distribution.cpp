@@ -342,7 +342,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
-    w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 
     courtroom_loaded = true;
