@@ -25,6 +25,7 @@ void Courtroom::open_charselect()
     ui_charselect = new AOCharSelect(centralWidget(), ao_app);
     ui_charselect->loadUI(char_list);
     connect(ui_charselect, &AOCharSelect::characterSelected, this, &Courtroom::char_clicked);
+
     connect(ui_charselect, &AOCharSelect::destroyed, this, [=]{
       ui_charselect = nullptr;
     });
