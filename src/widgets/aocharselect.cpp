@@ -221,11 +221,11 @@ void AOCharSelect::filterCharacterList()
     l_character_item->setDisabled(l_is_character_taken);
 
     bool l_hide_character = false;
-    if (!l_character_button->characterName().contains(l_filter,
+    if (!l_filter.isEmpty() && !l_character_button->characterName().contains(l_filter,
                                                       Qt::CaseInsensitive)) {
       l_hide_character = true;
     }
-    else if (l_hide_taken_characters && l_is_character_taken) {
+    if (l_hide_taken_characters && l_is_character_taken) {
       l_hide_character = true;
     }
     l_character_button->setHidden(l_hide_character);
