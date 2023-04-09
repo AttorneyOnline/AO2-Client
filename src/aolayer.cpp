@@ -90,13 +90,13 @@ QPixmap AOLayer::get_pixmap(QImage image)
       f_pixmap = f_pixmap.scaled(f_w, f_h);
     else
       f_pixmap = f_pixmap.scaledToHeight(f_h, transform_mode);
-    this->resize(f_pixmap.size());
   }
   return f_pixmap;
 }
 
 void AOLayer::set_frame(QPixmap f_pixmap)
 {
+  this->resize(f_pixmap.size());
   this->setPixmap(f_pixmap);
   this->center_pixmap(f_pixmap);
 }
