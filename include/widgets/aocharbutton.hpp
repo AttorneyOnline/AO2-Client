@@ -9,7 +9,8 @@ class AOCharButton : public AttorneyOnline::UI::CharButton {
   Q_OBJECT
 public:
   explicit AOCharButton(QWidget *parent, AOApplication *f_ao_app,
-                        const int &f_id, const bool &f_taken, const QString &f_name);
+                        const int &f_id, const bool &f_taken,
+                        const QString &f_name);
   ~AOCharButton();
 
   void setTaken(const bool &f_state) override;
@@ -21,8 +22,8 @@ public:
   QSize sizeHint();
 
 private:
-  AOApplication* ao_app;
-  QWidget* ui_taken_overlay;
+  AOApplication *ao_app;
+  QWidget *ui_taken_overlay;
 
   int m_character_id;
   bool m_taken;
@@ -41,8 +42,6 @@ protected:
   void enterEvent(QEnterEvent *e) override;
 #endif
   void leaveEvent(QEvent *e) override;
-
-  void contextMenuEvent(QContextMenuEvent* event) override;
 };
 
 #endif // AOCHARBUTTON_H
