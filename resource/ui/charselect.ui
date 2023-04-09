@@ -47,6 +47,9 @@
        <property name="text">
         <string>Taken Character</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>
@@ -88,7 +91,7 @@
           <x>0</x>
           <y>0</y>
           <width>443</width>
-          <height>384</height>
+          <height>386</height>
          </rect>
         </property>
         <property name="sizePolicy">
