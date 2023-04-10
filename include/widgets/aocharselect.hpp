@@ -34,6 +34,8 @@ private slots:
 
 signals:
   void characterSelected(const int &f_character_index);
+  void returnToLobbyPressed();
+  void spectatorPressed();
 
 private:
   void buildCharacterList(const QVector<char_type> &f_characters) override;

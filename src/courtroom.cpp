@@ -1291,8 +1291,6 @@ void Courtroom::done_received()
 
   set_mute_list();
   set_pair_list();
-
-  show();
 }
 
 void Courtroom::set_background(QString p_background, bool display)
@@ -1539,6 +1537,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 void Courtroom::enter_courtroom()
 {
   emit closeCharselect();
+  show();
   set_evidence_page();
 
   if (ao_app->flipping_supported)
@@ -5763,12 +5762,15 @@ void Courtroom::char_clicked(int n_char)
 void Courtroom::open_charselect()
 {
   if (ui_charselect == nullptr) {
+    hide();
     ui_charselect = new AOCharSelect(centralWidget(), ao_app);
     ui_charselect->loadUI(char_list);
     connect(ui_charselect, &AOCharSelect::characterSelected, this,
             &Courtroom::char_clicked);
     connect(this, &Courtroom::closeCharselect, ui_charselect,
             &AOCharSelect::close);
+    connect(ui_charselect, &AOCharSelect::returnToLobbyPressed,
+            this, &Courtroom::on_back_to_lobby_clicked);
     connect(ui_charselect, &AOCharSelect::destroyed, this,
             [=] { ui_charselect = nullptr; });
     ui_charselect->show();
@@ -5781,4 +5783,8 @@ Courtroom::~Courtroom()
   delete sfx_player;
   delete objection_player;
   delete blip_player;
+
+  if (ui_charselect != nullptr) {
+    delete ui_charselect;
+  }
 }
