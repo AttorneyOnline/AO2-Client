@@ -44,25 +44,31 @@ void AOCharSelect::loadUI(const QVector<char_type> &f_characters)
   l_layout->addWidget(ui_main_widget);
 
   FROM_UI(QTreeWidget, char_name_tree)
-  FROM_UI(QPushButton, back_to_lobby_button)
-  FROM_UI(QLineEdit, char_name_edit)
-  FROM_UI(QCheckBox, show_taken_char_button)
-  FROM_UI(QWidget, button_area_widget)
-  FROM_UI(QPushButton, spectator_button)
-
-  ui_flow_layout = new FlowLayout(ui_button_area_widget);
-
   ui_char_name_tree->setHeaderHidden(true);
   ui_char_name_tree->setContextMenuPolicy(Qt::CustomContextMenu);
-
   connect(ui_char_name_tree, &QTreeWidget::itemDoubleClicked, this,
           &AOCharSelect::onCharacterListDoubleClicked);
   connect(ui_char_name_tree, &QTreeWidget::customContextMenuRequested, this,
           &AOCharSelect::onCharacterItemContextMenuRequested);
-  connect(ui_char_name_edit, &QLineEdit::textEdited, this,
+
+  FROM_UI(QPushButton, back_to_lobby_button)
+  connect(ui_back_to_lobby_button, &QPushButton::pressed, this,
+          &AOCharSelect::returnToLobbyPressed);
+
+  FROM_UI(QLineEdit, char_name_edit)
+  connect(ui_char_name_edit, &QLineEdit::textChanged, this,
           &AOCharSelect::onSearchChanged);
-  connect(ui_show_taken_char_button, &QCheckBox::stateChanged, this,
+
+  FROM_UI(QCheckBox, show_taken_char_button)
+  connect(ui_show_taken_char_button, &QCheckBox::clicked, this,
           &AOCharSelect::onShowTakenChanged);
+
+  FROM_UI(QWidget, button_area_widget)
+  FROM_UI(QPushButton, spectator_button)
+  connect(ui_spectator_button, &QPushButton::pressed,
+          this, [this]{emit characterSelected(SPECTATOR_INDEX);});
+
+  ui_flow_layout = new FlowLayout(ui_button_area_widget);
 
   buildCharacterList(f_characters);
 }
@@ -220,8 +226,8 @@ void AOCharSelect::filterCharacterList()
     l_character_item->setDisabled(l_is_character_taken);
 
     bool l_hide_character = false;
-    if (!l_filter.isEmpty() && !l_character_button->characterName().contains(l_filter,
-                                                      Qt::CaseInsensitive)) {
+    if (!l_filter.isEmpty() && !l_character_button->characterName().contains(
+                                   l_filter, Qt::CaseInsensitive)) {
       l_hide_character = true;
     }
     if (l_hide_taken_characters && l_is_character_taken) {
