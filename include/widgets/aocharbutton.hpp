@@ -24,6 +24,7 @@ public:
 private:
   AOApplication *ao_app;
   QWidget *ui_taken_overlay;
+  QWidget *ui_selector_overlay;
 
   int m_character_id;
   bool m_taken;

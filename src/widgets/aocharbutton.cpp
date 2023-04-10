@@ -1,17 +1,15 @@
 #include "widgets/aocharbutton.hpp"
-#include "QFile"
 #include "aoapplication.h"
-#include "debug_functions.h"
-#include <QContextMenuEvent>
-#include <QDesktopServices>
-#include <QMenu>
+#include "options.h"
 #include <file_functions.h>
 
 AOCharButton::AOCharButton(QWidget *parent, AOApplication *f_ao_app,
                            const int &f_id, const bool &f_taken,
                            const QString &f_name)
     : AttorneyOnline::UI::CharButton(parent), ao_app(f_ao_app),
-      ui_taken_overlay(new QWidget(this)), m_character_id(f_id), m_taken(f_taken), m_character_name(f_name)
+      ui_taken_overlay(new QWidget(this)),
+      ui_selector_overlay(new QWidget(this)), m_character_id(f_id),
+      m_taken(f_taken), m_character_name(f_name)
 {
   connect(this, &AOCharButton::pressed, this,
           [=]() { emit characterSelected(m_character_id); });
@@ -28,10 +26,20 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *f_ao_app,
     setText(f_name);
   }
 
-  ui_taken_overlay->setStyleSheet("background-color: rgba(0, 0, 0, 64)");
+  ui_taken_overlay->setStyleSheet("background-color: rgba(0, 0, 0, 64);");
   ui_taken_overlay->setVisible(m_taken);
   ui_taken_overlay->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken_overlay->setFixedSize(QSize(fixed_height, fixed_width));
+
+  QString l_selector_path =
+      ao_app->get_image("char_selector", Options::getInstance().theme(),
+                        Options::getInstance().subTheme(),
+                        ao_app->default_theme, "", "", "", true);
+
+  ui_selector_overlay->setStyleSheet("image: url(" + l_selector_path + ");");
+  ui_selector_overlay->setVisible(false);
+  ui_selector_overlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_selector_overlay->setFixedSize(QSize(fixed_height, fixed_width));
 }
 
 AOCharButton::~AOCharButton() {}
@@ -56,8 +64,12 @@ void AOCharButton::enterEvent(QEvent *e)
 void AOCharButton::enterEvent(QEnterEvent *e)
 #endif
 {
-
+  ui_selector_overlay->setVisible(true);
   QPushButton::enterEvent(e);
 }
 
-void AOCharButton::leaveEvent(QEvent *e) { QPushButton::leaveEvent(e); }
+void AOCharButton::leaveEvent(QEvent *e)
+{
+  ui_selector_overlay->setVisible(false);
+  QPushButton::leaveEvent(e);
+}
