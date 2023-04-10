@@ -1,5 +1,6 @@
 #ifndef CHARBUTTON_H
 #define CHARBUTTON_H
+#pragma once
 
 #include <QPushButton>
 
