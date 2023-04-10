@@ -19,7 +19,7 @@ LIBS += -L$$PWD/lib
 QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
 
 # Uncomment for verbose network logging
-DEFINES += DEBUG_NETWORK
+# DEFINES += DEBUG_NETWORK
 
 # Uncomment for verbose animation logging
 # DEFINES += DEBUG_MOVIE
