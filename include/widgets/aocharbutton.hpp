@@ -1,6 +1,5 @@
 #ifndef AOCHARBUTTON_H
 #define AOCHARBUTTON_H
-#pragma once
 
 #include "interfaces/widgets/charbutton.hpp"
 
