@@ -5,6 +5,7 @@
 #include "datatypes.h"
 #include "demoserver.h"
 #include "include/network/aodiscord.hpp"
+#include "pathing/aovpath.hpp"
 
 #include "bass.h"
 
@@ -33,25 +34,6 @@ class NetworkManager;
 class Lobby;
 class Courtroom;
 class Options;
-
-class VPath : QString {
-  using QString::QString;
-
-public:
-  explicit VPath(const QString &str) : QString(str) {}
-  inline QString const &toQString() const { return *this; }
-  inline bool operator==(const VPath &str) const {
-    return this->toQString() == str.toQString();
-  }
-  inline VPath operator+(const VPath &str) const {
-    return VPath(this->toQString() + str.toQString());
-  }
-};
-
-inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
-{
-  return qHash(key.toQString(), seed);
-}
 
 class AOApplication : public QApplication {
   Q_OBJECT

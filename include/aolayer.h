@@ -12,7 +12,6 @@
 #include <QWaitCondition>
 
 class AOApplication;
-class VPath;
 
 // "Brief" explanation of what the hell this is:
 //
