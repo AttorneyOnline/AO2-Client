@@ -216,8 +216,14 @@ void AOOptionsDialog::updateValues()
 
 void AOOptionsDialog::savePressed()
 {
-  for (const OptionEntry &entry : qAsConst(optionEntries))
+  bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme());
+  for (const OptionEntry &entry : qAsConst(optionEntries)) {
     entry.save();
+  }
+
+  if (l_reload_theme_required) {
+    emit reloadThemeRequest();
+  }
   close();
 }
 
