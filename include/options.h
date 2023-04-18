@@ -247,6 +247,10 @@ public:
   QStringList mountPaths() const;
   void setMountPaths(QStringList value);
 
+  // Get if the cache is saved to disk
+  bool enablePersistentCache() const;
+  void setEnablePersistentCache(bool value);
+
   // Get whether to opt out of player count metrics sent to the master server
   bool playerCountOptout() const;
   void setPlayerCountOptout(bool value);

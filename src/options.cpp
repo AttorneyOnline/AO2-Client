@@ -508,6 +508,16 @@ void Options::setMountPaths(QStringList value)
   config.setValue("mount_paths", value);
 }
 
+bool Options::enablePersistentCache() const
+{
+  return config.value("persistent_cache", true).toBool();
+}
+
+void Options::setEnablePersistentCache(bool value)
+{
+  config.setValue("persistent_cache", value);
+}
+
 bool Options::playerCountOptout() const
 {
   return config.value("player_count_optout", false).toBool();
