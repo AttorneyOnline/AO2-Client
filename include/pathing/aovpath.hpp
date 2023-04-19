@@ -19,7 +19,9 @@ namespace AttorneyOnline {
       }
     };
 
-    inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
+    // Hardcoding no seed is fine.
+    // Otherwise paths aren't reloadable.
+    inline uint qHash(const VPath &key, uint seed = 0)
     {
       return qHash(key.toQString(), seed);
     }
