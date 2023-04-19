@@ -11,6 +11,7 @@ namespace AttorneyOnline::Core {
 }
 
 class AOFinder : public QObject {
+public:
   AOFinder(QObject *parent, QString f_base_path);
   ~AOFinder();
 

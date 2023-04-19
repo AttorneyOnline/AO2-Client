@@ -30,6 +30,8 @@ namespace AttorneyOnline {
 
       QString checkDirectoryCache(VPath f_directory);
       QString checkAssetCache(VPath f_asset);
+      void insertIntoDirectoryCache(VPath f_directory, QString f_physical_path);
+      void insertIntoAssetCache(VPath f_asset, QString f_physical_path);
 
     private:
       //uint = hashed VPath
