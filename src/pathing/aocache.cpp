@@ -15,6 +15,15 @@ AttorneyOnline::Core::AOCache::AOCache(QObject *parent, const QString f_base_pat
     return;
   }
 
+  if (!QFile::exists(m_base_path+ "/cache.lock")) {
+    qDebug() << "[Cache]::CTOR : Creating cache lock.";
+    m_primary_client = true;
+    QFile l_cache_lock(m_base_path+ "/cache.lock");
+    l_cache_lock.open(QIODevice::ReadWrite);
+    l_cache_lock.flush();
+    l_cache_lock.close();
+  }
+
   QString l_directory_path = f_base_path + "/dir_cache.ao";
   if (QFile::exists(l_directory_path)) {
     qInfo() << "[Cache]::CTOR : Restoring directory cache.";
@@ -67,4 +76,42 @@ AttorneyOnline::Core::AOCache::~AOCache()
     l_out << m_directory_cache;
     l_asset_file.close();
   }
+}
+
+void AttorneyOnline::Core::AOCache::populateDirectoryCache()
+{
+  QStringList l_mountlist;
+  l_mountlist << m_base_path << Options::getInstance().mountPaths();
+
+  QStringList l_asset_folder {
+      "background",
+      "characters",
+      "evidence",
+      "misc",
+      "themes",
+      "sounds/blips"
+      "sounds/general"
+      "sounds/music"
+  };
+
+  for (QString &l_mount : l_mountlist) {
+    for (QString &l_folder : l_asset_folder) {
+
+    }
+  }
+}
+
+QString AttorneyOnline::Core::AOCache::checkDirectoryCache(VPath f_directory)
+{
+  return m_directory_cache.value(qHash(f_directory));
+}
+
+QString AttorneyOnline::Core::AOCache::checkAssetCache(VPath f_asset)
+{
+  return m_asset_cache.value(qHash(f_asset));
+}
+
+bool AttorneyOnline::Core::AOCache::isPrimaryClient()
+{
+  return m_primary_client;
 }
