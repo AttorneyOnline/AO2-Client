@@ -1,5 +1,5 @@
-#ifndef AOVIEWPATH_H
-#define AOVIEWPATH_H
+#ifndef AOVPATH_H
+#define AOVPATH_H
 
 #include <QString>
 #include <QHash>
