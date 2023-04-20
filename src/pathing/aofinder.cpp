@@ -11,3 +11,8 @@ AOFinder::AOFinder(QObject *parent, QString f_base_path)
 }
 
 AOFinder::~AOFinder() {}
+
+void AOFinder::updateMountPaths(QStringList f_base_mounts, QString f_reason)
+{
+  m_cache.get()->invalidateCache(f_reason);
+}
