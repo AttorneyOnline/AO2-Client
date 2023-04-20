@@ -4,8 +4,6 @@
 #include <QObject>
 #include <memory>
 
-#include "pathing/aovpath.hpp"
-
 namespace AttorneyOnline::Core {
   class AOCache;
 }
@@ -16,8 +14,10 @@ public:
   ~AOFinder();
 
 private:
-
   std::unique_ptr<AttorneyOnline::Core::AOCache> m_cache;
+
+public slots:
+  void updateMountPaths(QStringList f_base_mounts, QString f_reason);
 };
 
 #endif // AOFINDER_H

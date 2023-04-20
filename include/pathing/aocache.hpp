@@ -26,12 +26,26 @@ namespace AttorneyOnline {
        *  Note : This means assets in the same subfolder can no longer
        *  be split in multiple mount paths.
        */
-      void populateDirectoryCache();
+      void populateDirectoryCache(QStringList f_base_mounts);
 
       QString checkDirectoryCache(VPath f_directory);
       QString checkAssetCache(VPath f_asset);
       void insertIntoDirectoryCache(VPath f_directory, QString f_physical_path);
       void insertIntoAssetCache(VPath f_asset, QString f_physical_path);
+
+      /**
+       * @brief Deletes the asset and directory cache.
+       *
+       * @details In some instances we need to completely redo the cache in order to accept new content, such as :
+       *
+       * - Adding a mountpath
+       * - Removing a mountpath
+       * - Changing mountpath order
+       * (Generally, if you touch your mountpaths, you will have a bad time.
+       *
+       * This is necessary to prevent stale entries and incorrect lookups.
+       */
+      void invalidateCache(QString f_reason);
 
     private:
       //uint = hashed VPath
