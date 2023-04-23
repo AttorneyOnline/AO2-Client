@@ -172,6 +172,11 @@ void AttorneyOnline::Core::AOCache::invalidateCache(QString f_reason)
   m_directory_cache.clear();
 }
 
+int AttorneyOnline::Core::AOCache::assetCacheSize()
+{
+  return m_asset_cache.size();
+}
+
 bool AttorneyOnline::Core::AOCache::isPrimaryClient()
 {
   return m_primary_client;

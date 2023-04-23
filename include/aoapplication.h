@@ -111,9 +111,6 @@ public:
 
   ///////////////////////////////////////////
 
-  // Returns the character the player has currently selected
-  QString get_current_char();
-
   // implementation in path_functions.cpp
   VPath get_theme_path(QString p_file, QString p_theme="");
   VPath get_character_path(QString p_char, QString p_file);

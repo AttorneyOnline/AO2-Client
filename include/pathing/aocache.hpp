@@ -47,6 +47,8 @@ namespace AttorneyOnline {
        */
       void invalidateCache(QString f_reason);
 
+      int assetCacheSize();
+
     private:
       //uint = hashed VPath
       QHash<uint, QString> m_asset_cache;
