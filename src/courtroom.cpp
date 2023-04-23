@@ -53,6 +53,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_speedlines->setObjectName("ui_vp_speedlines");
+  ui_vp_speedlines->stretch = true;
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
