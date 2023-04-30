@@ -34,6 +34,7 @@ class NetworkManager;
 class Lobby;
 class Courtroom;
 class Options;
+class AOFinder;
 
 class AOApplication : public QApplication {
   Q_OBJECT
@@ -357,6 +358,8 @@ private:
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
+
+  std::shared_ptr<AOFinder> m_finder;
 
 public slots:
   void server_disconnected();

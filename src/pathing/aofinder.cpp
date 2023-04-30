@@ -6,9 +6,11 @@
 #include <QFile>
 #include <QSettings>
 
-AOFinder::AOFinder(QObject *parent, QString f_base_path)
+AOFinder::AOFinder(QObject *parent, QString f_base_path,
+                   QStringList f_mount_paths)
     : QObject(parent), m_cache(std::make_unique<AttorneyOnline::Core::AOCache>(
-                           this, f_base_path))
+                           this, f_base_path)),
+      m_base_path(f_base_path), m_mount_paths(f_mount_paths)
 {
   qInfo() << "[AOFinder]::CTOR: Starting";
 }
@@ -138,14 +140,12 @@ QString AOFinder::get_pos_path(const QString &f_background, const QString &pos,
   return f_background;
 }
 
-QString AOFinder::read_design_ini(QString p_identifier,
-                                       VPath p_design_path)
+QString AOFinder::read_design_ini(QString p_identifier, VPath p_design_path)
 {
   return read_design_ini(p_identifier, get_real_path(p_design_path));
 }
 
-QString AOFinder::read_design_ini(QString p_identifier,
-                                       QString p_design_path)
+QString AOFinder::read_design_ini(QString p_identifier, QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
   settings.setIniCodec("UTF-8");
@@ -157,6 +157,11 @@ QString AOFinder::read_design_ini(QString p_identifier,
     return value.toString();
   }
   return "";
+}
+
+void AOFinder::invalidate_lookup_cache(QString f_reason)
+{
+  m_cache.get()->invalidateCache(f_reason);
 }
 
 VPath AOFinder::get_evidence_path(QString f_file)
@@ -405,4 +410,5 @@ QString AOFinder::get_real_path(const VPath &vpath, const QStringList &suffixes)
 void AOFinder::updateMountPaths(QStringList f_base_mounts, QString f_reason)
 {
   m_cache.get()->invalidateCache(f_reason);
+  m_cache.get()->populateDirectoryCache(f_base_mounts);
 }

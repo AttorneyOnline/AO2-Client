@@ -6,6 +6,7 @@
 #include "lobby.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "pathing/aofinder.hpp"
 
 #include "widgets/aooptionsdialog.h"
 
@@ -22,6 +23,9 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
   discord = new AODiscord(this);
+
+  m_finder = std::make_shared<AOFinder>(this, get_base_path(),
+                                        Options::getInstance().mountPaths());
 
   asset_lookup_cache.reserve(2048);
 
