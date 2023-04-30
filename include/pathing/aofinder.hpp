@@ -12,7 +12,7 @@ namespace AttorneyOnline::Core {
 
 class AOFinder : public QObject {
 public:
-  AOFinder(QObject *parent, QString f_base_path);
+  AOFinder(QObject *parent, QString f_base_path, QStringList f_mount_paths);
   ~AOFinder();
 
   // implementation in path_functions.cpp
@@ -46,10 +46,11 @@ public:
   QString read_design_ini(QString p_identifier, VPath p_design_path);
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
-  void invalidate_lookup_cache();
+  void invalidate_lookup_cache(QString f_reason);
 
 private:
   std::unique_ptr<AttorneyOnline::Core::AOCache> m_cache;
+  QString m_base_path;
   QStringList m_mount_paths;
 
 public slots:
