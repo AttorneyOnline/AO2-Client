@@ -10,18 +10,18 @@ class QTreeWidgetItem;
 
 #include <QMainWindow>
 #include "networkmanager.h"
-#include "file_functions.h"
 
 #ifdef ANDROID
 #include <QtAndroidExtras/QtAndroid>
 #endif
 
 class AOApplication;
+class AOFinder;
 
 class Lobby : public QMainWindow {
   Q_OBJECT
 public:
-  Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr);
+  Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr, std::shared_ptr<AOFinder> f_finder = nullptr);
   ~Lobby();
 
   void set_player_count(int players_online, int max_players);
@@ -33,6 +33,7 @@ public:
 private:
   AOApplication *ao_app;
   NetworkManager *net_manager;
+  std::shared_ptr<AOFinder> m_finder;
 
   const QString DEFAULT_UI = "lobby.ui";
   QVector<server_type> m_serverList;

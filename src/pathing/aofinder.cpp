@@ -17,6 +17,11 @@ AOFinder::AOFinder(QObject *parent, QString f_base_path,
 
 AOFinder::~AOFinder() {}
 
+QString AOFinder::get_base_path()
+{
+  return m_base_path;
+}
+
 // this is a quite broad generalization
 // the most common OSes(mac and windows) are _usually_ case insensitive
 // however, there do exist mac installations with case sensitive filesystems
@@ -438,8 +443,8 @@ QString AOFinder::get_real_path(const VPath &vpath, const QStringList &suffixes)
       path = get_case_sensitive_path(path);
       if (QFile::exists(path)) {
         m_cache->insertIntoAssetCache(vpath, path);
-        unsigned int cache_size = is_power_2(m_cache->assetCacheSize());
-        if (is_power_2(cache_size))
+        unsigned int cache_size = m_cache->assetCacheSize();
+        if (is_power_2(m_cache->assetCacheSize()))
           qDebug() << "lookup cache has reached" << cache_size << "entries";
         return path;
       }

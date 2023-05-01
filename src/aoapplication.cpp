@@ -51,7 +51,7 @@ void AOApplication::construct_lobby()
     return;
   }
 
-  w_lobby = new Lobby(this, net_manager);
+  w_lobby = new Lobby(this, net_manager, m_finder);
   lobby_constructed = true;
 
   QRect geometry = QGuiApplication::primaryScreen()->geometry();
@@ -87,7 +87,7 @@ void AOApplication::construct_courtroom()
     return;
   }
 
-  w_courtroom = new Courtroom(this);
+  w_courtroom = new Courtroom(this, m_finder);
   courtroom_constructed = true;
 
   QRect geometry = QGuiApplication::primaryScreen()->geometry();
@@ -139,13 +139,10 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this);
+    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, net_manager, m_finder);
     if (courtroom_constructed) {
         connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
                 w_courtroom, &Courtroom::on_reload_theme_clicked);
-    }
-
-    if(lobby_constructed) {
     }
     l_dialog->exec();
     delete l_dialog;
