@@ -186,7 +186,7 @@ void AOCharSelect::buildCharacterList(const QVector<char_type> &f_characters)
     l_character_item->setText(0, l_character.name);
     l_character_item->setIcon(
         0, QIcon(ao_app->get_image_suffix(
-               ao_app->get_character_path(l_character.name, "char_icon"))));
+               ao_app->get_character_path(l_character.name, "char_icon"), true)));
     l_character_item->setText(1, QString::number(l_character_id));
 
     QString l_category = ao_app->get_category(l_character.name);
