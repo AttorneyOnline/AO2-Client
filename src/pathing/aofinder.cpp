@@ -422,6 +422,7 @@ QString AOFinder::get_real_path(const VPath &vpath, const QStringList &suffixes)
 
   // Cache miss; try all known mount paths
   QStringList bases = m_mount_paths;
+  bases.prepend(m_base_path);
   // base
   // content 1
   // content 2
