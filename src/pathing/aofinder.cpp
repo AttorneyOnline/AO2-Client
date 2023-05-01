@@ -121,23 +121,70 @@ QString AOFinder::get_pos_path(const QString &f_background, const QString &pos,
   QString l_background;
   QString l_desk_image;
 
-  if (QFile::exists((get_image_suffix(
-          get_background_path(pos, f_background))))) // Unique pos path
+  if (QFile::exists(get_image_suffix(get_background_path("witnessempty", f_background)))) {
+    l_background = "witnessempty";
+    l_desk_image = "stand";
+  }
+  else {
+    l_background = "wit";
+    l_desk_image = "wit_overlay";
+  }
+
+  if (pos == "def" && QFile::exists(get_image_suffix(
+                          get_background_path("defenseempty", f_background)))) {
+    l_background = "defenseempty";
+    l_desk_image = "defensedesk";
+  }
+  else if (pos == "pro" &&
+           QFile::exists(get_image_suffix(
+               get_background_path("prosecutorempty", f_background)))) {
+    l_background = "prosecutorempty";
+    l_desk_image = "prosecutiondesk";
+  }
+  else if (pos == "jud" && QFile::exists(get_image_suffix(
+                               get_background_path("judgestand", f_background)))) {
+    l_background = "judgestand";
+    l_desk_image = "judgedesk";
+  }
+  else if (pos == "hld" &&
+           QFile::exists(get_image_suffix(
+               get_background_path("helperstand", f_background)))) {
+    l_background = "helperstand";
+    l_desk_image = "helperdesk";
+  }
+  else if (pos == "hlp" &&
+           QFile::exists(get_image_suffix(
+               get_background_path("prohelperstand", f_background)))) {
+    l_background = "prohelperstand";
+    l_desk_image = "prohelperdesk";
+  }
+  else if (pos == "jur" && QFile::exists(get_image_suffix(
+                               get_background_path("jurystand", f_background)))) {
+    l_background = "jurystand";
+    l_desk_image = "jurydesk";
+  }
+  else if (pos == "sea" &&
+           QFile::exists(get_image_suffix(
+               get_background_path("seancestand", f_background)))) {
+    l_background = "seancestand";
+    l_desk_image = "seancedesk";
+  }
+
+  if (QFile::exists(get_image_suffix(
+          get_background_path(pos, f_background)))) // Unique pos path
   {
     l_background = pos;
     l_desk_image = pos + "_overlay";
   }
 
-  QString desk_override =
-      read_design_ini("overlays/" + f_background,
-                      get_background_path("design.ini", f_background));
+  QString desk_override = read_design_ini("overlays/" + f_background, get_background_path("design.ini", f_background));
   if (desk_override != "") {
     l_desk_image = desk_override;
   }
   if (desk) {
     return l_desk_image;
   }
-  return f_background;
+  return l_background;
 }
 
 QString AOFinder::read_design_ini(QString p_identifier, VPath p_design_path)

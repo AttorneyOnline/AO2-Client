@@ -152,7 +152,7 @@ void BackgroundLayer::load_image(QString p_filename)
 #ifdef DEBUG_MOVIE
   qDebug() << "[BackgroundLayer] BG loaded: " << p_filename;
 #endif
-  QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
+  QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename), false);
 
   if (final_path == last_path) {
     // Don't restart background if background is unchanged
