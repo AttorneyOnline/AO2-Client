@@ -409,7 +409,9 @@ QString AOFinder::get_real_path(const VPath &vpath, const QStringList &suffixes)
   if (!phys_path.isEmpty() && QFile::exists(phys_path)) {
     for (const QString &suffix :
          suffixes) { // make sure cached asset is the right type
-      if (phys_path.endsWith(suffix, Qt::CaseInsensitive)) return phys_path;
+      if (phys_path.endsWith(suffix, Qt::CaseInsensitive)) {
+        return phys_path;
+      }
     }
   }
 
