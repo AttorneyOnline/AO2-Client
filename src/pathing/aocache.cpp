@@ -39,6 +39,7 @@ AttorneyOnline::Core::AOCache::AOCache(QObject *parent, const QString f_base_pat
       l_read >> m_directory_cache;
       l_directory_file.close();
     }
+        qInfo() << "[Cache]::CTOR: Restored" << m_directory_cache.size() << "entries.";
   }
 
   QString l_asset_path = m_base_path + "cache/asset_cache.ao";
@@ -50,6 +51,7 @@ AttorneyOnline::Core::AOCache::AOCache(QObject *parent, const QString f_base_pat
       QDataStream l_read(&l_asset_file);
       l_read >> m_asset_cache;
     }
+    qInfo() << "[Cache]::CTOR: Restored" << m_asset_cache.size() << "entries.";
   }
 }
 
