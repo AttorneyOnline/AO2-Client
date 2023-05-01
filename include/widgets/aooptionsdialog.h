@@ -1,6 +1,7 @@
 #ifndef AOOPTIONSDIALOG_H
 #define AOOPTIONSDIALOG_H
 
+#include "networkmanager.h"
 #include "options.h"
 
 #include <QtCore/QVariant>
@@ -17,7 +18,6 @@ class QTabWidget;
 class QLabel;
 class QAbstractButton;
 
-
 #include <QtWidgets/QDialog>
 #include <QDirIterator>
 #include <QListWidget>
@@ -25,6 +25,8 @@ class QAbstractButton;
 #include <QTextStream>
 
 class AOApplication;
+class AOFinder;
+class NetworkManager;
 
 struct OptionEntry {
   std::function<void()> load;
@@ -34,11 +36,12 @@ struct OptionEntry {
 class AOOptionsDialog : public QDialog {
   Q_OBJECT
 public:
-  explicit AOOptionsDialog(QDialog *parent = nullptr,
-                           AOApplication *p_ao_app = nullptr);
+  explicit AOOptionsDialog(QDialog *parent = nullptr, NetworkManager* f_net_man = nullptr,
+                           std::shared_ptr<AOFinder> f_finder = nullptr);
 
 private:
-  AOApplication *ao_app;
+  std::shared_ptr<AOFinder> m_finder;
+  NetworkManager* m_manager;
 
   // Dialog interaction buttons. Save/Discard/Restore Defaults
   QDialogButtonBox *ui_settings_buttons;

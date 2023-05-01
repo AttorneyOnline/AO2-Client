@@ -5,6 +5,7 @@
 #include "file_functions.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "pathing/aofinder.hpp"
 
 #include <QCheckBox>
 #include <QCollator>
@@ -24,10 +25,11 @@
   ;                                                                            \
   ui_##name = findChild<type *>(#name);
 
-AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
+AOOptionsDialog::AOOptionsDialog(QDialog *parent, NetworkManager *f_net_man, std::shared_ptr<AOFinder> f_finder)
     : QDialog(parent)
 {
-  ao_app = p_ao_app;
+  m_finder = f_finder;
+  m_manager = f_net_man;
   setupUI();
 }
 
@@ -192,7 +194,7 @@ void AOOptionsDialog::updateValues()
   }
 
   QStringList l_subthemes =
-      QDir(ao_app->get_real_path(ao_app->get_theme_path("")))
+      QDir(m_finder->get_real_path(m_finder->get_theme_path("")))
           .entryList(QDir::Dirs | QDir::NoDotAndDotDot);
   for (const QString &l_subtheme : qAsConst(l_subthemes)) {
     if (l_subtheme.toLower() != "server" && l_subtheme.toLower() != "default" &&
@@ -201,7 +203,7 @@ void AOOptionsDialog::updateValues()
     }
   }
 
-  ao_app->net_manager->request_document(
+  m_manager->request_document(
       MSDocumentType::PrivacyPolicy, [this](QString document) {
         if (document.isEmpty()) {
           document = tr("Couldn't get the privacy policy.");
@@ -256,7 +258,7 @@ void AOOptionsDialog::themeChanged(int i)
   ui_subtheme_combobox->addItem("server");
   ui_subtheme_combobox->addItem("default");
 
-  QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path(
+  QStringList l_subthemes = QDir(m_finder->get_real_path(m_finder->get_theme_path(
                                      "", ui_theme_combobox->itemText(i))))
                                 .entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -270,10 +272,10 @@ void AOOptionsDialog::themeChanged(int i)
 
   QString l_ressource_name = Options::getInstance().theme() + ".rcc";
   QString l_resource =
-      ao_app->get_asset("themes/" + ui_theme_combobox->currentText() + ".rcc");
+      m_finder->get_asset("themes/" + ui_theme_combobox->currentText() + ".rcc");
   if (l_resource.isEmpty()) {
     QResource::unregisterResource(
-        ao_app->get_asset("themes/" + l_ressource_name));
+        m_finder->get_asset("themes/" + l_ressource_name));
     qDebug() << "Unable to locate ressource file" << l_ressource_name;
     return;
   }
@@ -323,7 +325,7 @@ void AOOptionsDialog::setupUI()
 
   FROM_UI(QPushButton, theme_folder_button)
   connect(ui_theme_folder_button, &QPushButton::clicked, this, [=] {
-    QString p_path = ao_app->get_real_path(ao_app->get_theme_path(
+    QString p_path = m_finder->get_real_path(m_finder->get_theme_path(
         "", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
     if (!dir_exists(p_path)) {
       return;

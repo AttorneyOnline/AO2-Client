@@ -7,6 +7,7 @@
 #include "widgets/add_server_dialog.h"
 #include "widgets/direct_connect_dialog.h"
 #include "widgets/edit_server_dialog.h"
+#include "pathing/aofinder.hpp"
 
 #include <QImageReader>
 #include <QLabel>
@@ -29,11 +30,12 @@
   check_for_updates();                                                         \
   reset_selection();
 
-Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
+Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager, std::shared_ptr<AOFinder> f_finder)
     : QMainWindow()
 {
   ao_app = p_ao_app;
   net_manager = p_net_manager;
+  m_finder = f_finder;
   connect(net_manager, &NetworkManager::server_list_received, this,
           &Lobby::setServerList);
   net_manager->get_server_list();
@@ -201,7 +203,7 @@ void Lobby::loadUI()
   FROM_UI(QTextBrowser, game_changelog_text)
   if (ui_game_changelog_text != nullptr) {
     QString l_changelog_text = "No changelog found.";
-    QFile l_changelog(get_base_path() + "changelog.md");
+    QFile l_changelog(m_finder->get_base_path() + "changelog.md");
     if (!l_changelog.open(QFile::ReadOnly)) {
       qDebug() << "Unable to locate changelog file. Does it even exist?";
       ui_game_changelog_text->setMarkdown(l_changelog_text);
@@ -435,7 +437,7 @@ void Lobby::onReloadThemeRequested()
 
 void Lobby::onSettingsRequested()
 {
-  AOOptionsDialog options(nullptr, ao_app);
+  AOOptionsDialog options(nullptr, net_manager, m_finder);
   connect(&options, &AOOptionsDialog::reloadThemeRequest, this,
           &Lobby::onReloadThemeRequested);
   options.exec();

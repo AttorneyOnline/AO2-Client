@@ -67,11 +67,12 @@
 
 class AOApplication;
 class AOCharSelect;
+class AOFinder;
 
 class Courtroom : public QMainWindow {
   Q_OBJECT
 public:
-  explicit Courtroom(AOApplication *p_ao_app);
+  explicit Courtroom(AOApplication *p_ao_app, std::shared_ptr<AOFinder> f_finder);
 
   void update_audio_volume();
 
@@ -340,6 +341,7 @@ public:
 private:
   AOApplication *ao_app;
   AOCharSelect* ui_charselect = nullptr;
+  std::shared_ptr<AOFinder> m_finder;
 
   // Percentage of audio that is suppressed when client is not in focus
   int suppress_audio = 0;

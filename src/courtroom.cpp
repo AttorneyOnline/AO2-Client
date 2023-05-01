@@ -2,9 +2,10 @@
 #include "options.h"
 #include "widgets/aocharselect.hpp"
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow(nullptr)
+Courtroom::Courtroom(AOApplication *p_ao_app, std::shared_ptr<AOFinder> f_finder) : QMainWindow(nullptr)
 {
   ao_app = p_ao_app;
+  m_finder = f_finder;
 
   this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) &
                        ~Qt::WindowMaximizeButtonHint);
