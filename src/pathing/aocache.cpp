@@ -16,7 +16,7 @@ AttorneyOnline::Core::AOCache::AOCache(QObject *parent, const QString f_base_pat
     return;
   }
 
-  m_asset_cache.reserve(2048);
+  m_asset_cache.reserve(10240);
   m_directory_cache.reserve(1024);
 
 
