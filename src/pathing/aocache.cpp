@@ -158,7 +158,7 @@ void AttorneyOnline::Core::AOCache::insertIntoAssetCache(VPath f_asset, QString 
 #if DEBUG_CACHE
   qDebug() << "[Cache]::AssetCache: Inserting VPath" << f_asset.toQString() << "with physical" << f_physical_path;
 #endif
-  m_directory_cache.insert(qHash(f_asset), f_physical_path);
+  m_asset_cache.insert(qHash(f_asset), f_physical_path);
 }
 
 void AttorneyOnline::Core::AOCache::invalidateCache(QString f_reason)
