@@ -6,6 +6,20 @@
 
 **[Refer to the docs](https://github.com/AttorneyOnline/docs/blob/master/docs/index.md) for more information.**
 
+Linux users will need to install the system dependencies related to Qt. These are the commands to run on a terminal for some distributions:
+* Ubuntu 22.04 LTS:
+```
+$ sudo apt-get install qt5-base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
+```
+* Arch:
+```
+$ sudo pacman -Syu qt5-base qt5-websockets qt5-imageformats qt5-svg
+```
+* Fedora:
+```
+$ sudo dnf install qt5-qtbase qt5-qtwebsockets qt5-qtimageformats qt5-qtsvg
+```
+
 ## Credits
 
 This is a open-source remake of Attorney Online written by OmniTroid. The original Attorney Online client was written by FanatSors in Delphi.
