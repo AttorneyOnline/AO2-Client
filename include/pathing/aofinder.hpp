@@ -17,7 +17,6 @@ public:
 
   QString get_base_path();
 
-  // implementation in path_functions.cpp
   VPath get_theme_path(QString p_file, QString p_theme="");
   VPath get_character_path(QString p_char, QString p_file);
   VPath get_misc_path(QString p_misc, QString p_file);
