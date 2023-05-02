@@ -3,6 +3,7 @@
 #pragma once
 
 #include <QHash>
+#include <QSet>
 #include <QObject>
 
 #include "pathing/aovpath.hpp"
@@ -29,8 +30,10 @@ namespace AttorneyOnline {
       void populateDirectoryCache(QStringList f_base_mounts);
 
       QString checkDirectoryCache(VPath f_directory);
-      QString checkAssetCache(VPath f_asset);
       void insertIntoDirectoryCache(VPath f_directory, QString f_physical_path);
+      bool checkListingCache(VPath f_path);
+      void insertIntoListingCache(VPath f_path);
+      QString checkAssetCache(VPath f_asset);
       void insertIntoAssetCache(VPath f_asset, QString f_physical_path);
 
       /**
@@ -53,6 +56,7 @@ namespace AttorneyOnline {
       //uint = hashed VPath
       QHash<uint, QString> m_asset_cache;
       QHash<uint, QString> m_directory_cache;
+      QSet<uint> m_dir_listing_exist_cache;
 
       QString m_base_path;
 
