@@ -368,6 +368,7 @@ QString AOFinder::get_sfx(QString f_sfx, QString f_misc, QString f_character)
 
 QString AOFinder::get_case_sensitive_path(QString f_file)
 {
+#define CASE_SENSITIVE_FILESYSTEM
 #ifdef CASE_SENSITIVE_FILESYSTEM
   // first, check to see if it's actually there (also serves as base case for
   // recursion)
@@ -387,17 +388,18 @@ QString AOFinder::get_case_sensitive_path(QString f_file)
   }
 
          // last resort, dirlist parent dir and find case insensitive match
-
-  if (!dir_listing_exist_cache.contains(qHash(file_parent_dir))) {
+  //if (!dir_listing_exist_cache.contains(qHash(file_parent_dir))) {
+  if (m_cache->checkListingCache(VPath(file_parent_dir))) {
     QStringList files = QDir(file_parent_dir).entryList();
     for (const QString &file : files) {
-      dir_listing_cache.insert(
-          qHash(file_parent_dir % QChar('/') % file.toLower()), file);
+      //dir_listing_cache.insert(qHash(file_parent_dir % QChar('/') % file.toLower()), file);
+      m_cache->insertIntoDirectoryCache(VPath(file_parent_dir + QChar('/') + file.toLower()), file);
     }
-    dir_listing_exist_cache.insert(qHash(file_parent_dir));
+    m_cache->insertIntoListingCache(VPath(file_parent_dir));
   }
-  QString found_file = dir_listing_cache.value(
-      qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
+  // QString found_file = dir_listing_cache.value(qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
+  QString found_file = m_cache->checkDirectoryCache(
+      VPath(file_parent_dir + QChar('/') + file_basename.toLower()));
 
   if (!found_file.isEmpty()) {
     return file_parent_dir + "/" + found_file;

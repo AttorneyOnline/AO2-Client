@@ -16,10 +16,6 @@ AttorneyOnline::Core::AOCache::AOCache(QObject *parent, const QString f_base_pat
     return;
   }
 
-  m_asset_cache.reserve(10240);
-  m_directory_cache.reserve(1024);
-
-
   if (!QFile::exists(m_base_path+ "cache/cache.lock")) {
     qInfo() << "[Cache]::CTOR: Creating cache lock.";
     m_primary_client = true;
@@ -29,6 +25,7 @@ AttorneyOnline::Core::AOCache::AOCache(QObject *parent, const QString f_base_pat
     l_cache_lock.close();
   }
 
+  m_directory_cache.reserve(1024);
   QString l_directory_path = m_base_path + "cache/dir_cache.ao";
   if (QFile::exists(l_directory_path)) {
     qInfo() << "[Cache]::CTOR: Restoring directory cache.";
@@ -42,6 +39,21 @@ AttorneyOnline::Core::AOCache::AOCache(QObject *parent, const QString f_base_pat
         qInfo() << "[Cache]::CTOR: Restored" << m_directory_cache.size() << "entries.";
   }
 
+  QString l_listing_path = m_base_path + "cache/dir_listing_cache.ao";
+  if (QFile::exists(l_listing_path)) {
+        qInfo() << "[Cache]::CTOR: Restoring directory cache.";
+
+        QFile l_listing_file(l_listing_path);
+        if (l_listing_file.open(QIODevice::ReadOnly)) {
+      QDataStream l_read(&l_listing_file);
+      l_read >> m_dir_listing_exist_cache;
+      l_listing_file.close();
+        }
+        qInfo() << "[Cache]::CTOR: Restored" << m_dir_listing_exist_cache.size() << "entries.";
+  }
+
+
+  m_asset_cache.reserve(10240);
   QString l_asset_path = m_base_path + "cache/asset_cache.ao";
   if (QFile::exists(l_asset_path)) {
     qInfo() << "[Cache]::CTOR: Restoring asset cache.";
@@ -77,6 +89,17 @@ AttorneyOnline::Core::AOCache::~AOCache()
       QDataStream l_out(&l_directory_file);
       l_out << m_directory_cache;
       l_directory_file.close();
+    }
+
+    QString l_listing_path = m_base_path + "cache/dir_listing_cache.ao";
+    qInfo() << "[Cache]::DTOR: Saving listing cache.";
+
+    QFile l_listing_file(l_listing_path);
+    l_listing_file.resize(0);
+    if (l_listing_file.open(QIODevice::WriteOnly)) {
+      QDataStream l_out(&l_listing_file);
+      l_out << m_dir_listing_exist_cache;
+      l_listing_file.close();
     }
 
     QString l_asset_path = m_base_path + "cache/asset_cache.ao";
@@ -133,6 +156,16 @@ QString AttorneyOnline::Core::AOCache::checkDirectoryCache(VPath f_directory)
 #endif
 }
 
+bool AttorneyOnline::Core::AOCache::checkListingCache(VPath f_path)
+{
+#if DEBUG_CACHE
+  bool l_listing_found = m_dir_listing_exist_cache.contains(qHash(f_path));
+  qDebug() << "[Cache]::ListingCache: VPath" << f_path.toQString() << "found;" << l_listing_found;
+#else
+  return m_dir_listing_exist_cache.contains(qHash(f_path));
+#endif
+}
+
 QString AttorneyOnline::Core::AOCache::checkAssetCache(VPath f_asset)
 {
 #if DEBUG_CACHE
@@ -154,6 +187,12 @@ void AttorneyOnline::Core::AOCache::insertIntoDirectoryCache(VPath f_directory, 
   m_directory_cache.insert(qHash(f_directory), f_physical_path);
 
 }
+
+void AttorneyOnline::Core::AOCache::insertIntoListingCache(VPath f_path)
+{
+  m_dir_listing_exist_cache.insert(qHash(f_path));
+}
+#endif
 
 void AttorneyOnline::Core::AOCache::insertIntoAssetCache(VPath f_asset, QString f_physical_path)
 {
