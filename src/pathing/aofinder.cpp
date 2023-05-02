@@ -373,15 +373,18 @@ QString AOFinder::get_case_sensitive_path(QString f_file)
   // recursion)
   QFileInfo file(f_file);
   QString file_basename = file.fileName();
-  if (QFile::exists((f_file))
+  if (QFile::exists((f_file)))
+  {
     return f_file;
+  }
 
 
   QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
 
          // second, does it exist in the new parent dir?
-  if (QFile::exists((file_parent_dir + "/" + file_basename))
+  if (QFile::exists((file_parent_dir + "/" + file_basename))) {
     return file_parent_dir + "/" + file_basename;
+  }
 
          // last resort, dirlist parent dir and find case insensitive match
 

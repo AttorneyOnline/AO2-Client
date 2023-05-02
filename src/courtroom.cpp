@@ -5756,7 +5756,6 @@ void Courtroom::char_clicked(int n_char)
 void Courtroom::open_charselect()
 {
   if (ui_charselect == nullptr) {
-    hide();
     ui_charselect = new AOCharSelect(centralWidget(), ao_app);
     ui_charselect->loadUI(char_list);
     connect(ui_charselect, &AOCharSelect::characterSelected, this,
@@ -5767,6 +5766,7 @@ void Courtroom::open_charselect()
             this, &Courtroom::on_back_to_lobby_clicked);
     connect(ui_charselect, &AOCharSelect::destroyed, this,
             [=] { ui_charselect = nullptr; });
+    hide();
     ui_charselect->show();
   }
 }
