@@ -192,7 +192,6 @@ void AttorneyOnline::Core::AOCache::insertIntoListingCache(VPath f_path)
 {
   m_dir_listing_exist_cache.insert(qHash(f_path));
 }
-#endif
 
 void AttorneyOnline::Core::AOCache::insertIntoAssetCache(VPath f_asset, QString f_physical_path)
 {
