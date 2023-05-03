@@ -87,9 +87,6 @@ private:
   QWidget *ui_audio_tab;
   QWidget *ui_audio_widget;
   QComboBox *ui_audio_device_combobox;
-  QSpinBox *ui_music_volume_spinbox;
-  QSpinBox *ui_sfx_volume_spinbox;
-  QSpinBox *ui_blips_volume_spinbox;
   QSpinBox *ui_suppress_audio_spinbox;
   QFrame *ui_volume_blip_divider;
   QSpinBox *ui_bliprate_spinbox;

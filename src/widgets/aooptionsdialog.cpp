@@ -450,9 +450,6 @@ void AOOptionsDialog::setupUI()
                                      &Options::audioOutputDevice,
                                      &Options::setAudioOutputDevice);
 
-  FROM_UI(QSpinBox, music_volume_spinbox)
-  FROM_UI(QSpinBox, sfx_volume_spinbox)
-  FROM_UI(QSpinBox, blips_volume_spinbox)
   FROM_UI(QSpinBox, suppress_audio_spinbox)
   FROM_UI(QSpinBox, bliprate_spinbox)
   FROM_UI(QCheckBox, blank_blips_cb)
@@ -460,12 +457,6 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, objectmusic_cb)
   FROM_UI(QCheckBox, disablestreams_cb)
 
-  registerOption<QSpinBox, int>("music_volume_spinbox", &Options::musicVolume,
-                                &Options::setMusicVolume);
-  registerOption<QSpinBox, int>("sfx_volume_spinbox", &Options::sfxVolume,
-                                &Options::setSfxVolume);
-  registerOption<QSpinBox, int>("blips_volume_spinbox", &::Options::blipVolume,
-                                &Options::setBlipVolume);
   registerOption<QSpinBox, int>("suppress_audio_spinbox",
                                 &::Options::defaultSuppressAudio,
                                 &Options::setDefaultSupressedAudio);
