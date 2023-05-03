@@ -5822,6 +5822,11 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
 
 Courtroom::~Courtroom()
 {
+  //save sound settings
+  Options::getInstance().setMusicVolume(ui_music_slider->value());
+  Options::getInstance().setSfxVolume(ui_sfx_slider->value());
+  Options::getInstance().setBlipVolume(ui_blip_slider->value());
+
   delete music_player;
   delete sfx_player;
   delete objection_player;
