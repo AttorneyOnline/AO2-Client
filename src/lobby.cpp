@@ -79,10 +79,12 @@ int Lobby::get_selected_server()
     if (auto item = ui_serverlist_tree->currentItem()) {
       return item->text(0).toInt();
     }
+    break;
   case FAVORITES:
     if (auto item = ui_favorites_tree->currentItem()) {
       return item->text(0).toInt();
     }
+    break;
   default:
     break;
   }
