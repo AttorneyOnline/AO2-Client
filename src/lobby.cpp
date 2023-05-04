@@ -189,6 +189,8 @@ void Lobby::loadUI()
   FROM_UI(QPushButton, connect_button);
   connect(ui_connect_button, &QPushButton::released, net_manager,
           &NetworkManager::join_to_server);
+  connect(ui_connect_button, &QPushButton::released, this,
+          [=] { ui_server_player_count_lbl->setText(tr("Joining Server...")); });
   connect(net_manager, &NetworkManager::server_connected, ui_connect_button,
           &QPushButton::setEnabled);
 
@@ -352,6 +354,7 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 {
   Q_UNUSED(p_item)
   Q_UNUSED(column)
+  ui_server_player_count_lbl->setText(tr("Joining Server..."));
   net_manager->join_to_server();
 }
 
