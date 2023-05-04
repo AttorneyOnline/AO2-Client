@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
+#include <QRegularExpression>
 
 class QLabel;
 class QSpinBox;
@@ -26,9 +27,7 @@ private slots:
 private:
     NetworkManager* net_manager;
 
-    QComboBox* ui_direct_protocol_box;
     QLineEdit* ui_direct_hostname_edit;
-    QSpinBox* ui_direct_port_box;
 
     QLabel* ui_direct_connection_status_lbl;
     QPushButton* ui_direct_connect_button;
@@ -38,6 +37,7 @@ private:
     QTimer connect_timeout;
 
     const int TCP_INDEX = 0;
+    const QRegularExpression SCHEME_PATTERN{"^\\w+://.+$"};
     const int CONNECT_TIMEOUT = 5 * 1000;
     const QString DEFAULT_UI = "direct_connect_dialog.ui";;
 

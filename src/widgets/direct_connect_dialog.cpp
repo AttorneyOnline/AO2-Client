@@ -2,6 +2,7 @@
 
 #include "networkmanager.h"
 #include "options.h"
+#include "debug_functions.h"
 
 #include <QComboBox>
 #include <QLabel>
@@ -10,6 +11,9 @@
 #include <QSpinBox>
 #include <QUiLoader>
 #include <QVBoxLayout>
+#include <QRegularExpressionMatch>
+#include <QStringBuilder>
+#include <QUrl>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \
@@ -30,9 +34,7 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
     auto l_layout = new QVBoxLayout(this);
     l_layout->addWidget(ui_widget);
 
-    FROM_UI(QComboBox, direct_protocol_box)
     FROM_UI(QLineEdit, direct_hostname_edit)
-    FROM_UI(QSpinBox, direct_port_box)
 
     FROM_UI(QLabel, direct_connection_status_lbl)
 
@@ -53,10 +55,27 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
 
 void DirectConnectDialog::onConnectPressed()
 {
+  QString l_hostname = ui_direct_hostname_edit->text();
+  if (!SCHEME_PATTERN.match(l_hostname).hasMatch()) {
+    l_hostname = "tcp://" % l_hostname;
+  }
+  QUrl l_url(l_hostname);
+  if (!l_url.isValid()) {
+    call_error(tr("Invalid URL."));
+    return;
+  }
+  if (!to_connection_type.contains(l_url.scheme())) {
+    call_error(tr("Scheme not recognized. Must be either of the following: ") % QStringList::fromVector(to_connection_type.keys().toVector()).join(", "));
+    return;
+  }
+  if (l_url.port() == -1) {
+    call_error(tr("Invalid server port."));
+    return;
+  }
   server_type l_server;
-  l_server.socket_type = ui_direct_protocol_box->currentIndex() == TCP_INDEX ? TCP : WEBSOCKETS;
-  l_server.ip = ui_direct_hostname_edit->text();
-  l_server.port = ui_direct_port_box->value();
+  l_server.socket_type = to_connection_type[l_url.scheme()];
+  l_server.ip = l_url.host();
+  l_server.port = l_url.port();
   l_server.name = "Direct Connection";
 
   net_manager->connect_to_server(l_server);
