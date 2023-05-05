@@ -8,7 +8,7 @@ namespace AttorneyOnline {
   namespace Core {
     class Discord : public QObject {
     public:
-      Discord(QObject *parent = nullptr) : QObject(parent){};
+      Discord(QObject *parent = nullptr) : QObject(parent){}
       ~Discord() = default;
 
     public slots:
