@@ -21,9 +21,8 @@ public:
   void set_muted(bool toggle);
 
 private:
-  //TODO: constness
-  QWidget *m_parent;
-  AOApplication *ao_app;
+  QWidget* const m_parent;
+  AOApplication* const ao_app;
   qreal m_volume;
 
   int m_cycle = 0;

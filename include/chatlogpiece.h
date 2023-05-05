@@ -14,16 +14,15 @@ public:
   chatlogpiece(QString p_name, QString p_showname, QString p_message,
                QString p_action, int color, bool selfname, QDateTime p_datetime);
 
-  //todo: constness
-  QString get_name() { return name; }
-  QString get_showname() { return showname; }
-  QString get_message() { return message; }
-  QString get_action() { return action; }
+  QString get_name() const { return name; }
+  QString get_showname() const { return showname; }
+  QString get_message() const { return message; }
+  QString get_action() const { return action; }
   bool get_selfname() const { return selfname; }
-  QDateTime get_datetime() { return datetime; }
-  QString get_datetime_as_string() { return datetime.toString(); }
+  QDateTime get_datetime() const { return datetime; }
+  QString get_datetime_as_string() const { return datetime.toString(); }
   int get_chat_color() const { return color; }
-  QString get_full();
+  QString get_full() const;
 
 private:
   QString name;

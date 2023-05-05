@@ -24,7 +24,7 @@ private slots:
     void onConnectTimeout();
 
 private:
-    NetworkManager* net_manager; //TODO: add const
+    NetworkManager* const net_manager;
 
     QComboBox* ui_direct_protocol_box;
     QLineEdit* ui_direct_hostname_edit;

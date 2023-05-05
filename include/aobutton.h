@@ -14,8 +14,8 @@ public:
   AOButton(QWidget *parent, AOApplication *p_ao_app);
   ~AOButton();
 
-  AOApplication *ao_app;
-  QMovie *movie;
+  AOApplication* const ao_app;
+  QMovie* movie;
 
   void set_image(QString p_image, QString p_misc="");
 };

@@ -11,10 +11,9 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 
-NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
+NetworkManager::NetworkManager(AOApplication *parent)
+    : QObject(parent), ao_app(parent)
 {
-  ao_app = parent;
-
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
 

@@ -40,8 +40,8 @@ public:
                            std::shared_ptr<AOFinder> f_finder = nullptr);
 
 private:
-  std::shared_ptr<AOFinder> m_finder;
-  NetworkManager* m_manager;
+  const std::shared_ptr<AOFinder> m_finder;
+  NetworkManager* const m_manager;
 
   // Dialog interaction buttons. Save/Discard/Restore Defaults
   QDialogButtonBox *ui_settings_buttons;

@@ -43,10 +43,10 @@ public:
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
-  NetworkManager *net_manager;
+  NetworkManager* const net_manager;
   Lobby *w_lobby;
   Courtroom *w_courtroom;
-  AODiscord *discord;
+  AODiscord* const discord;
 
   bool lobby_constructed = false;
   bool courtroom_constructed = false;
@@ -105,10 +105,10 @@ public:
 
   //////////////////versioning///////////////
 
-  int get_release() const { return RELEASE; }
-  int get_major_version() const { return MAJOR_VERSION; }
-  int get_minor_version() const { return MINOR_VERSION; }
-  QString get_version_string();
+  constexpr int get_release() { return RELEASE; }
+  constexpr int get_major_version() { return MAJOR_VERSION; }
+  constexpr int get_minor_version() { return MINOR_VERSION; }
+  QString get_version_string() const;
 
   ///////////////////////////////////////////
 
@@ -359,7 +359,7 @@ private:
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
 
-  std::shared_ptr<AOFinder> m_finder;
+  const std::shared_ptr<AOFinder> m_finder;
 
 public slots:
   void server_disconnected();

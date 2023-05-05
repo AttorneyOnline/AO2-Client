@@ -95,7 +95,7 @@ public:
   QString find_image(QStringList p_list);
 
 protected:
-  AOApplication *ao_app;
+  AOApplication* const ao_app;
   QVector<QPixmap> movie_frames;
   QVector<int> movie_delays;
 

@@ -23,7 +23,7 @@ signals:
   void show_evidence_details(int index);
 
 private:
-  AOApplication *ao_app;
+  AOApplication* const ao_app;
   InterfaceLayer *evidence_movie;
   QPushButton *evidence_icon;
   AOSfxPlayer *sfx_player;

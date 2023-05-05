@@ -14,7 +14,7 @@ public:
   void set_widgets();
   void play(QString emote, QString char_name, bool flipped = false, int self_offset = 0, int self_offset_v = 0);
 private:
-  AOApplication *ao_app;
+  AOApplication* const ao_app;
   QWidget *ui_viewport;
   BackgroundLayer *ui_vp_background;
   SplashLayer *ui_vp_speedlines;

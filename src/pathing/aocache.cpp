@@ -143,7 +143,7 @@ void AttorneyOnline::Core::AOCache::populateDirectoryCache(QStringList f_base_mo
   }
 }
 
-QString AttorneyOnline::Core::AOCache::checkDirectoryCache(VPath f_directory)
+QString AttorneyOnline::Core::AOCache::checkDirectoryCache(VPath f_directory) const
 {
 #if DEBUG_CACHE
   QString l_path = m_asset_cache.value(qHash(f_directory));
@@ -156,7 +156,7 @@ QString AttorneyOnline::Core::AOCache::checkDirectoryCache(VPath f_directory)
 #endif
 }
 
-bool AttorneyOnline::Core::AOCache::checkListingCache(VPath f_path)
+bool AttorneyOnline::Core::AOCache::checkListingCache(VPath f_path) const
 {
 #if DEBUG_CACHE
   bool l_listing_found = m_dir_listing_exist_cache.contains(qHash(f_path));
@@ -166,7 +166,7 @@ bool AttorneyOnline::Core::AOCache::checkListingCache(VPath f_path)
 #endif
 }
 
-QString AttorneyOnline::Core::AOCache::checkAssetCache(VPath f_asset)
+QString AttorneyOnline::Core::AOCache::checkAssetCache(VPath f_asset) const
 {
 #if DEBUG_CACHE
   QString l_path = m_asset_cache.value(qHash(f_asset));
@@ -212,12 +212,12 @@ void AttorneyOnline::Core::AOCache::invalidateCache(QString f_reason)
   m_directory_cache.clear();
 }
 
-unsigned int AttorneyOnline::Core::AOCache::assetCacheSize()
+unsigned int AttorneyOnline::Core::AOCache::assetCacheSize() const
 {
   return m_asset_cache.size();
 }
 
-bool AttorneyOnline::Core::AOCache::isPrimaryClient()
+bool AttorneyOnline::Core::AOCache::isPrimaryClient() const
 {
   return m_primary_client;
 }

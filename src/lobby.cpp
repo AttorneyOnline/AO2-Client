@@ -31,11 +31,8 @@
   reset_selection();
 
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager, std::shared_ptr<AOFinder> f_finder)
-    : QMainWindow()
+    : QMainWindow(), ao_app(p_ao_app), net_manager(p_net_manager), m_finder(f_finder)
 {
-  ao_app = p_ao_app;
-  net_manager = p_net_manager;
-  m_finder = f_finder;
   connect(net_manager, &NetworkManager::server_list_received, this,
           &Lobby::setServerList);
   net_manager->get_server_list();
@@ -79,7 +76,7 @@ void Lobby::on_tab_changed(int index)
   }
 }
 
-int Lobby::get_selected_server()
+int Lobby::get_selected_server() const
 {
   switch (ui_connections_tabview->currentIndex()) {
   case SERVER:
@@ -96,7 +93,7 @@ int Lobby::get_selected_server()
   return -1;
 }
 
-int Lobby::pageSelected() { return current_page; }
+int Lobby::pageSelected() const { return current_page; }
 
 void Lobby::reset_selection()
 {
@@ -540,7 +537,7 @@ void Lobby::set_server_description(const QString &server_description)
   ui_server_description_text->insertHtml(result);
 }
 
-const QVector<server_type> Lobby::serverList() { return m_serverList; }
+const QVector<server_type> Lobby::serverList() const { return m_serverList; }
 
 void Lobby::setServerList(QVector<server_type> f_serverList)
 {

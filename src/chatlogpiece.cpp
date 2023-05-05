@@ -35,7 +35,7 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
   datetime = p_datetime.toUTC();
 }
 
-QString chatlogpiece::get_full()
+QString chatlogpiece::get_full() const
 {
   QString full = "[";
 

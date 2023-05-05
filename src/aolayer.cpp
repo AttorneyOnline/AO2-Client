@@ -6,10 +6,9 @@
 
 static QThreadPool *thread_pool;
 
-AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : QLabel(p_parent), ao_app(p_ao_app)
 {
-  ao_app = p_ao_app;
-
   // used for culling images when their max_duration is exceeded
   shfx_timer = new QTimer(this);
   shfx_timer->setTimerType(Qt::PreciseTimer);
