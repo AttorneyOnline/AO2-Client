@@ -20,13 +20,13 @@ public:
   void set_volume(int p_volume);
   void set_muted(bool toggle);
 
-  int m_cycle = 0;
-
 private:
+  //TODO: constness
   QWidget *m_parent;
   AOApplication *ao_app;
   qreal m_volume;
 
+  int m_cycle = 0;
   bool m_muted = false;
 
   void set_volume_internal(qreal p_volume);
