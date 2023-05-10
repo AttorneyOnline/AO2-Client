@@ -3544,6 +3544,10 @@ void Courtroom::start_chat_ticking()
       break;
   }
 
+  if (m_chatmessage[EMOTE_MOD].toInt() == ZOOM) {
+    ui_vp_desk->hide();
+  }
+
   if (m_chatmessage[EFFECTS] != "") {
     QStringList fx_list = m_chatmessage[EFFECTS].split("|");
     QString fx = fx_list[0];
