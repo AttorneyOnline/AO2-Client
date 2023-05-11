@@ -1842,7 +1842,7 @@ void Courtroom::on_chat_return_pressed()
     f_desk_mod = ao_app->get_desk_mod(current_char, current_emote);
     if (!ao_app->expanded_desk_mods_supported) {
       if (f_desk_mod == DESK_PRE_ONLY_EX || f_desk_mod == DESK_PRE_ONLY)
-        f_desk_mod = DESK_HIDE;/
+        f_desk_mod = DESK_HIDE;
       else if (f_desk_mod == DESK_EMOTE_ONLY_EX || f_desk_mod == DESK_EMOTE_ONLY)
         f_desk_mod = DESK_SHOW;
     }
