@@ -1379,9 +1379,7 @@ void Courtroom::set_background(QString p_background, bool display)
     QString f_side = current_side;
     if (current_side == "")
       f_side = ao_app->get_char_side(current_char);
-    set_scene(
-        QString::number(ao_app->get_desk_mod(current_char, current_emote)),
-        f_side);
+    set_scene(true, f_side);
   }
 }
 
@@ -1838,22 +1836,21 @@ void Courtroom::on_chat_return_pressed()
   else
     f_side = current_side;
 
-  QString f_desk_mod = "chat";
+  int f_desk_mod = DESK_SHOW;
 
   if (ao_app->desk_mod_supported) {
-    f_desk_mod =
-        QString::number(ao_app->get_desk_mod(current_char, current_emote));
+    f_desk_mod = ao_app->get_desk_mod(current_char, current_emote);
     if (!ao_app->expanded_desk_mods_supported) {
-      if (f_desk_mod == "2" || f_desk_mod == "4")
-        f_desk_mod = "0";
-      else if (f_desk_mod == "3" || f_desk_mod == "5")
-        f_desk_mod = "1";
+      if (f_desk_mod % 2 == 0) //deskmods 2 and 4 only show desk on preanim
+        f_desk_mod = DESK_HIDE;
+      else
+        f_desk_mod = DESK_SHOW;
     }
-    if (f_desk_mod == "-1")
-      f_desk_mod = "chat";
+    if (f_desk_mod == -1)
+      f_desk_mod = DESK_SHOW;
   }
 
-  packet_contents.append(f_desk_mod);
+  packet_contents.append(QString::number(f_desk_mod));
 
   QString f_pre = ao_app->get_pre_emote(current_char, current_emote);
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
@@ -2471,8 +2468,6 @@ void Courtroom::display_character()
   else {
     ui_vp_sticker->stop();
   }
-  // Initialize the correct pos (called SIDE here for some reason) with DESK_MOD to determine if we should hide the desk or not.
-  set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
 
   // Arrange the netstrings of the frame SFX for the character to know about
   if (!m_chatmessage[FRAME_SFX].isEmpty() &&
@@ -3475,20 +3470,20 @@ void Courtroom::play_preanim(bool immediate)
   ui_vp_player_char->set_play_once(true);
   ui_vp_player_char->load_image(f_preanim, f_char, preanim_duration, true);
 
-  switch(m_chatmessage[DESK_MOD].toInt()) {
-    case 4:
+  switch (m_chatmessage[DESK_MOD].toInt()) {
+    case DESK_EMOTE_ONLY_EX:
       ui_vp_sideplayer_char->hide();
       ui_vp_player_char->move_and_center(0, 0);
       [[fallthrough]];
-    case 2:
-      set_scene("0", m_chatmessage[SIDE]);
+    case DESK_EMOTE_ONLY:
+    case DESK_HIDE:
+      set_scene(false, m_chatmessage[SIDE]);
       break;
-    case 5:
-    case 3:
-      set_scene("1", m_chatmessage[SIDE]);
-      break;
-    default:
-      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
+
+    case DESK_PRE_ONLY_EX:
+    case DESK_PRE_ONLY:
+    case DESK_SHOW:
+      set_scene(true, m_chatmessage[SIDE]);
       break;
   }
 
@@ -3526,26 +3521,22 @@ void Courtroom::start_chat_ticking()
 
   // handle expanded desk mods
   switch(m_chatmessage[DESK_MOD].toInt()) {
-    case 4:
+    case DESK_EMOTE_ONLY_EX:
       set_self_offset(m_chatmessage[SELF_OFFSET]);
       [[fallthrough]];
-    case 2:
-      set_scene("1", m_chatmessage[SIDE]);
+    case DESK_EMOTE_ONLY:
+    case DESK_SHOW:
+      set_scene(true, m_chatmessage[SIDE]);
       break;
-    case 5:
+
+    case DESK_PRE_ONLY_EX:
       ui_vp_sideplayer_char->hide();
       ui_vp_player_char->move_and_center(0, 0);
       [[fallthrough]];
-    case 3:
-      set_scene("0", m_chatmessage[SIDE]);
+    case DESK_PRE_ONLY:
+    case DESK_HIDE:
+      set_scene(false, m_chatmessage[SIDE]);
       break;
-    default:
-      set_scene(m_chatmessage[DESK_MOD], m_chatmessage[SIDE]);
-      break;
-  }
-
-  if (m_chatmessage[EMOTE_MOD].toInt() == ZOOM) {
-    ui_vp_desk->hide();
   }
 
   if (m_chatmessage[EFFECTS] != "") {
@@ -3916,19 +3907,15 @@ void Courtroom::play_sfx()
         ao_app->get_sfx_looping(current_char, current_emote) == "1");
 }
 
-void Courtroom::set_scene(const QString f_desk_mod, const QString f_side)
+void Courtroom::set_scene(bool show_desk, const QString f_side)
 {
   ui_vp_background->load_image(ao_app->get_pos_path(f_side));
   ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
 
-  if (f_desk_mod == "0" ||
-      (f_desk_mod != "1" &&
-       (f_side == "jud" || f_side == "hld" || f_side == "hlp"))) {
-    ui_vp_desk->hide();
-  }
-  else {
+  if (show_desk)
     ui_vp_desk->show();
-  }
+  else
+    ui_vp_desk->hide();
 }
 
 void Courtroom::set_self_offset(const QString& p_list) {
