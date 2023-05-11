@@ -1841,9 +1841,9 @@ void Courtroom::on_chat_return_pressed()
   if (ao_app->desk_mod_supported) {
     f_desk_mod = ao_app->get_desk_mod(current_char, current_emote);
     if (!ao_app->expanded_desk_mods_supported) {
-      if (f_desk_mod % 2 == 0) //deskmods 2 and 4 only show desk on preanim
-        f_desk_mod = DESK_HIDE;
-      else
+      if (f_desk_mod == DESK_PRE_ONLY_EX || f_desk_mod == DESK_PRE_ONLY)
+        f_desk_mod = DESK_HIDE;/
+      else if (f_desk_mod == DESK_EMOTE_ONLY_EX || f_desk_mod == DESK_EMOTE_ONLY)
         f_desk_mod = DESK_SHOW;
     }
     if (f_desk_mod == -1)
