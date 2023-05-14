@@ -120,6 +120,17 @@ enum EMOTE_MOD_TYPE {
   PREANIM_ZOOM = 6,
 };
 
+enum DESK_MOD_TYPE {
+  DESK_HIDE = 0,
+  DESK_SHOW,
+  DESK_EMOTE_ONLY,
+  DESK_PRE_ONLY,
+  DESK_EMOTE_ONLY_EX,
+  DESK_PRE_ONLY_EX,
+  //"EX" for "expanded"
+  //dumb, i know, but throw the first stone if you have a better idea
+};
+
 enum MUSIC_EFFECT { FADE_IN = 1, FADE_OUT = 2, SYNC_POS = 4 };
 
 #endif // DATATYPES_H

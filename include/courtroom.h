@@ -191,7 +191,7 @@ public:
   void set_pair_list();
 
   // sets desk and bg based on pos in chatmessage
-  void set_scene(QString f_desk_mod, QString f_side);
+  void set_scene(bool show_desk, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
   void set_self_offset(const QString& p_list);
