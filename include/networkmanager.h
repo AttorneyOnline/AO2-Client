@@ -22,7 +22,7 @@ class NetworkManager : public QObject {
   Q_OBJECT
 
 private:
-  AOApplication *ao_app;
+  AOApplication* const ao_app;
   QNetworkAccessManager *http;
 
   union {

@@ -25,7 +25,7 @@ private slots:
     void onConnectTimeout();
 
 private:
-    NetworkManager* net_manager;
+    NetworkManager* const net_manager;
 
     QLineEdit* ui_direct_hostname_edit;
 
@@ -39,7 +39,7 @@ private:
     const int TCP_INDEX = 0;
     const QRegularExpression SCHEME_PATTERN{"^\\w+://.+$"};
     const int CONNECT_TIMEOUT = 5 * 1000;
-    const QString DEFAULT_UI = "direct_connect_dialog.ui";;
+    const QString DEFAULT_UI = "direct_connect_dialog.ui";
 
 };
 

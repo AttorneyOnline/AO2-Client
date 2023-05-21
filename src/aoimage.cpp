@@ -5,11 +5,9 @@
 
 #include <QBitmap>
 
-AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static) : QLabel(parent)
+AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static)
+    : QLabel(parent), m_parent(parent), ao_app(p_ao_app), is_static(make_static)
 {
-  m_parent = parent;
-  ao_app = p_ao_app;
-  is_static = make_static;
   if (!is_static) // Only create the QMovie if we're non-static
   {
     movie = new QMovie(this);

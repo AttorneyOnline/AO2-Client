@@ -19,8 +19,8 @@
   ;                                                                            \
   ui_##name = findChild<type *>(#name);
 
-DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
-    net_manager(p_net_manager)
+DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager)
+    : net_manager(p_net_manager)
 {
     QUiLoader l_loader(this);
     QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));

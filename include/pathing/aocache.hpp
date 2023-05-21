@@ -29,11 +29,11 @@ namespace AttorneyOnline {
        */
       void populateDirectoryCache(QStringList f_base_mounts);
 
-      QString checkDirectoryCache(VPath f_directory);
+      QString checkDirectoryCache(VPath f_directory) const;
       void insertIntoDirectoryCache(VPath f_directory, QString f_physical_path);
-      bool checkListingCache(VPath f_path);
+      bool checkListingCache(VPath f_path) const;
       void insertIntoListingCache(VPath f_path);
-      QString checkAssetCache(VPath f_asset);
+      QString checkAssetCache(VPath f_asset) const;
       void insertIntoAssetCache(VPath f_asset, QString f_physical_path);
 
       /**
@@ -50,7 +50,7 @@ namespace AttorneyOnline {
        */
       void invalidateCache(QString f_reason);
 
-      unsigned int assetCacheSize();
+      unsigned int assetCacheSize() const;
 
     private:
       //uint = hashed VPath
@@ -58,14 +58,14 @@ namespace AttorneyOnline {
       QHash<uint, QString> m_directory_cache;
       QSet<uint> m_dir_listing_exist_cache;
 
-      QString m_base_path;
+      const QString m_base_path;
 
       /**
-       * @brief Wether the client is the first to launch and delete the lock file on close.
+       * @brief Whether the client is the first to launch and delete the lock file on close.
        */
       bool m_primary_client = false;
 
-      bool isPrimaryClient();
+      bool isPrimaryClient() const;
     };
   } // namespace Core
 } // namespace AttorneyOnline

@@ -27,7 +27,7 @@ public:
   bool stretchToViewport() override;
 
 private:
-  QSettings m_effect_ini;
+  const QSettings m_effect_ini;
 };
 
 #endif // AOEFFECT_H

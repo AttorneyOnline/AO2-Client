@@ -17,7 +17,7 @@ AOFinder::AOFinder(QObject *parent, QString f_base_path,
 
 AOFinder::~AOFinder() {}
 
-QString AOFinder::get_base_path()
+QString AOFinder::get_base_path() const
 {
   return m_base_path;
 }
@@ -40,27 +40,27 @@ static bool is_power_2(unsigned int n)
   return r == 1;
 }
 
-VPath AOFinder::get_theme_path(QString f_file, QString f_theme)
+VPath AOFinder::get_theme_path(QString f_file, QString f_theme) const
 {
   return VPath("themes/" + f_theme + "/" + f_file);
 }
 
-VPath AOFinder::get_character_path(QString f_char, QString f_file)
+VPath AOFinder::get_character_path(QString f_char, QString f_file) const
 {
   return VPath("characters/" + f_char + "/" + f_file);
 }
 
-VPath AOFinder::get_misc_path(QString f_misc, QString f_file)
+VPath AOFinder::get_misc_path(QString f_misc, QString f_file) const
 {
   return VPath("misc/" + f_misc + "/" + f_file);
 }
 
-VPath AOFinder::get_sounds_path(QString f_file)
+VPath AOFinder::get_sounds_path(QString f_file) const
 {
   return VPath("sounds/general/" + f_file);
 }
 
-VPath AOFinder::get_music_path(QString f_song)
+VPath AOFinder::get_music_path(QString f_song) const
 {
   if (f_song.startsWith("http")) {
     return VPath(f_song); // url
@@ -68,7 +68,7 @@ VPath AOFinder::get_music_path(QString f_song)
   return VPath("sounds/music/" + f_song);
 }
 
-VPath AOFinder::get_background_path(QString f_file, QString f_background)
+VPath AOFinder::get_background_path(QString f_file, QString f_background) const
 {
   if (!f_background.isEmpty()) {
     return VPath("background/" + f_background + "/" + f_file);
@@ -76,17 +76,17 @@ VPath AOFinder::get_background_path(QString f_file, QString f_background)
   return get_default_background_path(f_file);
 }
 
-VPath AOFinder::get_default_background_path(QString f_file)
+VPath AOFinder::get_default_background_path(QString f_file) const
 {
   return VPath("background/default/" + f_file);
 }
 
-QString AOFinder::get_sfx_suffix(VPath sound_to_check)
+QString AOFinder::get_sfx_suffix(VPath sound_to_check) const
 {
-  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi",
+  const QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi",
                           ".xm",   ".it",  ".s3m", ".mod", ".mtm", ".umx"};
   // Check if we were provided a direct filepath with a suffix already
-  QString path = sound_to_check.toQString();
+  const QString path = sound_to_check.toQString();
   // Loop through our suffixes
   for (const QString &suffix : suffixes) {
     // If our VPath ends with a valid suffix
@@ -98,7 +98,7 @@ QString AOFinder::get_sfx_suffix(VPath sound_to_check)
   return get_real_path(sound_to_check, suffixes);
 }
 
-QString AOFinder::get_image_suffix(VPath path_to_check, bool static_image)
+QString AOFinder::get_image_suffix(VPath path_to_check, bool static_image) const
 {
   QStringList suffixes{};
   if (!static_image) {
@@ -120,7 +120,7 @@ QString AOFinder::get_image_suffix(VPath path_to_check, bool static_image)
 }
 
 QString AOFinder::get_pos_path(const QString &f_background, const QString &pos,
-                               const bool desk)
+                               const bool desk) const
 {
   // witness is default if pos is invalid
   QString l_background;
@@ -192,12 +192,12 @@ QString AOFinder::get_pos_path(const QString &f_background, const QString &pos,
   return l_background;
 }
 
-QString AOFinder::read_design_ini(QString p_identifier, VPath p_design_path)
+QString AOFinder::read_design_ini(QString p_identifier, VPath p_design_path) const
 {
   return read_design_ini(p_identifier, get_real_path(p_design_path));
 }
 
-QString AOFinder::read_design_ini(QString p_identifier, QString p_design_path)
+QString AOFinder::read_design_ini(QString p_identifier, QString p_design_path) const
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
   settings.setIniCodec("UTF-8");
@@ -216,7 +216,7 @@ void AOFinder::invalidate_lookup_cache(QString f_reason)
   m_cache.get()->invalidateCache(f_reason);
 }
 
-VPath AOFinder::get_evidence_path(QString f_file)
+VPath AOFinder::get_evidence_path(QString f_file) const
 {
   return VPath("evidence/" + f_file);
 }
@@ -225,7 +225,7 @@ QVector<VPath> AOFinder::get_asset_paths(QString f_element, QString f_theme,
                                          QString f_subtheme,
                                          QString f_default_theme,
                                          QString f_misc, QString f_character,
-                                         QString f_placeholder)
+                                         QString f_placeholder) const
 {
   QVector<VPath> pathlist;
   if (f_character != "")
@@ -256,7 +256,7 @@ QVector<VPath> AOFinder::get_asset_paths(QString f_element, QString f_theme,
   return pathlist;
 }
 
-QString AOFinder::get_asset_path(QVector<VPath> pathlist)
+QString AOFinder::get_asset_path(QVector<VPath> pathlist) const
 {
   for (const VPath &p : pathlist) {
     QString path = get_real_path(p);
@@ -267,7 +267,7 @@ QString AOFinder::get_asset_path(QVector<VPath> pathlist)
   return QString();
 }
 
-QString AOFinder::get_image_path(QVector<VPath> pathlist, bool static_image)
+QString AOFinder::get_image_path(QVector<VPath> pathlist, bool static_image) const
 {
   for (const VPath &p : pathlist) {
     QString path = get_image_suffix(p, static_image);
@@ -278,7 +278,7 @@ QString AOFinder::get_image_path(QVector<VPath> pathlist, bool static_image)
   return QString();
 }
 
-QString AOFinder::get_sfx_path(QVector<VPath> pathlist)
+QString AOFinder::get_sfx_path(QVector<VPath> pathlist) const
 {
   for (const VPath &p : pathlist) {
     QString path = get_sfx_suffix(p);
@@ -291,7 +291,7 @@ QString AOFinder::get_sfx_path(QVector<VPath> pathlist)
 
 QString AOFinder::get_config_value(QString f_identifier, QString f_config,
                                    QString f_theme, QString f_subtheme,
-                                   QString f_default_theme, QString f_misc)
+                                   QString f_default_theme, QString f_misc) const
 {
   QString path;
   //    qDebug() << "got request for" << f_identifier << "in" << f_config;
@@ -319,9 +319,9 @@ QString AOFinder::get_config_value(QString f_identifier, QString f_config,
 QString AOFinder::get_asset(QString f_element, QString f_theme,
                             QString f_subtheme, QString f_default_theme,
                             QString f_misc, QString f_character,
-                            QString f_placeholder)
+                            QString f_placeholder) const
 {
-  QString ret = get_asset_path(get_asset_paths(f_element, f_theme, f_subtheme,
+  const QString ret = get_asset_path(get_asset_paths(f_element, f_theme, f_subtheme,
                                                f_default_theme, f_misc,
                                                f_character, f_placeholder));
   if (ret.isEmpty()) {
@@ -335,9 +335,9 @@ QString AOFinder::get_asset(QString f_element, QString f_theme,
 QString AOFinder::get_image(QString f_element, QString f_theme,
                             QString f_subtheme, QString f_default_theme,
                             QString f_misc, QString f_character,
-                            QString f_placeholder, bool static_image)
+                            QString f_placeholder, bool static_image) const
 {
-  QString ret = get_image_path(get_asset_paths(f_element, f_theme, f_subtheme,
+  const QString ret = get_image_path(get_asset_paths(f_element, f_theme, f_subtheme,
                                                f_default_theme, f_misc,
                                                f_character, f_placeholder),
                                static_image);
@@ -350,14 +350,14 @@ QString AOFinder::get_image(QString f_element, QString f_theme,
   return ret;
 }
 
-QString AOFinder::get_sfx(QString f_sfx, QString f_misc, QString f_character)
+QString AOFinder::get_sfx(QString f_sfx, QString f_misc, QString f_character) const
 {
   QVector<VPath> pathlist;
   // If sound subfolder not found, search just for SFX
   pathlist += get_asset_paths(f_sfx, "", "", "", f_misc, f_character);
   // If SFX not found, search base/sounds/general/ folder
   pathlist += get_sounds_path(f_sfx);
-  QString ret = get_sfx_path(pathlist);
+  const QString ret = get_sfx_path(pathlist);
   if (ret.isEmpty()) {
     qWarning().nospace() << "could not find sfx " << f_sfx
                          << " (char = " << f_character << ", misc = " << f_misc
@@ -366,13 +366,13 @@ QString AOFinder::get_sfx(QString f_sfx, QString f_misc, QString f_character)
   return ret;
 }
 
-QString AOFinder::get_case_sensitive_path(QString f_file)
+QString AOFinder::get_case_sensitive_path(QString f_file) const
 {
 #define CASE_SENSITIVE_FILESYSTEM
 #ifdef CASE_SENSITIVE_FILESYSTEM
   // first, check to see if it's actually there (also serves as base case for
   // recursion)
-  QFileInfo file(f_file);
+  const QFileInfo file(f_file);
   QString file_basename = file.fileName();
   if (QFile::exists((f_file)))
   {
@@ -380,7 +380,7 @@ QString AOFinder::get_case_sensitive_path(QString f_file)
   }
 
 
-  QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
+  const QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
 
          // second, does it exist in the new parent dir?
   if (QFile::exists((file_parent_dir + "/" + file_basename))) {
@@ -390,7 +390,7 @@ QString AOFinder::get_case_sensitive_path(QString f_file)
          // last resort, dirlist parent dir and find case insensitive match
   //if (!dir_listing_exist_cache.contains(qHash(file_parent_dir))) {
   if (m_cache->checkListingCache(VPath(file_parent_dir))) {
-    QStringList files = QDir(file_parent_dir).entryList();
+    const QStringList files = QDir(file_parent_dir).entryList();
     for (const QString &file : files) {
       //dir_listing_cache.insert(qHash(file_parent_dir % QChar('/') % file.toLower()), file);
       m_cache->insertIntoDirectoryCache(VPath(file_parent_dir + QChar('/') + file.toLower()), file);
@@ -398,7 +398,7 @@ QString AOFinder::get_case_sensitive_path(QString f_file)
     m_cache->insertIntoListingCache(VPath(file_parent_dir));
   }
   // QString found_file = dir_listing_cache.value(qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
-  QString found_file = m_cache->checkDirectoryCache(
+  const QString found_file = m_cache->checkDirectoryCache(
       VPath(file_parent_dir + QChar('/') + file_basename.toLower()));
 
   if (!found_file.isEmpty()) {
@@ -412,10 +412,10 @@ QString AOFinder::get_case_sensitive_path(QString f_file)
 #endif
 }
 
-QString AOFinder::get_real_path(const VPath &vpath, const QStringList &suffixes)
+QString AOFinder::get_real_path(const VPath &vpath, const QStringList &suffixes) const
 {
   // Try cache first
-  QString phys_path = m_cache->checkAssetCache(vpath);
+  const QString phys_path = m_cache->checkAssetCache(vpath);
   if (!phys_path.isEmpty() && QFile::exists(phys_path)) {
     for (const QString &suffix :
          suffixes) { // make sure cached asset is the right type
@@ -458,7 +458,7 @@ QString AOFinder::get_real_path(const VPath &vpath, const QStringList &suffixes)
   }
 
   // Not found in mount paths; check if the file is remote
-  QString remotePath = vpath.toQString();
+  const QString remotePath = vpath.toQString();
   if (remotePath.startsWith("http:") || remotePath.startsWith("https:")) {
     return remotePath;
   }

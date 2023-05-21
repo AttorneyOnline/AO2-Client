@@ -7,7 +7,7 @@ namespace AttorneyOnline {
   namespace UI {
     class CharButton : public QPushButton {
     public:
-      explicit CharButton(QWidget *parent) : QPushButton(parent){};
+      explicit CharButton(QWidget *parent) : QPushButton(parent){}
       ~CharButton() = default;
 
       virtual void setTaken(const bool &f_state) = 0;

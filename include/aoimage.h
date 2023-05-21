@@ -14,13 +14,13 @@ public:
   AOImage(QWidget *parent, AOApplication *p_ao_app, bool make_static = false);
   ~AOImage();
 
-  QWidget *m_parent;
-  AOApplication *ao_app;
+  QWidget* const m_parent;
+  AOApplication* const ao_app;
   QMovie *movie;
 
   QString path;
 
-  bool is_static = false;
+  const bool is_static;
 
   bool masked = false;
 

@@ -21,15 +21,6 @@
 #define CASE_SENSITIVE_FILESYSTEM
 #endif
 
-static bool is_power_2(unsigned int n) {
-  unsigned int r = 0;
-  while (n) {
-    r += n & 1;
-    n >>= 1;
-  }
-  return r == 1;
-}
-
 VPath AOApplication::get_theme_path(QString p_file, QString p_theme)
 { 
   return m_finder.get()->get_theme_path(p_file, p_theme);

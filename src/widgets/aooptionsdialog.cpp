@@ -26,10 +26,8 @@
   ui_##name = findChild<type *>(#name);
 
 AOOptionsDialog::AOOptionsDialog(QDialog *parent, NetworkManager *f_net_man, std::shared_ptr<AOFinder> f_finder)
-    : QDialog(parent)
+    : QDialog(parent), m_finder(f_finder), m_manager(f_net_man)
 {
-  m_finder = f_finder;
-  m_manager = f_net_man;
   setupUI();
 }
 

@@ -5,9 +5,8 @@
 #include "options.h"
 
 AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
-    : QPushButton(parent)
+    : QPushButton(parent), ao_app(p_ao_app)
 {
-  ao_app = p_ao_app;
   movie = new QMovie(this);
   connect(movie, &QMovie::frameChanged, [this]{
     this->setIcon(movie->currentPixmap().scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
