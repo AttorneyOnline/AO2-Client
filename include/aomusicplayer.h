@@ -26,8 +26,8 @@ public slots:
   void stop(int channel = 0);
 
 private:
-  QWidget *m_parent;
-  AOApplication *ao_app;
+  QWidget* const m_parent;
+  AOApplication* const ao_app;
 
   bool m_looping = false;
   bool m_muted = false;

@@ -20,11 +20,11 @@ public:
   void set_selected_image(QString p_image);
 
   void set_id(int p_id) { m_id = p_id; }
-  int get_id() { return m_id; }
+  int get_id() const { return m_id; }
 
 private:
-  QWidget *parent;
-  AOApplication *ao_app;
+  QWidget* const parent;
+  AOApplication* const ao_app;
   QLabel *ui_selected = nullptr;
 
   int m_id = 0;

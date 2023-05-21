@@ -1,9 +1,8 @@
 #include "aoemotepreview.h"
 
-AOEmotePreview::AOEmotePreview(QWidget *parent, AOApplication *p_ao_app) : QWidget(parent)
+AOEmotePreview::AOEmotePreview(QWidget *parent, AOApplication *p_ao_app)
+    : QWidget(parent), ao_app(p_ao_app)
 {
-  ao_app = p_ao_app;
-
   ui_viewport = new QWidget(this);
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_player_char->setObjectName("ui_vp_player_char");

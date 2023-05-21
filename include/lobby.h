@@ -26,14 +26,14 @@ public:
 
   void set_player_count(int players_online, int max_players);
   void set_server_description(const QString &server_description);
-  const QVector<server_type> serverList();
-  int get_selected_server();
-  int pageSelected();
+  const QVector<server_type> serverList() const;
+  int get_selected_server() const;
+  int pageSelected() const;
 
 private:
-  AOApplication *ao_app;
-  NetworkManager *net_manager;
-  std::shared_ptr<AOFinder> m_finder;
+  AOApplication* const ao_app;
+  NetworkManager* const net_manager;
+  const std::shared_ptr<AOFinder> m_finder;
 
   const QString DEFAULT_UI = "lobby.ui";
   QVector<server_type> m_serverList;

@@ -5,9 +5,8 @@
 #include "file_functions.h"
 
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
+    : m_parent(parent), ao_app(p_ao_app)
 {
-  m_parent = parent;
-  ao_app = p_ao_app;
 }
 
 AOMusicPlayer::~AOMusicPlayer()

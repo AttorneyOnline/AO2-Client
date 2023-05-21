@@ -19,14 +19,11 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
   original_message_handler(type, context, msg);
 }
 
-AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
+AOApplication::AOApplication(int &argc, char **argv)
+    : QApplication(argc, argv), net_manager(new NetworkManager(this)),
+      discord(new AODiscord(this)),
+      m_finder(std::make_shared<AOFinder>(this, get_base_path(), Options::getInstance().mountPaths()))
 {
-  net_manager = new NetworkManager(this);
-  discord = new AODiscord(this);
-
-  m_finder = std::make_shared<AOFinder>(this, get_base_path(),
-                                        Options::getInstance().mountPaths());
-
   asset_lookup_cache.reserve(2048);
 
   message_handler_context = this;
@@ -116,7 +113,7 @@ void AOApplication::destruct_courtroom()
   courtroom_constructed = false;
 }
 
-QString AOApplication::get_version_string()
+QString AOApplication::get_version_string() const
 {
   return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
          QString::number(MINOR_VERSION);

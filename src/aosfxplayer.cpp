@@ -2,9 +2,8 @@
 #include "file_functions.h"
 
 AOSfxPlayer::AOSfxPlayer(QWidget *parent, AOApplication *p_ao_app)
+    : m_parent(parent), ao_app(p_ao_app)
 {
-  m_parent = parent;
-  ao_app = p_ao_app;
 }
 
 void AOSfxPlayer::clear()

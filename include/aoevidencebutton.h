@@ -23,8 +23,8 @@ public:
   void set_selected(bool p_selected);
 
 private:
-  AOApplication *ao_app;
-  QWidget *m_parent;
+  AOApplication* const ao_app;
+  QWidget* const m_parent;
 
   AOImage *ui_selected;
   AOImage *ui_selector;

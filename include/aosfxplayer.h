@@ -21,17 +21,17 @@ public:
   void set_volume(qreal p_volume);
   void set_looping(bool toggle, int channel = -1);
   void set_muted(bool toggle);
-  int m_channel = 0;
-  int get_volume() { return m_volume * 100; };
+  int get_volume() const { return m_volume * 100; }
 private:
-  QWidget *m_parent;
-  AOApplication *ao_app;
+  QWidget* const m_parent;
+  AOApplication* const ao_app;
   qreal m_volume = 0;
 
   bool m_looping = true;
   bool m_muted = false;
   void set_volume_internal(qreal p_volume);
 
+  int m_channel = 0;
   const int m_channelmax = 5;
 
   HSTREAM m_stream_list[5];

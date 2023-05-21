@@ -4,9 +4,8 @@
 #include "file_functions.h"
 
 AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
-    : QLabel(p_parent)
+    : QLabel(p_parent), ao_app(p_ao_app)
 {
-  ao_app = p_ao_app;
   evidence_icon = new QPushButton(this);
   evidence_icon->hide();
   sfx_player = new AOSfxPlayer(this, ao_app);

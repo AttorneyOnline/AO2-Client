@@ -1719,6 +1719,7 @@ void Courtroom::list_areas()
 void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &context,
                                       const QString &msg)
 {
+  Q_UNUSED(context);
   const QMap<QtMsgType, QString> colors = {
     {QtDebugMsg, "debug"},
     {QtInfoMsg, "info"},
