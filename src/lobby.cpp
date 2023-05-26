@@ -191,8 +191,9 @@ void Lobby::loadUI()
   FROM_UI(QPushButton, connect_button);
   connect(ui_connect_button, &QPushButton::released, net_manager,
           &NetworkManager::join_to_server);
-  connect(ui_connect_button, &QPushButton::released, this,
-          [=] { ui_server_player_count_lbl->setText(tr("Joining Server...")); });
+  connect(ui_connect_button, &QPushButton::released, this, [=] {
+    ui_server_player_count_lbl->setText(tr("Joining Server..."));
+  });
   connect(net_manager, &NetworkManager::server_connected, ui_connect_button,
           &QPushButton::setEnabled);
 
@@ -286,7 +287,7 @@ void Lobby::on_about_clicked()
          "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
          "Crystalwarrior, Iamgoofball, in1tiate"
          "<p><b>Client development:</b><br>"
-         "Cents02, windrammer, skyedeving, TrickyLeifa, Salanto"
+         "Cents02, windrammer, skyedeving, TrickyLeifa, Salanto, lambdcalculus"
          "<p><b>QA testing:</b><br>"
          "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
          "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
