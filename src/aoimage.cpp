@@ -1,6 +1,7 @@
 #include "file_functions.h"
 
 #include "aoimage.h"
+#include "options.h"
 
 #include <QBitmap>
 
@@ -28,9 +29,9 @@ AOImage::~AOImage() {}
 
 bool AOImage::set_image(QString p_image, QString p_misc)
 {
-  QString p_image_resolved = ao_app->get_image(p_image, ao_app->current_theme, ao_app->get_subtheme(),
+  QString p_image_resolved = ao_app->get_image(p_image, Options::getInstance().theme(), Options::getInstance().subTheme(),
                                                ao_app->default_theme, p_misc, "", "",
-                                               is_static || !ao_app->get_animated_theme());
+                                               is_static || !Options::getInstance().animatedThemeEnabled());
 
   if (!file_exists(p_image_resolved)) {
     qWarning() << "could not find image" << p_image;
@@ -41,11 +42,11 @@ bool AOImage::set_image(QString p_image, QString p_misc)
   if (!is_static) {
     movie->stop();
     movie->setFileName(path);
-    if (ao_app->get_animated_theme() && movie->frameCount() > 1) {
+    if (Options::getInstance().animatedThemeEnabled() && movie->frameCount() > 1) {
       movie->start();
     }
   }
-  if (is_static || !ao_app->get_animated_theme() || movie->frameCount() <= 1) {
+  if (is_static || !Options::getInstance().animatedThemeEnabled() || movie->frameCount() <= 1) {
     QPixmap f_pixmap(path);
 
     f_pixmap =

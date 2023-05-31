@@ -32,9 +32,13 @@ private:
   int m_id = 0;
 
 protected:
-  void enterEvent(QEnterEvent *e);
-  void leaveEvent(QEvent *e);
-  void mouseDoubleClickEvent(QMouseEvent *e);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  void enterEvent(QEvent *e) override;
+#else
+  void enterEvent(QEnterEvent *e) override;
+#endif
+  void leaveEvent(QEvent *e) override;
+  void mouseDoubleClickEvent(QMouseEvent *e) override;
   /*
 void dragLeaveEvent(QMouseEvent *e);
 void dragEnterEvent(QMouseEvent *e);

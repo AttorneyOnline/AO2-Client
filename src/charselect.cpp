@@ -98,8 +98,14 @@ void Courtroom::set_char_select()
   set_size_and_pos(ui_char_taken, "char_taken");
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
+  // Silence emission. This causes the signal to be emitted TWICE during server join!
+  // Fuck this. Performance Sandwich.
+  ui_char_taken->blockSignals(true);
+  ui_char_passworded->blockSignals(true);
   ui_char_taken->setChecked(true);
   ui_char_passworded->setChecked(true);
+  ui_char_taken->blockSignals(false);
+  ui_char_passworded->blockSignals(false);
 
   truncate_label_text(ui_char_taken, "char_taken");
   truncate_label_text(ui_char_passworded, "char_passworded");
@@ -141,6 +147,18 @@ void Courtroom::set_char_select_page()
 
   if (current_char_page > 0)
     ui_char_select_left->show();
+
+  QPoint f_spacing =
+      ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
+
+  char_columns =
+      ((ui_char_buttons->width() - button_width) / (f_spacing.x() + button_width)) +
+      1;
+  char_rows = ((ui_char_buttons->height() - button_height) /
+               (f_spacing.y() + button_height)) +
+              1;
+
+  max_chars_on_page = char_columns * char_rows;
 
   put_button_in_place(current_char_page * max_chars_on_page, chars_on_page);
 }
@@ -233,25 +251,13 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
   QPoint f_spacing =
       ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
 
-  int x_spacing = f_spacing.x();
   int x_mod_count = 0;
-
-  int y_spacing = f_spacing.y();
   int y_mod_count = 0;
-
-  char_columns =
-      ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) +
-      1;
-  char_rows = ((ui_char_buttons->height() - button_height) /
-               (y_spacing + button_height)) +
-              1;
-
-  max_chars_on_page = char_columns * char_rows;
 
   int startout = starting;
   for (int n = starting; n < startout + chars_on_this_page; ++n) {
-    int x_pos = (button_width + x_spacing) * x_mod_count;
-    int y_pos = (button_height + y_spacing) * y_mod_count;
+    int x_pos = (button_width + f_spacing.x()) * x_mod_count;
+    int y_pos = (button_height + f_spacing.y()) * y_mod_count;
 
     ui_char_button_list_filtered.at(n)->move(x_pos, y_pos);
     ui_char_button_list_filtered.at(n)->show();
@@ -324,19 +330,6 @@ void Courtroom::character_loading_finished()
     // still running, it is just loading the pictures of the characters.
     if (ao_app->lobby_constructed) {
       ao_app->generated_chars++;
-      int total_loading_size = ao_app->char_list_size * 2 +
-                               ao_app->evidence_list_size +
-                               ao_app->music_list_size;
-      int loading_value =
-          int(((ao_app->loaded_chars + ao_app->generated_chars +
-                ao_app->loaded_music + ao_app->loaded_evidence) /
-               static_cast<double>(total_loading_size)) *
-              100);
-      ao_app->w_lobby->set_loading_value(loading_value);
-      ao_app->w_lobby->set_loading_text(
-          tr("Generating chars:\n%1/%2").arg(
-                      QString::number(ao_app->generated_chars),
-                      QString::number(ao_app->char_list_size)));
     }
   }
   ui_char_list->expandAll();

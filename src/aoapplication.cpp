@@ -1,12 +1,13 @@
 #include "aoapplication.h"
 
+#include "bassmidi.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+#include "options.h"
 
-#include "aocaseannouncerdialog.h"
-#include "aooptionsdialog.h"
+#include "widgets/aooptionsdialog.h"
 
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
@@ -19,10 +20,6 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  // Create the QSettings class that points to the config.ini.
-  configini =
-      new QSettings(get_base_path() + "config.ini", QSettings::IniFormat);
-
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
 
@@ -40,7 +37,6 @@ AOApplication::~AOApplication()
   destruct_lobby();
   destruct_courtroom();
   delete discord;
-  delete configini;
   qInstallMessageHandler(original_message_handler);
 }
 
@@ -51,8 +47,7 @@ void AOApplication::construct_lobby()
     return;
   }
 
-  load_favorite_list();
-  w_lobby = new Lobby(this);
+  w_lobby = new Lobby(this, net_manager);
   lobby_constructed = true;
 
   QRect geometry = QGuiApplication::primaryScreen()->geometry();
@@ -60,13 +55,12 @@ void AOApplication::construct_lobby()
   int y = (geometry.height() - w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  if (is_discord_enabled())
+  if (Options::getInstance().discordEnabled())
     discord->state_lobby();
 
   if (demo_server)
       demo_server->deleteLater();
   demo_server = new DemoServer(this);
-
   w_lobby->show();
 }
 
@@ -124,64 +118,6 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme() { current_theme = read_theme(); }
-
-void AOApplication::load_favorite_list()
-{
-  favorite_list = read_favorite_servers();
-}
-
-void AOApplication::save_favorite_list()
-{
-  QSettings favorite_servers_ini(get_base_path() + "favorite_servers.ini", QSettings::IniFormat);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  favorite_servers_ini.setIniCodec("UTF-8");
-#endif
-
-  favorite_servers_ini.clear();
-  // skip demo server entry, demo server entry is always at index 0
-  for(int i = 1; i < favorite_list.size(); ++i) {
-    auto fav_server = favorite_list.at(i);
-    favorite_servers_ini.beginGroup(QString::number(i));
-    favorite_servers_ini.setValue("name", fav_server.name);
-    favorite_servers_ini.setValue("address", fav_server.ip);
-    favorite_servers_ini.setValue("port", fav_server.port);
-    favorite_servers_ini.setValue("desc", fav_server.desc);
-
-    if (fav_server.socket_type == TCP) {
-      favorite_servers_ini.setValue("protocol", "tcp");
-    } else {
-      favorite_servers_ini.setValue("protocol", "ws");
-    }
-    favorite_servers_ini.endGroup();
-  }
-  favorite_servers_ini.sync();
-}
-
-QString AOApplication::get_current_char()
-{
-  if (courtroom_constructed)
-    return w_courtroom->get_current_char();
-  else
-    return "";
-}
-
-void AOApplication::add_favorite_server(int p_server)
-{
-  if (p_server < 0 || p_server >= server_list.size())
-    return;
-  favorite_list.append(server_list.at(p_server));
-  save_favorite_list();
-}
-
-void AOApplication::remove_favorite_server(int p_server)
-{
-  if (p_server < 0 || p_server >= favorite_list.size())
-    return;
-  favorite_list.removeAt(p_server);
-  save_favorite_list();
-}
-
 void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {
@@ -189,25 +125,26 @@ void AOApplication::server_disconnected()
     construct_lobby();
     destruct_courtroom();
   }
+  Options::getInstance().setServerSubTheme(QString());
 }
 
 void AOApplication::loading_cancelled()
 {
   destruct_courtroom();
-
-  w_lobby->hide_loading_overlay();
 }
 
 void AOApplication::call_settings_menu()
 {
-  AOOptionsDialog settings(nullptr, this);
-  settings.exec();
-}
+    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this);
+    if (courtroom_constructed) {
+        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
+                w_courtroom, &Courtroom::on_reload_theme_clicked);
+    }
 
-void AOApplication::call_announce_menu(Courtroom *court)
-{
-  AOCaseAnnouncerDialog announcer(nullptr, this, court);
-  announcer.exec();
+    if(lobby_constructed) {
+    }
+    l_dialog->exec();
+    delete l_dialog;
 }
 
 // Callback for when BASS device is lost
@@ -238,24 +175,26 @@ void AOApplication::initBASS()
   unsigned int a = 0;
   BASS_DEVICEINFO info;
 
-  if (get_audio_output_device() == "default") {
+  if (Options::getInstance().audioOutputDevice() == "default") {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
   else {
     for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-      if (get_audio_output_device() == info.name) {
+      if (Options::getInstance().audioOutputDevice() == info.name) {
         BASS_SetDevice(a);
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
                   nullptr);
         load_bass_plugins();
         qInfo() << info.name << "was set as the default audio output device.";
+        BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
         return;
       }
     }
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
+  BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
 }
 
 #if (defined(_WIN32) || defined(_WIN64))

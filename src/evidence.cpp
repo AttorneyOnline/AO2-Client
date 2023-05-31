@@ -1,4 +1,5 @@
 #include "courtroom.h"
+#include "options.h"
 
 void Courtroom::initialize_evidence()
 {
@@ -400,7 +401,7 @@ void Courtroom::on_evidence_image_name_edited()
 
 void Courtroom::on_evidence_image_button_clicked()
 {
-  QDir dir("base/evidence/");
+  QDir dir(get_base_path() + "/evidence/");
   QFileDialog dialog(this);
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setNameFilter(tr("Images (*.png)"));
@@ -416,8 +417,8 @@ void Courtroom::on_evidence_image_button_clicked()
     return;
 
   QString filename = filenames.at(0);
-  QStringList bases = ao_app->get_mount_paths();
-  bases.prepend(ao_app->get_base_path());
+  QStringList bases = Options::getInstance().mountPaths();
+  bases.prepend(get_base_path());
   for (const QString &base : bases) {
     QDir baseDir(base);
     if (filename.startsWith(baseDir.absolutePath() + "/")) {
@@ -453,7 +454,7 @@ void Courtroom::on_evidence_clicked(int p_id)
   else if (f_real_id > local_evidence_list.size())
     return;
   
-  if (!ao_app->get_evidence_double_click()){
+  if (!Options::getInstance().evidenceDoubleClickEdit()){
     on_evidence_double_clicked(p_id);
     return;
   }

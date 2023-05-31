@@ -1,4 +1,8 @@
 #include "aomusicplayer.h"
+#include "options.h"
+
+#include "bass.h"
+#include "file_functions.h"
 
 AOMusicPlayer::AOMusicPlayer(QWidget *parent, AOApplication *p_ao_app)
 {
@@ -30,25 +34,15 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   DWORD newstream;
   if (f_path.startsWith("http")) {
 
-    if (ao_app->is_streaming_disabled()) {
+    if (!Options::getInstance().streamingEnabled()) {
         BASS_ChannelStop(m_stream_list[channel]);
         return QObject::tr("[MISSING] Streaming disabled.");
     }
-
-    if (f_path.endsWith(".opus"))
-      newstream = BASS_OPUS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
-    else if (f_path.endsWith(".mid"))
-      newstream = BASS_MIDI_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0, 1);
-    else
-      newstream = BASS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
-
-  } else {
+    newstream = BASS_StreamCreateURL(f_path.toStdString().c_str(), 0, streaming_flags, nullptr, 0);
+  }
+  else {
     f_path = ao_app->get_real_path(ao_app->get_music_path(p_song));
-    if (f_path.endsWith(".opus"))
-      newstream = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
-    else if (f_path.endsWith(".mid"))
-      newstream = BASS_MIDI_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags, 1);
-    else if (f_path.endsWith(".mo3") || f_path.endsWith(".xm") || f_path.endsWith(".mod") || f_path.endsWith(".s3m") || f_path.endsWith(".it") || f_path.endsWith(".mtm") || f_path.endsWith(".umx") )
+    if (f_path.endsWith(".mo3") || f_path.endsWith(".xm") || f_path.endsWith(".mod") || f_path.endsWith(".s3m") || f_path.endsWith(".it") || f_path.endsWith(".mtm") || f_path.endsWith(".umx") )
       newstream = BASS_MusicLoad(FALSE,f_path.utf16(), 0, 0, flags, 1);
     else
       newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
@@ -56,7 +50,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
 
   int error_code = BASS_ErrorGetCode();
 
-  if (ao_app->get_audio_output_device() != "default")
+  if (Options::getInstance().audioOutputDevice() != "default")
     BASS_ChannelSetDevice(m_stream_list[channel], BASS_GetDevice());
 
   QString d_path = f_path + ".txt";
@@ -219,20 +213,18 @@ void AOMusicPlayer::set_looping(bool loop_song, int channel)
     loop_sync[channel] = 0;
   }
 
-  if (loop_start[channel] >= 0) {
-    if (loop_start[channel] < loop_end[channel])
-    {
-      //Loop when the endpoint is reached.
-      loop_sync[channel] = BASS_ChannelSetSync(
-          m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
-          loop_end[channel], loopProc, &loop_start[channel]);
-    }
-    else
-    {
-      //Loop when the end of the file is reached.
-      loop_sync[channel] = BASS_ChannelSetSync(
-          m_stream_list[channel], BASS_SYNC_END | BASS_SYNC_MIXTIME,
-          0, loopProc, &loop_start[channel]);
-    }
+  if (loop_start[channel] < loop_end[channel])
+  {
+    //Loop when the endpoint is reached.
+    loop_sync[channel] = BASS_ChannelSetSync(
+        m_stream_list[channel], BASS_SYNC_POS | BASS_SYNC_MIXTIME,
+        loop_end[channel], loopProc, &loop_start[channel]);
+  }
+  else
+  {
+    //Loop when the end of the file is reached.
+    loop_sync[channel] = BASS_ChannelSetSync(
+        m_stream_list[channel], BASS_SYNC_END | BASS_SYNC_MIXTIME,
+        0, loopProc, &loop_start[channel]);
   }
 }

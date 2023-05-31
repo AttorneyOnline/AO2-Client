@@ -23,7 +23,7 @@ jobs:
           - platform: gcc_64
             os: ubuntu-latest
           - platform: android
-            os: ubuntu-latest
+            os: ubuntu-20.04
           - platform: msvc2019
             os: windows-2019
           - platform: mingw81_32
@@ -59,6 +59,7 @@ jobs:
            ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
            SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
            echo "y" | $SDKMANAGER "ndk;21.4.7075529"
+           echo "y" | $SDKMANAGER "platforms;android-24"
            ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
         
       - uses: Skycoder42/action-setup-qt@master
@@ -164,21 +165,23 @@ jobs:
       - name: Install Android BASS
         if: matrix.platform == 'android'
         run: |
-          mkdir ./android/libs/
-          mkdir ./android/libs/armeabi-v7a/
+          mkdir -p ./android/libs/armeabi-v7a/
           curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
-          unzip -d bass -o bass.zip
+          unzip -o bass.zip -d bass
           cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
+          unzip -o bass.zip "libs/*" -d "./android/libs/"
           cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
+          unzip -o bassmidi.zip "libs/*" -d "./android/libs/"
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
+          unzip -o bassopus.zip "libs/*" -d "./android/libs/"
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
@@ -214,13 +217,22 @@ jobs:
           rm -r bearer
           rm -r styles
 
+      - name: Copy MingW DLL
+        if: matrix.platform == 'mingw81_32'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libgcc_s_dw2-1.dll .
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libstdc++-6.dll .
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libwinpthread-1.dll .
+
       - name: Deploy Linux
         if: matrix.platform == 'gcc_64'
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
           cp ../scripts/launch.sh .
-          mkdir imageformats
+          mkdir -p imageformats
           cp ../QtApng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
           chmod +x launch.sh
           chmod +x Attorney_Online
@@ -251,11 +263,10 @@ jobs:
         working-directory: ${{github.workspace}}/
         shell: bash
         run: |
-          mkdir ./build/libs/
-          mkdir ./build/libs/armeabi-v7a/
+          mkdir -p ./build/libs/armeabi-v7a/
           mv ./bin/*.so ./build/libs/armeabi-v7a/
           cp ./QtApng/plugins/imageformats/libplugins_imageformats_qapng_armeabi-v7a.so ./build/libs/armeabi-v7a/
-          androiddeployqt --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
+          androiddeployqt --android-platform android-24 --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master

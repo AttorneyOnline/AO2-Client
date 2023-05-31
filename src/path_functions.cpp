@@ -1,6 +1,7 @@
 #include "aoapplication.h"
 #include "courtroom.h"
 #include "file_functions.h"
+#include "options.h"
 
 #include <QDir>
 #include <QRegularExpression>
@@ -28,31 +29,10 @@ static bool is_power_2(unsigned int n) {
   return r == 1;
 }
 
-QString AOApplication::get_base_path()
-{
-  QString base_path = "";
-#ifdef ANDROID
-  QString sdcard_storage = getenv("SECONDARY_STORAGE");
-  if (dir_exists(sdcard_storage + "/base/")) {
-    base_path = sdcard_storage + "/base/";
-  }
-  else {
-    QString external_storage = getenv("EXTERNAL_STORAGE");
-    base_path = external_storage + "/base/";
-  }
-#elif defined(__APPLE__)
-  base_path = applicationDirPath() + "/../../../base/";
-#else
-  base_path = applicationDirPath() + "/base/";
-#endif
-
-  return base_path;
-}
-
 VPath AOApplication::get_theme_path(QString p_file, QString p_theme)
 {
   if (p_theme == "")
-      p_theme = current_theme;
+      p_theme = Options::getInstance().theme();
   return VPath("themes/" + p_theme + "/" + p_file);
 }
 
@@ -280,9 +260,9 @@ QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_characte
 {
   QVector<VPath> pathlist;
   // Sounds subfolder is prioritized for organization sake
-  pathlist += get_asset_paths("sounds/" + p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
+  pathlist += get_asset_paths("sounds/" + p_sfx, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_misc, p_character);
   // If sound subfolder not found, search just for SFX
-  pathlist += get_asset_paths(p_sfx, current_theme, get_subtheme(), default_theme, p_misc, p_character);
+  pathlist += get_asset_paths(p_sfx, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_misc, p_character);
   // If SFX not found, search base/sounds/general/ folder
   pathlist += get_sounds_path(p_sfx);
   QString ret = get_sfx_path(pathlist);
@@ -346,7 +326,7 @@ QString AOApplication::get_real_path(const VPath &vpath,
   }
 
   // Cache miss; try all known mount paths
-  QStringList bases = get_mount_paths();
+  QStringList bases = Options::getInstance().mountPaths();
   bases.prepend(get_base_path());
   // base
   // content 1

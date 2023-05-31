@@ -104,7 +104,11 @@ void AOEvidenceButton::dragEnterEvent(QMouseEvent *e)
 }
 */
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+void AOEvidenceButton::enterEvent(QEvent *e)
+#else
 void AOEvidenceButton::enterEvent(QEnterEvent *e)
+#endif
 {
   ui_selector->show();
 

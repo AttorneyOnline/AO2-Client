@@ -5,10 +5,11 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+#include "options.h"
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
-    if (get_demo_logging_enabled() && !log_filename.isEmpty())
+    if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
     {
         QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
         if (!demo_timer.isValid())
@@ -71,8 +72,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     client_id = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
-    if (lobby_constructed)
-      w_lobby->enable_connect_button();
+    net_manager->server_connected(true);
 
     QStringList f_contents = {"AO2", get_version_string()};
     send_server_packet(new AOPacket("ID", f_contents));
@@ -150,10 +150,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         w_lobby->set_server_description(f_contents.at(2));
     }
 
-    if (w_lobby->doubleclicked) {
-      send_server_packet(new AOPacket("askchaa"));
-      w_lobby->doubleclicked = false;
-    }
     log_to_demo = false;
   }
   else if (header == "SI") {
@@ -179,33 +175,38 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     courtroom_loaded = false;
 
     int selected_server = w_lobby->get_selected_server();
-
     QString server_address = "", server_name = "";
-    if (w_lobby->public_servers_selected) {
-      if (selected_server >= 0 && selected_server < server_list.size()) {
-        auto info = server_list.at(selected_server);
-        server_name = info.name;
-        server_address =
-            QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title = server_name;
-      }
+    switch (w_lobby->pageSelected()) {
+    case 0:
+        if (selected_server >= 0 && selected_server < server_list.size()) {
+                auto info = server_list.at(selected_server);
+                server_name = info.name;
+                server_address =
+                    QString("%1:%2").arg(info.ip, QString::number(info.port));
+                window_title = server_name;
+              }
+        break;
+    case 1:
+    {
+        QVector<server_type> favorite_list = Options::getInstance().favorites();
+              if (selected_server >= 0 && selected_server < favorite_list.size()) {
+                auto info = favorite_list.at(selected_server);
+                server_name = info.name;
+                server_address =
+                    QString("%1:%2").arg(info.ip, QString::number(info.port));
+                window_title = server_name;
+              }
     }
-    else {
-      if (selected_server >= 0 && selected_server < favorite_list.size()) {
-        auto info = favorite_list.at(selected_server);
-        server_name = info.name;
-        server_address =
-            QString("%1:%2").arg(info.ip, QString::number(info.port));
-        window_title = server_name;
-      }
+        break;
+    case 2:
+        window_title = "Local Demo Recording";
+        break;
+    default:
+        break;
     }
 
     if (courtroom_constructed)
       w_courtroom->set_window_title(window_title);
-
-    w_lobby->show_loading_overlay();
-    w_lobby->set_loading_text(tr("Loading"));
-    w_lobby->set_loading_value(0);
 
     AOPacket *f_packet;
 
@@ -214,7 +215,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (AOApplication::get_demo_logging_enabled() && server_name != "Demo playback") {
+    if (Options::getInstance().logToDemoFileEnabled() && server_name != "Demo playback") {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString(
           "'logs/" + server_name.remove(QRegularExpression("[\\\\/:*?\"<>|\']")) +
           "/'yyyy-MM-dd hh-mm-ss t'.log'");
@@ -228,7 +229,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
     hash.addData(server_address.toUtf8());
-    if (is_discord_enabled())
+    if (Options::getInstance().discordEnabled())
       discord->state_server(server_name.toStdString(),
                             hash.result().toBase64().toStdString());
     log_to_demo = false;
@@ -264,21 +265,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       f_char.taken = false;
 
       w_courtroom->append_char(f_char);
-
-      if (!courtroom_loaded) {
-        ++loaded_chars;
-        w_lobby->set_loading_text(tr("Loading chars:\n%1/%2")
-                                      .arg(QString::number(loaded_chars))
-                                      .arg(QString::number(char_list_size)));
-
-        int total_loading_size =
-            char_list_size * 2 + evidence_list_size + music_list_size;
-        int loading_value = int(
-            ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-             static_cast<double>(total_loading_size)) *
-            100);
-        w_lobby->set_loading_value(loading_value);
-      }
     }
 
     if (!courtroom_loaded)
@@ -295,11 +281,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
       ++loaded_music;
-
-      w_lobby->set_loading_text(tr("Loading music:\n%1/%2")
-                                    .arg(QString::number(loaded_music))
-                                    .arg(QString::number(music_list_size)));
-
       if (musics_time) {
         w_courtroom->append_music(f_contents.at(n_element));
       }
@@ -319,14 +300,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           areas++;
         }
       }
-
-      int total_loading_size =
-          char_list_size * 2 + evidence_list_size + music_list_size;
-      int loading_value = int(
-          ((loaded_chars + generated_chars + loaded_music + loaded_evidence) /
-           static_cast<double>(total_loading_size)) *
-          100);
-      w_lobby->set_loading_value(loading_value);
     }
 
     for (int area_n = 0; area_n < areas; area_n++) {
@@ -369,10 +342,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "DONE") {
     if (!courtroom_constructed)
       goto end;
-
-    if (lobby_constructed)
-      w_courtroom->append_server_chatmessage(tr("[Global log]"),
-                                             w_lobby->get_chatlog(), "0");
 
     w_courtroom->character_loading_finished();
     w_courtroom->done_received();
@@ -534,13 +503,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->mod_called(f_contents.at(0));
   }
-  else if (header == "CASEA") {
-    if (courtroom_constructed && f_contents.size() >= 6)
-      w_courtroom->case_called(f_contents.at(0), f_contents.at(1) == "1",
-                               f_contents.at(2) == "1", f_contents.at(3) == "1",
-                               f_contents.at(4) == "1",
-                               f_contents.at(5) == "1");
-  }
   else if (header == "TI") { // Timer packet
     if (!courtroom_constructed || f_contents.size() < 2)
       goto end;
@@ -603,14 +565,15 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     subtheme = f_contents.at(0);
 
     // Check if we have subthemes set to "server"
-    QString p_st = configini->value("subtheme").value<QString>();
-    if (p_st.toLower() != "server")
+    if (Options::getInstance().settingsSubTheme().toLower() != "server")
       // We don't. Simply acknowledge the subtheme sent by the server, but don't do anything else.
       return;
 
     // Reload theme request
-    if (f_contents.size() > 1 && f_contents.at(1) == "1")
+    if (f_contents.size() > 1 && f_contents.at(1) == "1") {
+      Options::getInstance().setServerSubTheme(subtheme);
       w_courtroom->on_reload_theme_clicked();
+    }
   }
   // Auth packet
   else if (header == "AUTH") {

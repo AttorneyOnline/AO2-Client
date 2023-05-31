@@ -12,7 +12,7 @@
 #include "aoimage.h"
 #include "aolayer.h"
 #include "aomusicplayer.h"
-#include "aooptionsdialog.h"
+#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
@@ -191,7 +191,7 @@ public:
   void set_pair_list();
 
   // sets desk and bg based on pos in chatmessage
-  void set_scene(QString f_desk_mod, QString f_side);
+  void set_scene(bool show_desk, QString f_side);
 
   // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
   void set_self_offset(const QString& p_list);
@@ -317,9 +317,6 @@ public:
 
   // Toggles the judge buttons, whether they should appear or not.
   void show_judge_controls(bool visible);
-
-  void announce_case(QString title, bool def, bool pro, bool jud, bool jur,
-                     bool steno);
 
   void check_connection_received();
 
@@ -741,14 +738,12 @@ private:
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
   AOButton *ui_settings;
-  AOButton *ui_announce_casing;
   AOButton *ui_switch_area_music;
 
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_additive;
   QCheckBox *ui_guard;
-  QCheckBox *ui_casing;
 
   QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
@@ -852,8 +847,6 @@ public slots:
 
   void mod_called(QString p_ip);
 
-  void case_called(QString msg, bool def, bool pro, bool jud, bool jur,
-                   bool steno);
   void on_reload_theme_clicked();
 
   void update_ui_music_name();
@@ -975,7 +968,6 @@ private slots:
   void on_change_character_clicked();
   void on_call_mod_clicked();
   void on_settings_clicked();
-  void on_announce_casing_clicked();
 
   void on_pre_clicked();
   void on_flip_clicked();
@@ -1015,8 +1007,6 @@ private slots:
   void on_spectator_clicked();
 
   void on_switch_area_music_clicked();
-
-  void on_casing_clicked();
 
   void on_application_state_changed(Qt::ApplicationState state);
 

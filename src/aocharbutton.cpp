@@ -78,7 +78,11 @@ void AOCharButton::set_image(QString p_character)
   }
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+void AOCharButton::enterEvent(QEvent *e)
+#else
 void AOCharButton::enterEvent(QEnterEvent *e)
+#endif
 {
   ui_selector->move(this->x() - 1, this->y() - 1);
   ui_selector->raise();
