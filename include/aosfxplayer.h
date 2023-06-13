@@ -20,14 +20,16 @@ public:
   void stop(int channel = -1);
   void set_volume(qreal p_volume);
   void set_looping(bool toggle, int channel = -1);
+  void set_muted(bool toggle);
   int m_channel = 0;
-
+  int get_volume() { return m_volume * 100; };
 private:
   QWidget *m_parent;
   AOApplication *ao_app;
   qreal m_volume = 0;
 
   bool m_looping = true;
+  bool m_muted = false;
   void set_volume_internal(qreal p_volume);
 
   const int m_channelmax = 5;

@@ -9,6 +9,7 @@
 #include <QLibraryInfo>
 #include <QPluginLoader>
 #include <QTranslator>
+#include <QResource>
 
 int main(int argc, char *argv[])
 {
@@ -16,15 +17,20 @@ int main(int argc, char *argv[])
 
   AOApplication main_app(argc, argv);
 
+  #ifdef ANDROID
+  if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE")==QtAndroid::PermissionResult::Denied) {
+    QtAndroid::requestPermissionsSync({"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"});
+  }
+  #endif
+
   AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
+  QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
   QFontDatabase fontDatabase;
-  QDirIterator it(main_app.get_base_path() + "fonts",
+  QDirIterator it(get_base_path() + "fonts",
                   QDirIterator::Subdirectories);
   while (it.hasNext())
     fontDatabase.addApplicationFont(it.next());
-
-  QSettings *configini = main_app.configini;
 
   QPluginLoader apngPlugin("qapng");
   if (!apngPlugin.load())
@@ -35,7 +41,7 @@ int main(int argc, char *argv[])
     qCritical() << "QWebp plugin could not be loaded";
 
   QString p_language =
-      configini->value("language", QLocale::system().name()).toString();
+      Options::getInstance().language();
   if (p_language == "  " || p_language == "")
     p_language = QLocale::system().name();
 

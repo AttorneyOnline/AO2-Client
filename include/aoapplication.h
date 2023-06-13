@@ -1,14 +1,13 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
+#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"
 #include "discord_rich_presence.h"
 
 #include "bass.h"
-#include "bassmidi.h"
-#include "bassopus.h"
 
 #include <QApplication>
 #include <QFile>
@@ -16,7 +15,6 @@
 #include <QVector>
 
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QRect>
 
 #include <QCryptographicHash>
@@ -35,6 +33,7 @@
 class NetworkManager;
 class Lobby;
 class Courtroom;
+class Options;
 
 class VPath : QString {
   using QString::QString;
@@ -78,7 +77,7 @@ public:
 
   void server_packet_received(AOPacket *p_packet);
 
-  void send_server_packet(AOPacket *p_packet, bool encoded = true);
+  void send_server_packet(AOPacket *p_packet);
 
   void call_settings_menu();
   void call_announce_menu(Courtroom *court);
@@ -88,8 +87,8 @@ public:
 
   ///////////////loading info///////////////////
 
-  // player number, it's hardly used but might be needed for some old servers
-  int s_pv = 0;
+  // client ID. Not useful, to be removed eventually
+  int client_id = 0;
 
   QString server_software = "";
 
@@ -112,22 +111,17 @@ public:
 
   ///////////////////////////////////////////
 
-  QVector<server_type> &get_favorite_list() { return favorite_list; }
-
   // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
+  void remove_favorite_server(int p_server);
 
   void set_server_list(QVector<server_type> &servers) { server_list = servers; }
   QVector<server_type> &get_server_list() { return server_list; }
-
-  // reads the theme from config.ini and sets it accordingly
-  void reload_theme();
 
   // Returns the character the player has currently selected
   QString get_current_char();
 
   // implementation in path_functions.cpp
-  QString get_base_path();
   VPath get_theme_path(QString p_file, QString p_theme="");
   VPath get_character_path(QString p_char, QString p_file);
   VPath get_misc_path(QString p_misc, QString p_file);
@@ -146,147 +140,11 @@ public:
   QString get_sfx(QString p_sfx, QString p_misc="", QString p_character="");
   QPair<QString, int> get_pos_path(const QString& pos, bool desk = false);
   QString get_case_sensitive_path(QString p_file);
-  QString get_real_path(const VPath &vpath);
-  QString get_real_suffixed_path(const VPath &vpath, const QStringList &suffixes);
+  QString get_real_path(const VPath &vpath, const QStringList &suffixes={""});
   void invalidate_lookup_cache();
 
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
-
-  // Instead of reinventing the wheel, we'll use a QSettings class.
-  QSettings *configini;
-
-  // Reads the theme from config.ini and loads it into the current_theme
-  // variable
-  QString read_theme();
-
-  // Returns the value of ooc_name in config.ini
-  QString get_ooc_name();
-
-  // Returns the blip rate from config.ini (once per X symbols)
-  int read_blip_rate();
-
-  // Returns true if blank blips is enabled in config.ini and false otherwise
-  bool get_blank_blip();
-
-  // Returns true if looping sound effects are enabled in the config.ini
-  bool get_looping_sfx();
-
-  // Returns true if stop music on objection is enabled in the config.ini
-  bool objection_stop_music();
-
-  // Returns the value of default_music in config.ini
-  int get_default_music();
-
-  // Returns the value of default_sfx in config.ini
-  int get_default_sfx();
-
-  // Returns the value of default_blip in config.ini
-  int get_default_blip();
-
-  // Returns the value if objections interrupt and skip the message queue
-  // from the config.ini.
-  bool is_instant_objection_enabled();
-
-  // returns if log will show messages as-received, while viewport will parse according to the queue (Text Stay Time)
-  // from the config.ini
-  bool is_desyncrhonized_logs_enabled();
-
-  // Returns the value of whether Discord should be enabled on startup
-  // from the config.ini.
-  bool is_discord_enabled();
-
-  // Returns the value of whether shaking should be enabled.
-  // from the config.ini.
-  bool is_shake_enabled();
-
-  // Returns the value of whether effects should be enabled.
-  // from the config.ini.
-  bool is_effects_enabled();
-
-  // Returns the value of whether frame-specific effects defined in char.ini
-  // should be sent/received over the network. from the config.ini.
-  bool is_frame_network_enabled();
-
-  // Returns the value of whether colored ic log should be a thing.
-  // from the config.ini.
-  bool is_colorlog_enabled();
-
-  // Returns the value of whether sticky sounds should be a thing.
-  // from the config.ini.
-  bool is_stickysounds_enabled();
-
-  // Returns the value of whether sticky effects should be a thing.
-  // from the config.ini.
-  bool is_stickyeffects_enabled();
-
-  // Returns the value of whether sticky preanims should be a thing.
-  // from the config.ini.
-  bool is_stickypres_enabled();
-
-  // Returns the value of whether custom chatboxes should be a thing.
-  // from the config.ini.
-  // I am increasingly maddened by the lack of dynamic auto-generation system
-  // for settings.
-  bool is_customchat_enabled();
-
-  // Returns the value of characer sticker (avatar) setting
-  bool is_sticker_enabled();
-
-  // Returns the value of whether continuous playback should be used
-  // from the config.ini.
-  bool is_continuous_enabled();
-
-  // Returns the value of whether stopping music by double clicking category should be used
-  // from the config.ini.
-  bool is_category_stop_enabled();
-
-  // Returns the value of the maximum amount of lines the IC chatlog
-  // may contain, from config.ini.
-  int get_max_log_size();
-
-  // Current wait time between messages for the queue system
-  int stay_time();
-
-  // Returns the letter display speed during text crawl in in-character messages
-  int get_text_crawl();
-
-  // Returns Minimum amount of time (in miliseconds) that must pass before the next Enter key press will send your IC message. (new behaviour)
-  int get_chat_ratelimit();
-
-  // Returns whether the log should go upwards (new behaviour)
-  // or downwards (vanilla behaviour).
-  bool get_log_goes_downwards();
-
-  // Returns whether the log should separate name from text via newline or :
-  bool get_log_newline();
-
-  // Get spacing between IC log entries.
-  int get_log_margin();
-
-  // Returns whether the log should have a timestamp.
-  bool get_log_timestamp();
-
-  // Returns the format string for the log timestamp
-  QString get_log_timestamp_format();
-
-  // Returns whether to log IC actions.
-  bool get_log_ic_actions();
-
-  // Returns the username the user may have set in config.ini.
-  QString get_default_username();
-
-  // Returns the audio device used for the client.
-  QString get_audio_output_device();
-
-  // Returns whether the user would like to have custom shownames on by default.
-  bool get_showname_enabled_by_default();
-
-  //Returns the showname the user may have set in config.ini.
-  QString get_default_showname();
-
-  // Returns the list of words in callwords.ini
-  QStringList get_call_words();
 
   // returns all of the file's lines in a QStringList
   QStringList get_list_file(VPath path);
@@ -307,9 +165,17 @@ public:
   void append_to_demofile(QString packet_string);
 
   /**
-   * @brief Returns the contents of server.ini.
+   * @brief Reads the clients log folder and locates potential demo files to populate the demoserver list.
+   *
+   * @return A seperated list of servernames and demo logfile filenames.
+   *
+   * @details This is to remove the need of delimiters or deal with potential
+   * harmfully encoding or plattform differences. We always get a combo of servername and filename.
+   *
+   * Do note this function assumes all demo files have the .demo extension.
+   *
    */
-  server_type read_server_ini();
+  QMultiMap<QString, QString> load_demo_logs_list() const;
 
   // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, VPath p_design_path);
@@ -397,12 +263,12 @@ public:
   // a string
   QStringList get_effects(QString p_char);
 
-  // t
+  // Get the correct effect image
   QString get_effect(QString effect, QString p_char, QString p_folder);
 
   // Return p_property of fx_name. If p_property is "sound", return
   // the value associated with fx_name, otherwise use fx_name + '_' + p_property.
-  QString get_effect_property(QString fx_name, QString p_char, QString p_property);
+  QString get_effect_property(QString fx_name, QString p_char, QString p_folder, QString p_property);
 
   // Returns the custom realisation used by the character.
   QString get_custom_realization(QString p_char);
@@ -473,56 +339,11 @@ public:
   // These are all casing-related settings.
   // ======
 
-  // Returns if the user has casing alerts enabled.
-  bool get_casing_enabled();
-
-  // Returns if the user wants to get alerts for the defence role.
-  bool get_casing_defence_enabled();
-
-  // Same for prosecution.
-  bool get_casing_prosecution_enabled();
-
-  // Same for judge.
-  bool get_casing_judge_enabled();
-
-  // Same for juror.
-  bool get_casing_juror_enabled();
-
-  // Same for steno.
-  bool get_casing_steno_enabled();
-
-  // Same for CM.
-  bool get_casing_cm_enabled();
-
-  // Get the message for the CM for casing alerts.
-  QString get_casing_can_host_cases();
-
-  // Get if text file logging is enabled
-  bool get_text_logging_enabled();
-
-  // Get if demo logging is enabled
-  bool get_demo_logging_enabled();
-
-  // Get the subtheme from settings
-  QString get_subtheme();
-
-  // Get if the theme is animated
-  bool get_animated_theme();
-
-  // Get the default scaling method
-  QString get_default_scaling();
-
-  // Get a list of custom mount paths
-  QStringList get_mount_paths();
-
-  // Get whether to opt out of player count metrics sent to the master server
-  bool get_player_count_optout();
-
   // Currently defined subtheme
   QString subtheme;
 
-  QString default_theme = "default";
-  QString current_theme = default_theme;
+  //Default is always default.
+  const QString default_theme = "default";
 
   // The file name of the log file in base/logs.
   QString log_filename;
@@ -549,10 +370,9 @@ public:
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 10;
-  const int MINOR_VERSION = 0;
+  const int MINOR_VERSION = 1;
 
   QVector<server_type> server_list;
-  QVector<server_type> favorite_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;

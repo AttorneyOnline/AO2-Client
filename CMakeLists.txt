@@ -37,7 +37,13 @@ target_link_libraries(Attorney_Online PRIVATE Qt5::Core Qt5::Gui Qt5::Network Qt
     Qt5::WebSockets bass bassmidi bassopus discord-rpc)
 target_compile_definitions(Attorney_Online PRIVATE DISCORD)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    target_link_libraries(Attorney_Online PRIVATE "-framework CoreFoundation" "-framework Foundation" "-framework CoreServices")
+endif()
+
 # Subdirectories
-add_subdirectory(test)
+if (AO_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
 add_subdirectory(src)
 add_subdirectory(include)
