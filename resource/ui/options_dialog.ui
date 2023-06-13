@@ -1,0 +1,1127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>optionsdialogue</class>
+ <widget class="QWidget" name="optionsdialogue">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>415</height>
+   </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_6">
+   <item>
+    <widget class="QTabWidget" name="settings_tabs">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="gameplay_tab">
+      <attribute name="title">
+       <string>Gameplay</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QScrollArea" name="scroll">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="form_layout_widget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>394</width>
+            <height>826</height>
+           </rect>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="23" column="1">
+            <widget class="QCheckBox" name="stickysounds_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="29" column="0">
+            <widget class="QLabel" name="category_stop_lbl">
+             <property name="toolTip">
+              <string>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</string>
+             </property>
+             <property name="text">
+              <string>Stop Music w/ Category:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="30" column="1">
+            <widget class="QCheckBox" name="sfx_on_idle_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="theme_combobox"/>
+           </item>
+           <item row="18" column="0">
+            <widget class="QLabel" name="scaling_label">
+             <property name="toolTip">
+              <string>Sets the default scaling method, if there is not one already defined specifically for the character.</string>
+             </property>
+             <property name="text">
+              <string>Scaling:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="26" column="0">
+            <widget class="QLabel" name="customchat_lbl">
+             <property name="toolTip">
+              <string>Turn this on to allow characters to define their own custom chat box designs.</string>
+             </property>
+             <property name="text">
+              <string>Custom Chatboxes:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="20" column="0">
+            <widget class="QLabel" name="effects_lbl">
+             <property name="toolTip">
+              <string>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
+             </property>
+             <property name="text">
+              <string>Allow Effects:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="1">
+            <widget class="QCheckBox" name="discord_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="theme_folder_button">
+             <property name="toolTip">
+              <string>Open the theme folder of the currently selected theme.</string>
+             </property>
+             <property name="text">
+              <string>Open Theme Folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="15" column="0">
+            <widget class="QLabel" name="ms_lbl">
+             <property name="toolTip">
+              <string>Overrides the base URL to retrieve server information from.</string>
+             </property>
+             <property name="text">
+              <string>Alternate Server List:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="instant_objection_lbl">
+             <property name="text">
+              <string>Instant Objection:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QSpinBox" name="text_crawl_spinbox">
+             <property name="suffix">
+              <string> ms</string>
+             </property>
+             <property name="maximum">
+              <number>500</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="theme_label">
+             <property name="toolTip">
+              <string>Sets the theme used in-game. If the new theme changes the lobby's look as well, you'll need to reload the Lobby for the changes to take effect, such as by joining a server and leaving it.</string>
+             </property>
+             <property name="text">
+              <string>Theme:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="17" column="1">
+            <widget class="QComboBox" name="language_combobox">
+             <item>
+              <property name="text">
+               <string>en</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>de</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>es</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>pt</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>pl</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>jp</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ru</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="15" column="1">
+            <widget class="QLineEdit" name="ms_textbox"/>
+           </item>
+           <item row="21" column="0">
+            <widget class="QLabel" name="framenetwork_lbl">
+             <property name="toolTip">
+              <string>Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality.</string>
+             </property>
+             <property name="text">
+              <string>Network Frame Effects:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="chat_ratelimit_lbl">
+             <property name="text">
+              <string>Chat Rate Limit:</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::AutoText</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="1">
+            <widget class="QSpinBox" name="chat_ratelimit_spinbox">
+             <property name="suffix">
+              <string> ms</string>
+             </property>
+             <property name="maximum">
+              <number>5000</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="animated_theme_lbl">
+             <property name="toolTip">
+              <string>If ticked, themes will be allowed to have animated elements.</string>
+             </property>
+             <property name="text">
+              <string>Animated Theme:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="text_crawl_lbl">
+             <property name="toolTip">
+              <string>Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed.</string>
+             </property>
+             <property name="text">
+              <string>Text crawl:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="theme_reload_button">
+             <property name="toolTip">
+              <string>Refresh the theme and update all of the ui elements to match.</string>
+             </property>
+             <property name="text">
+              <string>Reload Theme</string>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="1">
+            <widget class="QComboBox" name="scaling_combobox"/>
+           </item>
+           <item row="22" column="1">
+            <widget class="QCheckBox" name="colorlog_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0">
+            <widget class="QLabel" name="default_showname_lbl">
+             <property name="toolTip">
+              <string>Your showname will be automatically set to this value when you join a server.</string>
+             </property>
+             <property name="text">
+              <string>Default showname:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="28" column="1">
+            <widget class="QCheckBox" name="continuous_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="subtheme_combobox"/>
+           </item>
+           <item row="27" column="0">
+            <widget class="QLabel" name="sticker_lbl">
+             <property name="toolTip">
+              <string>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</string>
+             </property>
+             <property name="text">
+              <string>Stickers:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="25" column="0">
+            <widget class="QLabel" name="stickypres_lbl">
+             <property name="toolTip">
+              <string>Turn this on to prevent preanimation checkbox from clearing after playing the emote.</string>
+             </property>
+             <property name="text">
+              <string>Sticky Preanims:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QSpinBox" name="stay_time_spinbox">
+             <property name="suffix">
+              <string> ms</string>
+             </property>
+             <property name="maximum">
+              <number>10000</number>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="0">
+            <widget class="QLabel" name="showname_lbl">
+             <property name="toolTip">
+              <string>Gives the default value for the in-game 'Custom shownames' tickbox, which in turn determines whether the client should display custom in-character names.</string>
+             </property>
+             <property name="text">
+              <string>Custom shownames:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="24" column="0">
+            <widget class="QLabel" name="stickyeffects_lbl">
+             <property name="toolTip">
+              <string>Turn this on to prevent the effects dropdown from clearing the effect after playing it.</string>
+             </property>
+             <property name="text">
+              <string>Sticky Effects:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="27" column="1">
+            <widget class="QCheckBox" name="sticker_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="stay_time_lbl">
+             <property name="toolTip">
+              <string>Minimum amount of time (in miliseconds) an IC message must stay on screen before the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behavior.</string>
+             </property>
+             <property name="text">
+              <string>Text Stay Time:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="17" column="0">
+            <widget class="QLabel" name="language_label">
+             <property name="toolTip">
+              <string>Sets the language if you don't want to use your system language.</string>
+             </property>
+             <property name="text">
+              <string>Language:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QCheckBox" name="instant_objection_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="25" column="1">
+            <widget class="QCheckBox" name="stickypres_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="1">
+            <widget class="QCheckBox" name="showname_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="21" column="1">
+            <widget class="QCheckBox" name="framenetwork_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="30" column="0">
+            <widget class="QLabel" name="sfx_on_idle_lbl">
+             <property name="toolTip">
+              <string>If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF.</string>
+             </property>
+             <property name="text">
+              <string>Always Send SFX:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="23" column="0">
+            <widget class="QLabel" name="stickysounds_lbl">
+             <property name="toolTip">
+              <string>Turn this on to prevent the sound dropdown from clearing the sound after playing it.</string>
+             </property>
+             <property name="text">
+              <string>Sticky Sounds:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="1">
+            <widget class="QCheckBox" name="shake_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0">
+            <widget class="QLabel" name="username_lbl">
+             <property name="toolTip">
+              <string>Your OOC name will be automatically set to this value when you join a server.</string>
+             </property>
+             <property name="text">
+              <string>Default username:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="0">
+            <widget class="QLabel" name="shake_lbl">
+             <property name="toolTip">
+              <string>Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
+             </property>
+             <property name="text">
+              <string>Allow Screenshake:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QCheckBox" name="animated_theme_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="16" column="0">
+            <widget class="QLabel" name="discord_lbl">
+             <property name="toolTip">
+              <string>Allows others on Discord to see what server you are in, what character are you playing, and how long you have been playing for.</string>
+             </property>
+             <property name="text">
+              <string>Discord:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="22" column="0">
+            <widget class="QLabel" name="colorlog_lbl">
+             <property name="toolTip">
+              <string>Use the markup colors in the server IC chatlog.</string>
+             </property>
+             <property name="text">
+              <string>Colors in IC Log:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="subtheme_label">
+             <property name="toolTip">
+              <string>Sets a 'subtheme', which will stack on top of the current theme and replace anything it can. Keep it at 'server' to let the server decide. Keep it at 'default' to keep it unchanging.</string>
+             </property>
+             <property name="text">
+              <string>Subtheme:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="20" column="1">
+            <widget class="QCheckBox" name="effects_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="29" column="1">
+            <widget class="QCheckBox" name="category_stop_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="26" column="1">
+            <widget class="QCheckBox" name="customchat_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="1">
+            <widget class="QLineEdit" name="default_showname_textbox"/>
+           </item>
+           <item row="14" column="1">
+            <widget class="QFrame" name="net_divider">
+             <property name="frameShape">
+              <enum>QFrame::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QFrame" name="theme_log_divider">
+             <property name="frameShape">
+              <enum>QFrame::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="24" column="1">
+            <widget class="QCheckBox" name="stickyeffects_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="31" column="0">
+            <widget class="QLabel" name="evidence_double_click_lbl">
+             <property name="toolTip">
+              <string>If ticked, Evidence needs a double-click to view rather than a single click.</string>
+             </property>
+             <property name="text">
+              <string>Evidence Double Click:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="1">
+            <widget class="QFrame" name="log_names_divider">
+             <property name="frameShape">
+              <enum>QFrame::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="31" column="1">
+            <widget class="QCheckBox" name="evidence_double_click_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="28" column="0">
+            <widget class="QLabel" name="continuous_lbl">
+             <property name="toolTip">
+              <string>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</string>
+             </property>
+             <property name="text">
+              <string>Continuous Playback:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="1">
+            <widget class="QLineEdit" name="username_textbox">
+             <property name="maxLength">
+              <number>30</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="callwords_tab">
+      <attribute name="title">
+       <string>Callwords</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QPlainTextEdit" name="callwords_textbox"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="callwords_explain_lbl">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br/&gt;&lt;br/&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="audio_tab">
+      <attribute name="title">
+       <string>Audio</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="audio_device_lbl">
+         <property name="text">
+          <string>Audio device:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="audio_device_combobox"/>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QFrame" name="audio_volume_divider">
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="suppress_audio_lbl">
+         <property name="toolTip">
+          <string>How much of the volume to suppress when client is not in focus.</string>
+         </property>
+         <property name="text">
+          <string>Suppress Audio:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="suppress_audio_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QFrame" name="volume_blip_divider">
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="bliprate_lbl">
+         <property name="toolTip">
+          <string>Sets the delay between playing the blip sounds.</string>
+         </property>
+         <property name="text">
+          <string>Blip rate:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="bliprate_spinbox">
+         <property name="toolTip">
+          <string>Play a blip sound \&quot;once per every X symbols\&quot;, where X is the blip rate. 0 plays a blip sound only once.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="blank_blips_lbl">
+         <property name="toolTip">
+          <string>If true, the game will play a blip sound even when a space is 'being said'.</string>
+         </property>
+         <property name="text">
+          <string>Blank blips:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QCheckBox" name="blank_blips_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="loopsfx_lbl">
+         <property name="toolTip">
+          <string>If true, the game will allow looping sound effects to play on preanimations.</string>
+         </property>
+         <property name="text">
+          <string>Enable Looping SFX:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QCheckBox" name="loopsfx_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="objectmusic_lbl">
+         <property name="toolTip">
+          <string>If true, AO2 will ask the server to stop music when you use 'Objection!'</string>
+         </property>
+         <property name="text">
+          <string>Kill Music On Objection:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QCheckBox" name="objectmusic_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="disablestreams_lbl">
+         <property name="toolTip">
+          <string>If true, AO2 will not play any streamed audio and show that streaming is disabled.</string>
+         </property>
+         <property name="text">
+          <string>Music Streaming enabled:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QCheckBox" name="disablestreams_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="assets_tab">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <attribute name="title">
+       <string>Assets</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="asset_lbl">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add or remove base folders for use by assets.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Base folders on the bottom are prioritized over those above them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="mount_list">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="mount_buttons_layout">
+         <item row="2" column="5">
+          <spacer name="mount_buttons_spacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="4">
+          <widget class="QPushButton" name="mount_down">
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>↓</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="mount_remove">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Remove</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <spacer name="mount_buttons_spacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="3">
+          <widget class="QPushButton" name="mount_up">
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>↑</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="mount_add">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Add...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="6">
+          <widget class="QPushButton" name="mount_clear_cache">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Clears the lookup cache for assets.
+Use this when you have added an asset that takes precedence over another existing asset.</string>
+           </property>
+           <property name="text">
+            <string>Clear Cache</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="logging_tab">
+      <attribute name="title">
+       <string>Logging</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="downwards_lbl">
+         <property name="toolTip">
+          <string>If ticked, new messages will appear at the bottom (like the OOC chatlog). The traditional (AO1) behaviour is equivalent to this being unticked.</string>
+         </property>
+         <property name="text">
+          <string>Log goes downwards:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="downwards_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="length_lbl">
+         <property name="toolTip">
+          <string>The amount of message lines the IC chatlog will keep before deleting older message lines. A value of 0 or below counts as 'infinite'.</string>
+         </property>
+         <property name="text">
+          <string>Log length:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="length_spinbox">
+         <property name="suffix">
+          <string> entries</string>
+         </property>
+         <property name="maximum">
+          <number>10000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="log_newline_lbl">
+         <property name="toolTip">
+          <string>If ticked, new messages will appear separated, with the message coming on the next line after the name. 
+When unticked, it displays it as 'name: message'.</string>
+         </property>
+         <property name="text">
+          <string>Log newline:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="log_newline_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="log_margin_lbl">
+         <property name="toolTip">
+          <string>The distance in pixels between each entry in the IC log. 
+Default: 0.</string>
+         </property>
+         <property name="text">
+          <string>Log margin:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSpinBox" name="log_margin_spinbox">
+         <property name="suffix">
+          <string> px</string>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="log_timestamp_lbl">
+         <property name="toolTip">
+          <string>If ticked, log will contain a timestamp in UTC before the name.</string>
+         </property>
+         <property name="text">
+          <string>Log timestamp:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="log_timestamp_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="log_timestamp_format_lbl">
+         <property name="text">
+          <string>Log timestamp format:
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="log_timestamp_format_combobox">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>h:mm:ss AP</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>hh:mm:ss</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>h:mm AP</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>hh:mm</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="log_ic_actions_lbl">
+         <property name="toolTip">
+          <string>If ticked, log will show IC actions such as shouting and presenting evidence.</string>
+         </property>
+         <property name="text">
+          <string>Log IC actions:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QCheckBox" name="log_ic_actions_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="desync_logs_lbl">
+         <property name="toolTip">
+          <string>If ticked, log will show messages as-received, while viewport will parse according to the queue (Text Stay Time).</string>
+         </property>
+         <property name="text">
+          <string>Desynchronize IC Logs:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QCheckBox" name="desync_logs_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="log_text_lbl">
+         <property name="toolTip">
+          <string>Text logs of gameplay will be automatically written in the /logs folder.</string>
+         </property>
+         <property name="text">
+          <string>Log to Text Files:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QCheckBox" name="log_text_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="log_demo_lbl">
+         <property name="toolTip">
+          <string>Gameplay will be automatically recorded as demos in the /logs folder.</string>
+         </property>
+         <property name="text">
+          <string>Log to Demo Files:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QCheckBox" name="log_demo_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="privacy_tab">
+      <attribute name="title">
+       <string>Privacy</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QCheckBox" name="privacy_optout_cb">
+         <property name="text">
+          <string>Do not include me in public player counts</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="privacy_separator">
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="privacy_policy"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="settings_buttons">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

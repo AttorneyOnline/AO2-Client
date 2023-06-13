@@ -3,10 +3,12 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "lobby.h"
+#include "options.h"
 
 #include <QAbstractSocket>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QNetworkReply>
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
@@ -17,7 +19,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   heartbeat_timer = new QTimer(this);
 
   QString master_config =
-      ao_app->configini->value("master", "").value<QString>();
+      Options::getInstance().alternativeMasterserver();
   if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
     qInfo() << "using alternate master server" << master_config;
     ms_baseurl = master_config;
@@ -81,7 +83,7 @@ void NetworkManager::send_heartbeat()
   // within a 5 minute window, so that the the number of people playing within
   // that time period can be counted and an accurate player count be displayed.
   // What do I care about your personal information, I really don't want it.
-  if (ao_app->get_player_count_optout())
+  if (Options::getInstance().playerCountOptout())
     return;
 
   QNetworkRequest req(QUrl(ms_baseurl + "/playing"));
@@ -105,7 +107,7 @@ void NetworkManager::request_document(MSDocumentType document_type,
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
 
   QString language =
-      ao_app->configini->value("language").toString();
+      Options::getInstance().language();
   if (language.trimmed().isEmpty())
     language = QLocale::system().name();
 
@@ -192,6 +194,11 @@ void NetworkManager::connect_to_server(server_type p_server)
   active_connection_type = p_server.socket_type;
 }
 
+void NetworkManager::join_to_server()
+{
+    ship_server_packet(AOPacket("askchaa").to_string());
+}
+
 void NetworkManager::disconnect_from_server()
 {
   if (!connected)
@@ -240,12 +247,32 @@ void NetworkManager::handle_server_packet(const QString& p_data)
       partial_packet = false;
     }
   }
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
+#else
   const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
+#endif
 
   for (const QString &packet : packet_list) {
-    AOPacket *f_packet = new AOPacket(packet);
-
+    QStringList f_contents;
+    // Packet should *always* end with #
+    if (packet.endsWith("#")) {
+      f_contents = packet.chopped(1).split("#");
+    }
+    // But, if it somehow doesn't, we should still be able to handle it
+    else {
+      f_contents = packet.split("#");
+    }
+    // Empty packets are suspicious!
+    if (f_contents.isEmpty()) {
+      qWarning() << "WARNING: Empty packet received from server, skipping...";
+      continue;
+    }
+    // Take the first arg as the command
+    QString command = f_contents.takeFirst();
+    // The rest is contents of the packet
+    AOPacket *f_packet = new AOPacket(command, f_contents);
+    // Ship it to the server!
     ao_app->server_packet_received(f_packet);
   }
 }

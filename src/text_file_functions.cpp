@@ -1,140 +1,6 @@
 #include "text_file_functions.h"
-
-QString AOApplication::read_theme()
-{
-  QString result = configini->value("theme", "default").value<QString>();
-  return result;
-}
-
-int AOApplication::read_blip_rate()
-{
-  int result = configini->value("blip_rate", 2).toInt();
-
-  if (result < 0)
-    return 0;
-
-  return result;
-}
-
-QString AOApplication::get_ooc_name()
-{
-  QString result = configini->value("ooc_name").value<QString>();
-  return result;
-}
-
-int AOApplication::get_default_music()
-{
-  int result = configini->value("default_music", 50).toInt();
-  return result;
-}
-
-int AOApplication::get_default_sfx()
-{
-  int result = configini->value("default_sfx", 50).toInt();
-  return result;
-}
-
-int AOApplication::get_default_blip()
-{
-  int result = configini->value("default_blip", 50).toInt();
-  return result;
-}
-
-int AOApplication::get_max_log_size()
-{
-  int result = configini->value("log_maximum", 200).toInt();
-  return result;
-}
-
-int AOApplication::stay_time()
-{
-  int result = configini->value("stay_time", 200).toInt();
-  return result;
-}
-
-int AOApplication::get_text_crawl()
-{
-  int result = configini->value("text_crawl", 40).toInt();
-  return result;
-}
-
-int AOApplication::get_chat_ratelimit()
-{
-  int result = configini->value("chat_ratelimit", 300).toInt();
-  return result;
-}
-
-bool AOApplication::get_log_goes_downwards()
-{
-  QString result =
-      configini->value("log_goes_downwards", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_log_newline()
-{
-  QString result = configini->value("log_newline", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-int AOApplication::get_log_margin()
-{
-  int result = configini->value("log_margin", 0).toInt();
-  return result;
-}
-
-bool AOApplication::get_log_timestamp()
-{
-  QString result = configini->value("log_timestamp", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-QString AOApplication::get_log_timestamp_format()
-{
-  QString result = configini->value("log_timestamp_format", "h:mm:ss AP").value<QString>();
-  return result;
-}
-
-bool AOApplication::get_log_ic_actions()
-{
-  QString result =
-      configini->value("log_ic_actions", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_showname_enabled_by_default()
-{
-  QString result =
-      configini->value("show_custom_shownames", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-QString AOApplication::get_default_username()
-{
-  QString result = configini->value("default_username", "").value<QString>();
-  if (result.isEmpty())
-    return get_ooc_name();
-  else
-    return result;
-}
-
-QString AOApplication::get_default_showname()
-{
-    QString result = configini->value("default_showname", "").value<QString>();
-    return result;
-}
-
-QString AOApplication::get_audio_output_device()
-{
-  QString result =
-      configini->value("default_audio_device", "default").value<QString>();
-  return result;
-}
-
-QStringList AOApplication::get_call_words()
-{
-  return get_list_file(get_base_path() + "callwords.ini");
-}
+#include "aoutils.h"
+#include "options.h"
 
 QStringList AOApplication::get_list_file(VPath path)
 {
@@ -196,7 +62,9 @@ bool AOApplication::write_to_file(QString p_text, QString p_file, bool make_dir)
                  QIODevice::Truncate)) {
     QTextStream out(&f_log);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     out.setCodec("UTF-8");
+#endif
     out << p_text;
 
     f_log.flush();
@@ -226,7 +94,9 @@ bool AOApplication::append_to_file(QString p_text, QString p_file,
   if (f_log.open(QIODevice::WriteOnly | QIODevice::Append)) {
     QTextStream out(&f_log);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     out.setCodec("UTF-8");
+#endif
     out << "\r\n" << p_text;
 
     f_log.flush();
@@ -236,27 +106,23 @@ bool AOApplication::append_to_file(QString p_text, QString p_file,
   return false;
 }
 
-server_type AOApplication::read_server_ini() {
-    server_type f_server;
-    QString l_path = get_base_path() + "server.ini";
+QMultiMap<QString, QString> AOApplication::load_demo_logs_list() const
+{
+    QString l_log_path = applicationDirPath() + "/logs/";
+    QDir l_log_folder(l_log_path);
+    l_log_folder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
 
-    QFile server_ini(l_path);
+    QMultiMap<QString,QString> l_demo_logs;
+    for (const QString &l_demo_folder_name : l_log_folder.entryList()) {
+        QDir l_demo_folder(l_log_path + l_demo_folder_name);
+        l_demo_folder.setFilter(QDir::Files);
+        l_demo_folder.setNameFilters(QStringList() << "*.demo");
 
-    if (!server_ini.exists()) {
-        QMessageBox msgBox;
-        msgBox.setText("No server details set in server.ini");
-        msgBox.exec();
+        for (QString l_demo_name : l_demo_folder.entryList()) {
+            l_demo_logs.insert(l_demo_folder_name, l_demo_name);
+        }
     }
-    else {
-        QSettings l_server_ini(l_path, QSettings::IniFormat);
-        l_server_ini.beginGroup("0");
-        f_server.ip = l_server_ini.value("address", "127.0.0.1").toString();
-        f_server.port = l_server_ini.value("port", 27016).toInt();
-        f_server.name = l_server_ini.value("name", "Default local server").toString();
-        f_server.socket_type = to_connection_type.value("tcp");
-        l_server_ini.endGroup();
-    }
-    return f_server;
+    return l_demo_logs;
 }
 
 QString AOApplication::read_design_ini(QString p_identifier,
@@ -269,7 +135,9 @@ QString AOApplication::read_design_ini(QString p_identifier,
                                        QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
   QVariant value = settings.value(p_identifier);
   if (value.type() == QVariant::StringList) {
     return value.toStringList().join(",");
@@ -283,7 +151,7 @@ QString AOApplication::read_design_ini(QString p_identifier,
 Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 {
   if (p_scaling.isEmpty())
-    p_scaling = get_default_scaling();
+    p_scaling = Options::getInstance().defaultScalingMode();
 
   if (p_scaling == "smooth")
     return Qt::SmoothTransformation;
@@ -292,7 +160,7 @@ Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 {
-  QString value = get_config_value(p_identifier, p_file, current_theme, get_subtheme(), default_theme);
+  QString value = get_config_value(p_identifier, p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme);
   QPoint return_value;
 
   return_value.setX(0);
@@ -338,7 +206,7 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
 QString AOApplication::get_design_element(QString p_identifier, QString p_file,
                                           QString p_misc)
 {
-  QString value = get_config_value(p_identifier, p_file, current_theme, get_subtheme(), default_theme, p_misc);
+  QString value = get_config_value(p_identifier, p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_misc);
   if (!value.isEmpty())
     return value;
   return "";
@@ -347,7 +215,7 @@ QString AOApplication::get_design_element(QString p_identifier, QString p_file,
 // tfw this function is only used for lobby and nowhere else
 int AOApplication::get_font_size(QString p_identifier, QString p_file)
 {
-  QString value = get_config_value(p_identifier, p_file, current_theme, get_subtheme(), default_theme);
+  QString value = get_config_value(p_identifier, p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme);
   if (!value.isEmpty())
     return value.toInt();
   return 10;
@@ -355,7 +223,7 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
 
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
-  QString value = get_config_value(p_identifier, p_file, current_theme, get_subtheme(), default_theme);
+  QString value = get_config_value(p_identifier, p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme);
   QColor return_color(0, 0, 0);
 
   if (value.isEmpty())
@@ -375,7 +243,7 @@ QColor AOApplication::get_color(QString p_identifier, QString p_file)
 
 QString AOApplication::get_stylesheet(QString p_file)
 {
-  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme);
+  QString path = get_asset(p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme);
   QFile design_ini;
   design_ini.setFileName(path);
   if (!design_ini.open(QIODevice::ReadOnly))
@@ -395,7 +263,7 @@ QString AOApplication::get_stylesheet(QString p_file)
 
 QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 {
-  QString path = get_asset(p_file, current_theme, get_subtheme(), default_theme);
+  QString path = get_asset(p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme);
   QFile design_ini;
   design_ini.setFileName(path);
   if (!design_ini.open(QIODevice::ReadOnly))
@@ -429,7 +297,7 @@ QString AOApplication::get_tagged_stylesheet(QString target_tag, QString p_file)
 QString AOApplication::get_chat_markup(QString p_identifier, QString p_chat)
 {
   // New Chadly method
-  QString value = get_config_value(p_identifier, "chat_config.ini", current_theme, get_subtheme(), default_theme, p_chat);
+  QString value = get_config_value(p_identifier, "chat_config.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_chat);
   if (!value.isEmpty())
     return value.toUtf8();
 
@@ -472,14 +340,14 @@ QColor AOApplication::get_chat_color(QString p_identifier, QString p_chat)
 
 QString AOApplication::get_penalty_value(QString p_identifier)
 {
-  return get_config_value(p_identifier, "penalty/penalty.ini", current_theme,
-                          get_subtheme(), default_theme, "");
+  return get_config_value(p_identifier, "penalty/penalty.ini", Options::getInstance().theme(),
+                          Options::getInstance().subTheme(), default_theme, "");
 }
 
 
 QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 {
-  QString value = get_config_value(p_identifier, "courtroom_sounds.ini", current_theme, get_subtheme(), default_theme, p_misc);
+  QString value = get_config_value(p_identifier, "courtroom_sounds.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_misc);
   if (!value.isEmpty())
     return value.toUtf8();
   return "";
@@ -487,8 +355,18 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  return get_real_suffixed_path(sound_to_check,
-                                {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx" });
+  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx" };
+  // Check if we were provided a direct filepath with a suffix already
+  QString path = sound_to_check.toQString();
+  // Loop through our suffixes
+  for (const QString &suffix : suffixes) {
+    // If our VPath ends with a valid suffix
+    if (path.endsWith(suffix, Qt::CaseInsensitive))
+      // Return that as the path
+      return get_real_path(sound_to_check);
+  }
+  // Otherwise, ignore the provided suffix and check our own
+  return get_real_path(sound_to_check, suffixes);
 }
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
@@ -499,7 +377,17 @@ QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
   }
   suffixes.append(".png");
 
-  return get_real_suffixed_path(path_to_check, suffixes);
+  // Check if we were provided a direct filepath with a suffix already
+  QString path = path_to_check.toQString();
+  // Loop through our suffixes
+  for (const QString &suffix : suffixes) {
+    // If our VPath ends with a valid suffix
+    if (path.endsWith(suffix, Qt::CaseInsensitive))
+      // Return that as the path
+      return get_real_path(path_to_check);
+  }
+  // Otherwise, ignore the provided suffix and check our own
+  return get_real_path(path_to_check, suffixes);
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and
@@ -510,8 +398,10 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
 {
   QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
-  settings.beginGroup(target_tag);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
+  settings.beginGroup(target_tag);
   QString value = settings.value(p_search_line).value<QString>();
   settings.endGroup();
   return value;
@@ -522,6 +412,10 @@ void AOApplication::set_char_ini(QString p_char, QString value,
 {
   QSettings settings(get_real_path(get_character_path(p_char, "char.ini")),
                      QSettings::IniFormat);
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  settings.setIniCodec("UTF-8");
+#endif
   settings.beginGroup(target_tag);
   settings.setValue(p_search_line, value);
   settings.endGroup();
@@ -532,7 +426,9 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
 {
   QStringList r_values;
   QSettings settings(get_real_path(p_path), QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
+#endif
   if (!target_tag.isEmpty())
     settings.beginGroup(target_tag);
   QStringList keys = settings.allKeys();
@@ -543,15 +439,6 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
   if (!settings.group().isEmpty())
     settings.endGroup();
   return r_values;
-}
-
-QString AOApplication::get_char_name(QString p_char)
-{
-  QString f_result = read_char_ini(p_char, "name", "Options");
-
-  if (f_result == "")
-    return p_char;
-  return f_result;
 }
 
 QString AOApplication::get_showname(QString p_char)
@@ -823,22 +710,68 @@ int AOApplication::get_text_delay(QString p_char, QString p_emote)
 
 QStringList AOApplication::get_effects(QString p_char)
 {
-  QString p_misc = read_char_ini(p_char, "effects", "Options");
-  QString p_path = get_asset("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  QString p_misc_path = get_asset("effects.ini", current_theme, get_subtheme(), default_theme, p_misc);
-  QSettings effects_config(p_path, QSettings::IniFormat);
-  effects_config.setIniCodec("UTF-8");
-  QStringList effects = effects_config.childGroups();
-  std::sort(effects.begin(), effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
-  if (p_path != p_misc_path) {
-    // If misc path is different from default path, stack the new miscs on top of the defaults
-    QSettings effects_config_misc(p_misc_path, QSettings::IniFormat);
-    effects_config_misc.setIniCodec("UTF-8");
-    QStringList misc_effects = effects_config_misc.childGroups();
-    std::sort(misc_effects.begin(), misc_effects.end(), [] (const QString &a, const QString &b) {return a.split(":")[0].toInt() < b.split(":")[0].toInt();});
-    effects += misc_effects;
+  const QStringList l_filepath_list{
+    get_asset("effects/effects.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, ""),
+    get_asset("effects.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, read_char_ini(p_char, "effects", "Options")),
+  };
+
+  QStringList l_effect_name_list;
+  for (const QString &i_filepath : l_filepath_list)
+  {
+    if (!QFile::exists(i_filepath))
+    {
+      continue;
+    }
+
+    QSettings l_effects_ini(i_filepath, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    l_effects_ini.setIniCodec("UTF-8");
+#endif
+         // port legacy effects
+    if (!l_effects_ini.contains("version/major") || l_effects_ini.value("version/major").toInt() < 2)
+    {
+      QFile effects_old(i_filepath);
+      if (QFile::copy(i_filepath, i_filepath + ".old")) {
+        AOUtils::migrateEffects(l_effects_ini);
+      }
+      else {
+        qWarning() << "Unable to copy effects.ini, skipping migration.";
+      }
+    }
+
+    QStringList l_group_list;
+    for (const QString &i_group : l_effects_ini.childGroups())
+    {
+      bool l_result;
+      i_group.toInt(&l_result);
+      if (l_result)
+      {
+        l_group_list.append(i_group);
+      }
+    }
+
+    std::sort(l_group_list.begin(), l_group_list.end(), [](const QString &lhs, const QString &rhs) {
+      return lhs.toInt() < rhs.toInt();
+    });
+
+    for (const QString &i_group : qAsConst(l_group_list))
+    {
+      const QString l_key = i_group + "/name";
+      if (!l_effects_ini.contains(l_key))
+      {
+        continue;
+      }
+
+      const QString l_effect_name = l_effects_ini.value(l_key).toString();
+      if (l_effect_name.isEmpty())
+      {
+        continue;
+      }
+
+      l_effect_name_list.append(l_effect_name);
+    }
   }
-  return effects;
+  return l_effect_name_list;
 }
 
 QString AOApplication::get_effect(QString effect, QString p_char,
@@ -848,8 +781,8 @@ QString AOApplication::get_effect(QString effect, QString p_char,
     p_folder = read_char_ini(p_char, "effects", "Options");
 
   QStringList paths {
-    get_image("effects/" + effect, current_theme, get_subtheme(), default_theme, ""),
-    get_image(effect, current_theme, get_subtheme(), default_theme, p_folder)
+    get_image("effects/" + effect, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, ""),
+    get_image(effect, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_folder)
   };
 
   for (const auto &p : paths)
@@ -859,23 +792,25 @@ QString AOApplication::get_effect(QString effect, QString p_char,
 }
 
 QString AOApplication::get_effect_property(QString fx_name, QString p_char,
-                                           QString p_property)
+                                           QString p_folder, QString p_property)
 {
-  const auto paths = get_asset_paths("effects/effects.ini", current_theme, get_subtheme(), default_theme, "");
-  const auto misc_paths = get_asset_paths("effects.ini", current_theme, get_subtheme(), default_theme, read_char_ini(p_char, "effects", "Options"));
+  if (p_folder == "")
+    p_folder = read_char_ini(p_char, "effects", "Options");
+
+  const auto paths = get_asset_paths("effects/effects.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, "");
+  const auto misc_paths = get_asset_paths("effects.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme, p_folder);
   QString path;
   QString f_result;
   for (const VPath &p : paths + misc_paths) {
     path = get_real_path(p);
     if (!path.isEmpty()) {
       QSettings settings(path, QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
       settings.setIniCodec("UTF-8");
+#endif
       QStringList char_effects = settings.childGroups();
       for (int i = 0; i < char_effects.size(); ++i) {
-        QString effect = char_effects[i];
-        if (effect.contains(":")) {
-          effect = effect.section(':', 1);
-        }
+        QString effect = settings.value(char_effects[i] + "/name").toString();
         if (effect.toLower() == fx_name.toLower()) {
           f_result = settings.value(char_effects[i] + "/" + p_property).toString();
           if (!f_result.isEmpty()) {
@@ -929,214 +864,4 @@ int AOApplication::get_pos_transition_duration(const QString &old_pos, const QSt
             continue;
     }
     return -1;
-}
-
-bool AOApplication::get_blank_blip()
-{
-  QString result = configini->value("blank_blip", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_looping_sfx()
-{
-  QString result = configini->value("looping_sfx", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::objection_stop_music()
-{
-  QString result =
-      configini->value("objection_stop_music", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_instant_objection_enabled()
-{
-  QString result = configini->value("instant_objection", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_desyncrhonized_logs_enabled()
-{
-  QString result = configini->value("desync_logs", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_discord_enabled()
-{
-  QString result = configini->value("discord", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_shake_enabled()
-{
-  QString result = configini->value("shake", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_effects_enabled()
-{
-  QString result = configini->value("effects", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_frame_network_enabled()
-{
-  QString result = configini->value("framenetwork", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_colorlog_enabled()
-{
-  QString result = configini->value("colorlog", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_stickysounds_enabled()
-{
-  QString result = configini->value("stickysounds", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_stickyeffects_enabled()
-{
-  QString result = configini->value("stickyeffects", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_stickypres_enabled()
-{
-  QString result = configini->value("stickypres", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_customchat_enabled()
-{
-  QString result = configini->value("customchat", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_sticker_enabled()
-{
-  QString result = configini->value("sticker", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_continuous_enabled()
-{
-  QString result = configini->value("continuous_playback", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::is_category_stop_enabled()
-{
-  QString result = configini->value("category_stop", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_casing_enabled()
-{
-  QString result = configini->value("casing_enabled", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_casing_defence_enabled()
-{
-  QString result =
-      configini->value("casing_defence_enabled", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_casing_prosecution_enabled()
-{
-  QString result =
-      configini->value("casing_prosecution_enabled", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_casing_judge_enabled()
-{
-  QString result =
-      configini->value("casing_judge_enabled", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_casing_juror_enabled()
-{
-  QString result =
-      configini->value("casing_juror_enabled", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_casing_steno_enabled()
-{
-  QString result =
-      configini->value("casing_steno_enabled", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_casing_cm_enabled()
-{
-  QString result =
-      configini->value("casing_cm_enabled", "false").value<QString>();
-  return result.startsWith("true");
-}
-
-QString AOApplication::get_casing_can_host_cases()
-{
-  QString result =
-      configini->value("casing_can_host_cases", "Turnabout Check Your Settings")
-          .value<QString>();
-  return result;
-}
-
-bool AOApplication::get_text_logging_enabled()
-{
-  QString result =
-      configini->value("automatic_logging_enabled", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-bool AOApplication::get_demo_logging_enabled()
-{
-  QString result =
-      configini->value("demo_logging_enabled", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-QString AOApplication::get_subtheme()
-{
-  QString result =
-      configini->value("subtheme", "server").value<QString>();
-  // Server means we want the server to decide for us
-  if (result == "server")
-      // 'subtheme' variable is affected by the server
-      result = subtheme;
-  // Default means we don't want any subthemes
-  else if (result == "default")
-      result = "";
-  return result;
-}
-
-bool AOApplication::get_animated_theme()
-{
-  QString result =
-      configini->value("animated_theme", "true").value<QString>();
-  return result.startsWith("true");
-}
-
-QString AOApplication::get_default_scaling()
-{
-  return configini->value("default_scaling", "fast").value<QString>();
-}
-
-QStringList AOApplication::get_mount_paths()
-{
-  return configini->value("mount_paths").value<QStringList>();
-}
-
-bool AOApplication::get_player_count_optout()
-{
-  return configini->value("player_count_optout", "false").value<QString>()
-      .startsWith("true");
 }

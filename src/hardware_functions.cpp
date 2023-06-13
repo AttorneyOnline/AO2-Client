@@ -36,34 +36,32 @@ QString get_hdid()
     ConvertSidToStringSidW(pToken->User.Sid, &HDIDParam);
     QString returnHDID = QString::fromWCharArray(HDIDParam);
     CloseHandle(hToken);
-    return returnHDID;
+    return returnHDID;     
+}
+#elif defined(ANDROID)
+QString get_hdid()
+{
+    QAndroidJniObject appctx = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative", "activity", "()Landroid/app/Activity;").callObjectMethod("getApplicationContext","()Landroid/content/Context;");
+    QAndroidJniObject androidId = QAndroidJniObject::callStaticObjectMethod("android/provider/Settings$Secure","getString",
+                                                                            "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;",
+                                                                            appctx.callObjectMethod("getContentResolver", "()Landroid/content/ContentResolver;").object<jobject>(),
+                                                                            QAndroidJniObject::fromString("android_id").object<jstring>());
+    return androidId.toString();
 }
 #elif QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 #if (defined(LINUX) || defined(__linux__))
+#include <QSysInfo>
 
-#include <QFile>
-#include <QTextStream>
+QByteArray machineId;
 
 QString get_hdid()
 {
-  QFile fstab_file("/etc/fstab");
-  if (!fstab_file.open(QIODevice::ReadOnly))
-    return "uxcps32sa9fnwic92mfbs0";
+  machineId = QSysInfo::machineUniqueId();
 
-  QTextStream in(&fstab_file);
-
-  while (!in.atEnd()) {
-    QString line = in.readLine();
-
-    if (line.startsWith("UUID")) {
-      QStringList line_elements = line.split("=");
-
-      if (line_elements.size() > 1)
-        return line_elements.at(1).left(23).trimmed();
-    }
+  if (machineId.isEmpty()) {
+    return "gxsps32sa9fnwic92mfbs2";
   }
-
-  return "uxcpz32sa9fnwic92mfbs1";
+  return QString(machineId);
 }
 
 #elif defined __APPLE__

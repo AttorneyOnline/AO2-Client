@@ -1,6 +1,6 @@
 name: CI build
 
-on: [push]
+on: [push, pull_request]
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
@@ -23,7 +23,7 @@ jobs:
           - platform: gcc_64
             os: ubuntu-latest
           - platform: android
-            os: ubuntu-latest
+            os: ubuntu-20.04
           - platform: msvc2019
             os: windows-2019
           - platform: mingw81_32
@@ -49,7 +49,7 @@ jobs:
 
       - name: Add msbuild to PATH
         if: matrix.platform == 'msvc2019'
-        uses: microsoft/setup-msbuild@master
+        uses: microsoft/setup-msbuild@main
         
       - name: Downgrade Android NDK
         if: matrix.platform == 'android'
@@ -57,12 +57,15 @@ jobs:
            ANDROID_ROOT=/usr/local/lib/android
            ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
            ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
+           SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
+           echo "y" | $SDKMANAGER "ndk;21.4.7075529"
+           echo "y" | $SDKMANAGER "platforms;android-24"
            ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
         
       - uses: Skycoder42/action-setup-qt@master
         id: qt
         with:
-          version: 5.15.1
+          version: ${{matrix.version}}
           platform: ${{matrix.platform}}
 
       - name: Install QtApng
@@ -71,16 +74,12 @@ jobs:
           cd QtApng
           cd src/3rdparty
           chmod +x get_libs.sh
-          ./get_libs.sh 1.2.12 1.6.37
+          ./get_libs.sh 1.2.13 1.6.37
           cd ../..
-          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
           ${{steps.qt.outputs.make}} qmake_all
           ${{steps.qt.outputs.make}}
           ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
-
-      - name: Create bin folder
-        run: |
-          mkdir bin
 
       - name: Install Windows Discord RPC
         if: contains(matrix.os, 'windows')
@@ -132,18 +131,18 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/x64/libbass.so ./lib/
-          cp ./bass/x64/libbass.so ./bin/
+          cp ./bass/libs/x86_64/libbass.so ./lib/
+          cp ./bass/libs/x86_64/libbass.so ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
-          cp ./bass/x64/libbassmidi.so ./lib/
-          cp ./bass/x64/libbassmidi.so ./bin/
+          cp ./bass/libs/x86_64/libbassmidi.so ./lib/
+          cp ./bass/libs/x86_64/libbassmidi.so ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/x64/libbassopus.so ./lib/
-          cp ./bass/x64/libbassopus.so ./bin/
+          cp ./bass/libs/x86_64/libbassopus.so ./lib/
+          cp ./bass/libs/x86_64/libbassopus.so ./bin/
 
       - name: Install Mac BASS
         if: matrix.os == 'macos-latest'
@@ -166,26 +165,34 @@ jobs:
       - name: Install Android BASS
         if: matrix.platform == 'android'
         run: |
-          mkdir ./android/libs/
-          mkdir ./android/libs/armeabi-v7a/
+          mkdir -p ./android/libs/armeabi-v7a/
           curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
-          unzip -d bass -o bass.zip
+          unzip -o bass.zip -d bass
           cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
+          unzip -o bass.zip "libs/*" -d "./android/libs/"
           cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
+          unzip -o bassmidi.zip "libs/*" -d "./android/libs/"
           cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
 
           curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
+          unzip -o bassopus.zip "libs/*" -d "./android/libs/"
           cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
 
       - name: qmake
+        if: matrix.platform != 'android'
         run: |
-          qmake DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
+          qmake QMAKE_CXXFLAGS+="-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
+
+      - name: qmake android
+        if: matrix.platform == 'android'
+        run: |
+          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
       - name: build
         run: |
@@ -210,6 +217,31 @@ jobs:
           rm -r bearer
           rm -r styles
 
+      - name: Copy MingW DLL
+        if: matrix.platform == 'mingw81_32'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libgcc_s_dw2-1.dll .
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libstdc++-6.dll .
+          cp D:/a/AO2-Client/AO2-Client/.cache/qt/Tools/mingw810_32/bin/libwinpthread-1.dll .
+
+      - name: Deploy Linux
+        if: matrix.platform == 'gcc_64'
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          cp ../scripts/launch.sh .
+          mkdir -p imageformats
+          cp ../QtApng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
+          chmod +x launch.sh
+          chmod +x Attorney_Online
+          tar -cf Attorney_Online.tar ./*
+          rm -rf imageformats
+          rm *.so
+          rm *.sh
+          rm Attorney_Online
+
       - name: Deploy Mac
         if: matrix.os == 'macos-latest'
         working-directory: ${{github.workspace}}/bin/
@@ -231,14 +263,13 @@ jobs:
         working-directory: ${{github.workspace}}/
         shell: bash
         run: |
-          mkdir ./build/libs/
-          mkdir ./build/libs/armeabi-v7a/
+          mkdir -p ./build/libs/armeabi-v7a/
           mv ./bin/*.so ./build/libs/armeabi-v7a/
           cp ./QtApng/plugins/imageformats/libplugins_imageformats_qapng_armeabi-v7a.so ./build/libs/armeabi-v7a/
-          androiddeployqt --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
+          androiddeployqt --android-platform android-24 --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-${{matrix.platform}}
+          name: Attorney_Online-${{matrix.os}}-${{matrix.platform}}
           path: ${{github.workspace}}/bin/

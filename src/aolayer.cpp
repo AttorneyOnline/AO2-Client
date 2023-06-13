@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "file_functions.h"
 #include "misc_functions.h"
+#include "options.h"
 
 static QThreadPool *thread_pool;
 
@@ -262,7 +263,7 @@ void SplashLayer::load_image(QString p_filename, QString p_charname,
                                    QString p_miscname)
 {
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
+  QString final_image = ao_app->get_image(p_filename, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
   start_playback(final_image);
   play();
 }
@@ -285,7 +286,7 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 {
   last_path = "";
   stretch = true;
-  QString final_image = ao_app->get_image(p_filename, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  QString final_image = ao_app->get_image(p_filename, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
   play();
 }
@@ -293,10 +294,10 @@ void InterfaceLayer::load_image(QString p_filename, QString p_miscname)
 void StickerLayer::load_image(QString p_charname)
 {
   QString p_miscname;
-  if (ao_app->is_customchat_enabled())
+  if (Options::getInstance().customChatboxEnabled())
     p_miscname = ao_app->get_chat(p_charname);
   transform_mode = ao_app->get_misc_scaling(p_miscname);
-  QString final_image = ao_app->get_image("sticker/" + p_charname, ao_app->current_theme, ao_app->get_subtheme(), ao_app->default_theme, p_miscname);
+  QString final_image = ao_app->get_image("sticker/" + p_charname, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_miscname);
   start_playback(final_image);
   play();
 }
@@ -325,7 +326,7 @@ void AOLayer::start_playback(QString p_image)
   QMutexLocker locker(&mutex);
   this->show();
 
-  if (!ao_app->is_continuous_enabled()) {
+  if (!Options::getInstance().continuousPlaybackEnabled()) {
     continuous = false;
     force_continuous = true;
   }
@@ -364,7 +365,11 @@ void AOLayer::start_playback(QString p_image)
     frame = 0;
     continuous = false;
   }
+  #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
+  #else
+  frame_loader = QtConcurrent::run(thread_pool, &AOLayer::populate_vectors, this);
+  #endif
   last_path = p_image;
   last_center = g_center;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
