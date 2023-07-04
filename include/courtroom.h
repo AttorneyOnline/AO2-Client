@@ -270,6 +270,8 @@ public:
   // Display the character's pair if present.
   void display_pair_character(QString other_charid, QString other_offset);
 
+  void display_third_pair_character(QString third_charid, QString third_offset);
+
   // Handle the emote modifier value and proceed through the logic accordingly.
   void handle_emote_mod(int emote_mod, bool p_immediate);
 
@@ -376,6 +378,8 @@ private:
 
   // The character ID of the character this user wants to appear alongside with.
   int other_charid = -1;
+
+  int third_charid = -1;
 
   // The horizontal offset this user has given if they want to appear alongside someone.
   int char_offset = 0;
@@ -651,6 +655,7 @@ private:
   SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
   CharLayer *ui_vp_sideplayer_char;
+  CharLayer *ui_vp_thirdplayer_char;
   BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
