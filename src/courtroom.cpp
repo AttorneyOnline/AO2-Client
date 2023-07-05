@@ -2086,17 +2086,18 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (third_charid > -1 && third_charid != m_cid) {
-    QString packet = QString::number(third_charid);
-    if (ao_app->effects_supported)
-      packet += "^" + QString::number(pair_order);
-    packet_contents.append(packet);
-  }
-  else {
-    packet_contents.append("-1");
+  if (ao_app->cccc_ic_supported) {
+    if (third_charid > -1 && third_charid != m_cid) {
+      QString packet = QString::number(third_charid);
+      if (ao_app->effects_supported)
+        packet += "^" + QString::number(pair_order);
+      packet_contents.append(packet);
+    }
+    else {
+      packet_contents.append("-1");
+    }
   }
 
-  
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
