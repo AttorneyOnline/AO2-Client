@@ -651,6 +651,7 @@ private:
   AOImage *ui_background;
 
   QWidget *ui_viewport;
+  QLabel *ui_vp_void;
   BackgroundLayer *ui_vp_background;
   SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
