@@ -625,3 +625,30 @@ void AOLayer::shfx_timer_done()
   // signal connected to courtroom object, let it figure out what to do
   emit done();
 }
+
+void AOLayer::invert() {
+    const QPixmap* pixmap = this->pixmap();
+    QImage* image = new QImage(pixmap->toImage());
+    image->invertPixels(QImage::InvertRgb);
+    this->setPixmap(QPixmap::fromImage(*image));
+}
+
+void AOLayer::fade(bool in, int duration)
+{
+    QGraphicsOpacityEffect* fade = new QGraphicsOpacityEffect(this);
+    this->setGraphicsEffect(fade);
+    QPropertyAnimation* fade_anim = new QPropertyAnimation(fade, "opacity");
+    fade_anim->setDuration(duration);
+    fade_anim->setStartValue(in ? 0 : 1);
+    fade_anim->setEndValue(in ? 1 : 0);
+    fade_anim->setEasingCurve(QEasingCurve::Linear);
+    fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
+    connect(fade_anim, SIGNAL(finished()), this, SLOT(in?fadein_finished():fadeout_finished()));
+
+}
+
+void AOLayer::fadeout_finished() {}
+
+void AOLayer::fadein_finished() {}
+
+void BackgroundLayer::fadein_finished() {emit hide_void();}
