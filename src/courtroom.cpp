@@ -3083,11 +3083,11 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(b)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->fade(false, 100);
+    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 2;
-    ui_vp_player_char->fade(true, 80);
+    ui_vp_player_char->fade(true, 300);
   }
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
@@ -3096,11 +3096,11 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(a)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->fade(false, 100);
+    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 3;
-    ui_vp_player_char->fade(true, 80);
+    ui_vp_player_char->fade(true, 300);
   }
 
   // Begin parsing through the chatbox message
