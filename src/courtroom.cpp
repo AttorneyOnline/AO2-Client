@@ -49,6 +49,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
+  ui_vp_void = new QLabel(ui_viewport);
+  ui_vp_void->setStyleSheet("QLabel {background-color:black}");
+  ui_vp_void->hide();
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
@@ -414,6 +417,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
 
+  connect(ui_vp_background, SIGNAL(hide_void()), ui_vp_void, SLOT(hide()));
+  
   connect(ui_vp_objection, &SplashLayer::done, this, &Courtroom::objection_done);
   connect(ui_vp_player_char, &CharLayer::done, this, &Courtroom::preanim_done);
   connect(ui_vp_player_char, &CharLayer::shake, this, &Courtroom::do_screenshake);
@@ -688,6 +693,9 @@ void Courtroom::set_widgets()
   // Once again, if the theme can't display it, set_move_and_pos will catch
   // them.
   ui_settings->show();
+
+  ui_vp_void->move(0, 0);
+  ui_vp_void->resize(ui_viewport->width(), ui_viewport->height());
 
   // make the BG's reload
   ui_vp_background->kill();
@@ -3071,6 +3079,7 @@ void Courtroom::handle_ic_speaking()
   if (color_is_talking && text_state == 1 &&
       anim_state < 2)
   {
+    ui_vp_player_char->fade(false, 60);
     // Stop the previous animation and play the talking animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
@@ -3078,10 +3087,12 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 2;
+    ui_vp_player_char->fade(true, 60);
   }
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
   {
+    ui_vp_player_char->fade(false, 60);
     // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
@@ -3089,6 +3100,7 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 3;
+    ui_vp_player_char->fade(true, 60);
   }
 
   // Begin parsing through the chatbox message
