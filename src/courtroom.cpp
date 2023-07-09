@@ -2173,6 +2173,11 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     p_contents[MESSAGE] = "";
   }
 
+  if (p_contents[MESSAGE].startswith(" ")) {
+    auto_additive = true;
+    ui_additive->setChecked(true);
+  }
+
   // If we determine we sent this message
   if (sender) {
     // Reset input UI elements, clear input box, etc.
@@ -3986,6 +3991,10 @@ void Courtroom::chat_tick()
                                       false);
         anim_state = 3;
       }
+    }
+    if (auto_additive) {
+      ui_additive->setChecked(false);
+      auto_additive = false;
     }
     // Continue ticking
     chat_tick_timer->start(msg_delay);
