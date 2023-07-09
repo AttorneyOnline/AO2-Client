@@ -503,6 +503,8 @@ private:
   QString previous_ic_message = "";
   QString additive_previous = "";
 
+  bool auto_additive = false;
+
   // char id, muted or not
   QMap<int, bool> mute_map;
 
