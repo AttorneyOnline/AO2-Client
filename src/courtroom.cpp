@@ -2070,8 +2070,11 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append(packet);
     }
   }
-
   if (ao_app->additive_text_supported) {
+    if (ui_ic_chat_message->text().startsWith(" ")) {
+      auto_additive = true;
+      ui_additive->setChecked(true);
+    }
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
   if (ao_app->effects_supported) {
@@ -2171,11 +2174,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (p_contents[MESSAGE].trimmed().isEmpty()) {
     // Turn it into true blankpost
     p_contents[MESSAGE] = "";
-  }
-
-  if (p_contents[MESSAGE].startsWith(" ")) {
-    auto_additive = true;
-    ui_additive->setChecked(true);
   }
 
   // If we determine we sent this message
