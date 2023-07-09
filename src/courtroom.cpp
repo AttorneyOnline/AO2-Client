@@ -2176,6 +2176,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (p_contents[MESSAGE].startsWith(" ")) {
     auto_additive = true;
     ui_additive->setChecked(true);
+    p_contents[ADDITIVE] = 1;
   }
 
   // If we determine we sent this message
@@ -5702,7 +5703,7 @@ void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_additive_clicked()
 {
-  if (ui_additive->isChecked()) {
+  if (ui_additive->isChecked() && !auto_aditive) {
     ui_ic_chat_message->home(false); // move cursor to the start of the message
     ui_ic_chat_message->insert(" "); // preface the message by whitespace
     ui_ic_chat_message->end(false);  // move cursor to the end of the message
