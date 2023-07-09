@@ -2173,7 +2173,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     p_contents[MESSAGE] = "";
   }
 
-  if (p_contents[MESSAGE].startswith(" ")) {
+  if (p_contents[MESSAGE].startsWith(" ")) {
     auto_additive = true;
     ui_additive->setChecked(true);
   }
