@@ -2071,7 +2071,7 @@ void Courtroom::on_chat_return_pressed()
     }
   }
   if (ao_app->additive_text_supported) {
-    if (ui_ic_chat_message->text().startsWith(" ")) {
+    if (ui_ic_chat_message->text().length() > 1 && ui_ic_chat_message->text().startsWith(" ")) {
       auto_additive = true;
       ui_additive->setChecked(true);
     }
@@ -3083,10 +3083,10 @@ void Courtroom::handle_ic_speaking()
       anim_state < 2)
   {
     // Stop the previous animation and play the talking animation
-    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(b)" + m_chatmessage[EMOTE];
+    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 2;
@@ -3096,10 +3096,10 @@ void Courtroom::handle_ic_speaking()
            anim_state != 3) // Set it to idle as we're not on that already
   {
     // Stop the previous animation and play the idle animation
-    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(a)" + m_chatmessage[EMOTE];
+    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 3;
