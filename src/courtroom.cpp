@@ -2176,7 +2176,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (p_contents[MESSAGE].startsWith(" ")) {
     auto_additive = true;
     ui_additive->setChecked(true);
-    p_contents[ADDITIVE] = 1;
   }
 
   // If we determine we sent this message
@@ -3086,10 +3085,10 @@ void Courtroom::handle_ic_speaking()
       anim_state < 2)
   {
     // Stop the previous animation and play the talking animation
+    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(b)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 2;
@@ -3099,16 +3098,15 @@ void Courtroom::handle_ic_speaking()
            anim_state != 3) // Set it to idle as we're not on that already
   {
     // Stop the previous animation and play the idle animation
+    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(a)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 3;
     ui_vp_player_char->fade(true, 300);
   }
-
   // Begin parsing through the chatbox message
   start_chat_ticking();
 }
@@ -3673,7 +3671,7 @@ void Courtroom::start_chat_ticking()
   if (m_chatmessage[MESSAGE].isEmpty()) {
     // since the message is empty, it's technically done ticking
     text_state = 2;
-    if (m_chatmessage[ADDITIVE] == "1") {
+    if (m_chatmessage[ADDITIVE] == "1" || auto_additive) {
       // Cool behavior
       ui_vp_chatbox->show();
       ui_vp_message->show();
@@ -3702,7 +3700,7 @@ void Courtroom::start_chat_ticking()
   if (Options::getInstance().characterStickerEnabled())
     ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
 
-  if (m_chatmessage[ADDITIVE] != "1") {
+  if (m_chatmessage[ADDITIVE] != "1" || !auto_additive) {
     ui_vp_message->clear();
     real_tick_pos = 0;
     additive_previous = "";
@@ -3994,8 +3992,8 @@ void Courtroom::chat_tick()
       }
     }
     if (auto_additive) {
-      ui_additive->setChecked(false);
       auto_additive = false;
+      ui_additive->setChecked(false);
     }
     // Continue ticking
     chat_tick_timer->start(msg_delay);
