@@ -3082,15 +3082,25 @@ void Courtroom::handle_ic_speaking()
   if (color_is_talking && text_state == 1 &&
       anim_state < 2)
   {
-    // Stop the previous animation and play the talking animation
+  // Stop the previous animation and play the talking animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(b)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->fade(false, 400);
-    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    // Set the anim state accordingly
-    anim_state = 2;
-    ui_vp_player_char->fade(true, 300);
+
+    if (ui_vp_player_char->graphicsEffect() != nullptr) {
+      delete ui_vp_player_char->graphicsEffect();
+    }
+  
+    if (ui_vp_player_char->isVisible()) {
+      ui_vp_player_char->fade(false, 400);
+      QObject::connect(ui_vp_player_char, &AOLayer::fadeout_finished, ui_vp_player_char, [this, filename]() {
+        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+        ui_vp_player_char->fade(true, 300);
+      });
+    } else {
+      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+      ui_vp_player_char->fade(true, 300);
+    }
   }
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
@@ -3099,11 +3109,9 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(a)" + m_chatmessage[EMOTE];
-    ui_vp_player_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     // Set the anim state accordingly
     anim_state = 3;
-    ui_vp_player_char->fade(true, 300);
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
