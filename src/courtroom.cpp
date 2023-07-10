@@ -3719,7 +3719,7 @@ void Courtroom::start_chat_ticking()
   if (Options::getInstance().characterStickerEnabled())
     ui_vp_sticker->load_image(m_chatmessage[CHAR_NAME]);
 
-  if (m_chatmessage[ADDITIVE] != "1" || !auto_additive) {
+  if (m_chatmessage[ADDITIVE] != "1") {
     ui_vp_message->clear();
     real_tick_pos = 0;
     additive_previous = "";
