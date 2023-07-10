@@ -245,13 +245,34 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   }
   int emote_num = id + max_emotes_on_page * current_emote_page;
   emote_menu->clear();
-  emote_menu->setDefaultAction(emote_menu->addAction("Preview Selected", this, [=]{
+
+  emote_menu->setDefaultAction(emote_menu->addAction("Add to Emote Queue", this, [=]{
+    // Obtiene la posición del cursor actual
+    QTextCursor cursor = ui_ic_chat_message->textCursor();
+    int cursorPosition = cursor.position();
+
+    if (cursorPosition < ui_ic_chat_message->document()->characterCount()) {    
+      cursor.insertText(" ¨(" + f_emote + ")¨ ");
+  
+      // Restaura la posición del cursor
+      cursor.setPosition(cursorPosition + 1);
+      ui_ic_chat_message->setTextCursor(cursor);
+    } else {
+        ui_ic_chat_message->moveCursor(QTextCursor::End);
+        ui_ic_chat_message->insertPlainText(" ¨(" + f_emote + ")¨ ");
+    }
+    // ui_ic_chat_message->setFocus();
+  }
+  ));
+
+  emote_menu->addSeparator();
+  
+  emote_menu->addAction("Preview Selected", this, [=]{
     emote_preview->show();
     emote_preview->raise();
     emote_preview->set_widgets();
     update_emote_preview();
   }
-  ));
   QString prefix = "";
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-") {
