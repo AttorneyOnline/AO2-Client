@@ -99,6 +99,9 @@ public:
 
   void fade(bool in, int duration);
 
+  void fadeout_finished();
+  void fadein_finished();
+
   void invert();
 
 protected:
@@ -167,8 +170,6 @@ protected slots:
   virtual void preanim_done();
   void shfx_timer_done();
   virtual void movie_ticker();
-  virtual void fadeout_finished();
-  virtual void fadein_finished();
 };
 
 class BackgroundLayer : public AOLayer {
