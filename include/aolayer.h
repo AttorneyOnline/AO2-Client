@@ -99,8 +99,8 @@ public:
 
   void fade(bool in, int duration);
 
-  void fadeout_finished();
-  void fadein_finished();
+  virtual void fadeout_finished();
+  virtual void fadein_finished();
 
   void invert();
 
