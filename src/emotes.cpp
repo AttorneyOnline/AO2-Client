@@ -246,23 +246,22 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   int emote_num = id + max_emotes_on_page * current_emote_page;
   emote_menu->clear();
 
-  emote_menu->setDefaultAction(emote_menu->addAction("Add to Emote Queue", this, [=]{
-    // Obtiene la posición del cursor actual
-    QTextCursor cursor = ui_ic_chat_message->textCursor();
-    int cursorPosition = cursor.position();
+  QString f_emote = ao_app->get_emote(current_char, emote_num);
 
-    if (cursorPosition < ui_ic_chat_message->document()->characterCount()) {    
-      cursor.insertText(" ¨(" + f_emote + ")¨ ");
-  
-      // Restaura la posición del cursor
-      cursor.setPosition(cursorPosition + 1);
-      ui_ic_chat_message->setTextCursor(cursor);
+  emote_menu->setDefaultAction(emote_menu->addAction("Add to Emote Queue", this, [=]{
+    if (ui_ic_chat_message->hasFocus()) {
+      int cursorPosition = ui_ic_chat_message->cursorPosition();
+      
+      ui_ic_chat_message->insert(" ¨(" + f_emote + ")¨ ");
+      
+      ui_ic_chat_message->setCursorPosition(cursorPosition + emote.length() + 1);
     } else {
-        ui_ic_chat_message->moveCursor(QTextCursor::End);
-        ui_ic_chat_message->insertPlainText(" ¨(" + f_emote + ")¨ ");
-    }
-    // ui_ic_chat_message->setFocus();
-  }
+        QString temp_text = ui_ic_chat_message->text();
+        temp_text += " ¨(" + f_emote + ")¨ "
+        ui_ic_chat_message->setText(temp_text);
+      }
+      ui_ic_chat_message->setFocus();
+     }
   ));
 
   emote_menu->addSeparator();
@@ -279,7 +278,6 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     emote_menu->addAction("Preview pre: " + f_pre, this, [=]{ preview_emote(f_pre); });
   }
 
-  QString f_emote = ao_app->get_emote(current_char, emote_num);
   if (!f_emote.isEmpty()) {
     emote_menu->addAction("Preview idle: " + f_emote, this, [=]{ preview_emote("(a)" + f_emote); });
     emote_menu->addAction("Preview talk: " + f_emote, this, [=]{ preview_emote("(b)" + f_emote); });
