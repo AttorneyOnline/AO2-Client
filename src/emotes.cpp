@@ -249,15 +249,17 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   QString f_emote = ao_app->get_emote(current_char, emote_num);
 
   emote_menu->setDefaultAction(emote_menu->addAction("Add to Emote Queue", this, [=]{
+    QString emote = " ¨(" + f_emote + ")¨ ";
+    
     if (ui_ic_chat_message->hasFocus()) {
       int cursorPosition = ui_ic_chat_message->cursorPosition();
       
-      ui_ic_chat_message->insert(" ¨(" + f_emote + ")¨ ");
+      ui_ic_chat_message->insert(emote);
       
       ui_ic_chat_message->setCursorPosition(cursorPosition + emote.length() + 1);
     } else {
         QString temp_text = ui_ic_chat_message->text();
-        temp_text += " ¨(" + f_emote + ")¨ "
+        temp_text += emote;
         ui_ic_chat_message->setText(temp_text);
       }
       ui_ic_chat_message->setFocus();
@@ -271,7 +273,7 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     emote_preview->raise();
     emote_preview->set_widgets();
     update_emote_preview();
-  }
+  });
   QString prefix = "";
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-") {
