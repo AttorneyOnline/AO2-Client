@@ -3103,10 +3103,9 @@ void Courtroom::handle_ic_speaking()
     // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
-    QString old_filename = "(a)" + last_sprite;
     filename = "(a)" + m_chatmessage[EMOTE];
     // I know it's really bad. I'll move this out from here later on
-    ui_vp_crossfade_char->load_image(old_filename, m_chatmessage[CHAR_NAME], 0, false);
+    ui_vp_crossfade_char->load_image(last_sprite, m_chatmessage[CHAR_NAME], 0, false);
     ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
     ui_vp_crossfade_char->show();
     ui_vp_crossfade_char->fade(false, 400);
@@ -3115,6 +3114,7 @@ void Courtroom::handle_ic_speaking()
     // Set the anim state accordingly
     anim_state = 3;
     ui_vp_crossfade_char->hide();
+    last_sprite = filename;
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
@@ -3724,8 +3724,6 @@ void Courtroom::start_chat_ticking()
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
   chat_tick_timer->start(0); // Display the first char right away
-
-  last_sprite = m_chatmessage[EMOTE];
   
   last_misc = current_misc;
   current_misc = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
