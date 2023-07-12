@@ -105,6 +105,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     effects_supported = false;
     expanded_desk_mods_supported = false;
     auth_packet_supported = false;
+    typing_timer_supported = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -137,7 +138,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_supported = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_supported = true;
-    log_to_demo = false;
+    if (f_packet.contains("typing_timer", Qt::CaseInsensitive))
+      typing_timer_supported = true;
+  log_to_demo = false;
   }
   else if (header == "PN") {
     if (!lobby_constructed || f_contents.size() < 2)
@@ -502,6 +505,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "ZZ") {
     if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->mod_called(f_contents.at(0));
+  }
+  else if (header == "TT") {
+    if (f_contents.isEmpty()) {
+      goto end;
+    }
+    qDebug().nospace() << "Received packet contents: " << f_contents;
+    int tt_state = f_contents.at(0).toInt();
+    QString tt_char = f_contents.at(1);
+
+    w_courtroom->current_icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
+                                               tt_char, "char_icon"));      
+    qDebug().nospace() << "Updated icon path: " << current_icon_path;
+      
+    if (tt_state == 1) {
+      w_courtroom->onTextChanged(); 
+    }
   }
   else if (header == "TI") { // Timer packet
     if (!courtroom_constructed || f_contents.size() < 2)
