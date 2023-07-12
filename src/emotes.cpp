@@ -245,20 +245,41 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   }
   int emote_num = id + max_emotes_on_page * current_emote_page;
   emote_menu->clear();
-  emote_menu->setDefaultAction(emote_menu->addAction("Preview Selected", this, [=]{
+
+  QString f_emote = ao_app->get_emote(current_char, emote_num);
+
+  emote_menu->setDefaultAction(emote_menu->addAction("Add to Emote Queue", this, [=]{
+    QString emote = " ¨(" + f_emote + ")¨ ";
+    
+    if (ui_ic_chat_message->hasFocus()) {
+      int cursorPosition = ui_ic_chat_message->cursorPosition();
+      
+      ui_ic_chat_message->insert(emote);
+      
+      ui_ic_chat_message->setCursorPosition(cursorPosition + emote.length() + 1);
+    } else {
+        QString temp_text = ui_ic_chat_message->text();
+        temp_text += emote;
+        ui_ic_chat_message->setText(temp_text);
+      }
+      ui_ic_chat_message->setFocus();
+     }
+  ));
+
+  emote_menu->addSeparator();
+  
+  emote_menu->addAction("Preview Selected", this, [=]{
     emote_preview->show();
     emote_preview->raise();
     emote_preview->set_widgets();
     update_emote_preview();
-  }
-  ));
+  });
   QString prefix = "";
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-") {
     emote_menu->addAction("Preview pre: " + f_pre, this, [=]{ preview_emote(f_pre); });
   }
 
-  QString f_emote = ao_app->get_emote(current_char, emote_num);
   if (!f_emote.isEmpty()) {
     emote_menu->addAction("Preview idle: " + f_emote, this, [=]{ preview_emote("(a)" + f_emote); });
     emote_menu->addAction("Preview talk: " + f_emote, this, [=]{ preview_emote("(b)" + f_emote); });

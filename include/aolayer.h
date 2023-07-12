@@ -10,6 +10,8 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QGraphicsEffect>
+#include <QPropertyAnimation>
 
 class AOApplication;
 class VPath;
@@ -95,6 +97,13 @@ public:
   // none exist, return NULL (safe because we check again for existence later)
   QString find_image(QStringList p_list);
 
+  void fade(bool in, int duration);
+
+  virtual void fadeout_finished();
+  virtual void fadein_finished();
+
+  void invert();
+
 protected:
   AOApplication *ao_app;
   QVector<QPixmap> movie_frames;
@@ -168,6 +177,10 @@ class BackgroundLayer : public AOLayer {
 public:
   BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename);
+signals:
+  void hide_void();
+protected:
+  void fadein_finished() override; // overridden to send the courtroom a signal to hide the void element
 };
 
 class CharLayer : public AOLayer {

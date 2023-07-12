@@ -49,6 +49,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
+  ui_vp_void = new QLabel(ui_viewport);
+  ui_vp_void->setStyleSheet("QLabel {background-color:black}");
+  ui_vp_void->hide();
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
@@ -57,10 +60,18 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
+  ui_vp_crossfade_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_crossfade_char->setObjectName("ui_vp_crossfade_char");
+  ui_vp_crossfade_char->masked = false;
+  ui_vp_crossfade_char->hide();
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char->setObjectName("ui_vp_sideplayer_char");
   ui_vp_sideplayer_char->masked = false;
   ui_vp_sideplayer_char->hide();
+  ui_vp_thirdplayer_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_thirdplayer_char->setObjectName("ui_vp_thirdplayer_char");
+  ui_vp_thirdplayer_char->masked = false;
+  ui_vp_thirdplayer_char->hide();
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_desk->setObjectName("ui_vp_desk");
 
@@ -410,6 +421,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
 
+  connect(ui_vp_background, SIGNAL(hide_void()), ui_vp_void, SLOT(hide()));
+  
   connect(ui_vp_objection, &SplashLayer::done, this, &Courtroom::objection_done);
   connect(ui_vp_player_char, &CharLayer::done, this, &Courtroom::preanim_done);
   connect(ui_vp_player_char, &CharLayer::shake, this, &Courtroom::do_screenshake);
@@ -685,6 +698,9 @@ void Courtroom::set_widgets()
   // them.
   ui_settings->show();
 
+  ui_vp_void->move(0, 0);
+  ui_vp_void->resize(ui_viewport->width(), ui_viewport->height());
+
   // make the BG's reload
   ui_vp_background->kill();
   ui_vp_desk->kill();
@@ -698,10 +714,17 @@ void Courtroom::set_widgets()
   ui_vp_player_char->move_and_center(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
+  ui_vp_crossfade_char->move_and_center(0, 0);
+  ui_vp_crossfade_char->combo_resize(ui_viewport->width(), ui_viewport->height());
+  
   ui_vp_sideplayer_char->move_and_center(0, 0);
   ui_vp_sideplayer_char->combo_resize(ui_viewport->width(),
                                       ui_viewport->height());
 
+  ui_vp_thirdplayer_char->move_and_center(0, 0);
+  ui_vp_thirdplayer_char->combo_resize(ui_viewport->width(),
+                                      ui_viewport->height());
+  
   // the AO2 desk element
   ui_vp_desk->move_and_center(0, 0);
   ui_vp_desk->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -1353,6 +1376,7 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_player_char->stop();
 
     ui_vp_sideplayer_char->stop();
+    ui_vp_thirdplayer_char->stop();
     ui_vp_effect->stop();
     ui_vp_message->hide();
     ui_vp_chatbox->setVisible(chatbox_always_show);
@@ -2053,8 +2077,11 @@ void Courtroom::on_chat_return_pressed()
       packet_contents.append(packet);
     }
   }
-
   if (ao_app->additive_text_supported) {
+    if (ui_ic_chat_message->text().length() > 1 && ui_ic_chat_message->text().startsWith(" ")) {
+      auto_additive = true;
+      ui_additive->setChecked(true);
+    }
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
   if (ao_app->effects_supported) {
@@ -2074,6 +2101,18 @@ void Courtroom::on_chat_return_pressed()
       ui_effects_dropdown->setCurrentIndex(0);
       ui_effects_dropdown->blockSignals(false);
       effect = "";
+    }
+  }
+
+  if (ao_app->cccc_ic_supported) {
+    if (third_charid > -1 && third_charid != m_cid) {
+      QString packet = QString::number(third_charid);
+      if (ao_app->effects_supported)
+        packet += "^" + QString::number(pair_order);
+      packet_contents.append(packet);
+    }
+    else {
+      packet_contents.append("-1");
     }
   }
 
@@ -2551,6 +2590,70 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
     }
 }
 
+void Courtroom::display_third_pair_character(QString third_charid, QString third_offset)
+{
+  // If pair information exists
+  if (!third_charid.isEmpty()) {
+    // Initialize the "ok" bool check to see if the toInt conversion succeeded
+    bool ok;
+    // Grab the charid of the pair
+    int charid = third_charid.split("^")[0].toInt(&ok);
+    // If the charid is an int and is valid...
+    if (ok && charid > -1) {
+      // Show the pair character
+      ui_vp_thirdplayer_char->show();
+      // Obtain the offsets, splitting it up by & char
+      QStringList offsets = third_offset.split("&");
+      int offset_x;
+      int offset_y;
+      // If we only got one number...
+      if (offsets.length() <= 1) {
+        // That's just the X offset. Make Y offset 0.
+        offset_x = third_offset.toInt();
+        offset_y = 0;
+      }
+      else {
+        // We got two numbers, set x and y offsets!
+        offset_x = offsets[0].toInt();
+        offset_y = offsets[1].toInt();
+      }
+      // Move pair character according to the offsets
+      ui_vp_thirdplayer_char->move(ui_viewport->width() * offset_x / 100,
+                                  ui_viewport->height() * offset_y / 100);
+      // Split the charid according to the ^ to determine if we have "ordering" info
+      QStringList args = third_charid.split("^");
+      if (args.size() >
+          1) // This ugly workaround is so we don't make an extra packet just
+              // for this purpose. Rewrite pairing when?
+      {
+        // Change the order of appearance based on the pair order variable
+        int order = args.at(1).toInt();
+        switch (order) {
+        case 0: // Our character is in front
+          ui_vp_thirdplayer_char->stackUnder(ui_vp_player_char);
+          break;
+        case 1: // Our character is behind
+          ui_vp_player_char->stackUnder(ui_vp_thirdplayer_char);
+          break;
+        default:
+          break;
+        }
+      }
+      // Flip the pair character
+      if (ao_app->flipping_supported && m_chatmessage[THIRD_FLIP].toInt() == 1)
+        ui_vp_thirdplayer_char->set_flipped(true);
+      else
+        ui_vp_thirdplayer_char->set_flipped(false);
+
+      // Play the other pair character's idle animation
+      QString filename = "(a)" + m_chatmessage[THIRD_EMOTE];
+      ui_vp_thirdplayer_char->set_play_once(false);
+      ui_vp_thirdplayer_char->load_image(filename, m_chatmessage[THIRD_NAME],
+                                            0, false);
+      }
+    }
+}
+
 void Courtroom::handle_emote_mod(int emote_mod, bool p_immediate)
 {
   // Deal with invalid emote modifiers
@@ -2613,11 +2716,14 @@ void Courtroom::handle_ic_message()
     // Reset the pair character
     ui_vp_sideplayer_char->stop();
     ui_vp_sideplayer_char->move(0, 0);
-
+    ui_vp_thirdplayer_char->stop();
+    ui_vp_thirdplayer_char->move(0, 0);
+    
     // If the emote_mod is not zooming
     if (emote_mod != ZOOM && emote_mod != PREANIM_ZOOM) {
       // Display the pair character
       display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
+      display_third_pair_character(m_chatmessage[THIRD_CHARID], m_chatmessage[THIRD_OFFSET]);
     }
 
     // Parse the emote_mod part of the chat message
@@ -2654,8 +2760,8 @@ void Courtroom::do_screenshake()
       screenshake_animation_group->duration());
   screenshake_animation_group->clear();
 
-  const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char,
-                                    ui_vp_sideplayer_char, ui_vp_chatbox};
+  const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char, ui_vp_crossfade_char,
+                                    ui_vp_sideplayer_char, ui_vp_thirdplayer_char, ui_vp_chatbox};
 
   // I would prefer if this was its own "shake" function to be honest.
   for (QWidget *ui_element : affected_list) {
@@ -2997,12 +3103,34 @@ void Courtroom::handle_ic_speaking()
     // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
+    // I know it's really bad. I'll move this out from here later on
+    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) {
+      filename = "(a)" + last_sprite;
+
+      qDebug().nospace() << last_sprite << " | " << filename;
+      qDebug().nospace() << m_chatmessage[EMOTE];
+      
+      ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
+      ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
+      ui_vp_crossfade_char->show();
+      ui_vp_crossfade_char->fade(false, 400);
+    }
+
     filename = "(a)" + m_chatmessage[EMOTE];
+
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) 
+      ui_vp_player_char->fade(true, 400);
+      qDebug().nospace() << "FADE";
     // Set the anim state accordingly
     anim_state = 3;
-  }
+    // ui_vp_crossfade_char->hide();
 
+    if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])
+      last_sprite = m_chatmessage[EMOTE];
+      qDebug().nospace() << m_chatmessage[CHAR_NAME] << " | " << last_charname;
+    last_charname = m_chatmessage[CHAR_NAME];
+  }
   // Begin parsing through the chatbox message
   start_chat_ticking();
 }
@@ -3473,6 +3601,7 @@ void Courtroom::play_preanim(bool immediate)
   switch (m_chatmessage[DESK_MOD].toInt()) {
     case DESK_EMOTE_ONLY_EX:
       ui_vp_sideplayer_char->hide();
+      ui_vp_thirdplayer_char->hide();
       ui_vp_player_char->move_and_center(0, 0);
       [[fallthrough]];
     case DESK_EMOTE_ONLY:
@@ -3531,6 +3660,7 @@ void Courtroom::start_chat_ticking()
 
     case DESK_PRE_ONLY_EX:
       ui_vp_sideplayer_char->hide();
+      ui_vp_thirdplayer_char->hide();
       ui_vp_player_char->move_and_center(0, 0);
       [[fallthrough]];
     case DESK_PRE_ONLY:
@@ -3565,7 +3695,7 @@ void Courtroom::start_chat_ticking()
   if (m_chatmessage[MESSAGE].isEmpty()) {
     // since the message is empty, it's technically done ticking
     text_state = 2;
-    if (m_chatmessage[ADDITIVE] == "1") {
+    if (m_chatmessage[ADDITIVE] == "1" || auto_additive) {
       // Cool behavior
       ui_vp_chatbox->show();
       ui_vp_message->show();
@@ -3609,7 +3739,7 @@ void Courtroom::start_chat_ticking()
   // At the start of every new message, we set the text speed to the default.
   current_display_speed = 3;
   chat_tick_timer->start(0); // Display the first char right away
-
+  
   last_misc = current_misc;
   current_misc = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
@@ -3885,6 +4015,10 @@ void Courtroom::chat_tick()
         anim_state = 3;
       }
     }
+    if (auto_additive) {
+      auto_additive = false;
+      ui_additive->setChecked(false);
+    }
     // Continue ticking
     chat_tick_timer->start(msg_delay);
   }
@@ -3930,6 +4064,9 @@ void Courtroom::set_self_offset(const QString& p_list) {
     }
     ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100,
                                        ui_viewport->height() * self_offset_v / 100);
+    ui_vp_crossfade_char->move_and_center(ui_viewport->width() * self_offset / 100,
+                                       ui_viewport->height() * self_offset_v / 100);
+
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -5591,7 +5728,7 @@ void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_additive_clicked()
 {
-  if (ui_additive->isChecked()) {
+  if (ui_additive->isChecked() && !auto_additive) {
     ui_ic_chat_message->home(false); // move cursor to the start of the message
     ui_ic_chat_message->insert(" "); // preface the message by whitespace
     ui_ic_chat_message->end(false);  // move cursor to the end of the message
