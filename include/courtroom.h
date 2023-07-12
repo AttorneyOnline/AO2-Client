@@ -322,6 +322,8 @@ public:
 
   void check_connection_received();
 
+  QString current_icon_path = "";
+
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
   void set_clock(int id, qint64 msecs);
@@ -532,8 +534,6 @@ private:
   int m_cid = -1;
   // cid and this may differ in cases of ini-editing
   QString current_char = "";
-
-  QString current_icon_path = "";
 
   int objection_state = 0;
   QString objection_custom = "";
@@ -870,6 +870,10 @@ public slots:
 
   void update_ui_music_name();
 
+  void onTextChanged();
+
+  void onTypingTimeout();
+
 private slots:
   void start_chat_ticking();
   void play_sfx();
@@ -1030,10 +1034,6 @@ private slots:
   void on_application_state_changed(Qt::ApplicationState state);
 
   void ping_server();
-
-  void onTextChanged();
-
-  void onTypingTimeout();
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
