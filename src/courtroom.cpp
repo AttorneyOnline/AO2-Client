@@ -3104,15 +3104,17 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     // I know it's really bad. I'll move this out from here later on
-    filename = "(a)" + last_sprite;
+    if (!last_sprite.isEmpty()) {
+      filename = "(a)" + last_sprite;
 
-    qDebug().nospace() << last_sprite << " | " << filename;
-    qDebug().nospace() << m_chatmessage[EMOTE];
-    
-    ui_vp_crossfade_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
-    ui_vp_crossfade_char->show();
-    ui_vp_crossfade_char->fade(false, 400);
+      qDebug().nospace() << last_sprite << " | " << filename;
+      qDebug().nospace() << m_chatmessage[EMOTE];
+      
+      ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
+      ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
+      ui_vp_crossfade_char->show();
+      ui_vp_crossfade_char->fade(false, 400);
+    }
 
     filename = "(a)" + m_chatmessage[EMOTE];
 
@@ -3121,7 +3123,11 @@ void Courtroom::handle_ic_speaking()
     // Set the anim state accordingly
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
-    last_sprite = m_chatmessage[EMOTE];
+
+    if (m_chatmessage[CHAR_NAME] == last_charname) {
+        last_sprite = m_chatmessage[EMOTE];
+    }
+    last_charname = m_chatmessage[CHAR_NAME];
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
