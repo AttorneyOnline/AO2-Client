@@ -3119,14 +3119,16 @@ void Courtroom::handle_ic_speaking()
     filename = "(a)" + m_chatmessage[EMOTE];
 
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    if (last_sprite != m_chatmessage[EMOTE]) 
+    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) 
       ui_vp_player_char->fade(true, 400);
+      qDebug().nospace() << "FADE";
     // Set the anim state accordingly
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
 
     if (m_chatmessage[CHAR_NAME] == last_charname)
-        last_sprite = m_chatmessage[EMOTE];
+      last_sprite = m_chatmessage[EMOTE];
+      qDebug().nospace() << m_chatmessage[CHAR_NAME] << " | " << last_charname;
     last_charname = m_chatmessage[CHAR_NAME];
   }
   // Begin parsing through the chatbox message
