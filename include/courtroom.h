@@ -563,8 +563,8 @@ private:
   QString last_misc;
 
   // I'll delete these eventually.
-  QString current_emote;
-  QString last_emote;
+  QString current_sprite;
+  QString last_sprite;
 
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
