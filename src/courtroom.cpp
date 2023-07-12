@@ -25,7 +25,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   text_queue_timer->setSingleShot(true);
 
   typingTimer = new QTimer(this);
-  typingTimer->setInterval(600);
+  typingTimer->setInterval(1000);
   
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
@@ -721,7 +721,7 @@ void Courtroom::set_widgets()
   ui_vp_background->kill();
   ui_vp_desk->kill();
 
-  ui_vp_char_icon->move(15, 15);
+  ui_vp_char_icon->move(3, 3);
   
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -5296,15 +5296,17 @@ void Courtroom::onTextChanged()
     if (text.isEmpty()) {
         typingTimer->stop();
         ui_vp_char_icon->hide();
+        ao_app->send_server_packet("TT", {"0", current_char});
     } else {
         typingTimer->start();
 
         ui_vp_char_icon->show();
         ui_vp_char_icon->setPixmap(char_icon_pixmap);
       
-        ui_vp_char_icon->setFixedSize(60, 60);
-        ui_vp_char_icon->setStyleSheet("QLabel {border-radius: 30px}");
+        ui_vp_char_icon->setFixedSize(40, 40);
+        ui_vp_char_icon->setStyleSheet("QLabel {border-radius: 10px}");
         qDebug().nospace() << "Current_icon: " << current_icon_path;
+        ao_app->send_server_packet("TT", {"1", current_char});
     }
 }
 
@@ -5312,8 +5314,8 @@ void Courtroom::onTypingTimeout()
 {
     typingTimer->stop();
     ui_vp_char_icon->hide();
-}
-
+    ao_app->send_server_packet("TT", {"0", current_char});
+} 
 
 void Courtroom::on_objection_clicked()
 {
