@@ -3126,7 +3126,7 @@ void Courtroom::handle_ic_speaking()
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
 
-    if (m_chatmessage[CHAR_NAME] == last_charname)
+    if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])
       last_sprite = m_chatmessage[EMOTE];
       qDebug().nospace() << m_chatmessage[CHAR_NAME] << " | " << last_charname;
     last_charname = m_chatmessage[CHAR_NAME];
