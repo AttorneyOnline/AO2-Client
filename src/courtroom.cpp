@@ -3093,15 +3093,9 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(b)" + m_chatmessage[EMOTE];
-    ui_vp_crossfade_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
-    ui_vp_crossfade_char->show();
-    ui_vp_crossfade_char->fade(false, 400);
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    ui_vp_player_char->fade(true, 400);
     // Set the anim state accordingly
     anim_state = 2;
-    ui_vp_crossfade_char->hide();
   }
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
@@ -3109,8 +3103,10 @@ void Courtroom::handle_ic_speaking()
     // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
+    old_filename = "(a)" + last_emote;
     filename = "(a)" + m_chatmessage[EMOTE];
-    ui_vp_crossfade_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+    // I know it's really bad. I'll move this out from here later on
+    ui_vp_crossfade_char->load_image(old_filename, m_chatmessage[CHAR_NAME], 0, false);
     ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
     ui_vp_crossfade_char->show();
     ui_vp_crossfade_char->fade(false, 400);
@@ -3729,6 +3725,9 @@ void Courtroom::start_chat_ticking()
   current_display_speed = 3;
   chat_tick_timer->start(0); // Display the first char right away
 
+  last_emote = current_emote;
+  current_emote = ao_app->get_chat(m_chatmessage[EMOTE]);
+  
   last_misc = current_misc;
   current_misc = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
