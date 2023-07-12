@@ -1031,6 +1031,10 @@ private slots:
 
   void ping_server();
 
+  void onTextChanged();
+
+  void onTypingTimeout();
+
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
 
