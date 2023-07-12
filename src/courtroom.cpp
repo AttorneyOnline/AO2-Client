@@ -3101,6 +3101,7 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->fade(true, 400);
     // Set the anim state accordingly
     anim_state = 2;
+    ui_vp_crossfade_char->hide();
   }
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
@@ -3117,6 +3118,7 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->fade(true, 400);
     // Set the anim state accordingly
     anim_state = 3;
+    ui_vp_crossfade_char->hide();
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
@@ -4051,6 +4053,9 @@ void Courtroom::set_self_offset(const QString& p_list) {
     }
     ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100,
                                        ui_viewport->height() * self_offset_v / 100);
+    ui_vp_crossfade_char->move_and_center(ui_viewport->width() * self_offset / 100,
+                                       ui_viewport->height() * self_offset_v / 100);
+
 }
 
 void Courtroom::set_ip_list(QString p_list)
