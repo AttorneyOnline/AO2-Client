@@ -720,6 +720,7 @@ void Courtroom::set_widgets()
   ui_vp_desk->kill();
 
   ui_vp_char_icon->move(5, 5);
+  ui_vp_char_icon->combo_resize(ui_viewport->width(), ui_viewport->height());
   
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
@@ -5289,6 +5290,7 @@ void Courtroom::on_hold_it_clicked()
 void Courtroom::onTextChanged()
 {
     QString text = ui_ic_chat_message->text();
+    QPixmap char_icon_pixmap(current_icon_path);
     
     if (text.isEmpty()) {
         typingTimer->stop();
@@ -5297,7 +5299,7 @@ void Courtroom::onTextChanged()
         typingTimer->start();
 
         ui_vp_char_icon->show();
-        ui_vp_char_icon->setPixmap(current_icon_path);
+        ui_vp_char_icon->setPixmap(char_icon_pixmap);
       
         ui_vp_char_icon->setFixedSize(60, 60);
         ui_vp_char_icon->setStyleSheet("QLabel {border-radius: 30px}");
