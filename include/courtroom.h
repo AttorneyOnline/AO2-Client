@@ -533,6 +533,8 @@ private:
   // cid and this may differ in cases of ini-editing
   QString current_char = "";
 
+  QString current_icon_path = "";
+
   int objection_state = 0;
   QString objection_custom = "";
   struct CustomObjection {
