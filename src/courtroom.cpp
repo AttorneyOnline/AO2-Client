@@ -3103,18 +3103,22 @@ void Courtroom::handle_ic_speaking()
     // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
-    filename = "(a)" + m_chatmessage[EMOTE];
     // I know it's really bad. I'll move this out from here later on
-    ui_vp_crossfade_char->load_image(last_sprite, m_chatmessage[CHAR_NAME], 0, false);
+    filename = "(a)" + last_sprite;
+
+    ui_vp_crossfade_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
     ui_vp_crossfade_char->show();
     ui_vp_crossfade_char->fade(false, 400);
+
+    filename = "(a)" + m_chatmessage[EMOTE];
+
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     ui_vp_player_char->fade(true, 400);
     // Set the anim state accordingly
     anim_state = 3;
     ui_vp_crossfade_char->hide();
-    last_sprite = filename;
+    last_sprite = m_chatmessage[EMOTE];
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
