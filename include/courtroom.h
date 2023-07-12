@@ -372,6 +372,9 @@ private:
 
   bool message_is_centered = false;
 
+  QTimer *typingTimer;
+  QIcon typingIcon;
+
   int current_display_speed = 3;
   int text_crawl = 40;
   double message_display_mult[7] = {0, 0.25, 0.65, 1, 1.25, 1.75, 2.25};
