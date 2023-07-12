@@ -3725,8 +3725,8 @@ void Courtroom::start_chat_ticking()
   current_display_speed = 3;
   chat_tick_timer->start(0); // Display the first char right away
 
-  last_emote = current_emote;
-  current_emote = ao_app->get_chat(m_chatmessage[EMOTE]);
+  last_sprite = current_sprite;
+  current_sprite = ao_app->get_chat(m_chatmessage[EMOTE]);
   
   last_misc = current_misc;
   current_misc = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
