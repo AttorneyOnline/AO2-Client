@@ -639,8 +639,8 @@ void AOLayer::fade(bool in, int duration)
     this->setGraphicsEffect(fade);
     QPropertyAnimation* fade_anim = new QPropertyAnimation(fade, "opacity");
     fade_anim->setDuration(duration);
-    fade_anim->setStartValue(in ? 0.65 : 1);
-    fade_anim->setEndValue(in ? 1 : 0.65);
+    fade_anim->setStartValue(in ? 0 : 1);
+    fade_anim->setEndValue(in ? 1 : 0);
     fade_anim->setEasingCurve(QEasingCurve::Linear);
     fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
     connect(fade_anim, SIGNAL(finished()), this, SLOT(in?fadein_finished():fadeout_finished()));
