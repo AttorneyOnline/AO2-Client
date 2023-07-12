@@ -515,7 +515,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString tt_char = f_contents.at(1);
 
     w_courtroom->current_icon_path = tt_char;
-    qDebug().nospace() << "Updated icon path: " << current_icon_path;
+    qDebug().nospace() << "Updated icon path: " << w_courtroom->current_icon_path;
       
     if (tt_state == 1) {
       w_courtroom->onTextChanged(); 
