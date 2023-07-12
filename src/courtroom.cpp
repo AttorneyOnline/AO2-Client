@@ -427,6 +427,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // Good enough for 2.10
   ui_pair_list->raise();
 
+  ui_vp_char_icon->raise();
+  
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -719,7 +721,7 @@ void Courtroom::set_widgets()
   ui_vp_background->kill();
   ui_vp_desk->kill();
 
-  ui_vp_char_icon->move(5, 5);
+  ui_vp_char_icon->move(15, 15);
   
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
