@@ -57,7 +57,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_void->setStyleSheet("QLabel {background-color:black}");
   ui_vp_void->hide();
 
-  ui_vp_char_icon = new QLabel(ui_viewport, ao_app);
+  ui_vp_char_icon = new QLabel(ui_viewport);
   ui_vp_char_icon->setObjectName("ui_vp_char_icon");
   
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
@@ -5300,7 +5300,7 @@ void Courtroom::onTextChanged()
         ui_vp_char_icon->setPixmap(current_icon_path);
       
         ui_vp_char_icon->setFixedSize(60, 60);
-        ui_vp_char_icon->setStyleSheet("border-radius: 30px;");
+        ui_vp_char_icon->setStyleSheet("QLabel {border-radius: 30px}");
         qDebug().nospace() << "Current_icon: " << current_icon_path;
     }
 }
