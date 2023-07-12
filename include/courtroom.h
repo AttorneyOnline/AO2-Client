@@ -657,6 +657,7 @@ private:
   BackgroundLayer *ui_vp_background;
   SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
+  CharLayer *ui_vp_crossfade_char;
   CharLayer *ui_vp_sideplayer_char;
   CharLayer *ui_vp_thirdplayer_char;
   BackgroundLayer *ui_vp_desk;

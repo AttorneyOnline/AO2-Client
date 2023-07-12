@@ -60,6 +60,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
+  ui_vp_crossfade_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_crossfade_char->setObjectName("ui_vp_crossfade_char");
+  ui_vp_crossfade_char->masked = false;
+  ui_vp_crossfade_char->hide();
   ui_vp_sideplayer_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_sideplayer_char->setObjectName("ui_vp_sideplayer_char");
   ui_vp_sideplayer_char->masked = false;
@@ -710,6 +714,9 @@ void Courtroom::set_widgets()
   ui_vp_player_char->move_and_center(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
+  ui_vp_crossfade_char->move_and_center(0, 0);
+  ui_vp_crossfade_char->combo_resize(ui_viewport->width(), ui_viewport->height());
+  
   ui_vp_sideplayer_char->move_and_center(0, 0);
   ui_vp_sideplayer_char->combo_resize(ui_viewport->width(),
                                       ui_viewport->height());
@@ -2753,7 +2760,7 @@ void Courtroom::do_screenshake()
       screenshake_animation_group->duration());
   screenshake_animation_group->clear();
 
-  const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char,
+  const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char, ui_vp_crossfade_char,
                                     ui_vp_sideplayer_char, ui_vp_thirdplayer_char, ui_vp_chatbox};
 
   // I would prefer if this was its own "shake" function to be honest.
@@ -3082,26 +3089,18 @@ void Courtroom::handle_ic_speaking()
   if (color_is_talking && text_state == 1 &&
       anim_state < 2)
   {
-  // Stop the previous animation and play the talking animation
+    // Stop the previous animation and play the talking animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(b)" + m_chatmessage[EMOTE];
-
-    if (ui_vp_player_char->graphicsEffect() != nullptr) {
-      delete ui_vp_player_char->graphicsEffect();
-    }
-  
-    if (ui_vp_player_char->isVisible()) {
-      ui_vp_player_char->fade(false, 400);
-      QObject::connect(ui_vp_player_char, &AOLayer::fadeout_finished, ui_vp_player_char, [this, filename]() {
-        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-        ui_vp_player_char->fade(true, 350);
-      });
-    } else {
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-      ui_vp_player_char->fade(true, 350);
-    }
-  anim_state = 2;
+    ui_vp_crossfade_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+    ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
+    ui_vp_crossfade_char->show();
+    ui_vp_crossfade_char->fade(false, 400);
+    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+    ui_vp_player_char->fade(true, 400);
+    // Set the anim state accordingly
+    anim_state = 2;
   }
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
@@ -3110,21 +3109,14 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
     filename = "(a)" + m_chatmessage[EMOTE];
-    if (ui_vp_player_char->graphicsEffect() != nullptr) {
-      delete ui_vp_player_char->graphicsEffect();
-    }
-  
-    if (ui_vp_player_char->isVisible()) {
-      ui_vp_player_char->fade(false, 400);
-      QObject::connect(ui_vp_player_char, &AOLayer::fadeout_finished, ui_vp_player_char, [this, filename]() {
-        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-        ui_vp_player_char->fade(true, 350);
-      });
-    } else {
-      ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-      ui_vp_player_char->fade(true, 350);
-    }
-  anim_state = 3;
+    ui_vp_crossfade_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+    ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
+    ui_vp_crossfade_char->show();
+    ui_vp_crossfade_char->fade(false, 400);
+    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+    ui_vp_player_char->fade(true, 400);
+    // Set the anim state accordingly
+    anim_state = 3;
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
