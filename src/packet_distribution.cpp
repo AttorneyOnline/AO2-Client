@@ -514,8 +514,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int tt_state = f_contents.at(0).toInt();
     QString tt_char = f_contents.at(1);
 
-    w_courtroom->current_icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
-                                               tt_char, "char_icon"));      
+    w_courtroom->current_icon_path = tt_char;
     qDebug().nospace() << "Updated icon path: " << current_icon_path;
       
     if (tt_state == 1) {
