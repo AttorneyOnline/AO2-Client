@@ -24,6 +24,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   text_queue_timer = new QTimer(this);
   text_queue_timer->setSingleShot(true);
 
+  typingTimer = new QTimer(this);
+  typingTimer->setInterval(600);
+  
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
 
@@ -49,14 +52,20 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
+
   ui_vp_void = new QLabel(ui_viewport);
   ui_vp_void->setStyleSheet("QLabel {background-color:black}");
   ui_vp_void->hide();
+
+  ui_vp_char_icon = new QLabel(ui_viewport, ao_app);
+  ui_vp_char_icon->setObjectName("ui_vp_char_icon");
+  
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_speedlines->setObjectName("ui_vp_speedlines");
   ui_vp_speedlines->stretch = true;
+  
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
@@ -72,6 +81,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_thirdplayer_char->setObjectName("ui_vp_thirdplayer_char");
   ui_vp_thirdplayer_char->masked = false;
   ui_vp_thirdplayer_char->hide();
+  
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_desk->setObjectName("ui_vp_desk");
 
@@ -440,6 +450,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(chat_tick_timer, &QTimer::timeout, this, &Courtroom::chat_tick);
 
+  connect(ui_ic_chat_message, &QLineEdit::textChanged, this, &Courtroom::onTextChanged);
+  connect(typingTimer, &QTimer::timeout, this, &Courtroom::onTypingTimeout);
+
+  
   connect(ui_pos_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           QOverload<int>::of(&Courtroom::on_pos_dropdown_changed));
   connect(ui_pos_dropdown, &QComboBox::editTextChanged, this,
@@ -705,6 +719,8 @@ void Courtroom::set_widgets()
   ui_vp_background->kill();
   ui_vp_desk->kill();
 
+  ui_vp_char_icon->move(5, 5);
+  
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
 
@@ -4690,6 +4706,8 @@ void Courtroom::set_iniswap_dropdown()
     ui_iniswap_dropdown->setItemIcon(i, QIcon(icon_path));
     if (iniswaps.at(i) == current_char) {
       ui_iniswap_dropdown->setCurrentIndex(i);
+      current_icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
+                                                   iniswaps.at(i), "char_icon"));
       if (i != 0)
         ui_iniswap_remove->show();
       else
@@ -5267,6 +5285,32 @@ void Courtroom::on_hold_it_clicked()
 
   ui_ic_chat_message->setFocus();
 }
+
+void Courtroom::onTextChanged()
+{
+    QString text = ui_ic_chat_message->text();
+    
+    if (text.isEmpty()) {
+        typingTimer->stop();
+        ui_vp_char_icon->hide();
+    } else {
+        typingTimer->start();
+
+        ui_vp_char_icon->show();
+        ui_vp_char_icon->setPixmap(current_icon_path);
+      
+        ui_vp_char_icon->setFixedSize(60, 60);
+        ui_vp_char_icon->setStyleSheet("border-radius: 30px;");
+        qDebug().nospace() << "Current_icon: " << current_icon_path;
+    }
+}
+
+void Courtroom::onTypingTimeout()
+{
+    typingTimer->stop();
+    ui_vp_char_icon->hide();
+}
+
 
 void Courtroom::on_objection_clicked()
 {
