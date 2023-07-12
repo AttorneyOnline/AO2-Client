@@ -720,7 +720,6 @@ void Courtroom::set_widgets()
   ui_vp_desk->kill();
 
   ui_vp_char_icon->move(5, 5);
-  ui_vp_char_icon->combo_resize(ui_viewport->width(), ui_viewport->height());
   
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
