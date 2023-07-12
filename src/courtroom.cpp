@@ -25,7 +25,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   text_queue_timer->setSingleShot(true);
 
   typingTimer = new QTimer(this);
-  typingTimer->setInterval(1000);
+  typingTimer->setInterval(2000);
   
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
@@ -5297,15 +5297,14 @@ void Courtroom::onTextChanged()
     if (text.isEmpty()) {
         typingTimer->stop();
         ui_vp_char_icon->hide();
-        ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
+        // ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
     } else {
         typingTimer->start();
 
         ui_vp_char_icon->show();
         ui_vp_char_icon->setPixmap(char_icon_pixmap);
       
-        ui_vp_char_icon->setFixedSize(40, 40);
-        ui_vp_char_icon->setStyleSheet("QLabel {border-radius: 10px}");
+        ui_vp_char_icon->setFixedSize(60, 60);
         qDebug().nospace() << "Current_icon: " << current_icon_path << "Path: " << current_char_path;
         ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));
     }
