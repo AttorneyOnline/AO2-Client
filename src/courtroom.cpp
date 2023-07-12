@@ -3103,7 +3103,7 @@ void Courtroom::handle_ic_speaking()
     // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
-    old_filename = "(a)" + last_emote;
+    QString old_filename = "(a)" + last_sprite;
     filename = "(a)" + m_chatmessage[EMOTE];
     // I know it's really bad. I'll move this out from here later on
     ui_vp_crossfade_char->load_image(old_filename, m_chatmessage[CHAR_NAME], 0, false);
