@@ -5292,7 +5292,7 @@ void Courtroom::onTextChanged()
 {
     QString text = ui_ic_chat_message->text();
     QPixmap char_icon_pixmap(current_icon_path);
-    QString current_char_path = ao_app->get_realpath ao_app->get_character_path(current_char, "char_icon");
+    QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
     
     if (text.isEmpty()) {
         typingTimer->stop();
@@ -5313,6 +5313,7 @@ void Courtroom::onTextChanged()
 
 void Courtroom::onTypingTimeout()
 {
+    QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
     typingTimer->stop();
     ui_vp_char_icon->hide();
     ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
