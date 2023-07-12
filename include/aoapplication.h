@@ -103,6 +103,7 @@ public:
   bool y_offset_supported = false;
   bool expanded_desk_mods_supported = false;
   bool auth_packet_supported = false;
+  bool typing_timer_supported = false;
 
   ///////////////loading info///////////////////
 
