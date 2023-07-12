@@ -5292,11 +5292,12 @@ void Courtroom::onTextChanged()
 {
     QString text = ui_ic_chat_message->text();
     QPixmap char_icon_pixmap(current_icon_path);
+    QString current_char_path = ao_app->get_realpath ao_app->get_character_path(current_char, "char_icon");
     
     if (text.isEmpty()) {
         typingTimer->stop();
         ui_vp_char_icon->hide();
-        ao_app->send_server_packet("TT", {"0", current_char});
+        ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
     } else {
         typingTimer->start();
 
@@ -5305,8 +5306,8 @@ void Courtroom::onTextChanged()
       
         ui_vp_char_icon->setFixedSize(40, 40);
         ui_vp_char_icon->setStyleSheet("QLabel {border-radius: 10px}");
-        qDebug().nospace() << "Current_icon: " << current_icon_path;
-        ao_app->send_server_packet("TT", {"1", current_char});
+        qDebug().nospace() << "Current_icon: " << current_icon_path << "Path: " << current_char_path;
+        ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));
     }
 }
 
@@ -5314,7 +5315,7 @@ void Courtroom::onTypingTimeout()
 {
     typingTimer->stop();
     ui_vp_char_icon->hide();
-    ao_app->send_server_packet("TT", {"0", current_char});
+    ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
 } 
 
 void Courtroom::on_objection_clicked()
