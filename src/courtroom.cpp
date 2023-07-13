@@ -5292,16 +5292,19 @@ void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
   QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
-  QPixmap char_icon_pixmap(current_char_path);
+  QPixmap char_icon_pixmap(current_icon_path);
+
+  if (current_char_path != current_icon_path) {
+    QPixmap char_icon_pixmap(current_char_path);
+  }
   
   if (text.isEmpty() && typingTimer->isActive()) {
       typingTimer->stop();
       ui_vp_char_icon->hide();
-      // ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
+      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
   } else if (!text.isEmpty() && !typingTimer->isActive()) {
       ui_vp_char_icon->setPixmap(char_icon_pixmap);
-      ui_vp_char_icon->setFixedSize(40, 40);
-      ui_vp_char_icon->resize(40, 40);
+      ui_vp_char_icon->setFixedSize(60, 60);
       ui_vp_char_icon->show();
       typingTimer->start();
       qDebug().nospace() << "Current_icon: " << current_icon_path << " - Path: " << current_char_path;
@@ -5311,8 +5314,7 @@ void Courtroom::onTextChanged()
 
 void Courtroom::onTypingTimeout()
 {
-  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
-  ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
+  // ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
   typingTimer->stop();
   ui_vp_char_icon->hide();
   qDebug().nospace() << "Timeout";
@@ -5320,15 +5322,13 @@ void Courtroom::onTypingTimeout()
 
 void Courtroom::typing_signal(int signal)
 {
-  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
-  QPixmap char_icon_pixmap(current_char_path);
+  QPixmap char_icon_pixmap(current_icon_path);
   if (signal == 1) {
     ui_vp_char_icon->setPixmap(char_icon_pixmap);
-    ui_vp_char_icon->setFixedSize(40, 40);
-    ui_vp_char_icon->resize(40, 40);
+    ui_vp_char_icon->setFixedSize(60, 60);
     ui_vp_char_icon->show();
     typingTimer->start();
-    // qDebug().nospace() << "Current_icon: " << current_icon_path;
+    qDebug().nospace() << "Current_icon: " << current_icon_path;
   } else {
     typingTimer->stop();
     ui_vp_char_icon->hide();
