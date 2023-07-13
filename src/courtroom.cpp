@@ -5295,7 +5295,7 @@ void Courtroom::onTextChanged()
   QPixmap char_icon_pixmap(current_icon_path);
 
   if (current_char_path != current_icon_path) {
-    QPixmap char_icon_pixmap(current_char_path);
+    char_icon_pixmap(current_char_path);
   }
   
   if (text.isEmpty() && typingTimer->isActive()) {
@@ -5303,8 +5303,8 @@ void Courtroom::onTextChanged()
       ui_vp_char_icon->hide();
       ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
   } else if (!text.isEmpty() && !typingTimer->isActive()) {
-      ui_vp_char_icon->setPixmap(char_icon_pixmap);
-      ui_vp_char_icon->setFixedSize(60, 60);
+      ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
+      ui_vp_char_icon->setFixedSize(40, 40);
       ui_vp_char_icon->show();
       typingTimer->start();
       qDebug().nospace() << "Current_icon: " << current_icon_path << " - Path: " << current_char_path;
@@ -5324,8 +5324,8 @@ void Courtroom::typing_signal(int signal)
 {
   QPixmap char_icon_pixmap(current_icon_path);
   if (signal == 1) {
-    ui_vp_char_icon->setPixmap(char_icon_pixmap);
-    ui_vp_char_icon->setFixedSize(60, 60);
+    ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
+    ui_vp_char_icon->setFixedSize(40, 40);
     ui_vp_char_icon->show();
     typingTimer->start();
     qDebug().nospace() << "Current_icon: " << current_icon_path;
