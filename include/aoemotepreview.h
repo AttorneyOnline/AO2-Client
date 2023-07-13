@@ -25,6 +25,8 @@ private:
 
   QString m_emote = "";
   QString m_char = "";
+  QString current_side = "";
+
 protected:
   void resizeEvent(QResizeEvent *);
 };
