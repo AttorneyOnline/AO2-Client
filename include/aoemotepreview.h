@@ -2,6 +2,7 @@
 #define AOEMOTEPREVIEW_H
 
 #include "aolayer.h"
+#include "aoapplication.h"
 #include <QWidget>
 
 class AOEmotePreview : public QWidget
