@@ -62,11 +62,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_pencil = new QLabel (ui_viewport);
   ui_vp_pencil->setObjectName("ui_vp_pencil");
-  QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil"));
+  QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil.png"));
+  qDebug().nospace() << pencil_path;
   QPixmap pencil_pixmap(pencil_path);
-  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
+  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
   ui_vp_pencil->setFixedSize(40, 40);
-  ui_vp_pencil->hide();
 
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
@@ -5304,11 +5304,12 @@ void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
   QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
-  QPixmap char_icon_pixmap(current_icon_path);
 
-  if (current_char_path != current_icon_path) {
-    QPixmap char_icon_pixmap = QPixmap(current_char_path);
+  if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
+    current_icon_path = current_char_path;
   }
+
+  QPixmap char_icon_pixmap(current_icon_path);
   
   if (text.isEmpty() && typingTimer->isActive()) {
       typingTimer->stop();
@@ -5317,7 +5318,7 @@ void Courtroom::onTextChanged()
       ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
   } else if (!text.isEmpty() && !typingTimer->isActive()) {
       ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));    
-      ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
+      ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
       ui_vp_char_icon->setFixedSize(40, 40);
       ui_vp_char_icon->show();
       ui_vp_pencil->show();
@@ -5339,7 +5340,7 @@ void Courtroom::typing_signal(int signal)
 {
   QPixmap char_icon_pixmap(current_icon_path);
   if (signal == 1) {
-    ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
+    ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     ui_vp_char_icon->setFixedSize(40, 40);
     ui_vp_char_icon->show();
     ui_vp_pencil->show();
