@@ -29,8 +29,6 @@ void AOEmotePreview::set_widgets()
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
   
   ui_size_label->setText(QString::number(this->width()) + "x" + QString::number(this->height()));
-
-  current_side = ao_app->get_char_side(char_name);
 }
 
 void AOEmotePreview::play(QString emote, QString char_name, bool flipped, int self_offset, int self_offset_v)
