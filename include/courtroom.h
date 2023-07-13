@@ -324,6 +324,8 @@ public:
 
   QString current_icon_path = "";
 
+  void typing_signal(int signal);
+
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
   void set_clock(int id, qint64 msecs);
