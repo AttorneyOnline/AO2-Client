@@ -59,7 +59,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_char_icon = new QLabel(ui_viewport);
   ui_vp_char_icon->setObjectName("ui_vp_char_icon");
-  
+
+  ui_vp_pencil = new QLabel (ui_viewport);
+  ui_vp_pencil->setObjectName("ui_vp_pencil");
+  QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil"));
+  QPixmap pencil_pixmap(pencil_path);
+  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
+  ui_vp_pencil->setFixedSize(40, 40);
+  ui_vp_pencil->hide();
+
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
@@ -428,6 +436,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_pair_list->raise();
 
   ui_vp_char_icon->raise();
+  ui_vp_pencil->raise();
   
   construct_char_select();
 
@@ -722,7 +731,10 @@ void Courtroom::set_widgets()
   ui_vp_desk->kill();
 
   ui_vp_char_icon->move(3, 3);
-  
+  ui_vp_pencil->move(45, 3);
+
+
+
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
 
@@ -5291,7 +5303,7 @@ void Courtroom::on_hold_it_clicked()
 void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
-  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
+  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
   QPixmap char_icon_pixmap(current_icon_path);
 
   if (current_char_path != current_icon_path) {
@@ -5301,14 +5313,16 @@ void Courtroom::onTextChanged()
   if (text.isEmpty() && typingTimer->isActive()) {
       typingTimer->stop();
       ui_vp_char_icon->hide();
+      ui_vp_pencil->hide();
       ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
   } else if (!text.isEmpty() && !typingTimer->isActive()) {
+      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));    
       ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
       ui_vp_char_icon->setFixedSize(40, 40);
       ui_vp_char_icon->show();
+      ui_vp_pencil->show();
       typingTimer->start();
       qDebug().nospace() << "Current_icon: " << current_icon_path << " - Path: " << current_char_path;
-      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));
   }
 }
 
@@ -5317,6 +5331,7 @@ void Courtroom::onTypingTimeout()
   // ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
   typingTimer->stop();
   ui_vp_char_icon->hide();
+  ui_vp_pencil->hide();
   qDebug().nospace() << "Timeout";
 }
 
@@ -5327,11 +5342,13 @@ void Courtroom::typing_signal(int signal)
     ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio));
     ui_vp_char_icon->setFixedSize(40, 40);
     ui_vp_char_icon->show();
+    ui_vp_pencil->show();
     typingTimer->start();
     qDebug().nospace() << "Current_icon: " << current_icon_path;
   } else {
     typingTimer->stop();
     ui_vp_char_icon->hide();
+    ui_vp_pencil->hide();
     qDebug().nospace() << "Timeout - 2";
   }
 }
