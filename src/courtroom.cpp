@@ -4708,8 +4708,8 @@ void Courtroom::set_iniswap_dropdown()
     ui_iniswap_dropdown->setItemIcon(i, QIcon(icon_path));
     if (iniswaps.at(i) == current_char) {
       ui_iniswap_dropdown->setCurrentIndex(i);
-      current_icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
-                                                   iniswaps.at(i), "char_icon"));
+      // current_icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
+      //                                             iniswaps.at(i), "char_icon"));
       if (i != 0)
         ui_iniswap_remove->show();
       else
@@ -5290,33 +5290,47 @@ void Courtroom::on_hold_it_clicked()
 
 void Courtroom::onTextChanged()
 {
-    QString text = ui_ic_chat_message->text();
-    QPixmap char_icon_pixmap(current_icon_path);
-    QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
-    
-    if (text.isEmpty()) {
-        typingTimer->stop();
-        ui_vp_char_icon->hide();
-        // ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
-    } else {
-        typingTimer->start();
-
-        ui_vp_char_icon->show();
-        ui_vp_char_icon->setPixmap(char_icon_pixmap);
-      
-        ui_vp_char_icon->setFixedSize(60, 60);
-        qDebug().nospace() << "Current_icon: " << current_icon_path << "Path: " << current_char_path;
-        ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));
-    }
+  QString text = ui_ic_chat_message->text();
+  current_icon_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
+  QPixmap char_icon_pixmap(current_icon_path);
+  
+  if (text.isEmpty() && typingTimer->isActive()) {
+      typingTimer->stop();
+      ui_vp_char_icon->hide();
+      // ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
+  } else if (!text.isEmpty() && !typingTimer->isActive()) {
+      ui_vp_char_icon->setPixmap(char_icon_pixmap);
+      ui_vp_char_icon->setFixedSize(60, 60);
+      ui_vp_char_icon->show();
+      typingTimer->start();
+      qDebug().nospace() << "Current_icon: " << current_icon_path << " - Path: " << current_char_path;
+      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));
+  }
 }
 
 void Courtroom::onTypingTimeout()
 {
-    QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
+  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
+  ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
+  typingTimer->stop();
+  ui_vp_char_icon->hide();
+  qDebug().nospace() << "Timeout";
+}
+
+void Courtroom::typing_signal(int signal)
+{
+  QPixmap char_icon_pixmap(current_icon_path);
+  if (signal == 1)
+    ui_vp_char_icon->setPixmap(char_icon_pixmap);
+    ui_vp_char_icon->setFixedSize(60, 60);
+    ui_vp_char_icon->show();
+    typingTimer->start();
+    qDebug().nospace() << "Current_icon: " << current_icon_path;
+  else
     typingTimer->stop();
     ui_vp_char_icon->hide();
-    ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
-} 
+    qDebug().nospace() << "Timeout - 2";
+}
 
 void Courtroom::on_objection_clicked()
 {
