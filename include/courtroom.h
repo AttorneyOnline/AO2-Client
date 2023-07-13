@@ -324,7 +324,7 @@ public:
 
   QString current_icon_path = "";
 
-  QString current_char_path = "";
+  // QString current_char_path = "";
 
   void typing_signal(int signal);
 
