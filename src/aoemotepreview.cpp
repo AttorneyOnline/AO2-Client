@@ -10,6 +10,7 @@ AOEmotePreview::AOEmotePreview(QWidget *parent, AOApplication *p_ao_app) : QWidg
   ui_vp_player_char->masked = false;
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
+  ui_vp_background->stackUnder(ui_vp_player_char);
   ui_size_label = new QLabel(this);
   ui_size_label->setObjectName("ui_size_label");
   setWindowFlag(Qt::WindowMinMaxButtonsHint, false);
@@ -33,6 +34,7 @@ void AOEmotePreview::set_widgets()
 void AOEmotePreview::play(QString emote, QString char_name, bool flipped, int self_offset, int self_offset_v)
 {
   current_side = ao_app->get_char_side(char_name);
+  ui_vp_background->move_and_center(ui_viewport->width(), ui_viewport->height);
   ui_vp_background->load_image(ao_app->get_pos_path(current_side));
   ui_vp_player_char->stop();
   ui_vp_player_char->set_flipped(flipped);
@@ -47,6 +49,7 @@ void AOEmotePreview::play(QString emote, QString char_name, bool flipped, int se
 void AOEmotePreview::resizeEvent(QResizeEvent *)
 {
   set_widgets();
+  ui_vp_background->kill();
   ui_vp_player_char->load_image(m_emote, m_char, 0, false);
   ui_vp_background->load_image(ao_app->get_pos_path(current_side));
 }
