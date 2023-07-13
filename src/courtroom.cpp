@@ -5291,7 +5291,7 @@ void Courtroom::on_hold_it_clicked()
 void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
-  current_icon_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
+  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
   QPixmap char_icon_pixmap(current_icon_path);
   
   if (text.isEmpty() && typingTimer->isActive()) {
@@ -5320,16 +5320,17 @@ void Courtroom::onTypingTimeout()
 void Courtroom::typing_signal(int signal)
 {
   QPixmap char_icon_pixmap(current_icon_path);
-  if (signal == 1)
+  if (signal == 1) {
     ui_vp_char_icon->setPixmap(char_icon_pixmap);
     ui_vp_char_icon->setFixedSize(60, 60);
     ui_vp_char_icon->show();
     typingTimer->start();
     qDebug().nospace() << "Current_icon: " << current_icon_path;
-  else
+  } else {
     typingTimer->stop();
     ui_vp_char_icon->hide();
     qDebug().nospace() << "Timeout - 2";
+  }
 }
 
 void Courtroom::on_objection_clicked()
