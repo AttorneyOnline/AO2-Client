@@ -511,15 +511,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
     }
     qDebug().nospace() << "Received packet contents: " << f_contents;
-    int tt_state = f_contents.at(0).toInt();
+    int tt_state = f_contents.at(0);
     QString tt_char = f_contents.at(1);
 
     w_courtroom->current_icon_path = tt_char;
     qDebug().nospace() << "Updated icon path: " << w_courtroom->current_icon_path;
       
-    if (tt_state == 1) {
-      w_courtroom->onTextChanged(); 
-    }
+    w_courtroom->typing_signal(tt_state);
   }
   else if (header == "TI") { // Timer packet
     if (!courtroom_constructed || f_contents.size() < 2)
