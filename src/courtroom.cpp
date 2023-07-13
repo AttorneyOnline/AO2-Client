@@ -732,7 +732,7 @@ void Courtroom::set_widgets()
   ui_vp_desk->kill();
 
   ui_vp_char_icon->move(3, 3);
-  ui_vp_pencil->move(28, 20);
+  ui_vp_pencil->move(26, 20);
   // ui_vp_pencil->move(45, 3);
 
 
