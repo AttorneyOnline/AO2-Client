@@ -65,8 +65,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil.png"));
   qDebug().nospace() << pencil_path;
   QPixmap pencil_pixmap(pencil_path);
-  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-  ui_vp_pencil->setFixedSize(40, 40);
+  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  ui_vp_pencil->setFixedSize(30, 30);
+  ui_vp_pencil->hide();
 
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
@@ -731,7 +732,8 @@ void Courtroom::set_widgets()
   ui_vp_desk->kill();
 
   ui_vp_char_icon->move(3, 3);
-  ui_vp_pencil->move(45, 3);
+  ui_vp_pencil->move(30, 30);
+  // ui_vp_pencil->move(45, 3);
 
 
 
