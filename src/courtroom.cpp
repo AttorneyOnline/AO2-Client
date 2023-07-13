@@ -5307,7 +5307,7 @@ void Courtroom::onTextChanged()
   QPixmap char_icon_pixmap(current_icon_path);
 
   if (current_char_path != current_icon_path) {
-    char_icon_pixmap(current_char_path);
+    QPixmap char_icon_pixmap = QPixmap(current_char_path);
   }
   
   if (text.isEmpty() && typingTimer->isActive()) {
