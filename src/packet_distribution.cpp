@@ -511,7 +511,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
     }
     qDebug().nospace() << "Received packet contents: " << f_contents;
-    int tt_state = f_contents.at(0);
+    int tt_state = f_contents.at(0).toInt();
     QString tt_char = f_contents.at(1);
 
     w_courtroom->current_icon_path = tt_char;
