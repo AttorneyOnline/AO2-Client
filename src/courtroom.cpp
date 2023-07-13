@@ -5292,10 +5292,10 @@ void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
   QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
+  QPixmap char_icon_pixmap(current_icon_path);
+
   if (current_char_path != current_icon_path) {
     QPixmap char_icon_pixmap(current_char_path);
-} else {
-    QPixmap char_icon_pixmap(current_icon_path);
   }
   if (text.isEmpty() && typingTimer->isActive()) {
       typingTimer->stop();
