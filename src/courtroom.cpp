@@ -3137,9 +3137,11 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->set_play_once(false);
     // I know it's really bad. I'll move this out from here later on
     if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) {
-      filename = "(a)" + last_sprite;      
+      filename = "(a)" + last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
+      if (other_charid == -1 && last_charname != m_chatmessage[CHAR_NAME]) 
+        ui_vp_crossfade_char->move_and_center(last_x_offset, last_y_offset);
       ui_vp_crossfade_char->show();
       ui_vp_crossfade_char->fade(false, 400);
     }
@@ -4092,7 +4094,8 @@ void Courtroom::set_self_offset(const QString& p_list) {
                                        ui_viewport->height() * self_offset_v / 100);
     ui_vp_crossfade_char->move_and_center(ui_viewport->width() * self_offset / 100,
                                        ui_viewport->height() * self_offset_v / 100);
-
+    last_x_offset = ui_viewport->width() * self_offset / 100
+    last_y_offset = ui_viewport->height() * self_offset_v / 100
 }
 
 void Courtroom::set_ip_list(QString p_list)
