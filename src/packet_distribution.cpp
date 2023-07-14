@@ -513,7 +513,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int tt_state = f_contents.at(0).toInt();
     QString tt_char = f_contents.at(1);
 
-    w_courtroom->current_icon_path = tt_char;
+    w_courtroom->current_icon_path = get_character_path(tt_char, "char_icon");
+
+    qDebug() << w_courtroom->current_icon_path;
       
     w_courtroom->typing_signal(tt_state);
   }
