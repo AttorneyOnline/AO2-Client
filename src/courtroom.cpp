@@ -4094,8 +4094,8 @@ void Courtroom::set_self_offset(const QString& p_list) {
                                        ui_viewport->height() * self_offset_v / 100);
     ui_vp_crossfade_char->move_and_center(ui_viewport->width() * self_offset / 100,
                                        ui_viewport->height() * self_offset_v / 100);
-    last_x_offset = ui_viewport->width() * self_offset / 100
-    last_y_offset = ui_viewport->height() * self_offset_v / 100
+    last_x_offset = ui_viewport->width() * self_offset / 100;
+    last_y_offset = ui_viewport->height() * self_offset_v / 100;
 }
 
 void Courtroom::set_ip_list(QString p_list)
