@@ -3137,7 +3137,7 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->set_play_once(false);
 
     // I know it's really bad. I'll move this out from here later on
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE-EMOTE] == "-") {
+    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") {
       filename = "(a)" + last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
@@ -3152,7 +3152,7 @@ void Courtroom::handle_ic_speaking()
     filename = "(a)" + m_chatmessage[EMOTE];
 
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE-EMOTE] == "-") 
+    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") 
       ui_vp_player_char->fade(true, 400);
     // Set the anim state accordingly
     anim_state = 3;
