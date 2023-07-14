@@ -512,8 +512,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
     int tt_state = f_contents.at(0).toInt();
     QString tt_char = f_contents.at(1);
+    QString tt_button = f_contents.at(2);
 
-    w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
+    // If there is no char_icon, we just grab the current button selected
+    if (!tt_char.isEmpty()) {
+      w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
+    } else {
+      w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "emotions/button" + tt_button + "_off");
+    }
 
     qDebug() << w_courtroom->current_icon_path;
       
