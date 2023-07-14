@@ -324,6 +324,8 @@ public:
 
   QString current_icon_path = "";
 
+  void get_char_path(QString charname, QString file) { ao_app->get_real_path(ao_app->get_character_path(charname, file)); }
+
   // QString current_char_path = "";
 
   void typing_signal(int signal);
