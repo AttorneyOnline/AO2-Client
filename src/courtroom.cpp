@@ -5300,6 +5300,12 @@ void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
   QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
+  QString emotion_number = QString::number(current_button_selected + 1);
+
+  if (!file_exists(current_icon_path)) {
+    current_char_path = ao_app->get_real_path(ao_app->get_character_path(
+        current_char, "emotions/button" + emotion_number + "_off"));
+  }  
 
   if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
     current_icon_path = current_char_path;
@@ -5311,9 +5317,9 @@ void Courtroom::onTextChanged()
       typingTimer->stop();
       ui_vp_char_icon->hide();
       ui_vp_pencil->hide();
-      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char}));
+      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
   } else if (!text.isEmpty() && !typingTimer->isActive()) {
-      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char}));    
+      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char, emotion_number}));
       ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
       ui_vp_char_icon->setFixedSize(40, 40);
       ui_vp_char_icon->show();
