@@ -63,7 +63,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_pencil = new QLabel (ui_viewport);
   ui_vp_pencil->setObjectName("ui_vp_pencil");
   QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil.png"));
-  qDebug().nospace() << pencil_path;
   QPixmap pencil_pixmap(pencil_path);
   ui_vp_pencil->setPixmap(pencil_pixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation));
   ui_vp_pencil->setFixedSize(30, 30);
@@ -3137,11 +3136,7 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->set_play_once(false);
     // I know it's really bad. I'll move this out from here later on
     if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) {
-      filename = "(a)" + last_sprite;
-
-      qDebug().nospace() << last_sprite << " | " << filename;
-      qDebug().nospace() << m_chatmessage[EMOTE];
-      
+      filename = "(a)" + last_sprite;      
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
       ui_vp_crossfade_char->show();
@@ -3153,14 +3148,12 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
     if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) 
       ui_vp_player_char->fade(true, 400);
-      qDebug().nospace() << "FADE";
     // Set the anim state accordingly
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
 
     if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])
       last_sprite = m_chatmessage[EMOTE];
-      qDebug().nospace() << m_chatmessage[CHAR_NAME] << " | " << last_charname;
     last_charname = m_chatmessage[CHAR_NAME];
   }
   // Begin parsing through the chatbox message
@@ -5325,7 +5318,6 @@ void Courtroom::onTextChanged()
       ui_vp_char_icon->show();
       ui_vp_pencil->show();
       typingTimer->start();
-      qDebug().nospace() << "Current_icon: " << current_icon_path << " - Path: " << current_char_path;
   }
 }
 
@@ -5335,7 +5327,6 @@ void Courtroom::onTypingTimeout()
   typingTimer->stop();
   ui_vp_char_icon->hide();
   ui_vp_pencil->hide();
-  qDebug().nospace() << "Timeout";
 }
 
 void Courtroom::typing_signal(int signal)
@@ -5347,12 +5338,10 @@ void Courtroom::typing_signal(int signal)
     ui_vp_char_icon->show();
     ui_vp_pencil->show();
     typingTimer->start();
-    qDebug().nospace() << "Current_icon: " << current_icon_path;
   } else {
     typingTimer->stop();
     ui_vp_char_icon->hide();
     ui_vp_pencil->hide();
-    qDebug().nospace() << "Timeout - 2";
   }
 }
 
