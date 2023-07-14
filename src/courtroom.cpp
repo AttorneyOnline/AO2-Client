@@ -3132,8 +3132,12 @@ void Courtroom::handle_ic_speaking()
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
   {
+    // Stop the previous animation and play the idle animation
+    ui_vp_player_char->stop();
+    ui_vp_player_char->set_play_once(false);
+
     // I know it's really bad. I'll move this out from here later on
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) {
+    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE-EMOTE] == "-") {
       filename = "(a)" + last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
@@ -3145,14 +3149,10 @@ void Courtroom::handle_ic_speaking()
       ui_vp_crossfade_char->fade(false, 400);
     }
 
-    // Stop the previous animation and play the idle animation
-    ui_vp_player_char->stop();
-    ui_vp_player_char->set_play_once(false);
-
     filename = "(a)" + m_chatmessage[EMOTE];
 
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) 
+    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE-EMOTE] == "-") 
       ui_vp_player_char->fade(true, 400);
     // Set the anim state accordingly
     anim_state = 3;
