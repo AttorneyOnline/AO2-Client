@@ -400,6 +400,10 @@ private:
   // The vertical offset this user has given.
   int char_vert_offset = 0;
 
+  int last_x_offset = 0;
+
+  int last_y_offset = 0;
+
   // 0 = in front, 1 = behind
   int pair_order = 0;
 
