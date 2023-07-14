@@ -515,13 +515,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString tt_button = f_contents.at(2);
 
     // If there is no char_icon, we just grab the current button selected
-    if (!tt_char.isEmpty()) {
-      w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
-    } else {
+    if (!file_exists(w_courtroom->get_char_path(tt_char, "char_icon"))) {
       w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "emotions/button" + tt_button + "_off");
+      qDebug() << "There is no char_icon: " << w_courtroom->current_icon_path;
+    } else {
+      w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
+      qDebug() << "There is a char_icon: " << w_courtroom->current_icon_path;
     }
-
-    qDebug() << w_courtroom->current_icon_path;
       
     w_courtroom->typing_signal(tt_state);
   }
