@@ -3132,9 +3132,6 @@ void Courtroom::handle_ic_speaking()
   else if (anim_state < 3 &&
            anim_state != 3) // Set it to idle as we're not on that already
   {
-    // Stop the previous animation and play the idle animation
-    ui_vp_player_char->stop();
-    ui_vp_player_char->set_play_once(false);
     // I know it's really bad. I'll move this out from here later on
     if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) {
       filename = "(a)" + last_sprite;
@@ -3147,6 +3144,10 @@ void Courtroom::handle_ic_speaking()
       ui_vp_crossfade_char->show();
       ui_vp_crossfade_char->fade(false, 400);
     }
+
+    // Stop the previous animation and play the idle animation
+    ui_vp_player_char->stop();
+    ui_vp_player_char->set_play_once(false);
 
     filename = "(a)" + m_chatmessage[EMOTE];
 
