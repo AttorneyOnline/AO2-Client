@@ -324,6 +324,8 @@ public:
 
   QString current_icon_path = "";
 
+  int current_button_selected = 0;
+
   QString get_char_path(QString charname, QString file) { return ao_app->get_real_path(ao_app->get_character_path(charname, file)); }
 
   // QString current_char_path = "";
