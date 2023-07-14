@@ -5298,7 +5298,7 @@ void Courtroom::on_hold_it_clicked()
 void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
-  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
+  QString current_char_path = ao_app->get_character_path(current_char, "char_icon");  
 
   if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
     current_icon_path = current_char_path;
