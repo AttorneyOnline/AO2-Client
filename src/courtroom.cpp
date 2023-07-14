@@ -2553,6 +2553,7 @@ void Courtroom::display_character()
 
   // Determine if we should flip the character or not
   ui_vp_player_char->set_flipped(m_chatmessage[FLIP].toInt() == 1);
+  ui_vp_crossfade_char->set_flipped(m_chatmessage[FLIP].toInt() == 1);
   // Move the character on the viewport according to the offsets
   set_self_offset(m_chatmessage[SELF_OFFSET]);
 }
@@ -5298,7 +5299,7 @@ void Courtroom::on_hold_it_clicked()
 void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
-  QString current_char_path = ao_app->get_image_suffix(ao_app->get_character_path(current_char, "char_icon"));  
+  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
 
   if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
     current_icon_path = current_char_path;
@@ -5310,9 +5311,9 @@ void Courtroom::onTextChanged()
       typingTimer->stop();
       ui_vp_char_icon->hide();
       ui_vp_pencil->hide();
-      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
+      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char}));
   } else if (!text.isEmpty() && !typingTimer->isActive()) {
-      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char_path}));    
+      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char}));    
       ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
       ui_vp_char_icon->setFixedSize(40, 40);
       ui_vp_char_icon->show();
