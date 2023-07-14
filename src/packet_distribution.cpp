@@ -522,6 +522,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
       qDebug().nospace() << "There is a char_icon: " << w_courtroom->current_icon_path;
     }
+
+   qDebug().nospace() << "Current icon path: " << w_courtroom->current_icon_path;
       
     w_courtroom->typing_signal(tt_state);
   }
