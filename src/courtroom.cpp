@@ -3140,8 +3140,10 @@ void Courtroom::handle_ic_speaking()
       filename = "(a)" + last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
-      if (other_charid == -1 && last_charname != m_chatmessage[CHAR_NAME]) 
+      if (other_charid == -1 && last_charname != m_chatmessage[CHAR_NAME]) {
         ui_vp_crossfade_char->move_and_center(last_x_offset, last_y_offset);
+        qDebug().nospace() << last_charname << "!=" << m_chatmessage[CHAR_NAME];
+      }
       ui_vp_crossfade_char->show();
       ui_vp_crossfade_char->fade(false, 400);
     }
@@ -3158,6 +3160,20 @@ void Courtroom::handle_ic_speaking()
     if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])
       last_sprite = m_chatmessage[EMOTE];
     last_charname = m_chatmessage[CHAR_NAME];
+
+    QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
+    int self_offset = self_offsets[0].toInt();
+    int self_offset_v;
+    if (self_offsets.length() <= 1) {
+      self_offset_v = 0;
+    }
+    else {
+      self_offset_v = self_offsets[1].toInt();
+    }
+    
+    last_x_offset = ui_viewport->width() * self_offset / 100;
+    last_y_offset = ui_viewport->height() * self_offset_v / 100;
+    qDebug().nospace() << last_x_offset << ", " << last_y_offset;
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
@@ -4094,8 +4110,6 @@ void Courtroom::set_self_offset(const QString& p_list) {
                                        ui_viewport->height() * self_offset_v / 100);
     ui_vp_crossfade_char->move_and_center(ui_viewport->width() * self_offset / 100,
                                        ui_viewport->height() * self_offset_v / 100);
-    last_x_offset = ui_viewport->width() * self_offset / 100;
-    last_y_offset = ui_viewport->height() * self_offset_v / 100;
 }
 
 void Courtroom::set_ip_list(QString p_list)
