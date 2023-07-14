@@ -5302,10 +5302,7 @@ void Courtroom::onTextChanged()
   QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
   QString emotion_number = QString::number(current_button_selected + 1);
 
-  if (!file_exists(current_icon_path)) {
-    current_char_path = ao_app->get_real_path(ao_app->get_character_path(
-        current_char, "emotions/button" + emotion_number + "_off"));
-  }  
+  qDebug().nospace() << current_icon_path << " | " << current_char_path;
 
   if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
     current_icon_path = current_char_path;
@@ -5338,6 +5335,11 @@ void Courtroom::onTypingTimeout()
 
 void Courtroom::typing_signal(int signal)
 {
+  if (!file_exists(current_icon_path)) {
+    current_char_path = ao_app->get_real_path(ao_app->get_character_path(
+        current_char, "emotions/button" + emotion_number + "_off"));
+    qDebug().nospace() << "Current_icon_path not found: " << current_icon_path << " | " << current_char_path;
+  }  
   QPixmap char_icon_pixmap(current_icon_path);
   if (signal == 1) {
     ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
