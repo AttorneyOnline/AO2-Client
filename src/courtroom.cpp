@@ -5317,7 +5317,7 @@ void Courtroom::on_hold_it_clicked()
 void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
-  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
+  QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
   QString emotion_number = QString::number(current_button_selected + 1);
   
   if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
@@ -5327,10 +5327,6 @@ void Courtroom::onTextChanged()
     current_icon_path = current_char_path;
   }
 
-  
-  
-  qDebug().nospace() << current_icon_path << " | " << current_char_path;
-  
   QPixmap char_icon_pixmap(current_icon_path);
   
   if (text.isEmpty() && typingTimer->isActive()) {
@@ -5350,7 +5346,6 @@ void Courtroom::onTextChanged()
 
 void Courtroom::onTypingTimeout()
 {
-  // ao_app->send_server_packet(new AOPacket("TT", {"0", current_char_path}));
   typingTimer->stop();
   ui_vp_char_icon->hide();
   ui_vp_pencil->hide();
