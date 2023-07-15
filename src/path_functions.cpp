@@ -38,6 +38,9 @@ VPath AOApplication::get_theme_path(QString p_file, QString p_theme)
 
 VPath AOApplication::get_character_path(QString p_char, QString p_file)
 {
+  if (asset_url.isEmpty()) {
+    qDebug() << VPath(asset_url + "characters/" + p_char + "/" + p_file);
+  }
   return VPath("characters/" + p_char + "/" + p_file);
 }
 
