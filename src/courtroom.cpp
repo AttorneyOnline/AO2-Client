@@ -5318,13 +5318,14 @@ void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
   QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));  
-  QString emotion_number = QString::number(current_button_selected + 1);
+  QString emotion_number = QString::number(-1);
 
   if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
     current_icon_path = current_char_path;
   } else if (current_char_path != current_icon_path && current_char_path.isEmpty()) {
     current_char_path = ao_app->get_real_path(ao_app->get_character_path(
         current_char, "emotions/button" + emotion_number + "_off"));
+    emotion_number = QString::number(current_button_selected + 1);
     current_icon_path = current_char_path;
   }
 
