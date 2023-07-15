@@ -523,8 +523,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       qDebug().nospace() << "There is a char_icon: " << w_courtroom->current_icon_path;
     }
 
-   qDebug().nospace() << "Current icon path: " << w_courtroom->current_icon_path;
-      
+    qDebug().nospace() << "Current icon path: " << w_courtroom->current_icon_path;
     w_courtroom->typing_signal(tt_state);
   }
   else if (header == "TI") { // Timer packet
