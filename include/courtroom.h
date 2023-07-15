@@ -328,10 +328,8 @@ public:
 
   QString get_char_path(QString charname, QString file) { return ao_app->get_real_path(ao_app->get_character_path(charname, file)); }
   QString get_button_path(QString charname, QString emotion_number) { 
-    qDebug() << ao_app->get_real_path(ao_app->get_character_path(charname, "char_icon"));
-    qDebug() << ao_app->get_real_path(ao_app->get_character_path(charname, "emotions/button1_off"));
-    qDebug() << ao_app->get_real_path(ao_app->get_character_path(charname, "emotions/button" + QString("2") + "_off"));
-    return ao_app->get_real_path(ao_app->get_character_path(charname, "emotions/button" + QString(emotion_number) + "_off")); 
+    qDebug() << ao_app->get_image_suffix(ao_app->get_character_path(charname, "emotions/button" + emotion_number + "_off")); 
+    return ao_app->get_image_suffix(ao_app->get_character_path(charname, "emotions/button" + emotion_number + "_off")); 
   }
 
   // QString current_char_path = "";
