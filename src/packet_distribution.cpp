@@ -517,7 +517,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     qDebug().nospace() << tt_char << " | " << tt_button;
 
     // If there is no char_icon, we just grab the current button selected
-    if (tt_button != "-1") {
+    if (!file_exists(w_courtroom->get_char_path(tt_char, "char_icon"))) {
       w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "emotions/button" + tt_button + "_off");
       qDebug().nospace() << "There is no char_icon: " << w_courtroom->current_icon_path;
     } else {
