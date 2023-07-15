@@ -5323,9 +5323,8 @@ void Courtroom::onTextChanged()
   if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
     current_icon_path = current_char_path;
   } else if (current_char_path != current_icon_path && current_char_path.isEmpty()) {
-    current_char_path = ao_app->get_real_path(ao_app->get_character_path(
-        current_char, "emotions/button" + emotion_number + "_off"));
     emotion_number = QString::number(current_button_selected + 1);
+    current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "emotions/button" + emotion_number + "_off"));
     current_icon_path = current_char_path;
   }
 
