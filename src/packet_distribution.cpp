@@ -514,18 +514,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString tt_char = f_contents.at(1);
     QString tt_button = f_contents.at(2);
 
-    qDebug().nospace() << tt_char << " | " << tt_button;
-
     // If there is no char_icon, we just grab the current button selected
     if (!file_exists(w_courtroom->get_char_path(tt_char, "char_icon"))) {
       w_courtroom->current_icon_path = w_courtroom->get_button_path(tt_char, tt_button);
-      qDebug().nospace() << "There is no char_icon: " << w_courtroom->current_icon_path << " |||| " << w_courtroom->get_button_path(tt_char, tt_button);
     } else {
       w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
-      qDebug().nospace() << "There is a char_icon: " << w_courtroom->current_icon_path;
     }
-
-    qDebug().nospace() << "Current icon path: " << w_courtroom->current_icon_path;
     w_courtroom->typing_signal(tt_state);
   }
   else if (header == "TI") { // Timer packet
