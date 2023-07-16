@@ -3159,7 +3159,7 @@ void Courtroom::handle_ic_speaking()
 
     qDebug().nospace() << "last_sprite: " << last_sprite;
     
-    if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])
+    if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE] && other_charid.isEmpty())
       last_sprite = m_chatmessage[EMOTE];
     last_charname = m_chatmessage[CHAR_NAME];
 
