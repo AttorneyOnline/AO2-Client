@@ -276,3 +276,26 @@ void NetworkManager::handle_server_packet(const QString& p_data)
     ao_app->server_packet_received(f_packet);
   }
 }
+
+void NetworkManager::start_image_streaming(QString path)
+{
+  qDebug().nospace() << path;  
+  QUrl url(path);
+  QNetworkRequest request(url);
+  http->get(request);
+  connect(http, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
+}
+
+void NetworkManager::image_reply_finished(QNetworkReply *reply)
+{
+  if (reply->error() == QNetworkReply::NoError) {
+    qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QByteArray image_data = reply->readAll();
+    if (streamed_pixmap.loadFromData(image_data)) {
+      qDebug() << "Success.";
+    } else {
+      qDebug() << "Failed.";
+    }
+  }
+  reply->deleteLater();
+}
