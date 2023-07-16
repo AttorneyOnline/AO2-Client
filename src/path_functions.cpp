@@ -368,7 +368,7 @@ QString AOApplication::get_real_path(const VPath &vpath,
   } else if (!asset_url.isEmpty()) { // Reminder to change this later
       remotePath = asset_url + remotePath;
       qDebug() << "Remote path: " << remotePath;
-      return remotePath;
+      return QString();
   }
 
   // File or directory not found
