@@ -365,6 +365,10 @@ QString AOApplication::get_real_path(const VPath &vpath,
   QString remotePath = vpath.toQString();
   if (remotePath.startsWith("http:") || remotePath.startsWith("https:")) {
       return remotePath;
+  } else if (!asset_url.isEmpty()) { // Reminder to change this later
+      remotePath = asset_url + remotePath;
+      qDebug() << "Remote path: " << remotePath;
+      return remotePath;
   }
 
   // File or directory not found
