@@ -5350,8 +5350,8 @@ void Courtroom::onTextChanged()
 void Courtroom::onTypingTimeout()
 {
   typingTimer->stop();
-  // ui_vp_char_icon->hide();
-  // ui_vp_pencil->hide();
+  ui_vp_char_icon->hide();
+  ui_vp_pencil->hide();
 }
 
 void Courtroom::typing_signal(int signal)
