@@ -48,6 +48,8 @@ public:
   explicit NetworkManager(AOApplication *parent);
   ~NetworkManager() = default;
 
+  QPixmap streamed_pixmap;
+
   void connect_to_server(server_type p_server);
   void disconnect_from_server();
 
@@ -62,10 +64,12 @@ public slots:
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);
+  void start_image_streaming(QString path);
   void send_heartbeat();
 private slots:
   void ms_request_finished(QNetworkReply *reply,
                            const std::function<void()> &cb);
+  void image_reply_finished(QNetworkReply *reply);
 
 private:
   QString get_user_agent() const {
