@@ -3142,7 +3142,7 @@ void Courtroom::handle_ic_speaking()
       qDebug().nospace() << last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
-      if (last_charname != m_chatmessage[CHAR_NAME]) {
+      if (!last_x_offset.isEmpty()) {
         ui_vp_crossfade_char->move_and_center(last_x_offset, last_y_offset);
         qDebug().nospace() << last_charname << "!=" << m_chatmessage[CHAR_NAME];
       }
