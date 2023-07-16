@@ -3139,9 +3139,10 @@ void Courtroom::handle_ic_speaking()
     // I know it's really bad. I'll move this out from here later on
     if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") {
       filename = "(a)" + last_sprite;
+      qDebug().nospace() << last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
-      if (other_charid == -1 && last_charname != m_chatmessage[CHAR_NAME]) {
+      if (last_charname != m_chatmessage[CHAR_NAME]) {
         ui_vp_crossfade_char->move_and_center(last_x_offset, last_y_offset);
         qDebug().nospace() << last_charname << "!=" << m_chatmessage[CHAR_NAME];
       }
@@ -3158,6 +3159,8 @@ void Courtroom::handle_ic_speaking()
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
 
+    qDebug().nospace() << "last_sprite: " << last_sprite;
+    
     if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])
       last_sprite = m_chatmessage[EMOTE];
     last_charname = m_chatmessage[CHAR_NAME];
