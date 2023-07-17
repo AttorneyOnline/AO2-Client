@@ -8,7 +8,7 @@
 
 static QThreadPool *thread_pool;
 
-AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
