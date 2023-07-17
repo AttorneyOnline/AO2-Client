@@ -3159,9 +3159,13 @@ void Courtroom::handle_ic_speaking()
 
     qDebug().nospace() << "last_sprite: " << last_sprite;
     
-    if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE] && other_charid > -1)
+    if (other_charid == -1 && (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])) {
       last_sprite = m_chatmessage[EMOTE];
-    last_charname = m_chatmessage[CHAR_NAME];
+      last_charname = m_chatmessage[CHAR_NAME];
+    } else if (other_charid != -1) {
+      last_sprite = current_emote;
+      last_charname = current_char;
+    }
 
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
