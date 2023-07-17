@@ -3158,15 +3158,19 @@ void Courtroom::handle_ic_speaking()
     // ui_vp_crossfade_char->hide();
 
     qDebug().nospace() << "last_sprite: " << last_sprite;
-    
+        
     if (other_charid == -1 && (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])) {
       last_sprite = m_chatmessage[EMOTE];
-      last_charname = m_chatmessage[CHAR_NAME];
     } else if (other_charid != -1) {
       last_sprite = current_emote;
-      last_charname = current_char;
     }
 
+    if (other_charid == -1) {
+      last_charname = m_chatmessage[CHAR_NAME];
+    } else {
+      last_charname = current_char;
+    }
+    
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
     int self_offset_v;
