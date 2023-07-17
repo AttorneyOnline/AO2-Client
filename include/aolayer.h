@@ -41,7 +41,7 @@ class AOLayer : public QLabel {
   Q_OBJECT
 
 public:
-  AOLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  AOLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
 
   QString filename;    // file name without extension, i.e. "witnesstestimony"
   int static_duration; // time in ms for static images to be displayed, if
@@ -106,6 +106,7 @@ public:
 
 protected:
   AOApplication *ao_app;
+  NetworkManager *net_manager;
   QVector<QPixmap> movie_frames;
   QVector<int> movie_delays;
 
