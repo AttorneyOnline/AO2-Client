@@ -14,6 +14,7 @@
 #include <QPropertyAnimation>
 
 class AOApplication;
+class NetworkManager;
 class VPath;
 
 // "Brief" explanation of what the hell this is:
