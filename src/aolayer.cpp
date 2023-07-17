@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "file_functions.h"
 #include "misc_functions.h"
+#include "networkmanager.h"
 #include "options.h"
 
 static QThreadPool *thread_pool;
@@ -224,6 +225,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
       VPath(current_emote), // The path by itself after the above fail
+      VPath(asset_url + "characters/" + p_charname + "/" + current_emote), // Streamed assets path
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
@@ -292,6 +294,10 @@ void AOLayer::start_playback(QString p_image)
     return;
   }
 
+  if (p_image.startsWith('http') && !asset_url.isEmpty()) {
+    net_manager->start_image_streaming(p_image);
+  }
+
   if (frame_loader.isRunning())
     exit_loop = true; // tell the loader to stop, we have a new image to load
 
@@ -345,7 +351,10 @@ void AOLayer::start_playback(QString p_image)
   last_path = p_image;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
-  this->set_frame(movie_frames[frame]);
+  if (p_image.startsWith("http") && !asset_url.isEmpty())
+    this->set_frame(streamed_pixmap);
+  else
+    this->set_frame(movie_frames[frame]);
 
   if (max_frames <= 1) {
     duration = static_duration;
