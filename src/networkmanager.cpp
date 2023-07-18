@@ -281,10 +281,10 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 void NetworkManager::start_image_streaming(QString path)
 {
   path += ".png";
-  QUrl encoded_path = QUrl::toPercentEncoding(path.toUtf8());
-  qDebug().nospace() << encoded_path;
-  QUrl url(encoded_path);
+  qDebug().nospace() << path;
+  QUrl url(path);
   QNetworkRequest request(url);
+  request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
   stream->get(request);
   connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
 }
