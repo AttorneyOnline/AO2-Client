@@ -50,7 +50,7 @@ public:
   explicit NetworkManager(AOApplication *parent);
   ~NetworkManager() = default;
 
-  QPixmap streamed_pixmap;
+  QImage streamed_image;
   bool streaming_successful = false;
 
   void connect_to_server(server_type p_server);
