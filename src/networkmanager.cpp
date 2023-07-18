@@ -285,8 +285,8 @@ void NetworkManager::start_image_streaming(QString path)
   QUrl url(path);
   QNetworkRequest request(url);
   request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
-  QNetworkReply *reply = stream->get(request);
-  connect(reply, &QNetworkReply::finished, this, &NetworkManager::image_reply_finished);
+  http->get(request);
+  connect(http, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
 }
 
 void NetworkManager::image_reply_finished(QNetworkReply *reply)
