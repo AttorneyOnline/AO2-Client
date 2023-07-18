@@ -294,7 +294,7 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
   if (reply->error() == QNetworkReply::NoError) {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray image_data = reply->readAll();
-    if (streamed_pixmap.loadFromData(image_data, "PNG")) {
+    if (streamed_image.loadFromData(image_data)) {
       streaming_successful = true;
       qDebug() << "Success loading image.";
       return
