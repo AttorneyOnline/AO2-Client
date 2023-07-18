@@ -279,7 +279,8 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 
 void NetworkManager::start_image_streaming(QString path)
 {
-  qDebug().nospace() << path;  
+  qDebug().nospace() << path;
+  path += ".png";
   QUrl url(path);
   QNetworkRequest request(url);
   http->get(request);
