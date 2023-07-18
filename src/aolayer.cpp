@@ -334,6 +334,8 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
+    while (!ao_app->net_manager->done)
+      imageLoaded.wait(&mutex);
     if (ao_app->net_manager->streaming_successful) {
       m_reader.read(&ao_app->net_manager->streamed_image);
       qDebug() << "Streaming was successful. Loaded image.";
@@ -664,7 +666,6 @@ void AOLayer::fade(bool in, int duration)
     fade_anim->setEasingCurve(QEasingCurve::Linear);
     fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
     connect(fade_anim, SIGNAL(finished()), this, SLOT(in?fadein_finished():fadeout_finished()));
-
 }
 
 void AOLayer::fadeout_finished() {}
