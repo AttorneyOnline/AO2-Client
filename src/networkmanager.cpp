@@ -17,6 +17,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
+  stream = new NetworkAccessManager(this);
 
   QString master_config =
       Options::getInstance().alternativeMasterserver();
@@ -279,12 +280,12 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 
 void NetworkManager::start_image_streaming(QString path)
 {
-  qDebug().nospace() << path;
   path += ".png";
+  qDebug().nospace() << path;
   QUrl url(path);
   QNetworkRequest request(url);
-  http->get(request);
-  connect(http, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
+  stream->get(request);
+  connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
 }
 
 void NetworkManager::image_reply_finished(QNetworkReply *reply)
@@ -292,7 +293,7 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
   if (reply->error() == QNetworkReply::NoError) {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray image_data = reply->readAll();
-    if (streamed_pixmap.loadFromData(image_data)) {
+    if (streamed_pixmap.loadFromData(image_data, "PNG")) {
       streaming_successful = true;
       qDebug() << "Success loading image.";
     } else {
