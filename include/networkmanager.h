@@ -67,14 +67,12 @@ public slots:
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);
-  void start_image_streaming(QString path,
-                        const std::function<void()> &cb);
+  void start_image_streaming(QString path);
   void send_heartbeat();
 private slots:
   void ms_request_finished(QNetworkReply *reply,
                            const std::function<void()> &cb);
-  void image_reply_finished(QNetworkReply *reply,
-                           const std::function<void()> &cb);
+  void image_reply_finished(QNetworkReply *reply);
 
 private:
   QString get_user_agent() const {
