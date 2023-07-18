@@ -8,10 +8,9 @@
 
 static QThreadPool *thread_pool;
 
-AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager) : QLabel(p_parent)
+AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
-  net_manager = p_net_manager;
 
   // used for culling images when their max_duration is exceeded
   shfx_timer = new QTimer(this);
@@ -34,28 +33,28 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_n
   }
 }
 
-BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : AOLayer(p_parent, p_ao_app, p_net_manager)
+BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOLayer(p_parent, p_ao_app)
 {
 }
-CharLayer::CharLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : AOLayer(p_parent, p_ao_app, p_net_manager)
+CharLayer::CharLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOLayer(p_parent, p_ao_app)
 {
 }
-EffectLayer::EffectLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : AOLayer(p_parent, p_ao_app, p_net_manager)
+EffectLayer::EffectLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOLayer(p_parent, p_ao_app)
 {
 }
-SplashLayer::SplashLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : AOLayer(p_parent, p_ao_app, p_net_manager)
+SplashLayer::SplashLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOLayer(p_parent, p_ao_app)
 {
 }
-InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : AOLayer(p_parent, p_ao_app, p_net_manager)
+InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOLayer(p_parent, p_ao_app)
 {
 }
-StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : AOLayer(p_parent, p_ao_app, p_net_manager)
+StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOLayer(p_parent, p_ao_app)
 {
 }
 
@@ -296,7 +295,7 @@ void AOLayer::start_playback(QString p_image)
   }
 
   if (p_image.startsWith('http') && !ao_app->asset_url.isEmpty()) {
-    net_manager->start_image_streaming(p_image);
+    ao_app->net_manager->start_image_streaming(p_image);
   }
 
   if (frame_loader.isRunning())
@@ -353,7 +352,7 @@ void AOLayer::start_playback(QString p_image)
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
   if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty())
-    this->set_frame(net_manager->streamed_pixmap);
+    this->set_frame(ao_app->net_manager->streamed_pixmap);
   else
     this->set_frame(movie_frames[frame]);
 
