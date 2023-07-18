@@ -296,6 +296,7 @@ void AOLayer::start_playback(QString p_image)
 
   if (p_image.startsWith('http') && !ao_app->asset_url.isEmpty()) {
     ao_app->net_manager->start_image_streaming(p_image);
+    qDebug() << "Started image streaming: " << p_image;
   }
 
   if (frame_loader.isRunning())
@@ -351,7 +352,7 @@ void AOLayer::start_playback(QString p_image)
   last_path = p_image;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
-  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty())
+  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty() && ao_app->net_manager->streamed_pixmap.isEmpty())
     this->set_frame(ao_app->net_manager->streamed_pixmap);
   else
     this->set_frame(movie_frames[frame]);
