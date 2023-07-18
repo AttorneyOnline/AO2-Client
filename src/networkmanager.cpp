@@ -17,7 +17,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
-  stream = new NetworkAccessManager(this);
+  stream = new QNetworkAccessManager(this);
 
   QString master_config =
       Options::getInstance().alternativeMasterserver();
