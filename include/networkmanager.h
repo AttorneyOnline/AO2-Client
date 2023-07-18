@@ -25,6 +25,8 @@ private:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
 
+  QNetworkAccessManager *stream;
+
   union {
     QWebSocket *ws;
     QTcpSocket *tcp;
