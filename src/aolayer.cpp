@@ -354,11 +354,12 @@ void AOLayer::start_playback(QString p_image)
   last_path = p_image;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again
-  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty() && ao_app->net_manager->streaming_successful)
+  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty() && ao_app->net_manager->streaming_successful) {
     this->set_frame(ao_app->net_manager->streamed_pixmap);
     qDebug().nospace() << "Set streamed pixmap.";
-  else
+  } else {
     this->set_frame(movie_frames[frame]);
+  }
 
   if (max_frames <= 1) {
     duration = static_duration;
