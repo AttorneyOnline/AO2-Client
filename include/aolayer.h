@@ -177,7 +177,7 @@ protected slots:
 class BackgroundLayer : public AOLayer {
   Q_OBJECT
 public:
-  BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
   void load_image(QString p_filename);
 signals:
   void hide_void();
@@ -188,7 +188,7 @@ protected:
 class CharLayer : public AOLayer {
   Q_OBJECT
 public:
-  CharLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  CharLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
   QString current_emote = ""; // name of the emote we're using
   bool is_preanim;     // equivalent to the old play_once, if true we don't want
                        // to loop this
@@ -242,28 +242,28 @@ signals:
 class SplashLayer : public AOLayer {
   Q_OBJECT
 public:
-  SplashLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  SplashLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
   void load_image(QString p_filename, QString p_charname, QString p_miscname);
 };
 
 class EffectLayer : public AOLayer {
   Q_OBJECT
 public:
-  EffectLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  EffectLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
   void load_image(QString p_filename, bool p_looping);
 };
 
 class InterfaceLayer : public AOLayer {
   Q_OBJECT
 public:
-  InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
   void load_image(QString p_filename, QString p_miscname);
 };
 
 class StickerLayer : public AOLayer {
   Q_OBJECT
 public:
-  StickerLayer(QWidget *p_parent, AOApplication *p_ao_app);
+  StickerLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
   void load_image(QString p_charname);
 };
 
