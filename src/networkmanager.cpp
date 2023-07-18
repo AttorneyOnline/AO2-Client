@@ -278,18 +278,20 @@ void NetworkManager::handle_server_packet(const QString& p_data)
   }
 }
 
-void NetworkManager::start_image_streaming(QString path)
+void NetworkManager::start_image_streaming(QString path, const std::function<void(QString)> &cb)
 {
   path += ".png";
   qDebug().nospace() << path;
   QUrl url(path);
   QNetworkRequest request(url);
   request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
-  http->get(request);
-  connect(http, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
+  stream->get(request);
+  QNetworkReply *reply = stream->get(req);
+  connect(reply, &QNetworkReply::finished,
+          this, std::bind(&NetworkManager::image_reply_finished, this, reply, cb));
 }
 
-void NetworkManager::image_reply_finished(QNetworkReply *reply)
+void NetworkManager::image_reply_finished(QNetworkReply *reply, const std::function<void(QString)> &cb)
 {
   if (reply->error() == QNetworkReply::NoError) {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
