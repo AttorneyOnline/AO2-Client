@@ -292,10 +292,16 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray image_data = reply->readAll();
     if (streamed_pixmap.loadFromData(image_data)) {
-      qDebug() << "Success.";
+      streaming_successful = true;
+      qDebug() << "Success loading image.";
     } else {
-      qDebug() << "Failed.";
+      streaming_successful = false;
+      qDebug() << "Failed loading image.";
     }
+  } else {
+    streaming_successful = false;
+    qDebug() << "Network Error while retrieving image.";
   }
+
   reply->deleteLater();
 }
