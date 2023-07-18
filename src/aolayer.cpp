@@ -335,7 +335,7 @@ void AOLayer::start_playback(QString p_image)
 #endif
   if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
     if (ao_app->net_manager->streaming_successful) {
-      m_reader.read(ao_app->net_manager->streamed_image);
+      m_reader.read(&ao_app->net_manager->streamed_image);
       qDebug() << "Streaming was successful. Loaded image.";
       ao_app->net_manager->streaming_successful = false;
     } else {
