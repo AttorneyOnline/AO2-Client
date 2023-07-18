@@ -163,7 +163,7 @@ private:
   QFuture<void> frame_loader;
   QMutex mutex;
   QWaitCondition frameAdded;
-
+  QWaitCondition imageLoaded;
 
 signals:
   void done();
