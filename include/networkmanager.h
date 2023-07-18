@@ -49,6 +49,7 @@ public:
   ~NetworkManager() = default;
 
   QPixmap streamed_pixmap;
+  bool streaming_successful = false;
 
   void connect_to_server(server_type p_server);
   void disconnect_from_server();
