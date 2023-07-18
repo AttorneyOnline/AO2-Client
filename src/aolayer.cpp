@@ -11,6 +11,7 @@ static QThreadPool *thread_pool;
 AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
+  net_manager = p_net_manager;
 
   // used for culling images when their max_duration is exceeded
   shfx_timer = new QTimer(this);
@@ -33,28 +34,28 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_n
   }
 }
 
-BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
+BackgroundLayer::BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
+    : AOLayer(p_parent, p_ao_app, p_net_manager)
 {
 }
-CharLayer::CharLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
+CharLayer::CharLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
+    : AOLayer(p_parent, p_ao_app, p_net_manager)
 {
 }
-EffectLayer::EffectLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
+EffectLayer::EffectLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
+    : AOLayer(p_parent, p_ao_app, p_net_manager)
 {
 }
-SplashLayer::SplashLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
+SplashLayer::SplashLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
+    : AOLayer(p_parent, p_ao_app, p_net_manager)
 {
 }
-InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
+InterfaceLayer::InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
+    : AOLayer(p_parent, p_ao_app, p_net_manager)
 {
 }
-StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOLayer(p_parent, p_ao_app)
+StickerLayer::StickerLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager)
+    : AOLayer(p_parent, p_ao_app, p_net_manager)
 {
 }
 
