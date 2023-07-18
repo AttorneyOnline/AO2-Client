@@ -303,6 +303,7 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
     }
   } else {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    qDebug() << "Error:" << reply->errorString();
     streaming_successful = false;
     qDebug() << "Network Error while retrieving image.";
   }
