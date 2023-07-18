@@ -281,9 +281,9 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 void NetworkManager::start_image_streaming(QString path)
 {
   path += ".png";
-  path = encodeURIComponent(path);
-  qDebug().nospace() << path;
-  QUrl url(path);
+  QUrl encoded_path = QUrl::fromPercentEncoding(path.toUtf8());
+  qDebug().nospace() << encoded_path;
+  QUrl url(encoded_path);
   QNetworkRequest request(url);
   stream->get(request);
   connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
