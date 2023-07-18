@@ -42,7 +42,7 @@ class AOLayer : public QLabel {
   Q_OBJECT
 
 public:
-  AOLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
+  AOLayer(QWidget *p_parent, AOApplication *p_ao_app);
 
   QString filename;    // file name without extension, i.e. "witnesstestimony"
   int static_duration; // time in ms for static images to be displayed, if
@@ -177,7 +177,7 @@ protected slots:
 class BackgroundLayer : public AOLayer {
   Q_OBJECT
 public:
-  BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
+  BackgroundLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename);
 signals:
   void hide_void();
@@ -188,7 +188,7 @@ protected:
 class CharLayer : public AOLayer {
   Q_OBJECT
 public:
-  CharLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
+  CharLayer(QWidget *p_parent, AOApplication *p_ao_app);
   QString current_emote = ""; // name of the emote we're using
   bool is_preanim;     // equivalent to the old play_once, if true we don't want
                        // to loop this
@@ -242,28 +242,28 @@ signals:
 class SplashLayer : public AOLayer {
   Q_OBJECT
 public:
-  SplashLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
+  SplashLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, QString p_charname, QString p_miscname);
 };
 
 class EffectLayer : public AOLayer {
   Q_OBJECT
 public:
-  EffectLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
+  EffectLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, bool p_looping);
 };
 
 class InterfaceLayer : public AOLayer {
   Q_OBJECT
 public:
-  InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
+  InterfaceLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_filename, QString p_miscname);
 };
 
 class StickerLayer : public AOLayer {
   Q_OBJECT
 public:
-  StickerLayer(QWidget *p_parent, AOApplication *p_ao_app, NetworkManager *p_net_manager);
+  StickerLayer(QWidget *p_parent, AOApplication *p_ao_app);
   void load_image(QString p_charname);
 };
 
