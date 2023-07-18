@@ -278,7 +278,7 @@ void NetworkManager::handle_server_packet(const QString& p_data)
   }
 }
 
-void NetworkManager::start_image_streaming(QString path, const std::function<void(QString)> &cb)
+void NetworkManager::start_image_streaming(QString path)
 {
   path += ".png";
   qDebug().nospace() << path;
@@ -286,12 +286,10 @@ void NetworkManager::start_image_streaming(QString path, const std::function<voi
   QNetworkRequest request(url);
   request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
   stream->get(request);
-  QNetworkReply *reply = stream->get(req);
-  connect(reply, &QNetworkReply::finished,
-          this, std::bind(&NetworkManager::image_reply_finished, this, reply, cb));
+  connect(http, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
 }
 
-void NetworkManager::image_reply_finished(QNetworkReply *reply, const std::function<void(QString)> &cb)
+void NetworkManager::image_reply_finished(QNetworkReply *reply)
 {
   if (reply->error() == QNetworkReply::NoError) {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -299,9 +297,11 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply, const std::funct
     if (streamed_pixmap.loadFromData(image_data, "PNG")) {
       streaming_successful = true;
       qDebug() << "Success loading image.";
+      return
     } else {
       streaming_successful = false;
       qDebug() << "Failed loading image.";
+      return
     }
   } else {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
