@@ -281,7 +281,7 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 void NetworkManager::start_image_streaming(QString path)
 {
   path += ".png";
-  QUrl encoded_path = QUrl::fromPercentEncoding(path.toUtf8());
+  QUrl encoded_path = QUrl::toPercentEncoding(path.toUtf8());
   qDebug().nospace() << encoded_path;
   QUrl url(encoded_path);
   QNetworkRequest request(url);
