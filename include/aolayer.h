@@ -163,7 +163,6 @@ private:
   QFuture<void> frame_loader;
   QMutex mutex;
   QWaitCondition frameAdded;
-  QWaitCondition imageLoaded;
 
 signals:
   void done();
@@ -172,6 +171,7 @@ protected slots:
   virtual void preanim_done();
   void shfx_timer_done();
   virtual void movie_ticker();
+  void onImageLoaded(const QImage& image);
 };
 
 class BackgroundLayer : public AOLayer {
