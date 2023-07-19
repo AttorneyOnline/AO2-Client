@@ -59,6 +59,7 @@ public:
 
 signals:
   void server_connected(bool state);
+  void imageLoaded(const QImage& image);
 
 public slots:
   void get_server_list(const std::function<void()> &cb);
