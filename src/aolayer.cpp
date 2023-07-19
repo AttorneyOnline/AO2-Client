@@ -12,6 +12,9 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
+  NetworkManager* networkManager = ao_app->net_manager;
+  connect(networkManager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
+  
   // used for culling images when their max_duration is exceeded
   shfx_timer = new QTimer(this);
   shfx_timer->setTimerType(Qt::PreciseTimer);
@@ -334,12 +337,9 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
-    while (!ao_app->net_manager->done)
-      imageLoaded.wait(&mutex);
     if (ao_app->net_manager->streaming_successful) {
       m_reader.read(&ao_app->net_manager->streamed_image);
       qDebug() << "Streaming was successful. Loaded image.";
-      ao_app->net_manager->streaming_successful = false;
     } else {
       this->kill();
       qDebug() << "Streaming failed. Aborting.";
@@ -653,6 +653,12 @@ void AOLayer::invert() {
     QImage* image = new QImage(pixmap->toImage());
     image->invertPixels(QImage::InvertRgb);
     this->setPixmap(QPixmap::fromImage(*image));
+}
+
+void AOLayer::onImageLoaded(const QImage& image) {
+  QPixmap pixmap = QPixmap::fromImage(ao_app->net_manager->streamed_image);
+  this->setPixmap(pixmap);
+  qDebug() << "Pixmap set.";
 }
 
 void AOLayer::fade(bool in, int duration)
