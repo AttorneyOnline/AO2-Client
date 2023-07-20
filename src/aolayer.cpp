@@ -301,7 +301,8 @@ void AOLayer::start_playback(QString p_image)
     qDebug() << "Loading... " << p_image;
     ao_app->net_manager->start_image_streaming(p_image);
     qDebug() << "Started image streaming: " << p_image;
-    p_image = ao_app->get_misc_path("default", "loading").toQString(); 
+    p_image = ao_app->get_misc_path("default", "loading").toQString();
+    qDebug() << p_image;
   }
 
   if (frame_loader.isRunning())
@@ -337,7 +338,7 @@ void AOLayer::start_playback(QString p_image)
 #ifdef DEBUG_MOVIE
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
-  if (p_image.endsWith("loading") && !ao_app->asset_url.isEmpty()) {
+  if (!ao_app->net_manager->streamed_image.isNull() && !ao_app->asset_url.isEmpty()) {
     if (ao_app->net_manager->streaming_successful) {
       m_reader.read(&ao_app->net_manager->streamed_image);
       qDebug() << "Streaming was successful. Loaded image.";
@@ -661,7 +662,6 @@ void AOLayer::onImageLoaded(const QImage& image) {
   // QPixmap pixmap = QPixmap::fromImage(ao_app->net_manager->streamed_image);
   // this->setPixmap(pixmap);
   qDebug() << "Started streaming playback.";
-  play();
 }
 
 void AOLayer::fade(bool in, int duration)
