@@ -297,10 +297,11 @@ void AOLayer::start_playback(QString p_image)
     return;
   }
   
-  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
+  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty() && ao_app->net_manager->streamed_image.isNull()) {
     qDebug() << "Loading... " << p_image;
     ao_app->net_manager->start_image_streaming(p_image);
     qDebug() << "Started image streaming: " << p_image;
+    p_image = ao_app->get_misc_path("default", "loading"); 
   }
 
   if (frame_loader.isRunning())
@@ -336,7 +337,7 @@ void AOLayer::start_playback(QString p_image)
 #ifdef DEBUG_MOVIE
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
-  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
+  if (p_image.endsWith("loading") && !ao_app->asset_url.isEmpty()) {
     if (ao_app->net_manager->streaming_successful) {
       m_reader.read(&ao_app->net_manager->streamed_image);
       qDebug() << "Streaming was successful. Loaded image.";
@@ -656,9 +657,10 @@ void AOLayer::invert() {
 }
 
 void AOLayer::onImageLoaded(const QImage& image) {
-  QPixmap pixmap = QPixmap::fromImage(ao_app->net_manager->streamed_image);
-  this->setPixmap(pixmap);
-  qDebug() << "Pixmap set.";
+  CharLayer::start_playback(ao_app->get_image_path(ao_app->get_character_path(VPath(ao_app->asset_url + "characters/" + p_charname + "/" + current_emote))));
+  // QPixmap pixmap = QPixmap::fromImage(ao_app->net_manager->streamed_image);
+  // this->setPixmap(pixmap);
+  qDebug() << "Started streaming playback.";
 }
 
 void AOLayer::fade(bool in, int duration)
