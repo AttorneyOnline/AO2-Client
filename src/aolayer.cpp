@@ -657,7 +657,7 @@ void AOLayer::invert() {
 }
 
 void AOLayer::onImageLoaded(const QImage& image) {
-  CharLayer::start_playback(ao_app->get_image_path(ao_app->get_character_path(VPath(ao_app->asset_url + "characters/" + p_charname + "/" + current_emote))));
+  CharLayer::start_playback(ao_app->get_image_path(ao_app->get_character_path(VPath(ao_app->asset_url + "characters/" + last_char + "/" + current_emote))));
   // QPixmap pixmap = QPixmap::fromImage(ao_app->net_manager->streamed_image);
   // this->setPixmap(pixmap);
   qDebug() << "Started streaming playback.";
