@@ -658,7 +658,7 @@ void AOLayer::invert() {
 }
 
 void AOLayer::onImageLoaded(const QImage& image) {
-  qDebug() << "..."
+  qDebug() << "...";
   start_playback(ao_app->net_manager->streamed_path);
   // QPixmap pixmap = QPixmap::fromImage(ao_app->net_manager->streamed_image);
   // this->setPixmap(pixmap);
