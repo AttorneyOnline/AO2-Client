@@ -51,7 +51,7 @@ public:
   ~NetworkManager() = default;
 
   QImage streamed_image;
-  bool done;
+  QString streamed_path;
   bool streaming_successful = false;
 
   void connect_to_server(server_type p_server);
