@@ -62,7 +62,7 @@ jobs:
            echo "y" | $SDKMANAGER "platforms;android-24"
            ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
         
-      - uses: Skycoder42/action-setup-qt@master
+      - uses: Satoru-1816/action-setup-qt@master
         id: qt
         with:
           version: ${{matrix.version}}
