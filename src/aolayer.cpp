@@ -301,8 +301,8 @@ void AOLayer::start_playback(QString p_image)
     qDebug() << "Loading... " << p_image;
     ao_app->net_manager->start_image_streaming(p_image);
     qDebug() << "Started image streaming: " << p_image;
-    p_image = ao_app->get_misc_path("default", "loading").toQString();
-    qDebug() << p_image;
+    this->kill();
+    return;
   }
 
   if (frame_loader.isRunning())
@@ -658,6 +658,7 @@ void AOLayer::invert() {
 }
 
 void AOLayer::onImageLoaded(const QImage& image) {
+  qDebug() << "..."
   start_playback(ao_app->net_manager->streamed_path);
   // QPixmap pixmap = QPixmap::fromImage(ao_app->net_manager->streamed_image);
   // this->setPixmap(pixmap);
