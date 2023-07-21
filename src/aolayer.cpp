@@ -13,7 +13,7 @@ AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
   ao_app = p_ao_app;
 
   NetworkManager* networkManager = ao_app->net_manager;
-  connect(networkManager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
+  connect(networkManager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded, Qt::UniqueConnection);
   
   // used for culling images when their max_duration is exceeded
   shfx_timer = new QTimer(this);
