@@ -664,30 +664,15 @@ void AOLayer::onImageLoaded(const QImage& image) {
   if (frame_loader.isRunning())
     exit_loop = true;
 
-  QMutexLocker locker(&mutex);
   this->show();
 
   this->clear();
   this->freeze();
   movie_frames.clear();
   movie_delays.clear();
-
-  m_reader.read(&ao_app->net_manager->streamed_image);
-  qDebug() << "Started streaming playback.";
   
-  last_max_frames = max_frames;
-  max_frames = m_reader.imageCount();
-  frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
-  while (movie_frames.size() <= frame)
-    frameAdded.wait(&mutex);
-  this->set_frame(movie_frames[frame]);
-
-  if (max_frames <= 1) {
-    duration = static_duration;
-  }
-  if (duration > 0 && cull_image == true)
-    shfx_timer->start(duration);
-  actual_time.restart();  
+  this->set_frame(ao_app->net_manager->streamed_pixmap);
+  qDebug() << "Started streaming playback.";
 }
 
 void AOLayer::fade(bool in, int duration)
