@@ -677,8 +677,7 @@ void AOLayer::onImageLoaded(const QImage& image) {
   
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
-  frame_loader = QtConcurrent::run(thread_pool, &AOLayer::populate_vectors, this);
-  last_path = p_image;
+  frame_loader = QtConcurrent::run(thread_pool, this, &AOLayer::populate_vectors);
   while (movie_frames.size() <= frame)
     frameAdded.wait(&mutex);
   this->set_frame(movie_frames[frame]);
