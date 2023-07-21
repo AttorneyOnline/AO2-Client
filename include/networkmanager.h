@@ -51,6 +51,7 @@ public:
   ~NetworkManager() = default;
 
   QImage streamed_image;
+  QPixmap streamed_pixmap;
   QString streamed_path;
   bool streaming_successful = false;
 
