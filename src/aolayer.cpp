@@ -660,6 +660,7 @@ void AOLayer::onImageLoaded(const QImage& image) {
   qDebug() << "...";
   QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
   set_frame(pixmap);
+  this->kill();
   qDebug() << "Started streaming playback.";
 }
 
