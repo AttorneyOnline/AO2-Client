@@ -28,6 +28,8 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
+  connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
+
 }
 
 void NetworkManager::get_server_list(const std::function<void()> &cb)
@@ -287,7 +289,6 @@ void NetworkManager::start_image_streaming(QString path)
   QNetworkRequest request(url);
   request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
   stream->get(request);
-  connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
 }
 
 void NetworkManager::image_reply_finished(QNetworkReply *reply)
