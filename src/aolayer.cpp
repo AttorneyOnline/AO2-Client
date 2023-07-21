@@ -11,7 +11,8 @@ static QThreadPool *thread_pool;
 AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
-  
+  net_manager = ao_app->net_manager;
+
   // used for culling images when their max_duration is exceeded
   shfx_timer = new QTimer(this);
   shfx_timer->setTimerType(Qt::PreciseTimer);
@@ -298,8 +299,7 @@ void AOLayer::start_playback(QString p_image)
     qDebug() << "Loading... " << p_image;
     ao_app->net_manager->start_image_streaming(p_image);
     qDebug() << "Started image streaming: " << p_image;
-    NetworkManager* networkManager = ao_app->net_manager;
-    connect(networkManager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
+    connect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
     p_image = ao_app->get_real_path(ao_app->get_misc_path("default", "loading"));
   }
 
@@ -656,7 +656,7 @@ void AOLayer::invert() {
 }
 
 void AOLayer::onImageLoaded(const QImage& image) {
-  disconnect(networkManager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
+  disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
   qDebug() << "...";
   //QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
   //set_frame(pixmap);
