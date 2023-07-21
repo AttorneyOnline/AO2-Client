@@ -658,9 +658,9 @@ void AOLayer::invert() {
 
 void AOLayer::onImageLoaded(const QImage& image) {
   qDebug() << "...";
-  QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
-  set_frame(pixmap);
-  this->kill();
+  //QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
+  //set_frame(pixmap);
+  m_reader.read(image);
   qDebug() << "Started streaming playback.";
 }
 
