@@ -670,8 +670,8 @@ void AOLayer::onImageLoaded(const QImage& image) {
   this->freeze();
   movie_frames.clear();
   movie_delays.clear();
-  
-  this->set_frame(ao_app->net_manager->streamed_pixmap);
+  this->set_frame(get_pixmap(ao_app->net_manager->streamed_image));
+  // this->set_frame(ao_app->net_manager->streamed_pixmap);
   qDebug() << "Started streaming playback.";
 }
 
