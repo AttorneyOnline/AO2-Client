@@ -301,7 +301,7 @@ void AOLayer::start_playback(QString p_image)
     qDebug() << "Loading... " << p_image;
     ao_app->net_manager->start_image_streaming(p_image);
     qDebug() << "Started image streaming: " << p_image;
-    p_image = ao_app->get_misc_path("default", "loading");
+    p_image = ao_app->get_misc_path("default", "loading").toQString();
   }
 
   if (frame_loader.isRunning())
