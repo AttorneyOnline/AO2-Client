@@ -28,7 +28,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
-  connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
+  connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished, Qt::UniqueConnection);
 
 }
 
@@ -309,6 +309,7 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
       streaming_successful = true;
       qDebug() << "Success loading image.";
       emit imageLoaded(streamed_image);
+      reply->deleteLater();
     } else {
       streaming_successful = false;
       qDebug() << "Failed loading image.";
