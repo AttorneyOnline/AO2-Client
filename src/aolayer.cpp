@@ -658,7 +658,7 @@ void AOLayer::invert() {
 void AOLayer::onImageLoaded(const QImage& image) {
   disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
   qDebug() << "...";
-  //QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
+  QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
   //set_frame(pixmap);
   
   if (frame_loader.isRunning())
@@ -670,7 +670,8 @@ void AOLayer::onImageLoaded(const QImage& image) {
   this->freeze();
   movie_frames.clear();
   movie_delays.clear();
-  this->set_frame(get_pixmap(ao_app->net_manager->streamed_image));
+  this->set_frame(pixmap);
+  // this->set_frame(get_pixmap(ao_app->net_manager->streamed_image));
   // this->set_frame(ao_app->net_manager->streamed_pixmap);
   qDebug() << "Started streaming playback.";
 }
