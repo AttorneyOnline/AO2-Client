@@ -293,7 +293,7 @@ void NetworkManager::start_image_streaming(QString path)
   QNetworkRequest request(url);
 
   QSslConfiguration config = request.sslConfiguration();
-  config.setProtocol(QSsl::AnyProtocol); // O utiliza la versión de TLS adecuada para tu caso
+  config.setProtocol(QSsl::AnyProtocol);
   request.setSslConfiguration(config);
   
   request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
@@ -305,7 +305,7 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
   if (reply->error() == QNetworkReply::NoError) {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray image_data = reply->readAll();
-    if (streamed_image.loadFromData(image_data) && streamed_pixmap.loadFromData(image_data)) {
+    if (streamed_image.loadFromData(image_data)) {
       streaming_successful = true;
       qDebug() << "Success loading image.";
       emit imageLoaded(streamed_image);
