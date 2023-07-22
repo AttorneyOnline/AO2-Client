@@ -283,10 +283,19 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 void NetworkManager::start_image_streaming(QString path)
 {
   streamed_path = path;
+  qDebug() << QSslSocket::sslLibraryBuildVersionString();
+  qDebug() << QSslSocket::supportsSsl();
+  qDebug() << QSslSocket::sslLibraryVersionString();
+
   path += ".png";
   qDebug().nospace() << path;
   QUrl url(path);
   QNetworkRequest request(url);
+
+  QSslConfiguration config = request.sslConfiguration();
+  config.setProtocol(QSsl::AnyProtocol); // O utiliza la versión de TLS adecuada para tu caso
+  request.setSslConfiguration(config);
+  
   request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
   stream->get(request);
 }
