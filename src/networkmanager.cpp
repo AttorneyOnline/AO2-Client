@@ -309,11 +309,9 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
       streaming_successful = true;
       qDebug() << "Success loading image.";
       emit imageLoaded(streamed_image);
-      return;
     } else {
       streaming_successful = false;
       qDebug() << "Failed loading image.";
-      return;
     }
   } else {
     qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
