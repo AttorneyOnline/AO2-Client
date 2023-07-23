@@ -5,6 +5,8 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 
+#include <QMessageBox>
+
 void Courtroom::construct_char_select()
 {
   this->setWindowFlags( (this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
@@ -197,7 +199,7 @@ void Courtroom::char_clicked(int n_char)
 
     switch (choice) {
       case QMessageBox::Download:
-        call_error(tr("Feature currently unavailable.");
+        call_error(tr("Feature currently unavailable."));
         break;
 
       case QMessageBox::Streaming:
