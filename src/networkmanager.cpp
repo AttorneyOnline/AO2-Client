@@ -280,15 +280,12 @@ void NetworkManager::handle_server_packet(const QString& p_data)
   }
 }
 
-void NetworkManager::start_image_streaming(QString path)
+void NetworkManager::start_image_streaming(QString path, QString prefix)
 {
+  // Reminder to change this later
+  if (!prefix.isEmpty())
+    path += prefix;
   streamed_path = path;
-  qDebug() << QSslSocket::sslLibraryBuildVersionString();
-  qDebug() << QSslSocket::supportsSsl();
-  qDebug() << QSslSocket::sslLibraryVersionString();
-
-  path += ".png";
-  qDebug().nospace() << path;
   QUrl url(path);
   QNetworkRequest request(url);
 
@@ -302,23 +299,46 @@ void NetworkManager::start_image_streaming(QString path)
 
 void NetworkManager::image_reply_finished(QNetworkReply *reply)
 {
+  // Check if there was an error in the network reply
   if (reply->error() == QNetworkReply::NoError) {
-    qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QByteArray image_data = reply->readAll();
-    if (streamed_image.loadFromData(image_data)) {
-      streaming_successful = true;
-      qDebug() << "Success loading image.";
-      emit imageLoaded(streamed_image);
-      reply->deleteLater();
-    } else {
-      streaming_successful = false;
-      qDebug() << "Failed loading image.";
-    }
+      // Get the HTTP status code from the reply
+      int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+      qDebug() << "Status code: " << statusCode;
+  
+      // Handle image file download (if it's a .png file)
+      if (streamed_path.endsWith(".png")) {
+          QByteArray image_data = reply->readAll();
+          if (streamed_image.loadFromData(image_data)) {
+              streaming_successful = true;
+              qDebug() << "Success loading image.";
+              emit imageLoaded(streamed_image);
+          } else {
+              streaming_successful = false;
+              qDebug() << "Failed loading image.";
+          }
+      } else if (streamed_path.endsWith("char.ini")) {
+          // Handle .ini file download
+          QByteArray char_ini_data = reply->readAll();
+          QString character_folder = "base/characters/" + streamed_charname;
+          QDir().mkpath(character_folder);
+          QString char_ini_path = character_folder + "/char.ini";
+          QFile char_ini_file(char_ini_path);
+          if (char_ini_file.open(QIODevice::WriteOnly)) {
+              char_ini_file.write(char_ini_data);
+              char_ini_file.close();
+              qDebug() << "Successfully saved char.ini for character " << streamed_charname;
+          } else {
+              qWarning() << "Failed to save char.ini for character " << streamed_charname;
+          }
+      }
   } else {
-    qDebug() << "Status code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    qDebug() << "Error:" << reply->errorString();
-    streaming_successful = false;
-    qDebug() << "Network Error while retrieving image.";
+      // Handle network error
+      int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+      qDebug() << "Status code: " << statusCode;
+      qDebug() << "Error:" << reply->errorString();
+      streaming_successful = false;
+      qDebug() << "Network Error while retrieving image.";
   }
+  
   reply->deleteLater();
 }
