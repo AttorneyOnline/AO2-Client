@@ -350,9 +350,9 @@ void NetworkManager::download_folder(const QStringList& paths) {
       QNetworkRequest request(url);
       QNetworkReply* reply = stream->get(request);
 
-      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url]() {
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, ""]() {
           if (reply->error() == QNetworkReply::NoError) {
-              save_folder(reply->readAll(), string_url);
+              save_folder(reply->readAll(), string_url, "");
           } else {
               qDebug() << "Failed to download folder: " << reply->errorString();
           }
@@ -363,8 +363,9 @@ void NetworkManager::download_folder(const QStringList& paths) {
 }
 
 
-void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl) {
-    QString localFolderPath = "base/characters/" + streamed_charname;
+void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, QString localFolderPath) {
+    if (localFolderPath.isEmpty())
+      localFolderPath = "base/characters/" + streamed_charname;
   
     QDir dir(localFolderPath);
     if (!dir.exists()) {
@@ -383,32 +384,29 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
           if (fileName.isEmpty() || fileSize.isEmpty())
               continue;
 
-          qDebug() << fileName;
-          QString finalPathUrl = pathUrl + "/" + fileName;
-          qDebug() << finalPathUrl;
+          if (fileName.endsWith("/")) {
+                QString subfolderPath = localFolderPath + "/" + fileName;
+                QString onlineSubfolderLookup = pathUrl + "/" + fileName;
 
-          if (fileName.endsWith("/")) { // If it's a subfolder
-              // Remove the trailing "/" from the folder name
-              fileName.chop(1);
-              // Recursively call the save_folder function for the subfolder
-              QNetworkRequest request(finalPathUrl);
-              QNetworkReply* reply = stream->get(request);
+                qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
 
-              QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
-                  if (reply->error() == QNetworkReply::NoError) {
-                      // Create the local subfolder if it doesn't exist
-                      QDir subDir(localFolderPath + "/" + fileName);
-                      if (!subDir.exists()) {
-                          subDir.mkpath(".");
-                      }
-                  } else {
-                      qDebug() << "Failed to download subfolder: " << reply->errorString();
-                  }
+                // Recursively call the function to save the subfolder
+                QNetworkRequest request(onlineSubfolderLookup);
+                QNetworkReply* reply = stream->get(request);
+                QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, subfolderPath, onlineSubfolderLookup]() {
+                    if (reply->error() == QNetworkReply::NoError) {
+                        save_folder(reply->readAll(), onlineSubfolderLookup, subfolderPath); // Recursive call
+                    } else {
+                        qDebug() << "Failed to download folder: " << reply->errorString();
+                    }
 
-                  reply->deleteLater();
-              });
-
-          } else { // If it's a file
+                    reply->deleteLater();
+                });
+          } else {
+              // It's a file, not a directory
+              qDebug() << "Downloading file: " << fileName;
+              QString finalPathUrl = pathUrl + "/" + fileName;
+              qDebug() << "Final path url: " << finalPathUrl;
               QNetworkRequest request(finalPathUrl);
               QNetworkReply* reply = stream->get(request);
 
