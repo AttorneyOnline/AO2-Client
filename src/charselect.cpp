@@ -205,6 +205,8 @@ void Courtroom::char_clicked(int n_char)
         msgBox.exec();
     
         if (msgBox.clickedButton() == btn1) {
+            QString download_path = VPath(ao_app->asset_url + "characters/" + char_name + "/").toQString();
+            ao_app->net_manager->download_folder(download_path);
             call_error(tr("Feature currently unavailable."));
         } else if (msgBox.clickedButton() == btn2) {
             qDebug() << streamed_ini_path;
