@@ -194,7 +194,6 @@ void Courtroom::char_clicked(int n_char)
         call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
         return;
       } else {
-        QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
         QMessageBox msgBox;
         msgBox.setText(tr("Could not find character (char.ini) for %1, but an asset url was found.").arg(char_name));
         msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
@@ -205,10 +204,14 @@ void Courtroom::char_clicked(int n_char)
         msgBox.exec();
     
         if (msgBox.clickedButton() == btn1) {
+            // I WILL change this later...
             QString download_path = VPath(ao_app->asset_url + "characters/" + char_name + "/").toQString();
+            QString download_path_lower = VPath(ao_app->asset_url + "characters/" + char_name.toLower() + "/").toQString();
             ao_app->net_manager->download_folder(download_path);
             call_error(tr("Feature currently unavailable."));
         } else if (msgBox.clickedButton() == btn2) {
+            QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
+            QString streamed_ini_path_lower = VPath(ao_app->asset_url + "characters/" + char_name.toLower() + "/char.ini").toQString();
             qDebug() << streamed_ini_path;
             ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
         } else {
