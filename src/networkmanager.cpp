@@ -386,7 +386,7 @@ void NetworkManager::save_folder(const QByteArray& folderData) {
 
             QUrl fileUrl(ao_app->asset_url + localFolderPath + "/" + fileName);
             QString decodedFileUrl = QUrl::fromPercentEncoding(fileUrl.toEncoded());
-            QDebug() << decodedFileUrl;
+            qDebug() << decodedFileUrl;
             QNetworkRequest request(decodedFileUrl);
             QNetworkReply* reply = stream->get(request);
 
