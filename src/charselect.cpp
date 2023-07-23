@@ -196,7 +196,7 @@ void Courtroom::char_clicked(int n_char)
       msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
       QPushButton* btn1 = msgBox.addButton(tr("Download"), QMessageBox::AcceptRole);
       QPushButton* btn2 = msgBox.addButton(tr("Streaming"), QMessageBox::AcceptRole);
-      QPushButton* btn3 = msgBox.addButton(tr("Cancel"), QMessageBox::CancelRole);
+      QPushButton* btn3 = msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
       msgBox.setDefaultButton(btn3);
       msgBox.exec();
   
