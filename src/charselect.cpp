@@ -190,25 +190,29 @@ void Courtroom::char_clicked(int n_char)
     ao_app->net_manager->streamed_charname = char_name;
 
     if (!file_exists(char_ini_path)) {
-      QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
-      QMessageBox msgBox;
-      msgBox.setText(tr("Could not find character (char.ini) for %1").arg(char_name));
-      msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
-      QPushButton* btn1 = msgBox.addButton(tr("Download"), QMessageBox::AcceptRole);
-      QPushButton* btn2 = msgBox.addButton(tr("Streaming"), QMessageBox::AcceptRole);
-      QPushButton* btn3 = msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
-      msgBox.setDefaultButton(btn3);
-      msgBox.exec();
-  
-      if (msgBox.clickedButton() == btn1) {
-          call_error(tr("Feature currently unavailable."));
-      } else if (msgBox.clickedButton() == btn2) {
-          qDebug() << streamed_ini_path;
-          ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
+      if (ao_app->asset_url.isEmpty()) {
+        call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
       } else {
-          return;
+        QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
+        QMessageBox msgBox;
+        msgBox.setText(tr("Could not find character (char.ini) for %1, but an asset url was found.").arg(char_name));
+        msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
+        QPushButton* btn1 = msgBox.addButton(tr("Download"), QMessageBox::AcceptRole);
+        QPushButton* btn2 = msgBox.addButton(tr("Streaming"), QMessageBox::AcceptRole);
+        QPushButton* btn3 = msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
+        msgBox.setDefaultButton(btn3);
+        msgBox.exec();
+    
+        if (msgBox.clickedButton() == btn1) {
+            call_error(tr("Feature currently unavailable."));
+        } else if (msgBox.clickedButton() == btn2) {
+            qDebug() << streamed_ini_path;
+            ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
+        } else {
+            return;
+        }
+        return;
       }
-      return;
     }
 
     qDebug() << "Found char.ini for" << char_name << "at" << char_ini_path;
