@@ -195,7 +195,7 @@ void Courtroom::char_clicked(int n_char)
         return;
       } else {
         QMessageBox msgBox;
-        msgBox.setText(tr("Could not find character (char.ini) for %1, but an asset url was found.").arg(char_name));
+        msgBox.setText(tr("Could not find character (char.ini) for %1.\nAvailable asset url: %2").arg(char_name).arg(ao_app->asset_url));
         msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
         QPushButton* btn1 = msgBox.addButton(tr("Download"), QMessageBox::AcceptRole);
         QPushButton* btn2 = msgBox.addButton(tr("Streaming"), QMessageBox::AcceptRole);
