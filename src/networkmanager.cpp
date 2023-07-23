@@ -347,10 +347,11 @@ void NetworkManager::download_folder(const QStringList& paths) {
   for (const QString& path : paths) {
       QUrl url(path);
       QString string_url = path;
+      QString local_folder_path = "";
       QNetworkRequest request(url);
       QNetworkReply* reply = stream->get(request);
 
-      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, ""]() {
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, local_folder_path]() {
           if (reply->error() == QNetworkReply::NoError) {
               save_folder(reply->readAll(), string_url, "");
           } else {
@@ -363,9 +364,14 @@ void NetworkManager::download_folder(const QStringList& paths) {
 }
 
 
-void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, QString& localFolderPath) {
-    if (localFolderPath.isEmpty())
-      localFolderPath = "base/characters/" + streamed_charname;
+void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, const QString& localFolderPath_r) {
+    if (localFolderPath_r.isEmpty()) {
+      qDebug() << "Localfolderpath is empty: " << localFolderPath_r;
+      QString localFolderPath = "base/characters/" + streamed_charname;
+    } else {
+      qDebug() << "Localfolderpath is not empty: " << localFolderPath_r;
+      QString localFolderPath = localFolderPath_r;
+    }
   
     QDir dir(localFolderPath);
     if (!dir.exists()) {
