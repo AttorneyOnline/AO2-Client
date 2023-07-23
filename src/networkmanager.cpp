@@ -343,21 +343,24 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
   reply->deleteLater();
 }
 
-void NetworkManager::download_folder(QString path) {
-    QUrl url(path);
-    QNetworkRequest request(url);
-    QNetworkReply* reply = stream->get(request);
+void NetworkManager::download_folders(const QStringList& paths) {
+  for (const QString& path : paths) {
+      QUrl url(path);
+      QNetworkRequest request(url);
+      QNetworkReply* reply = stream->get(request);
 
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        if (reply->error() == QNetworkReply::NoError) {
-            save_folder(reply->readAll());
-        } else {
-            qDebug() << "Failed to download folder: " << reply->errorString();
-        }
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+          if (reply->error() == QNetworkReply::NoError) {
+              save_folder(reply->readAll());
+          } else {
+              qDebug() << "Failed to download folder: " << reply->errorString();
+          }
 
-        reply->deleteLater();
-    });
+          reply->deleteLater();
+      });
+  }
 }
+
 
 void NetworkManager::save_folder(const QByteArray& folderData) {
     QString localFolderPath = "base/characters/" + streamed_charname;
