@@ -81,7 +81,7 @@ private slots:
   void ms_request_finished(QNetworkReply *reply,
                            const std::function<void()> &cb);
   void image_reply_finished(QNetworkReply *reply);
-  void save_folder(const QByteArray& folderData, const QString& pathUrl, QString& localFolderPath);
+  void save_folder(const QByteArray& folderData, const QString& pathUrl, const QString& localFolderPath_r);
 
 private:
   QString get_user_agent() const {
