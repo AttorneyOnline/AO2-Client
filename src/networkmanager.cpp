@@ -342,3 +342,52 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
   
   reply->deleteLater();
 }
+
+void NetworkManager::download_folder(QString path) {
+    QUrl url(path);
+    QNetworkRequest request(url);
+    QNetworkReply* reply = stream->get(request);
+
+    QObject::connect(reply, &QNetworkReply::finished, [reply]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            save_folder(reply->readAll());
+        } else {
+            qDebug() << "Failed to download folder: " << reply->errorString();
+        }
+
+        reply->deleteLater();
+    });
+}
+
+void NetworkManager::save_folder(const QByteArray& folderData) {
+    QString localFolderPath = "base/characters/" + streamed_charname;
+
+    QDir dir(localFolderPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    QList<QByteArray> fileList = folderData.split('\n');
+    for (const QByteArray& file : fileList) {
+
+        if (file.isEmpty())
+          continue;
+
+        QUrl fileUrl(file);
+        QString fileName = fileUrl.fileName();
+
+        if (fileName.isEmpty()) {
+            qDebug() << "File name is not valid: " << file;
+            continue;
+        }
+
+        QString localFilePath = localFolderPath + fileName;
+        QFile localFile(localFilePath);
+        if (localFile.open(QIODevice::WriteOnly)) {
+            localFile.write(file);
+            localFile.close();
+        } else {
+            qDebug() << "Error while saving: " << localFilePath;
+        }
+    }
+}
