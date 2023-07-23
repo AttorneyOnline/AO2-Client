@@ -384,9 +384,9 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
                 continue;
 
             qDebug() << fileName;
-            pathUrl = pathUrl + "/" + fileName;
-            qDebug() << pathUrl;
-            QNetworkRequest request(pathUrl);
+            QString finalPathUrl = pathUrl + "/" + fileName;
+            qDebug() << finalPathUrl;
+            QNetworkRequest request(finalPathUrl);
             QNetworkReply* reply = stream->get(request);
 
             QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
