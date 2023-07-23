@@ -208,12 +208,14 @@ void Courtroom::char_clicked(int n_char)
             QString download_path = VPath(ao_app->asset_url + "characters/" + char_name + "/").toQString();
             QString download_path_lower = VPath(ao_app->asset_url + "characters/" + char_name.toLower() + "/").toQString();
             ao_app->net_manager->download_folder(download_path);
+            ao_app->net_manager->download_folder(download_path_lower);
             call_error(tr("Feature currently unavailable."));
         } else if (msgBox.clickedButton() == btn2) {
             QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
             QString streamed_ini_path_lower = VPath(ao_app->asset_url + "characters/" + char_name.toLower() + "/char.ini").toQString();
             qDebug() << streamed_ini_path;
             ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
+            ao_app->net_manager->start_image_streaming(streamed_ini_path_lower, "");
         } else {
             return;
         }
