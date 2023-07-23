@@ -365,12 +365,11 @@ void NetworkManager::download_folder(const QStringList& paths) {
 
 
 void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, const QString& localFolderPath_r) {
-    if (localFolderPath_r.isEmpty()) {
-      qDebug() << "Localfolderpath is empty: " << localFolderPath_r;
-      QString localFolderPath = "base/characters/" + streamed_charname;
-    } else {
+    QString localFolderPath = "base/characters/" + streamed_charname;
+
+    if (!localFolderPath_r.isEmpty()) {
       qDebug() << "Localfolderpath is not empty: " << localFolderPath_r;
-      QString localFolderPath = localFolderPath_r;
+      localFolderPath = localFolderPath_r;
     }
   
     QDir dir(localFolderPath);
