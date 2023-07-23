@@ -185,8 +185,12 @@ void Courtroom::char_clicked(int n_char)
     QString char_name = char_list.at(n_char).name;
     QString char_ini_path = ao_app->get_real_path(
           ao_app->get_character_path(char_name, "char.ini"));
-
+    ao_app->net_manager->streamed_charname = char_name;
+    
     if (!file_exists(char_ini_path)) {
+      QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
+      qDebug() << streamed_ini_path;
+      ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
       call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
       return;
     }
