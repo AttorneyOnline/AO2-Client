@@ -186,14 +186,33 @@ void Courtroom::char_clicked(int n_char)
     QString char_ini_path = ao_app->get_real_path(
           ao_app->get_character_path(char_name, "char.ini"));
     ao_app->net_manager->streamed_charname = char_name;
-    
+
     if (!file_exists(char_ini_path)) {
-      QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
-      qDebug() << streamed_ini_path;
-      ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
-      call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
-      return;
+    QMessageBox msgBox;
+    msgBox.setText(tr("Could not find character (char.ini) for %1").arg(char_name));
+    msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
+    msgBox.setStandardButtons(QMessageBox::Download | QMessageBox::Streaming | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Download);
+    int choice = msgBox.exec();
+
+    switch (choice) {
+      case QMessageBox::Download:
+        call_error(tr("Feature currently unavailable.");
+        break;
+
+      case QMessageBox::Streaming:
+        QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
+        qDebug() << streamed_ini_path;
+        ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
+        break;
+
+      case QMessageBox::Cancel:
+      default:
+        return;
     }
+  
+    return;
+  }
 
     qDebug() << "Found char.ini for" << char_name << "at" << char_ini_path;
   }
