@@ -349,9 +349,9 @@ void NetworkManager::download_folder(const QStringList& paths) {
       QNetworkRequest request(url);
       QNetworkReply* reply = stream->get(request);
 
-      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, url]() {
           if (reply->error() == QNetworkReply::NoError) {
-              save_folder(reply->readAll());
+              save_folder(reply->readAll(), url);
           } else {
               qDebug() << "Failed to download folder: " << reply->errorString();
           }
@@ -362,7 +362,7 @@ void NetworkManager::download_folder(const QStringList& paths) {
 }
 
 
-void NetworkManager::save_folder(const QByteArray& folderData) {
+void NetworkManager::save_folder(const QByteArray& folderData, const QUrl& pathUrl) {
     QString localFolderPath = "base/characters/" + streamed_charname;
 
     QDir dir(localFolderPath);
@@ -383,11 +383,8 @@ void NetworkManager::save_folder(const QByteArray& folderData) {
                 continue;
 
             qDebug() << fileName;
-
-            QUrl fileUrl(ao_app->asset_url + localFolderPath + "/" + fileName);
-            QString decodedFileUrl = QUrl::fromPercentEncoding(fileUrl.toEncoded());
-            qDebug() << decodedFileUrl;
-            QNetworkRequest request(decodedFileUrl);
+            qDebug() << pathUrl;
+            QNetworkRequest request(pathUrl);
             QNetworkReply* reply = stream->get(request);
 
             QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
