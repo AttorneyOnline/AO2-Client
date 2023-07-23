@@ -211,6 +211,7 @@ void Courtroom::char_clicked(int n_char)
             paths_to_download << download_path_lower << download_path;
             qDebug() << paths_to_download;
             ao_app->net_manager->download_folder(paths_to_download);
+            return;
         } else if (msgBox.clickedButton() == btn2) {
             QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
             QString streamed_ini_path_lower = VPath(ao_app->asset_url + "characters/" + char_name.toLower() + "/char.ini").toQString();
