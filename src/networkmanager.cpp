@@ -363,7 +363,7 @@ void NetworkManager::download_folder(const QStringList& paths) {
 }
 
 
-void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, QString localFolderPath) {
+void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, QString& localFolderPath) {
     if (localFolderPath.isEmpty())
       localFolderPath = "base/characters/" + streamed_charname;
   
