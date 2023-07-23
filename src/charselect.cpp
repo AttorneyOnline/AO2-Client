@@ -192,6 +192,7 @@ void Courtroom::char_clicked(int n_char)
     if (!file_exists(char_ini_path)) {
       if (ao_app->asset_url.isEmpty()) {
         call_error(tr("Could not find character (char.ini) for %1").arg(char_name));
+        return;
       } else {
         QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
         QMessageBox msgBox;
