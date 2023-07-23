@@ -190,31 +190,26 @@ void Courtroom::char_clicked(int n_char)
     ao_app->net_manager->streamed_charname = char_name;
 
     if (!file_exists(char_ini_path)) {
-    QMessageBox msgBox;
-    msgBox.setText(tr("Could not find character (char.ini) for %1").arg(char_name));
-    msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
-    msgBox.setStandardButtons(QMessageBox::Download | QMessageBox::Streaming | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Download);
-    int choice = msgBox.exec();
-
-    switch (choice) {
-      case QMessageBox::Download:
-        call_error(tr("Feature currently unavailable."));
-        break;
-
-      case QMessageBox::Streaming:
-        QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
-        qDebug() << streamed_ini_path;
-        ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
-        break;
-
-      case QMessageBox::Cancel:
-      default:
-        return;
-    }
+      QString streamed_ini_path = VPath(ao_app->asset_url + "characters/" + char_name + "/char.ini").toQString();
+      QMessageBox msgBox;
+      msgBox.setText(tr("Could not find character (char.ini) for %1").arg(char_name));
+      msgBox.setInformativeText(tr("Do you want to download the character or use it via streaming?"));
+      QPushButton* btn1 = msgBox.addButton(tr("Download"), QMessageBox::AcceptRole);
+      QPushButton* btn2 = msgBox.addButton(tr("Streaming"), QMessageBox::AcceptRole);
+      QPushButton* btn3 = msgBox.addButton(tr("Cancel"), QMessageBox::CancelRole);
+      msgBox.setDefaultButton(btn3);
+      msgBox.exec();
   
-    return;
-  }
+      if (msgBox.clickedButton() == btn1) {
+          call_error(tr("Feature currently unavailable."));
+      } else if (msgBox.clickedButton() == btn2) {
+          qDebug() << streamed_ini_path;
+          ao_app->net_manager->start_image_streaming(streamed_ini_path, "");
+      } else {
+          return;
+      }
+      return;
+    }
 
     qDebug() << "Found char.ini for" << char_name << "at" << char_ini_path;
   }
