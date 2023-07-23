@@ -74,7 +74,7 @@ public slots:
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);
   void start_image_streaming(QString path, QString prefix);
-  void download_folder(QString path);
+  void download_folder(const QStringList& paths);
 
   void send_heartbeat();
 private slots:
