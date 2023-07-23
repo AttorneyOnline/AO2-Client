@@ -348,9 +348,9 @@ void NetworkManager::download_folder(QString path) {
     QNetworkRequest request(url);
     QNetworkReply* reply = stream->get(request);
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply]() {
+    QObject::connect(reply, &QNetworkReply::finished, this, [reply]() {
         if (reply->error() == QNetworkReply::NoError) {
-            save_folder(reply->readAll());
+            this->save_folder(reply->readAll());
         } else {
             qDebug() << "Failed to download folder: " << reply->errorString();
         }
