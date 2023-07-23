@@ -370,27 +370,39 @@ void NetworkManager::save_folder(const QByteArray& folderData) {
         dir.mkpath(".");
     }
 
-    QList<QByteArray> fileList = folderData.split('\n');
-    for (const QByteArray& file : fileList) {
+    QRegularExpression regex("<a href=\"(.*?)\">(.*?)<\\/a>");
+    QRegularExpressionMatchIterator matches = regex.globalMatch(QString(folderData));
 
-        if (file.isEmpty())
-          continue;
+    while (matches.hasNext()) {
+        QRegularExpressionMatch match = matches.next();
+        if (match.hasMatch()) {
+            QString fileName = match.captured(1);
+            QString fileSize = match.captured(2);
 
-        QUrl fileUrl(file);
-        QString fileName = fileUrl.fileName();
+            if (fileName.isEmpty() || fileSize.isEmpty())
+                continue;
 
-        if (fileName.isEmpty()) {
-            qDebug() << "File name is not valid: " << file;
-            continue;
-        }
+            qDebug() << fileName;
 
-        QString localFilePath = localFolderPath + fileName;
-        QFile localFile(localFilePath);
-        if (localFile.open(QIODevice::WriteOnly)) {
-            localFile.write(file);
-            localFile.close();
-        } else {
-            qDebug() << "Error while saving: " << localFilePath;
+            QUrl fileUrl(localFolderPath + "/" + fileName);
+            QNetworkRequest request(fileUrl);
+            QNetworkReply* reply = stream->get(request);
+
+            QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
+                if (reply->error() == QNetworkReply::NoError) {
+                    QFile localFile(localFolderPath + "/" + fileName);
+                    if (localFile.open(QIODevice::WriteOnly)) {
+                        localFile.write(reply->readAll());
+                        localFile.close();
+                    } else {
+                        qDebug() << "Error while saving: " << localFile.fileName();
+                    }
+                } else {
+                    qDebug() << "Failed to download file: " << reply->errorString();
+                }
+
+                reply->deleteLater();
+            });
         }
     }
 }
