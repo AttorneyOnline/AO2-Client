@@ -50,13 +50,16 @@ public:
   explicit NetworkManager(AOApplication *parent);
   ~NetworkManager() = default;
 
+  void connect_to_server(server_type p_server);
+  void disconnect_from_server();
+
+  ////// Streaming variables //////
   QImage streamed_image;
   QPixmap streamed_pixmap;
   QString streamed_path;
+  QString streamed_charname;
   bool streaming_successful = false;
-
-  void connect_to_server(server_type p_server);
-  void disconnect_from_server();
+  ////////////////////////////////
 
 signals:
   void server_connected(bool state);
@@ -70,7 +73,7 @@ public slots:
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);
-  void start_image_streaming(QString path);
+  void start_image_streaming(QString path, QString prefix);
   void send_heartbeat();
 private slots:
   void ms_request_finished(QNetworkReply *reply,
