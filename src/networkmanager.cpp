@@ -347,12 +347,13 @@ void NetworkManager::download_folder(const QStringList& paths) {
   for (const QString& path : paths) {
       QUrl url(path);
       QString string_url = path;
+      QSet<QString> processed_folders;
       QNetworkRequest request(url);
       QNetworkReply* reply = stream->get(request);
 
-      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url]() {
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, processed_folders]() {
           if (reply->error() == QNetworkReply::NoError) {
-              save_folder(reply->readAll(), string_url);
+              save_folder(reply->readAll(), string_url, processed_folders);
           } else {
               qDebug() << "Failed to download folder: " << reply->errorString();
           }
@@ -363,9 +364,9 @@ void NetworkManager::download_folder(const QStringList& paths) {
 }
 
 
-void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl) {
+void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, QSet<QString>& processedFolders) {
     QString localFolderPath = "base/characters/" + streamed_charname;
-
+  
     QDir dir(localFolderPath);
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -375,17 +376,54 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
     QRegularExpressionMatchIterator matches = regex.globalMatch(QString(folderData));
 
     while (matches.hasNext()) {
-        QRegularExpressionMatch match = matches.next();
-        if (match.hasMatch()) {
-            QString fileName = match.captured(1);
-            QString fileSize = match.captured(2);
+      QRegularExpressionMatch match = matches.next();
+      if (match.hasMatch()) {
+        QString fileName = match.captured(1);
+        QString fileSize = match.captured(2);
 
-            if (fileName.isEmpty() || fileSize.isEmpty())
+        if (fileName.isEmpty() || fileSize.isEmpty())
+            continue;
+
+        qDebug() << fileName;
+        QString finalPathUrl = pathUrl + "/" + fileName;
+        qDebug() << finalPathUrl;
+
+        if (fileName.endsWith("/")) { // If it's a subfolder
+            // Remove the trailing "/" from the folder name
+            fileName.chop(1);
+            
+            // Check if the subfolder has already been processed
+            QString subFolderPath = localFolderPath + "/" + fileName;
+            if (processedFolders.contains(subFolderPath)) {
+                // Skip this subfolder to avoid a loop
                 continue;
+            }
+            
+            // Add the subfolder to the processed set
+            processedFolders.insert(subFolderPath);
+            
+            // Recursively call the save_folder function for the subfolder
+            QNetworkRequest request(finalPathUrl);
+            QNetworkReply* reply = stream->get(request);
 
-            qDebug() << fileName;
-            QString finalPathUrl = pathUrl + "/" + fileName;
-            qDebug() << finalPathUrl;
+            QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, subFolderPath, fileName, &processedFolders]() {
+                if (reply->error() == QNetworkReply::NoError) {
+                    // Create the local subfolder if it doesn't exist
+                    QDir subDir(subFolderPath);
+                    if (!subDir.exists()) {
+                        subDir.mkpath(".");
+                    }
+                } else {
+                    qDebug() << "Failed to download subfolder: " << reply->errorString();
+                }
+
+                // Remove the subfolder from the processed set after finishing
+                processedFolders.remove(subFolderPath);
+
+                reply->deleteLater();
+            });
+
+        } else { // If it's a file
             QNetworkRequest request(finalPathUrl);
             QNetworkReply* reply = stream->get(request);
 
@@ -406,4 +444,5 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
             });
         }
     }
+}
 }
