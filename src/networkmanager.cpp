@@ -343,7 +343,7 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
   reply->deleteLater();
 }
 
-void NetworkManager::download_folders(const QStringList& paths) {
+void NetworkManager::download_folder(const QStringList& paths) {
   for (const QString& path : paths) {
       QUrl url(path);
       QNetworkRequest request(url);
