@@ -297,9 +297,9 @@ void AOLayer::start_playback(QString p_image)
   
   if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
     disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
-    qDebug() << "Loading... " << p_image;
-    ao_app->net_manager->start_image_streaming(p_image);
-    qDebug() << "Started image streaming: " << p_image;
+    // qDebug() << "Loading... " << p_image;
+    ao_app->net_manager->start_image_streaming(p_image, ".png");
+    // qDebug() << "Started image streaming: " << p_image;
     connect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded, Qt::UniqueConnection);
     p_image = ao_app->get_real_path(ao_app->get_misc_path("default", "loading"));
   }
@@ -647,22 +647,20 @@ void AOLayer::invert() {
 
 void AOLayer::onImageLoaded(const QImage& image) {
   disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
-  qDebug() << "...";
+  // qDebug() << "...";
   // QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
   //set_frame(pixmap);
   
   if (frame_loader.isRunning())
     exit_loop = true;
-
   this->show();
-
   this->clear();
   this->freeze();
   movie_frames.clear();
   movie_delays.clear();
   this->set_frame(get_pixmap(ao_app->net_manager->streamed_image));
   // this->set_frame(ao_app->net_manager->streamed_pixmap);
-  qDebug() << "Started streaming playback.";
+  // qDebug() << "Started streaming playback.";
 }
 
 void AOLayer::fade(bool in, int duration)
