@@ -30,8 +30,6 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
   connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished, Qt::UniqueConnection);
-  connect(download, &QNetworkAccessManager::finished, this, &NetworkManager::save_folder);
-
 }
 
 void NetworkManager::get_server_list(const std::function<void()> &cb)
@@ -353,11 +351,13 @@ void NetworkManager::download_folder(const QStringList& paths) {
       QNetworkRequest request(url);
       QNetworkReply* reply = download->get(request);
 
-      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, local_folder_path]() {
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, &local_folder_path]() {
           if (reply->error() == QNetworkReply::NoError) {
               save_folder(reply->readAll(), string_url, "");
+              reply->deleteLater();
           } else {
               qDebug() << "Failed to download folder: " << reply->errorString();
+              reply->deleteLater();
           }
 
           reply->deleteLater();
@@ -400,7 +400,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
                 // Recursively call the function to save the subfolder
                 QNetworkRequest request(onlineSubfolderLookup);
                 QNetworkReply* reply = download->get(request);
-                QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, subfolderPath, onlineSubfolderLookup]() {
+                QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, &subfolderPath, &onlineSubfolderLookup]() {
                     if (reply->error() == QNetworkReply::NoError) {
                         save_folder(reply->readAll(), onlineSubfolderLookup, subfolderPath); // Recursive call
                     } else {
