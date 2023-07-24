@@ -18,7 +18,8 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
   stream = new QNetworkAccessManager(this);
-
+  download = new QNetworkAccessManager(this);
+  
   QString master_config =
       Options::getInstance().alternativeMasterserver();
   if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
@@ -349,7 +350,7 @@ void NetworkManager::download_folder(const QStringList& paths) {
       QString string_url = path;
       QString local_folder_path = "";
       QNetworkRequest request(url);
-      QNetworkReply* reply = stream->get(request);
+      QNetworkReply* reply = download->get(request);
 
       QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, local_folder_path]() {
           if (reply->error() == QNetworkReply::NoError) {
@@ -397,7 +398,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
 
                 // Recursively call the function to save the subfolder
                 QNetworkRequest request(onlineSubfolderLookup);
-                QNetworkReply* reply = stream->get(request);
+                QNetworkReply* reply = download->get(request);
                 QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, subfolderPath, onlineSubfolderLookup]() {
                     if (reply->error() == QNetworkReply::NoError) {
                         save_folder(reply->readAll(), onlineSubfolderLookup, subfolderPath); // Recursive call
@@ -413,7 +414,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
               QString finalPathUrl = pathUrl + "/" + fileName;
               qDebug() << "Final path url: " << finalPathUrl;
               QNetworkRequest request(finalPathUrl);
-              QNetworkReply* reply = stream->get(request);
+              QNetworkReply* reply = download->get(request);
 
               QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
                   if (reply->error() == QNetworkReply::NoError) {
