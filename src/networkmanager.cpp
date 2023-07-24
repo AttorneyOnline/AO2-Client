@@ -368,8 +368,9 @@ void NetworkManager::download_folder(const QStringList& paths) {
 
 void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, const QString& localFolderPath_r) {
     QString localFolderPath = localFolderPath_r;
-  
-    QDir dir(localFolderPath);
+
+    QString sanitizedFolderName = QUrl::fromPercentEncoding(localFolderPath.toUtf8());
+    QDir dir(sanitizedFolderName);
     if (!dir.exists()) {
         dir.mkpath(".");
     }
@@ -393,7 +394,8 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
                 qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
                 qDebug() << "Subfolder path: " << subfolderPath;
 
-                QDir dir2(subfolderPath);
+                QString sanitizedSubfolderName = QUrl::fromPercentEncoding(subfolderPath.toUtf8());
+                QDir dir2(sanitizedSubfolderName);
                 if (!dir2.exists() && dir2 != ("base/characters/" + streamed_charname)) {
                     dir2.mkpath(".");
                 }
