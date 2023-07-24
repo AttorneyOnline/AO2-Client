@@ -441,4 +441,4 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
           }
       }
   }
-
+}
