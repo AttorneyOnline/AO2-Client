@@ -419,7 +419,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
 
               QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
                   if (reply->error() == QNetworkReply::NoError) {
-                      fileName_decoded = QUrl::fromPercentEncoding(fileName.toUtf8());
+                      QString fileName_decoded = QUrl::fromPercentEncoding(fileName.toUtf8());
                       QFile localFile(localFolderPath + "/" + fileName_decoded);
                       if (localFile.open(QIODevice::WriteOnly)) {
                           localFile.write(reply->readAll());
