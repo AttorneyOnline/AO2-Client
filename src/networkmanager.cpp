@@ -30,6 +30,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
   connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished, Qt::UniqueConnection);
+  connect(download, &QNetworkAccessManager::finished, this, &NetworkManager::save_folder);
 
 }
 
@@ -418,7 +419,8 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
 
               QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
                   if (reply->error() == QNetworkReply::NoError) {
-                      QFile localFile(localFolderPath + "/" + fileName);
+                      fileName_decoded = QUrl::fromPercentEncoding(fileName.toUtf8());
+                      QFile localFile(localFolderPath + "/" + fileName_decoded);
                       if (localFile.open(QIODevice::WriteOnly)) {
                           localFile.write(reply->readAll());
                           localFile.close();
