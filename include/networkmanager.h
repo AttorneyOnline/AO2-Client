@@ -26,6 +26,8 @@ private:
   QNetworkAccessManager *http;
 
   QNetworkAccessManager *stream;
+  QNetworkAccessManager *download;
+
 
   union {
     QWebSocket *ws;
