@@ -370,7 +370,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
     QString localFolderPath = localFolderPath_r;
   
     QDir dir(localFolderPath);
-    if (!dir.exists()) {
+    if (!dir.exists() && dir == "base/characters/" + streamed_charname) {
         dir.mkpath(".");
     }
 
