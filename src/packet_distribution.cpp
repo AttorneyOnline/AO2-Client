@@ -105,6 +105,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     effects_supported = false;
     expanded_desk_mods_supported = false;
     auth_packet_supported = false;
+    triplex_supported = false;
     typing_timer_supported = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
@@ -138,6 +139,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_supported = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_supported = true;
+    if (f_packet.contains("triplex", Qt::CaseInsensitive))
+      triplex_supported = true;
     if (f_packet.contains("typing_timer", Qt::CaseInsensitive))
       typing_timer_supported = true;
   log_to_demo = false;
