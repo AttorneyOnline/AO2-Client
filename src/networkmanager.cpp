@@ -351,7 +351,7 @@ void NetworkManager::download_folder(const QStringList& paths) {
       QNetworkRequest request(url);
       QNetworkReply* reply = download->get(request);
 
-      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, &local_folder_path]() {
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, local_folder_path]() {
           if (reply->error() == QNetworkReply::NoError) {
               save_folder(reply->readAll(), string_url, local_folder_path);
               reply->deleteLater();
@@ -387,21 +387,21 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
               continue;
         
           QString subfolderPath = localFolderPath + "/" + fileName;
-          QString onlineSubfolderLookup = pathUrl + fileName;
+          QString onlineSubfolderLookup = pathUrl + "/" + fileName;
 
           if (fileName.endsWith("/") && !fileName.startsWith("base/characters")) {
                 qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
                 qDebug() << "Subfolder path: " << subfolderPath;
             
-                QDir dir(subfolderPath);
-                if (!dir.exists()) {
-                    dir.mkpath(".");
+                QDir dir2(subfolderPath);
+                if (!dir2.exists()) {
+                    dir2.mkpath(".");
                 }
 
                 // Recursively call the function to save the subfolder
                 QNetworkRequest request(onlineSubfolderLookup);
                 QNetworkReply* reply = download->get(request);
-                QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, onlineSubfolderLookup, subfolderPath]() {
+                QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, subfolderPath, onlineSubfolderLookup]() {
                     if (reply->error() == QNetworkReply::NoError) {
                         save_folder(reply->readAll(), onlineSubfolderLookup, subfolderPath); // Recursive call
                     } else {
