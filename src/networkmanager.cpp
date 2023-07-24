@@ -398,7 +398,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
                 localFolderPath = "base/characters/" + streamed_charname;
 
                 qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
-                qDebug() << "Subfolder path: " << subFolderPath;
+                qDebug() << "Subfolder path: " << subfolderPath;
 
                 // Recursively call the function to save the subfolder
                 QNetworkRequest request(onlineSubfolderLookup);
