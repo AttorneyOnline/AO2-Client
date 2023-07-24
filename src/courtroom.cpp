@@ -2135,7 +2135,8 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->cccc_ic_supported) {
+  // Adds support for 3 players in screen
+  if (ao_app->triplex_supported) {
     if (third_charid > -1 && third_charid != m_cid) {
       QString packet = QString::number(third_charid);
       if (ao_app->effects_supported)
