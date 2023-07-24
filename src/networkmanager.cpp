@@ -368,11 +368,6 @@ void NetworkManager::download_folder(const QStringList& paths) {
 
 void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, const QString& localFolderPath_r) {
     QString localFolderPath = "base/characters/" + streamed_charname;
-
-    if (!localFolderPath_r.isEmpty()) {
-      qDebug() << "Localfolderpath is not empty: " << localFolderPath_r;
-      localFolderPath = localFolderPath_r;
-    }
   
     QDir dir(localFolderPath);
     if (!dir.exists()) {
@@ -390,13 +385,11 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
 
           if (fileName.isEmpty() || fileSize.isEmpty())
               continue;
+        
+          QString subfolderPath = localFolderPath + "/" + fileName;
+          QString onlineSubfolderLookup = pathUrl + "/" + fileName;
 
           if (fileName.endsWith("/") && !fileName.startsWith("base/characters")) {
-                QString subfolderPath = localFolderPath + "/" + fileName;
-                QString onlineSubfolderLookup = pathUrl + "/" + fileName;
-
-                localFolderPath = "base/characters/" + streamed_charname;
-
                 qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
                 qDebug() << "Subfolder path: " << subfolderPath;
 
