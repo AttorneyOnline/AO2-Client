@@ -391,7 +391,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
           if (fileName.isEmpty() || fileSize.isEmpty())
               continue;
 
-          if (fileName.endsWith("/")) {
+          if (fileName.endsWith("/") && !fileName.startsWith("base/characters")) {
                 QString subfolderPath = localFolderPath + "/" + fileName;
                 QString onlineSubfolderLookup = pathUrl + "/" + fileName;
 
