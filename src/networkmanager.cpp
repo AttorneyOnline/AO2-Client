@@ -370,7 +370,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
     QString localFolderPath = localFolderPath_r;
   
     QDir dir(localFolderPath);
-    if (!dir.exists() && dir == "base/characters/" + streamed_charname) {
+    if (!dir.exists()) {
         dir.mkpath(".");
     }
 
@@ -383,18 +383,18 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
           QString fileName = match.captured(1);
           QString fileSize = match.captured(2);
 
-          if (fileName.isEmpty() || fileSize.isEmpty())
+          if (fileName.isEmpty() || fileSize.isEmpty() || fileName.startsWith("?"))
               continue;
         
           QString subfolderPath = localFolderPath + "/" + fileName;
           QString onlineSubfolderLookup = pathUrl + "/" + fileName;
 
-          if (fileName.endsWith("/") && !fileName.startsWith("base/characters")) {
+          if (fileName.endsWith("/") && fileName != ("/base/characters/") & !fileName.startsWith("/")) {
                 qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
                 qDebug() << "Subfolder path: " << subfolderPath;
 
                 QDir dir2(subfolderPath);
-                if (!dir2.exists() && dir != "base/characters/" + streamed_charname) {
+                if (!dir2.exists() && dir2 != ("base/characters/" + streamed_charname)) {
                     dir2.mkpath(".");
                 }
             
