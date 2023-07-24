@@ -392,16 +392,17 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
           if (fileName.endsWith("/") && !fileName.startsWith("base/characters")) {
                 qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
                 qDebug() << "Subfolder path: " << subfolderPath;
+
+                QDir dir2(subfolderPath);
+                if (!dir2.exists() && dir != "base/characters/" + streamed_charname) {
+                    dir2.mkpath(".");
+                }
             
                 // Recursively call the function to save the subfolder
                 QNetworkRequest request(onlineSubfolderLookup);
                 QNetworkReply* reply = download->get(request);
                 QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, subfolderPath, onlineSubfolderLookup]() {
                     if (reply->error() == QNetworkReply::NoError) {
-                        QDir dir2(subfolderPath);
-                        if (!dir2.exists()) {
-                            dir2.mkpath(".");
-                        }
                         save_folder(reply->readAll(), onlineSubfolderLookup, subfolderPath); // Recursive call
                     } else {
                         qDebug() << "Failed to download folder: " << reply->errorString();
