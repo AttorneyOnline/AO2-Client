@@ -389,7 +389,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
           QString subfolderPath = localFolderPath + "/" + fileName;
           QString onlineSubfolderLookup = pathUrl + "/" + fileName;
 
-          if (fileName.endsWith("/") && fileName != ("/base/characters/") & !fileName.startsWith("/")) {
+          if (fileName.endsWith("/") && fileName != ("/base/characters/") && !fileName.startsWith("/") && !fileName.startsWith("..")) {
                 qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
                 qDebug() << "Subfolder path: " << subfolderPath;
 
@@ -422,19 +422,23 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
                   if (reply->error() == QNetworkReply::NoError) {
                       QString fileName_decoded = QUrl::fromPercentEncoding(fileName.toUtf8());
                       QFile localFile(localFolderPath + "/" + fileName_decoded);
-                      if (localFile.open(QIODevice::WriteOnly)) {
-                          localFile.write(reply->readAll());
-                          localFile.close();
+                      if (localFile.exists()) {
+                          qDebug() << "File already exists: " << localFile.fileName();
                       } else {
-                          qDebug() << "Error while saving: " << localFile.fileName();
+                          if (localFile.open(QIODevice::WriteOnly)) {
+                              localFile.write(reply->readAll());
+                              localFile.close();
+                          } else {
+                              qDebug() << "Error while saving: " << localFile.fileName();
+                          }
                       }
                   } else {
                       qDebug() << "Failed to download file: " << reply->errorString();
                   }
-
+  
                   reply->deleteLater();
               });
           }
       }
   }
-}
+
