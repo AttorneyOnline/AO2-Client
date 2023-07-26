@@ -5579,6 +5579,29 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
   menu->popup(ui_text_color->mapToGlobal(pos));
 }
 
+void Courtroom::search_download_file()
+{
+  QString content;
+  download_ini_path = ao_app->get_real_path(
+                ao_app->get_character_path(char_name, "download.ini"));
+  if (file_exists(download_ini_path))
+  {
+    QFile file(download_ini_path);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+      content = QString::fromUtf8(file.readAll());
+      file.close();
+      if content.startsWith("http")
+      {
+        ao_app->send_server_packet(new AOPacket("CU", "1", current_char, content));
+      }
+    } else {
+      qDebug() << "Error opening file: " << file.errorString();
+      return;
+    }
+  }
+}
+
 void Courtroom::set_text_color_dropdown()
 {
   // Clear the lists
