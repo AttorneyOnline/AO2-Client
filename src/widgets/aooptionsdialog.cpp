@@ -19,6 +19,7 @@
 #include <QSpinBox>
 #include <QUiLoader>
 #include <QVBoxLayout>
+#include <QTableWidget>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \
@@ -627,7 +628,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QLabel, download_disclaimer_1)
   FROM_UI(QLabel, download_disclaimer_2)
 
-  connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this] {
+  connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
     int row = item->row();
     int column = item->column();
 
@@ -644,7 +645,7 @@ void AOOptionsDialog::setupUI()
         }
       }
     }
-  }
+  });
   updateValues();
 }
 
