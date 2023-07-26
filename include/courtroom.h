@@ -331,7 +331,7 @@ public:
     return ao_app->get_image_suffix(ao_app->get_character_path(charname, "emotions/button" + emotion_number + "_off")); 
   }
 
-  // QString current_char_path = "";
+  void search_download_file();
 
   void typing_signal(int signal);
 
