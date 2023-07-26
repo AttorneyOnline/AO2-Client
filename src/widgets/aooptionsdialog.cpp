@@ -624,9 +624,7 @@ void AOOptionsDialog::setupUI()
 
   // Char Download Manager tab
 
-  FROM_UI(QTableWidget, ui_download_table)
-  FROM_UI(QLabel, download_disclaimer_1)
-  FROM_UI(QLabel, download_disclaimer_2)
+  FROM_UI(QTableWidget, download_table)
 
   connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
     int row = item->row();
