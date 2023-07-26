@@ -660,31 +660,6 @@ void AOOptionsDialog::timestampCbChanged(int state)
   ui_log_timestamp_format_combobox->setDisabled(state == 0);
 }
 
-void AOOptionsDialog::addCharacterRow(QString characterName, QString downloadLink)
-{
-    int row = ui_download_table->rowCount();
-    ui_download_table->insertRow(row);
-
-    QTableWidgetItem* characterItem = new QTableWidgetItem(characterName);
-    ui_download_table->setItem(row, 0, characterItem);
-
-    QTableWidgetItem* linkItem = new QTableWidgetItem(downloadLink);
-    ui_download_table->setItem(row, 1, linkItem);
-}
-
-void AOOptionsDialog::removeCharacterRow(QString characterName)
-{
-    for (int row = 0; row < ui_download_table->rowCount(); ++row)
-    {
-        QTableWidgetItem* item = ui_download_table->item(row, 0);
-        if (item && item->text() == characterName)
-        {
-            ui_download_table->removeRow(row);
-            break;
-        }
-    }
-}
-
 #if (defined(_WIN32) || defined(_WIN64))
 bool AOOptionsDialog::needsDefaultAudioDevice() { return true; }
 #elif (defined(LINUX) || defined(__linux__))
