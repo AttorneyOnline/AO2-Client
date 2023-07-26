@@ -24,6 +24,7 @@ class QAbstractButton;
 #include <QListWidget>
 #include <QTextBrowser>
 #include <QTextStream>
+#include <QTableWidget>
 
 class AOApplication;
 
