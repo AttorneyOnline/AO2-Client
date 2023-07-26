@@ -120,8 +120,6 @@ private:
 
   // Char Download Manager tab... or just DL Manager tab
   QTableWidget *ui_download_table;
-  QLabel *download_disclaimer_1; // I'm not taking any responsibility lol
-  QLabel *download_disclaimer_2;
 
   /**
    * Allows the AO2 master server hoster to go broke.
