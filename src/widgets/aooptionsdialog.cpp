@@ -621,6 +621,30 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QTextBrowser, privacy_policy)
   ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
 
+  // Char Download Manager tab
+
+  FROM_UI(QTableWidget, ui_download_table)
+  FROM_UI(QLabel, download_disclaimer_1)
+  FROM_UI(QLabel, download_disclaimer_2)
+
+  connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this] {
+    int row = item->row();
+    int column = item->column();
+
+    if (column == 1) {
+      QTableWidgetItem* linkItem = ui_download_table->item(row, column);
+      if (linkItem) {
+        QString downloadLink = linkItem->text();
+        QUrl url(downloadLink);
+
+        if (url.isValid()) {
+          QDesktopServices::openUrl(url);
+        } else {
+          qWarning() << "Invalid URL: " << downloadLink;
+        }
+      }
+    }
+  }
   updateValues();
 }
 
@@ -635,6 +659,31 @@ void AOOptionsDialog::onTimestampFormatEdited()
 void AOOptionsDialog::timestampCbChanged(int state)
 {
   ui_log_timestamp_format_combobox->setDisabled(state == 0);
+}
+
+void AOOptionsDialog::addCharacterRow(QString characterName, QString downloadLink)
+{
+    int row = ui_download_table->rowCount();
+    ui_download_table->insertRow(row);
+
+    QTableWidgetItem* characterItem = new QTableWidgetItem(characterName);
+    ui_download_table->setItem(row, 0, characterItem);
+
+    QTableWidgetItem* linkItem = new QTableWidgetItem(downloadLink);
+    ui_download_table->setItem(row, 1, linkItem);
+}
+
+void AOOptionsDialog::removeCharacterRow(QString characterName)
+{
+    for (int row = 0; row < ui_download_table->rowCount(); ++row)
+    {
+        QTableWidgetItem* item = ui_download_table->item(row, 0);
+        if (item && item->text() == characterName)
+        {
+            ui_download_table->removeRow(row);
+            break;
+        }
+    }
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
