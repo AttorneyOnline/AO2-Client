@@ -195,7 +195,7 @@ void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
     // Configurar los datos de la única columna
     widget->setColumnCount(1);
     for (int row = 0; row < data.rows.size(); ++row) {
-        const QString &rowData = data.rows.at(row);
+        const QStringList &rowData = data.rows.at(row);
         QTableWidgetItem* item = new QTableWidgetItem(rowData);
         widget->setItem(row, 0, item);
     }
