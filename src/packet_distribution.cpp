@@ -392,7 +392,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->enter_courtroom();
     w_courtroom->set_courtroom_size();
     w_courtroom->update_character(f_contents.at(2).toInt());
-    w_courtroom->search_download_file();
+    w_courtroom->search_download_file("1");
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
