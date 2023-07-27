@@ -535,19 +535,18 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString cu_name = f_contents.at(1);
     QString cu_link = QUrl::fromPercentEncoding(f_contents.at(2).toUtf8());
 
-    TableData dl_Table = Options::getInstance().downloadManager();
+    TableData dl_table = Options::getInstance().downloadManager();
     QStringList newRow;
     newRow.append(cu_link);
 
-    dl_Table.headers.append(cu_name);
-    dl_Table.rows.append(newRow);
+    dl_table.headers.append(cu_name);
+    dl_table.rows.append(newRow);
 
     Options::getInstance().setDownloadManager(dl_table);
       
     // dialog->addCharacterRow(cu_name, cu_link);
     qDebug() << cu_name << " | " << cu_link;
     qDebug() << "Download Table: " << dl_table;
-    qDebug() << Options::getInstance().downloadManager();
   }
   else if (header == "TI") { // Timer packet
     if (!courtroom_constructed || f_contents.size() < 2)
