@@ -650,19 +650,18 @@ void AOOptionsDialog::setupUI()
 
 void AOOptionsDialog::addCharacterRow(QString characterName, QString downloadLink)
 {
-  ui_download_table->setRowCount(1);
   ui_download_table->setColumnCount(1);
   int row = ui_download_table->rowCount();
-  ui_download_table->insertRow(row);
 
   qDebug() << "addCharacterRow: row" << row; 
 
+  ui_download_table->setRowCount(row+1);
 
-  QTableWidgetItem* characterItem = new QTableWidgetItem(characterName);
-  ui_download_table->setItem(row, 1, characterItem);
+  QTableWidgetItem* headerItem = new QTableWidgetItem(characterName);
+  ui_download_table->setVerticalHeaderItem(row+1, headerItem);
 
   QTableWidgetItem* linkItem = new QTableWidgetItem(downloadLink);
-  ui_download_table->setItem(row, 1, linkItem);
+  ui_download_table->setItem(row+1, 0, linkItem);
 }
 
 void AOOptionsDialog::removeCharacterRow(QString characterName)
