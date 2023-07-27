@@ -679,7 +679,7 @@ void AOOptionsDialog::setupUI()
   // Char Download Manager tab
 
   FROM_UI(QTableWidget, download_table)
-  registerOption<TableData>("download_table", &Options::downloadManager,
+  registerOption<QTableWidget, TableData>("download_table", &Options::downloadManager,
                                   &Options::setDownloadManager);
 
   connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
