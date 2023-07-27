@@ -38,6 +38,8 @@ class AOOptionsDialog : public QDialog {
 public:
   explicit AOOptionsDialog(QDialog *parent = nullptr,
                            AOApplication *p_ao_app = nullptr);
+  void addCharacterRow(QString characterName, QString downloadLink);
+  void removeCharacterRow(QString characterName);
 
 private:
   AOApplication *ao_app;
@@ -148,8 +150,6 @@ private:
 
 signals:
   void reloadThemeRequest();
-  // void addCharacterRow(QString characterName, QString downloadLink);
-  // void removeCharacterRow(QString characterName);
 
 private slots:
   void savePressed();
