@@ -6,6 +6,11 @@
 #include <QSettings>
 #include <datatypes.h>
 
+struct TableData {
+    QStringList headers;
+    QList<QStringList> rows;
+};
+
 class Options {
 private:
   /**
@@ -27,6 +32,7 @@ private:
   Options();
 
   QString m_server_subtheme;
+  TableData downloadTableData;
 
 public:
   Options(Options const &) = delete;
@@ -270,6 +276,9 @@ public:
   // Callwords notify the user when the word/words are used in a game message.
   QStringList callwords() const;
   void setCallwords(QStringList value);
+
+  TableData downloadManager() const;
+  void setDownloadManager(TableData& data);
 
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
