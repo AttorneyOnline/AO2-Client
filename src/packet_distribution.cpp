@@ -527,7 +527,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
     w_courtroom->typing_signal(tt_state);
   }
-  else if (header == "CU") { // Char URL packet
+  else if (header == "CU") { // Char URL packet for the Char Downloader
     if (f_contents.isEmpty()) {
       goto end;
     }
@@ -535,8 +535,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString cu_name = f_contents.at(1);
     QString cu_link = f_contents.at(2);
 
-    // If we have a download.ini
-    AOOptionsDialog::addCharacterRow(cu_name, cu_link);
+    AOOptionsDialog* dialog = new AOOptionsDialog(nullptr, this);
+    dialog.addCharacterRow(cu_name, cu_link);
     qDebug() << cu_name << " | " << cu_link;
   }
   else if (header == "TI") { // Timer packet
