@@ -278,7 +278,7 @@ public:
   void setCallwords(QStringList value);
 
   TableData downloadManager() const;
-  void setDownloadManager(TableData& data);
+  void setDownloadManager(TableData data);
 
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
