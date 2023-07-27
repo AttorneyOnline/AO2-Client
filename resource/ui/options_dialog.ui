@@ -630,7 +630,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QTableWidget" name="ui_download_table">
+        <widget class="QTableWidget" name="download_table">
          <property name="toolTip">
           <string>List of available character DL links.
 Double click the items to download them!</string>
