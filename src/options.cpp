@@ -577,7 +577,7 @@ TableData Options::downloadManager() const
   return downloadTableData;
 }
 
-void Options::setDownloadManager(TableData& data)
+void Options::setDownloadManager(TableData data)
 {
   downloadTableData = data;
 }
