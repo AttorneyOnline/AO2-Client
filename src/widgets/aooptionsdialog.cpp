@@ -147,10 +147,11 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
   return paths;
 }
 
+// Modificar la función widgetData
 template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
 {
     TableData tableData;
-    QMap<QString, QStringList> rowDataMap; // Usaremos un QMap para almacenar los datos por nombre
+    QSet<QString> uniqueURLs; // Conjunto para almacenar URLs únicas
 
     // Obtener las cabeceras (nombres de las filas) de la tabla
     for (int row = 0; row < widget->rowCount(); ++row) {
@@ -163,42 +164,32 @@ template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
     for (int row = 0; row < widget->rowCount(); ++row) {
         QTableWidgetItem* item = widget->item(row, 0);
         QString rowData = item ? item->text() : "";
-        QString headerData = tableData.headers.value(row); // Obtener el nombre asociado
-
-        // Si ya hay una entrada con el mismo nombre, eliminarla del mapa antes de agregar la nueva
-        if (rowDataMap.contains(headerData)) {
-            rowDataMap.remove(headerData);
+        // Verificar si la URL ya ha sido agregada previamente
+        if (!rowData.isEmpty() && !uniqueURLs.contains(rowData)) {
+            tableData.rows.append(rowData);
+            uniqueURLs.insert(rowData); // Agregar la URL al conjunto
         }
-
-        // Agregar el nuevo valor al mapa
-        rowDataMap.insert(headerData, rowData.split(", "));
     }
-
-    // Convertir el mapa ordenado a la lista de filas en TableData
-    tableData.rows = rowDataMap.values();
 
     return tableData;
 }
 
-// Establecer datos en el QTableWidget utilizando TableData
+// Modificar la función setWidgetData
 template <>
 void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
 {
-    widget->clearContents();
     widget->setRowCount(data.headers.size());
-    widget->setColumnCount(1);
-
-    // Configurar las cabeceras (nombres de las filas)
     for (int row = 0; row < data.headers.size(); ++row) {
-        QString headerData = data.headers.at(row);
+        QString headerData = data.headers.value(row);
         QTableWidgetItem* headerItem = new QTableWidgetItem(headerData);
         widget->setVerticalHeaderItem(row, headerItem);
     }
 
-    // Configurar los datos de la única columna
+    widget->setColumnCount(1);
     for (int row = 0; row < data.rows.size(); ++row) {
         const QStringList &rowData = data.rows.at(row);
-        QTableWidgetItem* item = new QTableWidgetItem(rowData.join(", "));
+        QString joinedRowData = rowData.join(", ");
+        QTableWidgetItem* item = new QTableWidgetItem(joinedRowData);
         widget->setItem(row, 0, item);
     }
 }
