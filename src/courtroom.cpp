@@ -4755,7 +4755,8 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
   QString iniswap = ui_iniswap_dropdown->itemText(p_index);
-
+  search_download_file("0"); // We delete the previous char's download.ini entry
+  
   QStringList swaplist;
   QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
   for (int i = 0; i < ui_iniswap_dropdown->count(); ++i) {
@@ -5581,7 +5582,7 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
   menu->popup(ui_text_color->mapToGlobal(pos));
 }
 
-void Courtroom::search_download_file()
+void Courtroom::search_download_file(QString action)
 {
   QString content;
   QString download_ini_path = ao_app->get_real_path(
@@ -5593,7 +5594,7 @@ void Courtroom::search_download_file()
       content = QString::fromUtf8(file.readAll());
       file.close();
       if (content.startsWith("http")) {
-        ao_app->send_server_packet(new AOPacket("CU", {"1", "1", current_char, content}));
+        ao_app->send_server_packet(new AOPacket("CU", {"1", action, current_char, content}));
       }
     } else {
         qDebug() << "Error opening file: " << file.errorString();
