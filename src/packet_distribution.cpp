@@ -531,9 +531,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.isEmpty()) {
       goto end;
     }
-    int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared 
-    QString cu_name = f_contents.at(1);
-    QString cu_link = QUrl::fromPercentEncoding(f_contents.at(2).toUtf8());
+    int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared
+    int cu_action = f_contents.at(1).toInt(); // 0 = Delete entry | 1 = Add entry
+    QString cu_name = f_contents.at(2);
+    QString cu_link = QUrl::fromPercentEncoding(f_contents.at(3).toUtf8());
 
     TableData dl_table = Options::getInstance().downloadManager();
     QStringList newRow;
@@ -542,6 +543,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     dl_table.headers.append(cu_name);
     dl_table.rows.append(newRow);
 
+    if (cu_action == 1) {
+        dl_table.action = "add";
+    } else {
+        dl_table.action = "delete";
+    }
+      
     Options::getInstance().setDownloadManager(dl_table);
       
     // dialog->addCharacterRow(cu_name, cu_link);
