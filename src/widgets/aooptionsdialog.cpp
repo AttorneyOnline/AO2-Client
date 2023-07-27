@@ -147,6 +147,54 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
   return paths;
 }
 
+template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
+{
+    TableData tableData;
+
+    // Obtener las cabeceras (nombres de las filas) de la tabla
+    for (int row = 0; row < widget->rowCount(); ++row) {
+        QTableWidgetItem* headerItem = widget->verticalHeaderItem(row);
+        if (headerItem) {
+            tableData.headers.append(headerItem->text());
+        } else {
+            tableData.headers.append("");
+        }
+    }
+
+    // Obtener los datos de la única columna de la tabla
+    for (int row = 0; row < widget->rowCount(); ++row) {
+        QTableWidgetItem* item = widget->item(row, 0);
+        if (item) {
+            tableData.rows.append(item->text());
+        } else {
+            tableData.rows.append("");
+        }
+    }
+
+    return tableData;
+}
+
+// Establecer datos en el QTableWidget utilizando TableData
+template <>
+void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
+{
+    // Configurar las cabeceras (nombres de las filas)
+    widget->setRowCount(value.headers.size());
+    for (int row = 0; row < value.headers.size(); ++row) {
+        QString headerData = value.headers.value(row);
+        QTableWidgetItem* headerItem = new QTableWidgetItem(headerData);
+        widget->setVerticalHeaderItem(row, headerItem);
+    }
+
+    // Configurar los datos de la única columna
+    widget->setColumnCount(1);
+    for (int row = 0; row < value.rows.size(); ++row) {
+        const QString &rowData = value.rows.at(row);
+        QTableWidgetItem* item = new QTableWidgetItem(rowData);
+        widget->setItem(row, 0, item);
+    }
+}
+
 template <typename T, typename V>
 void AOOptionsDialog::registerOption(const QString &widgetName,
                                      V (Options::*getter)() const,
@@ -625,6 +673,8 @@ void AOOptionsDialog::setupUI()
   // Char Download Manager tab
 
   FROM_UI(QTableWidget, download_table)
+  registerOption<TableData>("download_table", &Options::downloadManager,
+                                  &Options::setDownloadManager);
 
   connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
     int row = item->row();
@@ -652,10 +702,10 @@ void AOOptionsDialog::addCharacterRow(QString characterName, QString downloadLin
 {
   ui_download_table->setColumnCount(1);
   int row = ui_download_table->rowCount();
+  ui_download_table->setRowCount(row+1);
 
   qDebug() << "addCharacterRow: row" << row; 
 
-  ui_download_table->setRowCount(row+1);
 
   QTableWidgetItem* headerItem = new QTableWidgetItem(characterName);
   ui_download_table->setVerticalHeaderItem(row+1, headerItem);
