@@ -147,7 +147,7 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
   return paths;
 }
 
-TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
+template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
 {
     TableData tableData;
     QMap<QString, QStringList> rowDataMap; // Usaremos un QMap para almacenar los datos por nombre
