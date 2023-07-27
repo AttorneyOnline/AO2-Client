@@ -9,6 +9,7 @@
 struct TableData {
     QStringList headers;
     QList<QStringList> rows;
+    QString action;
 };
 
 class Options {
