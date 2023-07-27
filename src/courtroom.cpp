@@ -5591,7 +5591,7 @@ void Courtroom::search_download_file()
       content = QString::fromUtf8(file.readAll());
       file.close();
       if (content.startsWith("http")) {
-        ao_app->send_server_packet(new AOPacket("CU", {"1", current_char, content}));
+        ao_app->send_server_packet(new AOPacket("CU", {"1", "1", current_char, content}));
       }
     } else {
         qDebug() << "Error opening file: " << file.errorString();
