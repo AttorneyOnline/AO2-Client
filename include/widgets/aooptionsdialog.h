@@ -148,8 +148,8 @@ private:
 
 signals:
   void reloadThemeRequest();
-  void addCharacterRow(QString characterName, QString downloadLink);
-  void removeCharacterRow(QString characterName);
+  // void addCharacterRow(QString characterName, QString downloadLink);
+  // void removeCharacterRow(QString characterName);
 
 private slots:
   void savePressed();
