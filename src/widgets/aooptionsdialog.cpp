@@ -147,35 +147,35 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
   return paths;
 }
 
-template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
+TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
 {
     TableData tableData;
-    QStringList rowsList;
-    QStringList headersList;
+    QMap<QString, QStringList> rowDataMap; // Usaremos un QMap para almacenar los datos por nombre
 
     // Obtener las cabeceras (nombres de las filas) de la tabla
     for (int row = 0; row < widget->rowCount(); ++row) {
         QTableWidgetItem* headerItem = widget->verticalHeaderItem(row);
-        if (headerItem) {
-            headersList.append(headerItem->text());
-            tableData.headers.append(headersList);
-        } else {
-            headersList.append("");
-            tableData.headers.append(headersList);
-        }
+        QString headerData = headerItem ? headerItem->text() : "";
+        tableData.headers.append(headerData);
     }
 
     // Obtener los datos de la única columna de la tabla
     for (int row = 0; row < widget->rowCount(); ++row) {
         QTableWidgetItem* item = widget->item(row, 0);
-        if (item) {
-            rowsList.append(item->text());
-            tableData.rows.append(rowsList);
-        } else {
-            rowsList.append("");
-            tableData.rows.append(rowsList);
+        QString rowData = item ? item->text() : "";
+        QString headerData = tableData.headers.value(row); // Obtener el nombre asociado
+
+        // Si ya hay una entrada con el mismo nombre, eliminarla del mapa antes de agregar la nueva
+        if (rowDataMap.contains(headerData)) {
+            rowDataMap.remove(headerData);
         }
+
+        // Agregar el nuevo valor al mapa
+        rowDataMap.insert(headerData, rowData.split(", "));
     }
+
+    // Convertir el mapa ordenado a la lista de filas en TableData
+    tableData.rows = rowDataMap.values();
 
     return tableData;
 }
@@ -184,16 +184,18 @@ template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
 template <>
 void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
 {
-    // Configurar las cabeceras (nombres de las filas)
+    widget->clearContents();
     widget->setRowCount(data.headers.size());
+    widget->setColumnCount(1);
+
+    // Configurar las cabeceras (nombres de las filas)
     for (int row = 0; row < data.headers.size(); ++row) {
-        QString headerData = data.headers.value(row);
+        QString headerData = data.headers.at(row);
         QTableWidgetItem* headerItem = new QTableWidgetItem(headerData);
         widget->setVerticalHeaderItem(row, headerItem);
     }
 
     // Configurar los datos de la única columna
-    widget->setColumnCount(1);
     for (int row = 0; row < data.rows.size(); ++row) {
         const QStringList &rowData = data.rows.at(row);
         QTableWidgetItem* item = new QTableWidgetItem(rowData.join(", "));
