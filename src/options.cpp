@@ -572,6 +572,16 @@ void Options::setCallwords(QStringList value)
   config.setValue("callwords", value);
 }
 
+TableData Options::downloadManager() const
+{
+  return downloadTableData;
+}
+
+void Options::setDownloadManager(TableData& data)
+{
+  downloadTableData = data;
+}
+
 void Options::clearConfig() { config.clear(); }
 
 QVector<server_type> Options::favorites()
