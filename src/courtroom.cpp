@@ -475,6 +475,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           &Courtroom::on_iniswap_dropdown_changed);
+  connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+          &Courtroom::search_download_file); // After we iniswap, we search for a download.ini
   connect(ui_iniswap_dropdown, &QComboBox::customContextMenuRequested, this,
           &Courtroom::on_iniswap_context_menu_requested);
   connect(ui_iniswap_remove, &AOButton::clicked, this,
