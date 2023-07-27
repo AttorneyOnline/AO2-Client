@@ -540,13 +540,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QStringList newRow;
     newRow.append(cu_link);
 
-    dl_table.headers.append(cu_name);
-    dl_table.rows.append(newRow);
-
     if (cu_action == 1) {
-        dl_table.action = "add";
+        dl_table.headers.append(cu_name);
+        dl_table.rows.append(newRow);
     } else {
-        dl_table.action = "delete";
+        // "Delete entry" action
+        for (int i = 0; i < dl_table.rows.size(); i++) {
+            const QStringList& row = dl_table.rows.at(i);
+            if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
+                // Found a matching entry, remove it.
+                dl_table.rows.removeAt(i);
+                dl_table.headers.removeAt(i);
+                break; // Assuming there's only one entry with the given cu_name and cu_link.
+        }
+      }
     }
       
     Options::getInstance().setDownloadManager(dl_table);
