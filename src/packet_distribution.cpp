@@ -534,6 +534,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared 
     QString cu_name = f_contents.at(1);
     QString cu_link = QUrl::fromPercentEncoding(f_contents.at(2).toUtf8());
+    AOOptionsDialog *dialog = new AOOptionsDialog(nullptr, this);
 
     dialog->addCharacterRow(cu_name, cu_link);
     qDebug() << cu_name << " | " << cu_link;
