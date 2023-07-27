@@ -546,7 +546,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       
     // dialog->addCharacterRow(cu_name, cu_link);
     qDebug() << cu_name << " | " << cu_link;
-    qDebug() << "Download Table: " << dl_table;
   }
   else if (header == "TI") { // Timer packet
     if (!courtroom_constructed || f_contents.size() < 2)
