@@ -150,14 +150,18 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
 template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
 {
     TableData tableData;
+    QStringList rowsList;
+    QStringList headersList;
 
     // Obtener las cabeceras (nombres de las filas) de la tabla
     for (int row = 0; row < widget->rowCount(); ++row) {
         QTableWidgetItem* headerItem = widget->verticalHeaderItem(row);
         if (headerItem) {
-            tableData.headers.append(headerItem->text());
+            headersList.append(headerItem->text());
+            tableData.headers.append(headersList);
         } else {
-            tableData.headers.append("");
+            headersList.append("");
+            tableData.headers.append(headersList);
         }
     }
 
@@ -165,9 +169,11 @@ template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
     for (int row = 0; row < widget->rowCount(); ++row) {
         QTableWidgetItem* item = widget->item(row, 0);
         if (item) {
-            tableData.rows.append(item->text());
+            rowsList.append(item->text());
+            tableData.rows.append(rowsList);
         } else {
-            tableData.rows.append("");
+            rowsList.append("")
+            tableData.rows.append(rowsList);
         }
     }
 
@@ -179,17 +185,17 @@ template <>
 void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
 {
     // Configurar las cabeceras (nombres de las filas)
-    widget->setRowCount(value.headers.size());
-    for (int row = 0; row < value.headers.size(); ++row) {
-        QString headerData = value.headers.value(row);
+    widget->setRowCount(data.headers.size());
+    for (int row = 0; row < data.headers.size(); ++row) {
+        QString headerData = data.headers.value(row);
         QTableWidgetItem* headerItem = new QTableWidgetItem(headerData);
         widget->setVerticalHeaderItem(row, headerItem);
     }
 
     // Configurar los datos de la única columna
     widget->setColumnCount(1);
-    for (int row = 0; row < value.rows.size(); ++row) {
-        const QString &rowData = value.rows.at(row);
+    for (int row = 0; row < data.rows.size(); ++row) {
+        const QString &rowData = data.rows.at(row);
         QTableWidgetItem* item = new QTableWidgetItem(rowData);
         widget->setItem(row, 0, item);
     }
