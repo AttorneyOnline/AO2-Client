@@ -5582,8 +5582,8 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
 void Courtroom::search_download_file()
 {
   QString content;
-  download_ini_path = ao_app->get_real_path(
-                ao_app->get_character_path(char_name, "download.ini"));
+  QString download_ini_path = ao_app->get_real_path(
+                ao_app->get_character_path(current_char, "download.ini"));
   if (file_exists(download_ini_path))
   {
     QFile file(download_ini_path);
@@ -5591,13 +5591,12 @@ void Courtroom::search_download_file()
     {
       content = QString::fromUtf8(file.readAll());
       file.close();
-      if content.startsWith("http")
-      {
+      if content.startsWith("http") {
         ao_app->send_server_packet(new AOPacket("CU", "1", current_char, content));
       }
     } else {
-      qDebug() << "Error opening file: " << file.errorString();
-      return;
+        qDebug() << "Error opening file: " << file.errorString();
+        return;
     }
   }
 }
