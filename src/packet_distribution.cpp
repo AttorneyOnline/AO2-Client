@@ -541,8 +541,23 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     newRow.append(cu_link);
 
     if (cu_action == 1) {
-        dl_table.headers.append(cu_name);
-        dl_table.rows.append(newRow);
+        // "Add entry" action
+        bool entryExists = false;
+    
+        // Check if the entry already exists with the same header (cu_name) and URL (cu_link)
+        for (int i = 0; i < dl_table.rows.size(); i++) {
+            const QStringList& row = dl_table.rows.at(i);
+            if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
+                entryExists = true;
+                break;
+            }
+        }
+    
+        // Only add the new entry if it doesn't already exist
+        if (!entryExists) {
+            dl_table.headers.append(cu_name);
+            dl_table.rows.append(newRow);
+        }
     } else {
         // "Delete entry" action
         for (int i = 0; i < dl_table.rows.size(); i++) {
