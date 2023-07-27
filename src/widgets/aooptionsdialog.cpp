@@ -686,11 +686,12 @@ void AOOptionsDialog::setupUI()
     int row = item->row();
     int column = item->column();
 
-    if (column == 1) {
+    if (column == 0) {
       QTableWidgetItem* linkItem = ui_download_table->item(row, column);
       if (linkItem) {
         QString downloadLink = linkItem->text();
         QUrl url(downloadLink);
+        qDebug() << url.isValid();
 
         if (url.isValid()) {
           QDesktopServices::openUrl(url);
