@@ -196,7 +196,7 @@ void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
     widget->setColumnCount(1);
     for (int row = 0; row < data.rows.size(); ++row) {
         const QStringList &rowData = data.rows.at(row);
-        QTableWidgetItem* item = new QTableWidgetItem(rowData);
+        QTableWidgetItem* item = new QTableWidgetItem(rowData.join(", "));
         widget->setItem(row, 0, item);
     }
 }
