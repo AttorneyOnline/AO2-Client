@@ -535,8 +535,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString cu_name = f_contents.at(1);
     QString cu_link = f_contents.at(2);
 
-    AOOptionsDialog* dialog = new AOOptionsDialog(nullptr, this);
-    dialog.addCharacterRow(cu_name, cu_link);
+    AOOptionsDialog *dialog = new AOOptionsDialog(nullptr, this);
+    dialog->addCharacterRow(cu_name, cu_link);
     qDebug() << cu_name << " | " << cu_link;
   }
   else if (header == "TI") { // Timer packet
