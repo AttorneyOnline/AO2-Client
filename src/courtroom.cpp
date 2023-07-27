@@ -5587,11 +5587,10 @@ void Courtroom::search_download_file()
   if (file_exists(download_ini_path))
   {
     QFile file(download_ini_path);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
       content = QString::fromUtf8(file.readAll());
       file.close();
-      if content.startsWith("http") {
+      if (content.startsWith("http")) {
         ao_app->send_server_packet(new AOPacket("CU", {"1", current_char, content}));
       }
     } else {
