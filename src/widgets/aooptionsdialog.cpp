@@ -172,7 +172,7 @@ template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
             rowsList.append(item->text());
             tableData.rows.append(rowsList);
         } else {
-            rowsList.append("")
+            rowsList.append("");
             tableData.rows.append(rowsList);
         }
     }
