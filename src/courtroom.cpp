@@ -1507,6 +1507,10 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
   QString f_char;
 
+  if (newchar) {
+    search_download_file("0"); // We delete the previous char's download.ini entry
+  }
+
   if (m_cid == -1) {
     if (Options::getInstance().discordEnabled())
       ao_app->discord->state_spectate();
@@ -4766,15 +4770,6 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   QString p_path = ao_app->get_real_path(VPath("iniswaps.ini"));
   if (!file_exists(p_path)) {
     p_path = get_base_path() + "iniswaps.ini";
-  }
-
-  QStringList filtered_defswaplist = defswaplist.filter(char_list.at(m_cid).name);
-  
-  if (filtered_defswaplist.isEmpty()) {
-    qDebug() << defswaplist;
-    qDebug() << filtered_defswaplist;
-    qDebug().noquote() << "Charname: " << char_list.at(m_cid).name;
-    search_download_file("0"); // We delete the previous char's download.ini entry    
   }
 
   ao_app->write_to_file(swaplist.join("\n"), p_path);
