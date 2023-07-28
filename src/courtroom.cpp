@@ -4768,12 +4768,11 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
     p_path = get_base_path() + "iniswaps.ini";
   }
 
-  QString char_to_find = char_list.at(m_cid).name;
-  char_to_find.remove("\"");
-
-  if (!defswaplist.contains(char_to_find)) {
+  QStringList filtered_defswaplist = defswaplist.filter(char_list.at(m_cid).name);
+  
+  if (!filtered_defswaplist.isEmpty()) {
     qDebug() << defswaplist;
-    qDebug() << "Charname: " << char_to_find;
+    qDebug().noquote() << "Charname: " << char_list.at(m_cid).name;
     search_download_file("0"); // We delete the previous char's download.ini entry    
   }
 
