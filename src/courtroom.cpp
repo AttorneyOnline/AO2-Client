@@ -5594,12 +5594,12 @@ void Courtroom::search_download_file(QString action)
       relative_char.replace(0, index + 1, ".."); // Fuck relative paths
   }
 
-  qDebug().noquote << relative_char;
+  qDebug() << relative_char;
 
   QString download_ini_path = ao_app->get_real_path(
                 ao_app->get_character_path(relative_char, "download.ini"));
 
-  qDebug().noquote << download_ini_path;
+  qDebug() << download_ini_path;
 
   if (file_exists(download_ini_path))
   {
