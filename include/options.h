@@ -9,7 +9,6 @@
 struct TableData {
     QStringList headers;
     QList<QStringList> rows;
-    QString action;
 };
 
 class Options {
@@ -280,6 +279,7 @@ public:
 
   TableData downloadManager() const;
   void setDownloadManager(TableData data);
+  void clearDownloadManager(TableData data);
 
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
