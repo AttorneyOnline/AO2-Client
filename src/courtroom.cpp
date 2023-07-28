@@ -5591,7 +5591,7 @@ void Courtroom::search_download_file(QString action)
   QString relative_char = current_char;
   int index = relative_char.indexOf("/");
   if (index != -1) {
-      relative_char.replace(0, index + 1, ".."); // Fuck relative paths
+      relative_char = relative_char.left(index); // Fuck relative paths
   }
 
   qDebug() << relative_char;
