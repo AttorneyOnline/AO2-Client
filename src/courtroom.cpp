@@ -4768,7 +4768,9 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
     p_path = get_base_path() + "iniswaps.ini";
   }
 
-  QString char_to_find = char_list.at(m_cid).name.remove("\"");
+  QString char_to_find = char_list.at(m_cid).name;
+  char_to_find.remove("\"");
+
   if (!defswaplist.contains(char_to_find))
     qDebug() << defswaplist;
     qDebug() << "Charname: " << char_to_find;
