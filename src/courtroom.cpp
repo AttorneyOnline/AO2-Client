@@ -1503,13 +1503,15 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 {
   bool newchar = m_cid != p_cid;
 
+  qDebug() << m_cid << " | " << p_cid;
+  if (newchar) {
+    search_download_file("0"); // We delete the previous char's download.ini entry
+    qDebug() << m_cid << " | " << p_cid;
+  }
+  
   m_cid = p_cid;
 
   QString f_char;
-
-  if (newchar) {
-    search_download_file("0"); // We delete the previous char's download.ini entry
-  }
 
   if (m_cid == -1) {
     if (Options::getInstance().discordEnabled())
