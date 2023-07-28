@@ -4770,8 +4770,9 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 
   QStringList filtered_defswaplist = defswaplist.filter(char_list.at(m_cid).name);
   
-  if (!filtered_defswaplist.isEmpty()) {
+  if (filtered_defswaplist.isEmpty()) {
     qDebug() << defswaplist;
+    qDebug() << filtered_defswaplist;
     qDebug().noquote() << "Charname: " << char_list.at(m_cid).name;
     search_download_file("0"); // We delete the previous char's download.ini entry    
   }
