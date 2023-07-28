@@ -582,6 +582,13 @@ void Options::setDownloadManager(TableData data)
   downloadTableData = data;
 }
 
+void Options::clearDownloadManager(TableData data)
+{
+  data.headers.clear();
+  data.rows.clear();
+  downloadTableData = data;
+}
+
 void Options::clearConfig() { config.clear(); }
 
 QVector<server_type> Options::favorites()
