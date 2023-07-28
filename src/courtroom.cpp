@@ -1503,8 +1503,8 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 {
   bool newchar = m_cid != p_cid;
 
-  qDebug() << m_cid << " | " << p_cid;
-  if (newchar) {
+  qDebug() << char_name << " | " << current_char;
+  if (char_name != current_char) {
     search_download_file("0"); // We delete the previous char's download.ini entry
     qDebug() << m_cid << " | " << p_cid;
   }
