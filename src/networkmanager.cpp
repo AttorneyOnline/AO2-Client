@@ -209,22 +209,17 @@ void NetworkManager::disconnect_from_server()
 
   switch (active_connection_type) {
   case TCP:
-    TableData dl_table = Options::getInstance().downloadManager();
-    dl_table.headers.clear();
-    dl_table.rows.clear();
-    Options::getInstance().setDownloadManager(dl_table);
     server_socket.tcp->close();
     server_socket.tcp->deleteLater();
     break;
   case WEBSOCKETS:
-    TableData dl_table = Options::getInstance().downloadManager();
-    dl_table.headers.clear();
-    dl_table.rows.clear();
-    Options::getInstance().setDownloadManager(dl_table);
     server_socket.ws->close(QWebSocketProtocol::CloseCodeGoingAway);
     server_socket.ws->deleteLater();
     break;
   }
+
+  TableData dl_table = Options::getInstance().downloadManager();
+  Options::getInstance().clearDownloadManager(dl_table);
 
   connected = false;
 }
