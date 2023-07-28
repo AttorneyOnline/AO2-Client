@@ -1503,12 +1503,6 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 {
   bool newchar = m_cid != p_cid;
 
-  qDebug() << char_name << " | " << current_char;
-  if (char_name != current_char && !char_name.contains(current_char)) {
-    search_download_file("0"); // We delete the previous char's download.ini entry
-    qDebug() << m_cid << " | " << p_cid;
-  }
-  
   m_cid = p_cid;
 
   QString f_char;
@@ -4774,6 +4768,8 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
     p_path = get_base_path() + "iniswaps.ini";
   }
 
+  search_download_file("0"); // We delete the previous char's download.ini entry  
+
   ao_app->write_to_file(swaplist.join("\n"), p_path);
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
@@ -5591,8 +5587,20 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
 void Courtroom::search_download_file(QString action)
 {
   QString content;
+
+  QString relative_char = current_char;
+  int index = relative_char.indexOf("/");
+  if (index != -1) {
+      relative_char.replace(0, index + 1, ".."); // Fuck relative paths
+  }
+
+  qDebug().noquote << relative_char;
+
   QString download_ini_path = ao_app->get_real_path(
-                ao_app->get_character_path(current_char, "download.ini"));
+                ao_app->get_character_path(relative_char, "download.ini"));
+
+  qDebug().noquote << download_ini_path;
+
   if (file_exists(download_ini_path))
   {
     QFile file(download_ini_path);
