@@ -4755,7 +4755,6 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
   QString iniswap = ui_iniswap_dropdown->itemText(p_index);
-  search_download_file("0"); // We delete the previous char's download.ini entry
   
   QStringList swaplist;
   QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
@@ -4768,6 +4767,11 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   if (!file_exists(p_path)) {
     p_path = get_base_path() + "iniswaps.ini";
   }
+
+  if (!defswaplist.contains(char_list.at(m_cid).name)) {
+    search_download_file("0"); // We delete the previous char's download.ini entry    
+  }
+
   ao_app->write_to_file(swaplist.join("\n"), p_path);
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
