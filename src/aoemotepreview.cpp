@@ -26,7 +26,7 @@ void AOEmotePreview::set_widgets()
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_background->move_and_center(0, 0);
-  ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_background->resize(this->width(), this->height());
   ui_vp_background->load_image(ao_app->get_pos_path(current_side));
   
   ui_size_label->setText(QString::number(this->width()) + "x" + QString::number(this->height()));
