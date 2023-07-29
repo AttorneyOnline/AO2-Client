@@ -226,7 +226,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
       VPath(current_emote), // The path by itself after the above fail
-      VPath(ao_app->asset_url + "characters/" + p_charname + "/" + current_emote), // Streamed assets path
+      // VPath(ao_app->asset_url + "characters/" + p_charname + "/" + current_emote), // Streamed assets path
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
