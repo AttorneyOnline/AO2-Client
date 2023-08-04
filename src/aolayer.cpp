@@ -227,6 +227,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
       VPath(current_emote), // The path by itself after the above fail
       Options::getInstance().assetStreaming() ? VPath(ao_app->asset_url + "characters/" + p_charname + "/" + current_emote) : VPath(), // Streamed assets path
+      Options::getInstance().assetStreaming() ? VPath(ao_app->asset_url + "characters/" + p_charname.toLower() + "/" + current_emote.toLower()) : VPath(), // Streamed assets path
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
@@ -301,7 +302,6 @@ void AOLayer::start_playback(QString p_image)
     ao_app->net_manager->start_image_streaming(p_image, ".png");
     // qDebug() << "Started image streaming: " << p_image;
     connect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
-    p_image = ao_app->get_real_path(ao_app->get_misc_path("default", "loading"));
   }
 
   if (frame_loader.isRunning())
