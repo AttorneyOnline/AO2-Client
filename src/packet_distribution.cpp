@@ -535,8 +535,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int cu_action = f_contents.at(1).toInt(); // 0 = Delete entry | 1 = Add entry
     QString cu_name = f_contents.at(2);
     QString cu_link = QUrl::fromPercentEncoding(f_contents.at(3).toUtf8());
+    
+    TableData dl_table;
 
-    TableData dl_table = Options::getInstance().downloadManager();
+    if (cu_authority == 1) { // Is this sent by the user?
+        dl_table = Options::getInstance().downloadManager();
+    } else if (cu_authority == 0) { // If not, treat it as sent by the server
+        dl_table = Options::getInstance().serverDownloadManager();
+    }
     QStringList newRow;
     newRow.append(cu_link);
 
@@ -570,10 +576,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         }
       }
     }
+    if (cu_authority == 1) {
+        Options::getInstance().setDownloadManager(dl_table);
+    } else if (cu_authority == 0) {
+        Options::getInstance().setServerDownloadManager(dl_table);
+    }
       
-    Options::getInstance().setDownloadManager(dl_table);
-      
-    // dialog->addCharacterRow(cu_name, cu_link);
     qDebug() << cu_name << " | " << cu_link;
   }
   else if (header == "TI") { // Timer packet
