@@ -298,6 +298,11 @@ void NetworkManager::start_image_streaming(QString path, QString prefix)
   
   request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
   stream->get(request);
+
+  path_lower = path.toLower();
+  QUrl url_lower(path_lower);
+  QNetworkRequest request_lower(url_lower);
+  stream->get(request_lower);
 }
 
 void NetworkManager::image_reply_finished(QNetworkReply *reply)
