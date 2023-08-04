@@ -486,6 +486,26 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("evidence_double_click_cb",
                                   &Options::evidenceDoubleClickEdit,
                                   &Options::setEvidenceDoubleClickEdit);
+  
+  registerOption<QCheckBox, bool>("hide_typing_cb",
+                                  &Options::hideTyping,
+                                  &Options::setHideTyping);
+  registerOption<QCheckBox, bool>("stop_typing_cb",
+                                  &Options::stopTypingIcon,
+                                  &Options::setStopTypingIcon);
+  registerOption<QCheckBox, bool>("crossfade_cb",
+                                  &Options::crossfade,
+                                  &Options::setCrossfade);
+  registerOption<QCheckBox, bool>("hide_gmplayer_btn_cb",
+                                  &Options::hideRoleplayButtons,
+                                  &Options::setHideRoleplayButtons);
+  registerOption<QCheckBox, bool>("image_streaming_cb",
+                                  &Options::imageStreaming,
+                                  &Options::setImageStreaming);
+  registerOption<QCheckBox, bool>("asset_streaming_cb",
+                                  &Options::assetStreaming,
+                                  &Options::setAssetStreaming);
+
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
   // people to put a billion entries in.
