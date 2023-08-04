@@ -33,6 +33,7 @@ private:
 
   QString m_server_subtheme;
   TableData downloadTableData;
+  TableData m_server_download_table;
 
 public:
   Options(Options const &) = delete;
@@ -279,15 +280,19 @@ public:
 
 
 // ------ TRIPLEX ADDITIONS ------ //
+  // DL Manager tables
   TableData downloadManager() const;
   void setDownloadManager(TableData data);
   void clearDownloadManager(TableData data);
 
-  // Returns the value of whether you can see other Typing Icons
+  TableData serverDownloadManager() const;
+  void setServerDownloadManager(TableData data);
+
+  // Whether you can see other Typing Icons
   bool hideTyping() const;
   void setHideTyping(bool value);
 
-  // If you are sending Typing Icon (TI) packets
+  // If you want to stop sending Typing Icon (TI) packets
   bool stopTypingIcon() const;
   void setStopTypingIcon(bool value);
 
@@ -299,11 +304,11 @@ public:
   bool imageStreaming() const;
   void setImageStreaming(bool value);
 
-  // If the buttons that open the GM/Player Screen can be shown
+  // If the buttons that open the GM/Player Screen are hidden or not
   bool hideRoleplayButtons() const;
   void setHideRoleplayButtons(bool value);
 
-  // If crossfade is visible
+  // If crossfade is enabled
   bool crossfade() const;
   void setCrossfade(bool value);
 
