@@ -129,6 +129,7 @@ private:
 
   // Char Download Manager tab... or just DL Manager tab
   QTableWidget *ui_download_table;
+  QTableWidget *ui_server_download_table;
 
   /**
    * Allows the AO2 master server hoster to go broke.
