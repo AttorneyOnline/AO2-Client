@@ -318,20 +318,9 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
   if (reply->error() == QNetworkReply::NoError) {
       // Get the HTTP status code from the reply
       int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-      qDebug() << "Status code: " << statusCode;
-  
-      // Handle image file download (if it's a .png file)
-      if (streamed_path.endsWith(".png")) {
-          QByteArray image_data = reply->readAll();
-          if (streamed_image.loadFromData(image_data)) {
-              streaming_successful = true;
-              qDebug() << "Success loading image.";
-              emit imageLoaded(streamed_image);
-          } else {
-              streaming_successful = false;
-              qDebug() << "Failed loading image.";
-          }
-      } else if (streamed_path.endsWith("char.ini")) {
+      qDebug() << "No error, Status code: " << statusCode;
+
+      if (streamed_path.endsWith("char.ini")) {
           // Handle .ini file download
           QByteArray char_ini_data = reply->readAll();
           QString character_folder = "base/characters/" + streamed_charname;
@@ -345,6 +334,16 @@ void NetworkManager::image_reply_finished(QNetworkReply *reply)
           } else {
               qWarning() << "Failed to save char.ini for character " << streamed_charname;
           }
+      } else { // Handle image file download
+        QByteArray image_data = reply->readAll();
+        if (streamed_image.loadFromData(image_data)) {
+            streaming_successful = true;
+            qDebug() << "Success loading image.";
+            emit imageLoaded(streamed_image);
+        } else {
+            streaming_successful = false;
+            qDebug() << "Failed loading image.";
+        }
       }
   } else {
       // Handle network error
