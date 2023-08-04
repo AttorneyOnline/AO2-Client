@@ -278,347 +278,349 @@
             </spacer>
            </item>
            <item row="20" column="0" colspan="2">
-            <layout class="QGridLayout" name="checkboxLayout">
-             <property name="sizeConstraint">
-              <enum>QLayout::SetDefaultConstraint</enum>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <item row="9" column="0">
-              <widget class="QLabel" name="stop_typing_lbl">
-               <property name="toolTip">
-                <string>If you check this, others won't see your Typing Icon.</string>
-               </property>
-               <property name="text">
-                <string>Stop Typing Packet:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="2">
-              <widget class="QLabel" name="crossfade_lbl">
-               <property name="toolTip">
-                <string>Disabling this will turn off the crossfade between sprites.</string>
-               </property>
-               <property name="text">
-                <string>Crossfade:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="3">
-              <widget class="QCheckBox" name="crossfade_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="1">
-              <widget class="QCheckBox" name="stop_typing_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="2">
-              <widget class="QLabel" name="hide_gmplayer_btn_lbl">
-               <property name="toolTip">
-                <string>Unused. Check this to hide the shortcut to open the GM/Player Screen.</string>
-               </property>
-               <property name="text">
-                <string>Hide GM/Player Button:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="3">
-              <widget class="QCheckBox" name="hide_gmplayer_btn_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="1">
-              <widget class="QCheckBox" name="hide_typing_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="0">
-              <widget class="QLabel" name="hide_typing_lbl">
-               <property name="toolTip">
-                <string>Hides the Typing Icon. You won't see others typing, but they will still see you.</string>
-               </property>
-               <property name="text">
-                <string>Hide Typing Icon:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0" colspan="4">
-              <widget class="Line" name="line">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="shake_lbl">
-               <property name="toolTip">
-                <string>Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
-               </property>
-               <property name="text">
-                <string>Allow Screenshake:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QCheckBox" name="shake_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="sticker_lbl">
-               <property name="toolTip">
-                <string>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</string>
-               </property>
-               <property name="text">
-                <string>Stickers:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QCheckBox" name="framenetwork_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QCheckBox" name="stickyeffects_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="QCheckBox" name="sticker_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="effects_lbl">
-               <property name="toolTip">
-                <string>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
-               </property>
-               <property name="text">
-                <string>Allow Effects:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="2">
-              <widget class="QLabel" name="evidence_double_click_lbl">
-               <property name="toolTip">
-                <string>If ticked, Evidence needs a double-click to view rather than a single click.</string>
-               </property>
-               <property name="text">
-                <string>Evidence Double Click:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="colorlog_lbl">
-               <property name="toolTip">
-                <string>Use the markup colors in the server IC chatlog.</string>
-               </property>
-               <property name="text">
-                <string>Colors in IC Log:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="customchat_lbl">
-               <property name="toolTip">
-                <string>Turn this on to allow characters to define their own custom chat box designs.</string>
-               </property>
-               <property name="text">
-                <string>Custom Chatboxes:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QCheckBox" name="customchat_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="QLabel" name="continuous_lbl">
-               <property name="toolTip">
-                <string>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</string>
-               </property>
-               <property name="text">
-                <string>Continuous Playback:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="3">
-              <widget class="QCheckBox" name="evidence_double_click_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="stickypres_lbl">
-               <property name="toolTip">
-                <string>Turn this on to prevent preanimation checkbox from clearing after playing the emote.</string>
-               </property>
-               <property name="text">
-                <string>Sticky Preanims:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="stickyeffects_lbl">
-               <property name="toolTip">
-                <string>Turn this on to prevent the effects dropdown from clearing the effect after playing it.</string>
-               </property>
-               <property name="text">
-                <string>Sticky Effects:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QCheckBox" name="colorlog_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="stickysounds_lbl">
-               <property name="toolTip">
-                <string>Turn this on to prevent the sound dropdown from clearing the sound after playing it.</string>
-               </property>
-               <property name="text">
-                <string>Sticky Sounds:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QCheckBox" name="stickysounds_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="QCheckBox" name="stickypres_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="3">
-              <widget class="QCheckBox" name="category_stop_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="2">
-              <widget class="QLabel" name="sfx_on_idle_lbl">
-               <property name="toolTip">
-                <string>If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF.</string>
-               </property>
-               <property name="text">
-                <string>Always Send SFX:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="3">
-              <widget class="QCheckBox" name="sfx_on_idle_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3">
-              <widget class="QCheckBox" name="continuous_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="2">
-              <widget class="QLabel" name="category_stop_lbl">
-               <property name="toolTip">
-                <string>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</string>
-               </property>
-               <property name="text">
-                <string>Stop Music w/ Category:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="framenetwork_lbl">
-               <property name="toolTip">
-                <string>Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality.</string>
-               </property>
-               <property name="text">
-                <string>Network Frame Effects:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QCheckBox" name="effects_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="0">
-              <widget class="QLabel" name="asset_streaming_lbl">
-               <property name="toolTip">
-                <string>Allows Asset Streaming, mostly for characters.</string>
-               </property>
-               <property name="text">
-                <string>Asset Streaming:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="1">
-              <widget class="QCheckBox" name="asset_streaming_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="2">
-              <widget class="QLabel" name="image_streaming_lbl">
-               <property name="toolTip">
-                <string>Unused. Disables remote images from showing in your IC.</string>
-               </property>
-               <property name="text">
-                <string>Image Streaming:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="3">
-              <widget class="QCheckBox" name="image_streaming_cb">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QWidget" name="gridWidget" native="true">
+             <layout class="QGridLayout" name="checkboxLayout">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
+              <property name="leftMargin">
+               <number>1</number>
+              </property>
+              <property name="topMargin">
+               <number>1</number>
+              </property>
+              <item row="9" column="0">
+               <widget class="QLabel" name="stop_typing_lbl">
+                <property name="toolTip">
+                 <string>If you check this, others won't see your Typing Icon.</string>
+                </property>
+                <property name="text">
+                 <string>Stop Typing Packet:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="2">
+               <widget class="QLabel" name="crossfade_lbl">
+                <property name="toolTip">
+                 <string>Disabling this will turn off the crossfade between sprites.</string>
+                </property>
+                <property name="text">
+                 <string>Crossfade:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="3">
+               <widget class="QCheckBox" name="crossfade_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QCheckBox" name="stop_typing_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="2">
+               <widget class="QLabel" name="hide_gmplayer_btn_lbl">
+                <property name="toolTip">
+                 <string>Unused. Check this to hide the shortcut to open the GM/Player Screen.</string>
+                </property>
+                <property name="text">
+                 <string>Hide GM/Player Button:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="3">
+               <widget class="QCheckBox" name="hide_gmplayer_btn_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QCheckBox" name="hide_typing_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="hide_typing_lbl">
+                <property name="toolTip">
+                 <string>Hides the Typing Icon. You won't see others typing, but they will still see you.</string>
+                </property>
+                <property name="text">
+                 <string>Hide Typing Icon:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0" colspan="4">
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="shake_lbl">
+                <property name="toolTip">
+                 <string>Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
+                </property>
+                <property name="text">
+                 <string>Allow Screenshake:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="shake_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="sticker_lbl">
+                <property name="toolTip">
+                 <string>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</string>
+                </property>
+                <property name="text">
+                 <string>Stickers:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QCheckBox" name="framenetwork_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QCheckBox" name="stickyeffects_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QCheckBox" name="sticker_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="effects_lbl">
+                <property name="toolTip">
+                 <string>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
+                </property>
+                <property name="text">
+                 <string>Allow Effects:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="QLabel" name="evidence_double_click_lbl">
+                <property name="toolTip">
+                 <string>If ticked, Evidence needs a double-click to view rather than a single click.</string>
+                </property>
+                <property name="text">
+                 <string>Evidence Double Click:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="colorlog_lbl">
+                <property name="toolTip">
+                 <string>Use the markup colors in the server IC chatlog.</string>
+                </property>
+                <property name="text">
+                 <string>Colors in IC Log:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="customchat_lbl">
+                <property name="toolTip">
+                 <string>Turn this on to allow characters to define their own custom chat box designs.</string>
+                </property>
+                <property name="text">
+                 <string>Custom Chatboxes:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QCheckBox" name="customchat_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="continuous_lbl">
+                <property name="toolTip">
+                 <string>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</string>
+                </property>
+                <property name="text">
+                 <string>Continuous Playback:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="3">
+               <widget class="QCheckBox" name="evidence_double_click_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="stickypres_lbl">
+                <property name="toolTip">
+                 <string>Turn this on to prevent preanimation checkbox from clearing after playing the emote.</string>
+                </property>
+                <property name="text">
+                 <string>Sticky Preanims:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="stickyeffects_lbl">
+                <property name="toolTip">
+                 <string>Turn this on to prevent the effects dropdown from clearing the effect after playing it.</string>
+                </property>
+                <property name="text">
+                 <string>Sticky Effects:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QCheckBox" name="colorlog_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="stickysounds_lbl">
+                <property name="toolTip">
+                 <string>Turn this on to prevent the sound dropdown from clearing the sound after playing it.</string>
+                </property>
+                <property name="text">
+                 <string>Sticky Sounds:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QCheckBox" name="stickysounds_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QCheckBox" name="stickypres_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QCheckBox" name="category_stop_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QLabel" name="sfx_on_idle_lbl">
+                <property name="toolTip">
+                 <string>If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF.</string>
+                </property>
+                <property name="text">
+                 <string>Always Send SFX:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QCheckBox" name="sfx_on_idle_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QCheckBox" name="continuous_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="category_stop_lbl">
+                <property name="toolTip">
+                 <string>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</string>
+                </property>
+                <property name="text">
+                 <string>Stop Music w/ Category:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="framenetwork_lbl">
+                <property name="toolTip">
+                 <string>Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality.</string>
+                </property>
+                <property name="text">
+                 <string>Network Frame Effects:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="effects_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="asset_streaming_lbl">
+                <property name="toolTip">
+                 <string>Allows Asset Streaming, mostly for characters.</string>
+                </property>
+                <property name="text">
+                 <string>Asset Streaming:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1">
+               <widget class="QCheckBox" name="asset_streaming_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="2">
+               <widget class="QLabel" name="image_streaming_lbl">
+                <property name="toolTip">
+                 <string>Unused. Disables remote images from showing in your IC.</string>
+                </property>
+                <property name="text">
+                 <string>Image Streaming:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="3">
+               <widget class="QCheckBox" name="image_streaming_cb">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </widget>
