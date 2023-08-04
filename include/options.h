@@ -277,9 +277,37 @@ public:
   QStringList callwords() const;
   void setCallwords(QStringList value);
 
+
+// ------ TRIPLEX ADDITIONS ------ //
   TableData downloadManager() const;
   void setDownloadManager(TableData data);
   void clearDownloadManager(TableData data);
+
+  // Returns the value of whether you can see other Typing Icons
+  bool hideTyping() const;
+  void setHideTyping(bool value);
+
+  // If you are sending Typing Icon (TI) packets
+  bool stopTypingIcon() const;
+  void setStopTypingIcon(bool value);
+
+  // If Asset Streaming (for Remote Characters) is enabled
+  bool assetStreaming() const;
+  void setAssetStreaming(bool value);
+
+  // If Image Streaming is enabled
+  bool imageStreaming() const;
+  void setImageStreaming(bool value);
+
+  // If the buttons that open the GM/Player Screen can be shown
+  bool hideRoleplayButtons() const;
+  void setHideRoleplayButtons(bool value);
+
+  // If crossfade is visible
+  bool crossfade() const;
+  void setCrossfade(bool value);
+
+// ------------------------------ //
 
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
