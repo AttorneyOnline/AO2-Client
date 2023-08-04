@@ -6079,6 +6079,11 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
 
 Courtroom::~Courtroom()
 {
+  // Erase the DL tables data
+  TableData to_destroy = Options::getInstance().downloadManager();
+  Options::getInstance().clearDownloadManager(to_destroy);
+  Options::getInstance().clearServerDownloadManager(to_destroy);
+
   //save sound settings
   Options::getInstance().setMusicVolume(ui_music_slider->value());
   Options::getInstance().setSfxVolume(ui_sfx_slider->value());
