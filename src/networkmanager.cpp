@@ -282,24 +282,34 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 
 void NetworkManager::start_image_streaming(QString path, QString prefix)
 {
-  // Reminder to change this later
-  if (!prefix.isEmpty())
+  QStringList prefixes = { ".png", ".webp", ".gif", ".apng" };
+  if (!prefixes.contains(prefix)) {
     path += prefix;
-  streamed_path = path;
-  QUrl url(path);
-  QNetworkRequest request(url);
+    streamed_path = path;
+    QUrl url(path);
+    QNetworkRequest request(url);
+    stream->get(request);
+  } else {
+    foreach (const QString &imagePrefix, prefixes) {
+      QString fullImagePath = path + imagePrefix;
+      streamed_path = fullImagePath;
+      
+      QUrl url(fullImagePath);
+      QNetworkRequest request(url);
 
-  QSslConfiguration config = request.sslConfiguration();
-  config.setProtocol(QSsl::AnyProtocol);
-  request.setSslConfiguration(config);
-  
-  request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
-  stream->get(request);
-
-  QString path_lower = path.toLower();
-  QUrl url_lower(path_lower);
-  QNetworkRequest request_lower(url_lower);
-  stream->get(request_lower);
+      QSslConfiguration config = request.sslConfiguration();
+      config.setProtocol(QSsl::AnyProtocol);
+      request.setSslConfiguration(config);
+      
+      request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
+      stream->get(request);
+    
+      QString path_lower = fullImagePath.toLower();
+      QUrl url_lower(path_lower);
+      QNetworkRequest request_lower(url_lower);
+      stream->get(request_lower);
+    }
+  }
 }
 
 void NetworkManager::image_reply_finished(QNetworkReply *reply)
