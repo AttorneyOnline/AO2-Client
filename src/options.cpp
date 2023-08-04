@@ -591,6 +591,16 @@ void Options::clearDownloadManager(TableData data)
   downloadTableData = data;
 }
 
+TableData Options::serverDownloadManager() const
+{
+  return m_server_download_table;
+}
+
+void Options::setServerDownloadManager(TableData data)
+{
+  m_server_download_table = data;
+}
+
 bool Options::hideTyping() const
 {
   return config.value("hide_typing", false).toBool();
