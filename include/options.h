@@ -287,6 +287,7 @@ public:
 
   TableData serverDownloadManager() const;
   void setServerDownloadManager(TableData data);
+  void clearServerDownloadManager(TableData data);
 
   // Whether you can see other Typing Icons
   bool hideTyping() const;
