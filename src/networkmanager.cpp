@@ -282,7 +282,7 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 
 void NetworkManager::start_image_streaming(QString path, QString prefix)
 {
-  QStringList prefixes = { ".png", ".webp", ".gif", ".apng" };
+  QStringList prefixes = { ".png", ".webp" };
   if (!prefixes.contains(prefix)) {
     path += prefix;
     streamed_path = path;
@@ -303,11 +303,6 @@ void NetworkManager::start_image_streaming(QString path, QString prefix)
       
       request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
       stream->get(request);
-    
-      QString path_lower = fullImagePath.toLower();
-      QUrl url_lower(path_lower);
-      QNetworkRequest request_lower(url_lower);
-      stream->get(request_lower);
     }
   }
 }
