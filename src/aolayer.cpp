@@ -227,7 +227,6 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
       VPath(current_emote), // The path by itself after the above fail
       Options::getInstance().assetStreaming() ? VPath(ao_app->asset_url + "characters/" + p_charname + "/" + current_emote) : VPath(), // Streamed assets path
-      Options::getInstance().assetStreaming() ? VPath(ao_app->asset_url + "characters/" + p_charname.toLower() + "/" + current_emote.toLower()) : VPath(), // Streamed assets path
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
@@ -648,8 +647,7 @@ void AOLayer::invert() {
 void AOLayer::onImageLoaded(const QImage& image) {
   disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
   // qDebug() << "...";
-  // QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
-  //set_frame(pixmap);
+  QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
   
   if (frame_loader.isRunning())
     exit_loop = true;
@@ -658,7 +656,8 @@ void AOLayer::onImageLoaded(const QImage& image) {
   this->freeze();
   movie_frames.clear();
   movie_delays.clear();
-  this->set_frame(get_pixmap(ao_app->net_manager->streamed_image));
+  this->set_frame(pixmap);
+  //this->set_frame(get_pixmap(ao_app->net_manager->streamed_image));
   // this->set_frame(ao_app->net_manager->streamed_pixmap);
   // qDebug() << "Started streaming playback.";
 }
