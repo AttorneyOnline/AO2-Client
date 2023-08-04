@@ -3140,7 +3140,7 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->set_play_once(false);
 
     // I know it's really bad. I'll move this out from here later on
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") {
+    if (Options::getInstance().crossfade() && !last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") {
       filename = "(a)" + last_sprite;
       qDebug().nospace() << last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
@@ -3154,7 +3154,7 @@ void Courtroom::handle_ic_speaking()
     filename = "(a)" + m_chatmessage[EMOTE];
 
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") 
+    if (Options::getInstance().crossfade() && !last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") 
       ui_vp_player_char->fade(true, 400);
     // Set the anim state accordingly
     anim_state = 3;
@@ -5326,33 +5326,17 @@ void Courtroom::on_hold_it_clicked()
 void Courtroom::onTextChanged()
 {
   QString text = ui_ic_chat_message->text();
-  // QString current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "char_icon"));
   QString emotion_number = QString::number(current_button_selected + 1);
-  
-  // I realized it's actually dumb to see your icon while typing...
 
-  // if (current_char_path != current_icon_path && !current_char_path.isEmpty()) {
-  //  current_icon_path = current_char_path;
-  // } else if (current_char_path != current_icon_path && current_char_path.isEmpty()) {
-  //  current_char_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "emotions/button" + emotion_number + "_off"));
-  //  current_icon_path = current_char_path;
-  // }
-
-  // QPixmap char_icon_pixmap(current_icon_path);
-  
-  if (text.isEmpty() && typingTimer->isActive()) {
-      typingTimer->stop();
-      // ui_vp_char_icon->hide();
-      // ui_vp_pencil->hide();
-      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
-  } else if (!text.isEmpty() && !typingTimer->isActive()) {
-      ao_app->send_server_packet(new AOPacket("TT", {"1", current_char, emotion_number}));
-      // ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-      // ui_vp_char_icon->setFixedSize(40, 40);
-      // ui_vp_char_icon->show();
-      // ui_vp_pencil->show();
-      typingTimer->start();
-  }
+  if (!Options::getInstance().stopTypingIcon()) {
+    if (text.isEmpty() && typingTimer->isActive()) {
+        typingTimer->stop();
+        ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
+    } else if (!text.isEmpty() && !typingTimer->isActive()) {
+        ao_app->send_server_packet(new AOPacket("TT", {"1", current_char, emotion_number}));
+        typingTimer->start();
+    }
+  }    
 }
 
 void Courtroom::onTypingTimeout()
@@ -5364,17 +5348,19 @@ void Courtroom::onTypingTimeout()
 
 void Courtroom::typing_signal(int signal)
 {
-  QPixmap char_icon_pixmap(current_icon_path);
-  if (signal == 1) {
-    ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    ui_vp_char_icon->setFixedSize(40, 40);
-    ui_vp_char_icon->show();
-    ui_vp_pencil->show();
-    typingTimer->start();
-  } else {
-    typingTimer->stop();
-    ui_vp_char_icon->hide();
-    ui_vp_pencil->hide();
+  if (!Options::getInstance().hideTyping()) {
+    QPixmap char_icon_pixmap(current_icon_path);
+    if (signal == 1) {
+      ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+      ui_vp_char_icon->setFixedSize(40, 40);
+      ui_vp_char_icon->show();
+      ui_vp_pencil->show();
+      typingTimer->start();
+    } else {
+      typingTimer->stop();
+      ui_vp_char_icon->hide();
+      ui_vp_pencil->hide();
+    }    
   }
 }
 
