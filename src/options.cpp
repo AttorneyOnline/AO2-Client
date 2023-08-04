@@ -601,6 +601,13 @@ void Options::setServerDownloadManager(TableData data)
   m_server_download_table = data;
 }
 
+void Options::clearServerDownloadManager(TableData data)
+{
+  data.headers.clear();
+  data.rows.clear();
+  m_server_download_table = data;
+}
+
 bool Options::hideTyping() const
 {
   return config.value("hide_typing", false).toBool();
