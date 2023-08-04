@@ -300,7 +300,7 @@ void AOLayer::start_playback(QString p_image)
     // qDebug() << "Loading... " << p_image;
     ao_app->net_manager->start_image_streaming(p_image, ".png");
     // qDebug() << "Started image streaming: " << p_image;
-    connect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded, Qt::UniqueConnection);
+    connect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
     p_image = ao_app->get_real_path(ao_app->get_misc_path("default", "loading"));
   }
 
