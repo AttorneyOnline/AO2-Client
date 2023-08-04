@@ -83,6 +83,13 @@ private:
   QCheckBox *ui_category_stop_cb;
   QCheckBox *ui_sfx_on_idle_cb;
 
+  QCheckBox *ui_hide_typing_cb;
+  QCheckBox *ui_stop_typing_cb;
+  QCheckBox *ui_asset_streaming_cb;
+  QCheckBox *ui_image_streaming_cb;
+  QCheckBox *ui_hide_gmplayer_btn_cb;
+  QCheckBox *ui_crossfade_cb;
+
   // The callwords tab
   QPlainTextEdit *ui_callwords_textbox;
   QCheckBox *ui_callwords_char_textbox;
