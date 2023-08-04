@@ -413,6 +413,13 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, sfx_on_idle_cb)
   FROM_UI(QCheckBox, evidence_double_click_cb)
 
+  FROM_UI(QCheckBox, crossfade_cb)
+  FROM_UI(QCheckBox, hide_typing_cb)
+  FROM_UI(QCheckBox, stop_typing_cb)
+  FROM_UI(QCheckBox, hide_gmplayer_btn_cb)
+  FROM_UI(QCheckBox, asset_streaming_cb)
+  FROM_UI(QCheckBox, image_streaming_cb)
+
   registerOption<QCheckBox, bool>("animated_theme_cb",
                                   &Options::animatedThemeEnabled,
                                   &Options::setAnimatedThemeEnabled);
