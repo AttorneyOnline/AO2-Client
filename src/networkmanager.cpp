@@ -218,9 +218,6 @@ void NetworkManager::disconnect_from_server()
     break;
   }
 
-  TableData dl_table = Options::getInstance().downloadManager();
-  Options::getInstance().clearDownloadManager(dl_table);
-
   connected = false;
 }
 
