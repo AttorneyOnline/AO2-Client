@@ -701,8 +701,11 @@ void AOOptionsDialog::setupUI()
   // Char Download Manager tab
 
   FROM_UI(QTableWidget, download_table)
+  FROM_UI(QTableWidget, server_download_table)
   registerOption<QTableWidget, TableData>("download_table", &Options::downloadManager,
                                   &Options::setDownloadManager);
+  registerOption<QTableWidget, TableData>("server_download_table", &Options::serverDownloadManager,
+                                  &Options::setServerDownloadManager);
 
   connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
     int row = item->row();
@@ -723,39 +726,28 @@ void AOOptionsDialog::setupUI()
       }
     }
   });
+  // I'll change this later...
+  connect(ui_server_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
+    int row = item->row();
+    int column = item->column();
+
+    if (column == 0) {
+      QTableWidgetItem* linkItem = ui_server_download_table->item(row, column);
+      if (linkItem) {
+        QString downloadLink = linkItem->text();
+        QUrl url(downloadLink);
+        qDebug() << url.isValid();
+
+        if (url.isValid()) {
+          QDesktopServices::openUrl(url);
+        } else {
+          qWarning() << "Invalid URL: " << downloadLink;
+        }
+      }
+    }
+  });
   updateValues();
 }
-
-
-void AOOptionsDialog::addCharacterRow(QString characterName, QString downloadLink)
-{
-  ui_download_table->setColumnCount(1);
-  int row = ui_download_table->rowCount();
-  ui_download_table->setRowCount(row+1);
-
-  qDebug() << "addCharacterRow: row" << row; 
-
-
-  QTableWidgetItem* headerItem = new QTableWidgetItem(characterName);
-  ui_download_table->setVerticalHeaderItem(row+1, headerItem);
-
-  QTableWidgetItem* linkItem = new QTableWidgetItem(downloadLink);
-  ui_download_table->setItem(row+1, 0, linkItem);
-}
-
-void AOOptionsDialog::removeCharacterRow(QString characterName)
-{
-  for (int row = 0; row < ui_download_table->rowCount(); ++row)
-  {
-      QTableWidgetItem* item = ui_download_table->item(row, 0);
-      if (item && item->text() == characterName)
-      {
-          ui_download_table->removeRow(row);
-          break;
-      }
-  }
-}
-
 
 void AOOptionsDialog::onTimestampFormatEdited()
 {
