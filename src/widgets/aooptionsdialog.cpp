@@ -185,6 +185,7 @@ void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
         QString headerData = data.headers.value(row);
         QTableWidgetItem* headerItem = new QTableWidgetItem(headerData);
         widget->setVerticalHeaderItem(row, headerItem);
+        widget->verticalHeaderItem(row)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     }
 
     widget->setColumnCount(1);
@@ -706,19 +707,6 @@ void AOOptionsDialog::setupUI()
                                   &Options::setDownloadManager);
   registerOption<QTableWidget, TableData>("server_download_table", &Options::serverDownloadManager,
                                   &Options::setServerDownloadManager);
-
-for (int row = 0; row < ui_download_table->rowCount(); ++row) {
-    QTableWidgetItem *item = ui_download_table->verticalHeaderItem(row);
-    if (item) {
-        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    }
-}
-for (int row = 0; row < ui_server_download_table->rowCount(); ++row) {
-    QTableWidgetItem *item = ui_server_download_table->verticalHeaderItem(row);
-    if (item) {
-        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter); // Alineación horizontal y vertical centrada
-    }
-}
 
   connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
     int row = item->row();
