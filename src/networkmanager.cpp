@@ -282,7 +282,7 @@ void NetworkManager::handle_server_packet(const QString& p_data)
 
 void NetworkManager::start_image_streaming(QString path, QString prefix)
 {
-  QStringList prefixes = { ".png", ".webp" };
+  QStringList prefixes = { ".png", ".webp", ".gif" };
   if (!prefixes.contains(prefix)) {
     path += prefix;
     streamed_path = path;
