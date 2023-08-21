@@ -22,14 +22,19 @@ jobs:
         include:
           - platform: gcc_64
             os: ubuntu-latest
+            target: desktop
           - platform: android
             os: ubuntu-20.04
+            target: android
           - platform: msvc2019
             os: windows-2019
+            target: desktop
           - platform: mingw81_32
             os: windows-latest
+            target: desktop
           - platform: clang_64
             os: macos-latest
+            target: desktop
 
     runs-on: ${{matrix.os}}
     steps:
@@ -62,11 +67,11 @@ jobs:
            echo "y" | $SDKMANAGER "platforms;android-24"
            ln -sfn $ANDROID_SDK_ROOT/ndk/21.4.7075529 $ANDROID_NDK_ROOT
         
-      - uses: Skycoder42/action-setup-qt@master
+      - uses: jurplel/install-qt-action@v3
         id: qt
         with:
           version: ${{matrix.version}}
-          platform: ${{matrix.platform}}
+          target: ${{matrix.platform}}
 
       - name: Install QtApng
         run: |
