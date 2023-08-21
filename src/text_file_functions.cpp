@@ -153,7 +153,7 @@ Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
   if (p_scaling.isEmpty())
     p_scaling = Options::getInstance().defaultScalingMode();
 
-  if (p_scaling == "Smooth")
+  if (p_scaling == "smooth")
     return Qt::SmoothTransformation;
   return Qt::FastTransformation;
 }
