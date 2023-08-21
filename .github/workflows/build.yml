@@ -82,9 +82,9 @@ jobs:
           ./get_libs.sh 1.3 1.6.37
           cd ../..
           qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
-          ${{steps.qt.outputs.make}} qmake_all
-          ${{steps.qt.outputs.make}}
-          ${{steps.qt.outputs.make}} INSTALL_ROOT="${{steps.qt.outputs.installdir}}" install
+          make qmake_all
+          make
+          make INSTALL_ROOT="${{QT_ROOT_DIR}}" install
 
       - name: Install Windows Discord RPC
         if: contains(matrix.os, 'windows')
