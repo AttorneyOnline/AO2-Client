@@ -71,7 +71,7 @@ jobs:
         id: qt
         with:
           version: ${{matrix.version}}
-          target: ${{matrix.platform}}
+          target: ${{matrix.target}}
 
       - name: Install QtApng
         run: |
