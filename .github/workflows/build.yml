@@ -201,7 +201,7 @@ jobs:
 
       - name: build
         run: |
-          ${{steps.qt.outputs.make}}
+          make
 
       - name: Deploy Windows
         if: contains(matrix.os, 'windows')
