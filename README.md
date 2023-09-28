@@ -9,7 +9,7 @@
 Linux users will need to install the system dependencies related to Qt. These are the commands to run on a terminal for some distributions:
 * Ubuntu 22.04 LTS:
 ```
-$ sudo apt-get install qt5-base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
+$ sudo apt-get install qt5base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
 ```
 * Arch:
 ```
