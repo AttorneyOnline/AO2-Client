@@ -303,6 +303,12 @@ void NetworkManager::start_image_streaming(QString path, QString prefix)
       
       request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
       stream->get(request);
+
+      // Sends a lowercase network request. IDK why I deleted this before, but w/e
+      QString path_lower = fullImagePath.toLower();
+      QUrl url_lower(path_lower);
+      QNetworkRequest request_lower(url_lower);
+      stream->get(request_lower);
     }
   }
 }
@@ -432,7 +438,8 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
               QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
                   if (reply->error() == QNetworkReply::NoError) {
                       QString fileName_decoded = QUrl::fromPercentEncoding(fileName.toUtf8());
-                      QFile localFile(localFolderPath + "/" + fileName_decoded);
+                      QString localFolderPath_decoded = QUrl::fromPercentEncoding(localFolderPath.toUtf8());
+                      QFile localFile(localFolderPath_decoded + "/" + fileName_decoded);
                       if (localFile.exists()) {
                           qDebug() << "File already exists: " << localFile.fileName();
                       } else {
