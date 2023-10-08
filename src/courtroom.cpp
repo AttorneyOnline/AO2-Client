@@ -956,7 +956,7 @@ void Courtroom::set_widgets()
       tr("Choose an effect to play on your next spoken message.\n"
          "The effects are defined in your theme/effects/effects.ini. Your "
          "character can define custom effects by\n"
-         "char.ini [Options] category, effects = 'miscname' where it referes "
+         "char.ini [Options] category, effects = 'miscname' where it refers "
          "to misc/<miscname>/effects.ini to read the effects."));
   // Todo: recode this entire fucking system with these dumbass goddamn ini's
   // why is everything so specifically coded for all these purposes is ABSTRACT
