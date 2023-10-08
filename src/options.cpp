@@ -572,6 +572,103 @@ void Options::setCallwords(QStringList value)
   config.setValue("callwords", value);
 }
 
+// ------ TRIPLEX ADDITIONS ------ //
+
+TableData Options::downloadManager() const
+{
+  return downloadTableData;
+}
+
+void Options::setDownloadManager(TableData data)
+{
+  downloadTableData = data;
+}
+
+void Options::clearDownloadManager(TableData data)
+{
+  data.headers.clear();
+  data.rows.clear();
+  downloadTableData = data;
+}
+
+TableData Options::serverDownloadManager() const
+{
+  return m_server_download_table;
+}
+
+void Options::setServerDownloadManager(TableData data)
+{
+  m_server_download_table = data;
+}
+
+void Options::clearServerDownloadManager(TableData data)
+{
+  data.headers.clear();
+  data.rows.clear();
+  m_server_download_table = data;
+}
+
+bool Options::hideTyping() const
+{
+  return config.value("hide_typing", false).toBool();
+}
+
+void Options::setHideTyping(bool value)
+{
+  config.setValue("hide_typing", value);
+}
+
+bool Options::stopTypingIcon() const
+{
+  return config.value("stop_typing", false).toBool();
+}
+
+void Options::setStopTypingIcon(bool value)
+{
+  config.setValue("stop_typing", value);
+}
+
+bool Options::assetStreaming() const
+{
+  return config.value("asset_streaming", true).toBool();
+}
+
+void Options::setAssetStreaming(bool value)
+{
+  config.setValue("asset_streaming", value);
+}
+
+bool Options::imageStreaming() const
+{
+  return config.value("image_streaming", false).toBool();
+}
+
+void Options::setImageStreaming(bool value)
+{
+  config.setValue("image_streaming", value);
+}
+
+bool Options::hideRoleplayButtons() const
+{
+  return config.value("hide_gmplayer_btn", false).toBool();
+}
+
+void Options::setHideRoleplayButtons(bool value)
+{
+  config.setValue("hide_gmplayer_btn", value);
+}
+
+bool Options::crossfade() const
+{
+  return config.value("crossfade", true).toBool();
+}
+
+void Options::setCrossfade(bool value)
+{
+  config.setValue("crossfade", value);
+}
+// ------------------------------ //
+
 void Options::clearConfig() { config.clear(); }
 
 QVector<server_type> Options::favorites()

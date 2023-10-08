@@ -24,6 +24,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   text_queue_timer = new QTimer(this);
   text_queue_timer->setSingleShot(true);
 
+  typingTimer = new QTimer(this);
+  typingTimer->setInterval(2000);
+  
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
 
@@ -49,14 +52,28 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
+
   ui_vp_void = new QLabel(ui_viewport);
   ui_vp_void->setStyleSheet("QLabel {background-color:black}");
   ui_vp_void->hide();
+
+  ui_vp_char_icon = new QLabel(ui_viewport);
+  ui_vp_char_icon->setObjectName("ui_vp_char_icon");
+
+  ui_vp_pencil = new QLabel (ui_viewport);
+  ui_vp_pencil->setObjectName("ui_vp_pencil");
+  QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil.png"));
+  QPixmap pencil_pixmap(pencil_path);
+  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  ui_vp_pencil->setFixedSize(30, 30);
+  ui_vp_pencil->hide();
+
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
   ui_vp_speedlines->setObjectName("ui_vp_speedlines");
   ui_vp_speedlines->stretch = true;
+  
   ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
   ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
@@ -72,6 +89,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_thirdplayer_char->setObjectName("ui_vp_thirdplayer_char");
   ui_vp_thirdplayer_char->masked = false;
   ui_vp_thirdplayer_char->hide();
+  
   ui_vp_desk = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_desk->setObjectName("ui_vp_desk");
 
@@ -417,6 +435,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // Good enough for 2.10
   ui_pair_list->raise();
 
+  ui_vp_char_icon->raise();
+  ui_vp_pencil->raise();
+  
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -440,6 +461,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(chat_tick_timer, &QTimer::timeout, this, &Courtroom::chat_tick);
 
+  connect(ui_ic_chat_message, &QLineEdit::textChanged, this, &Courtroom::onTextChanged);
+  connect(typingTimer, &QTimer::timeout, this, &Courtroom::onTypingTimeout);
+
+  
   connect(ui_pos_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           QOverload<int>::of(&Courtroom::on_pos_dropdown_changed));
   connect(ui_pos_dropdown, &QComboBox::editTextChanged, this,
@@ -450,6 +475,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           &Courtroom::on_iniswap_dropdown_changed);
+  connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), 
+          this, [this]() { search_download_file("1"); });
   connect(ui_iniswap_dropdown, &QComboBox::customContextMenuRequested, this,
           &Courtroom::on_iniswap_context_menu_requested);
   connect(ui_iniswap_remove, &AOButton::clicked, this,
@@ -705,6 +732,12 @@ void Courtroom::set_widgets()
   ui_vp_background->kill();
   ui_vp_desk->kill();
 
+  ui_vp_char_icon->move(3, 3);
+  ui_vp_pencil->move(26, 20);
+  // ui_vp_pencil->move(45, 3);
+
+
+
   ui_vp_background->move_and_center(0, 0);
   ui_vp_background->combo_resize(ui_viewport->width(), ui_viewport->height());
 
@@ -923,7 +956,7 @@ void Courtroom::set_widgets()
       tr("Choose an effect to play on your next spoken message.\n"
          "The effects are defined in your theme/effects/effects.ini. Your "
          "character can define custom effects by\n"
-         "char.ini [Options] category, effects = 'miscname' where it referes "
+         "char.ini [Options] category, effects = 'miscname' where it refers "
          "to misc/<miscname>/effects.ini to read the effects."));
   // Todo: recode this entire fucking system with these dumbass goddamn ini's
   // why is everything so specifically coded for all these purposes is ABSTRACT
@@ -2104,7 +2137,8 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->cccc_ic_supported) {
+  // Adds support for 3 players in screen
+  if (ao_app->triplex_supported) {
     if (third_charid > -1 && third_charid != m_cid) {
       QString packet = QString::number(third_charid);
       if (ao_app->effects_supported)
@@ -2522,6 +2556,7 @@ void Courtroom::display_character()
 
   // Determine if we should flip the character or not
   ui_vp_player_char->set_flipped(m_chatmessage[FLIP].toInt() == 1);
+  ui_vp_crossfade_char->set_flipped(m_chatmessage[FLIP].toInt() == 1);
   // Move the character on the viewport according to the offsets
   set_self_offset(m_chatmessage[SELF_OFFSET]);
 }
@@ -3103,15 +3138,15 @@ void Courtroom::handle_ic_speaking()
     // Stop the previous animation and play the idle animation
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
-    // I know it's really bad. I'll move this out from here later on
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) {
-      filename = "(a)" + last_sprite;
 
-      qDebug().nospace() << last_sprite << " | " << filename;
-      qDebug().nospace() << m_chatmessage[EMOTE];
-      
+    // I know it's really bad. I'll move this out from here later on
+    if (Options::getInstance().crossfade() && !last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") {
+      filename = "(a)" + last_sprite;
+      qDebug().nospace() << last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
+      ui_vp_crossfade_char->move_and_center(last_x_offset, last_y_offset);
+      qDebug().nospace() << last_charname << "!=" << m_chatmessage[CHAR_NAME];
       ui_vp_crossfade_char->show();
       ui_vp_crossfade_char->fade(false, 400);
     }
@@ -3119,17 +3154,33 @@ void Courtroom::handle_ic_speaking()
     filename = "(a)" + m_chatmessage[EMOTE];
 
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    if (!last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE]) 
+    if (Options::getInstance().crossfade() && !last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") 
       ui_vp_player_char->fade(true, 400);
-      qDebug().nospace() << "FADE";
     // Set the anim state accordingly
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
 
-    if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE])
+    qDebug().nospace() << "last_sprite: " << last_sprite;
+        
+    if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE]) {
       last_sprite = m_chatmessage[EMOTE];
-      qDebug().nospace() << m_chatmessage[CHAR_NAME] << " | " << last_charname;
+      qDebug().nospace() << "There was no charid pair (" << other_charid << "). Last sprite is " << last_sprite;
+    }
     last_charname = m_chatmessage[CHAR_NAME];
+    
+    QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
+    int self_offset = self_offsets[0].toInt();
+    int self_offset_v;
+    if (self_offsets.length() <= 1) {
+      self_offset_v = 0;
+    }
+    else {
+      self_offset_v = self_offsets[1].toInt();
+    }
+    
+    last_x_offset = ui_viewport->width() * self_offset / 100;
+    last_y_offset = ui_viewport->height() * self_offset_v / 100;
+    qDebug().nospace() << last_x_offset << ", " << last_y_offset;
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
@@ -4066,7 +4117,6 @@ void Courtroom::set_self_offset(const QString& p_list) {
                                        ui_viewport->height() * self_offset_v / 100);
     ui_vp_crossfade_char->move_and_center(ui_viewport->width() * self_offset / 100,
                                        ui_viewport->height() * self_offset_v / 100);
-
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -4690,6 +4740,8 @@ void Courtroom::set_iniswap_dropdown()
     ui_iniswap_dropdown->setItemIcon(i, QIcon(icon_path));
     if (iniswaps.at(i) == current_char) {
       ui_iniswap_dropdown->setCurrentIndex(i);
+      // current_icon_path = ao_app->get_image_suffix(ao_app->get_character_path(
+      //                                             iniswaps.at(i), "char_icon"));
       if (i != 0)
         ui_iniswap_remove->show();
       else
@@ -4703,7 +4755,7 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
   ui_ic_chat_message->setFocus();
   QString iniswap = ui_iniswap_dropdown->itemText(p_index);
-
+  
   QStringList swaplist;
   QStringList defswaplist = ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini"));
   for (int i = 0; i < ui_iniswap_dropdown->count(); ++i) {
@@ -4715,6 +4767,9 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
   if (!file_exists(p_path)) {
     p_path = get_base_path() + "iniswaps.ini";
   }
+
+  search_download_file("0"); // We delete the previous char's download.ini entry  
+
   ao_app->write_to_file(swaplist.join("\n"), p_path);
   ui_iniswap_dropdown->blockSignals(true);
   ui_iniswap_dropdown->setCurrentIndex(p_index);
@@ -5268,6 +5323,47 @@ void Courtroom::on_hold_it_clicked()
   ui_ic_chat_message->setFocus();
 }
 
+void Courtroom::onTextChanged()
+{
+  QString text = ui_ic_chat_message->text();
+  QString emotion_number = QString::number(current_button_selected + 1);
+
+  if (!Options::getInstance().stopTypingIcon()) {
+    if (text.isEmpty() && typingTimer->isActive()) {
+        typingTimer->stop();
+        ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
+    } else if (!text.isEmpty() && !typingTimer->isActive()) {
+        ao_app->send_server_packet(new AOPacket("TT", {"1", current_char, emotion_number}));
+        typingTimer->start();
+    }
+  }    
+}
+
+void Courtroom::onTypingTimeout()
+{
+  typingTimer->stop();
+  ui_vp_char_icon->hide();
+  ui_vp_pencil->hide();
+}
+
+void Courtroom::typing_signal(int signal)
+{
+  if (!Options::getInstance().hideTyping()) {
+    QPixmap char_icon_pixmap(current_icon_path);
+    if (signal == 1) {
+      ui_vp_char_icon->setPixmap(char_icon_pixmap.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+      ui_vp_char_icon->setFixedSize(40, 40);
+      ui_vp_char_icon->show();
+      ui_vp_pencil->show();
+      typingTimer->start();
+    } else {
+      typingTimer->stop();
+      ui_vp_char_icon->hide();
+      ui_vp_pencil->hide();
+    }    
+  }
+}
+
 void Courtroom::on_objection_clicked()
 {
   if (objection_state == 2) {
@@ -5472,6 +5568,39 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
   }
   );
   menu->popup(ui_text_color->mapToGlobal(pos));
+}
+
+void Courtroom::search_download_file(QString action)
+{
+  QString content;
+
+  QString relative_char = current_char;
+  int index = relative_char.indexOf("/");
+  if (index != -1) {
+      relative_char = relative_char.left(index); // Fuck relative paths
+  }
+
+  qDebug() << relative_char;
+
+  QString download_ini_path = ao_app->get_real_path(
+                ao_app->get_character_path(relative_char, "download.ini"));
+
+  qDebug() << download_ini_path;
+
+  if (file_exists(download_ini_path))
+  {
+    QFile file(download_ini_path);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      content = QString::fromUtf8(file.readAll());
+      file.close();
+      if (content.startsWith("http")) {
+        ao_app->send_server_packet(new AOPacket("CU", {"1", action, current_char, content}));
+      }
+    } else {
+        qDebug() << "Error opening file: " << file.errorString();
+        return;
+    }
+  }
 }
 
 void Courtroom::set_text_color_dropdown()
@@ -5950,6 +6079,11 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
 
 Courtroom::~Courtroom()
 {
+  // Erase the DL tables data
+  TableData to_destroy = Options::getInstance().downloadManager();
+  Options::getInstance().clearDownloadManager(to_destroy);
+  Options::getInstance().clearServerDownloadManager(to_destroy);
+
   //save sound settings
   Options::getInstance().setMusicVolume(ui_music_slider->value());
   Options::getInstance().setSfxVolume(ui_sfx_slider->value());

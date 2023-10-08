@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "file_functions.h"
 #include "misc_functions.h"
+#include "networkmanager.h"
 #include "options.h"
 
 static QThreadPool *thread_pool;
@@ -10,6 +11,7 @@ static QThreadPool *thread_pool;
 AOLayer::AOLayer(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
+  net_manager = ao_app->net_manager;
 
   // used for culling images when their max_duration is exceeded
   shfx_timer = new QTimer(this);
@@ -224,6 +226,7 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
           p_charname,
           current_emote), // Just use the non-prefixed image, animated or not
       VPath(current_emote), // The path by itself after the above fail
+      Options::getInstance().assetStreaming() ? VPath(ao_app->asset_url + "characters/" + p_charname + "/" + current_emote) : VPath(), // Streamed assets path
       ao_app->get_theme_path("placeholder"), // Theme placeholder path
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
@@ -290,6 +293,15 @@ void AOLayer::start_playback(QString p_image)
   if (p_image == "") {// image wasn't found by the path resolution function
     this->kill();
     return;
+  }
+  
+  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
+    disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
+    // qDebug() << "Loading... " << p_image;
+    ao_app->net_manager->start_image_streaming(p_image, ".png");
+    // qDebug() << "Started image streaming: " << p_image;
+    connect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
+    p_image = ao_app->get_real_path(ao_app->get_misc_path("default", "loading"));
   }
 
   if (frame_loader.isRunning())
@@ -633,6 +645,24 @@ void AOLayer::invert() {
     this->setPixmap(QPixmap::fromImage(*image));
 }
 
+void AOLayer::onImageLoaded(const QImage& image) {
+  disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
+  // qDebug() << "...";
+  QPixmap pixmap = get_pixmap(ao_app->net_manager->streamed_image);
+  
+  if (frame_loader.isRunning())
+    exit_loop = true;
+  this->show();
+  this->clear();
+  this->freeze();
+  movie_frames.clear();
+  movie_delays.clear();
+  this->set_frame(pixmap);
+  //this->set_frame(get_pixmap(ao_app->net_manager->streamed_image));
+  // this->set_frame(ao_app->net_manager->streamed_pixmap);
+  // qDebug() << "Started streaming playback.";
+}
+
 void AOLayer::fade(bool in, int duration)
 {
     QGraphicsOpacityEffect* fade = new QGraphicsOpacityEffect(this);
@@ -644,7 +674,6 @@ void AOLayer::fade(bool in, int duration)
     fade_anim->setEasingCurve(QEasingCurve::Linear);
     fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
     connect(fade_anim, SIGNAL(finished()), this, SLOT(in?fadein_finished():fadeout_finished()));
-
 }
 
 void AOLayer::fadeout_finished() {}

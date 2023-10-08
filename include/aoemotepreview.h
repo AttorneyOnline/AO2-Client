@@ -2,6 +2,7 @@
 #define AOEMOTEPREVIEW_H
 
 #include "aolayer.h"
+#include "aoapplication.h"
 #include <QWidget>
 
 class AOEmotePreview : public QWidget
@@ -25,6 +26,8 @@ private:
 
   QString m_emote = "";
   QString m_char = "";
+  QString current_side = "";
+
 protected:
   void resizeEvent(QResizeEvent *);
 };

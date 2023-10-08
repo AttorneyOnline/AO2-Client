@@ -38,6 +38,10 @@ VPath AOApplication::get_theme_path(QString p_file, QString p_theme)
 
 VPath AOApplication::get_character_path(QString p_char, QString p_file)
 {
+  // if (!asset_url.isEmpty()) {
+  //  VPath path = VPath(asset_url + "characters/" + p_char + "/" + p_file);
+  //  qDebug() << path.toQString();
+  // }
   return VPath("characters/" + p_char + "/" + p_file);
 }
 
@@ -361,6 +365,10 @@ QString AOApplication::get_real_path(const VPath &vpath,
   QString remotePath = vpath.toQString();
   if (remotePath.startsWith("http:") || remotePath.startsWith("https:")) {
       return remotePath;
+  // } else if (!asset_url.isEmpty()) { // Reminder to change this later
+  //    remotePath = asset_url + remotePath;
+  //    qDebug() << "Remote path: " << remotePath;
+  //    return QString();
   }
 
   // File or directory not found

@@ -19,6 +19,7 @@
 #include <QSpinBox>
 #include <QUiLoader>
 #include <QVBoxLayout>
+#include <QTableWidget>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \
@@ -144,6 +145,56 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
     paths.append(widget->item(i)->text());
   }
   return paths;
+}
+
+// Modificar la función widgetData
+template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
+{
+    TableData tableData;
+    QSet<QString> uniqueURLs; // Conjunto para almacenar URLs únicas
+
+    // Obtener las cabeceras (nombres de las filas) de la tabla
+    for (int row = 0; row < widget->rowCount(); ++row) {
+        QTableWidgetItem* headerItem = widget->verticalHeaderItem(row);
+        QString headerData = headerItem ? headerItem->text() : "";
+        tableData.headers.append(headerData);
+    }
+
+    // Obtener los datos de la única columna de la tabla
+    for (int row = 0; row < widget->rowCount(); ++row) {
+        QTableWidgetItem* item = widget->item(row, 0);
+        QString rowData = item ? item->text() : "";
+        // Verificar si la URL ya ha sido agregada previamente
+        if (!rowData.isEmpty() && !uniqueURLs.contains(rowData)) {
+            QStringList rowDataList; // Crear una lista de un solo elemento
+            rowDataList.append(rowData); // Agregar el elemento a la lista
+            tableData.rows.append(rowDataList); // Agregar la lista a la lista de filas
+            uniqueURLs.insert(rowData); // Agregar la URL al conjunto
+        }
+    }
+
+    return tableData;
+}
+
+// Modificar la función setWidgetData
+template <>
+void AOOptionsDialog::setWidgetData(QTableWidget *widget, const TableData &data)
+{
+    widget->setRowCount(data.headers.size());
+    for (int row = 0; row < data.headers.size(); ++row) {
+        QString headerData = data.headers.value(row);
+        QTableWidgetItem* headerItem = new QTableWidgetItem(headerData);
+        widget->setVerticalHeaderItem(row, headerItem);
+        widget->verticalHeaderItem(row)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+
+    widget->setColumnCount(1);
+    for (int row = 0; row < data.rows.size(); ++row) {
+        const QStringList &rowData = data.rows.at(row);
+        QString joinedRowData = rowData.join(", ");
+        QTableWidgetItem* item = new QTableWidgetItem(joinedRowData);
+        widget->setItem(row, 0, item);
+    }
 }
 
 template <typename T, typename V>
@@ -363,6 +414,13 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, sfx_on_idle_cb)
   FROM_UI(QCheckBox, evidence_double_click_cb)
 
+  FROM_UI(QCheckBox, crossfade_cb)
+  FROM_UI(QCheckBox, hide_typing_cb)
+  FROM_UI(QCheckBox, stop_typing_cb)
+  FROM_UI(QCheckBox, hide_gmplayer_btn_cb)
+  FROM_UI(QCheckBox, asset_streaming_cb)
+  FROM_UI(QCheckBox, image_streaming_cb)
+
   registerOption<QCheckBox, bool>("animated_theme_cb",
                                   &Options::animatedThemeEnabled,
                                   &Options::setAnimatedThemeEnabled);
@@ -436,6 +494,26 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("evidence_double_click_cb",
                                   &Options::evidenceDoubleClickEdit,
                                   &Options::setEvidenceDoubleClickEdit);
+  
+  registerOption<QCheckBox, bool>("hide_typing_cb",
+                                  &Options::hideTyping,
+                                  &Options::setHideTyping);
+  registerOption<QCheckBox, bool>("stop_typing_cb",
+                                  &Options::stopTypingIcon,
+                                  &Options::setStopTypingIcon);
+  registerOption<QCheckBox, bool>("crossfade_cb",
+                                  &Options::crossfade,
+                                  &Options::setCrossfade);
+  registerOption<QCheckBox, bool>("hide_gmplayer_btn_cb",
+                                  &Options::hideRoleplayButtons,
+                                  &Options::setHideRoleplayButtons);
+  registerOption<QCheckBox, bool>("image_streaming_cb",
+                                  &Options::imageStreaming,
+                                  &Options::setImageStreaming);
+  registerOption<QCheckBox, bool>("asset_streaming_cb",
+                                  &Options::assetStreaming,
+                                  &Options::setAssetStreaming);
+
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
   // people to put a billion entries in.
@@ -621,6 +699,54 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QTextBrowser, privacy_policy)
   ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
 
+  // Char Download Manager tab
+
+  FROM_UI(QTableWidget, download_table)
+  FROM_UI(QTableWidget, server_download_table)
+  registerOption<QTableWidget, TableData>("download_table", &Options::downloadManager,
+                                  &Options::setDownloadManager);
+  registerOption<QTableWidget, TableData>("server_download_table", &Options::serverDownloadManager,
+                                  &Options::setServerDownloadManager);
+
+  connect(ui_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
+    int row = item->row();
+    int column = item->column();
+
+    if (column == 0) {
+      QTableWidgetItem* linkItem = ui_download_table->item(row, column);
+      if (linkItem) {
+        QString downloadLink = linkItem->text();
+        QUrl url(downloadLink);
+        qDebug() << url.isValid();
+
+        if (url.isValid()) {
+          QDesktopServices::openUrl(url);
+        } else {
+          qWarning() << "Invalid URL: " << downloadLink;
+        }
+      }
+    }
+  });
+  // I'll change this later...
+  connect(ui_server_download_table, &QTableWidget::itemDoubleClicked,  this, [this](QTableWidgetItem* item) {
+    int row = item->row();
+    int column = item->column();
+
+    if (column == 0) {
+      QTableWidgetItem* linkItem = ui_server_download_table->item(row, column);
+      if (linkItem) {
+        QString downloadLink = linkItem->text();
+        QUrl url(downloadLink);
+        qDebug() << url.isValid();
+
+        if (url.isValid()) {
+          QDesktopServices::openUrl(url);
+        } else {
+          qWarning() << "Invalid URL: " << downloadLink;
+        }
+      }
+    }
+  });
   updateValues();
 }
 

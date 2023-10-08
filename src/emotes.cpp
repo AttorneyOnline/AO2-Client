@@ -211,6 +211,7 @@ void Courtroom::select_emote(int p_id)
   }
 
   ui_emote_dropdown->setCurrentIndex(current_emote);
+  current_button_selected = current_emote;
   update_emote_preview();
   ui_ic_chat_message->setFocus();
 }

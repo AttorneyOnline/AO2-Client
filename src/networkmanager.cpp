@@ -17,7 +17,9 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   http = new QNetworkAccessManager(this);
   heartbeat_timer = new QTimer(this);
-
+  stream = new QNetworkAccessManager(this);
+  download = new QNetworkAccessManager(this);
+  
   QString master_config =
       Options::getInstance().alternativeMasterserver();
   if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
@@ -27,6 +29,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
+  connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
 }
 
 void NetworkManager::get_server_list(const std::function<void()> &cb)
@@ -274,5 +277,186 @@ void NetworkManager::handle_server_packet(const QString& p_data)
     AOPacket *f_packet = new AOPacket(command, f_contents);
     // Ship it to the server!
     ao_app->server_packet_received(f_packet);
+  }
+}
+
+void NetworkManager::start_image_streaming(QString path, QString prefix)
+{
+  QStringList prefixes = { ".png", ".webp", ".gif" };
+  if (!prefixes.contains(prefix)) {
+    path += prefix;
+    streamed_path = path;
+    QUrl url(path);
+    QNetworkRequest request(url);
+    stream->get(request);
+  } else {
+    foreach (const QString &imagePrefix, prefixes) {
+      QString fullImagePath = path + imagePrefix;
+      streamed_path = fullImagePath;
+      
+      QUrl url(fullImagePath);
+      QNetworkRequest request(url);
+
+      QSslConfiguration config = request.sslConfiguration();
+      config.setProtocol(QSsl::AnyProtocol);
+      request.setSslConfiguration(config);
+      
+      request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
+      stream->get(request);
+
+      // Sends a lowercase network request. IDK why I deleted this before, but w/e
+      QString path_lower = fullImagePath.toLower();
+      QUrl url_lower(path_lower);
+      QNetworkRequest request_lower(url_lower);
+      stream->get(request_lower);
+    }
+  }
+}
+
+void NetworkManager::image_reply_finished(QNetworkReply *reply)
+{
+  // Check if there was an error in the network reply
+  if (reply->error() == QNetworkReply::NoError) {
+      // Get the HTTP status code from the reply
+      int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+      qDebug() << "No error, Status code: " << statusCode;
+
+      if (streamed_path.endsWith("char.ini")) {
+          // Handle .ini file download
+          QByteArray char_ini_data = reply->readAll();
+          QString character_folder = "base/characters/" + streamed_charname;
+          QDir().mkpath(character_folder);
+          QString char_ini_path = character_folder + "/char.ini";
+          QFile char_ini_file(char_ini_path);
+          if (char_ini_file.open(QIODevice::WriteOnly)) {
+              char_ini_file.write(char_ini_data);
+              char_ini_file.close();
+              qDebug() << "Successfully saved char.ini for character " << streamed_charname;
+          } else {
+              qWarning() << "Failed to save char.ini for character " << streamed_charname;
+          }
+      } else { // Handle image file download
+        QByteArray image_data = reply->readAll();
+        if (streamed_image.loadFromData(image_data)) {
+            streaming_successful = true;
+            qDebug() << "Success loading image.";
+            emit imageLoaded(streamed_image);
+        } else {
+            streaming_successful = false;
+            qDebug() << "Failed loading image.";
+        }
+      }
+  } else {
+      // Handle network error
+      int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+      qDebug() << "Status code: " << statusCode;
+      qDebug() << "Error:" << reply->errorString();
+      streaming_successful = false;
+      qDebug() << "Network Error while retrieving image.";
+  }
+  
+  reply->deleteLater();
+}
+
+void NetworkManager::download_folder(const QStringList& paths) {
+  for (const QString& path : paths) {
+      QUrl url(path);
+      QString string_url = path;
+      QString local_folder_path = "base/characters/" + streamed_charname;
+      QNetworkRequest request(url);
+      QNetworkReply* reply = download->get(request);
+
+      QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, string_url, local_folder_path]() {
+          if (reply->error() == QNetworkReply::NoError) {
+              save_folder(reply->readAll(), string_url, local_folder_path);
+              reply->deleteLater();
+          } else {
+              qDebug() << "Failed to download folder: " << reply->errorString();
+              reply->deleteLater();
+          }
+
+          reply->deleteLater();
+      });
+  }
+}
+
+
+void NetworkManager::save_folder(const QByteArray& folderData, const QString& pathUrl, const QString& localFolderPath_r) {
+    QString localFolderPath = localFolderPath_r;
+
+    QString sanitizedFolderName = QUrl::fromPercentEncoding(localFolderPath.toUtf8());
+    QDir dir(sanitizedFolderName);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    QRegularExpression regex("<a href=\"(.*?)\">(.*?)<\\/a>");
+    QRegularExpressionMatchIterator matches = regex.globalMatch(QString(folderData));
+
+    while (matches.hasNext()) {
+      QRegularExpressionMatch match = matches.next();
+      if (match.hasMatch()) {
+          QString fileName = match.captured(1);
+          QString fileSize = match.captured(2);
+
+          if (fileName.isEmpty() || fileSize.isEmpty() || fileName.startsWith("?"))
+              continue;
+        
+          QString subfolderPath = localFolderPath + "/" + fileName;
+          QString onlineSubfolderLookup = pathUrl + "/" + fileName;
+
+          if (fileName.endsWith("/") && fileName != ("/base/characters/") && !fileName.startsWith("/") && !fileName.startsWith("..")) {
+                qDebug() << "Subfolder found! Downloading directory: " << onlineSubfolderLookup;
+                qDebug() << "Subfolder path: " << subfolderPath;
+
+                QString sanitizedSubfolderName = QUrl::fromPercentEncoding(subfolderPath.toUtf8());
+                QDir dir2(sanitizedSubfolderName);
+                if (!dir2.exists() && dir2 != ("base/characters/" + streamed_charname)) {
+                    dir2.mkpath(".");
+                }
+            
+                // Recursively call the function to save the subfolder
+                QNetworkRequest request(onlineSubfolderLookup);
+                QNetworkReply* reply = download->get(request);
+                QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, subfolderPath, onlineSubfolderLookup]() {
+                    if (reply->error() == QNetworkReply::NoError) {
+                        save_folder(reply->readAll(), onlineSubfolderLookup, subfolderPath); // Recursive call
+                    } else {
+                        qDebug() << "Failed to download folder: " << reply->errorString();
+                    }
+
+                    reply->deleteLater();
+                });
+          } else {
+              // It's a file, not a directory
+              qDebug() << "Downloading file: " << fileName;
+              QString finalPathUrl = pathUrl + "/" + fileName;
+              qDebug() << "Final path url: " << finalPathUrl;
+              QNetworkRequest request(finalPathUrl);
+              QNetworkReply* reply = download->get(request);
+
+              QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, localFolderPath, fileName]() {
+                  if (reply->error() == QNetworkReply::NoError) {
+                      QString fileName_decoded = QUrl::fromPercentEncoding(fileName.toUtf8());
+                      QString localFolderPath_decoded = QUrl::fromPercentEncoding(localFolderPath.toUtf8());
+                      QFile localFile(localFolderPath_decoded + "/" + fileName_decoded);
+                      if (localFile.exists()) {
+                          qDebug() << "File already exists: " << localFile.fileName();
+                      } else {
+                          if (localFile.open(QIODevice::WriteOnly)) {
+                              localFile.write(reply->readAll());
+                              localFile.close();
+                          } else {
+                              qDebug() << "Error while saving: " << localFile.fileName();
+                          }
+                      }
+                  } else {
+                      qDebug() << "Failed to download file: " << reply->errorString();
+                  }
+  
+                  reply->deleteLater();
+              });
+          }
+      }
   }
 }

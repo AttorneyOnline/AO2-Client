@@ -6,6 +6,11 @@
 #include <QSettings>
 #include <datatypes.h>
 
+struct TableData {
+    QStringList headers;
+    QList<QStringList> rows;
+};
+
 class Options {
 private:
   /**
@@ -27,6 +32,8 @@ private:
   Options();
 
   QString m_server_subtheme;
+  TableData downloadTableData;
+  TableData m_server_download_table;
 
 public:
   Options(Options const &) = delete;
@@ -270,6 +277,43 @@ public:
   // Callwords notify the user when the word/words are used in a game message.
   QStringList callwords() const;
   void setCallwords(QStringList value);
+
+
+// ------ TRIPLEX ADDITIONS ------ //
+  // DL Manager tables
+  TableData downloadManager() const;
+  void setDownloadManager(TableData data);
+  void clearDownloadManager(TableData data);
+
+  TableData serverDownloadManager() const;
+  void setServerDownloadManager(TableData data);
+  void clearServerDownloadManager(TableData data);
+
+  // Whether you can see other Typing Icons
+  bool hideTyping() const;
+  void setHideTyping(bool value);
+
+  // If you want to stop sending Typing Icon (TI) packets
+  bool stopTypingIcon() const;
+  void setStopTypingIcon(bool value);
+
+  // If Asset Streaming (for Remote Characters) is enabled
+  bool assetStreaming() const;
+  void setAssetStreaming(bool value);
+
+  // If Image Streaming is enabled
+  bool imageStreaming() const;
+  void setImageStreaming(bool value);
+
+  // If the buttons that open the GM/Player Screen are hidden or not
+  bool hideRoleplayButtons() const;
+  void setHideRoleplayButtons(bool value);
+
+  // If crossfade is enabled
+  bool crossfade() const;
+  void setCrossfade(bool value);
+
+// ------------------------------ //
 
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();

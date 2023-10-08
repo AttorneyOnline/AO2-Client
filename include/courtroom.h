@@ -322,6 +322,19 @@ public:
 
   void check_connection_received();
 
+  QString current_icon_path = "";
+
+  int current_button_selected = 0;
+
+  QString get_char_path(QString charname, QString file) { return ao_app->get_real_path(ao_app->get_character_path(charname, file)); }
+  QString get_button_path(QString charname, QString emotion_number) { 
+    return ao_app->get_image_suffix(ao_app->get_character_path(charname, "emotions/button" + emotion_number + "_off")); 
+  }
+
+  void search_download_file(QString action);
+
+  void typing_signal(int signal);
+
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
   void set_clock(int id, qint64 msecs);
@@ -372,6 +385,9 @@ private:
 
   bool message_is_centered = false;
 
+  QTimer *typingTimer;
+  QIcon typingIcon;
+
   int current_display_speed = 3;
   int text_crawl = 40;
   double message_display_mult[7] = {0, 0.25, 0.65, 1, 1.25, 1.75, 2.25};
@@ -386,6 +402,10 @@ private:
 
   // The vertical offset this user has given.
   int char_vert_offset = 0;
+
+  int last_x_offset = 0;
+
+  int last_y_offset = 0;
 
   // 0 = in front, 1 = behind
   int pair_order = 0;
@@ -658,6 +678,8 @@ private:
 
   QWidget *ui_viewport;
   QLabel *ui_vp_void;
+  QLabel *ui_vp_char_icon;
+  QLabel *ui_vp_pencil;
   BackgroundLayer *ui_vp_background;
   SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
@@ -863,6 +885,10 @@ public slots:
   void on_reload_theme_clicked();
 
   void update_ui_music_name();
+
+  void onTextChanged();
+
+  void onTypingTimeout();
 
 private slots:
   void start_chat_ticking();

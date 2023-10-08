@@ -14,6 +14,7 @@
 #include <QPropertyAnimation>
 
 class AOApplication;
+class NetworkManager;
 class VPath;
 
 // "Brief" explanation of what the hell this is:
@@ -106,6 +107,7 @@ public:
 
 protected:
   AOApplication *ao_app;
+  NetworkManager *net_manager;
   QVector<QPixmap> movie_frames;
   QVector<int> movie_delays;
 
@@ -162,7 +164,6 @@ private:
   QMutex mutex;
   QWaitCondition frameAdded;
 
-
 signals:
   void done();
 
@@ -170,6 +171,7 @@ protected slots:
   virtual void preanim_done();
   void shfx_timer_done();
   virtual void movie_ticker();
+  void onImageLoaded(const QImage& image);
 };
 
 class BackgroundLayer : public AOLayer {

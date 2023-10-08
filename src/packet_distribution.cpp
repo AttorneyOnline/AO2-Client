@@ -6,6 +6,7 @@
 #include "lobby.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "widgets/aooptionsdialog.h"
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
@@ -105,6 +106,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     effects_supported = false;
     expanded_desk_mods_supported = false;
     auth_packet_supported = false;
+    triplex_supported = false;
+    typing_timer_supported = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -137,7 +140,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_supported = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_supported = true;
-    log_to_demo = false;
+    if (f_packet.contains("triplex", Qt::CaseInsensitive))
+      triplex_supported = true;
+    if (f_packet.contains("typing_timer", Qt::CaseInsensitive))
+      typing_timer_supported = true;
+  log_to_demo = false;
   }
   else if (header == "PN") {
     if (!lobby_constructed || f_contents.size() < 2)
@@ -385,6 +392,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->enter_courtroom();
     w_courtroom->set_courtroom_size();
     w_courtroom->update_character(f_contents.at(2).toInt());
+    w_courtroom->search_download_file("1");
   }
   else if (header == "MS") {
     if (courtroom_constructed && courtroom_loaded)
@@ -502,6 +510,79 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "ZZ") {
     if (courtroom_constructed && !f_contents.isEmpty())
       w_courtroom->mod_called(f_contents.at(0));
+  }
+  else if (header == "TT") { // Typing Timer packet
+    if (f_contents.isEmpty()) {
+      goto end;
+    }
+    int tt_state = f_contents.at(0).toInt();
+    QString tt_char = f_contents.at(1);
+    QString tt_button = f_contents.at(2);
+
+    // If there is no char_icon, we just grab the current button selected
+    if (!file_exists(w_courtroom->get_char_path(tt_char, "char_icon"))) {
+      w_courtroom->current_icon_path = w_courtroom->get_button_path(tt_char, tt_button);
+    } else {
+      w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
+    }
+    w_courtroom->typing_signal(tt_state);
+  }
+  else if (header == "CU") { // Char URL packet for the Char Downloader
+    if (f_contents.isEmpty()) {
+      goto end;
+    }
+    int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared
+    int cu_action = f_contents.at(1).toInt(); // 0 = Delete entry | 1 = Add entry
+    QString cu_name = f_contents.at(2);
+    QString cu_link = QUrl::fromPercentEncoding(f_contents.at(3).toUtf8());
+    
+    TableData dl_table;
+
+    if (cu_authority == 1) { // Is this sent by the user?
+        dl_table = Options::getInstance().downloadManager();
+    } else if (cu_authority == 0) { // If not, treat it as sent by the server
+        dl_table = Options::getInstance().serverDownloadManager();
+    }
+    QStringList newRow;
+    newRow.append(cu_link);
+
+    if (cu_action == 1) {
+        // "Add entry" action
+        bool entryExists = false;
+    
+        // Check if the entry already exists with the same header (cu_name) and URL (cu_link)
+        for (int i = 0; i < dl_table.rows.size(); i++) {
+            const QStringList& row = dl_table.rows.at(i);
+            if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
+                entryExists = true;
+                break;
+            }
+        }
+    
+        // Only add the new entry if it doesn't already exist
+        if (!entryExists) {
+            dl_table.headers.append(cu_name);
+            dl_table.rows.append(newRow);
+        }
+    } else {
+        // "Delete entry" action
+        for (int i = 0; i < dl_table.rows.size(); i++) {
+            const QStringList& row = dl_table.rows.at(i);
+            if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
+                // Found a matching entry, remove it.
+                dl_table.rows.removeAt(i);
+                dl_table.headers.removeAt(i);
+                break; // Assuming there's only one entry with the given cu_name and cu_link.
+        }
+      }
+    }
+    if (cu_authority == 1) {
+        Options::getInstance().setDownloadManager(dl_table);
+    } else if (cu_authority == 0) {
+        Options::getInstance().setServerDownloadManager(dl_table);
+    }
+      
+    qDebug() << cu_name << " | " << cu_link;
   }
   else if (header == "TI") { // Timer packet
     if (!courtroom_constructed || f_contents.size() < 2)

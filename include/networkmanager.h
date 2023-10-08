@@ -25,6 +25,10 @@ private:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
 
+  QNetworkAccessManager *stream;
+  QNetworkAccessManager *download;
+
+
   union {
     QWebSocket *ws;
     QTcpSocket *tcp;
@@ -51,8 +55,17 @@ public:
   void connect_to_server(server_type p_server);
   void disconnect_from_server();
 
+  ////// Streaming variables //////
+  QImage streamed_image;
+  QPixmap streamed_pixmap;
+  QString streamed_path;
+  QString streamed_charname;
+  bool streaming_successful = false;
+  ////////////////////////////////
+
 signals:
   void server_connected(bool state);
+  void imageLoaded(const QImage& image);
 
 public slots:
   void get_server_list(const std::function<void()> &cb);
@@ -62,10 +75,15 @@ public slots:
 
   void request_document(MSDocumentType document_type,
                         const std::function<void(QString)> &cb);
+  void start_image_streaming(QString path, QString prefix);
+  void download_folder(const QStringList& paths);
+
   void send_heartbeat();
 private slots:
   void ms_request_finished(QNetworkReply *reply,
                            const std::function<void()> &cb);
+  void image_reply_finished(QNetworkReply *reply);
+  void save_folder(const QByteArray& folderData, const QString& pathUrl, const QString& localFolderPath_r);
 
 private:
   QString get_user_agent() const {

@@ -15,6 +15,7 @@ class QScrollArea;
 class QSpinBox;
 class QTabWidget;
 class QLabel;
+class QTableWidget;
 class QAbstractButton;
 
 
@@ -23,6 +24,7 @@ class QAbstractButton;
 #include <QListWidget>
 #include <QTextBrowser>
 #include <QTextStream>
+#include <QTableWidget>
 
 class AOApplication;
 
@@ -36,6 +38,8 @@ class AOOptionsDialog : public QDialog {
 public:
   explicit AOOptionsDialog(QDialog *parent = nullptr,
                            AOApplication *p_ao_app = nullptr);
+  void addCharacterRow(QString characterName, QString downloadLink);
+  void removeCharacterRow(QString characterName);
 
 private:
   AOApplication *ao_app;
@@ -79,6 +83,13 @@ private:
   QCheckBox *ui_category_stop_cb;
   QCheckBox *ui_sfx_on_idle_cb;
 
+  QCheckBox *ui_hide_typing_cb;
+  QCheckBox *ui_stop_typing_cb;
+  QCheckBox *ui_asset_streaming_cb;
+  QCheckBox *ui_image_streaming_cb;
+  QCheckBox *ui_hide_gmplayer_btn_cb;
+  QCheckBox *ui_crossfade_cb;
+
   // The callwords tab
   QPlainTextEdit *ui_callwords_textbox;
   QCheckBox *ui_callwords_char_textbox;
@@ -115,6 +126,10 @@ private:
   QCheckBox *ui_log_ic_actions_cb;
   QCheckBox *ui_log_text_cb;
   QCheckBox *ui_log_demo_cb;
+
+  // Char Download Manager tab... or just DL Manager tab
+  QTableWidget *ui_download_table;
+  QTableWidget *ui_server_download_table;
 
   /**
    * Allows the AO2 master server hoster to go broke.
