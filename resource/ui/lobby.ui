@@ -121,7 +121,9 @@ background-color: rgb(17, 17, 17);
           <property name="text">
            <string/>
           </property>
-          <property name="pixmap">:/resource/ui/lobby_assets/discord-mark.png</property>
+          <property name="pixmap">
+           <pixmap resource="resources.qrc">:/resource/ui/lobby_assets/discord-mark.png</pixmap>
+          </property>
           <property name="scaledContents">
            <bool>true</bool>
           </property>
@@ -216,7 +218,7 @@ background-color: rgb(17, 17, 17);
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="Items.qrc">:/Icons/Icon_globe.png</pixmap>
+           <pixmap resource="Items.qrc">:/resource/ui/lobby_assets/Icon_globe.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -501,7 +503,7 @@ QTabBar {
            <widget class="QWidget" name="serverlist_tab">
             <attribute name="icon">
              <iconset resource="Items.qrc">
-              <normaloff>:/Icons/icon_public.png</normaloff>:/Icons/icon_public.png</iconset>
+              <normaloff>:/resource/ui/lobby_assets/icon_public.png</normaloff>:/resource/ui/lobby_assets/icon_public.png</iconset>
             </attribute>
             <attribute name="title">
              <string>Public Servers</string>
@@ -601,7 +603,7 @@ QHeaderView::section {
            <widget class="QWidget" name="favorites_tab">
             <attribute name="icon">
              <iconset resource="Items.qrc">
-              <normaloff>:/Icons/icon_favorites.png</normaloff>:/Icons/icon_favorites.png</iconset>
+              <normaloff>:/resource/ui/lobby_assets/icon_favorites.png</normaloff>:/resource/ui/lobby_assets/icon_favorites.png</iconset>
             </attribute>
             <attribute name="title">
              <string>Favorites</string>
@@ -680,7 +682,7 @@ QHeaderView::section {
            <widget class="QWidget" name="demo_tab">
             <attribute name="icon">
              <iconset resource="Items.qrc">
-              <normaloff>:/Icons/icon_demos.png</normaloff>:/Icons/icon_demos.png</iconset>
+              <normaloff>:/resource/ui/lobby_assets/icon_demos.png</normaloff>:/resource/ui/lobby_assets/icon_demos.png</iconset>
             </attribute>
             <attribute name="title">
              <string>Demos</string>
@@ -808,7 +810,7 @@ QPushButton:pressed {
            </property>
            <property name="icon">
             <iconset resource="Items.qrc">
-             <normaloff>:/Icons/icon_refresh.png</normaloff>:/Icons/icon_refresh.png</iconset>
+             <normaloff>:/resource/ui/lobby_assets/icon_refresh.png</normaloff>:/resource/ui/lobby_assets/icon_refresh.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -868,7 +870,7 @@ QPushButton:pressed {
              </property>
              <property name="icon">
               <iconset resource="Items.qrc">
-               <normaloff>:/Icons/icon_plus.png</normaloff>:/Icons/icon_plus.png</iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_plus.png</normaloff>:/resource/ui/lobby_assets/icon_plus.png</iconset>
              </property>
             </widget>
            </item>
@@ -905,7 +907,7 @@ QPushButton:pressed {
              </property>
              <property name="icon">
               <iconset resource="Items.qrc">
-               <normaloff>:/Icons/icon_minus.png</normaloff>:/Icons/icon_minus.png</iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_minus.png</normaloff>:/resource/ui/lobby_assets/icon_minus.png</iconset>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">buttonGroup</string>
@@ -944,7 +946,7 @@ QPushButton:pressed {
              </property>
              <property name="icon">
               <iconset resource="Items.qrc">
-               <normaloff>:/Icons/icon_wireless_3.png</normaloff>:/Icons/icon_wireless_3.png</iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -986,7 +988,7 @@ QPushButton:pressed {
              </property>
              <property name="icon">
               <iconset resource="Items.qrc">
-               <normaloff>:/Icons/icon_plus.png</normaloff>:/Icons/icon_plus.png</iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_plus.png</normaloff>:/resource/ui/lobby_assets/icon_plus.png</iconset>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">buttonGroup</string>
@@ -1026,7 +1028,7 @@ QPushButton:pressed {
              </property>
              <property name="icon">
               <iconset resource="Items.qrc">
-               <normaloff>:/Icons/icon_edit_2.png</normaloff>:/Icons/icon_edit_2.png</iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1214,7 +1216,7 @@ QPushButton:pressed {
               </property>
               <property name="icon">
                <iconset resource="Items.qrc">
-                <normaloff>:/Icons/icon_settings.png</normaloff>:/Icons/icon_settings.png</iconset>
+                <normaloff>:/resource/ui/lobby_assets/icon_settings.png</normaloff>:/resource/ui/lobby_assets/icon_settings.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -1328,7 +1330,7 @@ QPushButton:pressed {
               </property>
               <property name="icon">
                <iconset resource="Items.qrc">
-                <normaloff>:/Icons/icon_about2.png</normaloff>:/Icons/icon_about2.png</iconset>
+                <normaloff>:/resource/ui/lobby_assets/icon_about2.png</normaloff>:/resource/ui/lobby_assets/icon_about2.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -1865,7 +1867,7 @@ QTabBar {
                   </property>
                   <property name="icon">
                    <iconset resource="Items.qrc">
-                    <normaloff>:/Icons/icon_badge_1.png</normaloff>:/Icons/icon_badge_1.png</iconset>
+                    <normaloff>:/resource/ui/lobby_assets/icon_badge_1.png</normaloff>:/resource/ui/lobby_assets/icon_badge_1.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -1996,7 +1998,7 @@ p, li { white-space: pre-wrap; }
                   </property>
                   <property name="icon">
                    <iconset resource="Items.qrc">
-                    <normaloff>:/Icons/icon_badge_2.png</normaloff>:/Icons/icon_badge_2.png</iconset>
+                    <normaloff>:/resource/ui/lobby_assets/icon_badge_2.png</normaloff>:/resource/ui/lobby_assets/icon_badge_2.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
