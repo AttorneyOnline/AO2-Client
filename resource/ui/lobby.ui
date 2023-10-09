@@ -121,9 +121,7 @@ background-color: rgb(17, 17, 17);
           <property name="text">
            <string/>
           </property>
-          <property name="pixmap">
-           <pixmap resource="">:/resource/ui/lobby_assets/discord-mark.png</pixmap>
-          </property>
+          <property name="pixmap">:/resource/ui/lobby_assets/discord-mark.png</property>
           <property name="scaledContents">
            <bool>true</bool>
           </property>
