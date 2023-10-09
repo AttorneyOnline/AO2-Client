@@ -15,5 +15,40 @@
         <file>resource/ui/lobby.ui</file>
         <file>resource/ui/lobby_assets/down-arrow.png</file>
         <file>resource/ui/lobby_assets/up-arrow.png</file>
+        <file>resource/ui/lobby_assets/Apollo_BG.png</file>
+        <file>resource/ui/lobby_assets/Athena_BG.png</file>
+        <file>resource/ui/lobby_assets/Icon_globe.png</file>
+        <file>resource/ui/lobby_assets/Logo_v5.png</file>
+        <file>resource/ui/lobby_assets/Miles_BG.png</file>
+        <file>resource/ui/lobby_assets/Phoenix_BG.png</file>
+        <file>resource/ui/lobby_assets/Subtitle_v8.png</file>
+        <file>resource/ui/lobby_assets/background.png</file>
+        <file>resource/ui/lobby_assets/connect_off.png</file>
+        <file>resource/ui/lobby_assets/connect_on.png</file>
+        <file>resource/ui/lobby_assets/connect_pressed.png</file>
+        <file>resource/ui/lobby_assets/discord-mark.png</file>
+        <file>resource/ui/lobby_assets/grain-overlay.png</file>
+        <file>resource/ui/lobby_assets/icon_about2.png</file>
+        <file>resource/ui/lobby_assets/icon_badge_1.png</file>
+        <file>resource/ui/lobby_assets/icon_badge_2.png</file>
+        <file>resource/ui/lobby_assets/icon_demos.png</file>
+        <file>resource/ui/lobby_assets/icon_edit_2.png</file>
+        <file>resource/ui/lobby_assets/icon_favorites.png</file>
+        <file>resource/ui/lobby_assets/icon_home.png</file>
+        <file>resource/ui/lobby_assets/icon_minus.png</file>
+        <file>resource/ui/lobby_assets/icon_plus.png</file>
+        <file>resource/ui/lobby_assets/icon_public.png</file>
+        <file>resource/ui/lobby_assets/icon_refresh.png</file>
+        <file>resource/ui/lobby_assets/icon_settings.png</file>
+        <file>resource/ui/lobby_assets/icon_wireless_3.png</file>
+        <file>resource/ui/lobby_assets/scanlines.png</file>
+        <file>resource/ui/lobby_assets/tab_changelog_off.png</file>
+        <file>resource/ui/lobby_assets/tab_changelog_off_hover</file>
+        <file>resource/ui/lobby_assets/tab_changelog_on</file>
+        <file>resource/ui/lobby_assets/tab_changelog_on_hover</file>
+        <file>resource/ui/lobby_assets/tab_motd_off</file>
+        <file>resource/ui/lobby_assets/tab_motd_off_hover</file>
+        <file>resource/ui/lobby_assets/tab_motd_on</file>
+        <file>resource/ui/lobby_assets/tab_motd_on_hover</file>
     </qresource>
 </RCC>
