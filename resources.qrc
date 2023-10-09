@@ -43,12 +43,12 @@
         <file>resource/ui/lobby_assets/icon_wireless_3.png</file>
         <file>resource/ui/lobby_assets/scanlines.png</file>
         <file>resource/ui/lobby_assets/tab_changelog_off.png</file>
-        <file>resource/ui/lobby_assets/tab_changelog_off_hover</file>
-        <file>resource/ui/lobby_assets/tab_changelog_on</file>
-        <file>resource/ui/lobby_assets/tab_changelog_on_hover</file>
-        <file>resource/ui/lobby_assets/tab_motd_off</file>
-        <file>resource/ui/lobby_assets/tab_motd_off_hover</file>
-        <file>resource/ui/lobby_assets/tab_motd_on</file>
-        <file>resource/ui/lobby_assets/tab_motd_on_hover</file>
+        <file>resource/ui/lobby_assets/tab_changelog_off_hover.png</file>
+        <file>resource/ui/lobby_assets/tab_changelog_on.png</file>
+        <file>resource/ui/lobby_assets/tab_changelog_on_hover.png</file>
+        <file>resource/ui/lobby_assets/tab_motd_off.png</file>
+        <file>resource/ui/lobby_assets/tab_motd_off_hover.png</file>
+        <file>resource/ui/lobby_assets/tab_motd_on.png</file>
+        <file>resource/ui/lobby_assets/tab_motd_on_hover.png</file>
     </qresource>
 </RCC>
