@@ -65,6 +65,7 @@ void Lobby::on_tab_changed(int index)
     ui_remove_from_favorites_button->setVisible(false);
     ui_edit_favorite_button->setVisible(false);
     ui_direct_connect_button->setVisible(false);
+    ui_load_demo_button->setVisible(true);
     reset_selection();
     break;
   default:
@@ -186,6 +187,10 @@ void Lobby::loadUI()
   connect(ui_remove_from_favorites_button, &QPushButton::released, this,
           &Lobby::on_remove_from_fav_released);
 
+  FROM_UI(QPushButton, load_demo_button);
+  connect(ui_load_demo_button, &QPushButton::released, this,
+          &Lobby::on_load_demo_released);
+  
   FROM_UI(QLabel, server_player_count_lbl)
   FROM_UI(QTextBrowser, server_description_text)
   FROM_UI(QPushButton, connect_button);
@@ -225,6 +230,11 @@ void Lobby::loadUI()
       l_tabbar->tabBar()->setExpanding(true);
     }
   }
+}
+
+void Lobby::on_load_demo_released()
+{
+  ao_app->demo_server->open_file();
 }
 
 void Lobby::on_refresh_released()
