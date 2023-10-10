@@ -1027,7 +1027,7 @@ QPushButton:pressed {
 }</string>
              </property>
              <property name="text">
-              <string>Add To Favorites</string>
+              <string>Load demo</string>
              </property>
              <property name="icon">
               <iconset>
