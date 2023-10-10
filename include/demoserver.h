@@ -23,6 +23,7 @@ public:
     int max_wait = -1;
 
     void set_demo_file(QString filepath);
+    void open_file();
 
 private:
     void handle_packet(AOPacket *packet);
