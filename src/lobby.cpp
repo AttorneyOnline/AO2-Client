@@ -47,7 +47,7 @@ void Lobby::on_tab_changed(int index)
     ui_add_server_button->setVisible(false);
     ui_edit_favorite_button->setVisible(false);
     ui_direct_connect_button->setVisible(true);
-    ui_load_demo_button->setVisible(false);
+    ui_load_demo_button->setVisible(true);
     reset_selection();
     break;
   case FAVORITES:
