@@ -189,8 +189,7 @@ void Lobby::loadUI()
   connect(ui_remove_from_favorites_button, &QPushButton::released, this,
           &Lobby::on_remove_from_fav_released);
 
-  FROM_UI(QPushButton, load_demo_button);
-  ui_load_demo_button->setVisible(false);
+  FROM_UI(QPushButton, load_demo_button)
   connect(ui_load_demo_button, &QPushButton::released, this,
           &Lobby::on_load_demo_released);
   
