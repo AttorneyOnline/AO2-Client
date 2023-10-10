@@ -218,7 +218,7 @@ background-color: rgb(17, 17, 17);
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="Items.qrc">:/resource/ui/lobby_assets/Icon_globe.png</pixmap>
+           <pixmap resource="resources.qrc">:/resource/ui/lobby_assets/Icon_globe.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -304,7 +304,7 @@ background-color: rgb(17, 17, 17);
      </property>
      <property name="styleSheet">
       <string notr="true">QWidget#lobby_info {
-	border-image: url(:/Images/background.png);
+	border-image: url(:/resource/ui/lobby_assets/background.png);
 }</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -502,7 +502,7 @@ QTabBar {
            </property>
            <widget class="QWidget" name="serverlist_tab">
             <attribute name="icon">
-             <iconset resource="Items.qrc">
+             <iconset resource="resources.qrc">
               <normaloff>:/resource/ui/lobby_assets/icon_public.png</normaloff>:/resource/ui/lobby_assets/icon_public.png</iconset>
             </attribute>
             <attribute name="title">
@@ -562,7 +562,7 @@ QTabBar {
                 <string notr="true">QTreeWidget {
 	border: 4px double #c5ac66;
 	padding: 0px;
-	background-image: url(:/Images/Phoenix_BG.png);
+	background-image: url(:/resource/ui/lobby_assets/Phoenix_BG.png);
 	background-color: rgb(8, 9, 13);
 	color:white;
 	border-top: 0x;
@@ -602,7 +602,7 @@ QHeaderView::section {
            </widget>
            <widget class="QWidget" name="favorites_tab">
             <attribute name="icon">
-             <iconset resource="Items.qrc">
+             <iconset resource="resources.qrc">
               <normaloff>:/resource/ui/lobby_assets/icon_favorites.png</normaloff>:/resource/ui/lobby_assets/icon_favorites.png</iconset>
             </attribute>
             <attribute name="title">
@@ -645,7 +645,7 @@ QHeaderView::section {
                 <string notr="true">QTreeWidget {
 	border: 4px double #c5ac66;
 	padding: 0px;
-	background-image: url(:/Images/Athena_BG.png);
+	background-image: url(:/resource/ui/lobby_assets/Athena_BG.png);
 	background-color: rgb(8, 9, 13);
 	color:white;
 }
@@ -681,7 +681,7 @@ QHeaderView::section {
            </widget>
            <widget class="QWidget" name="demo_tab">
             <attribute name="icon">
-             <iconset resource="Items.qrc">
+             <iconset resource="resources.qrc">
               <normaloff>:/resource/ui/lobby_assets/icon_demos.png</normaloff>:/resource/ui/lobby_assets/icon_demos.png</iconset>
             </attribute>
             <attribute name="title">
@@ -722,7 +722,7 @@ QHeaderView::section {
 	border: 4px double #c5ac66;
 	padding: 0px;
 	border-top: 0px;
-	background-image: url(:/Images/Apollo_BG.png);
+	background-image: url(:/resource/ui/lobby_assets/Apollo_BG.png);
 	background-color: rgb(8, 9, 13);
 	color:white;
 }
@@ -809,7 +809,7 @@ QPushButton:pressed {
             <string>Refresh</string>
            </property>
            <property name="icon">
-            <iconset resource="Items.qrc">
+            <iconset resource="resources.qrc">
              <normaloff>:/resource/ui/lobby_assets/icon_refresh.png</normaloff>:/resource/ui/lobby_assets/icon_refresh.png</iconset>
            </property>
            <property name="iconSize">
@@ -869,7 +869,7 @@ QPushButton:pressed {
               <string>Add Server</string>
              </property>
              <property name="icon">
-              <iconset resource="Items.qrc">
+              <iconset resource="resources.qrc">
                <normaloff>:/resource/ui/lobby_assets/icon_plus.png</normaloff>:/resource/ui/lobby_assets/icon_plus.png</iconset>
              </property>
             </widget>
@@ -906,7 +906,7 @@ QPushButton:pressed {
               <string>Remove Server</string>
              </property>
              <property name="icon">
-              <iconset resource="Items.qrc">
+              <iconset resource="resources.qrc">
                <normaloff>:/resource/ui/lobby_assets/icon_minus.png</normaloff>:/resource/ui/lobby_assets/icon_minus.png</iconset>
              </property>
              <attribute name="buttonGroup">
@@ -945,7 +945,7 @@ QPushButton:pressed {
               <string>Direct Connect</string>
              </property>
              <property name="icon">
-              <iconset resource="Items.qrc">
+              <iconset resource="resources.qrc">
                <normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</iconset>
              </property>
              <property name="iconSize">
@@ -987,7 +987,7 @@ QPushButton:pressed {
               <string>Add To Favorites</string>
              </property>
              <property name="icon">
-              <iconset resource="Items.qrc">
+              <iconset resource="resources.qrc">
                <normaloff>:/resource/ui/lobby_assets/icon_plus.png</normaloff>:/resource/ui/lobby_assets/icon_plus.png</iconset>
              </property>
              <attribute name="buttonGroup">
@@ -1027,7 +1027,7 @@ QPushButton:pressed {
               <string>Edit Server</string>
              </property>
              <property name="icon">
-              <iconset resource="Items.qrc">
+              <iconset resource="resources.qrc">
                <normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</iconset>
              </property>
              <property name="iconSize">
@@ -1152,7 +1152,7 @@ QPushButton:pressed {
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Items.qrc">:/Logos/Logo_v5.png</pixmap>
+               <pixmap resource="resources.qrc">:/Logos/Logo_v5.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -1215,7 +1215,7 @@ QPushButton:pressed {
                <string>                Settings                        </string>
               </property>
               <property name="icon">
-               <iconset resource="Items.qrc">
+               <iconset resource="resources.qrc">
                 <normaloff>:/resource/ui/lobby_assets/icon_settings.png</normaloff>:/resource/ui/lobby_assets/icon_settings.png</iconset>
               </property>
               <property name="iconSize">
@@ -1267,7 +1267,7 @@ QPushButton:pressed {
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Items.qrc">:/Logos/Subtitle_v8.png</pixmap>
+               <pixmap resource="resources.qrc">:/Logos/Subtitle_v8.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>false</bool>
@@ -1329,7 +1329,7 @@ QPushButton:pressed {
                <string>                   About                          </string>
               </property>
               <property name="icon">
-               <iconset resource="Items.qrc">
+               <iconset resource="resources.qrc">
                 <normaloff>:/resource/ui/lobby_assets/icon_about2.png</normaloff>:/resource/ui/lobby_assets/icon_about2.png</iconset>
               </property>
               <property name="iconSize">
@@ -1444,7 +1444,7 @@ QPushButton:pressed {
            <property name="styleSheet">
             <string notr="true">QWidget#server_container {
 	border: 4px double #c5ac66;
-	background-image: url(:/Images/scanlines.png);
+	background-image: url(:/resource/ui/lobby_assets/scanlines.png);
 	background-color: rgb(4, 14, 45);
 	color:white;
 }</string>
@@ -1520,7 +1520,7 @@ QPushButton:pressed {
               <property name="styleSheet">
                <string notr="true">QTextBrowser#server_description_text {
 	border: 2px outset rgb(85, 62, 8);
-	background-image: url(:/Images/Miles_BG.png);
+	background-image: url(:/resource/ui/lobby_assets/Miles_BG.png);
 	background-color: #06060a;
 	color:white;
 	margin: 3px;
@@ -1585,15 +1585,15 @@ p, li { white-space: pre-wrap; }
               </property>
               <property name="styleSheet">
                <string notr="true">QPushButton:disabled {
-	border-image: url(:/Images/connect_off.png);
+	border-image: url(:/resource/ui/lobby_assets/connect_off.png);
 }
 
 QPushButton:enabled {
-	border-image: url(:/Images/connect_on.png);
+	border-image: url(:/resource/ui/lobby_assets/connect_on.png);
 }
 
 QPushButton:pressed {
-	border-image: url(:/Images/connect_pressed.png);
+	border-image: url(:/resource/ui/lobby_assets/connect_pressed.png);
 }</string>
               </property>
               <property name="text">
@@ -1748,35 +1748,35 @@ QTabBar::tab:!selected:hover {
 }
 
 QTabBar::tab:first:selected:hover {
-	background-image: url(:/Images/tab_motd_on_hover.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_on_hover.png);
 }
 
 QTabBar::tab:first:!selected:hover {
-	background-image: url(:/Images/tab_motd_off_hover.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_off_hover.png);
 }
 
 QTabBar::tab:first:selected {
-	background-image: url(:/Images/tab_motd_on.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_on.png);
 }
 
 QTabBar::tab:first:!selected {
-	background-image: url(:/Images/tab_motd_off.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_off.png);
 }
 
 QTabBar::tab:last:selected {
-	background-image: url(:/Images/tab_changelog_on.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_changelog_on.png);
 }
 
 QTabBar::tab:last:selected:hover {
-	background-image: url(:/Images/tab_changelog_on_hover.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_changelog_on_hover.png);
 }
 
 QTabBar::tab:last:!selected {
-	background-image: url(:/Images/tab_changelog_off.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_changelog_off.png);
 }
 
 QTabBar::tab:last:!selected:hover {
-	background-image: url(:/Images/tab_changelog_off_hover.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_changelog_off_hover.png);
 }
 
 QTabBar {
@@ -1804,7 +1804,7 @@ QTabBar {
            <widget class="QWidget" name="motd_tab">
             <property name="styleSheet">
              <string notr="true">QWidget#motd_tab {
-	background-image: url(:/Images/grain-overlay.png);
+	background-image: url(:/resource/ui/lobby_assets/grain-overlay.png);
 }</string>
             </property>
             <attribute name="title">
@@ -1866,7 +1866,7 @@ QTabBar {
                    <string>Message of The Day</string>
                   </property>
                   <property name="icon">
-                   <iconset resource="Items.qrc">
+                   <iconset resource="resources.qrc">
                     <normaloff>:/resource/ui/lobby_assets/icon_badge_1.png</normaloff>:/resource/ui/lobby_assets/icon_badge_1.png</iconset>
                   </property>
                   <property name="iconSize">
@@ -1935,7 +1935,7 @@ p, li { white-space: pre-wrap; }
            <widget class="QWidget" name="changelog_tab">
             <property name="styleSheet">
              <string notr="true">QWidget#changelog_tab {
-	background-image: url(:/Images/grain-overlay.png);
+	background-image: url(:/resource/ui/lobby_assets/grain-overlay.png);
 }</string>
             </property>
             <attribute name="title">
@@ -1997,7 +1997,7 @@ p, li { white-space: pre-wrap; }
                    <string>What's New?   </string>
                   </property>
                   <property name="icon">
-                   <iconset resource="Items.qrc">
+                   <iconset resource="resources.qrc">
                     <normaloff>:/resource/ui/lobby_assets/icon_badge_2.png</normaloff>:/resource/ui/lobby_assets/icon_badge_2.png</iconset>
                   </property>
                   <property name="iconSize">
@@ -2073,7 +2073,7 @@ p, li { white-space: pre-wrap; }
   </action>
  </widget>
  <resources>
-  <include location="Items.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
  <buttongroups>
