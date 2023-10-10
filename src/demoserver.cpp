@@ -17,6 +17,11 @@ void DemoServer::set_demo_file(QString filepath)
     filename = filepath;
 }
 
+void DemoServer::open_file()
+{
+    filename = QFileDialog::getOpenFileName(nullptr, tr("Load Demo"), "logs/", tr("Demo Files (*.demo)"));
+}
+
 void DemoServer::start_server()
 {
     if (server_started) return;
