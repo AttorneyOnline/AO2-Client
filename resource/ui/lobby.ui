@@ -1035,7 +1035,7 @@ QPushButton:pressed {
             </widget>
            </item>
            <item row="1" column="6">
-            <widget class="QPushButton" name="edit_favorite_button_2">
+            <widget class="QPushButton" name="edit_favorite_button">
              <property name="font">
               <font>
                <family>DM Sans</family>
