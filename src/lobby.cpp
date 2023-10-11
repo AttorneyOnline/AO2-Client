@@ -237,7 +237,12 @@ void Lobby::loadUI()
 
 void Lobby::on_load_demo_released()
 {
+  ao_app->demo_server->start_server();
+  server_type demo_server;
+  demo_server.ip = "127.0.0.1";
+  demo_server.port = ao_app->demo_server->port;
   ao_app->demo_server->open_file();
+  net_manager->connect_to_server(demo_server);
 }
 
 void Lobby::on_refresh_released()
