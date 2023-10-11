@@ -1027,7 +1027,7 @@ QPushButton:pressed {
 }</string>
              </property>
              <property name="text">
-              <string>Load demo</string>
+              <string>Add To Favorites</string>
              </property>
              <property name="icon">
               <iconset>
@@ -1067,11 +1067,7 @@ QPushButton:pressed {
 }</string>
              </property>
              <property name="text">
-              <string>Edit Server</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</iconset>
+              <string>Load Demo</string>
              </property>
              <property name="iconSize">
               <size>
