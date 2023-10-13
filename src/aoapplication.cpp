@@ -134,6 +134,7 @@ void AOApplication::server_disconnected()
         net_manager->connect_to_server(net_manager->last_server_chosen);
   }
   Options::getInstance().setServerSubTheme(QString());
+  }
 }
 
 void AOApplication::loading_cancelled()
