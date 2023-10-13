@@ -140,6 +140,7 @@ void NetworkManager::connect_to_server(server_type p_server)
 
   qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
                               << p_server.port;
+  last_server_chosen = p_server;
 
   switch (p_server.socket_type) {
   default:
