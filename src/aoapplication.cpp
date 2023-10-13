@@ -122,8 +122,17 @@ void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {
     call_notice(tr("Disconnected from server."));
-    construct_lobby();
-    destruct_courtroom();
+    QMessageBox msgBox;
+    msgBox.setText(tr("Disconnected from server."));
+    QPushButton* btn1 = msgBox.addButton(tr("Return to Lobby"), QMessageBox::AcceptRole);
+    QPushButton* btn2 = msgBox.addButton(tr("Reconnect"), QMessageBox::AcceptRole);
+    msgBox.setDefaultButton(btn1);
+    msgBox.exec();
+    if (msgBox.clickedButton() == btn1) {
+        construct_lobby();
+        destruct_courtroom();
+    } else if (msgBox.clickedButton() == btn2) {
+        net_manager->connect_to_server(last_server_chosen);
   }
   Options::getInstance().setServerSubTheme(QString());
 }
