@@ -121,7 +121,6 @@ QString AOApplication::get_version_string()
 void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {
-    call_notice(tr("Disconnected from server."));
     QMessageBox msgBox;
     msgBox.setText(tr("Disconnected from server."));
     QPushButton* btn1 = msgBox.addButton(tr("Return to Lobby"), QMessageBox::AcceptRole);
