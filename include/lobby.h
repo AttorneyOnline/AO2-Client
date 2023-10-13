@@ -70,6 +70,7 @@ private:
   QPushButton *ui_remove_from_favorites_button;
   QPushButton *ui_edit_favorite_button;
   QPushButton *ui_direct_connect_button;
+  QPushButton *ui_load_demo_button;
   QPushButton *ui_refresh_button;
 
   // Serverinfo / MOTD Horizontal Row
@@ -94,6 +95,7 @@ private slots:
   void on_add_server_to_fave_released();
   void on_edit_favorite_released();
   void on_remove_from_fav_released();
+  void on_load_demo_released();
   void on_about_clicked();
   void on_server_list_clicked(QTreeWidgetItem *p_item, int column);
   void on_list_doubleclicked(QTreeWidgetItem *p_item, int column);

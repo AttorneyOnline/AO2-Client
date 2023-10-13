@@ -122,7 +122,7 @@ background-color: rgb(17, 17, 17);
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="resources.qrc">:/resource/ui/lobby_assets/discord-mark.png</pixmap>
+           <pixmap>:/resource/ui/lobby_assets/discord-mark.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -218,7 +218,7 @@ background-color: rgb(17, 17, 17);
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="resources.qrc">:/resource/ui/lobby_assets/Icon_globe.png</pixmap>
+           <pixmap>:/resource/ui/lobby_assets/Icon_globe.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -502,7 +502,7 @@ QTabBar {
            </property>
            <widget class="QWidget" name="serverlist_tab">
             <attribute name="icon">
-             <iconset resource="resources.qrc">
+             <iconset>
               <normaloff>:/resource/ui/lobby_assets/icon_public.png</normaloff>:/resource/ui/lobby_assets/icon_public.png</iconset>
             </attribute>
             <attribute name="title">
@@ -602,7 +602,7 @@ QHeaderView::section {
            </widget>
            <widget class="QWidget" name="favorites_tab">
             <attribute name="icon">
-             <iconset resource="resources.qrc">
+             <iconset>
               <normaloff>:/resource/ui/lobby_assets/icon_favorites.png</normaloff>:/resource/ui/lobby_assets/icon_favorites.png</iconset>
             </attribute>
             <attribute name="title">
@@ -681,7 +681,7 @@ QHeaderView::section {
            </widget>
            <widget class="QWidget" name="demo_tab">
             <attribute name="icon">
-             <iconset resource="resources.qrc">
+             <iconset>
               <normaloff>:/resource/ui/lobby_assets/icon_demos.png</normaloff>:/resource/ui/lobby_assets/icon_demos.png</iconset>
             </attribute>
             <attribute name="title">
@@ -809,7 +809,7 @@ QPushButton:pressed {
             <string>Refresh</string>
            </property>
            <property name="icon">
-            <iconset resource="resources.qrc">
+            <iconset>
              <normaloff>:/resource/ui/lobby_assets/icon_refresh.png</normaloff>:/resource/ui/lobby_assets/icon_refresh.png</iconset>
            </property>
            <property name="iconSize">
@@ -837,12 +837,11 @@ QPushButton:pressed {
            <property name="verticalSpacing">
             <number>6</number>
            </property>
-           <item row="1" column="4">
-            <widget class="QPushButton" name="add_server_button">
+           <item row="1" column="0">
+            <widget class="QPushButton" name="direct_connect_button">
              <property name="font">
               <font>
                <family>DM Sans</family>
-               <pointsize>9</pointsize>
               </font>
              </property>
              <property name="styleSheet">
@@ -861,16 +860,22 @@ QPushButton:hover {
 }
 
 QPushButton:pressed {
-	background-color: rgb(25, 25, 25);
+	background-color: rgb(30, 30, 30);
 	color: white;
 }</string>
              </property>
              <property name="text">
-              <string>Add Server</string>
+              <string>Direct Connect</string>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
-               <normaloff>:/resource/ui/lobby_assets/icon_plus.png</normaloff>:/resource/ui/lobby_assets/icon_plus.png</iconset>
+              <iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>16</width>
+               <height>12</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -906,7 +911,7 @@ QPushButton:pressed {
               <string>Remove Server</string>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
+              <iconset>
                <normaloff>:/resource/ui/lobby_assets/icon_minus.png</normaloff>:/resource/ui/lobby_assets/icon_minus.png</iconset>
              </property>
              <attribute name="buttonGroup">
@@ -914,11 +919,49 @@ QPushButton:pressed {
              </attribute>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="direct_connect_button">
+           <item row="1" column="4">
+            <widget class="QPushButton" name="add_server_button">
              <property name="font">
               <font>
                <family>DM Sans</family>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+	padding: 2px;
+	margin: 1px;
+	border: 1px solid rgb(197, 172, 102);
+	border-radius: 9px;
+	color: 	rgb(230, 230, 230);
+	background-color: black;
+}
+
+QPushButton:hover {
+	background-color: rgb(17, 17, 17);
+	color: white;
+}
+
+QPushButton:pressed {
+	background-color: rgb(25, 25, 25);
+	color: white;
+}</string>
+             </property>
+             <property name="text">
+              <string>Add Server</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_plus.png</normaloff>:/resource/ui/lobby_assets/icon_plus.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="7">
+            <widget class="QPushButton" name="edit_favorite_button">
+             <property name="font">
+              <font>
+               <family>DM Sans</family>
+               <pointsize>9</pointsize>
               </font>
              </property>
              <property name="styleSheet">
@@ -942,11 +985,11 @@ QPushButton:pressed {
 }</string>
              </property>
              <property name="text">
-              <string>Direct Connect</string>
+              <string>Edit Server</string>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
-               <normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</normaloff>:/resource/ui/lobby_assets/icon_wireless_3.png</iconset>
+              <iconset>
+               <normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -987,7 +1030,7 @@ QPushButton:pressed {
               <string>Add To Favorites</string>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
+              <iconset>
                <normaloff>:/resource/ui/lobby_assets/icon_plus.png</normaloff>:/resource/ui/lobby_assets/icon_plus.png</iconset>
              </property>
              <attribute name="buttonGroup">
@@ -995,8 +1038,8 @@ QPushButton:pressed {
              </attribute>
             </widget>
            </item>
-           <item row="1" column="6">
-            <widget class="QPushButton" name="edit_favorite_button">
+           <item row="1" column="8">
+            <widget class="QPushButton" name="load_demo_button">
              <property name="font">
               <font>
                <family>DM Sans</family>
@@ -1024,11 +1067,7 @@ QPushButton:pressed {
 }</string>
              </property>
              <property name="text">
-              <string>Edit Server</string>
-             </property>
-             <property name="icon">
-              <iconset resource="resources.qrc">
-               <normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</normaloff>:/resource/ui/lobby_assets/icon_edit_2.png</iconset>
+              <string>Load Demo</string>
              </property>
              <property name="iconSize">
               <size>
@@ -1111,7 +1150,7 @@ QPushButton:pressed {
              <number>0</number>
             </property>
             <property name="bottomMargin">
-             <number>26</number>
+             <number>21</number>
             </property>
             <property name="horizontalSpacing">
              <number>0</number>
@@ -1130,13 +1169,13 @@ QPushButton:pressed {
               <property name="minimumSize">
                <size>
                 <width>182</width>
-                <height>143</height>
+                <height>150</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>197</width>
-                <height>155</height>
+                <width>175</width>
+                <height>149</height>
                </size>
               </property>
               <property name="styleSheet">
@@ -1152,19 +1191,13 @@ QPushButton:pressed {
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="resources.qrc">:/resource/ui/lobby_assets/Logo_v5.png</pixmap>
+               <pixmap>:/resource/ui/lobby_assets/Logo_v5.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
-              </property>
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <property name="indent">
-               <number>-1</number>
               </property>
              </widget>
             </item>
@@ -1215,7 +1248,7 @@ QPushButton:pressed {
                <string>                Settings                        </string>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset>
                 <normaloff>:/resource/ui/lobby_assets/icon_settings.png</normaloff>:/resource/ui/lobby_assets/icon_settings.png</iconset>
               </property>
               <property name="iconSize">
@@ -1267,7 +1300,7 @@ QPushButton:pressed {
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="resources.qrc">:/Logos/Subtitle_v8.png</pixmap>
+               <pixmap>:/resource/ui/lobby_assets/Subtitle_v8.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>false</bool>
@@ -1329,7 +1362,7 @@ QPushButton:pressed {
                <string>                   About                          </string>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset>
                 <normaloff>:/resource/ui/lobby_assets/icon_about2.png</normaloff>:/resource/ui/lobby_assets/icon_about2.png</iconset>
               </property>
               <property name="iconSize">
@@ -1613,7 +1646,7 @@ QPushButton:pressed {
    <item>
     <widget class="QWidget" name="motd_changelog_container" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -1866,7 +1899,7 @@ QTabBar {
                    <string>Message of The Day</string>
                   </property>
                   <property name="icon">
-                   <iconset resource="resources.qrc">
+                   <iconset>
                     <normaloff>:/resource/ui/lobby_assets/icon_badge_1.png</normaloff>:/resource/ui/lobby_assets/icon_badge_1.png</iconset>
                   </property>
                   <property name="iconSize">
@@ -1997,7 +2030,7 @@ p, li { white-space: pre-wrap; }
                    <string>What's New?   </string>
                   </property>
                   <property name="icon">
-                   <iconset resource="resources.qrc">
+                   <iconset>
                     <normaloff>:/resource/ui/lobby_assets/icon_badge_2.png</normaloff>:/resource/ui/lobby_assets/icon_badge_2.png</iconset>
                   </property>
                   <property name="iconSize">
