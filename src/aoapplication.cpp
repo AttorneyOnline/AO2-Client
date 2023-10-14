@@ -21,7 +21,6 @@ void message_handler(QtMsgType type, const QMessageLogContext &context,
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
-  reconnect = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
 
   asset_lookup_cache.reserve(2048);
@@ -132,22 +131,19 @@ void AOApplication::server_disconnected()
         construct_lobby();
         destruct_courtroom();
     } else if (msgBox.clickedButton() == btn2) {
-      reconnect->connect_to_server(net_manager->last_server_chosen);
+      net_manager->connect_to_server(net_manager->last_server_chosen);
       QTimer::singleShot(3000, this, [this]() {
-          connect(reconnect, &NetworkManager::server_connected, this, [this](bool connected) {
-              if (connected) {
-                  reconnect->join_to_server(); 
-                  call_notice(tr("Success reconnecting to server."));
-                  destruct_courtroom();
-                  construct_courtroom();
-              } else {
-                  call_notice(tr("Failed to reconnect to server."));
-                  construct_lobby();
-                  destruct_courtroom();
-              }
-            qDebug() << reconnect;
-          });
-          disconnect(reconnect, &NetworkManager::server_connected, this, nullptr);
+          if (net_manager->established_connection) {
+              net_manager->join_to_server(); 
+              call_notice(tr("Success reconnecting to server."));
+              destruct_courtroom();
+              construct_courtroom();
+          } else {
+              call_notice(tr("Failed to reconnect to server."));
+              construct_lobby();
+              destruct_courtroom();
+          }
+        qDebug() << established_connection;
       });
     }
   }
