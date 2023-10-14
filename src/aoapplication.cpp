@@ -143,7 +143,7 @@ void AOApplication::server_disconnected()
               construct_lobby();
               destruct_courtroom();
           }
-        qDebug() << established_connection;
+        qDebug() << net_manager->established_connection;
       });
     }
   }
