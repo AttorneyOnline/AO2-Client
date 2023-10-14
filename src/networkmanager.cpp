@@ -152,6 +152,7 @@ void NetworkManager::connect_to_server(server_type p_server)
 
     connect(server_socket.tcp, &QAbstractSocket::connected, this, [] {
       qDebug() << "established connection to server";
+      established_connection = true;
     });
     connect(server_socket.tcp, &QIODevice::readyRead, this, [this] {
       handle_server_packet(QString::fromUtf8(server_socket.tcp->readAll()));
@@ -164,6 +165,7 @@ void NetworkManager::connect_to_server(server_type p_server)
     connect(server_socket.tcp, &QAbstractSocket::errorOccurred, this, [this] {
 #endif
       qCritical() << "TCP socket error:" << server_socket.tcp->errorString();
+      established_connection = false;
     });
 
     server_socket.tcp->connectToHost(p_server.ip, p_server.port);
@@ -174,6 +176,7 @@ void NetworkManager::connect_to_server(server_type p_server)
 
     connect(server_socket.ws, &QWebSocket::connected, this, [] {
       qDebug() << "established connection to server";
+      established_connection = true;
     });
     connect(server_socket.ws, &QWebSocket::textMessageReceived, this,
             &NetworkManager::handle_server_packet);
@@ -182,6 +185,7 @@ void NetworkManager::connect_to_server(server_type p_server)
     connect(server_socket.ws, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
             this, [this] {
       qCritical() << "WebSockets error:" << server_socket.ws->errorString();
+      established_connection = false;
     });
 
     QUrl url;
@@ -195,7 +199,6 @@ void NetworkManager::connect_to_server(server_type p_server)
   }
 
   connected = true;
-  established_connection = true;
   active_connection_type = p_server.socket_type;
 }
 
