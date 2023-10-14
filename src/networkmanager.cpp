@@ -140,6 +140,7 @@ void NetworkManager::connect_to_server(server_type p_server)
 
   qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
                               << p_server.port;
+  last_server_chosen = p_server;
 
   switch (p_server.socket_type) {
   default:
@@ -149,8 +150,9 @@ void NetworkManager::connect_to_server(server_type p_server)
     qInfo() << "using TCP backend";
     server_socket.tcp = new QTcpSocket(this);
 
-    connect(server_socket.tcp, &QAbstractSocket::connected, this, [] {
+    connect(server_socket.tcp, &QAbstractSocket::connected, this, [this] {
       qDebug() << "established connection to server";
+      established_connection = true;
     });
     connect(server_socket.tcp, &QIODevice::readyRead, this, [this] {
       handle_server_packet(QString::fromUtf8(server_socket.tcp->readAll()));
@@ -163,6 +165,7 @@ void NetworkManager::connect_to_server(server_type p_server)
     connect(server_socket.tcp, &QAbstractSocket::errorOccurred, this, [this] {
 #endif
       qCritical() << "TCP socket error:" << server_socket.tcp->errorString();
+      established_connection = false;
     });
 
     server_socket.tcp->connectToHost(p_server.ip, p_server.port);
@@ -171,8 +174,9 @@ void NetworkManager::connect_to_server(server_type p_server)
     qInfo() << "using WebSockets backend";
     server_socket.ws = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
 
-    connect(server_socket.ws, &QWebSocket::connected, this, [] {
+    connect(server_socket.ws, &QWebSocket::connected, this, [this] {
       qDebug() << "established connection to server";
+      established_connection = true;
     });
     connect(server_socket.ws, &QWebSocket::textMessageReceived, this,
             &NetworkManager::handle_server_packet);
@@ -181,6 +185,7 @@ void NetworkManager::connect_to_server(server_type p_server)
     connect(server_socket.ws, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
             this, [this] {
       qCritical() << "WebSockets error:" << server_socket.ws->errorString();
+      established_connection = false;
     });
 
     QUrl url;

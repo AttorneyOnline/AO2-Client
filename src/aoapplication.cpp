@@ -121,9 +121,32 @@ QString AOApplication::get_version_string()
 void AOApplication::server_disconnected()
 {
   if (courtroom_constructed) {
-    call_notice(tr("Disconnected from server."));
-    construct_lobby();
-    destruct_courtroom();
+    QMessageBox msgBox;
+    msgBox.setText(tr("Disconnected from server."));
+    QPushButton* btn1 = msgBox.addButton(tr("Return to Lobby"), QMessageBox::AcceptRole);
+    QPushButton* btn2 = msgBox.addButton(tr("Reconnect"), QMessageBox::AcceptRole);
+    msgBox.setDefaultButton(btn1);
+    msgBox.exec();
+    if (msgBox.clickedButton() == btn1) {
+        construct_lobby();
+        destruct_courtroom();
+    } else if (msgBox.clickedButton() == btn2) {
+      net_manager->connect_to_server(net_manager->last_server_chosen);
+      QTimer::singleShot(3600, this, [this]() {
+          if (net_manager->established_connection) {
+              net_manager->join_to_server();
+              QString hdid = get_hdid();
+              call_notice(tr("Success reconnecting to server."));
+              send_server_packet(new AOPacket("CC", {QString::number(client_id),
+                            QString::number(w_courtroom->get_cid()), hdid}));
+          } else {
+              call_notice(tr("Failed to reconnect to server."));
+              construct_lobby();
+              destruct_courtroom();
+          }
+        qDebug() << net_manager->established_connection;
+      });
+    }
   }
   Options::getInstance().setServerSubTheme(QString());
 }
