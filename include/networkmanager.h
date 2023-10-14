@@ -56,6 +56,7 @@ public:
   void disconnect_from_server();
 
   server_type last_server_chosen;
+  bool connection_established;
 
   ////// Streaming variables //////
   QImage streamed_image;
