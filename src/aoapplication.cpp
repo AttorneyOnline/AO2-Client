@@ -133,7 +133,7 @@ void AOApplication::server_disconnected()
     } else if (msgBox.clickedButton() == btn2) {
       net_manager->connect_to_server(net_manager->last_server_chosen);
       QTimer::singleShot(3000, [this]() {
-          if (net_manager->server_connected) {
+          if (net_manager->connected) {
             net_manager->join_to_server(); 
             call_notice(tr("Success reconnecting to server."));
             destruct_courtroom();
