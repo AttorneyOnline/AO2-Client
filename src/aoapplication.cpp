@@ -132,17 +132,20 @@ void AOApplication::server_disconnected()
         destruct_courtroom();
     } else if (msgBox.clickedButton() == btn2) {
       net_manager->connect_to_server(net_manager->last_server_chosen);
-      QTimer::singleShot(3000, [this]() {
-          if (net_manager->connected) {
-            net_manager->join_to_server(); 
-            call_notice(tr("Success reconnecting to server."));
-            destruct_courtroom();
-            construct_courtroom();
-          } else {
-            call_notice(tr("Failed to reconnect to server."));
-            construct_lobby();
-            destruct_courtroom();
-          }
+      QTimer::singleShot(3000, this, [this]() {
+          connect(net_manager, &NetworkManager::server_connected, this, [this](bool connected) {
+              if (connected) {
+                  net_manager->join_to_server(); 
+                  call_notice(tr("Success reconnecting to server."));
+                  destruct_courtroom();
+                  construct_courtroom();
+              } else {
+                  call_notice(tr("Failed to reconnect to server."));
+                  construct_lobby();
+                  destruct_courtroom();
+              }
+              disconnect(net_manager, &NetworkManager::server_connected, this, nullptr);
+          });
       });
     }
   }
