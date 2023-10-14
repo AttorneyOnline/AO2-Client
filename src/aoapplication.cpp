@@ -134,10 +134,11 @@ void AOApplication::server_disconnected()
       net_manager->connect_to_server(net_manager->last_server_chosen);
       QTimer::singleShot(3000, this, [this]() {
           if (net_manager->established_connection) {
-              net_manager->join_to_server(); 
+              net_manager->join_to_server();
+              QString hdid = get_hdid();
               call_notice(tr("Success reconnecting to server."));
               send_server_packet(new AOPacket("CC", {QString::number(client_id),
-                            w_courtroom->get_cid(), get_hdid()}));
+                            QString::number(w_courtroom->get_cid()), hdid}));
           } else {
               call_notice(tr("Failed to reconnect to server."));
               construct_lobby();
