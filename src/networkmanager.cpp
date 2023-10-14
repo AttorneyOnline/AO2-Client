@@ -195,6 +195,7 @@ void NetworkManager::connect_to_server(server_type p_server)
   }
 
   connected = true;
+  established_connection = true;
   active_connection_type = p_server.socket_type;
 }
 
