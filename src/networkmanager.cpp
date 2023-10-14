@@ -150,7 +150,7 @@ void NetworkManager::connect_to_server(server_type p_server)
     qInfo() << "using TCP backend";
     server_socket.tcp = new QTcpSocket(this);
 
-    connect(server_socket.tcp, &QAbstractSocket::connected, this, [] {
+    connect(server_socket.tcp, &QAbstractSocket::connected, this, [this] {
       qDebug() << "established connection to server";
       established_connection = true;
     });
@@ -174,7 +174,7 @@ void NetworkManager::connect_to_server(server_type p_server)
     qInfo() << "using WebSockets backend";
     server_socket.ws = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
 
-    connect(server_socket.ws, &QWebSocket::connected, this, [] {
+    connect(server_socket.ws, &QWebSocket::connected, this, [this] {
       qDebug() << "established connection to server";
       established_connection = true;
     });
