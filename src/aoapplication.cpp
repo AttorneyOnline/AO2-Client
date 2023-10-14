@@ -132,7 +132,7 @@ void AOApplication::server_disconnected()
         destruct_courtroom();
     } else if (msgBox.clickedButton() == btn2) {
       net_manager->connect_to_server(net_manager->last_server_chosen);
-      QTimer::singleShot(3000, this, [this]() {
+      QTimer::singleShot(3600, this, [this]() {
           if (net_manager->established_connection) {
               net_manager->join_to_server();
               QString hdid = get_hdid();
