@@ -132,6 +132,7 @@ void AOApplication::server_disconnected()
         destruct_courtroom();
     } else if (msgBox.clickedButton() == btn2) {
         net_manager->connect_to_server(net_manager->last_server_chosen);
+        net_manager->join_to_server();
   }
   Options::getInstance().setServerSubTheme(QString());
   }
