@@ -131,13 +131,21 @@ void AOApplication::server_disconnected()
         construct_lobby();
         destruct_courtroom();
     } else if (msgBox.clickedButton() == btn2) {
-        QTimer::singleShot(3000, this, [this](){
-            net_manager->join_to_server();
-        });
+      net_manager->connect_to_server(net_manager->last_server_chosen);
+      QTimer::singleShot(3000, [this]() {
+          if (net_manager->server_connected) {
+            call_notice(tr("Success reconnecting to server."));
+            net_manager->join_to_server(); 
+            w_courtroom->set_char_select();
+          } else {
+            call_notice(tr("Failed to reconnect to server."));
+            construct_lobby();
+            destruct_courtroom();
+          }
+      });
     }
   }
   Options::getInstance().setServerSubTheme(QString());
-  }
 }
 
 void AOApplication::loading_cancelled()
