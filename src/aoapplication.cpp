@@ -131,8 +131,10 @@ void AOApplication::server_disconnected()
         construct_lobby();
         destruct_courtroom();
     } else if (msgBox.clickedButton() == btn2) {
-        net_manager->connect_to_server(net_manager->last_server_chosen);
-        QObject::connect(net_manager, &NetworkManager::server_connected, net_manager, &NetworkManager::join_to_server);
+        QTimer::singleShot(3000, this, [this](){
+            net_manager->join_to_server();
+        });
+    }
   }
   Options::getInstance().setServerSubTheme(QString());
   }
