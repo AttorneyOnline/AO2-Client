@@ -108,6 +108,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     auth_packet_supported = false;
     triplex_supported = false;
     typing_timer_supported = false;
+    expanded_overlays = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -135,7 +136,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_packet.contains("effects", Qt::CaseInsensitive))
       effects_supported = true;
     if (f_packet.contains("y_offset", Qt::CaseInsensitive))
-        y_offset_supported = true;
+      y_offset_supported = true;
     if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
       expanded_desk_mods_supported = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
@@ -144,6 +145,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       triplex_supported = true;
     if (f_packet.contains("typing_timer", Qt::CaseInsensitive))
       typing_timer_supported = true;
+    if (f_packet.contains("expanded_overlays", Qt::CaseInsensitive))
+      expanded_overlays_supported = true;
   log_to_demo = false;
   }
   else if (header == "PN") {
@@ -364,12 +367,15 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (f_contents.size() >= 2) {
       // We have a pos included in the background packet!
-        if (!f_contents.at(1).isEmpty())
-          //Not touching it when its empty.
-          w_courtroom->set_side(f_contents.at(1));
-      // There's an overlay defined (desk image)
+      if (!f_contents.at(1).isEmpty())
+        //Not touching it when its empty.
+        w_courtroom->set_side(f_contents.at(1));
+
+      if (f_contents.size() == 3 && expanded_overlays_supported) {
+        // There's an overlay defined (desk image)
         if (!f_contents.at(2).isEmpty())
           w_courtroom->server_overlay = f_contents.at(2);
+        }  
     }
     w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2); // BG, true/false
   }
