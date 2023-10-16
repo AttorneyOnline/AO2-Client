@@ -657,6 +657,8 @@ private:
   QString current_side = "";
   QString current_desk = "";
 
+  QString server_overlay = "";
+
   QString last_music_search = "";
   QString last_area_search = "";
 
