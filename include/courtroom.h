@@ -331,6 +331,8 @@ public:
     return ao_app->get_image_suffix(ao_app->get_character_path(charname, "emotions/button" + emotion_number + "_off")); 
   }
 
+  QString server_overlay = "";
+
   void search_download_file(QString action);
 
   void typing_signal(int signal);
@@ -656,8 +658,6 @@ private:
   QString current_background = "default";
   QString current_side = "";
   QString current_desk = "";
-
-  QString server_overlay = "";
 
   QString last_music_search = "";
   QString last_area_search = "";
