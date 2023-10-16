@@ -367,8 +367,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         if (!f_contents.at(1).isEmpty())
           //Not touching it when its empty.
           w_courtroom->set_side(f_contents.at(1));
+      // There's an overlay defined (desk image)
+        if (!f_contents.at(2).isEmpty())
+          server_overlay = f_contents.at(2);
     }
-    w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
+    w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2); // BG, true/false
   }
   else if (header == "SP") {
     if (!courtroom_constructed || f_contents.isEmpty())
