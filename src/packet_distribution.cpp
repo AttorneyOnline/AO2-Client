@@ -108,7 +108,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     auth_packet_supported = false;
     triplex_supported = false;
     typing_timer_supported = false;
-    expanded_overlays = false;
+    expanded_overlays_supported = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
