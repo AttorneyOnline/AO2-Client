@@ -437,6 +437,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
+
+  QMenuBar* menuBar = new QMenuBar(this);
+
+  QMenu* fileMenu = menuBar->addMenu("File");
+  QMenu* editMenu = menuBar->addMenu("Edit");
+  setMenuBar(menuBar);
+
   
   construct_char_select();
 
