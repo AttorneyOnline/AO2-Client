@@ -41,6 +41,7 @@
 #include <QTreeWidget>
 #include <QVector>
 #include <QQueue>
+#include <QMenuBar>
 
 #include <QBrush>
 #include <QDebug>
