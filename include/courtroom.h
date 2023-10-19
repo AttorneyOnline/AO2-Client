@@ -670,6 +670,9 @@ private:
   QBrush gaming_brush;
   QBrush locked_brush;
 
+  QMenuBar* menu_bar;
+  QPropertyAnimation* menu_animation;
+
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
   AOSfxPlayer *objection_player;
