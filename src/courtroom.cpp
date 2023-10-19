@@ -438,13 +438,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
 
-  QMenuBar* menuBar = new QMenuBar(this);
+  // We handle the menu bar
+  QMenuBar* menu_bar = new QMenuBar(this);
+  QMenu* fileMenu = menu_bar->addMenu("File");
+  QMenu* editMenu = menu_bar->addMenu("Edit");
+  setMenuBar(menu_bar);
+  menu_bar->hide();
 
-  QMenu* fileMenu = menuBar->addMenu("File");
-  QMenu* editMenu = menuBar->addMenu("Edit");
-  setMenuBar(menuBar);
+  QPropertyAnimation* menu_animation = new QPropertyAnimation(menu_bar, "geometry");
+  menu_animation->setDuration(500);
 
-  
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -5938,6 +5941,31 @@ void Courtroom::on_switch_area_music_clicked()
   }
   on_music_search_edited(ui_music_search->text());
 
+}
+
+void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
+    int cursor_y = event->y();
+    int threshold = 10;
+    QRect start_rect = menu_bar->geometry();
+    QRect end_rect;
+
+    if (cursor_y < threshold) {
+        end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
+        if (!menu_bar->isVisible()) {
+            menu_bar->show();
+        }
+    } else {
+        end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
+        if (menu_bar->isVisible()) {
+            menu_bar->hide();
+        }
+    }
+
+    if (menu_animation->state() != QPropertyAnimation::Running) {
+        menu_animation->setStartValue(start_rect);
+        menu_animation->setEndValue(end_rect);
+        menu_animation->start();
+    }
 }
 
 void Courtroom::ping_server()
