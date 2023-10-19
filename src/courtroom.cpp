@@ -439,13 +439,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_pencil->raise();
 
   // We handle the menu bar
-  QMenuBar* menu_bar = new QMenuBar(this);
+  menu_bar = new QMenuBar(this);
   QMenu* fileMenu = menu_bar->addMenu("File");
   QMenu* editMenu = menu_bar->addMenu("Edit");
   setMenuBar(menu_bar);
   menu_bar->hide();
 
-  QPropertyAnimation* menu_animation = new QPropertyAnimation(menu_bar, "geometry");
+  menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
 
   construct_char_select();
