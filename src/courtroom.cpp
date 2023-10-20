@@ -443,7 +443,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QMenu* fileMenu = menu_bar->addMenu("File");
   QMenu* editMenu = menu_bar->addMenu("Edit");
   setMenuBar(menu_bar);
-  menu_bar->hide();
 
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
@@ -5947,20 +5946,14 @@ void Courtroom::on_switch_area_music_clicked()
 
 void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
     int cursor_y = event->y();
-    int threshold = 10;
+    int threshold = 20;
     QRect start_rect = menu_bar->geometry();
     QRect end_rect;
 
     if (cursor_y < threshold) {
         end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
-        if (!menu_bar->isVisible()) {
-            menu_bar->show();
-        }
     } else {
         end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
-        if (menu_bar->isVisible()) {
-            menu_bar->hide();
-        }
     }
 
     if (menu_animation->state() != QPropertyAnimation::Running) {
