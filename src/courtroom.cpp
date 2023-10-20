@@ -443,6 +443,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QMenu* fileMenu = menu_bar->addMenu("File");
   QMenu* editMenu = menu_bar->addMenu("Edit");
   setMenuBar(menu_bar);
+  menu_bar->hide();
 
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
@@ -5952,7 +5953,8 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
 
     qDebug() << cursor_y;
 
-    if (cursor_y < threshold) {
+    if (cursor_y < threshold && menu_bar->isVisible()) {
+        qDebug() << "Menu_bar is visible, cursor under threshold";
         QRect start_rect = menu_bar->geometry();
         QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
 
@@ -5961,7 +5963,9 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
             menu_animation->setEndValue(end_rect);
             menu_animation->start();
         }
-    } else {
+        menu_bar->hide();
+    } else if (cursor_y >= threshold && !menu_bar->isVisible()) {
+        qDebug() << "Menu_bar is invisible, cursor over threshold";
         QRect start_rect = menu_bar->geometry();
         QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
 
@@ -5970,6 +5974,7 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
             menu_animation->setEndValue(end_rect);
             menu_animation->start();
         }
+        menu_bar->show();
     }
 }
 
