@@ -447,6 +447,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
 
+  this->setMouseTracking(true);
+
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -5949,7 +5951,6 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
     int threshold = 30;
 
     qDebug() << cursor_y;
-    
 
     if (cursor_y < threshold) {
         QRect start_rect = menu_bar->geometry();
@@ -5970,6 +5971,11 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
             menu_animation->start();
         }
     }
+}
+
+void Courtroom::mouseMoveEvent(QMouseEvent* event) {
+    menu_bar_mouse_event(event);
+    qDebug() << "mouse moved";
 }
 
 void Courtroom::ping_server()
