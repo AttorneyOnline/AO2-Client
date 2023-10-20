@@ -5948,7 +5948,7 @@ void Courtroom::on_switch_area_music_clicked()
 
 void Courtroom::menu_bar_mouse_event(QEvent *event) {
   if (event->type() == QEvent::MouseMove) {
-      QPoint cursorPos = mapFromGlobal(QCursor::pos());
+      QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
 
       if (cursorPos.y() <= 3) {
           QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
