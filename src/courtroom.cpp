@@ -461,6 +461,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_vp_player_char, &CharLayer::play_sfx, this,
           &Courtroom::play_char_sfx);
 
+  connect(menu_bar, &Courtroom::mouseMoveEvent, this, &Courtroom::menu_bar_mouse_event);
+  
   connect(text_delay_timer, &QTimer::timeout, this,
           &Courtroom::start_chat_ticking);
 
