@@ -447,11 +447,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
 
-  // this->setMouseTracking(true);
-  // ui_background->setMouseTracking(true);
-  // ui_viewport->setMouseTracking(true);
-
-  menu_bar->setWindowOpacity(0.5);
+  this->setMouseTracking(true);
   
   construct_char_select();
 
@@ -5950,18 +5946,20 @@ void Courtroom::on_switch_area_music_clicked()
 
 }
 
-void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
-    if (menu_bar->geometry().contains(event->pos())) {
-        if (!menu_bar->isVisible()) {
-            qDebug() << "Menu_bar is invisible, cursor under threshold";
-            QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
-            start_menu_animation(end_rect);
-        }
-    } else if (menu_bar->isVisible()) {
-        qDebug() << "Menu_bar is invisible, cursor over threshold";
-        QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
-        start_menu_animation(end_rect);
-    }
+void Courtroom::menu_bar_mouse_event(QEvent *event) {
+  if (event->type() == QEvent::MouseMove) {
+      QPoint cursorPos = mapFromGlobal(QCursor::pos());
+
+      if (cursorPos.y() <= 3) {
+          QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
+          menu_bar->show();
+          start_menu_animation(end_rect);
+      } else if (cursorPos.y() > 3 && menu_bar->isVisible()) {
+          QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
+          menu_bar->hide();
+          start_menu_animation(end_rect);
+      }
+  }
 }
 
 void Courtroom::start_menu_animation(const QRect& end_rect) {
@@ -5973,10 +5971,10 @@ void Courtroom::start_menu_animation(const QRect& end_rect) {
     }
 }
 
-void Courtroom::mouseMoveEvent(QMouseEvent* event) {
-    menu_bar_mouse_event(event);
-    qDebug() << "mouse moved";
-}
+//void Courtroom::mouseMoveEvent(QMouseEvent* event) {
+//    menu_bar_mouse_event(event);
+//    qDebug() << "mouse moved";
+//}
 
 void Courtroom::ping_server()
 {
