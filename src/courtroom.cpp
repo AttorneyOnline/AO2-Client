@@ -5946,20 +5946,29 @@ void Courtroom::on_switch_area_music_clicked()
 
 void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
     int cursor_y = event->y();
-    int threshold = 20;
-    QRect start_rect = menu_bar->geometry();
-    QRect end_rect;
+    int threshold = 30;
 
-    if (cursor_y < threshold) {
-        end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
+    qDebug() << cursor_y;
+    
+
+    if (cursor_Y < threshold) {
+        QRect start_rect = menu_bar->geometry();
+        QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
+
+        if (menu_animation->state() != QPropertyAnimation::Running) {
+            menu_animation->setStartValue(start_rect);
+            menu_animation->setEndValue(end_rect);
+            menu_animation->start();
+        }
     } else {
-        end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
-    }
+        QRect start_rect = menu_bar->geometry();
+        QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
 
-    if (menu_animation->state() != QPropertyAnimation::Running) {
-        menu_animation->setStartValue(start_rect);
-        menu_animation->setEndValue(end_rect);
-        menu_animation->start();
+        if (menu_animation->state() != QPropertyAnimation::Running) {
+            menu_animation->setStartValue(start_rect);
+            menu_animation->setEndValue(end_rect);
+            menu_animation->start();
+        }
     }
 }
 
