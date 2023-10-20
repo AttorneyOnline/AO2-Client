@@ -338,6 +338,7 @@ public:
 
   void menu_bar_mouse_event(QMouseEvent* event);
   void mouseMoveEvent(QMouseEvent* event);
+  void start_menu_animation(const QRect& end_rect);
 
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
