@@ -5951,7 +5951,7 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
     qDebug() << cursor_y;
     
 
-    if (cursor_Y < threshold) {
+    if (cursor_y < threshold) {
         QRect start_rect = menu_bar->geometry();
         QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
 
