@@ -5948,33 +5948,30 @@ void Courtroom::on_switch_area_music_clicked()
 }
 
 void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
-    int cursor_y = event->y();
-    int threshold = 30;
-
-    qDebug() << cursor_y;
-
-    if (cursor_y <= threshold && !menu_bar->isVisible()) {
-        qDebug() << "Menu_bar is invisible, cursor under threshold";
-        QRect start_rect = menu_bar->geometry();
-        QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
-
-        if (menu_animation->state() != QPropertyAnimation::Running) {
-            menu_animation->setStartValue(start_rect);
-            menu_animation->setEndValue(end_rect);
-            menu_animation->start();
+    if (menu_bar->geometry().contains(event->pos())) {
+        if (!menu_bar->isVisible()) {
+            qDebug() << "Menu_bar is invisible, cursor under threshold";
+            QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
+            start_menu_animation(end_rect);
         }
-        menu_bar->show();
-    } else if (cursor_y > threshold && menu_bar->isVisible()) {
-        qDebug() << "Menu_bar is visible, cursor over threshold";
-        QRect start_rect = menu_bar->geometry();
+    } else if (menu_bar->isVisible()) {
+        qDebug() << "Menu_bar is invisible, cursor over threshold";
         QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
+        start_menu_animation(end_rect);
+    }
+}
 
-        if (menu_animation->state() != QPropertyAnimation::Running) {
-            menu_animation->setStartValue(start_rect);
-            menu_animation->setEndValue(end_rect);
-            menu_animation->start();
+void Courtroom::start_menu_animation(const QRect& end_rect) {
+    if (menu_animation->state() != QPropertyAnimation::Running) {
+        QRect start_rect = menu_bar->geometry();
+        menu_animation->setStartValue(start_rect);
+        menu_animation->setEndValue(end_rect);
+        menu_animation->start();
+        if (end_rect.y() >= 0) {
+            menu_bar->show();
+        } else {
+            menu_bar->hide();
         }
-        menu_bar->hide();
     }
 }
 
