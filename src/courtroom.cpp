@@ -447,10 +447,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
 
-  this->setMouseTracking(true);
-  ui_background->setMouseTracking(true);
-  ui_viewport->setMouseTracking(true);
+  // this->setMouseTracking(true);
+  // ui_background->setMouseTracking(true);
+  // ui_viewport->setMouseTracking(true);
 
+  menu_bar->setWindowOpacity(0.5);
+  
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -5968,11 +5970,6 @@ void Courtroom::start_menu_animation(const QRect& end_rect) {
         menu_animation->setStartValue(start_rect);
         menu_animation->setEndValue(end_rect);
         menu_animation->start();
-        if (end_rect.y() >= 0) {
-            menu_bar->show();
-        } else {
-            menu_bar->hide();
-        }
     }
 }
 
