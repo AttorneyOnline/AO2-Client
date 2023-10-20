@@ -5953,8 +5953,8 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
 
     qDebug() << cursor_y;
 
-    if (cursor_y < threshold && menu_bar->isVisible()) {
-        qDebug() << "Menu_bar is visible, cursor under threshold";
+    if (cursor_y <= threshold && !menu_bar->isVisible()) {
+        qDebug() << "Menu_bar is invisible, cursor under threshold";
         QRect start_rect = menu_bar->geometry();
         QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
 
@@ -5963,9 +5963,9 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
             menu_animation->setEndValue(end_rect);
             menu_animation->start();
         }
-        menu_bar->hide();
-    } else if (cursor_y >= threshold && !menu_bar->isVisible()) {
-        qDebug() << "Menu_bar is invisible, cursor over threshold";
+        menu_bar->show();
+    } else if (cursor_y > threshold && menu_bar->isVisible()) {
+        qDebug() << "Menu_bar is visible, cursor over threshold";
         QRect start_rect = menu_bar->geometry();
         QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
 
@@ -5974,7 +5974,7 @@ void Courtroom::menu_bar_mouse_event(QMouseEvent* event) {
             menu_animation->setEndValue(end_rect);
             menu_animation->start();
         }
-        menu_bar->show();
+        menu_bar->hide();
     }
 }
 
