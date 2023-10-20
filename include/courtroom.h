@@ -337,7 +337,7 @@ public:
   void typing_signal(int signal);
 
   void menu_bar_mouse_event(QEvent *event);
-  void mouseMoveEvent(QMouseEvent* event);
+  // void mouseMoveEvent(QMouseEvent* event);
   void start_menu_animation(const QRect& end_rect);
 
   void start_clock(int id);
