@@ -5949,15 +5949,18 @@ void Courtroom::on_switch_area_music_clicked()
 void Courtroom::menu_bar_mouse_event(QEvent *event) {
   if (event->type() == QEvent::MouseMove) {
       QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
+      qDebug() << "a";
 
-      if (cursorPos.y() <= 3) {
+      if (cursorPos.y() <= 23) {
           QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
           menu_bar->show();
           start_menu_animation(end_rect);
-      } else if (cursorPos.y() > 3 && menu_bar->isVisible()) {
+          qDebug() << "b";
+      } else if (cursorPos.y() > 23 && menu_bar->isVisible()) {
           QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
           menu_bar->hide();
           start_menu_animation(end_rect);
+          qDebug() << "c";
       }
   }
 }
