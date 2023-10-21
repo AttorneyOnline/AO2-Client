@@ -441,6 +441,27 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
   return r_values;
 }
 
+QStringList AOApplication::read_char_sets(VPath p_path, QString target_tag)
+{
+  QStringList r_values;
+  QSettings settings(get_real_path(p_path), QSettings::IniFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  settings.setIniCodec("UTF-8");
+#endif
+  if (!target_tag.isEmpty())
+    settings.beginGroup(target_tag);
+    QString group_name = settings.group();
+    r_values << group_name;
+  QStringList keys = settings.allKeys();
+  foreach (QString key, keys) {
+    QString value = settings.value(key).value<QString>();
+    r_values << key + "=" + value;
+  }
+  if (!settings.group().isEmpty())
+    settings.endGroup();
+  return r_values;
+}
+
 QString AOApplication::get_showname(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "showname", "Options");
