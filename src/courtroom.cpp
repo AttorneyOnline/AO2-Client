@@ -4787,7 +4787,7 @@ void Courtroom::set_character_sets()
 {
   char_set_tags = ao_app->get_list_file(VPath("global_char_set.ini"));
 
-  qDebug() << char_sets_tags;
+  qDebug() << char_set_tags;
 
   QMenu* currentCategoryMenu = nullptr;
 
@@ -4814,8 +4814,9 @@ void Courtroom::set_character_sets()
 
         connect(action, &QAction::triggered, this, [this, action]() {
             on_char_set_chosen(action->text());
-      }
-    }
+       }
+     }
+   }
   }
 }
 
