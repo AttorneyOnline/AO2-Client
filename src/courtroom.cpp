@@ -498,7 +498,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
   connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
   connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
-  connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_context_menu_requested);
+  connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   setMenuBar(menu_bar);
 
