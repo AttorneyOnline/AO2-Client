@@ -500,6 +500,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
+  set_character_sets();
+  
   setMenuBar(menu_bar);
 
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
