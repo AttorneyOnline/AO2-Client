@@ -440,8 +440,66 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
-  QMenu* fileMenu = menu_bar->addMenu("File");
-  QMenu* editMenu = menu_bar->addMenu("Edit");
+
+  QMenu* MainMenu = menu_bar->addMenu("Main");
+  QMenu* CharacterMenu = menu_bar->addMenu("Character");
+  QMenu* RoleplayMenu = menu_bar->addMenu("Roleplay");
+  QMenu* QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+
+  // Main tab
+  QAction* action_change_character = new QAction("Change character", this);
+  QAction* action_reload_theme = new QAction("Reload theme", this);
+  QAction* action_call_mod = new QAction("Call mod", this);
+  QAction* action_image_streaming = new QAction("Image streaming", this);
+  QAction* action_return_lobby = new QAction("Return to Lobby", this);
+
+  // Character tab
+  QAction* action_preanim = new QAction("Preanim", this);
+  QAction* action_flip = new QAction("Flip", this);
+  QAction* action_additive = new QAction("Additive", this);
+  QAction* action_immediate = new QAction("Immediate", this);
+  QAction* action_shownames = new QAction("Enable Shownames", this);
+  // Make 'em checkable
+  action_preanim->setCheckable(true);
+  action_flip->setCheckable(true);
+  action_additive->setCheckable(true);
+  action_immediate->setCheckable(true);
+  action_shownames->setCheckable(true);
+
+  // Roleplay tab
+  QAction* action_view_map = new QAction("View Map", this);
+  QAction* action_open_evidence = new QAction("Open Evidence", this);
+  QAction* action_player_profile = new QAction("Player Profile", this);
+  QAction* action_gm_screen = new QAction("GM Screen", this);
+
+  // Why Qt, why
+  MainMenu->addAction(action_change_character);     //
+  MainMenu->addAction(action_reload_theme);        //
+  MainMenu->addAction(action_call_mod);           //  MAIN TAB
+  MainMenu->addSeparator();                      //
+  MainMenu->addAction(action_image_streaming);  //
+  MainMenu->addAction(action_return_lobby);    //
+  CharacterMenu->addAction(action_preanim);        //
+  CharacterMenu->addAction(action_flip);          //
+  CharacterMenu->addAction(action_additive);     //  CHARACTER TAB
+  CharacterMenu->addAction(action_immediate);   //
+  CharacterMenu->addAction(action_shownames);  //
+  RoleplayMenu->addAction(action_view_map);           //
+  RoleplayMenu->addAction(action_open_evidence);     //
+  RoleplayMenu->addSeparator();                     //   ROLEPLAY TAB
+  RoleplayMenu->addAction(action_player_profile);  //
+  RoleplayMenu->addAction(action_gm_screen);      //
+
+  connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
+  connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
+  connect(action_call_mod, &QAction::triggered, this, &Courtroom::on_call_mod_clicked);
+
+  connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
+  connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
+  connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
+  connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
+  connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_context_menu_requested);
+
   setMenuBar(menu_bar);
 
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
@@ -477,7 +535,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ic_chat_message, &QLineEdit::textChanged, this, &Courtroom::onTextChanged);
   connect(typingTimer, &QTimer::timeout, this, &Courtroom::onTypingTimeout);
 
-  
+
   connect(ui_pos_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           QOverload<int>::of(&Courtroom::on_pos_dropdown_changed));
   connect(ui_pos_dropdown, &QComboBox::editTextChanged, this,
