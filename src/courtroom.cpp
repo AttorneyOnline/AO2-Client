@@ -441,10 +441,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
 
-  QMenu* MainMenu = menu_bar->addMenu("Main");
-  QMenu* CharacterMenu = menu_bar->addMenu("Character");
-  QMenu* RoleplayMenu = menu_bar->addMenu("Roleplay");
-  QMenu* QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+  //QMenu* MainMenu = menu_bar->addMenu("Main");
+  //QMenu* CharacterMenu = menu_bar->addMenu("Character");
+  //QMenu* RoleplayMenu = menu_bar->addMenu("Roleplay");
+  //QMenu* QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
 
   // Main tab
   QAction* action_change_character = new QAction("Change character", this);
