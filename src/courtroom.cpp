@@ -451,7 +451,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QAction* action_reload_theme = new QAction("Reload theme", this);
   QAction* action_call_mod = new QAction("Call mod", this);
   QAction* action_image_streaming = new QAction("Image streaming", this);
+  QAction* action_settings = new QAction("Settings", this);
   QAction* action_return_lobby = new QAction("Return to Lobby", this);
+  action_image_streaming->setEnabled(false);
 
   // Character tab
   QAction* action_preanim = new QAction("Preanim", this);
@@ -471,6 +473,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QAction* action_open_evidence = new QAction("Open Evidence", this);
   QAction* action_player_profile = new QAction("Player Profile", this);
   QAction* action_gm_screen = new QAction("GM Screen", this);
+  action_view_map->setEnabled(false);
+  action_player_profile->setEnabled(false);
+  action_gm_screen->setEnabled(false);
 
   // Swapping tab
   QAction* action_load_set = new QAction("Load char set...", this);
@@ -481,7 +486,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   MainMenu->addAction(action_call_mod);           //  MAIN TAB
   MainMenu->addSeparator();                      //
   MainMenu->addAction(action_image_streaming);  //
-  MainMenu->addAction(action_return_lobby);    //
+  MainMenu->addAction(action_settings);        //
+  MainMenu->addAction(action_return_lobby);   //
   CharacterMenu->addAction(action_preanim);        //
   CharacterMenu->addAction(action_flip);          //
   CharacterMenu->addAction(action_additive);     //  CHARACTER TAB
@@ -492,13 +498,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   RoleplayMenu->addSeparator();                     //   ROLEPLAY TAB
   RoleplayMenu->addAction(action_player_profile);  //
   RoleplayMenu->addAction(action_gm_screen);      //
-  QSwappingMenu->addAction(action_load_set);
-  QSwappingMenu->addSeparator();
+  QSwappingMenu->addAction(action_load_set);         //  SWAPPING TAB
+  QSwappingMenu->addSeparator();                    //
 
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
   connect(action_call_mod, &QAction::triggered, this, &Courtroom::on_call_mod_clicked);
-
+  connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
+  
   connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
   connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
   connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
