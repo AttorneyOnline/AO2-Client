@@ -338,7 +338,7 @@ public:
 
   void menu_bar_mouse_event(QEvent *event);
   // void mouseMoveEvent(QMouseEvent* event);
-  void set_character_sets();
+  void set_character_sets(QString char_set);
   void start_menu_animation(const QRect& end_rect);
 
   QMenu* MainMenu;
