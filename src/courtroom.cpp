@@ -4783,6 +4783,30 @@ void Courtroom::on_pos_remove_clicked()
   ui_ic_chat_message->setFocus();
 }
 
+void Courtroom::set_character_sets()
+{
+  QStringList tags = ao_app->read_char_sets(VPath("global_char_set.ini"));
+
+  QMenu* currentCategoryMenu = nullptr;
+
+  // Iterar a través de las etiquetas (tags) del archivo INI
+  for (const QString& tag : tags) {
+    QStringList keyValuePairs = tag.split("=");
+    if (keyValuePairs.size() == 2) {
+      QString key = keyValuePairs[0].trimmed();
+      QString value = keyValuePairs[1].trimmed();
+
+      if (key == "category") {
+        // Si encontramos una etiqueta "category", creamos un nuevo menú
+        currentCategoryMenu = QSwappingMenu->addMenu(value);
+      } else if (currentCategoryMenu) {
+        // Si estamos dentro de un menú "category", agregamos las demás claves como acciones
+        QAction* action = currentCategoryMenu->addAction(value);
+      }
+    }
+  }
+}
+
 void Courtroom::set_iniswap_dropdown()
 {
   ui_iniswap_dropdown->blockSignals(true);
