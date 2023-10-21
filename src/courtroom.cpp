@@ -472,6 +472,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QAction* action_player_profile = new QAction("Player Profile", this);
   QAction* action_gm_screen = new QAction("GM Screen", this);
 
+  // Swapping tab
+  QAction* action_load_set = new QAction("Load char set...", this);
+
   // Why Qt, why
   MainMenu->addAction(action_change_character);     //
   MainMenu->addAction(action_reload_theme);        //
@@ -489,6 +492,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   RoleplayMenu->addSeparator();                     //   ROLEPLAY TAB
   RoleplayMenu->addAction(action_player_profile);  //
   RoleplayMenu->addAction(action_gm_screen);      //
+  QSwappingMenu->addAction(action_load_set);
+  QSwappingMenu->addSeparator();
 
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -499,6 +504,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
   connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
+
+  connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
   setMenuBar(menu_bar);
 
@@ -4783,9 +4790,9 @@ void Courtroom::on_pos_remove_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::set_character_sets()
+void Courtroom::set_character_sets(QString char_set)
 {
-  char_set_tags = ao_app->get_list_file(VPath("global_char_set.ini"));
+  char_set_tags = ao_app->get_list_file(VPath(char_set));
 
   qDebug() << char_set_tags;
 
@@ -4818,6 +4825,16 @@ void Courtroom::set_character_sets()
        }
      }
    }
+}
+
+void Courtroom::on_char_set_load()
+{
+  QDir baseDir("base");
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Char Set"), "Character sets/", tr("Char Set Files (*.ini)"));
+  
+  qDebug() << "relative Path: " << filename;
+
+  set_character_sets(filename);
 }
 
 void Courtroom::on_char_set_chosen(const QString& actionText)
@@ -5922,7 +5939,7 @@ void Courtroom::on_reload_theme_clicked()
 
   // to update status on the background
   set_background(current_background, true);
-  set_character_sets();
+  set_character_sets("global_char_set.ini");
 }
 
 void Courtroom::on_back_to_lobby_clicked()
