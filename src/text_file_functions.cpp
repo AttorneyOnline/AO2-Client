@@ -451,7 +451,7 @@ QStringList AOApplication::read_char_sets(VPath p_path, QString target_tag)
   if (!target_tag.isEmpty())
     settings.beginGroup(target_tag);
     QString group_name = settings.group();
-    r_values << group_name;
+    r_values << "category=" + group_name;
   QStringList keys = settings.allKeys();
   foreach (QString key, keys) {
     QString value = settings.value(key).value<QString>();
