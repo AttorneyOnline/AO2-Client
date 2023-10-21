@@ -441,24 +441,29 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
   return r_values;
 }
 
-QStringList AOApplication::read_char_sets(VPath p_path, QString target_tag)
+QStringList AOApplication::read_char_sets(VPath p_path)
 {
   QStringList r_values;
   QSettings settings(get_real_path(p_path), QSettings::IniFormat);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   settings.setIniCodec("UTF-8");
 #endif
-  if (!target_tag.isEmpty())
-    settings.beginGroup(target_tag);
-    QString group_name = settings.group();
+
+  QStringList groupNames = settings.childGroups();
+
+  foreach (const QString &group_name, groupNames) {
     r_values << "category=" + group_name;
-  QStringList keys = settings.allKeys();
-  foreach (QString key, keys) {
-    QString value = settings.value(key).value<QString>();
-    r_values << key + "=" + value;
-  }
-  if (!settings.group().isEmpty())
+    settings.beginGroup(group_name);
+
+    QStringList keys = settings.allKeys();
+    foreach (const QString &key, keys) {
+      QString value = settings.value(key).value<QString>();
+      r_values << key + "=" + value;
+    }
+
     settings.endGroup();
+  }
+
   return r_values;
 }
 
