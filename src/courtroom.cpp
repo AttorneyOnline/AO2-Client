@@ -4814,7 +4814,7 @@ void Courtroom::set_character_sets()
 
         connect(action, &QAction::triggered, this, [this, action]() {
             on_char_set_chosen(action->text());
-        })
+        });
        }
      }
    }
