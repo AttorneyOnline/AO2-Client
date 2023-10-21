@@ -344,7 +344,7 @@ public:
   QMenu* MainMenu = menu_bar->addMenu("Main");
   QMenu* CharacterMenu = menu_bar->addMenu("Character");
   QMenu* RoleplayMenu = menu_bar->addMenu("Roleplay");
-  QMenu* QSwappingMenu = menu_bar->addMenu("Quick-Swapping")
+  QMenu* QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
 
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
