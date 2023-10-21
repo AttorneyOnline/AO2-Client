@@ -499,7 +499,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
   connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
-  
+
   setMenuBar(menu_bar);
 
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
@@ -4785,25 +4785,58 @@ void Courtroom::on_pos_remove_clicked()
 
 void Courtroom::set_character_sets()
 {
-  QStringList tags = ao_app->get_list_file(VPath("global_char_set.ini"));
+  char_set_tags = ao_app->get_list_file(VPath("global_char_set.ini"));
 
-  qDebug() << tags;
+  qDebug() << char_sets_tags;
 
   QMenu* currentCategoryMenu = nullptr;
 
   // Iterar a través de las etiquetas (tags) del archivo INI
-  for (const QString& tag : tags) {
+  for (const QString& tag : char_sets_tags) {
     QStringList keyValuePairs = tag.split("=");
     if (keyValuePairs.size() == 2) {
       QString key = keyValuePairs[0].trimmed();
       QString value = keyValuePairs[1].trimmed();
 
       if (key == "category") {
-        // Si encontramos una etiqueta "category", creamos un nuevo menú
-        currentCategoryMenu = QSwappingMenu->addMenu(value);
+        // Verificamos si la categoría ya ha sido agregada
+        if (!added_categories.contains(value)) {
+          currentCategoryMenu = QSwappingMenu->addMenu(value);
+          added_categories.insert(value);
+        }
       } else if (currentCategoryMenu) {
         // Si estamos dentro de un menú "category", agregamos las demás claves como acciones
         QAction* action = currentCategoryMenu->addAction(value);
+        
+        // Agregar un icono a la acción
+        QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(key, "char_icon"));
+        action->setIcon(QIcon(icon_path));
+
+        connect(action, &QAction::triggered, this, [this, action]() {
+            on_char_set_chosen(action->text());
+      }
+    }
+  }
+}
+
+void Courtroom::on_char_set_chosen(const QString& actionText)
+{
+  // QAction* senderAction = qobject_cast<QAction*>(sender());
+
+  // if (!senderAction)
+    // return;
+
+  // QString actionText = senderAction->text();
+
+  for (const QString& tag : char_sets_tags) {
+    QStringList keyValuePairs = tag.split("=");
+    if (keyValuePairs.size() == 2) {
+      QString key = keyValuePairs[0].trimmed();
+      QString value = keyValuePairs[1].trimmed();
+
+      if (value == actionText) {
+        update_character(m_cid, key, true);
+        break;
       }
     }
   }
