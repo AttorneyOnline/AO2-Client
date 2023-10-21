@@ -347,6 +347,7 @@ public:
   QMenu* QSwappingMenu;
 
   QSet<QString> added_categories; // For the QSwapping menu
+  QStringList char_set_tags;
 
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
@@ -931,6 +932,8 @@ private slots:
   void music_list_collapse_all();
   void music_stop(bool no_effects = false);
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
+
+  void on_char_set_chosen(const QString& actionText);
 
   void select_emote(int p_id);
 
