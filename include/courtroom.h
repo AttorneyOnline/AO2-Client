@@ -934,6 +934,7 @@ private slots:
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
   void on_char_set_chosen(const QString& actionText);
+  void on_char_set_load();
 
   void select_emote(int p_id);
 
