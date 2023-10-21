@@ -441,10 +441,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
 
-  //QMenu* MainMenu = menu_bar->addMenu("Main");
-  //QMenu* CharacterMenu = menu_bar->addMenu("Character");
-  //QMenu* RoleplayMenu = menu_bar->addMenu("Roleplay");
-  //QMenu* QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+  MainMenu = menu_bar->addMenu("Main");
+  CharacterMenu = menu_bar->addMenu("Character");
+  RoleplayMenu = menu_bar->addMenu("Roleplay");
+  QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
 
   // Main tab
   QAction* action_change_character = new QAction("Change character", this);
@@ -499,8 +499,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
   connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
-
-  set_character_sets();
   
   setMenuBar(menu_bar);
 
@@ -4787,7 +4785,9 @@ void Courtroom::on_pos_remove_clicked()
 
 void Courtroom::set_character_sets()
 {
-  QStringList tags = ao_app->read_char_sets(VPath("global_char_set.ini"));
+  QStringList tags = ao_app->get_list_file(VPath("global_char_set.ini"));
+
+  qDebug() << tags;
 
   QMenu* currentCategoryMenu = nullptr;
 
@@ -5888,6 +5888,7 @@ void Courtroom::on_reload_theme_clicked()
 
   // to update status on the background
   set_background(current_background, true);
+  set_character_sets();
 }
 
 void Courtroom::on_back_to_lobby_clicked()
