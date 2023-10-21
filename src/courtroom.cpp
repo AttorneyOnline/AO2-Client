@@ -4792,7 +4792,7 @@ void Courtroom::set_character_sets()
   QMenu* currentCategoryMenu = nullptr;
 
   // Iterar a través de las etiquetas (tags) del archivo INI
-  for (const QString& tag : char_sets_tags) {
+  for (const QString& tag : char_set_tags) {
     QStringList keyValuePairs = tag.split("=");
     if (keyValuePairs.size() == 2) {
       QString key = keyValuePairs[0].trimmed();
@@ -4814,10 +4814,10 @@ void Courtroom::set_character_sets()
 
         connect(action, &QAction::triggered, this, [this, action]() {
             on_char_set_chosen(action->text());
+        })
        }
      }
    }
-  }
 }
 
 void Courtroom::on_char_set_chosen(const QString& actionText)
