@@ -346,6 +346,8 @@ public:
   QMenu* RoleplayMenu;
   QMenu* QSwappingMenu;
 
+  QSet<QString> added_categories; // For the QSwapping menu
+
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
   void set_clock(int id, qint64 msecs);
