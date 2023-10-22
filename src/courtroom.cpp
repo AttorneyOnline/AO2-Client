@@ -4822,11 +4822,18 @@ void Courtroom::set_character_sets(QString char_set)
     } else if (currentCategoryMenu) {
       if (key.startsWith("Menu:") && key.length() > 5) {
         QString subMenuTitle = key.mid(5);
+        QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(subMenuTitle, "char_icon"));
+
         currentSubMenu = currentCategoryMenu->addMenu(value);
-        add_action_to_menu(currentSubMenu, "Default", subMenuTitle);
+        QAction* default_char = currentSubMenu->addAction("Default");
+        default_char->setIcon(QIcon(icon_path));
+        currentSubMenu->setIcon(QIcon(icon_path));
         currentSubMenu->addSeparator();
+
+        connect(default_char, &QAction::triggered, this, [this, default_char]() {
+            on_char_set_chosen(subMenuTitle);
       } else if (key.startsWith("+") && currentSubMenu) {
-        add_action_to_menu(currentSubMenu, value, key.mid(1));
+        add_action_to_menu(currentSubMenu, value.mid(1), key.mid(1));
       } else {
         add_action_to_menu(currentCategoryMenu, value, key);
       }
