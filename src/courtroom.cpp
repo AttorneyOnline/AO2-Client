@@ -4832,6 +4832,7 @@ void Courtroom::set_character_sets(QString char_set)
 
         connect(default_char, &QAction::triggered, this, [this, default_char]() {
             on_char_set_chosen(subMenuTitle);
+        });
       } else if (key.startsWith("+") && currentSubMenu) {
         add_action_to_menu(currentSubMenu, value.mid(1), key.mid(1));
       } else {
