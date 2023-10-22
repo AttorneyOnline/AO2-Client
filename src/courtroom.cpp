@@ -4800,44 +4800,56 @@ void Courtroom::on_pos_remove_clicked()
 void Courtroom::set_character_sets(QString char_set)
 {
   char_set_tags = ao_app->get_list_file(VPath(char_set));
-
   qDebug() << char_set_tags;
 
   QMenu* currentCategoryMenu = nullptr;
+  QMenu* currentSubMenu = nullptr;
 
-  // Iterar a través de las etiquetas (tags) del archivo INI
   for (const QString& tag : char_set_tags) {
     QStringList keyValuePairs = tag.split("=");
-    if (keyValuePairs.size() == 2) {
-      QString key = keyValuePairs[0].trimmed();
-      QString value = keyValuePairs[1].trimmed();
+    if (keyValuePairs.size() != 2)
+      continue;
 
-      if (key == "category") {
-        // Verificamos si la categoría ya ha sido agregada
-        if (!added_categories.contains(value)) {
-          currentCategoryMenu = QSwappingMenu->addMenu(value);
-          added_categories.insert(value);
-        }
-      } else if (currentCategoryMenu) {
-        // Si estamos dentro de un menú "category", agregamos las demás claves como acciones
-        QAction* action = currentCategoryMenu->addAction(value);
-        
-        // Agregar un icono a la acción
-        QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(key, "char_icon"));
-        action->setIcon(QIcon(icon_path));
+    QString key = keyValuePairs[0].trimmed();
+    QString value = keyValuePairs[1].trimmed();
 
-        connect(action, &QAction::triggered, this, [this, action]() {
-            on_char_set_chosen(action->text());
-        });
-       }
-     }
-   }
+    if (key == "category") {
+      if (!added_categories.contains(value)) {
+        currentCategoryMenu = QSwappingMenu->addMenu(value);
+        added_categories.insert(value);
+        currentSubMenu = nullptr;
+      }
+    } else if (currentCategoryMenu) {
+      if (key.startsWith("Menu:") && key.length() > 5) {
+        QString subMenuTitle = key.mid(5);
+        currentSubMenu = currentCategoryMenu->addMenu(subMenuTitle);
+        add_action_to_menu(currentSubMenu, "Default", subMenuTitle);
+        currentSubMenu->addSeparator();
+      } else if (key.startsWith("+") && currentSubMenu) {
+        add_action_to_menu(currentSubMenu, key.mid(1), key);
+      } else {
+        add_action_to_menu(currentCategoryMenu, value, key);
+      }
+    }
+  }
+}
+
+void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const QString& actionKey)
+{
+  QAction* action = menu->addAction(actionText);
+
+  QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(actionKey, "char_icon"));
+  action->setIcon(QIcon(icon_path));
+
+  connect(action, &QAction::triggered, this, [this, actionText]() {
+      on_char_set_chosen(actionText);
+  });
 }
 
 void Courtroom::on_char_set_load()
 {
   QDir baseDir("base");
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Char Set"), "Character sets/", tr("Char Set Files (*.ini)"));
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "Character sets/", tr("Char Set Files (*.ini)"));
   
   qDebug() << "relative Path: " << filename;
 
