@@ -4823,12 +4823,12 @@ void Courtroom::set_character_sets(QString char_set)
       if (key.startsWith("Menu:") && key.length() > 5) {
         QString subMenuTitle = key.mid(5);
         currentSubMenu = currentCategoryMenu->addMenu(value);
-        add_action_to_menu(currentSubMenu, "Default", value);
+        add_action_to_menu(currentSubMenu, "Default", subMenuTitle);
         currentSubMenu->addSeparator();
       } else if (key.startsWith("+") && currentSubMenu) {
-        add_action_to_menu(currentSubMenu, key.mid(1), value);
+        add_action_to_menu(currentSubMenu, value, key.mid(1));
       } else {
-        add_action_to_menu(currentCategoryMenu, value, value);
+        add_action_to_menu(currentCategoryMenu, value, key);
       }
     }
   }
