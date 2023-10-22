@@ -4830,7 +4830,7 @@ void Courtroom::set_character_sets(QString char_set)
         currentSubMenu->setIcon(QIcon(icon_path));
         currentSubMenu->addSeparator();
 
-        connect(default_char, &QAction::triggered, this, [this, default_char]() {
+        connect(default_char, &QAction::triggered, this, [this, subMenuTitle]() {
             on_char_set_chosen(subMenuTitle);
         });
       } else if (key.startsWith("+") && currentSubMenu) {
