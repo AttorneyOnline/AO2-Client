@@ -4799,8 +4799,13 @@ void Courtroom::on_pos_remove_clicked()
 
 void Courtroom::set_character_sets(QString char_set)
 {
-  char_set_tags = ao_app->get_list_file(VPath(char_set));
+  if (file_exists(char_set)) {
+    char_set_tags = ao_app->get_list_file(VPath(char_set));
+  } else {
+    return;
+  }
   qDebug() << char_set_tags;
+
 
   QMenu* currentCategoryMenu = nullptr;
   QMenu* currentSubMenu = nullptr;
@@ -4813,11 +4818,19 @@ void Courtroom::set_character_sets(QString char_set)
     QString key = keyValuePairs[0].trimmed();
     QString value = keyValuePairs[1].trimmed();
 
+    if (value.isEmpty()) {
+        value = key;
+    }
+
     if (key == "category") {
       if (!added_categories.contains(value)) {
         currentCategoryMenu = QSwappingMenu->addMenu(value);
-        added_categories.insert(value);
+        added_categories.insert(value, currentCategoryMenu);
         currentSubMenu = nullptr;
+      } else {
+        currentCategoryMenu = added_categories[value];
+        currentSubMenu = nullptr;
+        continue;
       }
     } else if (currentCategoryMenu) {
       if (key.startsWith("Menu:") && key.length() > 5) {
