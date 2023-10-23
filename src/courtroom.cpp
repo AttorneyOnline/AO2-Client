@@ -4825,7 +4825,7 @@ void Courtroom::set_character_sets(QString char_set)
     if (key == "category") {
       if (!added_categories.contains(value)) {
         currentCategoryMenu = QSwappingMenu->addMenu(value);
-        added_categories.insert(value, currentCategoryMenu);
+        added_categories[value] = currentCategoryMenu;
         currentSubMenu = nullptr;
       } else {
         currentCategoryMenu = added_categories[value];
