@@ -347,7 +347,7 @@ public:
   QMenu* RoleplayMenu;
   QMenu* QSwappingMenu;
 
-  QSet<QString> added_categories; // For the QSwapping menu
+  QMap<QString, QMenu*> added_categories;  // For the QSwapping Menu
   QStringList char_set_tags;
 
   void start_clock(int id);
