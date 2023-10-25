@@ -1408,9 +1408,9 @@ void Courtroom::set_taken(int n_char, bool p_taken)
 
   char_type f_char;
   f_char.name = char_list.at(n_char).name;
-  f_char.description = char_list.at(n_char).description;
+  // f_char.description = char_list.at(n_char).description;   UNUSED
   f_char.taken = p_taken;
-  f_char.evidence_string = char_list.at(n_char).evidence_string;
+  // f_char.evidence_string = char_list.at(n_char).evidence_string;   UNUSED
 
   char_list.replace(n_char, f_char);
 }
