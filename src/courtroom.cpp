@@ -516,6 +516,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   setMenuBar(menu_bar);
 
+  QString base_path = get_base_path();
+  if (file_exists(base_path + "global_char_set.ini")) {
+    set_character_sets(base_path + "global_char_set.ini");
+  }
+
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
 
