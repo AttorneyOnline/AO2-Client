@@ -75,7 +75,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     net_manager->server_connected(true);
 
-    QStringList f_contents = {"AO2", get_version_string()};
+    QStringList f_contents = {"AO2", "2.10.1"};
     send_server_packet(new AOPacket("ID", f_contents));
   }
   else if (header == "CT") {
