@@ -334,10 +334,10 @@ void Courtroom::character_loading_finished()
     QList<QTreeWidgetItem*> matching_list = ui_char_list->findItems(char_category, Qt::MatchFixedString, 0);
     // create the character tree item
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
-    // treeItem->setText(0, char_list.at(n).name);
+    treeItem->setText(0, char_list.at(n).name);
    // treeItem->setIcon(0, QIcon(ao_app->get_image_suffix(
       // ao_app->get_character_path(char_list.at(n).name, "char_icon"))));
-    // treeItem->setText(1, QString::number(n));
+    treeItem->setText(1, QString::number(n));
     // category logic
     QTreeWidgetItem *category;
     if (char_category == "") // no category
