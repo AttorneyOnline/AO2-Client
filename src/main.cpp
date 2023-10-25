@@ -10,6 +10,7 @@
 #include <QPluginLoader>
 #include <QTranslator>
 #include <QResource>
+#include <QStyleFactory>
 
 int main(int argc, char *argv[])
 {
