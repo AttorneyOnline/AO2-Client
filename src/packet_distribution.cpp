@@ -265,8 +265,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       char_type f_char;
       f_char.name = sub_elements.at(0);
-      if (sub_elements.size() >= 2)
-        f_char.description = sub_elements.at(1);
+      // if (sub_elements.size() >= 2)             If this breaks anything,
+      //  f_char.description = sub_elements.at(1);       I blame Symphony
 
       // temporary. the CharsCheck packet sets this properly
       f_char.taken = false;
