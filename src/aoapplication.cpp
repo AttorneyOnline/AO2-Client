@@ -114,8 +114,10 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
-         QString::number(MINOR_VERSION);
+  return "Luna 1.0";
+
+  // return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
+  //       QString::number(MINOR_VERSION);
 }
 
 void AOApplication::server_disconnected()
