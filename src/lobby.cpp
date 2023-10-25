@@ -296,8 +296,13 @@ void Lobby::on_about_clicked()
 {
   const bool hasApng = QImageReader::supportedImageFormats().contains("apng");
   QString msg =
-      tr("<h2>Attorney Online %1</h2>"
-         "The courtroom drama simulator."
+      tr("<h2>Attorney Online Golden: %1</h2>"
+         // "<h3>A Shred of Moon's Light.</h3>"
+         "<p><b>Main Development:</b><br>"
+         "Satoru;1816 (Lead Developer), SymphonyVR (Rust Server & Design), Sigma | XVIII"
+         "<p><b>Special thanks:</b><br>"
+         "Alcor, Dadabecla, Omegazx12, Crissiam, Kal, Eaglestone"
+         "<p><h3>AO's Original Team</h3>"
          "<p><b>Source code:</b> "
          "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
          "https://github.com/AttorneyOnline/AO2-Client</a>"
