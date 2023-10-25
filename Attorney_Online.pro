@@ -3,7 +3,7 @@ QT += core gui widgets network websockets uitools
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = Luna 1.0.0
+VERSION = "Luna 1.0.0"
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
