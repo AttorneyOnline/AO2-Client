@@ -62,13 +62,12 @@ void AOCharButton::set_image(QString p_character)
   QString image_path = ao_app->get_image_suffix(
       ao_app->get_character_path(p_character, "char_icon"));
 
-  this->setText("");
-
   if (file_exists(image_path)) {
     this->setStyleSheet("QPushButton { border-image: url(\"" + image_path +
                         "\") 0 0 0 0 stretch stretch; }"
                         "QToolTip { background-image: url(); color: #000000; "
                         "background-color: #ffffff; border: 0px; }");
+    this->setText("");
   }
   else {
     this->setStyleSheet("QPushButton { border-image: url(); }"
