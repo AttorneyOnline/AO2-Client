@@ -521,7 +521,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   setMenuBar(menu_bar);
 
-  QString base_path = ao_app->get_real_path(get_base_path() + "global_char_set.ini");
+  QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
   if (!base_path.isEmpty()) {
     set_character_sets(base_path);
   }
