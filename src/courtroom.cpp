@@ -140,7 +140,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_objection->force_continuous = true;
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_objection->setObjectName("ui_vp_objection");
-
+  
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
   ui_ic_chatlog->setObjectName("ui_ic_chatlog");
@@ -204,6 +204,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     ui_clock[i]->setObjectName("ui_clock" + QString::number(i));
   }
 
+  // ui_rp_clock = new AOImage(this, ao_app);
+  // ui_rp_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
+  // ui_rp_clock->hide();
+  // ui_rp_clock->setObjectName("ui_rp_clock");
+  
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
@@ -520,6 +525,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   if (file_exists(base_path + "global_char_set.ini")) {
     set_character_sets(base_path + "global_char_set.ini");
   }
+  qDebug() << base_path;
 
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
