@@ -4829,14 +4829,12 @@ void Courtroom::set_character_sets(QString char_set)
     }
 
     QStringList keyValuePairs = tag.split("=");
-    if (keyValuePairs.size() != 2)
-      continue;
-
-    QString key = keyValuePairs[0].trimmed();
-    QString value = keyValuePairs[1].trimmed();
-
-    if (!full_tag.contains('=')) {
-        value = full_tag;
+    if (keyValuePairs.size() != 2) {
+      QString key = full_tag; 
+      Qstring value = full_tag;
+    } else {
+      QString key = keyValuePairs[0].trimmed();
+      QString value = keyValuePairs[1].trimmed();
     }
 
     if (key == "category") {
@@ -4890,8 +4888,11 @@ void Courtroom::on_char_set_load()
   QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/swapping sets/", tr("Char Set Files (*.ini)"));
   
   qDebug() << "relative Path: " << filename;
-
-  set_character_sets(filename);
+  if (!filename.isEmpty()) {
+    set_character_sets(filename);    
+  } else {
+    return;
+  }
 }
 
 void Courtroom::on_char_set_chosen(const QString& actionText)
