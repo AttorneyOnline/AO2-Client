@@ -521,8 +521,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   setMenuBar(menu_bar);
 
-  QString base_path = ao_app->get_real_path(ao_app->get_base_path("global_char_set.ini"));
-  if (base_path) {
+  QString base_path = ao_app->get_real_path(get_base_path("global_char_set.ini"));
+  if (!base_path.isEmpty()) {
     set_character_sets(base_path);
   }
   qDebug() << base_path;
@@ -4836,7 +4836,7 @@ void Courtroom::set_character_sets(QString char_set)
     QString value = keyValuePairs[1].trimmed();
 
     if (!full_tag.contains('=')) {
-        value = real_key;
+        value = full_tag;
     }
 
     if (key == "category") {
@@ -4904,9 +4904,9 @@ void Courtroom::on_char_set_chosen(const QString& actionText)
 
       if (value == actionText) {
         if (key.startsWith("+"))
-          key = key.mid(1);
+          key = key.mid(1).trimmed();
         else if (key.startsWith("Menu:"))
-          key = key.mid(5);
+          key = key.mid(5).trimmed();
         update_character(m_cid, key, true);
         break;
       }
