@@ -521,9 +521,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   setMenuBar(menu_bar);
 
-  QString base_path = get_base_path();
-  if (file_exists(base_path + "global_char_set.ini")) {
-    set_character_sets(base_path + "global_char_set.ini");
+  QString base_path = ao_app->get_real_path(ao_app->get_base_path("global_char_set.ini"));
+  if (base_path) {
+    set_character_sets(base_path);
   }
   qDebug() << base_path;
 
@@ -4813,15 +4813,21 @@ void Courtroom::set_character_sets(QString char_set)
   if (file_exists(char_set)) {
     char_set_tags = ao_app->get_list_file(VPath(char_set));
   } else {
+    qDebug() << "Character set not found!";
     return;
   }
   qDebug() << char_set_tags;
-
 
   QMenu* currentCategoryMenu = nullptr;
   QMenu* currentSubMenu = nullptr;
 
   for (const QString& tag : char_set_tags) {
+    QString full_tag = tag.trimmed(); 
+
+    if (full_tag.isEmpty()) {
+        continue;
+    }
+
     QStringList keyValuePairs = tag.split("=");
     if (keyValuePairs.size() != 2)
       continue;
@@ -4829,8 +4835,8 @@ void Courtroom::set_character_sets(QString char_set)
     QString key = keyValuePairs[0].trimmed();
     QString value = keyValuePairs[1].trimmed();
 
-    if (value.isEmpty()) {
-        value = key;
+    if (!full_tag.contains('=')) {
+        value = real_key;
     }
 
     if (key == "category") {
@@ -4858,9 +4864,9 @@ void Courtroom::set_character_sets(QString char_set)
             on_char_set_chosen(value);
         });
       } else if (key.startsWith("+") && currentSubMenu) {
-        add_action_to_menu(currentSubMenu, value, key.mid(1));
+        add_action_to_menu(currentSubMenu, value, key.mid(1).trimmed());
       } else {
-        add_action_to_menu(currentCategoryMenu, value, key);
+        add_action_to_menu(currentCategoryMenu, value, key.trimmed());
       }
     }
   }
@@ -4880,8 +4886,8 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
 
 void Courtroom::on_char_set_load()
 {
-  QDir baseDir("base");
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "Character sets/", tr("Char Set Files (*.ini)"));
+  // QDir baseDir("base");
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/swapping sets/", tr("Char Set Files (*.ini)"));
   
   qDebug() << "relative Path: " << filename;
 
@@ -4890,13 +4896,6 @@ void Courtroom::on_char_set_load()
 
 void Courtroom::on_char_set_chosen(const QString& actionText)
 {
-  // QAction* senderAction = qobject_cast<QAction*>(sender());
-
-  // if (!senderAction)
-    // return;
-
-  // QString actionText = senderAction->text();
-
   for (const QString& tag : char_set_tags) {
     QStringList keyValuePairs = tag.split("=");
     if (keyValuePairs.size() == 2) {
