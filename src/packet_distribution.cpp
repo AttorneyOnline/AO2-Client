@@ -639,7 +639,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     log_to_demo = false;
   }
   // RP Clock
-  else if (l_header == "CL")
+  else if (header == "CL")
   {
     if (courtroom_constructed && f_contents.size() > 0)
       w_courtroom->handle_clock(f_contents.at(1));
