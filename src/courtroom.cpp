@@ -6265,8 +6265,9 @@ void Courtroom::handle_clock(QString time)
   m_current_clock = new_clock;
   qInfo() << QString("Clock time changed to %1").arg(m_current_clock);
 
-  const QString clock_filename = (m_current_clock >= 0) ? "hours/" + QString::number(m_current_clock) : "";
-  const QString asset_path = ao_app->get_real_path(ao_app->get_theme_path(clock_filename));
+  QString clock_filename = (m_current_clock >= 0) ? "hours/" + QString::number(m_current_clock) : "";
+  qDebug() << "Clock Filename: " << clock_filename;
+  QString asset_path = ao_app->get_real_path(ao_app->get_theme_path("hours/"));
 
   if (asset_path.isEmpty())
   {
