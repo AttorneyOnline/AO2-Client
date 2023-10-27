@@ -50,6 +50,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_background = new AOImage(this, ao_app);
   ui_background->setObjectName("ui_background");
 
+  ui_rp_clock = new AOImage(this, ao_app);
+  ui_rp_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_rp_clock->hide();
+  ui_rp_clock->setObjectName("ui_rp_clock");
+  
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
 
@@ -203,11 +208,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     ui_clock[i]->hide();
     ui_clock[i]->setObjectName("ui_clock" + QString::number(i));
   }
-
-  ui_rp_clock = new AOImage(this, ao_app);
-  ui_rp_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_rp_clock->hide();
-  ui_rp_clock->setObjectName("ui_rp_clock");
   
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -4819,6 +4819,8 @@ void Courtroom::set_character_sets(QString char_set)
   }
   qDebug() << char_set_tags;
 
+  QString key; 
+  QString value;
   QMenu* currentCategoryMenu = nullptr;
   QMenu* currentSubMenu = nullptr;
 
@@ -4831,11 +4833,11 @@ void Courtroom::set_character_sets(QString char_set)
 
     QStringList keyValuePairs = tag.split("=");
     if (keyValuePairs.size() != 2) {
-      QString key = full_tag; 
-      QString value = full_tag;
+      key = full_tag; 
+      value = full_tag;
     } else {
-      QString key = keyValuePairs[0].trimmed();
-      QString value = keyValuePairs[1].trimmed();
+      key = keyValuePairs[0].trimmed();
+      value = keyValuePairs[1].trimmed();
     }
 
     if (key == "category") {
