@@ -427,6 +427,9 @@ private:
   // 0 = in front, 1 = behind
   int pair_order = 0;
 
+  // RP clock
+  int m_current_clock = 0;
+
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
