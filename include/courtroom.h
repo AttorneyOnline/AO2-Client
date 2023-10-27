@@ -350,6 +350,8 @@ public:
   QMap<QString, QMenu*> added_categories;  // For the QSwapping Menu
   QStringList char_set_tags;
 
+  void handle_clock(QString time);
+
   void start_clock(int id);
   void start_clock(int id, qint64 msecs);
   void set_clock(int id, qint64 msecs);
@@ -731,6 +733,8 @@ private:
 
   static const int max_clocks = 5;
   AOClockLabel *ui_clock[max_clocks];
+
+  AOImage ui_rp_clock;
 
   AOButton *ui_pair_button;
   QListWidget *ui_pair_list;
