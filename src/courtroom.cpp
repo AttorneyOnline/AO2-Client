@@ -50,11 +50,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_background = new AOImage(this, ao_app);
   ui_background->setObjectName("ui_background");
 
-  ui_rp_clock = new AOImage(this, ao_app);
-  ui_rp_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_rp_clock->hide();
-  ui_rp_clock->setObjectName("ui_rp_clock");
-  
   ui_viewport = new QWidget(this);
   ui_viewport->setObjectName("ui_viewport");
 
@@ -102,6 +97,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_effect->setObjectName("ui_vp_effect");
 
+  ui_rp_clock = new AOImage(ui_viewport, ao_app);
+  ui_rp_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_rp_clock->hide();
+  ui_rp_clock->setObjectName("ui_rp_clock");
+  
   ui_vp_evidence_display = new AOEvidenceDisplay(ui_viewport, ao_app);
   ui_vp_evidence_display->setObjectName("ui_vp_evidence_display");
 
