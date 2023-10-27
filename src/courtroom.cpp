@@ -204,10 +204,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     ui_clock[i]->setObjectName("ui_clock" + QString::number(i));
   }
 
-  // ui_rp_clock = new AOImage(this, ao_app);
-  // ui_rp_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
-  // ui_rp_clock->hide();
-  // ui_rp_clock->setObjectName("ui_rp_clock");
+  ui_rp_clock = new AOImage(this, ao_app);
+  ui_rp_clock->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_rp_clock->hide();
+  ui_rp_clock->setObjectName("ui_rp_clock");
   
   ui_ic_chat_name = new QLineEdit(this);
   ui_ic_chat_name->setFrame(false);
@@ -969,6 +969,7 @@ void Courtroom::set_widgets()
   }
   ui_music_display->load_image("music_display", "");
 
+  set_size_and_pos(ui_rp_clock, "rp_clock");
 
   for (int i = 0; i < max_clocks; i++) {
     set_size_and_pos(ui_clock[i], "clock_" + QString::number(i));
@@ -4831,7 +4832,7 @@ void Courtroom::set_character_sets(QString char_set)
     QStringList keyValuePairs = tag.split("=");
     if (keyValuePairs.size() != 2) {
       QString key = full_tag; 
-      Qstring value = full_tag;
+      QString value = full_tag;
     } else {
       QString key = keyValuePairs[0].trimmed();
       QString value = keyValuePairs[1].trimmed();
@@ -6244,6 +6245,36 @@ void Courtroom::set_clock_visibility(int id, bool visible)
   {
     ui_clock[id]->setVisible(visible);
   }
+}
+
+void Courtroom::handle_clock(QString time)
+{
+  int new_clock = time.toInt();
+  if (new_clock < 0)
+  {
+    qInfo() << "Clock time is invalid; no asset to be used.";
+    return;
+  }
+
+  // Avoid unnecessary updates
+  if (new_clock == m_current_clock)
+    return;
+
+  m_current_clock = new_clock;
+  qInfo() << QString("Clock time changed to %1").arg(m_current_clock);
+
+  const QString clock_filename = (m_current_clock >= 0) ? "hours/" + QString::number(m_current_clock) : "";
+  const QString asset_path = ao_app->get_real_path(ao_app->get_theme_path(clock_filename));
+
+  if (asset_path.isEmpty())
+  {
+    qDebug() << "Asset not found; aborting.";
+    return;
+  }
+
+  ui_rp_clock->set_image(clock_filename);
+  // ui_rp_clock->start();
+  ui_rp_clock->show();
 }
 
 void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
