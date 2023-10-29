@@ -30,6 +30,44 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
 
+  music_player = new AOMusicPlayer(this, ao_app);
+  music_player->set_muted(true);
+  connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished,
+          this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
+
+  sfx_player = new AOSfxPlayer(this, ao_app);
+  sfx_player->set_muted(true);
+
+  objection_player = new AOSfxPlayer(this, ao_app);
+  objection_player->set_muted(true);
+
+  blip_player = new AOBlipPlayer(this, ao_app);
+  blip_player->set_muted(true);
+
+  modcall_player = new AOSfxPlayer(this, ao_app);
+  modcall_player->set_volume(50);
+
+  ui_background = new AOImage(this, ao_app);
+  ui_background->setObjectName("ui_background");
+
+  ui_viewport = new QWidget(this);
+  ui_viewport->setObjectName("ui_viewport");
+
+  ui_vp_void = new QLabel(ui_viewport);
+  ui_vp_void->setStyleSheet("QLabel {background-color:black}");
+  ui_vp_void->hide();
+
+  ui_vp_char_icon = new QLabel(ui_viewport);
+  ui_vp_char_icon->setObjectName("ui_vp_char_icon");
+
+  ui_vp_pencil = new QLabel (ui_viewport);
+  ui_vp_pencil->setObjectName("ui_vp_pencil");
+  QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil.png"));
+  QPixmap pencil_pixmap(pencil_path);
+  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  ui_vp_pencil->setFixedSize(30, 30);
+  ui_vp_pencil->hide();
+
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
 
@@ -119,44 +157,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   menu_animation = new QPropertyAnimation(menu_bar, "geometry");
   menu_animation->setDuration(500);
-  
-  music_player = new AOMusicPlayer(this, ao_app);
-  music_player->set_muted(true);
-  connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished,
-          this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
-
-  sfx_player = new AOSfxPlayer(this, ao_app);
-  sfx_player->set_muted(true);
-
-  objection_player = new AOSfxPlayer(this, ao_app);
-  objection_player->set_muted(true);
-
-  blip_player = new AOBlipPlayer(this, ao_app);
-  blip_player->set_muted(true);
-
-  modcall_player = new AOSfxPlayer(this, ao_app);
-  modcall_player->set_volume(50);
-
-  ui_background = new AOImage(this, ao_app);
-  ui_background->setObjectName("ui_background");
-
-  ui_viewport = new QWidget(this);
-  ui_viewport->setObjectName("ui_viewport");
-
-  ui_vp_void = new QLabel(ui_viewport);
-  ui_vp_void->setStyleSheet("QLabel {background-color:black}");
-  ui_vp_void->hide();
-
-  ui_vp_char_icon = new QLabel(ui_viewport);
-  ui_vp_char_icon->setObjectName("ui_vp_char_icon");
-
-  ui_vp_pencil = new QLabel (ui_viewport);
-  ui_vp_pencil->setObjectName("ui_vp_pencil");
-  QString pencil_path = ao_app->get_real_path(ao_app->get_misc_path("default", "pencil.png"));
-  QPixmap pencil_pixmap(pencil_path);
-  ui_vp_pencil->setPixmap(pencil_pixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-  ui_vp_pencil->setFixedSize(30, 30);
-  ui_vp_pencil->hide();
 
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
@@ -4833,7 +4833,7 @@ void Courtroom::set_character_sets(QString char_set)
   for (const QString& tag : char_set_tags) {
     QString full_tag = tag.trimmed(); 
 
-    if (full_tag.isEmpty()) {
+    if (full_tag.isEmpty() || full_tag.startsWith("//")) {
         continue;
     }
 
