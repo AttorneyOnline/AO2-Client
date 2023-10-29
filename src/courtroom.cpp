@@ -68,96 +68,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_pencil->setFixedSize(30, 30);
   ui_vp_pencil->hide();
 
-  // We handle the menu bar
-  menu_bar = new QMenuBar(this);
-
-  MainMenu = menu_bar->addMenu("Main");
-  CharacterMenu = menu_bar->addMenu("Character");
-  RoleplayMenu = menu_bar->addMenu("Roleplay");
-  QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
-
-  // Main tab
-  QAction* action_change_character = new QAction("Change character", this);
-  QAction* action_reload_theme = new QAction("Reload theme", this);
-  QAction* action_call_mod = new QAction("Call mod", this);
-  QAction* action_image_streaming = new QAction("Image streaming", this);
-  QAction* action_settings = new QAction("Settings", this);
-  QAction* action_return_lobby = new QAction("Return to Lobby", this);
-  action_image_streaming->setEnabled(false);
-
-  // Character tab
-  QAction* action_preanim = new QAction("Preanim", this);
-  QAction* action_flip = new QAction("Flip", this);
-  QAction* action_additive = new QAction("Additive", this);
-  QAction* action_immediate = new QAction("Immediate", this);
-  QAction* action_shownames = new QAction("Enable Shownames", this);
-  // Make 'em checkable
-  action_preanim->setCheckable(true);
-  ui_pre->setCheckable(true);
-  action_flip->setCheckable(true);
-  ui_flip->setCheckable(true);
-  action_additive->setCheckable(true);
-  action_immediate->setCheckable(true);
-  action_shownames->setCheckable(true);
-
-  // Roleplay tab
-  QAction* action_view_map = new QAction("View Map", this);
-  QAction* action_open_evidence = new QAction("Open Evidence", this);
-  QAction* action_player_profile = new QAction("Player Profile", this);
-  QAction* action_gm_screen = new QAction("GM Screen", this);
-  action_view_map->setEnabled(false);
-  action_player_profile->setEnabled(false);
-  action_gm_screen->setEnabled(false);
-
-  // Swapping tab
-  QAction* action_load_set = new QAction("Load char set...", this);
-
-  // Why Qt, why
-  MainMenu->addAction(action_change_character);     //
-  MainMenu->addAction(action_reload_theme);        //
-  MainMenu->addAction(action_call_mod);           //  MAIN TAB
-  MainMenu->addSeparator();                      //
-  MainMenu->addAction(action_image_streaming);  //
-  MainMenu->addAction(action_settings);        //
-  MainMenu->addAction(action_return_lobby);   //
-  CharacterMenu->addAction(action_preanim);        //
-  CharacterMenu->addAction(action_flip);          //
-  CharacterMenu->addAction(action_additive);     //  CHARACTER TAB
-  CharacterMenu->addAction(action_immediate);   //
-  CharacterMenu->addAction(action_shownames);  //
-  RoleplayMenu->addAction(action_view_map);           //
-  RoleplayMenu->addAction(action_open_evidence);     //
-  RoleplayMenu->addSeparator();                     //   ROLEPLAY TAB
-  RoleplayMenu->addAction(action_player_profile);  //
-  RoleplayMenu->addAction(action_gm_screen);      //
-  QSwappingMenu->addAction(action_load_set);         //  SWAPPING TAB
-  QSwappingMenu->addSeparator();                    //
-  
-  connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
-  connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
-  connect(action_call_mod, &QAction::triggered, this, &Courtroom::on_call_mod_clicked);
-  connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
-  connect(action_return_lobby, &QAction::triggered, this, &Courtroom::on_back_to_lobby_clicked);
-  
-  connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
-  connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
-  connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
-  connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
-  connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
-
-  connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
-
-  setMenuBar(menu_bar);
-
-  QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
-  if (!base_path.isEmpty()) {
-    set_character_sets(base_path);
-  }
-  qDebug() << base_path;
-
-  menu_animation = new QPropertyAnimation(menu_bar, "geometry");
-  menu_animation->setDuration(500);
-
   ui_vp_background = new BackgroundLayer(ui_viewport, ao_app);
   ui_vp_background->setObjectName("ui_vp_background");
   ui_vp_speedlines = new SplashLayer(ui_viewport, ao_app);
@@ -533,6 +443,97 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
 
+
+  // We handle the menu bar
+  menu_bar = new QMenuBar(this);
+
+  MainMenu = menu_bar->addMenu("Main");
+  CharacterMenu = menu_bar->addMenu("Character");
+  RoleplayMenu = menu_bar->addMenu("Roleplay");
+  QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+
+  // Main tab
+  QAction* action_change_character = new QAction("Change character", this);
+  QAction* action_reload_theme = new QAction("Reload theme", this);
+  QAction* action_call_mod = new QAction("Call mod", this);
+  QAction* action_image_streaming = new QAction("Image streaming", this);
+  QAction* action_settings = new QAction("Settings", this);
+  QAction* action_return_lobby = new QAction("Return to Lobby", this);
+  action_image_streaming->setEnabled(false);
+
+  // Character tab
+  QAction* action_preanim = new QAction("Preanim", this);
+  QAction* action_flip = new QAction("Flip", this);
+  QAction* action_additive = new QAction("Additive", this);
+  QAction* action_immediate = new QAction("Immediate", this);
+  QAction* action_shownames = new QAction("Enable Shownames", this);
+  // Make 'em checkable
+  action_preanim->setCheckable(true);
+  ui_pre->setCheckable(true);
+  action_flip->setCheckable(true);
+  ui_flip->setCheckable(true);
+  action_additive->setCheckable(true);
+  action_immediate->setCheckable(true);
+  action_shownames->setCheckable(true);
+
+  // Roleplay tab
+  QAction* action_view_map = new QAction("View Map", this);
+  QAction* action_open_evidence = new QAction("Open Evidence", this);
+  QAction* action_player_profile = new QAction("Player Profile", this);
+  QAction* action_gm_screen = new QAction("GM Screen", this);
+  action_view_map->setEnabled(false);
+  action_player_profile->setEnabled(false);
+  action_gm_screen->setEnabled(false);
+
+  // Swapping tab
+  QAction* action_load_set = new QAction("Load char set...", this);
+
+  // Why Qt, why
+  MainMenu->addAction(action_change_character);     //
+  MainMenu->addAction(action_reload_theme);        //
+  MainMenu->addAction(action_call_mod);           //  MAIN TAB
+  MainMenu->addSeparator();                      //
+  MainMenu->addAction(action_image_streaming);  //
+  MainMenu->addAction(action_settings);        //
+  MainMenu->addAction(action_return_lobby);   //
+  CharacterMenu->addAction(action_preanim);        //
+  CharacterMenu->addAction(action_flip);          //
+  CharacterMenu->addAction(action_additive);     //  CHARACTER TAB
+  CharacterMenu->addAction(action_immediate);   //
+  CharacterMenu->addAction(action_shownames);  //
+  RoleplayMenu->addAction(action_view_map);           //
+  RoleplayMenu->addAction(action_open_evidence);     //
+  RoleplayMenu->addSeparator();                     //   ROLEPLAY TAB
+  RoleplayMenu->addAction(action_player_profile);  //
+  RoleplayMenu->addAction(action_gm_screen);      //
+  QSwappingMenu->addAction(action_load_set);         //  SWAPPING TAB
+  QSwappingMenu->addSeparator();                    //
+  
+  connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
+  connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
+  connect(action_call_mod, &QAction::triggered, this, &Courtroom::on_call_mod_clicked);
+  connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
+  connect(action_return_lobby, &QAction::triggered, this, &Courtroom::on_back_to_lobby_clicked);
+  
+  connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
+  connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
+  connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
+  connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
+  connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
+
+  connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
+
+  setMenuBar(menu_bar);
+
+  QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
+  if (!base_path.isEmpty()) {
+    set_character_sets(base_path);
+  }
+  qDebug() << base_path;
+
+  menu_animation = new QPropertyAnimation(menu_bar, "geometry");
+  menu_animation->setDuration(500);
+  
   this->setMouseTracking(true);
   
   construct_char_select();
