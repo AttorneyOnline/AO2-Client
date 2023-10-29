@@ -94,7 +94,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   RoleplayMenu->addAction(action_gm_screen);      //
   QSwappingMenu->addAction(action_load_set);         //  SWAPPING TAB
   QSwappingMenu->addSeparator();                    //
-
+  
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
   connect(action_call_mod, &QAction::triggered, this, &Courtroom::on_call_mod_clicked);
@@ -4827,10 +4827,13 @@ void Courtroom::set_character_sets(QString char_set)
   QMenu* currentCategoryMenu = nullptr;
   QMenu* currentSubMenu = nullptr;
 
+  //currentCategoryMenu->setContextMenuPolicy(Qt::CustomContextMenu);
+  //QAction* add_character_action = currentCategoryMenu->addAction("Add Character");
+
   for (const QString& tag : char_set_tags) {
     QString full_tag = tag.trimmed(); 
 
-    if (full_tag.isEmpty() || full_tag.startsWith("//")) {
+    if (full_tag.isEmpty()) {
         continue;
     }
 
@@ -4848,6 +4851,7 @@ void Courtroom::set_character_sets(QString char_set)
         currentCategoryMenu = QSwappingMenu->addMenu(value);
         added_categories[value] = currentCategoryMenu;
         currentSubMenu = nullptr;
+        
       } else {
         currentCategoryMenu = added_categories[value];
         currentSubMenu = nullptr;
