@@ -250,7 +250,7 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   QString f_emote = ao_app->get_emote(current_char, emote_num);
 
   emote_menu->setDefaultAction(emote_menu->addAction("Add to Emote Queue", this, [=]{
-    QString emote = " ¨(" + f_emote + ")¨ ";
+    QString emote = " ¨<" + f_emote + ">¨ ";
     
     if (ui_ic_chat_message->hasFocus()) {
       int cursorPosition = ui_ic_chat_message->cursorPosition();
