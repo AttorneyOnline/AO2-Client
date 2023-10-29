@@ -532,7 +532,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
     }
     int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared
-    int cu_action = f_contents.at(1).toInt(); // 0 = Delete entry | 1 = Add entry
+    int cu_action = f_contents.at(1).toInt(); // 0 = Delete entry | 1 = Add entry | 2 = Clear entries
     QString cu_name = f_contents.at(2);
     QString cu_link = QUrl::fromPercentEncoding(f_contents.at(3).toUtf8());
     
@@ -564,7 +564,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
             dl_table.headers.append(cu_name);
             dl_table.rows.append(newRow);
         }
-    } else {
+    } else if (cu_action == 0) {
         // "Delete entry" action
         for (int i = 0; i < dl_table.rows.size(); i++) {
             const QStringList& row = dl_table.rows.at(i);
@@ -575,6 +575,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                 break; // Assuming there's only one entry with the given cu_name and cu_link.
         }
       }
+    } else if (cu_action == 3) {
+        dl_table.headers.clear();
+        dl_table.rows.clear();
     }
     if (cu_authority == 1) {
         Options::getInstance().setDownloadManager(dl_table);
