@@ -4828,9 +4828,6 @@ void Courtroom::set_character_sets(QString char_set)
   QMenu* currentCategoryMenu = nullptr;
   QMenu* currentSubMenu = nullptr;
 
-  //currentCategoryMenu->setContextMenuPolicy(Qt::CustomContextMenu);
-  //QAction* add_character_action = currentCategoryMenu->addAction("Add Character");
-
   for (const QString& tag : char_set_tags) {
     QString full_tag = tag.trimmed(); 
 
@@ -4850,6 +4847,10 @@ void Courtroom::set_character_sets(QString char_set)
     if (key == "category") {
       if (!added_categories.contains(value)) {
         currentCategoryMenu = QSwappingMenu->addMenu(value);
+
+        // currentCategoryMenu->setContextMenuPolicy(Qt::CustomContextMenu);
+        // connect(currentCategoryMenu, &QMenu::customContextMenuRequested, this, &Courtroom::on_qswap_context_menu_requested);
+
         added_categories[value] = currentCategoryMenu;
         currentSubMenu = nullptr;
         
@@ -4908,21 +4909,26 @@ void Courtroom::on_char_set_load()
 
 void Courtroom::on_char_set_chosen(const QString& actionText)
 {
+  QString key;
+  QString value;
   for (const QString& tag : char_set_tags) {
     QStringList keyValuePairs = tag.split("=");
     if (keyValuePairs.size() == 2) {
-      QString key = keyValuePairs[0].trimmed();
-      QString value = keyValuePairs[1].trimmed();
+      key = keyValuePairs[0].trimmed();
+      value = keyValuePairs[1].trimmed();
+    } else {
+      key = actionText;
+      value = actionText;
+    }
 
-      if (value == actionText) {
-        if (key.startsWith("+"))
-          key = key.mid(1).trimmed();
-        else if (key.startsWith("Menu:"))
-          key = key.mid(5).trimmed();
-        update_character(m_cid, key, true);
-        search_download_file("1"); // We send a Character URL packet
-        break;
-      }
+    if (value == actionText) {
+      if (key.startsWith("+"))
+        key = key.mid(1).trimmed();
+      else if (key.startsWith("Menu:"))
+        key = key.mid(5).trimmed();
+      update_character(m_cid, key, true);
+      search_download_file("1"); // We send a Character URL packet
+      break;
     }
   }
 }
