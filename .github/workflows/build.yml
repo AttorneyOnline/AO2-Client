@@ -215,7 +215,6 @@ jobs:
           rm ./Qt5Svg.dll
           rm -r iconengines
           rm -r bearer
-          rm -r styles
 
       - name: Copy MingW DLL
         if: matrix.platform == 'mingw81_32'
