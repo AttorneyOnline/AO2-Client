@@ -27,8 +27,6 @@ int main(int argc, char *argv[])
   AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
-  main_app.setStyle(QStyleFactory::create("Fusion"));
-
   QFontDatabase fontDatabase;
   QDirIterator it(get_base_path() + "fonts",
                   QDirIterator::Subdirectories);
