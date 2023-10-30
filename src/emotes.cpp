@@ -23,6 +23,9 @@ void Courtroom::initialize_emotes()
   emote_preview = new AOEmotePreview(this, ao_app);
   emote_preview->setObjectName("ui_emote_preview");
 
+  new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Left), this, SLOT(select_previous_or_next_emote()));
+  new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Right), this, SLOT(select_previous_or_next_emote()));
+
   connect(ui_emote_left, &AOButton::clicked, this,
           &Courtroom::on_emote_left_clicked);
   connect(ui_emote_right, &AOButton::clicked, this,
@@ -234,6 +237,36 @@ void Courtroom::update_emote_preview() {
 void Courtroom::on_emote_clicked(int p_id)
 {
   select_emote(p_id + max_emotes_on_page * current_emote_page);
+}
+
+void Courtroom::select_previous_or_next_emote()
+{
+    QKeySequence keySequence = qobject_cast<QShortcut*>(sender())->key();
+  
+    QWidget* button = qobject_cast<QWidget*>(sender());
+    int id = (qobject_cast<AOEmoteButton*>(button)) ? qobject_cast<AOEmoteButton*>(button)->get_id() : current_emote;
+
+    if (id < 0)
+        return;
+
+    qDebug() << "Current emote: " << current_emote << " | ID: " << id;
+    
+    if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Left))
+    {
+        int previous_emote = current_emote - 1;
+        if (previous_emote >= 0)
+        {
+            select_emote(previous_emote);
+        }
+    }
+    else if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Right))
+    {
+        int next_emote = current_emote + 1;
+        if (next_emote < max_emotes_on_page)
+        {
+            select_emote(next_emote);
+        }
+    }
 }
 
 void Courtroom::show_emote_menu(const QPoint &pos)
