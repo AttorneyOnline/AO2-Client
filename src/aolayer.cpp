@@ -338,6 +338,12 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
+  if (m_reader.read()) {
+    continue;
+  } else {
+    this->kill();
+    return;
+  }
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
   if (m_reader.loopCount() == 0 && max_frames > 1)
