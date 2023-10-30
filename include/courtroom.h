@@ -42,6 +42,7 @@
 #include <QVector>
 #include <QQueue>
 #include <QMenuBar>
+#include <QShortcut>
 
 #include <QBrush>
 #include <QDebug>
