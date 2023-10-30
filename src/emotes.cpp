@@ -25,6 +25,8 @@ void Courtroom::initialize_emotes()
 
   new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Left), this, SLOT(select_previous_or_next_emote()));
   new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Right), this, SLOT(select_previous_or_next_emote()));
+  new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Up), this, SLOT(select_previous_or_next_emote()));
+  new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Down), this, SLOT(select_previous_or_next_emote()));
 
   connect(ui_emote_left, &AOButton::clicked, this,
           &Courtroom::on_emote_left_clicked);
@@ -266,6 +268,18 @@ void Courtroom::select_previous_or_next_emote()
         {
             select_emote(next_emote);
         }
+    }
+    if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Up))
+    {
+    if (total_pages > current_emote_page + 1)
+      ++current_emote_page;
+      set_emote_page();
+    }
+    else if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Down))
+    {
+    if (current_emote_page > 0)
+      --current_emote_page;
+      set_emote_page();
     }
 }
 
