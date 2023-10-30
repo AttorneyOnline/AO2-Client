@@ -290,7 +290,7 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
-  if (p_image == "" || p_image.isNull() && p_image.isEmpty()) {// image wasn't found by the path resolution function
+  if (p_image == "") {// image wasn't found by the path resolution function
     this->kill();
     return;
   }
@@ -338,11 +338,9 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
-  if (m_reader.read()) {
-    continue;
-  } else {
-    this->kill();
-    return;
+  if (!m_reader.read()) {
+      this->kill();
+      return;
   }
   last_max_frames = max_frames;
   max_frames = m_reader.imageCount();
