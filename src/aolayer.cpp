@@ -290,7 +290,7 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
-  if (p_image == "" || p_image.isNull() == false && p_image.isEmpty() == false) {// image wasn't found by the path resolution function
+  if (p_image == "" || p_image.isNull() && p_image.isEmpty()) {// image wasn't found by the path resolution function
     this->kill();
     return;
   }
