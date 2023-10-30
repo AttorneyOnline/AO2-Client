@@ -338,7 +338,7 @@ void AOLayer::start_playback(QString p_image)
   qDebug() << "[AOLayer::start_playback] Stretch:" << stretch << "Filename:" << p_image;
 #endif
   m_reader.setFileName(p_image);
-  if (!m_reader.read()) {
+  if (m_reader.isNull()) {
       this->kill();
       return;
   }
