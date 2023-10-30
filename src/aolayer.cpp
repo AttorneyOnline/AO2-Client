@@ -290,7 +290,7 @@ void CharLayer::start_playback(QString p_image)
 
 void AOLayer::start_playback(QString p_image)
 {
-  if (p_image == "") {// image wasn't found by the path resolution function
+  if (p_image == "" || p_image.isNull() == false && p_image.isEmpty() == false) {// image wasn't found by the path resolution function
     this->kill();
     return;
   }
@@ -315,7 +315,7 @@ void AOLayer::start_playback(QString p_image)
     force_continuous = true;
   }
 
-  if (((last_path == p_image) && (!force_continuous)) || p_image == "")
+  if (((last_path == p_image) && (!force_continuous)) || p_image.isEmpty())
     return;
 
 #ifdef DEBUG_MOVIE
