@@ -4916,7 +4916,7 @@ void Courtroom::on_char_set_chosen(const QString& actionText)
     if (keyValuePairs.size() == 2) {
       key = keyValuePairs[0].trimmed();
       value = keyValuePairs[1].trimmed();
-    } else {
+    } else if (tag == actionText) {
       key = actionText;
       value = actionText;
     }
