@@ -515,10 +515,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
   connect(action_return_lobby, &QAction::triggered, this, [this]() {
       QMessageBox::StandardButton reply;
-      reply = QMessageBox::question(this, "", tr("Are you sure you want to return to the lobby?"),
+      reply = QMessageBox::question(this, "", "Are you sure you want to return to the lobby?",
                                     QMessageBox::Yes | QMessageBox::No);
-  
-      if (reply == QMessageBox::Ok) {
+      if (reply == QMessageBox::Yes) {
           on_back_to_lobby_clicked();
       } else {
           return;
