@@ -946,6 +946,8 @@ private slots:
 
   void select_emote(int p_id);
 
+  void select_previous_or_next_emote();
+
   void on_emote_clicked(int p_id);
 
   void on_emote_left_clicked();
