@@ -267,6 +267,7 @@ void Courtroom::select_previous_or_next_emote()
                 if (current_emote_page > 0)
                 {
                     --current_emote_page;
+                    set_emote_page();
                 }
             }
             select_emote(previous_emote);
@@ -283,6 +284,7 @@ void Courtroom::select_previous_or_next_emote()
                 if (current_emote_page < total_pages)
                 {
                     ++current_emote_page;
+                    set_emote_page();
                 }
             }
             select_emote(next_emote);
