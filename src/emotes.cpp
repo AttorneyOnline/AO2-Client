@@ -267,14 +267,14 @@ void Courtroom::select_previous_or_next_emote()
     else if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Right))
     {
         int next_emote = current_emote + 1;
-        if (next_emote < max_emotes_on_page)
+        if (next_emote < total_emotes)
         {
             select_emote(next_emote);
         }
     }
     if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Up))
     {
-    if (total_pages > current_emote_page + 1)
+    if (total_pages > current_emote_page)
       ++current_emote_page;
       set_emote_page();
     }
