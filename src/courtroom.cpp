@@ -462,8 +462,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_image_streaming->setEnabled(false);
 
   // Character tab
-  QAction* action_hide = new QAction("Hide", this);
-  QAction* action_narrator = new QAction("Narrator", this);
+  action_hide = new QAction("Hide", this);
+  action_narrator = new QAction("Narrator", this);
 
   QAction* action_preanim = new QAction("Preanim", this);
   QAction* action_flip = new QAction("Flip", this);
@@ -3231,16 +3231,18 @@ void Courtroom::handle_ic_speaking()
     ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
   }
 
-  if (action_narrator->isChecked()) {
-    filename = "";
-  } else if (action_hide->isChecked()) {
-    filename = " ";
-  }
-  
   // Check if this is a talking color (white text, etc.)
   color_is_talking =
       color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
   QString filename;
+  
+    if (action_narrator->isChecked()) {
+      filename = "";
+      anim_state = 3;
+    } else if (action_hide->isChecked()) {
+      filename = " ";
+    }
+
   // If color is talking, and our state isn't already talking
   if (color_is_talking && text_state == 1 &&
       anim_state < 2)
