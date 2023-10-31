@@ -248,6 +248,9 @@ void Courtroom::select_previous_or_next_emote()
     QWidget* button = qobject_cast<QWidget*>(sender());
     int id = (qobject_cast<AOEmoteButton*>(button)) ? qobject_cast<AOEmoteButton*>(button)->get_id() : current_emote;
 
+    int total_emotes = ao_app->get_emote_number(current_char);
+    int total_pages = total_emotes / max_emotes_on_page;
+
     if (id < 0)
         return;
 
