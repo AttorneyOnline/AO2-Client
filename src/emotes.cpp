@@ -290,14 +290,14 @@ void Courtroom::select_previous_or_next_emote()
             select_emote(next_emote);
         }
     }
-    if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Up))
+    if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Down))
     {
     if (total_pages > current_emote_page)
       ++current_emote_page;
       select_emote(current_emote_page * max_emotes_on_page);
       set_emote_page();
     }
-    else if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Down))
+    else if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Up))
     {
     if (current_emote_page > 0)
       --current_emote_page;
