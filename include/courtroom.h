@@ -691,6 +691,9 @@ private:
   QMenuBar* menu_bar;
   QPropertyAnimation* menu_animation;
 
+  QAction* action_hide;
+  QAction* action_narrator;
+
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
   AOSfxPlayer *objection_player;
