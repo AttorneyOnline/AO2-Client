@@ -462,16 +462,19 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_image_streaming->setEnabled(false);
 
   // Character tab
+  QAction* action_hide = new QAction("Hide", this);
+  QAction* action_narrator = new QAction("Narrator", this);
+
   QAction* action_preanim = new QAction("Preanim", this);
   QAction* action_flip = new QAction("Flip", this);
   QAction* action_additive = new QAction("Additive", this);
   QAction* action_immediate = new QAction("Immediate", this);
   QAction* action_shownames = new QAction("Enable Shownames", this);
   // Make 'em checkable
+  action_hide->setCheckable(true);
+  action_narrator->setCheckable(true);
   action_preanim->setCheckable(true);
-  ui_pre->setCheckable(true);
   action_flip->setCheckable(true);
-  ui_flip->setCheckable(true);
   action_additive->setCheckable(true);
   action_immediate->setCheckable(true);
   action_shownames->setCheckable(true);
@@ -496,9 +499,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   MainMenu->addAction(action_image_streaming);  //
   MainMenu->addAction(action_settings);        //
   MainMenu->addAction(action_return_lobby);   //
-  CharacterMenu->addAction(action_preanim);        //
+  CharacterMenu->addAction(action_hide);              //
+  CharacterMenu->addAction(action_narrator);         //
+  CharacterMenu->addSeparator();                    //
+  CharacterMenu->addAction(action_preanim);        //  CHARACTER TAB
   CharacterMenu->addAction(action_flip);          //
-  CharacterMenu->addAction(action_additive);     //  CHARACTER TAB
+  CharacterMenu->addAction(action_additive);     //  
   CharacterMenu->addAction(action_immediate);   //
   CharacterMenu->addAction(action_shownames);  //
   RoleplayMenu->addAction(action_view_map);           //
@@ -522,6 +528,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       } else {
           return;
       }});
+
   connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
   connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
   connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
@@ -3224,6 +3231,12 @@ void Courtroom::handle_ic_speaking()
     ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
   }
 
+  if (action_narrator->isChecked()) {
+    filename = "";
+  } else if (action_hide->isChecked()) {
+    filename = " ";
+  }
+  
   // Check if this is a talking color (white text, etc.)
   color_is_talking =
       color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
