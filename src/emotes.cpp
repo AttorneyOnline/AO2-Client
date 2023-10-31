@@ -261,6 +261,14 @@ void Courtroom::select_previous_or_next_emote()
         int previous_emote = current_emote - 1;
         if (previous_emote >= 0)
         {
+            if (previous_emote < current_emote_page * max_emotes_on_page)
+            {
+                // Change to previous page
+                if (current_emote_page > 0)
+                {
+                    --current_emote_page;
+                }
+            }
             select_emote(previous_emote);
         }
     }
@@ -269,6 +277,14 @@ void Courtroom::select_previous_or_next_emote()
         int next_emote = current_emote + 1;
         if (next_emote < total_emotes)
         {
+            if (next_emote >= (current_emote_page + 1) * max_emotes_on_page)
+            {
+                // Change to next page
+                if (current_emote_page < total_pages)
+                {
+                    ++current_emote_page;
+                }
+            }
             select_emote(next_emote);
         }
     }
