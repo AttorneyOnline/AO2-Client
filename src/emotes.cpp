@@ -276,12 +276,17 @@ void Courtroom::select_previous_or_next_emote()
     {
     if (total_pages > current_emote_page)
       ++current_emote_page;
+      int new_emote_index = current_emote_page * max_emotes_on_page + 1;
+      select_emote(new_emote_index);
       set_emote_page();
     }
     else if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Down))
     {
     if (current_emote_page > 0)
       --current_emote_page;
+      int new_emote_index = current_emote_page * max_emotes_on_page + 1;
+      select_emote(new_emote_index);
+      // select_emote(current_emote / current_emote_page);
       set_emote_page();
     }
 }
