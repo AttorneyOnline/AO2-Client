@@ -2859,7 +2859,7 @@ void Courtroom::handle_ic_message()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
-  if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
+  if (m_chatmessage[EMOTE] != "") {
     // Display our own character
     display_character();
 
@@ -2881,10 +2881,6 @@ void Courtroom::handle_ic_message()
   }
   else
   {
-    if (action_hide->isChecked()) {
-      qDebug() << "Action hide:" << action_hide->isChecked();
-      ui_vp_player_char->move(100, 0);
-    }
     play_sfx();
     start_chat_ticking();
   }
@@ -3935,11 +3931,11 @@ void Courtroom::chat_tick()
   chat_tick_timer->stop();
   ui_vp_player_char->set_static_duration(0);
   QString filename;
-
+     
   if (tick_pos >= f_message.size()) {
     text_state = 2;
     // Check if we're a narrator msg
-    if (m_chatmessage[EMOTE] != "") {
+    if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
       if (anim_state < 3) {
         QStringList c_paths = {
           ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)" + m_chatmessage[EMOTE])),
@@ -3959,6 +3955,10 @@ void Courtroom::chat_tick()
         }
         ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
                                         false);
+        if (action_hide->isChecked()) {
+          qDebug() << "Action hide:" << action_hide->isChecked();
+          ui_vp_player_char->move_and_center(100, 0);
+        }
       }
     }
     else // We're a narrator msg
