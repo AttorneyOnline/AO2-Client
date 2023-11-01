@@ -543,18 +543,18 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   connect(action_set_dl, &QAction::triggered, this, [this]() {
-      QString characterPath = ao_app->get_character_path(current_char, "download.ini");
-      QString existingURL;
+      QString characterPath = ao_app->get_real_path(ao_app->get_character_path(current_char, "download.ini"));
+      //QString existingURL;
 
-      if (file_exists(ao_app->get_image_suffix(characterPath))) {
-        QTextStream stream(&file);
-        existingURL = stream.readLine();
-      } else {
-        existingURL = "";
-      }
+      //if (file_exists(ao_app->get_image_suffix(characterPath))) {
+       // QTextStream stream(&file);
+      //  existingURL = stream.readLine();
+      //} else {
+      //  existingURL = "";
+      //}
 
       bool ok;
-      QString url = QInputDialog::getText(this, "Set Download Link", "Enter the character's Download Link:", QLineEdit::Normal, "", &ok);
+      QString url = QInputDialog::getText(this, "Set Download Link", "Enter your character's Download Link:", QLineEdit::Normal, "", &ok);
       
       if (ok && !url.isEmpty()) {
           QFile file(characterPath);
