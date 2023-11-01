@@ -6169,13 +6169,15 @@ void Courtroom::on_set_dl_clicked()
   //} else {
   //  existingURL = "";
   //}
-
+  qDebug() << "char path: " << characterPath;
   bool ok;
   QString url = QInputDialog::getText(this, "Set Download Link", "Enter your character's Download Link:", QLineEdit::Normal, "", &ok);
   
   if (ok && !url.isEmpty()) {
-      QFile file(characterPath);
-      if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QFile file;
+      file.setFileName(characterPath);
+      if (file.open(QIODevice::WriteOnly|QIODevice::Text)) {
+          qDebug() << "File opened!";
           QTextStream stream(&file);
           stream << url;
           file.close();
