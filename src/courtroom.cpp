@@ -2632,7 +2632,7 @@ bool Courtroom::handle_objection()
     ui_vp_player_char->set_play_once(true);
     return true;
   }
-  if (m_chatmessage[EMOTE] != "")
+  if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked())
     display_character();
   return false;
 }
@@ -2859,7 +2859,7 @@ void Courtroom::handle_ic_message()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
-  if (m_chatmessage[EMOTE] != "") {
+  if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
     // Display our own character
     display_character();
 
@@ -3953,12 +3953,13 @@ void Courtroom::chat_tick()
           ui_vp_player_char->set_play_once(false);
           filename = "(a)" + m_chatmessage[EMOTE];
         }
-        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
-                                        false);
         if (action_hide->isChecked()) {
           qDebug() << "Action hide:" << action_hide->isChecked();
-          ui_vp_player_char->move_and_center(100, 0);
+          ui_vp_player_char->move_and_center(ui_viewport->width() * 100 / 100,
+                                             ui_viewport->height() * 0 / 100);
         }
+        ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
+                                        false);
       }
     }
     else // We're a narrator msg
@@ -4160,7 +4161,7 @@ void Courtroom::chat_tick()
       msg_delay = qMin(max_delay, msg_delay * punctuation_modifier);
     }
 
-    if (m_chatmessage[EMOTE] != "") {
+    if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
       // If this color is talking
       if (color_is_talking && anim_state != 2 &&
           anim_state <
