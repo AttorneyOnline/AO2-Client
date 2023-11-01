@@ -464,6 +464,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // Character tab
   action_hide = new QAction("Hide", this);
   action_narrator = new QAction("Narrate", this);
+  QAction* action_set_dl = new QAction("Set Download Link", this);
+  QAction* action_broadcast_to_server = new QAction("Broadcast to Server", this);
+  QAction* action_disable_url_sharing = new QAction("Disable URL Sharing", this);
+  QAction* action_delete_download_ini = new QAction("Delete File", this);
 
   QAction* action_preanim = new QAction("Preanim", this);
   QAction* action_flip = new QAction("Flip", this);
@@ -499,6 +503,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   MainMenu->addAction(action_image_streaming);  //
   MainMenu->addAction(action_settings);        //
   MainMenu->addAction(action_return_lobby);   //
+
   CharacterMenu->addAction(action_hide);              //
   CharacterMenu->addAction(action_narrator);         //
   CharacterMenu->addSeparator();                    //
@@ -507,11 +512,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   CharacterMenu->addAction(action_additive);     //  
   CharacterMenu->addAction(action_immediate);   //
   CharacterMenu->addAction(action_shownames);  //
+  CharacterMenu->addSeparator();
+  CharacterMenu->addMenu(DownloadIniMenu);
+
+  DownloadIniMenu->addAction(action_set_dl);
+  DownloadIniMenu->addAction(action_broadcast_to_server);
+  DownloadIniMenu->addSeparator();
+  DownloadIniMenu->addAction(action_disable_url_sharing);
+  DownloadIniMenu->addAction(action_delete_download_ini);
+  
   RoleplayMenu->addAction(action_view_map);           //
   RoleplayMenu->addAction(action_open_evidence);     //
   RoleplayMenu->addSeparator();                     //   ROLEPLAY TAB
   RoleplayMenu->addAction(action_player_profile);  //
   RoleplayMenu->addAction(action_gm_screen);      //
+
   QSwappingMenu->addAction(action_load_set);         //  SWAPPING TAB
   QSwappingMenu->addSeparator();                    //
   
@@ -526,6 +541,34 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
   connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
+
+  connect(action_set_dl, &QAction::triggered, this, [this]() {
+      QString characterPath = ao_app->get_character_path(current_char, "download.ini");
+      QString existingURL;
+
+      if (file_exists(ao_app->get_image_suffix(characterPath))) {
+        QTextStream stream(&file);
+        existingURL = stream.readLine();
+      } else {
+        existingURL = "";
+      }
+
+      bool ok;
+      QString url = QInputDialog::getText(this, "Set Download Link", "Enter the character's Download Link:", QLineEdit::Normal, "", &ok);
+      
+      if (ok && !url.isEmpty()) {
+          QFile file(characterPath);
+          if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+              QTextStream stream(&file);
+              stream << url;
+              file.close();
+              search_download_file("1");
+          } else {
+              qDebug() << "Couldn't open the file.";
+          }
+      }
+  });
+  connect(action_broadcast_to_server, &QAction::triggered, this, [this]() { search_download_file("1"); });
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
