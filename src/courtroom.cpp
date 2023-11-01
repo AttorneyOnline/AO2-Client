@@ -519,15 +519,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
   connect(action_call_mod, &QAction::triggered, this, &Courtroom::on_call_mod_clicked);
   connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
-  connect(action_return_lobby, &QAction::triggered, this, [this]() {
-      QMessageBox::StandardButton reply;
-      reply = QMessageBox::question(this, "Exit", "Are you sure you want to return to the lobby?",
-                                    QMessageBox::Yes | QMessageBox::No);
-      if (reply == QMessageBox::Yes) {
-          on_back_to_lobby_clicked();
-      } else {
-          return;
-      }});
+  connect(action_return_lobby, &QAction::triggered, this, &Courtroom::on_return_to_lobby_clicked);
 
   connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
   connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
@@ -6037,6 +6029,19 @@ void Courtroom::on_reload_theme_clicked()
   // to update status on the background
   set_background(current_background, true);
   set_character_sets("global_char_set.ini");
+}
+
+void Courtroom::on_return_to_lobby_clicked()
+{
+  QMessageBox::StandardButton reply;
+  reply = QMessageBox::question(this, "Exit", "Are you sure you want to return to the lobby?",
+                                QMessageBox::Yes | QMessageBox::No);
+  if (reply == QMessageBox::Yes) {
+      ao_app->construct_lobby();
+      ao_app->destruct_courtroom();
+  } else {
+      return;
+  }
 }
 
 void Courtroom::on_back_to_lobby_clicked()
