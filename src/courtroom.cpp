@@ -520,6 +520,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   DLMenu->addSeparator();
   DLMenu->addAction(action_disable_url_sharing);
   DLMenu->addAction(action_delete_download_ini);
+  action_disable_url_sharing->setCheckable(true);
 
   RoleplayMenu->addAction(action_view_map);           //
   RoleplayMenu->addAction(action_open_evidence);     //
@@ -543,7 +544,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   connect(action_set_dl, &QAction::triggered, this, &Courtroom::on_set_dl_clicked);
-  connect(action_broadcast_to_server, &QAction::triggered, this, [this]() { search_download_file("1"); });
+  connect(action_broadcast_to_server, &QAction::triggered, this, [this]() { 
+    if (!action_disable_url_sharing->isChecked()) {search_download_file("1");} });
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
@@ -552,6 +554,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
   if (!base_path.isEmpty()) {
     set_character_sets(base_path);
+    qDebug() << "Loaded global char set!"
   }
   qDebug() << base_path;
 
@@ -600,7 +603,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           &Courtroom::on_iniswap_dropdown_changed);
   connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), 
-          this, [this]() { search_download_file("1"); });
+          this, [this]() { if (!action_disable_url_sharing->isChecked()) {search_download_file("1");} });
   connect(ui_iniswap_dropdown, &QComboBox::customContextMenuRequested, this,
           &Courtroom::on_iniswap_context_menu_requested);
   connect(ui_iniswap_remove, &AOButton::clicked, this,
@@ -4961,7 +4964,8 @@ void Courtroom::on_char_set_chosen(const QString& actionText)
       else if (key.startsWith("Menu:"))
         key = key.mid(5).trimmed();
       update_character(m_cid, key, true);
-      search_download_file("1"); // We send a Character URL packet
+      if (!action_disable_url_sharing->isChecked())
+        search_download_file("1"); // We send a Character URL packet
       break;
     }
   }
@@ -6195,7 +6199,8 @@ void Courtroom::on_set_dl_clicked()
           QTextStream stream(&file);
           stream << url;
           file.close();
-          search_download_file("1");
+          if (!action_disable_url_sharing->isChecked())
+            search_download_file("1");
       } else {
           qDebug() << "Couldn't open the file.";
       }
