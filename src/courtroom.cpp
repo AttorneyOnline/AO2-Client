@@ -3235,7 +3235,15 @@ void Courtroom::handle_ic_speaking()
   color_is_talking =
       color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
   QString filename;
-
+  if (action_narrator->isChecked()) {
+    qDebug() << "Action narrator:" << action_narrator->isChecked();
+    m_chatmessage[EMOTE] = "";
+    // ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+  } else if (action_hide->isChecked()) {
+    qDebug() << "Action hide:" << action_hide->isChecked();
+    m_chatmessage[EMOTE] = " ";
+    // ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
+  }
   // If color is talking, and our state isn't already talking
   if (color_is_talking && text_state == 1 &&
       anim_state < 2)
@@ -3297,16 +3305,6 @@ void Courtroom::handle_ic_speaking()
     last_x_offset = ui_viewport->width() * self_offset / 100;
     last_y_offset = ui_viewport->height() * self_offset_v / 100;
     qDebug().nospace() << last_x_offset << ", " << last_y_offset;
-  }
-  if (action_narrator->isChecked()) {
-    qDebug() << "Action narrator:" << action_narrator->isChecked();
-    filename = "";
-    anim_state = 3;
-    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-  } else if (action_hide->isChecked()) {
-    qDebug() << "Action hide:" << action_hide->isChecked();
-    filename = " ";
-    ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
