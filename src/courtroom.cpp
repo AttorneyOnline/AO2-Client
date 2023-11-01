@@ -6160,7 +6160,7 @@ void Courtroom::regenerate_ic_chatlog()
 
 void Courtroom::on_set_dl_clicked()
 {
-  QString characterPath = ao_app->get_image_suffix(ao_app->get_character_path(current_char, "download.ini"));
+  QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
   //QString existingURL;
 
   //if (file_exists(ao_app->get_image_suffix(characterPath))) {
@@ -6169,13 +6169,13 @@ void Courtroom::on_set_dl_clicked()
   //} else {
   //  existingURL = "";
   //}
-  qDebug() << "char path: " << characterPath << " | current char: " << current_char;
+  qDebug() << "char path: " << characterPath + "download.ini" << " | current char: " << current_char;
   bool ok;
   QString url = QInputDialog::getText(this, "Set Download Link", "Enter your character's Download Link:", QLineEdit::Normal, "", &ok);
   
   if (ok && !url.isEmpty()) {
       QFile file;
-      file.setFileName(characterPath);
+      file.setFileName(characterPath + "download.ini");
       if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
           qDebug() << "File opened!";
           QTextStream stream(&file);
