@@ -542,32 +542,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
-  connect(action_set_dl, &QAction::triggered, this, [this]() {
-      QString characterPath = ao_app->get_real_path(ao_app->get_character_path(current_char, "download.ini"));
-      //QString existingURL;
-
-      //if (file_exists(ao_app->get_image_suffix(characterPath))) {
-       // QTextStream stream(&file);
-      //  existingURL = stream.readLine();
-      //} else {
-      //  existingURL = "";
-      //}
-
-      bool ok;
-      QString url = QInputDialog::getText(this, "Set Download Link", "Enter your character's Download Link:", QLineEdit::Normal, "", &ok);
-      
-      if (ok && !url.isEmpty()) {
-          QFile file(characterPath);
-          if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-              QTextStream stream(&file);
-              stream << url;
-              file.close();
-              search_download_file("1");
-          } else {
-              qDebug() << "Couldn't open the file.";
-          }
-      }
-  });
+  connect(action_set_dl, &QAction::triggered, this, &Courtroom::on_set_dl_clicked);
   connect(action_broadcast_to_server, &QAction::triggered, this, [this]() { search_download_file("1"); });
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
@@ -6182,6 +6157,35 @@ void Courtroom::regenerate_ic_chatlog()
                    item.get_selfname(), item.get_datetime().toLocalTime());
   }
 }
+
+void Courtroom::on_set_dl_clicked()
+{
+  QString characterPath = ao_app->get_real_path(ao_app->get_character_path(current_char, "download.ini"));
+  //QString existingURL;
+
+  //if (file_exists(ao_app->get_image_suffix(characterPath))) {
+   // QTextStream stream(&file);
+  //  existingURL = stream.readLine();
+  //} else {
+  //  existingURL = "";
+  //}
+
+  bool ok;
+  QString url = QInputDialog::getText(this, "Set Download Link", "Enter your character's Download Link:", QLineEdit::Normal, "", &ok);
+  
+  if (ok && !url.isEmpty()) {
+      QFile file(characterPath);
+      if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+          QTextStream stream(&file);
+          stream << url;
+          file.close();
+          search_download_file("1");
+      } else {
+          qDebug() << "Couldn't open the file.";
+      }
+  }
+}
+
 
 void Courtroom::on_evidence_button_clicked()
 {
