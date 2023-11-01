@@ -3,6 +3,8 @@
 
 #include <QEvent>
 #include <QLineEdit>
+#include <QMenuBar>
+#include <QPropertyAnimation>
 
 class AOLineEditFilter : public QObject
 {
