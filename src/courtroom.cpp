@@ -2859,7 +2859,7 @@ void Courtroom::handle_ic_message()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
-  if (m_chatmessage[EMOTE] != "") {
+  if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
     // Display our own character
     display_character();
 
@@ -2881,6 +2881,10 @@ void Courtroom::handle_ic_message()
   }
   else
   {
+    if (action_hide->isChecked()) {
+      qDebug() << "Action hide:" << action_hide->isChecked();
+      ui_vp_player_char->move(100, 0);
+    }
     play_sfx();
     start_chat_ticking();
   }
@@ -3235,15 +3239,6 @@ void Courtroom::handle_ic_speaking()
   color_is_talking =
       color_markdown_talking_list.at(m_chatmessage[TEXT_COLOR].toInt());
   QString filename;
-  if (action_narrator->isChecked()) {
-    qDebug() << "Action narrator:" << action_narrator->isChecked();
-    m_chatmessage[EMOTE] = "";
-    // ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-  } else if (action_hide->isChecked()) {
-    qDebug() << "Action hide:" << action_hide->isChecked();
-    m_chatmessage[EMOTE] = " ";
-    // ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-  }
   // If color is talking, and our state isn't already talking
   if (color_is_talking && text_state == 1 &&
       anim_state < 2)
