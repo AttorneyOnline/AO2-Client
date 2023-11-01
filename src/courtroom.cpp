@@ -2091,9 +2091,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(current_char);
 
-  if (action_hide->isChecked()) {
-    packet_contents.append(" ");
-  } else if (action_narrator->isChecked()) {
+  if (action_narrator->isChecked()) {
     packet_contents.append("");
   } else {
     packet_contents.append(ao_app->get_emote(current_char, current_emote)); 
@@ -2186,9 +2184,15 @@ void Courtroom::on_chat_return_pressed()
     }
     // Send the offset as it's gonna be used regardless
     if(ao_app->y_offset_supported)
-        packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+        if (!action_hide->isChecked())
+          packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+        else
+          packet_contents.append(QString::number("100") + "&" + QString::number(char_vert_offset));
     else
-        packet_contents.append(QString::number(char_offset));
+        if (!action_hide->isChecked())
+          packet_contents.append(QString::number(char_offset));
+        else
+          packet_contents.append(QString::number("100"));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_immediate->isChecked() && ui_pre->isChecked()) {
