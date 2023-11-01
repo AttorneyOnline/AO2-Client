@@ -1069,6 +1069,7 @@ private slots:
   bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
 
   void on_back_to_lobby_clicked();
+  void on_return_to_lobby_clicked();
 
   void on_char_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_char_select_left_clicked();
