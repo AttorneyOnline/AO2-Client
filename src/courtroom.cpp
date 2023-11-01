@@ -6181,42 +6181,54 @@ void Courtroom::regenerate_ic_chatlog()
 
 void Courtroom::on_set_dl_clicked()
 {
-  bool ok;
+  QString download_ini_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "download.ini"));
+  QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
+
   QInputDialog dialog;
   dialog.setInputMode(QInputDialog::TextInput);
-  dialog.setWindowFlags(Qt::WindowSystemMenuHint);
+  dialog.setWindowFlags(Qt::WindowCloseButtonHint);
   dialog.setWindowTitle(tr("Set Download Link"));
   dialog.setLabelText(tr("Enter your character's Download Link:"));
-  dialog.setTextValue(""); // Default value
+
+  // Read the existing value from the file if it exists
+  if (!download_ini_path.isEmpty()) {
+    QFile file(download_ini_path);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream stream(&file);
+        QString defaultText = stream.readLine();
+        dialog.setTextValue(defaultText);
+        file.close();
+    }
+  } else {
+    dialog.setTextValue("");
+  }
 
   QString styleSheet = "QLabel { color: black; }"; // Change label's color
   dialog.setStyleSheet(styleSheet);
   auto code = dialog.exec();
-  
-  if (code != QDialog::Accepted)
-    return;
-  
+
+  if (code != QDialog::Accepted) {
+      return;
+  }
+
   QString url = dialog.textValue();
 
-  QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
-
   qDebug() << "char path: " << characterPath + "download.ini" << " | current char: " << current_char;
-  // QString url = QInputDialog::getText(this, "Set Download Link", "Enter your character's Download Link:", QLineEdit::Normal, "", &ok);
-  
-  if (ok && !url.isEmpty()) {
-      QFile file;
-      file.setFileName(characterPath + "download.ini");
+
+  if (!url.isEmpty()) {
+      QFile file(characterPath + "download.ini");
       if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
           qDebug() << "File opened!";
           QTextStream stream(&file);
           stream << url;
           file.close();
-          if (!action_disable_url_sharing->isChecked())
-            search_download_file("1");
+          if (!action_disable_url_sharing->isChecked()) {
+              search_download_file("1");
+          }
       } else {
           qDebug() << "Couldn't open the file.";
       }
-  }
+   }
 }
 
 
