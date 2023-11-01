@@ -548,6 +548,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       if (!action_disable_url_sharing->isChecked())
           search_download_file("1");
   });
+  connect(action_delete_download_ini, &QAction::triggered, this, [this, action_delete_download_ini]() {
+    QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
+    
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirm Deletion", "Are you sure you want to delete your Download.ini?", 
+                                 QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        if (QFile::remove(characterPath + "download.ini")) {
+            qDebug() << "Successfully deleted Download.ini.";
+        } else {
+            qDebug() << "Failed to delete Download.ini.";
+        }
+    }
+  });
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
