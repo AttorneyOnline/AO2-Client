@@ -938,7 +938,7 @@ private slots:
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_music_list_context_menu_requested(const QPoint &pos);
-  void on_set_dl_clicked;
+  void on_set_dl_clicked();
   void music_fade_out(bool toggle);
   void music_fade_in(bool toggle);
   void music_synchronize(bool toggle);
