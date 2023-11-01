@@ -6182,28 +6182,25 @@ void Courtroom::regenerate_ic_chatlog()
 void Courtroom::on_set_dl_clicked()
 {
   bool ok;
-  QInputDialog dialog(this);
+  QInputDialog dialog;
   dialog.setInputMode(QInputDialog::TextInput);
-  dialog.setWindowTitle("Set Download Link");
-  dialog.setLabelText("Enter your character's Download Link:");
+  dialog.setWindowFlags(Qt::WindowSystemMenuHint);
+  dialog.setWindowTitle(tr("Set Download Link"));
+  dialog.setLabelText(tr("Enter your character's Download Link:"));
   dialog.setTextValue(""); // Default value
 
   QString styleSheet = "QLabel { color: black; }"; // Change label's color
   dialog.setStyleSheet(styleSheet);
-
+  auto code = dialog.exec();
+  
+  if (code != QDialog::Accepted)
+    return;
+  
   QString url = dialog.textValue();
 
   QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
-  //QString existingURL;
 
-  //if (file_exists(ao_app->get_image_suffix(characterPath))) {
-   // QTextStream stream(&file);
-  //  existingURL = stream.readLine();
-  //} else {
-  //  existingURL = "";
-  //}
   qDebug() << "char path: " << characterPath + "download.ini" << " | current char: " << current_char;
-  // bool ok;
   // QString url = QInputDialog::getText(this, "Set Download Link", "Enter your character's Download Link:", QLineEdit::Normal, "", &ok);
   
   if (ok && !url.isEmpty()) {
