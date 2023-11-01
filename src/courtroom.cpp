@@ -443,7 +443,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
 
-
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
 
@@ -566,6 +565,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
+  QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
+  menuBarFilter->collapseMenuBar = true;
+  menu_bar->installEventFilter(menuBarFilter);
+  
   setMenuBar(menu_bar);
 
   QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
