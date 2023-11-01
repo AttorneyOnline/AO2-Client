@@ -6174,9 +6174,7 @@ void Courtroom::on_set_dl_clicked()
   QString styleSheet = "QLabel { color: black; }"; // Change label's color
   dialog.setStyleSheet(styleSheet);
 
-  if (dialog.exec() == QDialog::Accepted) {
-      QString url = dialog.textValue();
-  }
+  QString url = dialog.textValue();
 
   QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
   //QString existingURL;
