@@ -348,6 +348,8 @@ public:
   QMenu* RoleplayMenu;
   QMenu* QSwappingMenu;
 
+  QMenu* DownloadIniMenu;
+
   QMap<QString, QMenu*> added_categories;  // For the QSwapping Menu
   QStringList char_set_tags;
 
