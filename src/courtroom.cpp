@@ -2187,12 +2187,12 @@ void Courtroom::on_chat_return_pressed()
         if (!action_hide->isChecked())
           packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
         else
-          packet_contents.append(QString::number("100") + "&" + QString::number(char_vert_offset));
+          packet_contents.append(QString::number(100) + "&" + QString::number(char_vert_offset));
     else
         if (!action_hide->isChecked())
           packet_contents.append(QString::number(char_offset));
         else
-          packet_contents.append(QString::number("100"));
+          packet_contents.append(QString::number(100));
 
     // Finally, we send over if we want our pres to not interrupt.
     if (ui_immediate->isChecked() && ui_pre->isChecked()) {
