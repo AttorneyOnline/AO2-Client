@@ -544,7 +544,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   connect(action_set_dl, &QAction::triggered, this, &Courtroom::on_set_dl_clicked);
-  connect(action_broadcast_to_server, &QAction::triggered, this, [this, action_disable_url_sharing]() {
+  connect(action_broadcast_to_server, &QAction::triggered, this, [this]() {
       if (!action_disable_url_sharing->isChecked())
           search_download_file("1");
   });
@@ -605,7 +605,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           &Courtroom::on_iniswap_dropdown_changed);
   connect(ui_iniswap_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), 
-          this, [this, action_disable_url_sharing]() { if (!action_disable_url_sharing->isChecked()) {search_download_file("1");} });
+          this, [this]() { if (!action_disable_url_sharing->isChecked()) {search_download_file("1");} });
   connect(ui_iniswap_dropdown, &QComboBox::customContextMenuRequested, this,
           &Courtroom::on_iniswap_context_menu_requested);
   connect(ui_iniswap_remove, &AOButton::clicked, this,
