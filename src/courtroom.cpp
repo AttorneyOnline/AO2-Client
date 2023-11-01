@@ -6160,7 +6160,7 @@ void Courtroom::regenerate_ic_chatlog()
 
 void Courtroom::on_set_dl_clicked()
 {
-  QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/download.ini"));
+  QString characterPath = ao_app->get_image_suffix(ao_app->get_character_path(current_char, "download.ini"));
   //QString existingURL;
 
   //if (file_exists(ao_app->get_image_suffix(characterPath))) {
