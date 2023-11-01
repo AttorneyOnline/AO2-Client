@@ -122,7 +122,9 @@ void AOLayer::combo_resize(int w, int h)
 
 int AOLayer::get_frame_delay(int delay)
 {
-  return static_cast<int>(double(delay) * double(speed / 100));
+  qDebug() << delay;
+  qDebug() << static_cast<int>(double(delay) * double(speed) / 100);
+  return static_cast<int>(double(delay) * double(speed) / 100);
 }
 
 void AOLayer::move(int ax, int ay)

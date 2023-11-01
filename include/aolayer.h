@@ -75,8 +75,8 @@ public:
   // Set the m_flipped variable to true/false
   void set_flipped(bool p_flipped) { m_flipped = p_flipped; }
 
-  // Set the movie's playback speed (between 10% and 1000%)
-  void set_speed(int modifier) { speed = qMax(10, qMin(modifier, 1000)); }
+  // Set the movie's frame delay multiplier (between 10% and 1000%)
+  void set_delay_multiplier(int modifier) { delay_multiplier = qMax(10, qMin(modifier, 1000)); }
 
   // Move the label itself around
   void move(int ax, int ay);
@@ -88,7 +88,7 @@ public:
   // no "combo" to speak of
   void combo_resize(int w, int h);
 
-  // Return the frame delay adjusted for speed
+  // Return the frame delay adjusted for multipliers
   int get_frame_delay(int delay);
 
   // iterate through a list of paths and return the first entry that exists. if
@@ -121,7 +121,9 @@ protected:
   int max_frames = 0;
   int last_max_frames = 0;
 
-  int speed = 100;
+  // Animation speed modifier in terms of percentage of frame delay (e.g. 50 for half delay aka double speed, 200 for double delay aka half speed)
+  // This isn't used, but it's cool!
+  int delay_multiplier = 100;
 
   bool m_flipped = false;
 
