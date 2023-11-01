@@ -2091,7 +2091,13 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(current_char);
 
-  packet_contents.append(ao_app->get_emote(current_char, current_emote));
+  if (action_hide->isChecked()) {
+    packet_contents.append(" ");
+  } else if (action_narrator->isChecked()) {
+    packet_contents.append("");
+  } else {
+    packet_contents.append(ao_app->get_emote(current_char, current_emote)); 
+  }
 
   packet_contents.append(ui_ic_chat_message->text());
 
@@ -2632,7 +2638,7 @@ bool Courtroom::handle_objection()
     ui_vp_player_char->set_play_once(true);
     return true;
   }
-  if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked())
+  if (m_chatmessage[EMOTE] != "")
     display_character();
   return false;
 }
@@ -2859,7 +2865,7 @@ void Courtroom::handle_ic_message()
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
   bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
-  if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
+  if (m_chatmessage[EMOTE] != "") {
     // Display our own character
     display_character();
 
@@ -3935,7 +3941,7 @@ void Courtroom::chat_tick()
   if (tick_pos >= f_message.size()) {
     text_state = 2;
     // Check if we're a narrator msg
-    if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
+    if (m_chatmessage[EMOTE] != "") {
       if (anim_state < 3) {
         QStringList c_paths = {
           ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "(c)" + m_chatmessage[EMOTE])),
@@ -3952,11 +3958,6 @@ void Courtroom::chat_tick()
           anim_state = 3;
           ui_vp_player_char->set_play_once(false);
           filename = "(a)" + m_chatmessage[EMOTE];
-        }
-        if (action_hide->isChecked()) {
-          qDebug() << "Action hide:" << action_hide->isChecked();
-          ui_vp_player_char->move_and_center(ui_viewport->width() * 100 / 100,
-                                             ui_viewport->height() * 0 / 100);
         }
         ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0,
                                         false);
@@ -4161,7 +4162,7 @@ void Courtroom::chat_tick()
       msg_delay = qMin(max_delay, msg_delay * punctuation_modifier);
     }
 
-    if (m_chatmessage[EMOTE] != "" && !action_narrator->isChecked()) {
+    if (m_chatmessage[EMOTE] != "") {
       // If this color is talking
       if (color_is_talking && anim_state != 2 &&
           anim_state <
