@@ -31,6 +31,39 @@ signals:
     void double_clicked();
 };
 
+class QMenuBarFilter : public QObject
+{
+    Q_OBJECT
 
+public:
+    bool collapseMenuBar = false;
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override {
+        QMenuBar *menuBar = qobject_cast<QMenuBar *>(obj);
+        if (menuBar != nullptr && collapseMenuBar) {
+            if (event->type() == QEvent::Enter) {
+                // We expand the QMenuBar
+                QPropertyAnimation *animation = new QPropertyAnimation(menuBar, "geometry");
+                animation->setDuration(500);
+                QRect startRect = menuBar->geometry();
+                QRect endRect = QRect(0, 0, menuBar->width(), menuBar->height());
+                animation->setStartValue(startRect);
+                animation->setEndValue(endRect);
+                animation->start();
+            } else if (event->type() == QEvent::Leave) {
+                // If we leave, retract the QMenuBar
+                QPropertyAnimation *animation = new QPropertyAnimation(menuBar, "geometry");
+                animation->setDuration(500);
+                QRect startRect = menuBar->geometry();
+                QRect endRect = QRect(0, 0, menuBar->width(), 2);
+                animation->setStartValue(startRect);
+                animation->setEndValue(endRect);
+                animation->start();
+            }
+        }
+        return false;
+    }
+};
 
 #endif // EVENTFILTERS_H
