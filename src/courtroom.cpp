@@ -513,14 +513,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   CharacterMenu->addAction(action_immediate);   //
   CharacterMenu->addAction(action_shownames);  //
   CharacterMenu->addSeparator();
-  CharacterMenu->addMenu(DownloadIniMenu);
+  QMenu* DLMenu = CharacterMenu->addMenu("Download.ini");
 
-  DownloadIniMenu->addAction(action_set_dl);
-  DownloadIniMenu->addAction(action_broadcast_to_server);
-  DownloadIniMenu->addSeparator();
-  DownloadIniMenu->addAction(action_disable_url_sharing);
-  DownloadIniMenu->addAction(action_delete_download_ini);
-  
+  DLMenu->addAction(action_set_dl);
+  DLMenu->addAction(action_broadcast_to_server);
+  DLMenu->addSeparator();
+  DLMenu->addAction(action_disable_url_sharing);
+  DLMenu->addAction(action_delete_download_ini);
+
   RoleplayMenu->addAction(action_view_map);           //
   RoleplayMenu->addAction(action_open_evidence);     //
   RoleplayMenu->addSeparator();                     //   ROLEPLAY TAB
