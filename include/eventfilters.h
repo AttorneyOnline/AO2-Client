@@ -43,22 +43,32 @@ public:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
-        QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
-        if (mainWindow != nullptr && collapseMenuBar) {
+        QMenuBar *menuBar = qobject_cast<QMenuBar *>(obj);
+        if (menuBar != nullptr && collapseMenuBar) {
             if (event->type() == QEvent::HoverMove) {
                 QPoint globalPos = QCursor::pos();
-                QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
+                
+                QMainWindow *mainWindow = qobject_cast<QMainWindow*>(menuBar->topLevelWidget());
     
-                int expandZoneHeight = 15;
+                if (mainWindow) {
+                    QRect mainWindowRect = mainWindow->geometry();
+                    
+                    int topZoneHeight = 15;
     
-                if (mainWindowPos.y() <= expandZoneHeight) {
-                    mainWindow->menuBar()->setFixedHeight(mainWindow->menuBar()->maximumHeight());
-                } else {
-                    mainWindow->menuBar()->setFixedHeight(2);
+                    if (globalPos.y() <= mainWindowRect.top() + topZoneHeight) {
+                        if (menuBar->height() != menuBar->maximumHeight()) {
+                            menuBar->setFixedHeight(menuBar->maximumHeight());
+                        }
+                    } else {
+                        if (menuBar->height() != 2) {
+                            menuBar->setFixedHeight(2);
+                        }
+                    }
                 }
             }
         }
         return false;
     }
+
 
 #endif // EVENTFILTERS_H
