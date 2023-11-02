@@ -69,7 +69,7 @@ protected:
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
             
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                    mainWindow->menuBar()->setGeometry(endRect);
                 });
             } else {
                 QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
@@ -82,7 +82,7 @@ protected:
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
             
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setFixedHeight(4);
+                    mainWindow->menuBar()->setGeometry(endRect);
                 });
             }
         }
