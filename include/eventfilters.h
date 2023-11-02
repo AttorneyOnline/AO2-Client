@@ -54,7 +54,7 @@ protected:
 
                 if (mainWindowPos.y() <= expandZoneHeight) {
                     qDebug() << mainWindowPos.y();
-                    mainWindow->menuBar()->setFixedHeight(mainWindow->menuBar()->maximumHeight());
+                    mainWindow->menuBar()->setFixedHeight(30);
                 } else {
                     qDebug() << "else: " << mainWindowPos.y();
                     mainWindow->menuBar()->setFixedHeight(2);
