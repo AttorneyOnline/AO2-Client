@@ -64,15 +64,17 @@ protected:
                 if (mainWindowPos.y() <= expandZoneHeight && !entered_zone) {
                     qDebug() << "Moved mouse inside zone, animation not running: " << mainWindowPos.y();
                     entered_zone = true;
-                    QPoint p = QPoint(0, -30);
+                    QRect r = QRect(0, -30, mainWindow->menuBar()->width(), mainWindow->menuBar()->height());
+                    //QPoint p = QPoint(0, -30);
                     //QPoint p = mainWindow->menuBar()->pos();
                     //QRect startRect = QRect(0, 4);
                     //QRect endRect = QRect(0, 0);
     
-                    animation = new QPropertyAnimation(mainWindow->menuBar(), "pos");
-                    animation->setStartValue(p);
-                    p += QPoint(0, 0);
-                    animation->setEndValue(p);
+                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                    animation->setStartValue(r);
+                    // p += QPoint(0, 0);
+                    r.translate(0, 0);
+                    animation->setEndValue(r);
                     animation->setDuration(500);
                     animation->start(QAbstractAnimation::DeleteWhenStopped);
                     
@@ -84,13 +86,16 @@ protected:
                     entered_zone = false;
                     qDebug() << "Moved mouse outside zone, animation not running: " << mainWindowPos.y();
                     // QPoint p = mainWindow->menuBar()->pos();
-                    QPoint p = QPoint(0, 0);
+                    //QPoint p = QPoint(0, 0);
                     //QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
                     //QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
-    
+
+                    QRect r = QRect(0, 0, mainWindow->menuBar()->width(), mainWindow->menuBar()->height());
+                    
                     animation = new QPropertyAnimation(mainWindow->menuBar(), "pos");
                     animation->setStartValue(p);
-                    p += QPoint(0, -30);
+                    //p += QPoint(0, -30);
+                    r.translate(0, -30);
                     animation->setEndValue(p);
                     animation->setDuration(500);
                     animation->start(QAbstractAnimation::DeleteWhenStopped);
