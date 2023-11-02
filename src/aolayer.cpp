@@ -295,7 +295,7 @@ void AOLayer::start_playback(QString p_image)
     return;
   }
   
-  if (p_image.startsWith("http") && !ao_app->asset_url.isEmpty()) {
+  if (p_image.startsWith("http") && Options::getInstance().assetStreaming()) {
     disconnect(net_manager, &NetworkManager::imageLoaded, this, &AOLayer::onImageLoaded);
     // qDebug() << "Loading... " << p_image;
     ao_app->net_manager->start_image_streaming(p_image, ".png");
