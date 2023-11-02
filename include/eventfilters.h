@@ -43,34 +43,22 @@ public:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
-        QMenuBar *menuBar = qobject_cast<QMenuBar *>(obj);
-        if (menuBar != nullptr && collapseMenuBar) {
-            if (event->type() == QEvent::Enter) {
-                menuBar->setGeometry(0, 0, menuBar->width(), 2);
-
-                qDebug() << "Mouse entró en el QMenuBar";
-                // We expand the QMenuBar
-                QPropertyAnimation *animation = new QPropertyAnimation(menuBar, "geometry");
-                animation->setDuration(500);
-                QRect startRect = menuBar->geometry();
-                QRect endRect = QRect(0, 0, menuBar->width(), menuBar->height());
-                animation->setStartValue(startRect);
-                animation->setEndValue(endRect);
-                animation->start();
-            } else if (event->type() == QEvent::Leave) {
-                qDebug() << "Mouse salió del QMenuBar";
-                // If we leave, retract the QMenuBar
-                QPropertyAnimation *animation = new QPropertyAnimation(menuBar, "geometry");
-                animation->setDuration(500);
-                QRect startRect = menuBar->geometry();
-                QRect endRect = QRect(0, 0, menuBar->width(), 2);
-                animation->setStartValue(startRect);
-                animation->setEndValue(endRect);
-                animation->start();
+        QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
+        if (mainWindow != nullptr && collapseMenuBar) {
+            if (event->type() == QEvent::HoverMove) {
+                QPoint globalPos = QCursor::pos();
+                QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
+    
+                int expandZoneHeight = 15;
+    
+                if (mainWindowPos.y() <= expandZoneHeight) {
+                    mainWindow->menuBar()->setFixedHeight(mainWindow->menuBar()->maximumHeight());
+                } else {
+                    mainWindow->menuBar()->setFixedHeight(2);
+                }
             }
         }
         return false;
     }
-};
 
 #endif // EVENTFILTERS_H
