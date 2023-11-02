@@ -568,7 +568,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
 
-  // menu_bar->installEventFilter(menuBarFilter);
   installEventFilter(menuBarFilter);
   this->setMouseTracking(true);
   
@@ -579,10 +578,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     set_character_sets(base_path);
     qDebug() << "Loaded global char set!";
   }
-  qDebug() << base_path;
-
-  // menu_animation = new QPropertyAnimation(menu_bar, "geometry");
-  // menu_animation->setDuration(500);
     
   construct_char_select();
 
@@ -3301,11 +3296,9 @@ void Courtroom::handle_ic_speaking()
     // I know it's really bad. I'll move this out from here later on
     if (Options::getInstance().crossfade() && !last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") {
       filename = "(a)" + last_sprite;
-      qDebug().nospace() << last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
       ui_vp_crossfade_char->move_and_center(last_x_offset, last_y_offset);
-      qDebug().nospace() << last_charname << "!=" << m_chatmessage[CHAR_NAME];
       ui_vp_crossfade_char->show();
       ui_vp_crossfade_char->fade(false, 400);
     }
@@ -3319,11 +3312,8 @@ void Courtroom::handle_ic_speaking()
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
 
-    qDebug().nospace() << "last_sprite: " << last_sprite;
-        
     if (m_chatmessage[CHAR_NAME] == last_charname || last_sprite != m_chatmessage[EMOTE]) {
       last_sprite = m_chatmessage[EMOTE];
-      qDebug().nospace() << "There was no charid pair (" << other_charid << "). Last sprite is " << last_sprite;
     }
     last_charname = m_chatmessage[CHAR_NAME];
     
@@ -3339,7 +3329,6 @@ void Courtroom::handle_ic_speaking()
     
     last_x_offset = ui_viewport->width() * self_offset / 100;
     last_y_offset = ui_viewport->height() * self_offset_v / 100;
-    qDebug().nospace() << last_x_offset << ", " << last_y_offset;
   }
   // Begin parsing through the chatbox message
   start_chat_ticking();
@@ -4879,7 +4868,6 @@ void Courtroom::set_character_sets(QString char_set)
     qDebug() << "Character set not found!";
     return;
   }
-  qDebug() << char_set_tags;
 
   QString key; 
   QString value;
@@ -4957,7 +4945,6 @@ void Courtroom::on_char_set_load()
   // QDir baseDir("base");
   QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/swapping sets/", tr("Char Set Files (*.ini)"));
   
-  qDebug() << "relative Path: " << filename;
   if (!filename.isEmpty()) {
     set_character_sets(filename);    
   } else {
@@ -5860,12 +5847,8 @@ void Courtroom::search_download_file(QString action)
       relative_char = relative_char.left(index); // Fuck relative paths
   }
 
-  qDebug() << relative_char;
-
   QString download_ini_path = ao_app->get_real_path(
                 ao_app->get_character_path(relative_char, "download.ini"));
-
-  qDebug() << download_ini_path;
 
   if (file_exists(download_ini_path))
   {
@@ -6217,8 +6200,6 @@ void Courtroom::on_set_dl_clicked()
 
   QString url = dialog.textValue();
 
-  qDebug() << "char path: " << characterPath + "download.ini" << " | current char: " << current_char;
-
   if (!url.isEmpty()) {
       QFile file(characterPath + "download.ini");
       if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -6406,7 +6387,6 @@ void Courtroom::handle_clock(QString time)
   qInfo() << QString("Clock time changed to %1").arg(m_current_clock);
 
   QString clock_filename = (m_current_clock >= 0) ? "hours/" + QString::number(m_current_clock) : "";
-  qDebug() << "Clock Filename: " << clock_filename;
   QString asset_path = ao_app->get_real_path(ao_app->get_theme_path("hours/"));
 
   if (!dir_exists(asset_path)) {
