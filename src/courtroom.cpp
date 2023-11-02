@@ -568,7 +568,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
 
-  menu_bar->installEventFilter(menuBarFilter);
+  // menu_bar->installEventFilter(menuBarFilter);
+  installEventFilter(menuBarFilter);
   this->setMouseTracking(true);
   
   setMenuBar(menu_bar);
