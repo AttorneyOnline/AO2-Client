@@ -6,6 +6,7 @@
 #include <QMenuBar>
 #include <QPropertyAnimation>
 #include <QDebug>
+#include <QMainWindow>
 
 class AOLineEditFilter : public QObject
 {
