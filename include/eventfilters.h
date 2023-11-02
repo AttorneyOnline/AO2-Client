@@ -44,6 +44,7 @@ public:
     int originalMenuBarHeight = -1;
 private:
     QPropertyAnimation* animation;
+    bool animationRunning = false;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
@@ -60,36 +61,42 @@ protected:
                     originalMenuBarHeight = mainWindow->menuBar()->height();
                 }
     
-                if (mainWindowPos.y() <= expandZoneHeight) {
-                    QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
-                    QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
-                
-                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
-                    animation->setStartValue(startRect);
-                    animation->setEndValue(endRect);
-                    animation->setDuration(500);
-                    animation->start(QAbstractAnimation::DeleteWhenStopped);
-                
-                    QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                        mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                    });
-                } else {
-                    QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
-                    QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
-                
-                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
-                    animation->setStartValue(startRect);
-                    animation->setEndValue(endRect);
-                    animation->setDuration(500);
-                    animation->start(QAbstractAnimation::DeleteWhenStopped);
-                
-                    QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                        mainWindow->menuBar()->setFixedHeight(4);
-                    });
-                }
+            if (mainWindowPos.y() <= expandZoneHeight && !animationRunning) {
+                QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
+                QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
+
+                animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                animation->setStartValue(startRect);
+                animation->setEndValue(endRect);
+                animation->setDuration(500);
+                animation->start(QAbstractAnimation::DeleteWhenStopped);
+                animationRunning = true;
+
+                QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
+                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                    animationRunning = false;
+                });
+            } else if (mainWindowPos.y() > expandZoneHeight && !animationRunning) {
+                QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
+                QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
+
+                animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                animation->setStartValue(startRect);
+                animation->setEndValue(endRect);
+                animation->setDuration(500);
+                animation->start(QAbstractAnimation::DeleteWhenStopped);
+
+                QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
+                    mainWindow->menuBar()->setFixedHeight(4);
+                    animationRunning = false;
+                });
+
+                // Establece la variable de estado a true
+                animationRunning = true;
             }
         }
-        return false;
+    }
+    return false;
   }    
 };
 
