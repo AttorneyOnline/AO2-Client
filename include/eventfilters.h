@@ -45,6 +45,8 @@ protected:
         QMenuBar *menuBar = qobject_cast<QMenuBar *>(obj);
         if (menuBar != nullptr && collapseMenuBar) {
             if (event->type() == QEvent::Enter) {
+                menuBar->setGeometry(0, 0, menuBar->width(), 2);
+
                 qDebug() << "Mouse entró en el QMenuBar";
                 // We expand the QMenuBar
                 QPropertyAnimation *animation = new QPropertyAnimation(menuBar, "geometry");
