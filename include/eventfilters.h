@@ -41,23 +41,29 @@ class QMenuBarFilter : public QObject
 
 public:
     bool collapseMenuBar = false;
+    static int originalMenuBarHeight = -1;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
+
         if (mainWindow != nullptr) {
             if (event->type() == QEvent::HoverMove) {
                 QPoint globalPos = QCursor::pos();
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
 
-                int expandZoneHeight = 15;
+                int expandZoneHeight = 20;
+
+                if (originalMenuBarHeight == -1) {
+                    originalMenuBarHeight = mainWindow->menuBar()->height();
+                }
 
                 if (mainWindowPos.y() <= expandZoneHeight) {
                     qDebug() << mainWindowPos.y();
-                    mainWindow->menuBar()->setFixedHeight(30);
+                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
                 } else {
                     qDebug() << "else: " << mainWindowPos.y();
-                    mainWindow->menuBar()->setFixedHeight(2);
+                    mainWindow->menuBar()->setFixedHeight(4);
                 }
             }
         }
