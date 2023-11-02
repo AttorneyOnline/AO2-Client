@@ -42,6 +42,8 @@ class QMenuBarFilter : public QObject
 public:
     bool collapseMenuBar = false;
     int originalMenuBarHeight = -1;
+private:
+    QPropertyAnimation* animation;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
@@ -62,7 +64,7 @@ protected:
                     QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
                     QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
                 
-                    QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
                     animation->setStartValue(startRect);
                     animation->setEndValue(endRect);
                     animation->setDuration(500);
@@ -75,7 +77,7 @@ protected:
                     QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
                     QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
                 
-                    QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
                     animation->setStartValue(startRect);
                     animation->setEndValue(endRect);
                     animation->setDuration(500);
