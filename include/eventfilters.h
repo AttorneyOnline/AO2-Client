@@ -62,11 +62,15 @@ protected:
                 }
 
                 if (mainWindowPos.y() <= expandZoneHeight) {
-                    qDebug() << mainWindowPos.y();
-                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                    // qDebug() << mainWindowPos.y();
+                    if (!entered_zone)
+                        mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                        entered_zone = true;
                 } else {
-                    qDebug() << "else: " << mainWindowPos.y();
-                    mainWindow->menuBar()->setFixedHeight(4);
+                    if (entered_zone)
+                        // qDebug() << "else: " << mainWindowPos.y();
+                        mainWindow->menuBar()->setFixedHeight(3);
+                        entered_zone = false;
                 }
             }
         }
