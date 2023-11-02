@@ -58,25 +58,31 @@ protected:
                 originalMenuBarHeight = mainWindow->menuBar()->height();
             }
 
+            QRect menuBarGeometry = mainWindow->menuBar()->geometry();
+
             if (mainWindowPos.y() <= expandZoneHeight) {
-                QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "fixedHeight");
-                animation->setStartValue(mainWindow->menuBar()->height());
-                animation->setEndValue(originalMenuBarHeight);
+                QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                animation->setStartValue(menuBarGeometry);
+                QRect endGeometry = menuBarGeometry;
+                endGeometry.setHeight(originalMenuBarHeight);
+                animation->setEndValue(endGeometry);
                 animation->setDuration(1000);
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
 
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                    mainWindow->menuBar()->setGeometry(endGeometry);
                 });
             } else {
-                QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "fixedHeight");
-                animation->setStartValue(mainWindow->menuBar()->height());
-                animation->setEndValue(4);
+                QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                animation->setStartValue(menuBarGeometry);
+                QRect endGeometry = menuBarGeometry;
+                endGeometry.setHeight(4);
+                animation->setEndValue(endGeometry);
                 animation->setDuration(1000);
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
 
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setFixedHeight(4);
+                    mainWindow->menuBar()->setGeometry(endGeometry);
                 });
             }
         }
