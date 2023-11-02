@@ -253,8 +253,6 @@ void Courtroom::select_previous_or_next_emote()
 
     if (id < 0)
         return;
-
-    qDebug() << "Current emote: " << current_emote << " | ID: " << id;
     
     if (keySequence == QKeySequence(Qt::ALT + Qt::Key_Left))
     {
