@@ -62,7 +62,7 @@ protected:
                 QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "fixedHeight");
                 animation->setStartValue(mainWindow->menuBar()->height());
                 animation->setEndValue(originalMenuBarHeight);
-                animation->setDuration(300);
+                animation->setDuration(1000);
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
 
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
@@ -72,7 +72,7 @@ protected:
                 QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "fixedHeight");
                 animation->setStartValue(mainWindow->menuBar()->height());
                 animation->setEndValue(4);
-                animation->setDuration(300);
+                animation->setDuration(1000);
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
 
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
