@@ -44,7 +44,7 @@ public:
     int originalMenuBarHeight = -1;
 private:
     QPropertyAnimation* animation;
-    bool animationRunning = false;
+    bool entered_zone = false;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
@@ -61,39 +61,42 @@ protected:
                     originalMenuBarHeight = mainWindow->menuBar()->height();
                 }
     
-                if (mainWindowPos.y() <= expandZoneHeight && !animationRunning) {
+                if (mainWindowPos.y() <= expandZoneHeight && !entered_zone) {
+                    qDebug() << "Moved mouse inside zone, animation not running: " << mainWindowPos.y();
+                    entered_zone = true;
                     QPoint p = mainWindow->menuBar()->pos();
-                    QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
-                    QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
+                    ///QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
+                    //QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
     
-                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                    animation = new QPropertyAnimation(mainWindow->menuBar(), "pos");
                     animation->setStartValue(p);
                     p += QPoint(0, 30);
                     animation->setEndValue(p);
                     animation->setDuration(500);
                     animation->start(QAbstractAnimation::DeleteWhenStopped);
-                    animationRunning = true;
-    
+                    
                     QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
                         // mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                        animationRunning = false;
+                        qDebug() << "Out animation done!"
                     });
-                } else if (mainWindowPos.y() > expandZoneHeight && !animationRunning) {
+                } else if (mainWindowPos.y() > expandZoneHeight && entered_zone) {
+                    entered_zone = false;
+                    qDebug() << "Moved mouse outside zone, animation not running: " << mainWindowPos.y();
                     QPoint p = mainWindow->menuBar()->pos();
-                    QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
-                    QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
+                    //QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
+                    //QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
     
-                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                    animation = new QPropertyAnimation(mainWindow->menuBar(), "pos");
                     animation->setStartValue(p);
                     p += QPoint(0, -30);
                     animation->setEndValue(p);
                     animation->setDuration(500);
                     animation->start(QAbstractAnimation::DeleteWhenStopped);
-                    animationRunning = true;
     
                     QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
                         // mainWindow->menuBar()->setFixedHeight(4);
-                        animationRunning = false;
+                        // animationRunning = false;
+                        qDebug() << "Retract animation done!"
                     });
                 }
             }
