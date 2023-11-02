@@ -93,10 +93,10 @@ protected:
                     QRect r = QRect(0, 0, mainWindow->menuBar()->width(), mainWindow->menuBar()->height());
                     
                     animation = new QPropertyAnimation(mainWindow->menuBar(), "pos");
-                    animation->setStartValue(p);
+                    animation->setStartValue(r);
                     //p += QPoint(0, -30);
                     r.translate(0, -30);
-                    animation->setEndValue(p);
+                    animation->setEndValue(r);
                     animation->setDuration(500);
                     animation->start(QAbstractAnimation::DeleteWhenStopped);
     
