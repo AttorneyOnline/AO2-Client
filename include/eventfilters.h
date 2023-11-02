@@ -58,31 +58,31 @@ protected:
                 originalMenuBarHeight = mainWindow->menuBar()->height();
             }
 
-            QRect menuBarGeometry = mainWindow->menuBar()->geometry();
-
             if (mainWindowPos.y() <= expandZoneHeight) {
+                QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
+                QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
+            
                 QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
-                animation->setStartValue(menuBarGeometry);
-                QRect endGeometry = menuBarGeometry;
-                endGeometry.setHeight(originalMenuBarHeight);
-                animation->setEndValue(endGeometry);
+                animation->setStartValue(startRect);
+                animation->setEndValue(endRect);
                 animation->setDuration(1000);
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
-
+            
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setGeometry(endGeometry);
+                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
                 });
             } else {
+                QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
+                QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
+            
                 QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
-                animation->setStartValue(menuBarGeometry);
-                QRect endGeometry = menuBarGeometry;
-                endGeometry.setHeight(4);
-                animation->setEndValue(endGeometry);
+                animation->setStartValue(startRect);
+                animation->setEndValue(endRect);
                 animation->setDuration(1000);
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
-
+            
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setGeometry(endGeometry);
+                    mainWindow->menuBar()->setFixedHeight(4);
                 });
             }
         }
