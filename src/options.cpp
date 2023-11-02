@@ -630,7 +630,7 @@ void Options::setStopTypingIcon(bool value)
 
 bool Options::assetStreaming() const
 {
-  return config.value("asset_streaming", true).toBool();
+  return config.value("asset_streaming", false).toBool();
 }
 
 void Options::setAssetStreaming(bool value)
