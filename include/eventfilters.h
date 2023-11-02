@@ -85,14 +85,12 @@ protected:
                 animation->setEndValue(endRect);
                 animation->setDuration(500);
                 animation->start(QAbstractAnimation::DeleteWhenStopped);
+                animationRunning = true;
 
                 QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
                     mainWindow->menuBar()->setFixedHeight(4);
                     animationRunning = false;
                 });
-
-                // Establece la variable de estado a true
-                animationRunning = true;
             }
         }
     }
