@@ -61,39 +61,43 @@ protected:
                     originalMenuBarHeight = mainWindow->menuBar()->height();
                 }
     
-            if (mainWindowPos.y() <= expandZoneHeight && !animationRunning) {
-                QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
-                QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
-
-                animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
-                animation->setStartValue(startRect);
-                animation->setEndValue(endRect);
-                animation->setDuration(500);
-                animation->start(QAbstractAnimation::DeleteWhenStopped);
-                animationRunning = true;
-
-                QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                    animationRunning = false;
-                });
-            } else if (mainWindowPos.y() > expandZoneHeight && !animationRunning) {
-                QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
-                QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
-
-                animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
-                animation->setStartValue(startRect);
-                animation->setEndValue(endRect);
-                animation->setDuration(500);
-                animation->start(QAbstractAnimation::DeleteWhenStopped);
-                animationRunning = true;
-
-                QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
-                    mainWindow->menuBar()->setFixedHeight(4);
-                    animationRunning = false;
-                });
+                if (mainWindowPos.y() <= expandZoneHeight && !animationRunning) {
+                    QPoint p = mainWindow->menuBar()->pos();
+                    QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), 4);
+                    QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), originalMenuBarHeight);
+    
+                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                    animation->setStartValue(p);
+                    p += QPoint(0, 30);
+                    animation->setEndValue(p);
+                    animation->setDuration(500);
+                    animation->start(QAbstractAnimation::DeleteWhenStopped);
+                    animationRunning = true;
+    
+                    QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
+                        // mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                        animationRunning = false;
+                    });
+                } else if (mainWindowPos.y() > expandZoneHeight && !animationRunning) {
+                    QPoint p = mainWindow->menuBar()->pos();
+                    QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
+                    QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
+    
+                    animation = new QPropertyAnimation(mainWindow->menuBar(), "geometry");
+                    animation->setStartValue(p);
+                    p += QPoint(0, -30);
+                    animation->setEndValue(p);
+                    animation->setDuration(500);
+                    animation->start(QAbstractAnimation::DeleteWhenStopped);
+                    animationRunning = true;
+    
+                    QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
+                        // mainWindow->menuBar()->setFixedHeight(4);
+                        animationRunning = false;
+                    });
+                }
             }
         }
-    }
     return false;
   }    
 };
