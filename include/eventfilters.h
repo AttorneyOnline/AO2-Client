@@ -41,7 +41,7 @@ class QMenuBarFilter : public QObject
 
 public:
     bool collapseMenuBar = false;
-    static int originalMenuBarHeight = -1;
+    int originalMenuBarHeight = -1;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
