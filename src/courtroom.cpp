@@ -442,8 +442,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
-
-  new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Left), this, SLOT(&Courtroom::on_reload_theme_clicked));
   
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
@@ -452,6 +450,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   CharacterMenu = menu_bar->addMenu("Character");
   RoleplayMenu = menu_bar->addMenu("Roleplay");
   QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+
+  QSwappingMenu->tearOffEnabled(true); // Make the QSwapping menu separable
 
   // Main tab
   QAction* action_change_character = new QAction("Change character", this);
@@ -540,10 +540,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
   connect(action_return_lobby, &QAction::triggered, this, &Courtroom::on_return_to_lobby_clicked);
 
-  connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
-  connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
-  connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
-  connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
+  // connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
+  // connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
+  // connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
+  // connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   connect(action_set_dl, &QAction::triggered, this, &Courtroom::on_set_dl_clicked);
@@ -582,7 +582,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     set_character_sets(base_path);
     qDebug() << "Loaded global char set!";
   }
-    
+
+  // Ugly and will change it soon
+  connect(action_preanim, &QAction::triggered, ui_pre, &AOButton::clicked);
+  connect(ui_pre, &AOButton::clicked, action_preanim, &QAction::triggered);
+  connect(action_flip, &QAction::triggered, ui_flip, &AOButton::clicked);
+  connect(ui_flip, &AOButton::clicked, action_flip, &QAction::triggered);
+  connect(ui_showname_enable, &AOButton::clicked, action_shownames, &QAction::triggered);
+  connect(action_shownames, &QAction::triggered, ui_showname_enable, &AOButton::clicked);
+  
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -722,7 +730,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_switch_area_music, &AOButton::clicked, this,
           &Courtroom::on_switch_area_music_clicked);
 
-  connect(ui_pre, &AOButton::clicked, this, &Courtroom::on_pre_clicked);
+  connect(ui_pre, &AOButton::clicked, this, &Courtroom::on_pre_clicked);  
   connect(ui_flip, &AOButton::clicked, this, &Courtroom::on_flip_clicked);
   connect(ui_additive, &AOButton::clicked, this, &Courtroom::on_additive_clicked);
   connect(ui_guard, &AOButton::clicked, this, &Courtroom::on_guard_clicked);
