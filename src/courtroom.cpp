@@ -443,6 +443,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
 
+  new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Left), this, SLOT(&Courtroom::on_reload_theme_clicked));
+  
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
 
@@ -459,6 +461,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QAction* action_settings = new QAction("Settings", this);
   QAction* action_return_lobby = new QAction("Return to Lobby", this);
   action_image_streaming->setEnabled(false);
+  action_reload_theme->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+  action_change_character->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
 
   // Character tab
   action_hide = new QAction("Hide", this);
@@ -572,7 +576,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   this->setMouseTracking(true);
   
   setMenuBar(menu_bar);
-
+  
   QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
   if (!base_path.isEmpty()) {
     set_character_sets(base_path);
@@ -6059,15 +6063,22 @@ void Courtroom::on_reload_theme_clicked()
 
 void Courtroom::on_return_to_lobby_clicked()
 {
-  QMessageBox::StandardButton reply;
-  reply = QMessageBox::question(this, "Exit", "Are you sure you want to return to the lobby?",
-                                QMessageBox::Yes | QMessageBox::No);
-  if (reply == QMessageBox::Yes) {
-      ao_app->construct_lobby();
-      ao_app->destruct_courtroom();
-  } else {
-      return;
-  }
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setText("Are you sure you want to return to the lobby?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+
+    QString styleSheet = "QLabel { color: black; }";
+    msgBox.setStyleSheet(styleSheet);
+
+    int reply = msgBox.exec();
+
+    if (reply == QMessageBox::Yes) {
+        ao_app->construct_lobby();
+        ao_app->destruct_courtroom();
+    } else {
+        return;
+    }
 }
 
 void Courtroom::on_back_to_lobby_clicked()
