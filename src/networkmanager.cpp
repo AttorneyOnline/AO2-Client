@@ -436,7 +436,6 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
               // It's a file, not a directory
               qDebug() << "Downloading file: " << fileName;
               QString finalPathUrl = pathUrl + "/" + fileName;
-              qDebug() << "Final path url: " << finalPathUrl;
               QNetworkRequest request(finalPathUrl);
               QNetworkReply* reply = download->get(request);
 
