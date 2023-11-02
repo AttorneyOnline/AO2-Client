@@ -77,7 +77,7 @@ protected:
                     
                     QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
                         // mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                        qDebug() << "Out animation done!"
+                        qDebug() << "Out animation done!";
                     });
                 } else if (mainWindowPos.y() > expandZoneHeight && entered_zone) {
                     entered_zone = false;
@@ -96,7 +96,7 @@ protected:
                     QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
                         // mainWindow->menuBar()->setFixedHeight(4);
                         // animationRunning = false;
-                        qDebug() << "Retract animation done!"
+                        qDebug() << "Retract animation done!";
                     });
                 }
             }
