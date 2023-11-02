@@ -64,8 +64,8 @@ protected:
                 if (mainWindowPos.y() <= expandZoneHeight && !entered_zone) {
                     qDebug() << "Moved mouse inside zone, animation not running: " << mainWindowPos.y();
                     entered_zone = true;
-                    //QPoint p = QPoint(0, -30);
-                    QPoint p = mainWindow->menuBar()->pos();
+                    QPoint p = QPoint(0, -30);
+                    //QPoint p = mainWindow->menuBar()->pos();
                     //QRect startRect = QRect(0, 4);
                     //QRect endRect = QRect(0, 0);
     
@@ -83,7 +83,8 @@ protected:
                 } else if (mainWindowPos.y() > expandZoneHeight && entered_zone) {
                     entered_zone = false;
                     qDebug() << "Moved mouse outside zone, animation not running: " << mainWindowPos.y();
-                    QPoint p = mainWindow->menuBar()->pos();
+                    // QPoint p = mainWindow->menuBar()->pos();
+                    QPoint p = QPoint(0, 0);
                     //QRect startRect = QRect(mainWindow->menuBar()->x(), mainWindow->menuBar()->y(), mainWindow->menuBar()->width(), originalMenuBarHeight);
                     //QRect endRect = QRect(startRect.x(), startRect.y(), startRect.width(), 4);
     
