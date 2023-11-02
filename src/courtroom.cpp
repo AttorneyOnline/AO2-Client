@@ -451,7 +451,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   RoleplayMenu = menu_bar->addMenu("Roleplay");
   QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
 
-  QSwappingMenu->tearOffEnabled(true); // Make the QSwapping menu separable
+  QSwappingMenu->setTearOffEnabled(true); // Make the QSwapping menu separable
 
   // Main tab
   QAction* action_change_character = new QAction("Change character", this);
