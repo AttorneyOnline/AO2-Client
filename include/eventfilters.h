@@ -52,23 +52,37 @@ protected:
                 QPoint globalPos = QCursor::pos();
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
 
-                int expandZoneHeight = 20;
+                int expandZoneHeight = 22;
 
-                if (originalMenuBarHeight == -1) {
-                    originalMenuBarHeight = mainWindow->menuBar()->height();
-                }
+            if (originalMenuBarHeight == -1) {
+                originalMenuBarHeight = mainWindow->menuBar()->height();
+            }
 
-                if (mainWindowPos.y() <= expandZoneHeight) {
-                    qDebug() << mainWindowPos.y();
+            if (mainWindowPos.y() <= expandZoneHeight) {
+                QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "fixedHeight");
+                animation->setStartValue(mainWindow->menuBar()->height());
+                animation->setEndValue(originalMenuBarHeight);
+                animation->setDuration(300);
+                animation->start(QAbstractAnimation::DeleteWhenStopped);
+
+                QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
                     mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                } else {
-                    qDebug() << "else: " << mainWindowPos.y();
+                });
+            } else {
+                QPropertyAnimation *animation = new QPropertyAnimation(mainWindow->menuBar(), "fixedHeight");
+                animation->setStartValue(mainWindow->menuBar()->height());
+                animation->setEndValue(4);
+                animation->setDuration(300);
+                animation->start(QAbstractAnimation::DeleteWhenStopped);
+
+                QObject::connect(animation, &QPropertyAnimation::finished, [=]() {
                     mainWindow->menuBar()->setFixedHeight(4);
-                }
+                });
             }
         }
-        return false;
     }
+    return false;
+  }    
 };
 
 
