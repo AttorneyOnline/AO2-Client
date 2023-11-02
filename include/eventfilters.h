@@ -69,6 +69,7 @@ protected:
         }
         return false;
     }
+}
 
 
 #endif // EVENTFILTERS_H
