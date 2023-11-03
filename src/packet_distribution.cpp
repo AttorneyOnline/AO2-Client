@@ -512,7 +512,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->mod_called(f_contents.at(0));
   }
   else if (header == "TT") { // Typing Timer packet
-    if (f_contents.isEmpty()) {
+    if (!courtroom_constructed) {
       goto end;
     }
     int tt_state = f_contents.at(0).toInt();
