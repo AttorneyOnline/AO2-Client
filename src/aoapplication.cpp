@@ -138,6 +138,9 @@ void AOApplication::server_disconnected()
           if (net_manager->established_connection) {
               net_manager->join_to_server();
               QString hdid = get_hdid();
+              send_server_packet(new AOPacket("HI", {hdid}));
+              send_server_packet(new AOPacket("ID", {"AO2", "2.10.1"}));
+              send_server_packet(new AOPacket("DONE"))
               call_notice(tr("Success reconnecting to server."));
               send_server_packet(new AOPacket("CC", {QString::number(client_id),
                             QString::number(w_courtroom->get_cid()), hdid}));
