@@ -328,6 +328,8 @@ public:
 
   int current_button_selected = 0;
 
+  QStringList last_area_entered;
+
   QString get_char_path(QString charname, QString file) { return ao_app->get_real_path(ao_app->get_character_path(charname, file)); }
   QString get_button_path(QString charname, QString emotion_number) { 
     return ao_app->get_image_suffix(ao_app->get_character_path(charname, "emotions/button" + emotion_number + "_off")); 
@@ -338,7 +340,6 @@ public:
   void typing_signal(int signal);
 
   void menu_bar_mouse_event(QEvent *event);
-  // void mouseMoveEvent(QMouseEvent* event);
   void set_character_sets(QString char_set);
   void add_action_to_menu(QMenu* menu, const QString& actionText, const QString& actionKey);
   void start_menu_animation(const QRect& end_rect);
