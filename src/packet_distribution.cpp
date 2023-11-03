@@ -528,7 +528,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->typing_signal(tt_state);
   }
   else if (header == "CU") { // Char URL packet for the Char Downloader
-    if (f_contents.isEmpty()) {
+    if (!courtroom_constructed || f_contents.isEmpty()) {
       goto end;
     }
     int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared
