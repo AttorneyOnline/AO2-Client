@@ -5581,6 +5581,7 @@ void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
   QStringList packet_contents;
   packet_contents.append(p_area);
   packet_contents.append(QString::number(m_cid));
+  last_area_entered = packet_contents; // Dumb workaround
   ao_app->send_server_packet(new AOPacket("MC", packet_contents));
 }
 
