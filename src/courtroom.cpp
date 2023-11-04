@@ -2233,7 +2233,7 @@ void Courtroom::on_chat_return_pressed()
           packet_contents.append(QString::number(100));
 
     // Finally, we send over if we want our pres to not interrupt.
-    if ((ui_immediate->isChecked() || action_immediate->isChecked()) && (ui_pre->isChecked() || ui_preanim->isChecked())) {
+    if ((ui_immediate->isChecked() || action_immediate->isChecked()) && (ui_pre->isChecked() || action_preanim->isChecked())) {
       packet_contents.append("1");
     }
     else {
