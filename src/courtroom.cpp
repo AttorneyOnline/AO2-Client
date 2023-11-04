@@ -3827,8 +3827,6 @@ void Courtroom::play_preanim(bool immediate)
   else {
     anim_state = 1;
     if (stay_time >= 0)
-      if (m_chatmessage[ADDITIVE] != "0")
-        stay_time = 1; // Makes Emote Queue less likely to desync
       text_delay_timer->start(stay_time);
   }
 }
@@ -3920,6 +3918,8 @@ void Courtroom::start_chat_ticking()
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
     int delay = Options::getInstance().textStayTime();
     if (delay > 0 && !text_queue_timer->isActive())
+      if (m_chatmessage[ADDITIVE] != "0")
+        delay = 1; // Makes Emote Queue less likely to desync
       text_queue_timer->start(delay);
     return;
   }
@@ -4019,6 +4019,8 @@ void Courtroom::chat_tick()
     // If we're not already waiting on the next message, start the timer. We could be overriden if there's an objection planned.
     int delay = Options::getInstance().textStayTime();
     if (delay > 0 && !text_queue_timer->isActive())
+      if (m_chatmessage[ADDITIVE] != "0")
+        delay = 1; // Makes Emote Queue less likely to desync
       text_queue_timer->start(delay);
 
     // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
