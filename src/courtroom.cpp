@@ -560,7 +560,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Question);
-    msgBox.setTitle("Confirm Deletion");
+    msgBox.setWindowTitle("Confirm Deletion");
     msgBox.setText("Are you sure you want to delete your Download.ini?");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setStyleSheet("QLabel {background-color:black}");
