@@ -497,6 +497,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   // Swapping tab
   QAction* action_load_set = new QAction("Load char set...", this);
+  QAction* action_reload_categories = new QAction("Reload Categories", this);
 
   // Why Qt, why
   MainMenu->addAction(action_change_character);     //
@@ -531,8 +532,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   RoleplayMenu->addAction(action_player_profile);  //
   RoleplayMenu->addAction(action_gm_screen);      //
 
-  QSwappingMenu->addAction(action_load_set);         //  SWAPPING TAB
-  QSwappingMenu->addSeparator();                    //
+  QMenu* QSwapOptions = QSwappingMenu->addMenu("Options");  
+  QSwapOptions->addAction(action_load_set);
+  QSwapOptions->addAction(action_reload_categories);
+  QSwappingMenu->addSeparator();                 //  SWAPPING TAB
+
   
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -540,10 +544,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
   connect(action_return_lobby, &QAction::triggered, this, &Courtroom::on_return_to_lobby_clicked);
 
-  // connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
-  // connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
-  // connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
-  // connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
+  connect(action_preanim, &QAction::triggered, this, &Courtroom::on_pre_clicked);
+  connect(action_flip, &QAction::triggered, this, &Courtroom::on_flip_clicked);
+  connect(action_additive, &QAction::triggered, this, &Courtroom::on_additive_clicked);
+  connect(action_shownames, &QAction::triggered, this, &Courtroom::on_showname_enable_clicked);
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   connect(action_set_dl, &QAction::triggered, this, &Courtroom::on_set_dl_clicked);
@@ -2077,7 +2081,7 @@ void Courtroom::on_chat_return_pressed()
     f_emote_mod = ZOOM;
   }
   // If we have "pre" on, and immediate is not checked
-  if (ui_pre->isChecked() && !ui_immediate->isChecked()) {
+  if ((ui_pre->isChecked() || action_preanim->isChecked()) && !ui_immediate->isChecked()) {
     // Turn idle into preanim
     if (f_emote_mod == IDLE) {
       f_emote_mod = PREANIM;
@@ -2101,7 +2105,7 @@ void Courtroom::on_chat_return_pressed()
     }
 
     // Play the sfx if pre is checked
-    if (ui_pre->isChecked()) {
+    if (ui_pre->isChecked() || action_preanim->isChecked()) {
       f_sfx = get_char_sfx();
     }
   }
@@ -2170,7 +2174,7 @@ void Courtroom::on_chat_return_pressed()
   QString f_flip;
 
   if (ao_app->flipping_supported) {
-    if (ui_flip->isChecked())
+    if (ui_flip->isChecked() || action_flip->isChecked())
       f_flip = "1";
     else
       f_flip = "0";
@@ -2229,7 +2233,7 @@ void Courtroom::on_chat_return_pressed()
           packet_contents.append(QString::number(100));
 
     // Finally, we send over if we want our pres to not interrupt.
-    if (ui_immediate->isChecked() && ui_pre->isChecked()) {
+    if ((ui_immediate->isChecked() || action_immediate->isChecked()) && (ui_pre->isChecked() || ui_preanim->isChecked())) {
       packet_contents.append("1");
     }
     else {
@@ -2330,7 +2334,7 @@ void Courtroom::reset_ui()
   ui_evidence_present->set_image("present");
 
   // If sticky sounds is disabled and we either have SFX on Idle enabled, or our Preanim checkbox is checked
-  if (!Options::getInstance().clearSoundsDropdownOnPlayEnabled() && (Options::getInstance().playSelectedSFXOnIdle() || ui_pre->isChecked())) {
+  if (!Options::getInstance().clearSoundsDropdownOnPlayEnabled() && (Options::getInstance().playSelectedSFXOnIdle() || (ui_pre->isChecked() || action_preanim->isChecked()))) {
     // Reset the SFX Dropdown to "Default"
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
@@ -2340,6 +2344,7 @@ void Courtroom::reset_ui()
   if (!Options::getInstance().clearPreOnPlayEnabled())
     // Turn off our Preanim checkbox
     ui_pre->setChecked(false);
+    action_preanim->setChecked(false);
 }
 
 void Courtroom::chatmessage_enqueue(QStringList p_contents)
@@ -6186,8 +6191,8 @@ void Courtroom::regenerate_ic_chatlog()
   last_ic_message = "";
   foreach (chatlogpiece item, ic_chatlog_history) {
     QString message = item.get_message();
-    QString name = ui_showname_enable->isChecked() ? item.get_showname()
-                                                   : item.get_name();
+    QString name = (ui_showname_enable->isChecked() || action_shownames->isChecked()) ? item.get_showname()
+                                                                                       : item.get_name();
     append_ic_text(message,
                    name,
                    item.get_action(), item.get_chat_color(),
