@@ -560,8 +560,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
     if (reply == QMessageBox::Yes) {
         if (QFile::remove(characterPath + "download.ini")) {
+            QMessageBox::information(this, "Notification", "Successfully deleted Download.ini.");
             qDebug() << "Successfully deleted Download.ini.";
         } else {
+            QMessageBox::warning(this, "Notification", "Failed to delete Download.ini.");
             qDebug() << "Failed to delete Download.ini.";
         }
     }
@@ -583,14 +585,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     qDebug() << "Loaded global char set!";
   }
 
-  // Ugly and will change it soon
-  connect(action_preanim, &QAction::triggered, ui_pre, &AOButton::clicked);
-  connect(ui_pre, &AOButton::clicked, action_preanim, &QAction::triggered);
-  connect(action_flip, &QAction::triggered, ui_flip, &AOButton::clicked);
-  connect(ui_flip, &AOButton::clicked, action_flip, &QAction::triggered);
-  connect(ui_showname_enable, &AOButton::clicked, action_shownames, &QAction::triggered);
-  connect(action_shownames, &QAction::triggered, ui_showname_enable, &AOButton::clicked);
-  
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -604,8 +598,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_vp_player_char, &CharLayer::play_sfx, this,
           &Courtroom::play_char_sfx);
 
-  // connect(this, &Courtroom::mouseMoveEvent, this, &Courtroom::menu_bar_mouse_event);
-  
   connect(text_delay_timer, &QTimer::timeout, this,
           &Courtroom::start_chat_ticking);
 
