@@ -1784,35 +1784,35 @@ QTabBar::tab:!selected:hover {
 }
 
 QTabBar::tab:first:selected:hover {
-	background-image: url(:/resource/ui/lobby_assets/tab_motd_on_hover.png);
-}
-
-QTabBar::tab:first:!selected:hover {
-	background-image: url(:/resource/ui/lobby_assets/tab_motd_off_hover.png);
-}
-
-QTabBar::tab:first:selected {
-	background-image: url(:/resource/ui/lobby_assets/tab_motd_on.png);
-}
-
-QTabBar::tab:first:!selected {
-	background-image: url(:/resource/ui/lobby_assets/tab_motd_off.png);
-}
-
-QTabBar::tab:last:selected {
-	background-image: url(:/resource/ui/lobby_assets/tab_changelog_on.png);
-}
-
-QTabBar::tab:last:selected:hover {
 	background-image: url(:/resource/ui/lobby_assets/tab_changelog_on_hover.png);
 }
 
-QTabBar::tab:last:!selected {
+QTabBar::tab:first:!selected:hover {
+	background-image: url(:/resource/ui/lobby_assets/tab_changelog_off_hover.png);
+}
+
+QTabBar::tab:first:selected {
+	background-image: url(:/resource/ui/lobby_assets/tab_changelog_on.png);
+}
+
+QTabBar::tab:first:!selected {
 	background-image: url(:/resource/ui/lobby_assets/tab_changelog_off.png);
 }
 
+QTabBar::tab:last:selected {
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_on.png);
+}
+
+QTabBar::tab:last:selected:hover {
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_on_hover.png);
+}
+
+QTabBar::tab:last:!selected {
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_off.png);
+}
+
 QTabBar::tab:last:!selected:hover {
-	background-image: url(:/resource/ui/lobby_assets/tab_changelog_off_hover.png);
+	background-image: url(:/resource/ui/lobby_assets/tab_motd_off_hover.png);
 }
 
 QTabBar {
