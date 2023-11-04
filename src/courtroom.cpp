@@ -1435,7 +1435,8 @@ void Courtroom::set_stylesheets()
   this->setStyleSheet(
     "QFrame { background-color:transparent; } "
     "QAbstractItemView { background-color: transparent; color: black; } "
-    "QLineEdit { background-color:transparent; }"
+    "QLineEdit { background-color:transparent; }
+    "QLabel { color: black; }"
     + this->styleSheet()
   );
 }
@@ -4898,8 +4899,10 @@ void Courtroom::set_character_sets(QString char_set)
       if (!added_categories.contains(value)) {
         currentCategoryMenu = QSwappingMenu->addMenu(value);
 
-        // currentCategoryMenu->setContextMenuPolicy(Qt::CustomContextMenu);
-        // connect(currentCategoryMenu, &QMenu::customContextMenuRequested, this, &Courtroom::on_qswap_context_menu_requested);
+        currentCategoryMenu->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(currentCategoryMenu, &QMenu::customContextMenuRequested, this, [this, currentCategoryMenu] {
+            on_qswap_context_menu_requested(currentCategoryMenu);
+        });
 
         added_categories[value] = currentCategoryMenu;
         currentSubMenu = nullptr;
@@ -4920,8 +4923,8 @@ void Courtroom::set_character_sets(QString char_set)
         currentSubMenu->setIcon(QIcon(icon_path));
         currentSubMenu->addSeparator();
 
-        connect(default_char, &QAction::triggered, this, [this, value]() {
-            on_char_set_chosen(value);
+        connect(default_char, &QAction::triggered, this, [this, subMenuTitle]() {
+            on_char_set_chosen(subMenuTitle);
         });
       } else if (key.startsWith("+") && currentSubMenu) {
         add_action_to_menu(currentSubMenu, value, key.mid(1).trimmed());
@@ -4939,15 +4942,15 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
   QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(actionKey, "char_icon"));
   action->setIcon(QIcon(icon_path));
 
-  connect(action, &QAction::triggered, this, [this, actionText]() {
-      on_char_set_chosen(actionText);
+  connect(action, &QAction::triggered, this, [this, actionKey]() {
+      on_char_set_chosen(actionKey);
   });
 }
 
 void Courtroom::on_char_set_load()
 {
   // QDir baseDir("base");
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/swapping sets/", tr("Char Set Files (*.ini)"));
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/char sets/", tr("Char Set Files (*.ini)"));
   
   if (!filename.isEmpty()) {
     set_character_sets(filename);    
@@ -4956,31 +4959,12 @@ void Courtroom::on_char_set_load()
   }
 }
 
-void Courtroom::on_char_set_chosen(const QString& actionText)
+void Courtroom::on_char_set_chosen(const QString& actionKey)
 {
-  QString key;
-  QString value;
-  for (const QString& tag : char_set_tags) {
-    QStringList keyValuePairs = tag.split("=");
-    if (keyValuePairs.size() == 2) {
-      key = keyValuePairs[0].trimmed();
-      value = keyValuePairs[1].trimmed();
-    } else if (tag == actionText) {
-      key = actionText;
-      value = actionText;
-    }
-
-    if (value == actionText) {
-      if (key.startsWith("+"))
-        key = key.mid(1).trimmed();
-      else if (key.startsWith("Menu:"))
-        key = key.mid(5).trimmed();
-      update_character(m_cid, key, true);
-      if (!action_disable_url_sharing->isChecked())
-        search_download_file("1"); // We send a Character URL packet
-      break;
-    }
-  }
+  update_character(m_cid, actionKey, true);
+  if (!action_disable_url_sharing->isChecked())
+    search_download_file("1"); // We send a Character URL packet
+  break;
 }
 
 void Courtroom::set_iniswap_dropdown()
@@ -5312,6 +5296,37 @@ bool Courtroom::effects_dropdown_find_and_set(QString effect)
   }
   return false;
 }
+
+void Courtroom::on_qswap_context_menu_requested(const QMenu *menu)
+{
+  QMenu *context_menu = new QMenu(this);
+
+  context_menu->setAttribute(Qt::WA_DeleteOnClose);
+  
+  context_menu->addAction(QString("Add character to category", this,
+      [this, menu] {
+    QInputDialog dialog;
+    dialog.setInputMode(QInputDialog::TextInput);
+    dialog.setWindowFlags(Qt::WindowCloseButtonHint);
+    dialog.setWindowTitle(tr("Add to Category"));
+    dialog.setLabelText(tr("Enter a character name:"));
+  
+    QString styleSheet = "QLabel { color: black; }";
+    dialog.setStyleSheet(styleSheet);
+    auto code = dialog.exec();
+  
+    if (code != QDialog::Accepted) {
+        return;
+    }
+  
+    QString character_name = dialog.textValue();
+
+    add_action_to_menu(menu, character_name, character_name);
+
+  }
+  );
+}
+
 
 QString Courtroom::get_char_sfx()
 {
