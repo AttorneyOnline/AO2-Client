@@ -45,7 +45,7 @@ public:
     bool collapseMenuBar = false;
     int originalMenuBarHeight = -1;
 private:
-    QPropertyAnimation* animation;
+    // QPropertyAnimation* animation;
     bool entered_zone = false;
 
 protected:
