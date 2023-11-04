@@ -819,6 +819,11 @@ private:
   QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
+  QAction *action_preanim;
+  QAction *action_flip;
+  QAction *action_immediate;
+  QAction *action_shownames;
+
   AOButton *ui_custom_objection;
   QMenu *custom_obj_menu;
   AOButton *ui_realization;
