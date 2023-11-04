@@ -3827,6 +3827,8 @@ void Courtroom::play_preanim(bool immediate)
   else {
     anim_state = 1;
     if (stay_time >= 0)
+      if (m_chatmessage[ADDITIVE] != "0")
+        stay_time = 1; // Makes Emote Queue less likely to desync
       text_delay_timer->start(stay_time);
   }
 }
