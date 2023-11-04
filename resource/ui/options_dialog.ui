@@ -414,17 +414,17 @@
                </widget>
               </item>
               <item row="9" column="2">
-               <widget class="QLabel" name="hide_gmplayer_btn_lbl">
+               <widget class="QLabel" name="menu_bar_visible_btn_lbl">
                 <property name="toolTip">
-                 <string>Unused. Check this to hide the shortcut to open the GM/Player Screen.</string>
+                 <string>If checked, the menu bar will always stay visible.</string>
                 </property>
                 <property name="text">
-                 <string>Hide GM/Player Button:</string>
+                 <string>Menu Bar Always Visible:</string>
                 </property>
                </widget>
               </item>
               <item row="9" column="3">
-               <widget class="QCheckBox" name="hide_gmplayer_btn_cb">
+               <widget class="QCheckBox" name="menu_bar_visible_btn_cb">
                 <property name="text">
                  <string/>
                 </property>
