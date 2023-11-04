@@ -279,7 +279,7 @@ public:
   void setCallwords(QStringList value);
 
 
-// ------ TRIPLEX ADDITIONS ------ //
+// ------ AO GOLDEN ADDITIONS ------ //
   // DL Manager tables
   TableData downloadManager() const;
   void setDownloadManager(TableData data);
@@ -306,8 +306,8 @@ public:
   void setImageStreaming(bool value);
 
   // If the buttons that open the GM/Player Screen are hidden or not
-  bool hideRoleplayButtons() const;
-  void setHideRoleplayButtons(bool value);
+  bool menuBarLocked() const;
+  void setMenuBarLocked(bool value);
 
   // If crossfade is enabled
   bool crossfade() const;
