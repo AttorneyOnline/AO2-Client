@@ -4966,7 +4966,6 @@ void Courtroom::on_char_set_chosen(const QString& actionKey)
   update_character(m_cid, actionKey, true);
   if (!action_disable_url_sharing->isChecked())
     search_download_file("1"); // We send a Character URL packet
-  break;
 }
 
 void Courtroom::set_iniswap_dropdown()
@@ -5299,7 +5298,7 @@ bool Courtroom::effects_dropdown_find_and_set(QString effect)
   return false;
 }
 
-void Courtroom::on_qswap_context_menu_requested(const QMenu *menu)
+void Courtroom::on_qswap_context_menu_requested(QMenu *menu)
 {
   QMenu *context_menu = new QMenu(this);
 
@@ -5325,8 +5324,7 @@ void Courtroom::on_qswap_context_menu_requested(const QMenu *menu)
 
     add_action_to_menu(menu, character_name, character_name);
 
-  }
-  );
+  }));
 }
 
 
