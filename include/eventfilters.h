@@ -1,10 +1,12 @@
 #ifndef EVENTFILTERS_H
 #define EVENTFILTERS_H
 
+#include "options.h"
+
 #include <QEvent>
 #include <QLineEdit>
 #include <QMenuBar>
-#include <QPropertyAnimation>
+#include <QTimer>
 #include <QDebug>
 #include <QMainWindow>
 
@@ -50,7 +52,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
 
-        if (mainWindow != nullptr) {
+        if (mainWindow != nullptr && !Options::getInstance().menuBarLocked()) {
             if (event->type() == QEvent::HoverMove) {
                 QPoint globalPos = QCursor::pos();
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
@@ -62,15 +64,15 @@ protected:
                 }
 
                 if (mainWindowPos.y() <= expandZoneHeight) {
-                    // qDebug() << mainWindowPos.y();
                     if (!entered_zone)
                         mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
                         entered_zone = true;
                 } else {
                     if (entered_zone)
-                        // qDebug() << "else: " << mainWindowPos.y();
-                        mainWindow->menuBar()->setFixedHeight(3);
-                        entered_zone = false;
+                        QTimer::singleShot(1000, mainWindow, [this]() {
+                            mainWindow->menuBar()->setFixedHeight(3);
+                            entered_zone = false;
+                    });
                 }
             }
         }
