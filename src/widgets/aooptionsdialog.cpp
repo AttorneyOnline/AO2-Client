@@ -165,11 +165,10 @@ template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
         QTableWidgetItem* item = widget->item(row, 0);
         QString rowData = item ? item->text() : "";
         // Verificar si la URL ya ha sido agregada previamente
-        if (!rowData.isEmpty() && !uniqueURLs.contains(rowData)) {
+        if (!rowData.isEmpty() && uniqueURLs.insert(rowData).second) {
             QStringList rowDataList; // Crear una lista de un solo elemento
             rowDataList.append(rowData); // Agregar el elemento a la lista
             tableData.rows.append(rowDataList); // Agregar la lista a la lista de filas
-            uniqueURLs.insert(rowData); // Agregar la URL al conjunto
         }
     }
 
@@ -417,7 +416,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, crossfade_cb)
   FROM_UI(QCheckBox, hide_typing_cb)
   FROM_UI(QCheckBox, stop_typing_cb)
-  FROM_UI(QCheckBox, hide_gmplayer_btn_cb)
+  FROM_UI(QCheckBox, menu_bar_visible_btn_cb)
   FROM_UI(QCheckBox, asset_streaming_cb)
   FROM_UI(QCheckBox, image_streaming_cb)
 
@@ -504,9 +503,9 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("crossfade_cb",
                                   &Options::crossfade,
                                   &Options::setCrossfade);
-  registerOption<QCheckBox, bool>("hide_gmplayer_btn_cb",
-                                  &Options::hideRoleplayButtons,
-                                  &Options::setHideRoleplayButtons);
+  registerOption<QCheckBox, bool>("menu_bar_visible_btn_cb",
+                                  &Options::menuBarLocked,
+                                  &Options::setMenuBarLocked);
   registerOption<QCheckBox, bool>("image_streaming_cb",
                                   &Options::imageStreaming,
                                   &Options::setImageStreaming);
