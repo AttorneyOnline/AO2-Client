@@ -53,14 +53,15 @@ protected:
         QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
 
         if (mainWindow != nullptr) {
-            if (originalMenuBarHeight == -1) {
-                originalMenuBarHeight = mainWindow->menuBar()->height();
-            }
-            if (Options::getInstance().menuBarLocked()) {
-                mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                return false;
-            }
             if (event->type() == QEvent::HoverMove) {
+                if (originalMenuBarHeight == -1) {
+                    originalMenuBarHeight = mainWindow->menuBar()->height();
+                }
+                if (Options::getInstance().menuBarLocked()) {
+                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                    return false;
+                }
+
                 QPoint globalPos = QCursor::pos();
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
 
