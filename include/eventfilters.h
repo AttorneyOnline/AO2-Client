@@ -69,7 +69,7 @@ protected:
                         entered_zone = true;
                 } else {
                     if (entered_zone)
-                        QTimer::singleShot(1000, mainWindow, [this]() {
+                        QTimer::singleShot(1000, mainWindow, [this, mainWindow]() {
                             mainWindow->menuBar()->setFixedHeight(3);
                             entered_zone = false;
                     });
