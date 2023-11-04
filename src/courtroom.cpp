@@ -557,17 +557,25 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   });
   connect(action_delete_download_ini, &QAction::triggered, this, [this, action_delete_download_ini]() {
     QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
-    
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Confirm Deletion", "Are you sure you want to delete your Download.ini?", 
-                                 QMessageBox::Yes | QMessageBox::No);
 
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setTitle("Confirm Deletion");
+    msgBox.setText("Are you sure you want to delete your Download.ini?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setStyleSheet("QLabel {background-color:black}");
+
+    int reply = msgBox.exec();
+    
     if (reply == QMessageBox::Yes) {
+        QMessageBox msgBox;
         if (QFile::remove(characterPath + "download.ini")) {
-            QMessageBox::information(this, "Notification", "Successfully deleted Download.ini.");
+            msgBox.setText("Successfully deleted Download.ini.");
+            msgBox.setStyleSheet("QLabel {background-color:black}");
             qDebug() << "Successfully deleted Download.ini.";
         } else {
-            QMessageBox::warning(this, "Notification", "Failed to delete Download.ini.");
+            msgBox.setText("Failed to delete Download.ini.");
+            msgBox.setStyleSheet("QLabel {background-color:black}");
             qDebug() << "Failed to delete Download.ini.";
         }
     }
@@ -6091,8 +6099,7 @@ void Courtroom::on_return_to_lobby_clicked()
     msgBox.setText("Are you sure you want to return to the lobby?");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 
-    QString styleSheet = "QLabel { color: black; }";
-    msgBox.setStyleSheet(styleSheet);
+    msgBox.setStyleSheet("QLabel {background-color:black}");
 
     int reply = msgBox.exec();
 
