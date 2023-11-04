@@ -497,7 +497,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   // Swapping tab
   QAction* action_load_set = new QAction("Load char set...", this);
-  QAction* action_reload_categories = new QAction("Reload Categories", this);
+  // QAction* action_reload_categories = new QAction("Reload Categories", this);
 
   // Why Qt, why
   MainMenu->addAction(action_change_character);     //
@@ -532,9 +532,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   RoleplayMenu->addAction(action_player_profile);  //
   RoleplayMenu->addAction(action_gm_screen);      //
 
-  QMenu* QSwapOptions = QSwappingMenu->addMenu("Options");  
-  QSwapOptions->addAction(action_load_set);
-  QSwapOptions->addAction(action_reload_categories);
+  // QMenu* QSwapOptions = QSwappingMenu->addMenu("Options");  // For RC2
+  QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
   
