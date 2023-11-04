@@ -1435,7 +1435,7 @@ void Courtroom::set_stylesheets()
   this->setStyleSheet(
     "QFrame { background-color:transparent; } "
     "QAbstractItemView { background-color: transparent; color: black; } "
-    "QLineEdit { background-color:transparent; }
+    "QLineEdit { background-color:transparent; }"
     "QLabel { color: black; }"
     + this->styleSheet()
   );
