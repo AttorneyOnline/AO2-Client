@@ -648,14 +648,14 @@ void Options::setImageStreaming(bool value)
   config.setValue("image_streaming", value);
 }
 
-bool Options::hideRoleplayButtons() const
+bool Options::menuBarLocked() const
 {
-  return config.value("hide_gmplayer_btn", false).toBool();
+  return config.value("menu_bar_visible_btn", false).toBool();
 }
 
-void Options::setHideRoleplayButtons(bool value)
+void Options::setMenuBarLocked(bool value)
 {
-  config.setValue("hide_gmplayer_btn", value);
+  config.setValue("menu_bar_visible_btn", value);
 }
 
 bool Options::crossfade() const
