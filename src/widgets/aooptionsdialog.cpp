@@ -165,10 +165,11 @@ template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
         QTableWidgetItem* item = widget->item(row, 0);
         QString rowData = item ? item->text() : "";
         // Verificar si la URL ya ha sido agregada previamente
-        if (!rowData.isEmpty() && uniqueURLs.insert(rowData).second) {
+        if (!rowData.isEmpty() && !uniqueURLs.contains(rowData)) {
             QStringList rowDataList; // Crear una lista de un solo elemento
             rowDataList.append(rowData); // Agregar el elemento a la lista
             tableData.rows.append(rowDataList); // Agregar la lista a la lista de filas
+            uniqueURLs.insert(rowData); // Agregar la URL al conjunto
         }
     }
 
