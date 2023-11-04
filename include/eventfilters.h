@@ -52,16 +52,19 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
 
-        if (mainWindow != nullptr && !Options::getInstance().menuBarLocked()) {
+        if (mainWindow != nullptr) {
+            if (originalMenuBarHeight == -1) {
+                originalMenuBarHeight = mainWindow->menuBar()->height();
+            }
+            if (Options::getInstance().menuBarLocked()) {
+                mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                return false;
+            }
             if (event->type() == QEvent::HoverMove) {
                 QPoint globalPos = QCursor::pos();
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
 
                 int expandZoneHeight = 22;
-
-                if (originalMenuBarHeight == -1) {
-                    originalMenuBarHeight = mainWindow->menuBar()->height();
-                }
 
                 if (mainWindowPos.y() <= expandZoneHeight) {
                     if (!entered_zone)
@@ -69,10 +72,8 @@ protected:
                         entered_zone = true;
                 } else {
                     if (entered_zone)
-                        QTimer::singleShot(1000, mainWindow, [this, mainWindow]() {
-                            mainWindow->menuBar()->setFixedHeight(3);
-                            entered_zone = false;
-                    });
+                        mainWindow->menuBar()->setFixedHeight(2);
+                        entered_zone = false;
                 }
             }
         }
