@@ -528,14 +528,17 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->typing_signal(tt_state);
   }
   else if (header == "CU") { // Char URL packet for the Char Downloader
-    if (!courtroom_constructed || f_contents.isEmpty()) {
-      goto end;
+    if (!courtroom_constructed || f_contents.isEmpty() || f_contents.size() < 4) {
+        // Ensure that f_contents has at least 4 elements to avoid index out of range access
+        qDebug() << "Invalid CU packet format!";
+        goto end;
     }
+
     int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared
     int cu_action = f_contents.at(1).toInt(); // 0 = Delete entry | 1 = Add entry | 2 = Clear entries
     QString cu_name = f_contents.at(2);
     QString cu_link = QUrl::fromPercentEncoding(f_contents.at(3).toUtf8());
-    
+
     TableData dl_table;
 
     if (cu_authority == 1) { // Is this sent by the user?
@@ -543,48 +546,58 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     } else if (cu_authority == 0) { // If not, treat it as sent by the server
         dl_table = Options::getInstance().serverDownloadManager();
     }
+
     QStringList newRow;
     newRow.append(cu_link);
 
     if (cu_action == 1) {
         // "Add entry" action
-        bool entryExists = false;
-    
-        // Check if the entry already exists with the same header (cu_name) and URL (cu_link)
-        for (int i = 0; i < dl_table.rows.size(); i++) {
-            const QStringList& row = dl_table.rows.at(i);
-            if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
-                entryExists = true;
-                break;
+        if (!cu_name.isEmpty() && !cu_link.isEmpty()) {
+            bool entryExists = false;
+            // Check if the entry already exists with the same header (cu_name) and URL (cu_link)
+            for (int i = 0; i < dl_table.rows.size(); i++) {
+                const QStringList& row = dl_table.rows.at(i);
+                if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
+                    entryExists = true;
+                    break;
+                }
             }
-        }
-    
-        // Only add the new entry if it doesn't already exist
-        if (!entryExists) {
-            dl_table.headers.append(cu_name);
-            dl_table.rows.append(newRow);
+            // Only add the new entry if it doesn't already exist
+            if (!entryExists) {
+                dl_table.headers.append(cu_name);
+                dl_table.rows.append(newRow);
+            }
+        } else {
+            qDebug() << "Invalid Add entry data!";
         }
     } else if (cu_action == 0) {
         // "Delete entry" action
-        for (int i = 0; i < dl_table.rows.size(); i++) {
-            const QStringList& row = dl_table.rows.at(i);
-            if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
-                // Found a matching entry, remove it.
-                dl_table.rows.removeAt(i);
-                dl_table.headers.removeAt(i);
-                break; // Assuming there's only one entry with the given cu_name and cu_link.
+        if (!cu_name.isEmpty() && !cu_link.isEmpty()) {
+            for (int i = 0; i < dl_table.rows.size(); i++) {
+                const QStringList& row = dl_table.rows.at(i);
+                if (row.size() > 0 && row.at(0) == cu_link && dl_table.headers.at(i) == cu_name) {
+                    // Found a matching entry, remove it.
+                    dl_table.rows.removeAt(i);
+                    dl_table.headers.removeAt(i);
+                    break; // Assuming there's only one entry with the given cu_name and cu_link.
+                }
+            }
+        } else {
+            qDebug() << "Invalid Delete entry data!";
         }
-      }
-    } else if (cu_action == 3) {
+    } else if (cu_action == 2) {
+        // "Clear entries" action
         dl_table.headers.clear();
         dl_table.rows.clear();
+    } else {
+        qDebug() << "Invalid cu_action value!";
     }
+
     if (cu_authority == 1) {
         Options::getInstance().setDownloadManager(dl_table);
     } else if (cu_authority == 0) {
         Options::getInstance().setServerDownloadManager(dl_table);
     }
-      
     qDebug() << cu_name << " | " << cu_link;
   }
   else if (header == "TI") { // Timer packet
