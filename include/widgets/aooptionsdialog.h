@@ -87,7 +87,7 @@ private:
   QCheckBox *ui_stop_typing_cb;
   QCheckBox *ui_asset_streaming_cb;
   QCheckBox *ui_image_streaming_cb;
-  QCheckBox *ui_hide_gmplayer_btn_cb;
+  QCheckBox *ui_menu_bar_visible_btn_cb;
   QCheckBox *ui_crossfade_cb;
 
   // The callwords tab
