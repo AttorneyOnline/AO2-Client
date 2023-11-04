@@ -105,6 +105,7 @@ public:
   bool auth_packet_supported = false;
   bool typing_timer_supported = false;
   bool triplex_supported = false;
+  bool expanded_overlays_supported = false;
 
   ///////////////loading info///////////////////
 
