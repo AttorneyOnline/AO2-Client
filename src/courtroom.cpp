@@ -562,7 +562,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     msgBox.setWindowTitle("Confirm Deletion");
     msgBox.setText("Are you sure you want to delete your Download.ini?");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setStyleSheet("QLabel {background-color:black}");
+    msgBox.setStyleSheet("QLabel {color:black}");
 
     int reply = msgBox.exec();
     
@@ -570,11 +570,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
         QMessageBox msgBox;
         if (QFile::remove(characterPath + "download.ini")) {
             msgBox.setText("Successfully deleted Download.ini.");
-            msgBox.setStyleSheet("QLabel {background-color:black}");
+            msgBox.setStyleSheet("QLabel {color:black}");
             qDebug() << "Successfully deleted Download.ini.";
         } else {
             msgBox.setText("Failed to delete Download.ini.");
-            msgBox.setStyleSheet("QLabel {background-color:black}");
+            msgBox.setStyleSheet("QLabel {color:black}");
             qDebug() << "Failed to delete Download.ini.";
         }
     }
@@ -6098,7 +6098,7 @@ void Courtroom::on_return_to_lobby_clicked()
     msgBox.setText("Are you sure you want to return to the lobby?");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 
-    msgBox.setStyleSheet("QLabel {background-color:black}");
+    msgBox.setStyleSheet("QLabel {color:black}");
 
     int reply = msgBox.exec();
 
