@@ -5304,7 +5304,7 @@ void Courtroom::on_qswap_context_menu_requested(QMenu *menu)
 
   context_menu->setAttribute(Qt::WA_DeleteOnClose);
   
-  context_menu->addAction(QString("Add character to category", this,
+  context_menu->addAction(QString("Add character to category"), this,
       [this, menu] {
     QInputDialog dialog;
     dialog.setInputMode(QInputDialog::TextInput);
@@ -5324,9 +5324,8 @@ void Courtroom::on_qswap_context_menu_requested(QMenu *menu)
 
     add_action_to_menu(menu, character_name, character_name);
 
-  }));
+  });
 }
-
 
 QString Courtroom::get_char_sfx()
 {
