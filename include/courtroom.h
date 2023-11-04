@@ -950,7 +950,9 @@ private slots:
   void music_stop(bool no_effects = false);
   void on_area_list_double_clicked(QTreeWidgetItem *p_item, int column);
 
-  void on_char_set_chosen(const QString& actionText);
+  void on_qswap_context_menu_requested(const QMenu *menu);
+
+  void on_char_set_chosen(const QString& actionKey);
   void on_char_set_load();
 
   void select_emote(int p_id);
