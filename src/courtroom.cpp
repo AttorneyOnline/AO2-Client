@@ -472,11 +472,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_disable_url_sharing = new QAction("Disable URL Sharing", this);
   QAction* action_delete_download_ini = new QAction("Delete File", this);
 
-  QAction* action_preanim = new QAction("Preanim", this);
-  QAction* action_flip = new QAction("Flip", this);
+  action_preanim = new QAction("Preanim", this);
+  action_flip = new QAction("Flip", this);
   QAction* action_additive = new QAction("Additive", this);
-  QAction* action_immediate = new QAction("Immediate", this);
-  QAction* action_shownames = new QAction("Enable Shownames", this);
+  action_immediate = new QAction("Immediate", this);
+  action_shownames = new QAction("Enable Shownames", this);
   // Make 'em checkable
   action_hide->setCheckable(true);
   action_narrator->setCheckable(true);
