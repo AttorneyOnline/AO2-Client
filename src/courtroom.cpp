@@ -4904,8 +4904,8 @@ void Courtroom::set_character_sets(QString char_set)
         currentCategoryMenu = QSwappingMenu->addMenu(value);
 
         currentCategoryMenu->setContextMenuPolicy(Qt::CustomContextMenu);
-        connect(currentCategoryMenu, &QMenu::customContextMenuRequested, this, [this, currentCategoryMenu] {
-            on_qswap_context_menu_requested(currentCategoryMenu);
+        connect(currentCategoryMenu, &QMenu::customContextMenuRequested, this, [this, currentCategoryMenu](const QPoint &pos) {
+            on_qswap_context_menu_requested(currentCategoryMenu, pos);
         });
 
         added_categories[value] = currentCategoryMenu;
@@ -5300,7 +5300,7 @@ bool Courtroom::effects_dropdown_find_and_set(QString effect)
   return false;
 }
 
-void Courtroom::on_qswap_context_menu_requested(QMenu *menu)
+void Courtroom::on_qswap_context_menu_requested(QMenu *menu, const QPoint &pos)
 {
   QMenu *context_menu = new QMenu(this);
 
@@ -5327,6 +5327,7 @@ void Courtroom::on_qswap_context_menu_requested(QMenu *menu)
     add_action_to_menu(menu, character_name, character_name);
 
   });
+  context_menu->popup(menu->mapToGlobal(pos));
 }
 
 QString Courtroom::get_char_sfx()
