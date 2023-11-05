@@ -65,7 +65,7 @@ protected:
                 QPoint globalPos = QCursor::pos();
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
 
-                int expandZoneHeight = 22;
+                int expandZoneHeight = 6;
 
                 if (mainWindowPos.y() <= expandZoneHeight) {
                     if (!entered_zone)
