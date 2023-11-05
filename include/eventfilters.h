@@ -65,15 +65,14 @@ protected:
                 QPoint globalPos = QCursor::pos();
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
 
-                int expandZoneHeight = 6;
-                int thresholdHeight = 23;
+                int expandZoneHeight = 22;
 
                 if (mainWindowPos.y() <= expandZoneHeight) {
                     if (!entered_zone)
                         mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
                         entered_zone = true;
                 } else {
-                    if (entered_zone && mainWindowPos.y() >= thresholdHeight)
+                    if (entered_zone)
                         mainWindow->menuBar()->setFixedHeight(2);
                         entered_zone = false;
                 }
