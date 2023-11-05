@@ -6412,6 +6412,7 @@ void Courtroom::set_clock_visibility(int id, bool visible)
 
 void Courtroom::handle_clock(QString time)
 {
+  // Based off of DRO's original implementation. Credits to their team.
   int new_clock = time.toInt();
   if (new_clock < 0)
   {
@@ -6440,7 +6441,6 @@ void Courtroom::handle_clock(QString time)
   }
 
   ui_rp_clock->set_image(clock_filename);
-  // ui_rp_clock->start();
   ui_rp_clock->show();
 }
 
