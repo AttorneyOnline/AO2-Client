@@ -537,8 +537,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_courtroom->typing_signal(tt_state);
   }
   else if (header == "CU") { // Char URL packet for the Char Downloader
-    if (!courtroom_constructed || f_contents.isEmpty() || f_contents.size() < 4) {
-        // Ensure that f_contents has at least 4 elements to avoid index out of range access
+    if (!courtroom_constructed || f_contents.isEmpty() || f_contents.size() < 2) {
+        // Ensure that f_contents has at least 2 elements to avoid index out of range access
         qDebug() << "Invalid CU packet format!";
         goto end;
     }
