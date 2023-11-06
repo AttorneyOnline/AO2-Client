@@ -808,11 +808,16 @@ void Courtroom::set_courtroom_size()
   }
   else {
     m_courtroom_width = f_courtroom.width;
-    m_courtroom_height = Options::getInstance().menuBarLocked() ? f_courtroom.height + menu_bar->height() : f_courtroom.height;
+    m_courtroom_height = f_courtroom.height;
 
-    this->setFixedSize(f_courtroom.width, f_courtroom.height);
+    if (Options::getInstance().menuBarLocked()) {
+      this->setFixedSize(f_courtroom.width, f_courtroom.height + menu_bar->height());
+      ui_background->move(0, menu_bar->height());
+    } else {
+      this->setFixedSize(f_courtroom.width, f_courtroom.height);
+      ui_background->move(0, 0);
+    }
   }
-  ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
   ui_background->set_image("courtroombackground");
 }
