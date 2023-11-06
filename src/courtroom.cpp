@@ -808,7 +808,7 @@ void Courtroom::set_courtroom_size()
   }
   else {
     m_courtroom_width = f_courtroom.width;
-    m_courtroom_height = f_courtroom.height;
+    m_courtroom_height = Options::getInstance().menuBarLocked() ? f_courtroom.height + menu_bar->height() : f_courtroom.height;
 
     this->setFixedSize(f_courtroom.width, f_courtroom.height);
   }
@@ -1469,7 +1469,11 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     p_widget->hide();
   }
   else {
-    p_widget->move(design_ini_result.x, design_ini_result.y);
+    int menuBarHeight = menu_bar->height();
+
+    // Is the menu bar locked? If so, move the widgets a few pixels down to give it space
+    int y_position = Options::getInstance().menuBarLocked() ? design_ini_result.y + menuBarHeight : design_ini_result.y;
+    p_widget->move(design_ini_result.x, y_position);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
 }
