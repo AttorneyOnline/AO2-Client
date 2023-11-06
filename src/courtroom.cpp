@@ -1030,7 +1030,7 @@ void Courtroom::set_widgets()
     ui_music_display->hide();
   }
   else {
-    ui_music_display->move(design_ini_result.x, design_ini_result.y);
+    ui_music_display->move(design_ini_result.x, Options::getInstance().menuBarLocked() ? design_ini_result.y + menu_bar->height() : design_ini_result.y);
     ui_music_display->combo_resize(design_ini_result.width,
                                    design_ini_result.height);
   }
@@ -3147,8 +3147,9 @@ void Courtroom::initialize_chatbox()
 
   // We detached the text as parent from the chatbox so it doesn't get affected
   // by the screenshake.
-  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
-                      ui_vp_message->y() + ui_vp_chatbox->y());
+  if (!Options::getInstance().menuBarLocked())
+    ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
+                        ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
