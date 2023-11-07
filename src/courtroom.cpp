@@ -1484,7 +1484,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     int y_position = design_ini_result.y;
     
     if (Options::getInstance().menuBarLocked()) { // Trust me, this will get redone
-       if (!unaffected.contains(p_identifier) || p_identifier.contains("evidence_background") || !p_identifier.startsWith("evidence_"))
+       if (!unaffected.contains(p_identifier) && (!p_identifier.startsWith("evidence_") && p_identifier != "evidence_background"))
          y_position += menuBarHeight;
     }
     p_widget->move(design_ini_result.x, y_position);
