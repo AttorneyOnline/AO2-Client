@@ -3147,9 +3147,8 @@ void Courtroom::initialize_chatbox()
 
   // We detached the text as parent from the chatbox so it doesn't get affected
   // by the screenshake.
-  if (!Options::getInstance().menuBarLocked())
-    ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
-                        ui_vp_message->y() + ui_vp_chatbox->y());
+  ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
+                      ui_vp_message->y() + Options::getInstance().menuBarLocked() ? ui_vp_chatbox->y() - menu_bar->height() : ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
