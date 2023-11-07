@@ -1477,7 +1477,11 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     int menuBarHeight = menu_bar->height();
 
     // Is the menu bar locked? If so, move the widgets a few pixels down to give it space
-    int y_position = Options::getInstance().menuBarLocked() ? design_ini_result.y + menuBarHeight : design_ini_result.y;
+    int y_position = design_ini_result.y;
+    
+    if (Options::getInstance().menuBarLocked() && p_identifier != "message" && p_identifier != "showname") {
+        y_position += menuBarHeight;
+    }
     p_widget->move(design_ini_result.x, y_position);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
@@ -3148,7 +3152,7 @@ void Courtroom::initialize_chatbox()
   // We detached the text as parent from the chatbox so it doesn't get affected
   // by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(),
-                      ui_vp_message->y() + Options::getInstance().menuBarLocked() ? ui_vp_chatbox->y() - menu_bar->height() : ui_vp_chatbox->y());
+                      ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
