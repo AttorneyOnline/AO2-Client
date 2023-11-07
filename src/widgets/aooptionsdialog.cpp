@@ -418,9 +418,6 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, hide_typing_cb)
   FROM_UI(QCheckBox, stop_typing_cb)
   FROM_UI(QCheckBox, menu_bar_visible_btn_cb)
-  connect(ui_menu_bar_visible_btn_cb, &QCheckBox::clicked, this, // Needed for the Menu Bar to update
-        &::AOOptionsDialog::onReloadThemeClicked);              // Courtroom's dimensions
-
   FROM_UI(QCheckBox, asset_streaming_cb)
   FROM_UI(QCheckBox, image_streaming_cb)
 
