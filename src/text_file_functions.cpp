@@ -184,25 +184,29 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
                                                     QString p_file,
                                                     QString p_misc)
 {
-  pos_size_type return_value;
-  return_value.x = 0;
-  return_value.y = 0;
-  return_value.width = -1;
-  return_value.height = -1;
   QString f_result = get_design_element(p_identifier, p_file, p_misc);
 
   QStringList sub_line_elements = f_result.split(",");
 
-  if (sub_line_elements.size() < 4)
+  if (sub_line_elements.size() < 4) {
+    pos_size_type return_value;
+    return_value.x = 0;
+    return_value.y = 0;
+    return_value.width = -1;
+    return_value.height = -1;
     return return_value;
+  }
 
-  return_value.x = sub_line_elements.at(0).toInt();
-  return_value.y = sub_line_elements.at(1).toInt();
-  return_value.width = sub_line_elements.at(2).toInt();
-  return_value.height = sub_line_elements.at(3).toInt();
+  pos_size_type return_value;
+
+  return_value.x = sub_line_elements[0].toInt();
+  return_value.y = sub_line_elements[1].toInt();
+  return_value.width = sub_line_elements[2].toInt();
+  return_value.height = sub_line_elements[3].toInt(); 
 
   return return_value;
 }
+
 QString AOApplication::get_design_element(QString p_identifier, QString p_file,
                                           QString p_misc)
 {
