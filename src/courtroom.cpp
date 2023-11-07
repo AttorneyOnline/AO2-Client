@@ -1477,7 +1477,8 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     int menuBarHeight = menu_bar->height();
     QStringList unaffected = {"message", "showname", "back_to_lobby", "char_buttons",  // A list of widgets that shouldn't be affected
                               "char_select_left", "char_select_right", "spectator", "char_password", // by the menu bar repositioning
-                                "ui_music_name"};
+                                "ui_music_name", "char_list", "char_taken", "char_passworded",
+                                "char_search"};
 
     // Is the menu bar locked? If so, move the widgets a few pixels down to give it space
     int y_position = design_ini_result.y;
