@@ -73,7 +73,7 @@ protected:
                         entered_zone = true;
                 } else {
                     if (entered_zone)
-                        mainWindow->menuBar()->setFixedHeight(2);
+                        mainWindow->menuBar()->setFixedHeight(0);
                         entered_zone = false;
                 }
             }
