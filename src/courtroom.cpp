@@ -464,6 +464,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_image_streaming->setEnabled(false);
   action_reload_theme->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
   action_change_character->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
+  action_open_dl_manager->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
 
   // Character tab
   action_hide = new QAction("Hide", this);
