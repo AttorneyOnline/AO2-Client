@@ -3266,7 +3266,7 @@ void Courtroom::handle_callwords()
   // Loop through each word in the call words list
   for (const QString &word : qAsConst(call_words)) {
     // If our message contains that specific call word
-    if (f_message.contains(word, Qt::CaseInsensitive)) {
+    if (f_message.contains(word.trimmed(), Qt::CaseInsensitive)) {
       // Play the call word sfx on the modcall_player sound container
       modcall_player->play(ao_app->get_court_sfx("word_call"));
       // Make the window flash
