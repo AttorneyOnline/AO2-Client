@@ -1482,8 +1482,8 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     p_widget->hide();
   }
   else {
-    int menuBarHeight = menu_bar->height();
-    qDebug() << "Menu bar height: " << menuBarHeight;
+    int menuBarHeight = (menu_bar->height() == 19) ? 21 : menuBarHeight; // Band-aid for RC2. Will investigate the issue and remove it after.
+    // qDebug() << "Menu bar height: " << menuBarHeight;
     QSet<QString> unaffected = {"message", "showname", "back_to_lobby", "char_buttons",  // A list of widgets that shouldn't be affected
                               "char_select_left", "char_select_right", "spectator", "char_password", // by the menu bar repositioning
                                 "char_list", "char_taken", "char_passworded", "char_search",
@@ -1493,7 +1493,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     // Is the menu bar locked? If so, move the widgets a few pixels down to give it space
     int y_position = design_ini_result.y;
 
-    qDebug() << "Y position 1: " << y_position;
+    // qDebug() << "Y position 1: " << y_position;
     
     if (Options::getInstance().menuBarLocked()) { // Trust me, this will get redone
        // Should the widget be unaffected? If not, we check if it's on the "affect" list. 
@@ -1503,7 +1503,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     }
     p_widget->move(design_ini_result.x, y_position);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
-    qDebug() << "Y position 2: " << y_position;
+    // qDebug() << "Y position 2: " << y_position;
   }
 }
 
