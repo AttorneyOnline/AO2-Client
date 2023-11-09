@@ -38,7 +38,7 @@ class AOOptionsDialog : public QDialog {
 public:
   explicit AOOptionsDialog(QDialog *parent = nullptr,
                            AOApplication *p_ao_app = nullptr,
-                           int initial_tab);
+                           int initial_tab = 0);
   void addCharacterRow(QString characterName, QString downloadLink);
   void removeCharacterRow(QString characterName);
 
