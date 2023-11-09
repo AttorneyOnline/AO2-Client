@@ -6191,7 +6191,7 @@ void Courtroom::on_call_mod_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_settings_clicked() { ao_app->call_settings_menu(); }
+void Courtroom::on_settings_clicked() { ao_app->call_settings_menu(0); }
 
 void Courtroom::on_pre_clicked() { ui_ic_chat_message->setFocus(); }
 
