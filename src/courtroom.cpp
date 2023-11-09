@@ -550,9 +550,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   connect(action_set_dl, &QAction::triggered, this, &Courtroom::on_set_dl_clicked);
+  connect(action_disable_url_sharing, &QAction::checkableChanged(true), this, [this]() {
+      search_download_file("0"); // Stops the client from sending URLs. Also removes your link from the DL Manager.
+  });
   connect(action_broadcast_to_server, &QAction::triggered, this, [this]() {
-      if (!action_disable_url_sharing->isChecked())
-          search_download_file("1");
+      search_download_file("1"); // Bypasses "Disable URL sharing"!
   });
   connect(action_delete_download_ini, &QAction::triggered, this, [this, action_delete_download_ini]() {
     QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
