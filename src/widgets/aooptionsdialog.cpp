@@ -746,6 +746,7 @@ void AOOptionsDialog::setupUI()
       }
     }
   });
+  FROM_UI(QTabWidget, settings_tabs)
   ui_settings_tabs->setCurrentIndex(1);
   updateValues();
 }
