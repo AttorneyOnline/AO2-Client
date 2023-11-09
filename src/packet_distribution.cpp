@@ -542,11 +542,19 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         qDebug() << "Invalid CU packet format!";
         goto end;
     }
-
+      
     int cu_authority = f_contents.at(0).toInt(); // 0 = Server-shared | 1 = User-shared
     int cu_action = f_contents.at(1).toInt(); // 0 = Delete entry | 1 = Add entry | 2 = Clear entries
-    QString cu_name = f_contents.at(2);
-    QString cu_link = QUrl::fromPercentEncoding(f_contents.at(3).toUtf8());
+    QString cu_name;
+    QString cu_link;
+    
+    if (f_contents.size() >= 3) {
+        cu_name = f_contents.at(2);
+    }
+    
+    if (f_contents.size() >= 4) {
+        cu_link = QUrl::fromPercentEncoding(f_contents.at(3).toUtf8());
+    }
 
     TableData dl_table;
 
