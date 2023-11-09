@@ -25,11 +25,12 @@
   ;                                                                            \
   ui_##name = findChild<type *>(#name);
 
-AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app)
+AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app, int initial_tab)
     : QDialog(parent)
 {
   ao_app = p_ao_app;
   setupUI();
+  ui_settings_tabs->setCurrentIndex(initial_tab);
 }
 
 void AOOptionsDialog::populateAudioDevices()
