@@ -160,9 +160,9 @@ void AOApplication::loading_cancelled()
   destruct_courtroom();
 }
 
-void AOApplication::call_settings_menu()
+void AOApplication::call_settings_menu(int initial_tab)
 {
-    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this, 0);
+    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this, initial_tab);
     if (courtroom_constructed) {
         connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
                 w_courtroom, &Courtroom::on_reload_theme_clicked);
