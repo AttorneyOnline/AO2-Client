@@ -37,12 +37,14 @@ class AOOptionsDialog : public QDialog {
   Q_OBJECT
 public:
   explicit AOOptionsDialog(QDialog *parent = nullptr,
-                           AOApplication *p_ao_app = nullptr);
+                           AOApplication *p_ao_app = nullptr,
+                           int initial_tab = 0);
   void addCharacterRow(QString characterName, QString downloadLink);
   void removeCharacterRow(QString characterName);
 
 private:
   AOApplication *ao_app;
+  QTabWidget *ui_settings_tabs;
 
   // Dialog interaction buttons. Save/Discard/Restore Defaults
   QDialogButtonBox *ui_settings_buttons;

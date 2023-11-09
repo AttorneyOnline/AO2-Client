@@ -79,7 +79,7 @@ public:
 
   void send_server_packet(AOPacket *p_packet);
 
-  void call_settings_menu();
+  void call_settings_menu(int initial_tab);
   void call_announce_menu(Courtroom *court);
 
   qint64 latency = 0;

@@ -469,7 +469,7 @@ void Lobby::onReloadThemeRequested()
 
 void Lobby::onSettingsRequested()
 {
-  AOOptionsDialog options(nullptr, ao_app);
+  AOOptionsDialog options(nullptr, ao_app, 0);
   connect(&options, &AOOptionsDialog::reloadThemeRequest, this,
           &Lobby::onReloadThemeRequested);
   options.exec();

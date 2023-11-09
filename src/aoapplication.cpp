@@ -9,6 +9,8 @@
 
 #include "widgets/aooptionsdialog.h"
 
+#include <QFile>
+
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
 void message_handler(QtMsgType type, const QMessageLogContext &context,
@@ -160,18 +162,32 @@ void AOApplication::loading_cancelled()
   destruct_courtroom();
 }
 
-void AOApplication::call_settings_menu()
+void AOApplication::call_settings_menu(int initial_tab)
 {
-    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this);
-    if (courtroom_constructed) {
-        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
-                w_courtroom, &Courtroom::on_reload_theme_clicked);
-    }
+    try {
+      AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this, initial_tab);
+      if (courtroom_constructed) {
+          connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
+                  w_courtroom, &Courtroom::on_reload_theme_clicked);
+      }
+  
+      if(lobby_constructed) {
+      }
+      l_dialog->exec();
+      delete l_dialog;
 
-    if(lobby_constructed) {
+    } catch (const std::exception &e) {
+      qCritical() << "Exception caught:" << e.what();
+  
+      QFile logFile("error.log");
+      if (logFile.open(QIODevice::Append | QIODevice::Text)) {
+          QTextStream stream(&logFile);
+          stream << "Exception caught: " << e.what() << "\n";
+          logFile.close();
+      } else {
+          qCritical() << "Failed to open log file.";
     }
-    l_dialog->exec();
-    delete l_dialog;
+  }
 }
 
 // Callback for when BASS device is lost
