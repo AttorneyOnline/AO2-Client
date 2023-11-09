@@ -1482,7 +1482,9 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     p_widget->hide();
   }
   else {
-    int menuBarHeight = (menu_bar->height() == 19) ? 21 : menuBarHeight; // Band-aid for RC2. Will investigate the issue and remove it after.
+    int menuBarHeight = menu_bar->height();
+    if (menuBarHeight == 19)
+      menuBarHeight = 21;
     // qDebug() << "Menu bar height: " << menuBarHeight;
     QSet<QString> unaffected = {"message", "showname", "back_to_lobby", "char_buttons",  // A list of widgets that shouldn't be affected
                               "char_select_left", "char_select_right", "spectator", "char_password", // by the menu bar repositioning
