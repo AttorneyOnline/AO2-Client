@@ -30,7 +30,6 @@ AOOptionsDialog::AOOptionsDialog(QDialog *parent, AOApplication *p_ao_app, int i
 {
   ao_app = p_ao_app;
   setupUI();
-  ui_settings_tabs->setCurrentIndex(initial_tab);
 }
 
 void AOOptionsDialog::populateAudioDevices()
@@ -747,6 +746,7 @@ void AOOptionsDialog::setupUI()
       }
     }
   });
+  ui_settings_tabs->setCurrentIndex(1);
   updateValues();
 }
 
