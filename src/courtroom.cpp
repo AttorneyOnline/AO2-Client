@@ -457,6 +457,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QAction* action_change_character = new QAction("Change character", this);
   QAction* action_reload_theme = new QAction("Reload theme", this);
   QAction* action_call_mod = new QAction("Call mod", this);
+  QAction* action_open_dl_manager = new QAction("DL Manager", this);
   QAction* action_image_streaming = new QAction("Image streaming", this);
   QAction* action_settings = new QAction("Settings", this);
   QAction* action_return_lobby = new QAction("Return to Lobby", this);
@@ -500,10 +501,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // QAction* action_reload_categories = new QAction("Reload Categories", this);
 
   // Why Qt, why
-  MainMenu->addAction(action_change_character);     //
-  MainMenu->addAction(action_reload_theme);        //
-  MainMenu->addAction(action_call_mod);           //  MAIN TAB
-  MainMenu->addSeparator();                      //
+  MainMenu->addAction(action_change_character);      //
+  MainMenu->addAction(action_reload_theme);         //
+  MainMenu->addAction(action_call_mod);            //  MAIN TAB
+  MainMenu->addSeparator();                       //
+  MainMenu->addAction(action_open_dl_manager);   //
   MainMenu->addAction(action_image_streaming);  //
   MainMenu->addAction(action_settings);        //
   MainMenu->addAction(action_return_lobby);   //
@@ -540,6 +542,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
   connect(action_call_mod, &QAction::triggered, this, &Courtroom::on_call_mod_clicked);
+  connect(action_open_dl_manager, &QAction::triggered, this, [this]() { ao_app->call_settings_menu(1); });
   connect(action_settings, &QAction::triggered, this, &Courtroom::on_settings_clicked);
   connect(action_return_lobby, &QAction::triggered, this, &Courtroom::on_return_to_lobby_clicked);
 
