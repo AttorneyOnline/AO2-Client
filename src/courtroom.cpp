@@ -550,7 +550,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_open_evidence, &QAction::triggered, this, &Courtroom::on_evidence_button_clicked);
 
   connect(action_set_dl, &QAction::triggered, this, &Courtroom::on_set_dl_clicked);
-  connect(action_disable_url_sharing, &QAction::toggled, this, [this, action_disable_url_sharing]() {
+  connect(action_disable_url_sharing, &QAction::toggled, this, [this]() {
       if (action_disable_url_sharing->isChecked(true)) {
         search_download_file("0"); // Stops the client from sending URLs. Also removes your link from the DL Manager.
       }
