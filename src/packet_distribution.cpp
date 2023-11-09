@@ -359,20 +359,28 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     log_to_demo = false;
   }
   else if (header == "BN") {
-    if (!courtroom_constructed || f_contents.isEmpty())
-      goto end;
-
-    if (f_contents.size() < 3) {
-      // We have a pos included in the background packet!
-      if (!f_contents.at(1).isEmpty())
-        //Not touching it when its empty.
-        w_courtroom->set_side(f_contents.at(1));
-    } else if (f_contents.size() >= 3) {
-      // There's an overlay defined (desk image)
-      if (!f_contents.at(2).isEmpty())
-        w_courtroom->server_overlay = f_contents.at(2);
+    if (!courtroom_constructed || f_contents.size() < 1) {
+        goto end;
     }
-    w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2); // BG, true/false
+
+    QString background = f_contents.at(0);
+    QString pos = (f_contents.size() >= 2) ? f_contents.at(1) : QString();
+    QString overlay = (f_contents.size() == 3) ? f_contents.at(2) : QString();
+
+    // Safety check for the background
+    if (!background.isEmpty()) {
+        w_courtroom->set_background(background, !pos.isEmpty());
+
+        // Safety check for the pos (side)
+        if (!pos.isEmpty()) {
+            w_courtroom->set_side(pos);
+        }
+
+        // Safety check for the overlay
+        if (!overlay.isEmpty()) {
+            w_courtroom->server_overlay = overlay;
+        }
+     }
   }
   else if (header == "SP") {
     if (!courtroom_constructed || f_contents.isEmpty())
