@@ -26,13 +26,14 @@ private:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QTextEdit *textEdit = qobject_cast<QTextEdit *>(obj);
-        if (textEdit != nullptr) {
+        QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
+        if (textEdit != nullptr && mainWindow != nullptr) {
             // Key press detection
             if (event->type() == QEvent::KeyPress) {
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
                 if (keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    on_chat_return_pressed();
+                    mainWindow->on_chat_return_pressed();
                     return true;
                 }
             }
