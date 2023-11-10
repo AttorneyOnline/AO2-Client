@@ -2316,11 +2316,17 @@ void Courtroom::on_chat_return_pressed()
     }
   }
   if (ao_app->additive_text_supported) {
-    if (ui_ic_chat_message->text().length() > 1 && ui_ic_chat_message->text().startsWith(" ")) {
-      auto_additive = true;
-      ui_additive->setChecked(true);
+    bool auto_additive_check = false;
+    const QString& message = ui_ic_chat_message->text();
+    if (message.startsWith(" ")) {
+      for (const QChar& c : message) {
+          if (!c.isSpace()) {
+              auto_additive_check = true;
+              break;
+          }
+      }
     }
-    packet_contents.append(ui_additive->isChecked() ? "1" : "0");
+    packet_contents.append((auto_additive_check || ui_additive->isChecked()) ? "1" : "0");
   }
   if (ao_app->effects_supported) {
     QString p_effect_folder =
@@ -3946,7 +3952,7 @@ void Courtroom::start_chat_ticking()
   if (m_chatmessage[MESSAGE].isEmpty()) {
     // since the message is empty, it's technically done ticking
     text_state = 2;
-    if (m_chatmessage[ADDITIVE] == "1" || auto_additive) {
+    if (m_chatmessage[ADDITIVE] == "1") {
       // Cool behavior
       ui_vp_chatbox->show();
       ui_vp_message->show();
@@ -4269,10 +4275,6 @@ void Courtroom::chat_tick()
                                       false);
         anim_state = 3;
       }
-    }
-    if (auto_additive) {
-      auto_additive = false;
-      ui_additive->setChecked(false);
     }
     // Continue ticking
     chat_tick_timer->start(msg_delay);
@@ -6209,7 +6211,7 @@ void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_additive_clicked()
 {
-  if (ui_additive->isChecked() && !auto_additive) {
+  if (ui_additive->isChecked()) {
     ui_ic_chat_message->home(false); // move cursor to the start of the message
     ui_ic_chat_message->insert(" "); // preface the message by whitespace
     ui_ic_chat_message->end(false);  // move cursor to the end of the message
