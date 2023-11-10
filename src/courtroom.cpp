@@ -574,17 +574,17 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
     int reply = msgBox.exec();
     
-    if (reply == QMessageBox::Yes) {
-        QMessageBox msgBox;
+    if (reply == QMessageBox::Yes) {  // This will be remade with the notification feature
+        QMessageBox msgBox_2;
+        msgBox_2.setStyleSheet("QLabel {color:black}");
         if (QFile::remove(characterPath + "download.ini")) {
-            msgBox.setText("Successfully deleted Download.ini.");
-            msgBox.setStyleSheet("QLabel {color:black}");
+            msgBox_2.setText("Successfully deleted Download.ini.");
             qDebug() << "Successfully deleted Download.ini.";
         } else {
-            msgBox.setText("Failed to delete Download.ini.");
-            msgBox.setStyleSheet("QLabel {color:black}");
+            msgBox_2.setText("Failed to delete Download.ini.");
             qDebug() << "Failed to delete Download.ini.";
         }
+        msgBox_2.exec();
     }
   });
 
