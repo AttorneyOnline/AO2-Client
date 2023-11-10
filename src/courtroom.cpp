@@ -745,6 +745,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_flip, &AOButton::clicked, this, &Courtroom::on_flip_clicked);
   connect(ui_additive, &AOButton::clicked, this, &Courtroom::on_additive_clicked);
   connect(ui_guard, &AOButton::clicked, this, &Courtroom::on_guard_clicked);
+  connect(ui_immediate, &AOButton::clicked, this, [this]() { ui_ic_chat_message->setFocus(); });
 
   connect(ui_showname_enable, &AOButton::clicked, this,
           &Courtroom::on_showname_enable_clicked);
