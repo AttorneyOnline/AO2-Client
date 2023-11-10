@@ -17,7 +17,11 @@ class AOLineEditFilter : public QObject
 {
     Q_OBJECT
 public:
+    //AOLineEditFilter(QWidget *p_parent, AOApplication *p_ao_app);
     bool preserve_selection = false;
+
+private:
+    AOApplication *ao_app;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
@@ -28,7 +32,7 @@ protected:
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
                 if (keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    w_courtroom->on_chat_return_pressed();
+                    ao_app->w_courtroom->on_chat_return_pressed();
                     return true;
                 }
             }
