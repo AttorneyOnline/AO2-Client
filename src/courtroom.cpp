@@ -215,7 +215,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setText(Options::getInstance().shownameOnJoin());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
 
-  ui_ic_chat_message = new QLineEdit(this);
+  ui_ic_chat_message = new QTextEdit(this);
   ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message in-character"));
   ui_ic_chat_message_filter = new AOLineEditFilter();
@@ -627,7 +627,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(chat_tick_timer, &QTimer::timeout, this, &Courtroom::chat_tick);
 
-  connect(ui_ic_chat_message, &QLineEdit::textChanged, this, &Courtroom::onTextChanged);
+  connect(ui_ic_chat_message, &QTextEdit::textChanged, this, &Courtroom::onTextChanged);
   connect(typingTimer, &QTimer::timeout, this, &Courtroom::onTypingTimeout);
 
 
@@ -667,8 +667,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_mute_list, &QListWidget::clicked, this,
           &Courtroom::on_mute_list_clicked);
 
-  connect(ui_ic_chat_message, &QLineEdit::returnPressed, this,
-          &Courtroom::on_chat_return_pressed);
+  //connect(ui_ic_chat_message, &QLineEdit::returnPressed, this,
+  //        &Courtroom::on_chat_return_pressed);
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
           &Courtroom::on_ooc_return_pressed);
