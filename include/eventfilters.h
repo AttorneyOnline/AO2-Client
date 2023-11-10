@@ -32,7 +32,7 @@ protected:
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
                 if (keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    ao_app->w_courtroom->on_chat_return_pressed();
+                    on_chat_return_pressed();
                     return true;
                 }
             }
