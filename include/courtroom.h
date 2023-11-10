@@ -366,6 +366,8 @@ public:
   void set_clock_visibility(int id, bool visible);
   void skip_clocks(qint64 msecs);
 
+  void on_chat_return_pressed();
+
   qint64 pong();
   // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
@@ -930,8 +932,6 @@ public slots:
   void onTextChanged();
 
   void onTypingTimeout();
-
-  void on_chat_return_pressed();
 
 private slots:
   void start_chat_ticking();
