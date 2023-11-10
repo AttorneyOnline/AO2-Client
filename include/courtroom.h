@@ -931,6 +931,8 @@ public slots:
 
   void onTypingTimeout();
 
+  void on_chat_return_pressed();
+
 private slots:
   void start_chat_ticking();
   void play_sfx();
@@ -939,8 +941,6 @@ private slots:
 
   void on_mute_list_clicked(QModelIndex p_index);
   void on_pair_list_clicked(QModelIndex p_index);
-
-  void on_chat_return_pressed();
 
   void on_ooc_return_pressed();
 
