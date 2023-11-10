@@ -322,17 +322,22 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     QString emote = " ¨<" + f_emote + ">¨ ";
     
     if (ui_ic_chat_message->hasFocus()) {
-      int cursorPosition = ui_ic_chat_message->cursorPosition();
-      
-      ui_ic_chat_message->insert(emote);
-      
-      ui_ic_chat_message->setCursorPosition(cursorPosition + emote.length() + 1);
+        QTextCursor cursor = ui_ic_chat_message->textCursor();
+        int cursorPosition = cursor.position();
+    
+        cursor.insertText(emote);
+    
+        cursor.setPosition(cursorPosition + emote.length() + 1);
+        ui_ic_chat_message->setTextCursor(cursor);
     } else {
-        QString temp_text = ui_ic_chat_message->text();
+        QTextCursor cursor = ui_ic_chat_message->textCursor();
+        QString temp_text = ui_ic_chat_message->toPlainText();
         temp_text += emote;
-        ui_ic_chat_message->setText(temp_text);
-      }
-      ui_ic_chat_message->setFocus();
+        ui_ic_chat_message->setPlainText(temp_text);
+        cursor.movePosition(QTextCursor::End);
+        ui_ic_chat_message->setTextCursor(cursor);
+       }
+    ui_ic_chat_message->setFocus();
      }
   ));
 
