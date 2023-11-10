@@ -757,7 +757,7 @@ private:
 
   QComboBox *ui_pair_order_dropdown;
 
-  QLineEdit *ui_ic_chat_message;
+  QTextEdit *ui_ic_chat_message;
   AOLineEditFilter *ui_ic_chat_message_filter;
   QLineEdit *ui_ic_chat_name;
 
