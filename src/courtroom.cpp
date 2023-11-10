@@ -216,7 +216,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
 
   ui_ic_chat_message = new QTextEdit(this);
-  ui_ic_chat_message->setFrame(false);
+  // ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message in-character"));
   ui_ic_chat_message_filter = new AOLineEditFilter();
   ui_ic_chat_message_filter->preserve_selection = true;
@@ -2178,7 +2178,7 @@ void Courtroom::on_chat_return_pressed()
     packet_contents.append(ao_app->get_emote(current_char, current_emote)); 
   }
 
-  packet_contents.append(ui_ic_chat_message->text());
+  packet_contents.append(ui_ic_chat_message->toPlainText());
 
   packet_contents.append(f_side);
 
@@ -2318,7 +2318,7 @@ void Courtroom::on_chat_return_pressed()
   }
   if (ao_app->additive_text_supported) {
     bool auto_additive_check = false;
-    const QString& message = ui_ic_chat_message->text();
+    const QString& message = ui_ic_chat_message->toPlainText();
     if (message.startsWith(" ")) {
       for (const QChar& c : message) {
           if (!c.isSpace()) {
@@ -2369,7 +2369,7 @@ void Courtroom::reset_ui()
 {
   ui_ic_chat_message->clear();
   if (ui_additive->isChecked())
-    ui_ic_chat_message->insert(" ");
+    ui_ic_chat_message->insertPlainText(" ");
   objection_state = 0;
   realization_state = 0;
   screenshake_state = 0;
@@ -5664,7 +5664,7 @@ void Courtroom::on_hold_it_clicked()
 
 void Courtroom::onTextChanged()
 {
-  QString text = ui_ic_chat_message->text();
+  QString text = ui_ic_chat_message->toPlainText();
   QString emotion_number = QString::number(current_button_selected + 1);
 
   if (!Options::getInstance().stopTypingIcon()) {
@@ -5999,37 +5999,36 @@ void Courtroom::gen_char_rgb_list(QString p_misc) {
 
 void Courtroom::on_text_color_changed(int p_color)
 {
-  if (ui_ic_chat_message->selectionStart() != -1) // We have a selection!
+  if (ui_ic_chat_message->textCursor().hasSelection()) // Check if we have a selection
   {
-    int c = color_row_to_number.at(p_color);
-    QString markdown_start = color_markdown_start_list.at(c);
-    if (markdown_start.isEmpty()) {
-      qWarning() << "Color list dropdown selected a non-existent markdown "
-                  "start character";
-      return;
-    }
-    QString markdown_end = color_markdown_end_list.at(c);
-    if (markdown_end.isEmpty())
-      markdown_end = markdown_start;
-    int start = ui_ic_chat_message->selectionStart();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-    int end = ui_ic_chat_message->selectionEnd() + 1;
-#else
-    int end = ui_ic_chat_message->selectedText().length() + 1;
-#endif
+      int c = color_row_to_number.at(p_color);
+      QString markdown_start = color_markdown_start_list.at(c);
+      if (markdown_start.isEmpty()) {
+          qWarning() << "Color list dropdown selected a non-existent markdown "
+                        "start character";
+          return;
+      }
+      QString markdown_end = color_markdown_end_list.at(c);
+      if (markdown_end.isEmpty())
+          markdown_end = markdown_start;
 
-    ui_ic_chat_message->setCursorPosition(start);
-    ui_ic_chat_message->insert(markdown_start);
-    ui_ic_chat_message->setCursorPosition(end);
-    ui_ic_chat_message->insert(markdown_end);
-    //    ui_ic_chat_message->end(false);
-    ui_text_color->setCurrentIndex(0);
+      QTextCursor cursor = ui_ic_chat_message->textCursor();
+      int start = cursor.selectionStart();
+      int end = cursor.selectionEnd();
+
+      cursor.setPosition(start);
+      cursor.insertText(markdown_start);
+      cursor.setPosition(end + markdown_start.length());
+      cursor.insertText(markdown_end);
+      ui_ic_chat_message->setTextCursor(cursor);
+      
+      ui_text_color->setCurrentIndex(0);
   }
   else {
-    if (p_color != -1 && p_color < color_row_to_number.size())
-      text_color = color_row_to_number.at(p_color);
-    else
-      text_color = 0;
+      if (p_color != -1 && p_color < color_row_to_number.size())
+          text_color = color_row_to_number.at(p_color);
+      else
+          text_color = 0;
   }
   ui_ic_chat_message->setFocus();
 }
@@ -6213,10 +6212,12 @@ void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
 void Courtroom::on_additive_clicked()
 {
   if (ui_additive->isChecked()) {
-    ui_ic_chat_message->home(false); // move cursor to the start of the message
-    ui_ic_chat_message->insert(" "); // preface the message by whitespace
-    ui_ic_chat_message->end(false);  // move cursor to the end of the message
-                                     // without selecting anything
+    QTextCursor cursor = ui_ic_chat_message->textCursor();
+    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor); // move cursor to the start of the message
+    cursor.insertText(" ");                                          // preface the message by whitespace
+    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor); // move cursor to the end of the message...
+                                                                   // without selecting anything
+    ui_ic_chat_message->setTextCursor(cursor);
   }
   ui_ic_chat_message->setFocus();
 }
