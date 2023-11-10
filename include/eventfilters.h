@@ -2,9 +2,11 @@
 #define EVENTFILTERS_H
 
 #include "options.h"
+#include "courtroom.h"
 
 #include <QEvent>
 #include <QLineEdit>
+#include <QTextEdit>
 #include <QMenuBar>
 #include <QTimer>
 #include <QDebug>
@@ -18,25 +20,34 @@ public:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
-        QLineEdit *lineEdit = qobject_cast<QLineEdit *>(obj);
-       if (event->type() == QEvent::FocusOut && lineEdit != nullptr && preserve_selection) { // lost focus
-            int start = lineEdit->selectionStart();
-          #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-            int len = lineEdit->selectionLength();
-          #else
-            int len = lineEdit->selectedText().length();
-          #endif
-            if (start != -1 && len != -1) {
-              lineEdit->setSelection(start, len);\
-              return true;
+        QTextEdit *textEdit = qobject_cast<QTextEdit *>(obj);
+        if (textEdit != nullptr) {
+            // Key press detection
+            if (event->type() == QEvent::KeyPress) {
+                QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+                if (keyEvent->key() == Qt::Key_Return) {
+                    qDebug("Enter Key Pressed..."); // Debug it for now
+                    on_chat_return_pressed();
+                    return true;
+                }
+            }
+
+            // Focus-out event handling
+            if (event->type() == QEvent::FocusOut && preserve_selection) {
+                QTextCursor cursor = textEdit->textCursor();
+                int start = cursor.selectionStart();
+                int len = cursor.selectionEnd() - start;
+                if (start != -1 && len != -1) {
+                    cursor.setPosition(start);
+                    cursor.setPosition(start + len, QTextCursor::KeepAnchor);
+                    textEdit->setTextCursor(cursor);
+                    return true;
+                }
             }
         }
         return false;
     }
-signals:
-    void double_clicked();
 };
-
 class QMenuBarFilter : public QObject
 {
     Q_OBJECT
