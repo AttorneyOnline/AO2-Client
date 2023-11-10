@@ -1,6 +1,7 @@
 #ifndef EVENTFILTERS_H
 #define EVENTFILTERS_H
 
+#include "aoapplication.h"
 #include "options.h"
 #include "courtroom.h"
 
@@ -27,7 +28,7 @@ protected:
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
                 if (keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    on_chat_return_pressed();
+                    w_courtroom->on_chat_return_pressed();
                     return true;
                 }
             }
