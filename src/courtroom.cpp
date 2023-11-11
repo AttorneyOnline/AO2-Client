@@ -459,6 +459,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   CharacterMenu = menu_bar->addMenu("Character");
   RoleplayMenu = menu_bar->addMenu("Roleplay");
   QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+  ThemeMenu = menu_bar->addMenu("Theme");
 
   QSwappingMenu->setTearOffEnabled(true); // Make the QSwapping menu separable
 
@@ -509,6 +510,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // Swapping tab
   QAction* action_load_set = new QAction("Load char set...", this);
   // QAction* action_reload_categories = new QAction("Reload Categories", this);
+
+  // Theme tab
+  QAction* 
 
   // Why Qt, why
   MainMenu->addAction(action_change_character);      //
@@ -699,7 +703,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this, completer]() {
       int row = completer->popup()->currentIndex().row();
       suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
-      if (!suggestionSelected) {
+      qDebug() << row;
+      qDebug() << "Is the popup visible? " << completer->popup()->isVisible();
+      if (!suggestionSelected || !completer->popup()->isVisible()) {
           on_ooc_return_pressed();
       }
       suggestionSelected = false;
