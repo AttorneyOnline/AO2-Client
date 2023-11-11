@@ -692,7 +692,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //        &Courtroom::on_ooc_return_pressed);
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
-         this, [this, completer] {
+         this, [this, completer]() {
             if (completer->currentCompletion().isEmpty()) {
                 on_ooc_return_pressed();
             }
