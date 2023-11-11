@@ -34,9 +34,9 @@ protected:
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
                 if (keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    if (aoApp->w_courtroom != nullptr) {
-                        aoApp->w_courtroom->on_chat_return_pressed();
-                    }
+                    //if (aoApp->w_courtroom != nullptr) {
+                    //    aoApp->w_courtroom->on_chat_return_pressed();
+                    //}
                     return true;
                  }
               }
