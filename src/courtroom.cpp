@@ -677,7 +677,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           &Courtroom::on_mute_list_clicked);
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-      this, [this](const QString& suggestion) {
+      this, [this, completer](const QString& suggestion) {
         ui_ooc_chat_message->blockSignals(true);
         completer->popup()->hide();
         ui_ooc_chat_message->blockSignals(false);
