@@ -2,7 +2,7 @@
 #define EVENTFILTERS_H
 
 #include "options.h"
-#include "courtroom.h"
+//#include "courtroom.h"
 
 #include <QEvent>
 #include <QLineEdit>
@@ -89,17 +89,17 @@ class QTextEditFilter : public QObject
     Q_OBJECT
 
 public:
-    QTextEditFilter(QWidget *p_parent, AOApplication *p_ao_app)
-    {
-      ao_app = p_ao_app;
-      m_parent = p_parent;
-    }
+    //QTextEditFilter(QWidget *p_parent, AOApplication *p_ao_app)
+    //{
+    //  ao_app = p_ao_app;
+    //  m_parent = p_parent;
+    //}
     // void Courtroom::chat_return_pressed() { on_chat_return_pressed(); }
     bool text_edit_preserve_selection = false;
 
 private:
-    AOApplication *ao_app;
-    QWidget *m_parent;
+    //AOApplication *ao_app;
+    //QWidget *m_parent;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
