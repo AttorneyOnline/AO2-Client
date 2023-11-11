@@ -696,16 +696,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
   //        &Courtroom::on_ooc_return_pressed);
 
-  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
-        [this, completer]() {
-          QModelIndex currentIndex = completer->popup()->currentIndex();
-          qDebug() << "current index: " << currentIndex;
-      
-          if (!currentIndex.isValid() || currentIndex.row() == -1) {
-              on_ooc_return_pressed();
-          }
-      });
-    
+  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this, completer, &suggestionSelected]() {
+      int row = completer->popup()->currentIndex().row();
+      suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
+      if (!suggestionSelected) {
+          on_ooc_return_pressed();
+      }
+      suggestionSelected = false;
+  });
+
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
   connect(ui_music_list, &QTreeWidget::customContextMenuRequested, this,
