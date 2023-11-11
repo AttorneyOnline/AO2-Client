@@ -670,6 +670,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //connect(ui_ic_chat_message, &QLineEdit::returnPressed, this,
   //        &Courtroom::on_chat_return_pressed);
 
+  connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
+          &Courtroom::on_chat_return_pressed);
+
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
           &Courtroom::on_ooc_return_pressed);
 
