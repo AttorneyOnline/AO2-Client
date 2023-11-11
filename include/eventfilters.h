@@ -3,7 +3,6 @@
 
 #include "options.h"
 #include "courtroom.h"
-#include "aoapplication.h"
 
 #include <QEvent>
 #include <QLineEdit>
@@ -106,7 +105,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QTextEdit *textEdit = qobject_cast<QTextEdit *>(obj);
     
-        if (textEdit != nullptr && aoApp != nullptr) {
+        if (textEdit != nullptr) {
             // Key press detection
             if (event->type() == QEvent::KeyPress) {
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -118,7 +117,7 @@ protected:
             }
 
             // Focus-out event handling
-            if (event->type() == QEvent::FocusOut && preserve_selection) {
+            if (event->type() == QEvent::FocusOut && text_edit_preserve_selection) {
                 QTextCursor cursor = textEdit->textCursor();
                 int start = cursor.selectionStart();
                 int len = cursor.selectionEnd() - start;
