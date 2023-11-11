@@ -218,7 +218,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_message = new QTextEdit(this);
   // ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message in-character"));
-  ui_ic_chat_message_filter = new QTextEditFilter(this, ao_app);
+  ui_ic_chat_message_filter = new QTextEditFilter();
   ui_ic_chat_message_filter->text_edit_preserve_selection = true;
   ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
   ui_ic_chat_message->setObjectName("ui_ic_chat_message");
