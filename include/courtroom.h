@@ -28,6 +28,7 @@
 
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QCompleter>
 #include <QComboBox>
 #include <QHeaderView>
 #include <QLineEdit>
