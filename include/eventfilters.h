@@ -109,7 +109,7 @@ protected:
         if (textEdit != nullptr) {
             // Key press detection
             if (event->type() == QEvent::KeyPress) {
-                QKeyEvent *keyEvent = qobject_cast<QKeyEvent *>(event);
+                QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
                 if (keyEvent != nullptr && keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
                     // chat_return_pressed();
