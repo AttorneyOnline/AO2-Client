@@ -4,6 +4,8 @@
 #include "options.h"
 
 #include <QEvent>
+#include <QApplication>
+#include <QClipboard>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QTextEdit>
@@ -108,6 +110,14 @@ protected:
                 }
             }
 
+            if (event->type() == QEvent::Clipboard) {
+                QClipboard *clipboard = QApplication::clipboard();
+                QString plainText = clipboard->text(); // We get whatever's on our clipboard
+                textEdit->setPlainText(plainText);    // and paste it as plain text
+                qDebug() << "Clipboard: " << plainText;
+                return true;
+            }
+            
             // Focus-out event handling
             if (event->type() == QEvent::FocusOut && text_edit_preserve_selection) {
                 QTextCursor cursor = textEdit->textCursor();
