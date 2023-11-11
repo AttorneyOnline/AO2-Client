@@ -94,7 +94,7 @@ public:
       ao_app = p_ao_app;
       m_parent = p_parent;
     }
-    void Courtroom::chat_return_pressed() { on_chat_return_pressed(); }
+    // void Courtroom::chat_return_pressed() { on_chat_return_pressed(); }
     bool text_edit_preserve_selection = false;
 
 private:
@@ -111,7 +111,7 @@ protected:
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
                 if (keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    chat_return_pressed();
+                    // chat_return_pressed();
                     return true;
                  }
             }
