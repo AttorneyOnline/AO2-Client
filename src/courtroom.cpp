@@ -696,7 +696,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
   //        &Courtroom::on_ooc_return_pressed);
 
-  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this, completer, suggestionSelected]() {
+  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this, completer]() {
       int row = completer->popup()->currentIndex().row();
       suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
       if (!suggestionSelected) {
