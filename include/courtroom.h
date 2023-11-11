@@ -344,10 +344,8 @@ public:
 
   void typing_signal(int signal);
 
-  void menu_bar_mouse_event(QEvent *event);
   void set_character_sets(QString char_set);
   void add_action_to_menu(QMenu* menu, const QString& actionText, const QString& actionKey);
-  void start_menu_animation(const QRect& end_rect);
 
   QMenu* MainMenu;
   QMenu* CharacterMenu;
