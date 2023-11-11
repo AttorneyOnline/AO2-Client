@@ -2,7 +2,6 @@
 #define EVENTFILTERS_H
 
 #include "options.h"
-//#include "courtroom.h"
 
 #include <QEvent>
 #include <QKeyEvent>
@@ -48,7 +47,6 @@ public:
     bool collapseMenuBar = false;
     int originalMenuBarHeight = -1;
 private:
-    // QPropertyAnimation* animation;
     bool entered_zone = false;
 
 protected:
@@ -89,18 +87,11 @@ class QTextEditFilter : public QObject
 {
     Q_OBJECT
 
-public:
-    //QTextEditFilter(QWidget *p_parent, AOApplication *p_ao_app)
-    //{
-    //  ao_app = p_ao_app;
-    //  m_parent = p_parent;
-    //}
-    // void Courtroom::chat_return_pressed() { on_chat_return_pressed(); }
-    bool text_edit_preserve_selection = false;
+signals:
+    void chat_return_pressed();
 
-private:
-    //AOApplication *ao_app;
-    //QWidget *m_parent;
+public:
+    bool text_edit_preserve_selection = false;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
@@ -112,7 +103,7 @@ protected:
                 QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
                 if (keyEvent != nullptr && keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    // chat_return_pressed();
+                    emit chat_return_pressed();
                     return true;
                 }
             }
