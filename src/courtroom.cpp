@@ -685,14 +685,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
             ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
         });
 
-  //connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-  //        this, [this, completer]() {
-  //          completer->setCurrentRow(-1);
-  //      });
-  
-  //connect(ui_ic_chat_message, &QLineEdit::returnPressed, this,
-  //        &Courtroom::on_chat_return_pressed);
-
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
@@ -702,8 +694,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this, completer]() {
       int row = completer->popup()->currentIndex().row();
       suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
-      qDebug() << row;
-      qDebug() << "Is the popup visible? " << completer->popup()->isVisible();
       if (!suggestionSelected || !completer->popup()->isVisible()) {
           on_ooc_return_pressed();
       }
