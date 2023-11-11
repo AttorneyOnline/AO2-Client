@@ -222,6 +222,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_message_filter->text_edit_preserve_selection = true;
   ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
   ui_ic_chat_message->setObjectName("ui_ic_chat_message");
+  ui_ic_chat_message->setAcceptRichText(false);
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
