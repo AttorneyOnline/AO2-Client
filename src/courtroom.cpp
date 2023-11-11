@@ -676,13 +676,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_mute_list, &QListWidget::clicked, this,
           &Courtroom::on_mute_list_clicked);
 
-  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-      this, [this, completer](const QString& suggestion) {
-        ui_ooc_chat_message->blockSignals(true);
-        completer->popup()->hide();
-        ui_ooc_chat_message->blockSignals(false);
-      });
-
   connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
           this, [this](const QString& suggestion) {
             ui_ooc_chat_message->setText(suggestion);
@@ -695,9 +688,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
-  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
-          &Courtroom::on_ooc_return_pressed);
+  //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
+  //        &Courtroom::on_ooc_return_pressed);
 
+  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
+         this, [this, completer] {
+            if (completer->currentCompletion().isEmpty()) {
+                on_ooc_return_pressed();
+            }
+        });
+  
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
   connect(ui_music_list, &QTreeWidget::customContextMenuRequested, this,
