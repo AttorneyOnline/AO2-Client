@@ -94,7 +94,7 @@ public:
       ao_app = p_ao_app;
       m_parent = p_parent;
     }
-    void chat_return_pressed() { ao_app->w_courtroom->on_chat_return_pressed(); }
+    void Courtroom::chat_return_pressed() { on_chat_return_pressed(); }
     bool text_edit_preserve_selection = false;
 
 private:
