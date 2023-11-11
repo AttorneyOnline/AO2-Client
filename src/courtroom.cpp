@@ -447,7 +447,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // Auto-completer test
   QStringList auto_commands = {"/help", "/bg", "/getarea", "/getareas", "/roll", 
                                "/coinflip", "/8ball", "/play", "/getmusic"};
-  QStringListModel* model = new QStringListModel(auto_commands, completer);
+  QStringListModel* model = new QStringListModel(auto_commands, this);
   QCompleter* completer = new QCompleter(model, this);
   ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
   
