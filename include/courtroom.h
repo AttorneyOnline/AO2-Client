@@ -646,6 +646,9 @@ private:
 
   QString effect = "";
 
+  // Checks if a suggestion was chosen from the completer
+  bool suggestionSelected = false;
+
   // Music effect flags we want to send to server when we play music
   int music_flags = FADE_OUT;
 
