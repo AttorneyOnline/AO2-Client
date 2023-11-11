@@ -105,7 +105,6 @@ private:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QTextEdit *textEdit = qobject_cast<QTextEdit *>(obj);
-        // AOApplication *aoApp = qobject_cast<AOApplication *>(qApp);
     
         if (textEdit != nullptr && aoApp != nullptr) {
             // Key press detection
