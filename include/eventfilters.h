@@ -112,6 +112,8 @@ protected:
                         cursor.insertText("\\n");
                         // cursor.insertText("\n");
                         cursor.insertBlock();
+                        cursor.movePosition(QTextCursor::StartOfBlock);
+                        textEdit->setTextCursor(cursor);
                         return true;
                     } else if (keyEvent->key() == Qt::Key_Return) {
                         qDebug("Enter Key Pressed...");
