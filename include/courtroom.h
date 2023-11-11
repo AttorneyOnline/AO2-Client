@@ -366,6 +366,7 @@ public:
   void set_clock_visibility(int id, bool visible);
   void skip_clocks(qint64 msecs);
 
+  void chat_return_pressed();
   void on_chat_return_pressed();
 
   qint64 pong();
