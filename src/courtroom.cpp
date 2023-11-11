@@ -6377,39 +6377,6 @@ void Courtroom::on_switch_area_music_clicked()
 
 }
 
-void Courtroom::menu_bar_mouse_event(QEvent *event) {
-  //if (event->type() == QEvent::MouseMove) {
-  //    QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
-  //    qDebug() << "a";
-
-  //    if (cursorPos.y() <= 23) {
-  //        QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
-  //        menu_bar->show();
-  //        start_menu_animation(end_rect);
-  //        qDebug() << "b";
-  //    } else if (cursorPos.y() > 23 && menu_bar->isVisible()) {
-  //        QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
-  //        menu_bar->hide();
-  //        start_menu_animation(end_rect);
-  //        qDebug() << "c";
-  //    }
-  //}
-}
-
-void Courtroom::start_menu_animation(const QRect& end_rect) {
-    //if (menu_animation->state() != QPropertyAnimation::Running) {
-    //    QRect start_rect = menu_bar->geometry();
-    //    menu_animation->setStartValue(start_rect);
-    //    menu_animation->setEndValue(end_rect);
-    //    menu_animation->start();
-    //}
-}
-
-//void Courtroom::mouseMoveEvent(QMouseEvent* event) {
-//    menu_bar_mouse_event(event);
-//    qDebug() << "mouse moved";
-//}
-
 void Courtroom::ping_server()
 {
   ping_timer.start();
