@@ -30,6 +30,7 @@
 #include <QCloseEvent>
 #include <QCompleter>
 #include <QStringListModel>
+#include <QModelIndex>
 #include <QComboBox>
 #include <QHeaderView>
 #include <QLineEdit>
