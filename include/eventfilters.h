@@ -26,17 +26,20 @@ private:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QTextEdit *textEdit = qobject_cast<QTextEdit *>(obj);
-        Courtroom *courtroom = qobject_cast<Courtroom *>(obj);
-        if (textEdit != nullptr && mainWindow != nullptr) {
+        AOApplication *aoApp = qobject_cast<AOApplication *>(qApp);
+    
+        if (textEdit != nullptr && aoApp != nullptr) {
             // Key press detection
             if (event->type() == QEvent::KeyPress) {
                 QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
                 if (keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
-                    courtroom->on_chat_return_pressed();
+                    if (aoApp->w_courtroom != nullptr) {
+                        aoApp->w_courtroom->on_chat_return_pressed();
+                    }
                     return true;
-                }
-            }
+                 }
+              }
 
             // Focus-out event handling
             if (event->type() == QEvent::FocusOut && preserve_selection) {
@@ -54,6 +57,7 @@ protected:
         return false;
     }
 };
+
 class QMenuBarFilter : public QObject
 {
     Q_OBJECT
