@@ -103,10 +103,20 @@ protected:
             // Key press detection
             if (event->type() == QEvent::KeyPress) {
                 QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
-                if (keyEvent != nullptr && keyEvent->key() == Qt::Key_Return) {
-                    qDebug("Enter Key Pressed..."); // Debug it for now
-                    emit chat_return_pressed();
-                    return true;
+                
+                if (keyEvent != nullptr) {
+                    if (keyEvent->key() == Qt::Key_Return && (keyEvent->modifiers() & Qt::ShiftModifier)) {
+                        qDebug("Shift + Enter Pressed...");
+                        // Add newline
+                        QTextCursor cursor = textEdit->textCursor();
+                        cursor.insertText("\n");
+                        cursor.insertBlock();
+                        return true;
+                    } else if (keyEvent->key() == Qt::Key_Return) {
+                        qDebug("Enter Key Pressed...");
+                        emit chat_return_pressed();
+                        return true;
+                    }
                 }
             }
             
