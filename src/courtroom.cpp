@@ -443,6 +443,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
+
+  // Auto-completer test
+  QStringList auto_commands = {"/help", "/bg", "/getarea", "/getareas", "/roll", 
+                               "/coinflip", "/8ball", "/play", "/getmusic"};
+  QStringListModel* model = new QStringListModel(auto_commands, completer);
+  QCompleter* completer = new QCompleter(model, this);
+  ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
   
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
@@ -676,6 +683,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
           &Courtroom::on_ooc_return_pressed);
+
+  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
+          this, [this](const QString& suggestion) {
+            ui_ooc_chat_message->setText(suggestion);
+            ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
+        });
 
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
