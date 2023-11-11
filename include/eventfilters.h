@@ -110,8 +110,8 @@ protected:
                         // Add newline
                         QTextCursor cursor = textEdit->textCursor();
                         cursor.insertText("\\n");
-                        cursor.insertText("\n");
-                        //cursor.insertBlock();
+                        // cursor.insertText("\n");
+                        cursor.insertBlock();
                         return true;
                     } else if (keyEvent->key() == Qt::Key_Return) {
                         qDebug("Enter Key Pressed...");
