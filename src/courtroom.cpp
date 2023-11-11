@@ -459,7 +459,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   CharacterMenu = menu_bar->addMenu("Character");
   RoleplayMenu = menu_bar->addMenu("Roleplay");
   QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
-  ThemeMenu = menu_bar->addMenu("Theme");
+  //ThemeMenu = menu_bar->addMenu("Theme");
 
   QSwappingMenu->setTearOffEnabled(true); // Make the QSwapping menu separable
 
@@ -512,7 +512,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // QAction* action_reload_categories = new QAction("Reload Categories", this);
 
   // Theme tab
-  QAction* 
 
   // Why Qt, why
   MainMenu->addAction(action_change_character);      //
