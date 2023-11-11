@@ -28,6 +28,9 @@
 
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QCompleter>
+#include <QStringListModel>
+#include <QModelIndex>
 #include <QComboBox>
 #include <QHeaderView>
 #include <QLineEdit>
@@ -341,10 +344,8 @@ public:
 
   void typing_signal(int signal);
 
-  void menu_bar_mouse_event(QEvent *event);
   void set_character_sets(QString char_set);
   void add_action_to_menu(QMenu* menu, const QString& actionText, const QString& actionKey);
-  void start_menu_animation(const QRect& end_rect);
 
   QMenu* MainMenu;
   QMenu* CharacterMenu;
@@ -642,6 +643,9 @@ private:
   bool evidence_presented = false;
 
   QString effect = "";
+
+  // Checks if a suggestion was chosen from the completer
+  bool suggestionSelected = false;
 
   // Music effect flags we want to send to server when we play music
   int music_flags = FADE_OUT;

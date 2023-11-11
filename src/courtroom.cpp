@@ -443,6 +443,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
+
+  // Auto-completer test
+  QStringList auto_commands = {"/help", "/bg", "/getarea", "/getareas", "/roll", 
+                               "/coinflip", "/8ball", "/play", "/getmusic"};
+  QStringListModel* model = new QStringListModel(auto_commands, this);
+  model->sort(0, Qt::AscendingOrder);
+  QCompleter* completer = new QCompleter(model, this);
+  ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
   
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
@@ -451,6 +459,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   CharacterMenu = menu_bar->addMenu("Character");
   RoleplayMenu = menu_bar->addMenu("Roleplay");
   QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+  //ThemeMenu = menu_bar->addMenu("Theme");
 
   QSwappingMenu->setTearOffEnabled(true); // Make the QSwapping menu separable
 
@@ -501,6 +510,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // Swapping tab
   QAction* action_load_set = new QAction("Load char set...", this);
   // QAction* action_reload_categories = new QAction("Reload Categories", this);
+
+  // Theme tab
 
   // Why Qt, why
   MainMenu->addAction(action_change_character);      //
@@ -668,14 +679,36 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_mute_list, &QListWidget::clicked, this,
           &Courtroom::on_mute_list_clicked);
 
+  connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
+          this, [this](const QString& suggestion) {
+            ui_ooc_chat_message->setText(suggestion);
+            ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
+        });
+
+  //connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
+  //        this, [this, completer]() {
+  //          completer->setCurrentRow(-1);
+  //      });
+  
   //connect(ui_ic_chat_message, &QLineEdit::returnPressed, this,
   //        &Courtroom::on_chat_return_pressed);
 
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
-  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
-          &Courtroom::on_ooc_return_pressed);
+  //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
+  //        &Courtroom::on_ooc_return_pressed);
+
+  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this, completer]() {
+      int row = completer->popup()->currentIndex().row();
+      suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
+      qDebug() << row;
+      qDebug() << "Is the popup visible? " << completer->popup()->isVisible();
+      if (!suggestionSelected || !completer->popup()->isVisible()) {
+          on_ooc_return_pressed();
+      }
+      suggestionSelected = false;
+  });
 
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
@@ -6343,39 +6376,6 @@ void Courtroom::on_switch_area_music_clicked()
   on_music_search_edited(ui_music_search->text());
 
 }
-
-void Courtroom::menu_bar_mouse_event(QEvent *event) {
-  //if (event->type() == QEvent::MouseMove) {
-  //    QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
-  //    qDebug() << "a";
-
-  //    if (cursorPos.y() <= 23) {
-  //        QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
-  //        menu_bar->show();
-  //        start_menu_animation(end_rect);
-  //        qDebug() << "b";
-  //    } else if (cursorPos.y() > 23 && menu_bar->isVisible()) {
-  //        QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
-  //        menu_bar->hide();
-  //        start_menu_animation(end_rect);
-  //        qDebug() << "c";
-  //    }
-  //}
-}
-
-void Courtroom::start_menu_animation(const QRect& end_rect) {
-    //if (menu_animation->state() != QPropertyAnimation::Running) {
-    //    QRect start_rect = menu_bar->geometry();
-    //    menu_animation->setStartValue(start_rect);
-    //    menu_animation->setEndValue(end_rect);
-    //    menu_animation->start();
-    //}
-}
-
-//void Courtroom::mouseMoveEvent(QMouseEvent* event) {
-//    menu_bar_mouse_event(event);
-//    qDebug() << "mouse moved";
-//}
 
 void Courtroom::ping_server()
 {

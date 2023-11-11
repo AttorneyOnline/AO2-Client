@@ -126,13 +126,20 @@ protected:
             // Focus-out event handling
             if (event->type() == QEvent::FocusOut && text_edit_preserve_selection) {
                 QTextCursor cursor = textEdit->textCursor();
-                int start = cursor.selectionStart();
-                int len = cursor.selectionEnd() - start;
-                if (start != -1 && len != -1) {
-                    cursor.setPosition(start);
-                    cursor.setPosition(start + len, QTextCursor::KeepAnchor);
-                    textEdit->setTextCursor(cursor);
-                    return true;
+                
+                // We check if there's a selection
+                if (cursor.hasSelection()) {
+                    int start = cursor.selectionStart();
+                    int len = cursor.selectionEnd() - start;
+                    if (start != -1 && len != -1) {
+                        cursor.setPosition(start);
+                        cursor.setPosition(start + len, QTextCursor::KeepAnchor);
+                        textEdit->setTextCursor(cursor);
+                        return true;
+                    }
+                } else {
+                    // We don't. Remove focus.
+                    textEdit->clearFocus();
                 }
             }
         }
