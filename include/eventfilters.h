@@ -5,6 +5,7 @@
 //#include "courtroom.h"
 
 #include <QEvent>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QMenuBar>
@@ -104,16 +105,16 @@ private:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QTextEdit *textEdit = qobject_cast<QTextEdit *>(obj);
-    
+
         if (textEdit != nullptr) {
             // Key press detection
             if (event->type() == QEvent::KeyPress) {
-                QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-                if (keyEvent->key() == Qt::Key_Return) {
+                QKeyEvent *keyEvent = qobject_cast<QKeyEvent *>(event);
+                if (keyEvent != nullptr && keyEvent->key() == Qt::Key_Return) {
                     qDebug("Enter Key Pressed..."); // Debug it for now
                     // chat_return_pressed();
                     return true;
-                 }
+                }
             }
 
             // Focus-out event handling
