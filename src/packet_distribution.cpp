@@ -16,8 +16,113 @@ void AOApplication::append_to_demofile(QString packet_string)
         if (!demo_timer.isValid())
             demo_timer.start();
         else
-            append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
+            append_to_file("wait#" + QString::number(demo_timer.restart()) + "#%", path, true);
         append_to_file(packet_string, path, true);
+    }
+}
+
+//// 'Code Improvement Suggestions' ////
+Suggestion 1: Use `const` keyword for `shouldShowImmediately` if it is not going to be changed later in the code.
+
+// Example before code:
+    bool shouldShowImmediately;
+    if (f_contents.size() >= 4) {
+      // mode:   0 = pre 2.8 version (change background after IC message)
+      //         1 = 2.8 version (Change background immediately, clearing the viewport)
+      //         2 = Change background without clearing the viewport
+      //         3 = Change the overlay immediately and the background in the next IC message
+      //                       mode
+      shouldShowImmediately = (f_contents[3] == "1");
+    } else {
+      shouldShowImmediately = (f_contents.size() >= 2);
+    }
+
+// Example after code:
+    const bool shouldShowImmediately = (f_contents.size() >= 4) ? (f_contents[3] == "1") : (f_contents.size() >= 2);
+
+Suggestion 2: Instead of checking `f_contents.size()` multiple times, store it in a variable at the beginning and use that variable.
+
+// Example before code:
+    bool shouldShowImmediately;
+    if (f_contents.size() >= 4) {
+      // mode:   0 = pre 2.8 version (change background after IC message)
+      //         1 = 2.8 version (Change background immediately, clearing the viewport)
+      //         2 = Change background without clearing the viewport
+      //         3 = Change the overlay immediately and the background in the next IC message
+      //                       mode
+      shouldShowImmediately = (f_contents[3] == "1");
+    } else {
+      shouldShowImmediately = (f_contents.size() >= 2);
+    }
+
+// Example after code:
+    int f_contents_size = f_contents.size();
+    bool shouldShowImmediately;
+    if (f_contents_size >= 4) {
+      // mode:   0 = pre 2.8 version (change background after IC message)
+      //         1 = 2.8 version (Change background immediately, clearing the viewport)
+      //         2 = Change background without clearing the viewport
+      //         3 = Change the overlay immediately and the background in the next IC message
+      //                       mode
+      shouldShowImmediately = (f_contents[3] == "1");
+    } else {
+      shouldShowImmediately = (f_contents_size >= 2);
+    }
+
+Suggestion 3: Instead of using `f_contents[1]` and `f_contents[2]` directly, assign them to variables with meaningful names to improve readability.
+
+// Example before code:
+    bool shouldShowImmediately;
+    if (f_contents.size() >= 4) {
+      // mode:   0 = pre 2.8 version (change background after IC message)
+      //         1 = 2.8 version (Change background immediately, clearing the viewport)
+      //         2 = Change background without clearing the viewport
+      //         3 = Change the overlay immediately and the background in the next IC message
+      //                       mode
+      shouldShowImmediately = (f_contents[3] == "1");
+    } else {
+      shouldShowImmediately = (f_contents.size() >= 2);
+    }
+
+// Example after code:
+    QString side = f_contents[1];
+    QString overlay = f_contents[2];
+    bool shouldShowImmediately;
+    if (f_contents_size >= 4) {
+      // mode:   0 = pre 2.8 version (change background after IC message)
+      //         1 = 2.8 version (Change background immediately, clearing the viewport)
+      //         2 = Change background without clearing the viewport
+      //         3 = Change the overlay immediately and the background in the next IC message
+      //                       mode
+      shouldShowImmediately = (f_contents[3] == "1");
+    } else {
+      shouldShowImmediately = (f_contents_size >= 2);
+    }
+
+// Improved version of the function 'AOApplication::append_to_demofile':
+void AOApplication::append_to_demofile(QString packet_string)
+{
+    if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
+    {
+        QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
+        if (!demo_timer.isValid())
+            demo_timer.start();
+        else
+            append_to_file("wait#" + QString::number(demo_timer.restart()) + "#%", path, true);
+        append_to_file(packet_string, path, true);
+
+        int f_contents_size = f_contents.size();
+        QString side = f_contents[1];
+        QString overlay = f_contents[2];
+        const bool shouldShowImmediately = (f_contents_size >= 4) ? (f_contents[3] == "1") : (f_contents_size >= 2);
+
+        if (shouldShowImmediately) {
+            if (!side.isEmpty()) {
+                w_courtroom->set_side(side);
+            }
+        }
+
+        w_courtroom->set_background(f_contents[0], shouldShowImmediately);
     }
 }
 
@@ -359,28 +464,48 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     log_to_demo = false;
   }
   else if (header == "BN") {
-    if (!courtroom_constructed || f_contents.size() < 1) {
+    if (!courtroom_constructed || f_contents.isEmpty()) {
         goto end;
     }
 
-    QString background = f_contents.at(0);
-    QString pos = (f_contents.size() >= 2) ? f_contents.at(1) : QString();
-    QString overlay = (f_contents.size() == 3) ? f_contents.at(2) : QString();
+    // Get the f_contents.size() into the L1 cache or the CPU registers.
+    int f_contents_size = f_contents.size();
 
-    // Safety check for the background
-    if (!background.isEmpty()) {
-        w_courtroom->set_background(background, !pos.isEmpty());
-
-        // Safety check for the pos (side)
-        if (!pos.isEmpty()) {
-            w_courtroom->set_side(pos);
+    // Set overlay procedure
+    if (f_contents_size > 3) {
+        // Set overlay if not empty
+        //   overlay
+        if (!f_contents[2].isEmpty()) {
+            w_courtroom->server_overlay = f_contents[2];
         }
+    }
 
-        // Safety check for the overlay
-        if (!overlay.isEmpty()) {
-            w_courtroom->server_overlay = overlay;
+    // Set background with parameters
+    const bool shouldShowImmediately;
+    // If the mode is set
+    if (f_contents_size >= 4) {
+      // mode:   0 = pre 2.8 version (change background after IC message)
+      //         1 = 2.8 version (Change background immediately, clearing the viewport)
+      //         2 = Change background without clearing the viewport
+      //         3 = Change the overlay immediately and the background in the next IC message
+      //                       mode
+      shouldShowImmediately = (f_contents[3] == "1");
+    } else {
+      shouldShowImmediately = (f_contents_size >= 2);
+    }
+
+    if (shouldShowImmediately && f_contents_size >= 2) {
+        // Set side if not empty
+        //   side
+        if (!f_contents[1].isEmpty()) {
+          w_courtroom->set_side(f_contents.[1]);
         }
-     }
+    }
+
+    // Safety: Safety check of f_contents[0] done on f_contents.isEmpty()
+    // Set background
+    //                          background       
+    w_courtroom->set_background(f_contents[0], shouldShowImmediately);
   }
   else if (header == "SP") {
     if (!courtroom_constructed || f_contents.isEmpty())
