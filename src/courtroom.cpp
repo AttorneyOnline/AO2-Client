@@ -450,7 +450,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     "/coinflip", "/8ball", "/play", "/getmusic"
   });
   model = new QStringListModel(auto_commands, this);
-  model->sort(0, Qt::AscendingOrder);
+  // model->sort(0, Qt::AscendingOrder); // This will become an option
   completer = new QCompleter(model, this);
   ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
   
@@ -5065,10 +5065,11 @@ void Courtroom::on_ooc_commands_load()
       }
   
       model->setStringList(auto_commands);
-      model->sort(0, Qt::AscendingOrder);
+      // model->sort(0, Qt::AscendingOrder);
       ui_ooc_chat_message->setFocus();
       if (ui_ooc_chat_message->text().isEmpty()) {
           ui_ooc_chat_message->setText("/");
+          completer->complete();
       }
   } else {
       qDebug() << "OOC shortcuts not found!";
