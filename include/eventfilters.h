@@ -66,16 +66,19 @@ protected:
                 }
 
                 QPoint globalPos = QCursor::pos();
-                QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
+                QRect screenGeometry = QApplication::desktop()->screenGeometry(mainWindow);
+                int screenYPosition = mainWindowGeometry.y() - screenGeometry.y();
 
-                int expandZoneHeight = 22;
+                int f_pos_y = globalPos.y() - screenYPosition;
+
+                const int EXPAND_ZONE_HEIGHT = 22;
                 
-                if (mainWindowPos.y() <= 0) {
+                if (f_pos_y <= 0) {
                     if (!entered_zone) {
                         mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
                         entered_zone = true;   
                     }
-                } else if (mainWindowPos.y() > expandZoneHeight) {
+                } else if (f_pos_y > EXPAND_ZONE_HEIGHT) {
                     if (entered_zone) {
                         mainWindow->menuBar()->setFixedHeight(0);
                         entered_zone = false;   
