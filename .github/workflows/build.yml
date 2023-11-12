@@ -217,6 +217,14 @@ jobs:
           rm -r bearer
           rm -r base
 
+      - name: Copy libssl DLL (Windows)
+        if: contains(matrix.os, 'windows')
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          curl https://file.garden/ZVDWuDYwl0xAoRs4/libssl%203.4.1%20win32.zip -o libssl.zip
+          unzip libssl.zip
+
       - name: Copy MingW DLL
         if: matrix.platform == 'mingw81_32'
         working-directory: ${{github.workspace}}/bin/
