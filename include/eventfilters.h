@@ -75,7 +75,9 @@ protected:
 
                 const int EXPAND_ZONE_HEIGHT = 22;
                 
-                if (f_pos_y <= 0) {
+                // Workaround: If the mouses moves to fast then the menu bar is not gonna get show. So we change it from 0 to 2 pixels
+                // TODO: Find a better solution. By instead moving the ccode inside of "(event->type() == QEvent::HoverMove)" to something that get called even if we are outside of the window on mouse movement.
+                if (f_pos_y <= 2) {
                     if (!entered_zone) {
                         mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
                         entered_zone = true;   
