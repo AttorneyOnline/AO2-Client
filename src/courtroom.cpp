@@ -661,7 +661,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
                   "// Even combine it with a display name!\n\n" <<
                   "// Menu:Arcueid Brunestud (A Piece of Blue Glass Moon) = Arcueid Brunestud\n\n" <<
                   "// You can add outfits or shortcuts to other characters adding their path.\n" <<
-                  "// Just add a "+" followed by the usual syntax.\n\n" <<
+                  "// Just add a \"+\" followed by the usual syntax.\n\n" <<
                   "// +Arcueid Brunestud (A Piece of Blue Glass Moon)/Suit = Suit\n" <<
                   "// +Arcueid Brunestud (A Piece of Blue Glass Moon)/Winter = Winter\n" <<
                   "// +ArcueidBrunestud (MBTL) = Type Lumina";
