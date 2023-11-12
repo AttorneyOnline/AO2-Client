@@ -81,8 +81,9 @@ protected:
                         entered_zone = false;   
                     }
                 }
+            }
+            return false;
         }
-        return false;
     }
 };
 
