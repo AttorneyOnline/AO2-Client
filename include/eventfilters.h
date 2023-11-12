@@ -105,8 +105,8 @@ protected:
                 QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
                 
                 if (keyEvent != nullptr) {
-                    if (keyEvent->key() == Qt::Key_Return && (keyEvent->modifiers() & Qt::ShiftModifier)) {
-                        qDebug("Shift + Enter Pressed...");
+                    if ((keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) && 
+                        (keyEvent->modifiers() & Qt::ShiftModifier)) {
                         // Add newline
                         QTextCursor cursor = textEdit->textCursor();
                         cursor.insertText("\\n");
@@ -115,8 +115,7 @@ protected:
                         cursor.movePosition(QTextCursor::StartOfBlock);
                         textEdit->setTextCursor(cursor);
                         return true;
-                    } else if (keyEvent->key() == Qt::Key_Return) {
-                        qDebug("Enter Key Pressed...");
+                    } else if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
                         emit chat_return_pressed();
                         return true;
                     }
