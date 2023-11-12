@@ -5055,7 +5055,7 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
 
 void Courtroom::on_ooc_commands_load()
 {
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/", tr("OOC Shorcut Files (*.ini)"));
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/", tr("OOC Shortcut Files (*.ini)"));
   
   if (!filename.isEmpty()) {
       auto_commands = ao_app->get_list_file(VPath(filename));
