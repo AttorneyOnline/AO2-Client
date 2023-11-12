@@ -373,7 +373,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "BN") {
     if (!courtroom_constructed || f_contents.isEmpty()) {
-    if (!courtroom_constructed || f_contents.isEmpty()) {
         goto end;
     }
 
@@ -389,34 +388,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         }
     }
 
-    // Set background with parameters
-    const bool shouldShowImmediately;
-    // If the mode is set
-    if (f_contents_size >= 4) {
-      // mode:   0 = pre 2.8 version (change background after IC message)
-      //         1 = 2.8 version (Change background immediately, clearing the viewport)
-      //         2 = Change background without clearing the viewport
-      //         3 = Change the overlay immediately and the background in the next IC message
-      //                       mode
-      shouldShowImmediately = (f_contents[3] == "1");
-    } else {
-      shouldShowImmediately = (f_contents_size >= 2);
-    }
-
     if (shouldShowImmediately && f_contents_size >= 2) {
         // Set side if not empty
         //   side
         if (!f_contents[1].isEmpty()) {
           w_courtroom->set_side(f_contents.[1]);
-    // Get the f_contents.size() into the L1 cache or the CPU registers.
-    int f_contents_size = f_contents.size();
-
-    // Set overlay procedure
-    if (f_contents_size > 3) {
-        // Set overlay if not empty
-        //   overlay
-        if (!f_contents[2].isEmpty()) {
-            w_courtroom->server_overlay = f_contents[2];
         }
     }
 
@@ -440,12 +416,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         if (!f_contents[1].isEmpty()) {
           w_courtroom->set_side(f_contents.[1]);
         }
-    }
-
-    // Safety: Safety check of f_contents[0] done on f_contents.isEmpty()
-    // Set background
-    //                          background       
-    w_courtroom->set_background(f_contents[0], shouldShowImmediately);
     }
 
     // Safety: Safety check of f_contents[0] done on f_contents.isEmpty()
