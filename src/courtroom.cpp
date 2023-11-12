@@ -532,7 +532,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   // Commands Tab
   CommandsMenu = menu_bar->addMenu("Commands");
-  QAction* action_load_ooc_commands = new QAction("Load OOC commands...", this);
+  QAction* action_load_ooc_commands = new QAction("Load OOC shortcuts...", this);
+  QAction* action_clear_ooc_shortcuts = new QAction("Clear all shortcuts", this);
   
 
   // Why Qt, why
@@ -574,6 +575,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
   CommandsMenu->addAction(action_load_ooc_commands);
+  CommandsMenu->addAction(action_clear_ooc_shortcuts);
   
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -626,6 +628,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
   connect(action_load_ooc_commands, &QAction::triggered, this, &Courtroom::on_ooc_commands_load);
+  connect(action_clear_ooc_shortcuts, &QAction::triggered, this, [this]() { model->setStringList(QStringList ({})); });
   
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
@@ -636,9 +639,27 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   setMenuBar(menu_bar);
   
   QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
-  if (!base_path.isEmpty()) {
+  if (file_exists(base_path)) {
     set_character_sets(base_path);
     qDebug() << "Loaded global char set!";
+  } else {
+    QFile file(get_base_path() + "global_char_set.ini");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream << "// Every category is defined by declaring it and following up with its name\n\n" <<
+                  "category = Ace Attorney\n\n" <<
+                  "// Syntax goes as following: Folder name = Display name\n\n" <<
+                  "Phoenix = Phoenix Wright\n" <<
+                  "Miles = Miles Edgeworth\n" <<
+                  "Apollo = Apollo Justice\n\n" <<
+                  "// Folder names without a \"display name\" are accepted,\n" <<
+                  "// as long as they're under a category\n\n" <<
+                  "Gumshoe\n" <<
+                  "Godot\n" <<
+                  "Franziska";
+        file.close();
+        qDebug() << "Created global char set!";
+    }
   }
 
   construct_char_select();
@@ -5055,12 +5076,12 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
 
 void Courtroom::on_ooc_commands_load()
 {
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/", tr("OOC Shortcut Files (*.ini)"));
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/", tr("OOC Shortcuts Files (*.ini)"));
   
   if (!filename.isEmpty()) {
       auto_commands = ao_app->get_list_file(VPath(filename));
       if (auto_commands.isEmpty()) {
-          qDebug() << "Error loading OOC shortcut file";
+          qDebug() << "Error loading OOC shortcuts file";
           return;
       }
   
@@ -6332,6 +6353,7 @@ void Courtroom::on_set_dl_clicked()
   dialog.setLabelText(tr("Enter your character's Download Link:"));
 
   // Read the existing value from the file if it exists
+  // This is needed for displaying what's currently in the download.ini (if there's one)
   if (!download_ini_path.isEmpty()) {
     QFile file(download_ini_path);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -6355,14 +6377,14 @@ void Courtroom::on_set_dl_clicked()
   QString url = dialog.textValue();
 
   if (!url.isEmpty()) {
-      QFile file(characterPath + "download.ini");
+      QFile file(characterPath + "download.ini"); // If the file doesn't exist, we create one
       if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
           qDebug() << "File opened!";
           QTextStream stream(&file);
           stream << url;
           file.close();
           if (!action_disable_url_sharing->isChecked()) {
-              search_download_file("1");
+              search_download_file("1"); // And we automatically send it to the server
           }
       } else {
           qDebug() << "Couldn't open the file.";
