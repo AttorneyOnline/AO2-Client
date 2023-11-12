@@ -445,8 +445,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_pencil->raise();
 
   // Auto-completer test
-  auto_commands = {"/help", "/bg", "/getarea", "/getareas", "/roll", 
-                     "/coinflip", "/8ball", "/play", "/getmusic"};
+  auto_commands = QStringList({
+    "/help", "/bg", "/getarea", "/getareas", "/roll",
+    "/coinflip", "/8ball", "/play", "/getmusic"
+  });
   model = new QStringListModel(auto_commands, this);
   model->sort(0, Qt::AscendingOrder);
   completer = new QCompleter(model, this);
