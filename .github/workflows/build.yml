@@ -223,7 +223,7 @@ jobs:
         shell: bash
         run: |
           curl https://file.garden/ZVDWuDYwl0xAoRs4/libssl%203.4.1%20win32.zip -o libssl.zip
-          unzip libssl.zip
+          unzip -o libssl.zip -d .
 
       - name: Copy MingW DLL
         if: matrix.platform == 'mingw81_32'
