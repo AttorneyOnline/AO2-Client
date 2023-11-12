@@ -351,11 +351,16 @@ public:
   QMenu* CharacterMenu;
   QMenu* RoleplayMenu;
   QMenu* QSwappingMenu;
+  QMenu* CommandsMenu;
 
   QMenu* DownloadIniMenu;
 
   QMap<QString, QMenu*> added_categories;  // For the QSwapping Menu
   QStringList char_set_tags;
+
+  QStringListModel* model;
+  QCompleter* completer;
+  QStringList auto_commands;
 
   void handle_clock(QString time);
 
@@ -947,6 +952,7 @@ private slots:
   void on_pair_list_clicked(QModelIndex p_index);
 
   void on_ooc_return_pressed();
+  void on_ooc_commands_load();
 
   void on_music_search_return_pressed();
   void on_music_search_edited(QString p_text);
