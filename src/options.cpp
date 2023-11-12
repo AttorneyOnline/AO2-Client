@@ -37,7 +37,6 @@ void Options::migrateCallwords()
   setCallwords(l_callwords);
 }
 
-
 Options::Options()
     : config(get_base_path() + "config.ini", QSettings::IniFormat, nullptr),
       favorite(get_base_path() + "favorite_servers.ini", QSettings::IniFormat,
