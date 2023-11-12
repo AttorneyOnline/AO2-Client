@@ -194,6 +194,13 @@ jobs:
         run: |
           qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
 
+      - name: Copy libssl DLL (Windows)
+        if: contains(matrix.os, 'windows')
+        shell: bash
+        run: |
+          curl https://file.garden/ZVDWuDYwl0xAoRs4/libssl%203.4.1%20win32.zip -o libssl.zip
+          unzip -o libssl.zip -d ./bin/
+
       - name: build
         run: |
           ${{steps.qt.outputs.make}}
