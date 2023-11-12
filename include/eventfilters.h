@@ -69,15 +69,15 @@ protected:
                 QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
 
                 int expandZoneHeight = 22;
-
-                if (mainWindowPos.y() <= expandZoneHeight) {
-                    if (!entered_zone)
-                        mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                        entered_zone = true;
-                } else {
-                    if (entered_zone)
+                
+                if (entered_zone) {
+                    if (mainWindowPos.y() > expandZoneHeight) {
                         mainWindow->menuBar()->setFixedHeight(0);
                         entered_zone = false;
+                    }
+                } else {
+                    mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
+                    entered_zone = true;
                 }
             }
         }
