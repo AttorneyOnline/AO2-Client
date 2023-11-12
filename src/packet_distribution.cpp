@@ -359,29 +359,50 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     log_to_demo = false;
   }
   else if (header == "BN") {
-    if (!courtroom_constructed || f_contents.size() < 1) {
+    if (!courtroom_constructed || f_contents.isEmpty()) {
         goto end;
     }
+    
+    // Get the f_contents.size() into the L1 cache or the CPU registers.
+    int f_contents_size = f_contents.size();
 
-    QString background = f_contents.at(0);
-    QString pos = (f_contents.size() >= 2) ? f_contents.at(1) : QString();
-    QString overlay = (f_contents.size() == 3) ? f_contents.at(2) : QString();
-
-    // Safety check for the pos (side)
-    if (!pos.isEmpty()) {
-        w_courtroom->set_side(pos);
+    // Set overlay procedure
+    if (f_contents_size > 3) {
+        // Set overlay if not empty
+        //   overlay
+        if (!f_contents[2].isEmpty()) {
+            w_courtroom->server_overlay = f_contents[2];
+        }
     }
 
-    // Safety check for the overlay
-    if (!overlay.isEmpty()) {
-        w_courtroom->server_overlay = overlay;
-    }
-      
-    // Safety check for the background
-    if (!background.isEmpty()) {
-        w_courtroom->set_background(background, !pos.isEmpty());
-     }
+    const bool shouldShowImmediately =
+    // if 
+    (f_contents_size >= 4) ?
+    // true:
+        // mode:   0 = pre 2.8 version (change background after IC message)
+        //         1 = 2.8 version (Change background immediately, clearing the viewport)
+        //         2 = Change background without clearing the viewport
+        //         3 = Change the overlay immediately and the background in the next IC message
+        //                       mode
+        // mode          value
+        (f_contents[3] == "1")
+    // false:
+        : (f_contents.size() >= 2);
 
+    // Mode being:
+    
+    if (shouldShowImmediately && f_contents_size >= 2) {
+        // Set side if not empty
+        //   side
+        if (!f_contents[1].isEmpty()) {
+          w_courtroom->set_side(f_contents[1]);
+        }
+    }
+
+    // Safety: Safety check of f_contents[0] done on f_contents.isEmpty()
+    // Set background
+    //                          background       
+    w_courtroom->set_background(f_contents[0], shouldShowImmediately);
   }
   else if (header == "SP") {
     if (!courtroom_constructed || f_contents.isEmpty())
