@@ -18,19 +18,6 @@ void AOApplication::append_to_demofile(QString packet_string)
         else
             append_to_file("wait#"+ QString::number(demo_timer.restart()) + "#%", path, true);
         append_to_file(packet_string, path, true);
-
-        int f_contents_size = f_contents.size();
-        QString side = f_contents[1];
-        QString overlay = f_contents[2];
-        const bool shouldShowImmediately = (f_contents_size >= 4) ? (f_contents[3] == "1") : (f_contents_size >= 2);
-
-        if (shouldShowImmediately) {
-            if (!side.isEmpty()) {
-                w_courtroom->set_side(side);
-            }
-        }
-
-        w_courtroom->set_background(f_contents[0], shouldShowImmediately);
     }
 }
 
@@ -392,29 +379,31 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         // Set side if not empty
         //   side
         if (!f_contents[1].isEmpty()) {
-          w_courtroom->set_side(f_contents.[1]);
+          w_courtroom->set_side(f_contents[1]);
         }
     }
 
-    // Set background with parameters
-    const bool shouldShowImmediately;
-    // If the mode is set
-    if (f_contents_size >= 4) {
-      // mode:   0 = pre 2.8 version (change background after IC message)
-      //         1 = 2.8 version (Change background immediately, clearing the viewport)
-      //         2 = Change background without clearing the viewport
-      //         3 = Change the overlay immediately and the background in the next IC message
-      //                       mode
-      shouldShowImmediately = (f_contents[3] == "1");
-    } else {
-      shouldShowImmediately = (f_contents_size >= 2);
-    }
+    const bool shouldShowImmediately = (f_contents.size() >= 4) ? (f_contents[3] == "1") : (f_contents.size() >= 2);
+
+    // // Set background with parameters
+    // const bool shouldShowImmediately;
+    // // If the mode is set
+    // if (f_contents_size >= 4) {
+    //   // mode:   0 = pre 2.8 version (change background after IC message)
+    //   //         1 = 2.8 version (Change background immediately, clearing the viewport)
+    //   //         2 = Change background without clearing the viewport
+    //   //         3 = Change the overlay immediately and the background in the next IC message
+    //   //                       mode
+    //   shouldShowImmediately = (f_contents[3] == "1");
+    // } else {
+    //   shouldShowImmediately = (f_contents_size >= 2);
+    // }
 
     if (shouldShowImmediately && f_contents_size >= 2) {
         // Set side if not empty
         //   side
         if (!f_contents[1].isEmpty()) {
-          w_courtroom->set_side(f_contents.[1]);
+          w_courtroom->set_side(f_contents[1]);
         }
     }
 
