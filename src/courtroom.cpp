@@ -445,11 +445,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_pencil->raise();
 
   // Auto-completer test
-  QStringList auto_commands = {"/help", "/bg", "/getarea", "/getareas", "/roll", 
-                               "/coinflip", "/8ball", "/play", "/getmusic"};
-  QStringListModel* model = new QStringListModel(auto_commands, this);
+  auto_commands = {"/help", "/bg", "/getarea", "/getareas", "/roll", 
+                     "/coinflip", "/8ball", "/play", "/getmusic"};
+  model = new QStringListModel(auto_commands, this);
   model->sort(0, Qt::AscendingOrder);
-  QCompleter* completer = new QCompleter(model, this);
+  completer = new QCompleter(model, this);
   ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
   
   // We handle the menu bar
@@ -526,6 +526,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // QAction* action_reload_categories = new QAction("Reload Categories", this);
 
   // Theme tab
+  // ???
+
+  // Commands Tab
+  CommandMenu = menu_bar->addMenu("Commands");
+  QAction* action_load_ooc_commands = new QAction("Load OOC commands...", this);
+  
 
   // Why Qt, why
   MainMenu->addAction(action_change_character);      //
@@ -565,6 +571,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
+  CommandMenu->addAction(action_load_ooc_commands);
   
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -616,6 +623,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
+  connect(action_load_ooc_commands, &QAction::triggered, this, &Courtroom::on_ooc_commands_load);
+  
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
 
@@ -5042,9 +5051,31 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
   });
 }
 
-void Courtroom::on_char_set_load()
+void Courtroom::on_ooc_commands_load()
 {
-  // QDir baseDir("base");
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/", tr("OOC Shorcut Files (*.ini)"));
+  
+  if (!filename.isEmpty()) {
+      auto_commands = ao_app->get_list_file(VPath(filename));
+      if (auto_commands.isEmpty()) {
+          qDebug() << "Error loading OOC shortcut file";
+          return;
+      }
+  
+      model->setStringList(auto_commands);
+      model->sort(0, Qt::AscendingOrder);
+      ui_ooc_chat_message->setFocus();
+      if (ui_ooc_chat_message->text().isEmpty()) {
+          ui_ooc_chat_message->setText("/");
+      }
+  } else {
+      qDebug() << "OOC shortcuts not found!";
+      return;
+  }
+}
+
+void Courtroom::on_ooc_commands_load()
+{
   QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/char sets/", tr("Char Set Files (*.ini)"));
   
   if (!filename.isEmpty()) {
