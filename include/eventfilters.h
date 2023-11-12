@@ -71,13 +71,15 @@ protected:
                 int expandZoneHeight = 22;
                 
                 if (mainWindowPos.y() <= 0) {
-                    if (!entered_zone)
+                    if (!entered_zone) {
                         mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                        entered_zone = true;
-                } else if mainWindowPos.y() > expandZoneHeight{
-                    if (entered_zone)
+                        entered_zone = true;   
+                    }
+                } else if (mainWindowPos.y() > expandZoneHeight) {
+                    if (entered_zone) {
                         mainWindow->menuBar()->setFixedHeight(0);
-                        entered_zone = false;
+                        entered_zone = false;   
+                    }
                 }
         }
         return false;
