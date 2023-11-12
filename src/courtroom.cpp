@@ -656,7 +656,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
                   "// as long as they're under a category\n\n" <<
                   "Gumshoe\n" <<
                   "Godot\n" <<
-                  "Franziska";
+                  "Franziska\n\n" << 
+                  "// You can create menus inside a current category.\n" << 
+                  "// Even combine it with a display name!\n\n" <<
+                  "// Menu:Arcueid Brunestud (A Piece of Blue Glass Moon) = Arcueid Brunestud\n\n" <<
+                  "// You can add outfits or shortcuts to other characters adding their path.\n" <<
+                  "// Just add a "+" followed by the usual syntax.\n\n" <<
+                  "// +Arcueid Brunestud (A Piece of Blue Glass Moon)/Suit = Suit\n" <<
+                  "// +Arcueid Brunestud (A Piece of Blue Glass Moon)/Winter = Winter\n" <<
+                  "// +ArcueidBrunestud (MBTL) = Type Lumina";
         file.close();
         qDebug() << "Created global char set!";
     }
