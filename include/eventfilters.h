@@ -4,11 +4,16 @@
 #include "options.h"
 
 #include <QEvent>
+#include <QApplication>
+#include <QClipboard>
+#include <QKeyEvent>
 #include <QLineEdit>
+#include <QTextEdit>
 #include <QMenuBar>
 #include <QTimer>
 #include <QDebug>
 #include <QMainWindow>
+#include <QDesktopWidget>
 
 class AOLineEditFilter : public QObject
 {
@@ -45,7 +50,6 @@ public:
     bool collapseMenuBar = false;
     int originalMenuBarHeight = -1;
 private:
-    // QPropertyAnimation* animation;
     bool entered_zone = false;
 
 protected:
@@ -63,24 +67,92 @@ protected:
                 }
 
                 QPoint globalPos = QCursor::pos();
-                QPoint mainWindowPos = mainWindow->mapFromGlobal(globalPos);
+                QRect mainWindowGeometry = mainWindow->geometry();
+                QRect screenGeometry = QApplication::desktop()->screenGeometry(mainWindow);
+                int screenYPosition = mainWindowGeometry.y() - screenGeometry.y();
 
-                int expandZoneHeight = 22;
+                int f_pos_y = globalPos.y() - screenYPosition;
 
-                if (mainWindowPos.y() <= expandZoneHeight) {
-                    if (!entered_zone)
+                const int EXPAND_ZONE_HEIGHT = 22;
+                
+                // Workaround: If the mouses moves to fast then the menu bar is not gonna get show. So we change it from 0 to 2 pixels
+                // TODO: Find a better solution. By instead moving the ccode inside of "(event->type() == QEvent::HoverMove)" to something that get called even if we are outside of the window on mouse movement.
+                if (f_pos_y <= 2) {
+                    if (!entered_zone) {
                         mainWindow->menuBar()->setFixedHeight(originalMenuBarHeight);
-                        entered_zone = true;
-                } else {
-                    if (entered_zone)
+                        entered_zone = true;   
+                    }
+                } else if (f_pos_y > EXPAND_ZONE_HEIGHT) {
+                    if (entered_zone) {
                         mainWindow->menuBar()->setFixedHeight(0);
-                        entered_zone = false;
+                        entered_zone = false;   
+                    }
+                }
+            }
+            return false;
+        }
+    }
+};
+
+class QTextEditFilter : public QObject
+{
+    Q_OBJECT
+
+signals:
+    void chat_return_pressed();
+
+public:
+    bool text_edit_preserve_selection = false;
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override {
+        QTextEdit *textEdit = qobject_cast<QTextEdit *>(obj);
+
+        if (textEdit != nullptr) {
+            // Key press detection
+            if (event->type() == QEvent::KeyPress) {
+                QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
+                
+                if (keyEvent != nullptr) {
+                    if ((keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) && 
+                        (keyEvent->modifiers() & Qt::ShiftModifier)) {
+                        // Add newline
+                        QTextCursor cursor = textEdit->textCursor();
+                        cursor.insertText("\\n");
+                        // cursor.insertText("\n");
+                        cursor.insertBlock();
+                        cursor.movePosition(QTextCursor::StartOfBlock);
+                        textEdit->setTextCursor(cursor);
+                        return true;
+                    } else if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+                        emit chat_return_pressed();
+                        return true;
+                    }
+                }
+            }
+            
+            // Focus-out event handling
+            if (event->type() == QEvent::FocusOut && text_edit_preserve_selection) {
+                QTextCursor cursor = textEdit->textCursor();
+                
+                // We check if there's a selection
+                if (cursor.hasSelection()) {
+                    int start = cursor.selectionStart();
+                    int len = cursor.selectionEnd() - start;
+                    if (start != -1 && len != -1) {
+                        cursor.setPosition(start);
+                        cursor.setPosition(start + len, QTextCursor::KeepAnchor);
+                        textEdit->setTextCursor(cursor);
+                        return true;
+                    }
+                } else {
+                    // We don't. Remove focus.
+                    textEdit->clearFocus();
                 }
             }
         }
         return false;
     }
 };
-
 
 #endif // EVENTFILTERS_H

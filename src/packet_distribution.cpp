@@ -362,7 +362,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed || f_contents.isEmpty()) {
         goto end;
     }
-
+    
     // Get the f_contents.size() into the L1 cache or the CPU registers.
     int f_contents_size = f_contents.size();
 

@@ -650,7 +650,7 @@ void Options::setImageStreaming(bool value)
 
 bool Options::menuBarLocked() const
 {
-  return config.value("menu_bar_visible_btn", false).toBool();
+  return config.value("menu_bar_visible_btn", true).toBool();
 }
 
 void Options::setMenuBarLocked(bool value)
