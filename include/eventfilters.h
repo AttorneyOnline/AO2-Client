@@ -57,7 +57,7 @@ protected:
         QMainWindow *mainWindow = qobject_cast<QMainWindow *>(obj);
 
         if (mainWindow != nullptr) {
-            if (event->type() == QEvent::MouseMove) {
+            if (event->type() == QEvent::HoverMove) {
                 if (originalMenuBarHeight == -1) {
                     originalMenuBarHeight = mainWindow->menuBar()->height();
                 }
