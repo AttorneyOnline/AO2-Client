@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QMainWindow>
+#include <QDesktopWidget>
 
 class AOLineEditFilter : public QObject
 {
@@ -66,6 +67,7 @@ protected:
                 }
 
                 QPoint globalPos = QCursor::pos();
+                QRect mainWindowGeometry = mainWindow->geometry();
                 QRect screenGeometry = QApplication::desktop()->screenGeometry(mainWindow);
                 int screenYPosition = mainWindowGeometry.y() - screenGeometry.y();
 
