@@ -529,7 +529,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // ???
 
   // Commands Tab
-  CommandMenu = menu_bar->addMenu("Commands");
+  CommandsMenu = menu_bar->addMenu("Commands");
   QAction* action_load_ooc_commands = new QAction("Load OOC commands...", this);
   
 
@@ -571,7 +571,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
-  CommandMenu->addAction(action_load_ooc_commands);
+  CommandsMenu->addAction(action_load_ooc_commands);
   
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -714,7 +714,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
   //        &Courtroom::on_ooc_return_pressed);
 
-  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this, completer]() {
+  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
       int row = completer->popup()->currentIndex().row();
       suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
       if (!suggestionSelected || !completer->popup()->isVisible()) {
@@ -5074,7 +5074,7 @@ void Courtroom::on_ooc_commands_load()
   }
 }
 
-void Courtroom::on_ooc_commands_load()
+void Courtroom::on_char_set_load()
 {
   QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/char sets/", tr("Char Set Files (*.ini)"));
   
