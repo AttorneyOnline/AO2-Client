@@ -11,6 +11,7 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QDesktopServices>
+#include <QPushButton>
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
