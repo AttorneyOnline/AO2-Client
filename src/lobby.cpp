@@ -301,7 +301,7 @@ void Lobby::on_about_clicked()
          "<p><b>Main Development:</b><br>"
          "Satoru;1816 (Lead Developer), SymphonyVR (Rust Server & Design), Sigma | XVIII"
          "<p><b>Special thanks:</b><br>"
-         "Alcor, Dadabecla, Omegazx12, Crissiam, Kal, Eaglestone"
+         "Alcor, Dadabecla, Omegazx12, Crissiam, Kal, Eaglestone, Nemo"
          "<p><h3>AO's Original Team</h3>"
          "<p><b>Source code:</b> "
          "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
