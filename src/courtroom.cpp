@@ -447,7 +447,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // Auto-completer test
   auto_commands = QStringList({
     "/help", "/bg", "/getarea", "/getareas", "/roll",
-    "/coinflip", "/8ball", "/play", "/getmusic"
+    "/area_lock", "/area_unlock", "/8ball", "/afk"
   });
   model = new QStringListModel(auto_commands, this);
   // model->sort(0, Qt::AscendingOrder); // This will become an option
@@ -5086,7 +5086,7 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
 
 void Courtroom::on_ooc_commands_load()
 {
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/", tr("OOC Shortcuts Files (*.ini)"));
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/custom sets/autocompleter", tr("OOC Shortcuts Files (*.ini)"));
   
   if (!filename.isEmpty()) {
       auto_commands = ao_app->get_list_file(VPath(filename));
@@ -5110,7 +5110,7 @@ void Courtroom::on_ooc_commands_load()
 
 void Courtroom::on_char_set_load()
 {
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/char sets/", tr("Char Set Files (*.ini)"));
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/custom sets/quickswapping/", tr("Char Set Files (*.ini)"));
   
   if (!filename.isEmpty()) {
     set_character_sets(filename);    
