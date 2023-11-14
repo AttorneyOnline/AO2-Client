@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - 5.15.1
+          - 5.15.2
         platform:
           - gcc_64
           - android
