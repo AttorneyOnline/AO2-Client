@@ -389,8 +389,8 @@ private:
 
   const QString GENERATION = "Luna";
   const QString VERSION = "1.0.0";
-  const QString STATUS = "RC 1.5";
-  const int HOTFIX = "0";
+  const QString STATUS = "RC1.5"; // Final or RC
+  const int HOTFIX = 0;
 
   QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
