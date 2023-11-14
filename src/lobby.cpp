@@ -599,7 +599,7 @@ void Lobby::check_for_updates()
               msgBox.setText(formattedHtmlText);
               msgBox.setStyleSheet("QLabel { min-width: 400px; }");  // Ajusta el ancho mínimo según sea necesario
               // msgBox.setIcon(QMessageBox::Information);
-              msgBox.setEscapeButton(QMessageBox::button(QMessageBox::Close));
+              msgBox.setEscapeButton(msgBox.button(QMessageBox::Close));
               QPushButton* btn1 = msgBox.addButton(tr("Windows"), QMessageBox::AcceptRole);
               QPushButton* btn2 = msgBox.addButton(tr("Windows (Alt)"), QMessageBox::AcceptRole);
               QPushButton* btn3 = msgBox.addButton(tr("Linux"), QMessageBox::AcceptRole);
