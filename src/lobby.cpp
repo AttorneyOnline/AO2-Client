@@ -568,9 +568,11 @@ void Lobby::check_for_updates()
           }
 
           if (update_version > current_version || update_status != STATUS && new_RC > current_RC || update_hotfix > HOTFIX) {
-              QString message = tr("New version available: %1\nDescription: %2\nDo you want to update?")
-                                    .arg(new_version)
-                                    .arg(description);
+              QString message = tr("A new version has released!: %1 %2 %3\nDescription: %4\nDo you want to update?")
+                                    .arg(update_generation)
+                                    .arg(update_version)
+                                    .arg(update_status)
+                                    .arg(update_description);
   
               QMessageBox msgBox;
               msgBox.setText(message);
