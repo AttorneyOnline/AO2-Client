@@ -354,6 +354,7 @@ public:
   QMenu* CommandsMenu;
 
   QMenu* DownloadIniMenu;
+  QMenu* ShortcutsMenu;
 
   QMap<QString, QMenu*> added_categories;  // For the QSwapping Menu
   QStringList char_set_tags;
