@@ -404,9 +404,7 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
 
         if (msgBox.clickedButton() == btn1) {
           QDesktopServices::openUrl(QUrl::fromLocalFile(sanitizedFolderName));
-        } else {
-          return;
-        }
+        } 
     }
 
     QRegularExpression regex("<a href=\"(.*?)\">(.*?)<\\/a>");
