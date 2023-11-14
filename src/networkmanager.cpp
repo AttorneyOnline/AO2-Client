@@ -116,8 +116,12 @@ void NetworkManager::request_document(MSDocumentType document_type,
   }
 
   QNetworkRequest req(url);
-  req.setRawHeader("User-Agent", get_user_agent().toUtf8());
-    
+  if (document_type != MSDocumentType::ClientVersion) {
+    req.setRawHeader("User-Agent", get_user_agent().toUtf8());
+  } else {
+    req.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
+  }
+  
   QString language =
       Options::getInstance().language();
   if (language.trimmed().isEmpty())
