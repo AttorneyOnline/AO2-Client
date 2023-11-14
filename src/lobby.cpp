@@ -569,7 +569,7 @@ void Lobby::check_for_updates()
               current_RC = ao_app->STATUS.mid(2).toInt();
             }
           }
-          ui_motd_text->setText("New update: " + update_generation + " " + update_status + " " + QString::number(update_hotfix) + " " + update_description);
+          ui_motd_text->setText("New update: " + update_generation + " " + update_status + " " + update_hotfix + " " + update_description);
           if (update_version > current_version || (update_status != ao_app->STATUS && new_RC > current_RC) || hotfixValue > ao_app->HOTFIX) {
               QString message = tr("A new version has released!: %1 %2 %3\nDescription: %4\nDo you want to update?")
                                     .arg(update_generation)
