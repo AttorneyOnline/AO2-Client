@@ -114,8 +114,13 @@ void NetworkManager::request_document(MSDocumentType document_type,
   } else {
     url = ms_baseurl + endpoint;
   }
+
   QNetworkRequest req(QUrl(url));
-  req.setRawHeader("User-Agent", get_user_agent().toUtf8());
+
+  QString user_agent = get_user_agent();
+  if (!user_agent.isEmpty()) {
+    req.setRawHeader("User-Agent", user_agent.toUtf8());
+  }
   
   QString language =
       Options::getInstance().language();
