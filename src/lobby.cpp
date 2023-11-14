@@ -559,13 +559,13 @@ void Lobby::check_for_updates()
           QVersionNumber update_version = QVersionNumber::fromString(root["Version"].toString());
           QString update_generation = root["Generation"].toString();
           QString update_status = root["Status"].toString();
-          QString update_hotfix = root["Hotfix"];
-          int hotfixValue = root["Hotfix"].toInt();
+          QString update_hotfix = root["Hotfix"].toString();
+          int hotfixValue = update_hotfix.toInt();
           QString update_description = root["Description"].toString();
 
           if (update_status.startsWith("RC")) {
             new_RC = update_status.mid(2).toInt();
-            if (STATUS != "Final") {
+            if (ao_app->STATUS != "Final") {
               current_RC = ao_app->STATUS.mid(2).toInt();
             }
           }
