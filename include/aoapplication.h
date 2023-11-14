@@ -387,6 +387,11 @@ private:
   const int MAJOR_VERSION = 10;
   const int MINOR_VERSION = 1;
 
+  const QString GENERATION = "Luna";
+  const QString VERSION = "1.0.0";
+  const QString STATUS = "RC 1.5";
+  const int HOTFIX = "0";
+
   QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
