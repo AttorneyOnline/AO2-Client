@@ -572,16 +572,36 @@ void Lobby::check_for_updates()
           }
           // ui_motd_text->setText("New update: " + update_generation + " " + update_status + " " + update_hotfix + " " + update_description);
           if (update_version > current_version || (update_status != ao_app->STATUS && new_RC > current_RC) || hotfixValue > ao_app->HOTFIX) {
-              QString message = tr("A new version has released!: %1 %2 %3\nDescription: %4\nDo you want to update?")
-                                    .arg(update_generation)
-                                    .arg(update_version.toString())
-                                    .arg(update_status)
-                                    .arg(update_description);
+              // QString message = tr("%1 %2 %3\nDescription: %4\nDo you want to update?")
+              //                      .arg(update_generation)
+              //                      .arg(update_version.toString())
+              //                      .arg(update_status)
+              //                      .arg(update_description);
   
               QMessageBox msgBox;
-              msgBox.setText(message);
-              QPushButton* btn1 = msgBox.addButton(tr("Windows [1]"), QMessageBox::AcceptRole);
-              QPushButton* btn2 = msgBox.addButton(tr("Windows [2]"), QMessageBox::AcceptRole);
+              msgBox.setWindowTitle("Attorney Online Golden Update");
+              
+              QString htmlText = R"(
+                  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+                  <html><head><meta name="qrichtext" content="1" /><style type="text/css">
+                  p, li { white-space: pre-wrap; }
+                  </style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;">
+                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt; font-weight:600; color:#000000;">Attorney Online Golden: %1 %2 %3</span></p>
+                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt;">A new update has released! </span></p>
+                  <p align="center" style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;"><br /></p>
+                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt; font-weight:600;">What's New?</span></p>
+                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt;">%4</span></p></body></html>
+              )";
+            
+              QString formattedHtmlText = QString(htmlText).arg(update_generation).arg(update_version.toString()).arg(update_status).arg(update_description);
+
+              msgBox.setTextFormat(Qt::RichText);
+              msgBox.setText(formattedHtmlText);
+              msgBox.setStyleSheet("QLabel { min-width: 400px; }");  // Ajusta el ancho mínimo según sea necesario
+              // msgBox.setIcon(QMessageBox::Information);
+              msgBox.setEscapeButton(QMessageBox::button(QMessageBox::Close));
+              QPushButton* btn1 = msgBox.addButton(tr("Windows"), QMessageBox::AcceptRole);
+              QPushButton* btn2 = msgBox.addButton(tr("Windows (Alt)"), QMessageBox::AcceptRole);
               QPushButton* btn3 = msgBox.addButton(tr("Linux"), QMessageBox::AcceptRole);
               QPushButton* btn4 = msgBox.addButton(tr("MacOS"), QMessageBox::AcceptRole);
   
