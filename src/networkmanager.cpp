@@ -108,9 +108,15 @@ void NetworkManager::request_document(MSDocumentType document_type,
   };
 
   const QString &endpoint = endpoints[document_type];
-  QNetworkRequest req(QUrl(ms_baseurl + endpoint));
+  QString url;
+  if (document_type == MSDocumentType::ClientVersion) {
+    url = "https://file.garden/YEp8caMz-xKjrHSj/Attorney%20Online%20Golden%20Releases/current_version.json";
+  } else {
+    url = ms_baseurl + endpoint;
+  }
+  QNetworkRequest req(QUrl(url));
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
-
+  
   QString language =
       Options::getInstance().language();
   if (language.trimmed().isEmpty())
