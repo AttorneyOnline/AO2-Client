@@ -1,6 +1,6 @@
 name: CI build
 
-on: [push, pull_request]
+on: [push]
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - 5.15.1
+          - 5.15.2
         platform:
           - gcc_64
           - android
