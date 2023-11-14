@@ -85,6 +85,11 @@ public:
   qint64 latency = 0;
   QString window_title;
 
+  const QString GENERATION = "Luna";
+  const QString VERSION = "1.0.0";
+  const QString STATUS = "RC1.5"; // Final, RC, Beta
+  const int HOTFIX = 0;
+
   /////////////////server metadata//////////////////
 
   bool yellow_text_supported = false;
@@ -386,11 +391,6 @@ private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 10;
   const int MINOR_VERSION = 1;
-
-  const QString GENERATION = "Luna";
-  const QString VERSION = "1.0.0";
-  const QString STATUS = "RC1.5"; // Final or RC
-  const int HOTFIX = 0;
 
   QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
