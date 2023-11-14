@@ -1,6 +1,6 @@
 name: CI build
 
-on: [push, pull_request]
+on: [push]
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
