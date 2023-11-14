@@ -395,16 +395,6 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
     QDir dir(sanitizedFolderName);
     if (!dir.exists()) {
         dir.mkpath(".");
-        QMessageBox msgBox;
-        msgBox.setText(tr("Download has started. Do you wish to open the character's folder?"));
-        QPushButton* btn1 = msgBox.addButton(tr("Accept"), QMessageBox::AcceptRole);
-        QPushButton* btn2 = msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
-        msgBox.setDefaultButton(btn2);
-        msgBox.exec();
-
-        if (msgBox.clickedButton() == btn1) {
-          QDesktopServices::openUrl(QUrl::fromLocalFile(sanitizedFolderName));
-        } 
     }
 
     QRegularExpression regex("<a href=\"(.*?)\">(.*?)<\\/a>");
