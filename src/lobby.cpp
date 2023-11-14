@@ -559,7 +559,8 @@ void Lobby::check_for_updates()
           QVersionNumber update_version = QVersionNumber::fromString(root["Version"].toString());
           QString update_generation = root["Generation"].toString();
           QString update_status = root["Status"].toString();
-          QString update_hotfix = root["Hotfix"].toInt();
+          QString update_hotfix = root["Hotfix"];
+          int hotfixValue = root["Hotfix"].toInt();
           QString update_description = root["Description"].toString();
 
           if (update_status.startsWith("RC")) {
@@ -569,10 +570,10 @@ void Lobby::check_for_updates()
             }
           }
 
-          if (update_version > current_version || update_status != ao_app->STATUS && new_RC > current_RC || update_hotfix > ao_app->HOTFIX) {
+          if (update_version > current_version || (update_status != ao_app->STATUS && new_RC > current_RC) || hotfixValue > ao_app->HOTFIX) {
               QString message = tr("A new version has released!: %1 %2 %3\nDescription: %4\nDo you want to update?")
                                     .arg(update_generation)
-                                    .arg(update_version)
+                                    .arg(update_version.toString())
                                     .arg(update_status)
                                     .arg(update_description);
   
