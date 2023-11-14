@@ -13,6 +13,8 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QVersionNumber>
+#include <QDesktopServices>
+#include <QJsonDocument>
 
 #include <QUiLoader>
 
@@ -544,7 +546,7 @@ void Lobby::check_for_updates()
 {
   net_manager->request_document(
       MSDocumentType::ClientVersion, [this](QString version_json) {
-        const QVersionNumber current_version = QVersionNumber::fromString(VERSION);
+        const QVersionNumber current_version = QVersionNumber::fromString(ao_app->VERSION);
         int new_RC;
         int current_RC;
 
@@ -563,11 +565,11 @@ void Lobby::check_for_updates()
           if (update_status.startsWith("RC")) {
             new_RC = update_status.mid(2).toInt();
             if (STATUS != "Final") {
-              current_RC = STATUS.mid(2).toInt();
+              current_RC = ao_app->STATUS.mid(2).toInt();
             }
           }
 
-          if (update_version > current_version || update_status != STATUS && new_RC > current_RC || update_hotfix > HOTFIX) {
+          if (update_version > current_version || update_status != ao_app->STATUS && new_RC > current_RC || update_hotfix > ao_app->HOTFIX) {
               QString message = tr("A new version has released!: %1 %2 %3\nDescription: %4\nDo you want to update?")
                                     .arg(update_generation)
                                     .arg(update_version)
