@@ -108,20 +108,16 @@ void NetworkManager::request_document(MSDocumentType document_type,
   };
 
   const QString &endpoint = endpoints[document_type];
-  QString url;
+  QUrl url;
   if (document_type == MSDocumentType::ClientVersion) {
-    url = "https://file.garden/YEp8caMz-xKjrHSj/Attorney%20Online%20Golden%20Releases/current_version.json";
+    url = QUrl("https://file.garden/YEp8caMz-xKjrHSj/Attorney%20Online%20Golden%20Releases/current_version.json");
   } else {
-    url = ms_baseurl + endpoint;
+    url = QUrl(ms_baseurl + endpoint);
   }
 
-  QNetworkRequest req(QUrl(url));
-
-  QString user_agent = get_user_agent();
-  if (!user_agent.isEmpty()) {
-    req.setRawHeader("User-Agent", user_agent.toUtf8());
-  }
-  
+  QNetworkRequest req(url);
+  req.setRawHeader("User-Agent", get_user_agent().toUtf8());
+    
   QString language =
       Options::getInstance().language();
   if (language.trimmed().isEmpty())
