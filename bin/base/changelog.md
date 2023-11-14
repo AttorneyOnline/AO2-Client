@@ -1,10 +1,12 @@
-# Luna 1.0.0 RC1
+# Luna 1.0.0 RC 1.5
 **Attorney Online Golden** is the next iteration branched off from *Attorney Online 2.10.1* and a new continuation for the client.
-Since AO2 is no longer actively developed, we aim to provide users and communities a more user-friendly experience with new features and Quality of Life additions, as well as full retro-compatibility with older and existing content from AO2.
+Since the original AO2 is no longer actively developed, we aim to provide users and communities a more user-friendly experience with new features and Quality of Life additions, as well as full retro-compatibility with older and existing content from AO2.
 ## The Full Changelog from 2.10.1
 There's been an increasingly ammount of changes moving on from 2.10.1. It started in the original conception of this client (originally known as AO Triplex), all until Luna 1.0, the former first official release.
 Changes will be separated in three categories for easier redaction: **Primary**, **Secondary** and **Tertiary**.
 ### Primary changes
+- **[RC 1.5] OOC Auto-completer**: The OOC can now auto-complete your commands, containing by default a few "vanilla" ones. You can create your custom shortcuts by creating an INI file with the commands you want, separated in different lines, and you'll be able to use them with the auto-completer. You can load them by going to the Commands tab -> "Load OOC shortcuts...". It can be customized to auto-complete other things than commands too!
+- **[RC 1.5] IC Input Multi-line**: Pressing Shift + Enter will let you add a newline automatically and see that change in the "message in-character" text box.
 - **Triple Pairing**: Users are now able to pair with 2 more people on screen *if* the server supports it.
 - **Emote Queue**: Ever wanted to change your emote mid-sentence? Right-clicking on the emote button you want, you'll find the "Add to Emote Queue" option. It's a quick method to change them on the fly.
 - **Typing icon**: A small pencil icon featuring other people's character icons will appear on the corner of the viewport indicating when they're typing. If you *don't* want others to know when you're typing or you don't want to see them, you can disable this in Settings.

@@ -28,6 +28,9 @@
 
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QCompleter>
+#include <QStringListModel>
+#include <QModelIndex>
 #include <QComboBox>
 #include <QHeaderView>
 #include <QLineEdit>
@@ -341,20 +344,23 @@ public:
 
   void typing_signal(int signal);
 
-  void menu_bar_mouse_event(QEvent *event);
   void set_character_sets(QString char_set);
   void add_action_to_menu(QMenu* menu, const QString& actionText, const QString& actionKey);
-  void start_menu_animation(const QRect& end_rect);
 
   QMenu* MainMenu;
   QMenu* CharacterMenu;
   QMenu* RoleplayMenu;
   QMenu* QSwappingMenu;
+  QMenu* CommandsMenu;
 
   QMenu* DownloadIniMenu;
 
   QMap<QString, QMenu*> added_categories;  // For the QSwapping Menu
   QStringList char_set_tags;
+
+  QStringListModel* model;
+  QCompleter* completer;
+  QStringList auto_commands;
 
   void handle_clock(QString time);
 
@@ -643,6 +649,9 @@ private:
 
   QString effect = "";
 
+  // Checks if a suggestion was chosen from the completer
+  bool suggestionSelected = false;
+
   // Music effect flags we want to send to server when we play music
   int music_flags = FADE_OUT;
 
@@ -757,8 +766,8 @@ private:
 
   QComboBox *ui_pair_order_dropdown;
 
-  QLineEdit *ui_ic_chat_message;
-  AOLineEditFilter *ui_ic_chat_message_filter;
+  QTextEdit *ui_ic_chat_message;
+  QTextEditFilter *ui_ic_chat_message_filter;
   QLineEdit *ui_ic_chat_name;
 
   QLineEdit *ui_ooc_chat_message;
@@ -931,6 +940,8 @@ public slots:
 
   void onTypingTimeout();
 
+  void on_chat_return_pressed();
+
 private slots:
   void start_chat_ticking();
   void play_sfx();
@@ -940,9 +951,8 @@ private slots:
   void on_mute_list_clicked(QModelIndex p_index);
   void on_pair_list_clicked(QModelIndex p_index);
 
-  void on_chat_return_pressed();
-
   void on_ooc_return_pressed();
+  void on_ooc_commands_load();
 
   void on_music_search_return_pressed();
   void on_music_search_edited(QString p_text);

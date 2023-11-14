@@ -215,13 +215,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setText(Options::getInstance().shownameOnJoin());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
 
-  ui_ic_chat_message = new QLineEdit(this);
-  ui_ic_chat_message->setFrame(false);
+  ui_ic_chat_message = new QTextEdit(this);
+  // ui_ic_chat_message->setFrame(false);
   ui_ic_chat_message->setPlaceholderText(tr("Message in-character"));
-  ui_ic_chat_message_filter = new AOLineEditFilter();
-  ui_ic_chat_message_filter->preserve_selection = true;
+  ui_ic_chat_message_filter = new QTextEditFilter();
+  ui_ic_chat_message_filter->text_edit_preserve_selection = true;
   ui_ic_chat_message->installEventFilter(ui_ic_chat_message_filter);
   ui_ic_chat_message->setObjectName("ui_ic_chat_message");
+  ui_ic_chat_message->setAcceptRichText(false);
 
   ui_muted = new AOImage(ui_ic_chat_message, ao_app);
   ui_muted->hide();
@@ -442,6 +443,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
+
+  // Auto-completer test
+  auto_commands = QStringList({
+    "/help", "/bg", "/getarea", "/getareas", "/roll",
+    "/area_lock", "/area_unlock", "/8ball", "/afk"
+  });
+  model = new QStringListModel(auto_commands, this);
+  // model->sort(0, Qt::AscendingOrder); // This will become an option
+  completer = new QCompleter(model, this);
+  ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
   
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
@@ -450,6 +461,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   CharacterMenu = menu_bar->addMenu("Character");
   RoleplayMenu = menu_bar->addMenu("Roleplay");
   QSwappingMenu = menu_bar->addMenu("Quick-Swapping");
+  //ThemeMenu = menu_bar->addMenu("Theme");
 
   QSwappingMenu->setTearOffEnabled(true); // Make the QSwapping menu separable
 
@@ -466,6 +478,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_change_character->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
   action_open_dl_manager->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
 
+  action_open_dl_manager->setToolTip(tr("An interface that manages Download Links streamed from the server."));
+  action_image_streaming->setToolTip(tr("A floating window that can stream remote images. Coming soon in Luna 1.5!"));
+  
   // Character tab
   action_hide = new QAction("Hide", this);
   action_narrator = new QAction("Narrate", this);
@@ -473,7 +488,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QAction* action_broadcast_to_server = new QAction("Broadcast to Server", this);
   action_disable_url_sharing = new QAction("Disable URL Sharing", this);
   QAction* action_delete_download_ini = new QAction("Delete File", this);
-
+  
   action_preanim = new QAction("Preanim", this);
   action_flip = new QAction("Flip", this);
   QAction* action_additive = new QAction("Additive", this);
@@ -488,6 +503,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_immediate->setCheckable(true);
   action_shownames->setCheckable(true);
 
+  action_hide->setToolTip(tr("Turn this toggle on to hide your character."));
+  action_narrator->setToolTip(tr("Toggling this will make your character talk over other people's characters."));
+  action_set_dl->setToolTip(tr("Sets a download.ini to stream the download link to the DL Manager."));
+  action_broadcast_to_server->setToolTip(tr("Manually broadcasts your download.ini to the server. Used for bypassing 'Disable URL Sharing'."));
+  action_disable_url_sharing->setToolTip(tr("Removes your character from the DL Manager and stops streaming its download.ini."));
+  action_delete_download_ini->setToolTip(tr("Deletes your download.ini file."));
+  
   // Roleplay tab
   QAction* action_view_map = new QAction("View Map", this);
   QAction* action_open_evidence = new QAction("Open Evidence", this);
@@ -497,9 +519,22 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_player_profile->setEnabled(false);
   action_gm_screen->setEnabled(false);
 
+  action_view_map->setToolTip(tr("An interactive map interface. Coming soon in Luna 1.5!"));
+  action_player_profile->setToolTip(tr("An integrated player profile screen. Coming soon in Luna 1.5!"));
+  action_gm_screen->setToolTip(tr("A GM interface to manage role-plays. Coming soon in Luna 1.5!"));
+  
   // Swapping tab
   QAction* action_load_set = new QAction("Load char set...", this);
   // QAction* action_reload_categories = new QAction("Reload Categories", this);
+
+  // Theme tab
+  // ???
+
+  // Commands Tab
+  CommandsMenu = menu_bar->addMenu("Commands");
+  QAction* action_load_ooc_commands = new QAction("Load OOC shortcuts...", this);
+  QAction* action_clear_ooc_shortcuts = new QAction("Clear all shortcuts", this);
+  
 
   // Why Qt, why
   MainMenu->addAction(action_change_character);      //
@@ -539,6 +574,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
+  CommandsMenu->addAction(action_load_ooc_commands);
+  CommandsMenu->addAction(action_clear_ooc_shortcuts);
   
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -590,6 +627,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
+  connect(action_load_ooc_commands, &QAction::triggered, this, &Courtroom::on_ooc_commands_load);
+  connect(action_clear_ooc_shortcuts, &QAction::triggered, this, [this]() { model->setStringList(QStringList ({})); });
+  
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
 
@@ -599,9 +639,37 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   setMenuBar(menu_bar);
   
   QString base_path = ao_app->get_real_path(VPath("global_char_set.ini"));
-  if (!base_path.isEmpty()) {
+  if (file_exists(base_path)) {
     set_character_sets(base_path);
     qDebug() << "Loaded global char set!";
+  } else {
+    QFile file(get_base_path() + "global_char_set.ini");
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream << "// Every category is defined by declaring it and following up with its name\n\n" <<
+                  "category = Ace Attorney\n\n" <<
+                  "// Syntax goes as following: Folder name = Display name\n\n" <<
+                  "Phoenix = Phoenix Wright\n" <<
+                  "Miles = Miles Edgeworth\n" <<
+                  "Apollo = Apollo Justice\n\n" <<
+                  "// Folder names without a \"display name\" are accepted,\n" <<
+                  "// as long as they're under a category\n\n" <<
+                  "Gumshoe\n" <<
+                  "Godot\n" <<
+                  "Franziska\n\n" << 
+                  "// You can create menus inside a current category.\n" << 
+                  "// Even combine it with a display name!\n\n" <<
+                  "// Menu:Arcueid Brunestud (A Piece of Blue Glass Moon) = Arcueid Brunestud\n\n" <<
+                  "// You can add outfits or shortcuts to other characters adding their path.\n" <<
+                  "// Just add a \"+\" followed by the usual syntax.\n\n" <<
+                  "// +Arcueid Brunestud (A Piece of Blue Glass Moon)/Suit = Suit\n" <<
+                  "// +Arcueid Brunestud (A Piece of Blue Glass Moon)/Winter = Winter\n" <<
+                  "// +ArcueidBrunestud (MBTL) = Type Lumina";
+        file.close();
+        qDebug() << "Created global char set!";
+        set_character_sets(base_path);
+        qDebug() << "Loaded global char set!";
+    }
   }
 
   construct_char_select();
@@ -627,7 +695,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(chat_tick_timer, &QTimer::timeout, this, &Courtroom::chat_tick);
 
-  connect(ui_ic_chat_message, &QLineEdit::textChanged, this, &Courtroom::onTextChanged);
+  connect(ui_ic_chat_message, &QTextEdit::textChanged, this, &Courtroom::onTextChanged);
   connect(typingTimer, &QTimer::timeout, this, &Courtroom::onTypingTimeout);
 
 
@@ -667,11 +735,26 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_mute_list, &QListWidget::clicked, this,
           &Courtroom::on_mute_list_clicked);
 
-  connect(ui_ic_chat_message, &QLineEdit::returnPressed, this,
+  connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
+          this, [this](const QString& suggestion) {
+            ui_ooc_chat_message->setText(suggestion);
+            ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
+        });
+
+  connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
-  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
-          &Courtroom::on_ooc_return_pressed);
+  //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
+  //        &Courtroom::on_ooc_return_pressed);
+
+  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
+      int row = completer->popup()->currentIndex().row();
+      suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
+      if (!suggestionSelected || !completer->popup()->isVisible()) {
+          on_ooc_return_pressed();
+      }
+      suggestionSelected = false;
+  });
 
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
@@ -2178,7 +2261,7 @@ void Courtroom::on_chat_return_pressed()
     packet_contents.append(ao_app->get_emote(current_char, current_emote)); 
   }
 
-  packet_contents.append(ui_ic_chat_message->text());
+  packet_contents.append(ui_ic_chat_message->toPlainText());
 
   packet_contents.append(f_side);
 
@@ -2318,7 +2401,7 @@ void Courtroom::on_chat_return_pressed()
   }
   if (ao_app->additive_text_supported) {
     bool auto_additive_check = false;
-    const QString& message = ui_ic_chat_message->text();
+    const QString& message = ui_ic_chat_message->toPlainText();
     if (message.startsWith(" ")) {
       for (const QChar& c : message) {
           if (!c.isSpace()) {
@@ -2369,7 +2452,7 @@ void Courtroom::reset_ui()
 {
   ui_ic_chat_message->clear();
   if (ui_additive->isChecked())
-    ui_ic_chat_message->insert(" ");
+    ui_ic_chat_message->insertPlainText(" ");
   objection_state = 0;
   realization_state = 0;
   screenshake_state = 0;
@@ -5001,10 +5084,33 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
   });
 }
 
+void Courtroom::on_ooc_commands_load()
+{
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/custom sets/autocompleter", tr("OOC Shortcuts Files (*.ini)"));
+  
+  if (!filename.isEmpty()) {
+      auto_commands = ao_app->get_list_file(VPath(filename));
+      if (auto_commands.isEmpty()) {
+          qDebug() << "Error loading OOC shortcuts file";
+          return;
+      }
+  
+      model->setStringList(auto_commands);
+      // model->sort(0, Qt::AscendingOrder);
+      ui_ooc_chat_message->setFocus();
+      if (ui_ooc_chat_message->text().isEmpty()) {
+          ui_ooc_chat_message->setText("/");
+          completer->complete();
+      }
+  } else {
+      qDebug() << "OOC shortcuts not found!";
+      return;
+  }
+}
+
 void Courtroom::on_char_set_load()
 {
-  // QDir baseDir("base");
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/char sets/", tr("Char Set Files (*.ini)"));
+  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/custom sets/quickswapping/", tr("Char Set Files (*.ini)"));
   
   if (!filename.isEmpty()) {
     set_character_sets(filename);    
@@ -5664,7 +5770,7 @@ void Courtroom::on_hold_it_clicked()
 
 void Courtroom::onTextChanged()
 {
-  QString text = ui_ic_chat_message->text();
+  QString text = ui_ic_chat_message->toPlainText();
   QString emotion_number = QString::number(current_button_selected + 1);
 
   if (!Options::getInstance().stopTypingIcon()) {
@@ -5999,37 +6105,36 @@ void Courtroom::gen_char_rgb_list(QString p_misc) {
 
 void Courtroom::on_text_color_changed(int p_color)
 {
-  if (ui_ic_chat_message->selectionStart() != -1) // We have a selection!
+  if (ui_ic_chat_message->textCursor().hasSelection()) // Check if we have a selection
   {
-    int c = color_row_to_number.at(p_color);
-    QString markdown_start = color_markdown_start_list.at(c);
-    if (markdown_start.isEmpty()) {
-      qWarning() << "Color list dropdown selected a non-existent markdown "
-                  "start character";
-      return;
-    }
-    QString markdown_end = color_markdown_end_list.at(c);
-    if (markdown_end.isEmpty())
-      markdown_end = markdown_start;
-    int start = ui_ic_chat_message->selectionStart();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-    int end = ui_ic_chat_message->selectionEnd() + 1;
-#else
-    int end = ui_ic_chat_message->selectedText().length() + 1;
-#endif
+      int c = color_row_to_number.at(p_color);
+      QString markdown_start = color_markdown_start_list.at(c);
+      if (markdown_start.isEmpty()) {
+          qWarning() << "Color list dropdown selected a non-existent markdown "
+                        "start character";
+          return;
+      }
+      QString markdown_end = color_markdown_end_list.at(c);
+      if (markdown_end.isEmpty())
+          markdown_end = markdown_start;
 
-    ui_ic_chat_message->setCursorPosition(start);
-    ui_ic_chat_message->insert(markdown_start);
-    ui_ic_chat_message->setCursorPosition(end);
-    ui_ic_chat_message->insert(markdown_end);
-    //    ui_ic_chat_message->end(false);
-    ui_text_color->setCurrentIndex(0);
+      QTextCursor cursor = ui_ic_chat_message->textCursor();
+      int start = cursor.selectionStart();
+      int end = cursor.selectionEnd();
+
+      cursor.setPosition(start);
+      cursor.insertText(markdown_start);
+      cursor.setPosition(end + markdown_start.length());
+      cursor.insertText(markdown_end);
+      ui_ic_chat_message->setTextCursor(cursor);
+      
+      ui_text_color->setCurrentIndex(0);
   }
   else {
-    if (p_color != -1 && p_color < color_row_to_number.size())
-      text_color = color_row_to_number.at(p_color);
-    else
-      text_color = 0;
+      if (p_color != -1 && p_color < color_row_to_number.size())
+          text_color = color_row_to_number.at(p_color);
+      else
+          text_color = 0;
   }
   ui_ic_chat_message->setFocus();
 }
@@ -6213,10 +6318,12 @@ void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
 void Courtroom::on_additive_clicked()
 {
   if (ui_additive->isChecked()) {
-    ui_ic_chat_message->home(false); // move cursor to the start of the message
-    ui_ic_chat_message->insert(" "); // preface the message by whitespace
-    ui_ic_chat_message->end(false);  // move cursor to the end of the message
-                                     // without selecting anything
+    QTextCursor cursor = ui_ic_chat_message->textCursor();
+    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor); // move cursor to the start of the message
+    cursor.insertText(" ");                                          // preface the message by whitespace
+    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor); // move cursor to the end of the message...
+                                                                   // without selecting anything
+    ui_ic_chat_message->setTextCursor(cursor);
   }
   ui_ic_chat_message->setFocus();
 }
@@ -6256,6 +6363,7 @@ void Courtroom::on_set_dl_clicked()
   dialog.setLabelText(tr("Enter your character's Download Link:"));
 
   // Read the existing value from the file if it exists
+  // This is needed for displaying what's currently in the download.ini (if there's one)
   if (!download_ini_path.isEmpty()) {
     QFile file(download_ini_path);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -6279,14 +6387,14 @@ void Courtroom::on_set_dl_clicked()
   QString url = dialog.textValue();
 
   if (!url.isEmpty()) {
-      QFile file(characterPath + "download.ini");
+      QFile file(characterPath + "download.ini"); // If the file doesn't exist, we create one
       if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
           qDebug() << "File opened!";
           QTextStream stream(&file);
           stream << url;
           file.close();
           if (!action_disable_url_sharing->isChecked()) {
-              search_download_file("1");
+              search_download_file("1"); // And we automatically send it to the server
           }
       } else {
           qDebug() << "Couldn't open the file.";
@@ -6338,39 +6446,6 @@ void Courtroom::on_switch_area_music_clicked()
   on_music_search_edited(ui_music_search->text());
 
 }
-
-void Courtroom::menu_bar_mouse_event(QEvent *event) {
-  //if (event->type() == QEvent::MouseMove) {
-  //    QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
-  //    qDebug() << "a";
-
-  //    if (cursorPos.y() <= 23) {
-  //        QRect end_rect = QRect(0, 0, menu_bar->width(), menu_bar->height());
-  //        menu_bar->show();
-  //        start_menu_animation(end_rect);
-  //        qDebug() << "b";
-  //    } else if (cursorPos.y() > 23 && menu_bar->isVisible()) {
-  //        QRect end_rect = QRect(0, -menu_bar->height(), menu_bar->width(), menu_bar->height());
-  //        menu_bar->hide();
-  //        start_menu_animation(end_rect);
-  //        qDebug() << "c";
-  //    }
-  //}
-}
-
-void Courtroom::start_menu_animation(const QRect& end_rect) {
-    //if (menu_animation->state() != QPropertyAnimation::Running) {
-    //    QRect start_rect = menu_bar->geometry();
-    //    menu_animation->setStartValue(start_rect);
-    //    menu_animation->setEndValue(end_rect);
-    //    menu_animation->start();
-    //}
-}
-
-//void Courtroom::mouseMoveEvent(QMouseEvent* event) {
-//    menu_bar_mouse_event(event);
-//    qDebug() << "mouse moved";
-//}
 
 void Courtroom::ping_server()
 {
