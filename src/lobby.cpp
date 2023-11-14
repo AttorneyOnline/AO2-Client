@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTreeWidget>
+#include <QVersionNumber>
 
 #include <QUiLoader>
 
@@ -542,13 +543,53 @@ void Lobby::get_motd()
 void Lobby::check_for_updates()
 {
   net_manager->request_document(
-      MSDocumentType::ClientVersion, [this](QString version) {
-        const QString current_version = ao_app->get_version_string();
-        if (!version.isEmpty() && version != current_version) {
-          ui_game_version_lbl->setText(
-              tr("Version: %1 (!)").arg(current_version));
-          ui_game_version_lbl->setToolTip(
-              tr("New version available: %1").arg(version));
+      MSDocumentType::ClientVersion, [this](QString version_json) {
+        const QVersionNumber current_version = QVersionNumber::fromString(VERSION);
+        int new_RC;
+        int current_RC;
+
+        // Parse the JSON response
+        QJsonDocument doc = QJsonDocument::fromJson(version_json.toUtf8());
+        if (!doc.isNull() && doc.isObject()) {
+          QJsonObject root = doc.object();
+
+          // We extract version information from the JSON
+          QVersionNumber update_version = QVersionNumber::fromString(root["Version"].toString());
+          QString update_generation = root["Generation"].toString();
+          QString update_status = root["Status"].toString();
+          QString update_hotfix = root["Hotfix"].toInt();
+          QString update_description = root["Description"].toString();
+
+          if (update_status.startsWith("RC")) {
+            new_RC = update_status.mid(2).toInt();
+            if (STATUS != "Final") {
+              current_RC = STATUS.mid(2).toInt();
+            }
+          }
+
+          if (update_version > current_version || update_status != STATUS && new_RC > current_RC || update_hotfix > HOTFIX) {
+              QString message = tr("New version available: %1\nDescription: %2\nDo you want to update?")
+                                    .arg(new_version)
+                                    .arg(description);
+  
+              QMessageBox msgBox;
+              msgBox.setText(message);
+              QPushButton* btn1 = msgBox.addButton(tr("Windows [1]"), QMessageBox::AcceptRole);
+              QPushButton* btn2 = msgBox.addButton(tr("Windows [2]"), QMessageBox::AcceptRole);
+              QPushButton* btn3 = msgBox.addButton(tr("Linux"), QMessageBox::AcceptRole);
+              QPushButton* btn4 = msgBox.addButton(tr("MacOS"), QMessageBox::AcceptRole);
+  
+              msgBox.exec();
+              if (msgBox.clickedButton() == btn1) {
+                QDesktopServices::openUrl(QUrl(root["Windows_1"].toString()));
+              } else if (msgBox.clickedButton() == btn2) {
+                QDesktopServices::openUrl(QUrl(root["Windows_2"].toString()));
+              } else if (msgBox.clickedButton() == btn3) {
+                QDesktopServices::openUrl(QUrl(root["Linux"].toString()));
+              } else if (msgBox.clickedButton() == btn4) {
+                QDesktopServices::openUrl(QUrl(root["MacOS"].toString()));
+              }
+          }
         }
       });
 }
