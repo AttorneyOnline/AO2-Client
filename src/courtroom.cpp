@@ -1609,22 +1609,6 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   char_list.replace(n_char, f_char);
 }
 
-QPoint Courtroom::get_theme_pos(QString p_identifier)
-{
-  QString filename = "courtroom_design.ini";
-
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename);
-
-  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
-    qWarning() << "could not find" << p_identifier << "in" << filename;
-    return QPoint(0, 0);
-  }
-  else {
-    return QPoint(design_ini_result.x, design_ini_result.y);
-  }
-}
-
 void Courtroom::done_received()
 {
   m_cid = -1;
