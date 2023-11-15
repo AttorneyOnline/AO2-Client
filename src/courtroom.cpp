@@ -478,9 +478,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_change_character->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
   action_open_dl_manager->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
 
-  action_open_dl_manager->setToolTip(tr("An interface that manages Download Links streamed from the server."));
-  action_image_streaming->setToolTip(tr("A floating window that can stream remote images. Coming soon in Luna 1.5!"));
-  
   // Character tab
   action_hide = new QAction("Hide", this);
   action_narrator = new QAction("Narrate", this);
@@ -503,13 +500,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_immediate->setCheckable(true);
   action_shownames->setCheckable(true);
 
-  action_hide->setToolTip(tr("Turn this toggle on to hide your character."));
-  action_narrator->setToolTip(tr("Toggling this will make your character talk over other people's characters."));
-  action_set_dl->setToolTip(tr("Sets a download.ini to stream the download link to the DL Manager."));
-  action_broadcast_to_server->setToolTip(tr("Manually broadcasts your download.ini to the server. Used for bypassing 'Disable URL Sharing'."));
-  action_disable_url_sharing->setToolTip(tr("Removes your character from the DL Manager and stops streaming its download.ini."));
-  action_delete_download_ini->setToolTip(tr("Deletes your download.ini file."));
-  
   // Roleplay tab
   QAction* action_view_map = new QAction("View Map", this);
   QAction* action_open_evidence = new QAction("Open Evidence", this);
@@ -519,10 +509,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   action_player_profile->setEnabled(false);
   action_gm_screen->setEnabled(false);
 
-  action_view_map->setToolTip(tr("An interactive map interface. Coming soon in Luna 1.5!"));
-  action_player_profile->setToolTip(tr("An integrated player profile screen. Coming soon in Luna 1.5!"));
-  action_gm_screen->setToolTip(tr("A GM interface to manage role-plays. Coming soon in Luna 1.5!"));
-  
   // Swapping tab
   QAction* action_load_set = new QAction("Load char set...", this);
   // QAction* action_reload_categories = new QAction("Reload Categories", this);
@@ -574,6 +560,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
+  ShortcutsMenu = CommandsMenu->addMenu("Default OOC Shortcuts");
   CommandsMenu->addAction(action_load_ooc_commands);
   CommandsMenu->addAction(action_clear_ooc_shortcuts);
   
@@ -672,6 +659,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     }
   }
 
+  //QString shortcutsPath = ao_app->get_real_path(VPath("custom sets/autocompleter/"));
+
+
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -748,8 +738,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //        &Courtroom::on_ooc_return_pressed);
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
-      int row = completer->popup()->currentIndex().row();
-      suggestionSelected = completer->popup()->isVisible() ? true : (row == -1 || suggestionSelected);
+      int row = completer->popup()->currentIndex().row(); // Is the completer activated?
+      suggestionSelected = completer->popup()->isVisible() ? // Is it also visible?
+                                                      true : // If so, take it as we selected a suggestion
+                                                      (row == -1 || suggestionSelected); // If it's either -1 or we already
+                                                                                        // selected one before, mark it as false
       if (!suggestionSelected || !completer->popup()->isVisible()) {
           on_ooc_return_pressed();
       }
