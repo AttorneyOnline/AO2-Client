@@ -309,7 +309,7 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 void Courtroom::character_loading_finished()
 {
   // Zeroeth, we'll clear any leftover characters from previous server visits.
-  ao_app->generated_chars = 0;
+  // ao_app->generated_chars = 0;
   if (ui_char_button_list.size() > 0) {
     foreach (AOCharButton *item, ui_char_button_list) {
       delete item;
@@ -362,9 +362,9 @@ void Courtroom::character_loading_finished()
 
     // This part here serves as a way of showing to the player that the game is
     // still running, it is just loading the pictures of the characters.
-    if (ao_app->lobby_constructed) {
-      ao_app->generated_chars++;
-    }
+    // if (ao_app->lobby_constructed) {
+    //   ao_app->generated_chars++;
+    // }
   }
   ui_char_list->expandAll();
 }
