@@ -579,7 +579,6 @@ void Lobby::check_for_updates()
               //                      .arg(update_description);
   
               QMessageBox msgBox;
-              msgBox.setWindowTitle("Attorney Online Golden Update");
               
               QString htmlText = R"(
                   <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
@@ -599,20 +598,17 @@ void Lobby::check_for_updates()
               msgBox.setText(formattedHtmlText);
               msgBox.setStyleSheet("QLabel { min-width: 400px; }");  // Ajusta el ancho mínimo según sea necesario
               // msgBox.setIcon(QMessageBox::Information);
-              msgBox.setEscapeButton(msgBox.button(QMessageBox::Close));
               QPushButton* btn1 = msgBox.addButton(tr("Windows"), QMessageBox::AcceptRole);
-              QPushButton* btn2 = msgBox.addButton(tr("Windows (Alt)"), QMessageBox::AcceptRole);
-              QPushButton* btn3 = msgBox.addButton(tr("Linux"), QMessageBox::AcceptRole);
-              QPushButton* btn4 = msgBox.addButton(tr("MacOS"), QMessageBox::AcceptRole);
+              QPushButton* btn2 = msgBox.addButton(tr("Linux"), QMessageBox::AcceptRole);
+              QPushButton* btn3 = msgBox.addButton(tr("MacOS"), QMessageBox::AcceptRole);
+              QPushButton* btn4 = msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
   
               msgBox.exec();
               if (msgBox.clickedButton() == btn1) {
                 QDesktopServices::openUrl(QUrl(root["Windows_1"].toString()));
               } else if (msgBox.clickedButton() == btn2) {
-                QDesktopServices::openUrl(QUrl(root["Windows_2"].toString()));
-              } else if (msgBox.clickedButton() == btn3) {
                 QDesktopServices::openUrl(QUrl(root["Linux"].toString()));
-              } else if (msgBox.clickedButton() == btn4) {
+              } else if (msgBox.clickedButton() == btn3) {
                 QDesktopServices::openUrl(QUrl(root["MacOS"].toString()));
               }
           }
