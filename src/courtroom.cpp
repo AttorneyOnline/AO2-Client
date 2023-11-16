@@ -739,14 +739,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
       int row = completer->popup()->currentIndex().row(); // Is the completer activated?
-      suggestionSelected = completer->popup()->isVisible() ? // Is it also visible?
-                                                      true : // If so, take it as we selected a suggestion
-                                                      (row == -1 || suggestionSelected); // If it's either -1 or we already
-                                                                                        // selected one before, mark it as false
-      if (!suggestionSelected || !completer->popup()->isVisible()) {
-          on_ooc_return_pressed();
+      if (completer->popup()->isVisible()) {
+        completer->popup()->hide();
       }
-      suggestionSelected = false;
+      on_ooc_return_pressed();
   });
 
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
