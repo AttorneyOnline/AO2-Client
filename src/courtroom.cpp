@@ -565,6 +565,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ShortcutsMenu = CommandsMenu->addMenu("Default OOC Shortcuts");
   CommandsMenu->addAction(action_load_ooc_commands);
   CommandsMenu->addAction(action_clear_ooc_shortcuts);
+
+  default_autocompleter_load();
   
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -660,9 +662,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
         qDebug() << "Loaded global char set!";
     }
   }
-
-  //QString shortcutsPath = ao_app->get_real_path(VPath("custom sets/autocompleter/"));
-
 
   construct_char_select();
 
