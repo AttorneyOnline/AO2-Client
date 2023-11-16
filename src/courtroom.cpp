@@ -742,6 +742,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       int row = completer->popup()->currentIndex().row(); // Is the completer activated?
       if (completer->popup()->isVisible()) {
         completer->popup()->hide();
+        ui_ooc_chat_message->clear();
       }
       on_ooc_return_pressed();
   });
