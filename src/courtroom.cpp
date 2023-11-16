@@ -618,7 +618,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
-  connect(action_load_ooc_commands, &QAction::triggered, this, &Courtroom::on_ooc_commands_load(true, ""));
+  connect(action_load_ooc_commands, &QAction::triggered, this, [this]() { on_ooc_commands_load(true, ""); });
   connect(action_clear_ooc_shortcuts, &QAction::triggered, this, [this]() { model->setStringList(QStringList ({})); });
   
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
