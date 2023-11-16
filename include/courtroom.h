@@ -360,6 +360,8 @@ public:
   QCompleter* completer;
   QStringList auto_commands;
 
+  void default_autocompleter_load();
+
   void handle_clock(QString time);
 
   void start_clock(int id);
@@ -950,7 +952,7 @@ private slots:
   void on_pair_list_clicked(QModelIndex p_index);
 
   void on_ooc_return_pressed();
-  void on_ooc_commands_load();
+  void on_ooc_commands_load(bool file_load, QString filename);
 
   void on_music_search_return_pressed();
   void on_music_search_edited(QString p_text);
