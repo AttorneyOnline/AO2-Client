@@ -5085,8 +5085,6 @@ void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
 
 void Courtroom::default_autocompleter_load()
 {
-    ShortcutsMenu = CommandsMenu->addMenu("Default OOC Shortcuts");
-
     QDir directory("base/custom sets/autocompleter");
     QStringList filters;
     filters << "*.ini";
