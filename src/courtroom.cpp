@@ -732,6 +732,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
             ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
         });
 
+  //connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
+  //      this, [this](const QString& suggestion) {
+  //    completer->popup()->hide();
+  //    ui_ooc_chat_message->clear();
+  //    on_ooc_return_pressed();
+  //});
+
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
@@ -739,11 +746,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //        &Courtroom::on_ooc_return_pressed);
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
-      int row = completer->popup()->currentIndex().row(); // Is the completer activated?
-      if (completer->popup()->isVisible()) {
-        completer->popup()->hide();
-        ui_ooc_chat_message->clear();
-      }
+      //int row = completer->popup()->currentIndex().row(); // Is the completer activated?
+      completer->popup()->hide();
+      ui_ooc_chat_message->clear();
       on_ooc_return_pressed();
   });
 
