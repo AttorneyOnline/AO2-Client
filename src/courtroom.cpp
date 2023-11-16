@@ -616,7 +616,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(action_load_set, &QAction::triggered, this, &Courtroom::on_char_set_load);
 
-  connect(action_load_ooc_commands, &QAction::triggered, this, &Courtroom::on_ooc_commands_load);
+  connect(action_load_ooc_commands, &QAction::triggered, this, &Courtroom::on_ooc_commands_load(true, ""));
   connect(action_clear_ooc_shortcuts, &QAction::triggered, this, [this]() { model->setStringList(QStringList ({})); });
   
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
@@ -5058,9 +5058,11 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
   });
 }
 
-void Courtroom::on_ooc_commands_load()
+void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
 {
-  QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/custom sets/autocompleter", tr("OOC Shortcuts Files (*.ini)"));
+  if (file_load) {
+    filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/custom sets/autocompleter", tr("OOC Shortcuts Files (*.ini)"));
+  }
   
   if (!filename.isEmpty()) {
       auto_commands = ao_app->get_list_file(VPath(filename));
@@ -5082,12 +5084,37 @@ void Courtroom::on_ooc_commands_load()
   }
 }
 
+void Courtroom::default_autocompleter_load()
+{
+    ShortcutsMenu = CommandsMenu->addMenu("Default OOC Shortcuts");
+
+    QDir directory("base/custom sets/autocompleter");
+    QStringList filters;
+    filters << "*.ini";
+    QFileInfoList files = directory.entryInfoList(filters, QDir::Files);
+
+    QActionGroup* actionGroup = new QActionGroup(this);
+
+    foreach (const QFileInfo& fileInfo, files) {
+        QAction* action = new QAction(fileInfo.baseName(), this);
+        action->setCheckable(true);
+        action->setActionGroup(actionGroup);
+
+        connect(action, &QAction::triggered, [this, fileInfo]() {
+            on_ooc_commands_load(false, fileInfo.absoluteFilePath());
+        });
+
+        actionGroup->addAction(action);
+        ShortcutsMenu->addAction(action);
+    }
+}
+
 void Courtroom::on_char_set_load()
 {
   QString filename = QFileDialog::getOpenFileName(nullptr, tr("Load Character Set"), "base/custom sets/quickswapping/", tr("Char Set Files (*.ini)"));
   
   if (!filename.isEmpty()) {
-    set_character_sets(filename);    
+    set_character_sets(filename);
   } else {
     return;
   }
@@ -6615,4 +6642,5 @@ Courtroom::~Courtroom()
   delete sfx_player;
   delete objection_player;
   delete blip_player;
+  delete menu_bar;
 }
