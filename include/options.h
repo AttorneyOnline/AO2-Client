@@ -313,6 +313,10 @@ public:
   bool crossfade() const;
   void setCrossfade(bool value);
 
+  // Default OOC autocompleter set
+  QString defaultAutocompleterSet() const;
+  void setDefaultAutocompleterSet(QString value);
+
 // ------------------------------ //
 
   // Clears the configuration file. Essentially restoring it to default.
