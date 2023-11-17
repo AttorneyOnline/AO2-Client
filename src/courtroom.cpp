@@ -740,6 +740,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
         this, [this](const QString& suggestion) {
+      qDebug() << "QCompleter Activated";
       completer->popup()->hide();
       ui_ooc_chat_message->clear();
   });
@@ -752,9 +753,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
       //int row = completer->popup()->currentIndex().row(); // Is the completer activated?
-      on_ooc_return_pressed();
+      qDebug() << "ReturnPressed Activated";
+      ui_ooc_chat_message->blockSignals(true);
       completer->popup()->hide();
       ui_ooc_chat_message->clear();
+      on_ooc_return_pressed();
+      ui_ooc_chat_message->blockSignals(false);
   });
 
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
