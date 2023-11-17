@@ -42,6 +42,8 @@ protected:
             if (keyEvent && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)) {
                 lineEdit->clear();
                 view->hide();
+                lineEdit->setText("aaaaaa");
+                qDebug() << "CLEARED"
                 return true;
             }
         }
