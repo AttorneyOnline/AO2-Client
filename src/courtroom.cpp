@@ -456,7 +456,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   completer = new QCompleter(model, this);
   ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
 
-  AOLineEditFilter* ooc_filter = new AOLineEditFilter();
+  AOLineEditFilter* ooc_filter = new AOLineEditFilter(ui_ooc_chat_message);
   completer->popup()->installEventFilter(ooc_filter); // Fuck QCompleter's default behaviour, honestly
   
   // We handle the menu bar
@@ -747,6 +747,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       //int row = completer->popup()->currentIndex().row(); // Is the completer activated?
       qDebug() << "ReturnPressed Activated";
       // completer->popup()->hide();
+      ui_ooc_chat_message->clear();
       on_ooc_return_pressed();
   });
 
