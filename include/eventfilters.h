@@ -43,7 +43,7 @@ protected:
                 lineEdit->clear();
                 view->hide();
                 lineEdit->setText("aaaaaa");
-                qDebug() << "CLEARED"
+                qDebug() << "CLEARED";
                 return true;
             }
         }
