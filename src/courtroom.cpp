@@ -456,7 +456,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   completer = new QCompleter(model, this);
   ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
 
-  AOLineEditFilter* ooc_filter = new AOLineEditFilter(ui_ooc_chat_message);
+  AOLineEditFilter* ooc_filter = new AOLineEditFilter();
   completer->popup()->installEventFilter(ooc_filter); // Fuck QCompleter's default behaviour, honestly
   
   // We handle the menu bar
@@ -1788,7 +1788,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
   current_char = f_char;
   current_side = ao_app->get_char_side(current_char);
-  set_side(current_side);
+  // set_side(current_side);
 
   set_text_color_dropdown();
 
