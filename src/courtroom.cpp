@@ -565,8 +565,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ShortcutsMenu = CommandsMenu->addMenu("Default OOC Shortcuts");
   CommandsMenu->addAction(action_load_ooc_commands);
   CommandsMenu->addAction(action_clear_ooc_shortcuts);
-
-  default_autocompleter_load();
   
   connect(action_change_character, &QAction::triggered, this, &Courtroom::on_change_character_clicked);
   connect(action_reload_theme, &QAction::triggered, this, &Courtroom::on_reload_theme_clicked);
@@ -620,7 +618,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(action_load_ooc_commands, &QAction::triggered, this, [this]() { on_ooc_commands_load(true, ""); });
   connect(action_clear_ooc_shortcuts, &QAction::triggered, this, [this]() { model->setStringList(QStringList ({})); });
-  
+
+  default_autocompleter_load();
+
+  if (!Options::getInstance().defaultAutocompleterSet()) {
+      on_ooc_commands_load(false, ao_app->get_real_path(VPath("%1%2")
+              .arg("base/custom sets/autocompleter/")
+              .arg(Options::getInstance().defaultAutocompleterSet())
+        ));
+  }
+
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
 
@@ -732,12 +739,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
             ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
         });
 
-  //connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-  //      this, [this](const QString& suggestion) {
-  //    completer->popup()->hide();
-  //    ui_ooc_chat_message->clear();
-  //    on_ooc_return_pressed();
-  //});
+  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
+        this, [this](const QString& suggestion) {
+      completer->popup()->hide();
+      ui_ooc_chat_message->clear();
+  });
 
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
@@ -5066,13 +5072,13 @@ void Courtroom::add_action_to_menu(QMenu* menu, const QString& actionText, const
 void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
 {
   if (file_load) {
-    filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/custom sets/autocompleter", tr("OOC Shortcuts Files (*.ini)"));
+    filename = QFileDialog::getOpenFileName(nullptr, tr("Load OOC shortcuts"), "base/custom sets/autocompleter", tr("OOC Shortcuts Set (*.ini)"));
   }
   
   if (!filename.isEmpty()) {
       auto_commands = ao_app->get_list_file(VPath(filename));
       if (auto_commands.isEmpty()) {
-          qDebug() << "Error loading OOC shortcuts file";
+          qDebug() << "Error loading OOC shortcuts set";
           return;
       }
   
@@ -5084,7 +5090,7 @@ void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
           completer->complete();
       }
   } else {
-      qDebug() << "OOC shortcuts not found!";
+      qDebug() << "OOC shortcuts set not found!";
       return;
   }
 }
@@ -5105,6 +5111,7 @@ void Courtroom::default_autocompleter_load()
 
         connect(action, &QAction::triggered, [this, fileInfo]() {
             on_ooc_commands_load(false, fileInfo.absoluteFilePath());
+            Options::getInstance().setDefaultAutocompleterSet(action->text());
         });
 
         actionGroup->addAction(action);
