@@ -623,9 +623,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   if (!Options::getInstance().defaultAutocompleterSet().isEmpty()) {
       on_ooc_commands_load(false, ao_app->get_real_path(VPath("custom sets/autocompleter/" +
-                                                    Options::getInstance().defaultAutocompleterSet())
-  ));
+                                                    Options::getInstance().defaultAutocompleterSet() + ".ini")
+    ));
   }
+  
 
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
@@ -744,22 +745,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       qDebug() << "ReturnPressed Activated";
       // completer->popup()->hide();
       on_ooc_return_pressed();
-      ui_ooc_chat_message->setText("Test");
   });
 
+  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
+          this, [this](const QString& suggestion) {
+      QKeyEvent* event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+      ui_ooc_chat_message->keyPressEvent(event);
+      delete event;
+          });
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
           this, [this](const QString& suggestion) {
-          qDebug() << "Highlighted";
           ui_ooc_chat_message->setText(suggestion);
           ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
         });
 
-  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-        this, [this](const QString& suggestion) {
-        qDebug() << "Activated";
-        ui_ooc_chat_message->clear();
-      });
   
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
@@ -5114,7 +5114,7 @@ void Courtroom::default_autocompleter_load()
 
         connect(action, &QAction::triggered, [this, fileInfo, action]() {
             on_ooc_commands_load(false, fileInfo.absoluteFilePath());
-            Options::getInstance().setDefaultAutocompleterSet(action->text() + ".ini");
+            Options::getInstance().setDefaultAutocompleterSet(action->text());
         });
 
         actionGroup->addAction(action);
