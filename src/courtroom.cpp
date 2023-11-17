@@ -622,7 +622,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   default_autocompleter_load();
 
   if (!Options::getInstance().defaultAutocompleterSet().isEmpty()) {
-      on_ooc_commands_load(false, ao_app->get_real_path(VPath("base/custom sets/autocompleter/" +
+      on_ooc_commands_load(false, ao_app->get_real_path(VPath("custom sets/autocompleter/" +
                                                     Options::getInstance().defaultAutocompleterSet())
   ));
   }
@@ -732,19 +732,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_mute_list, &QListWidget::clicked, this,
           &Courtroom::on_mute_list_clicked);
 
-  connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
-          this, [this](const QString& suggestion) {
-          qDebug() << "Highlighted";
-          ui_ooc_chat_message->setText(suggestion);
-          ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
-        });
-
-    connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-          this, [this](const QString& suggestion) {
-          qDebug() << "Activated";
-          ui_ooc_chat_message->clear();
-        });
-
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
@@ -760,6 +747,20 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       ui_ooc_chat_message->setText("");
   });
 
+
+  connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
+          this, [this](const QString& suggestion) {
+          qDebug() << "Highlighted";
+          ui_ooc_chat_message->setText(suggestion);
+          ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
+        });
+
+  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
+        this, [this](const QString& suggestion) {
+        qDebug() << "Activated";
+        ui_ooc_chat_message->clear();
+      });
+  
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
   connect(ui_music_list, &QTreeWidget::customContextMenuRequested, this,
