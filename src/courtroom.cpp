@@ -621,11 +621,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   default_autocompleter_load();
 
-  if (!Options::getInstance().defaultAutocompleterSet()) {
-      on_ooc_commands_load(false, ao_app->get_real_path(VPath("%1%2")
-              .arg("base/custom sets/autocompleter/")
-              .arg(Options::getInstance().defaultAutocompleterSet())
-        ));
+  if (!Options::getInstance().defaultAutocompleterSet().isEmpty()) {
+      on_ooc_commands_load(false, ao_app->get_real_path(VPath("base/custom sets/autocompleter/" +
+                                                    Options::getInstance().defaultAutocompleterSet())
+  ));
   }
 
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
@@ -5109,7 +5108,7 @@ void Courtroom::default_autocompleter_load()
         action->setCheckable(true);
         action->setActionGroup(actionGroup);
 
-        connect(action, &QAction::triggered, [this, fileInfo]() {
+        connect(action, &QAction::triggered, [this, fileInfo, action]() {
             on_ooc_commands_load(false, fileInfo.absoluteFilePath());
             Options::getInstance().setDefaultAutocompleterSet(action->text());
         });
