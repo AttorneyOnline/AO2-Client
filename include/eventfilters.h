@@ -5,15 +5,14 @@
 
 #include <QEvent>
 #include <QApplication>
-#include <QClipboard>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QMenuBar>
-#include <QTimer>
+// #include <QTimer>
 #include <QDebug>
 #include <QMainWindow>
-#include <QDesktopWidget>
+#include <QAbstractItemView>
 
 class AOLineEditFilter : public QObject
 {
