@@ -667,6 +667,19 @@ void Options::setCrossfade(bool value)
 {
   config.setValue("crossfade", value);
 }
+
+// Default OOC autocompleter set
+QString Options::defaultAutocompleterSet() const
+{
+  return config.value("ooc_autocompleter", value).toString();
+}
+
+void Options::setDefaultAutocompleterSet(QString value)
+{
+  config.setValue("ooc_autocompleter", value);
+}
+
+
 // ------------------------------ //
 
 void Options::clearConfig() { config.clear(); }
