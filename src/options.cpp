@@ -572,7 +572,7 @@ void Options::setCallwords(QStringList value)
   config.setValue("callwords", value);
 }
 
-// ------ TRIPLEX ADDITIONS ------ //
+// ------ GOLDEN ADDITIONS ------ //
 
 TableData Options::downloadManager() const
 {
@@ -671,14 +671,13 @@ void Options::setCrossfade(bool value)
 // Default OOC autocompleter set
 QString Options::defaultAutocompleterSet() const
 {
-  return config.value("ooc_autocompleter", value).toString();
+  return config.value("ooc_autocompleter", "").toString();
 }
 
 void Options::setDefaultAutocompleterSet(QString value)
 {
   config.setValue("ooc_autocompleter", value);
 }
-
 
 // ------------------------------ //
 
