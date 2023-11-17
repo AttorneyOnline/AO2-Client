@@ -37,19 +37,17 @@ protected:
               return true;
             }
         }
-      if (event->type() == QEvent::KeyPress)
-      {
-         QKeyEvent* keyEvent = dynamic_cast<QKeyEvent*>(event);
-         if (keyEvent->key() == Qt::Key_Return || 
-             keyEvent->key() == Qt::Key_Enter)
-         {
-            lineEdit->clear();
-            view->hide();
-            return true;
-         }
-      }
+        if (lineEdit && view && event->type() == QEvent::KeyPress) {
+            QKeyEvent* keyEvent = dynamic_cast<QKeyEvent*>(event);
+            if (keyEvent && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)) {
+                lineEdit->clear();
+                view->hide();
+                return true;
+            }
+        }
         return false;
     }
+
 signals:
     void double_clicked();
 };
