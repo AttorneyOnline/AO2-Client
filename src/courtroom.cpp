@@ -750,15 +750,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
           this, [this](const QString& suggestion) {
       QKeyEvent* event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-      ui_ooc_chat_message->keyPressEvent(event);
+      QCoreApplication::postEvent(ui_ooc_chat_message, event);
       delete event;
-          });
+  });
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
           this, [this](const QString& suggestion) {
           ui_ooc_chat_message->setText(suggestion);
           ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
-        });
+  });
 
   
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
