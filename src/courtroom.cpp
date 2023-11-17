@@ -739,7 +739,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
         });
 
-    connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
+    connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
           this, [this](const QString& suggestion) {
           qDebug() << "Activated";
           ui_ooc_chat_message->clear();
