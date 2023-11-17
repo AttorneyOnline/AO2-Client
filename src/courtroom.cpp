@@ -562,7 +562,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
-  ShortcutsMenu = CommandsMenu->addMenu("Default OOC Shortcuts");
+  ShortcutsMenu = CommandsMenu->addMenu("Default OOC shortcuts");
   CommandsMenu->addAction(action_load_ooc_commands);
   CommandsMenu->addAction(action_clear_ooc_shortcuts);
   
@@ -739,6 +739,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
         });
 
+    connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
+          this, [this](const QString& suggestion) {
+          qDebug() << "Activated";
+          ui_ooc_chat_message->clear();
+        });
+
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
@@ -751,7 +757,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       qDebug() << "ReturnPressed Activated";
       // completer->popup()->hide();
       on_ooc_return_pressed();
-      ui_ooc_chat_message->clear();
+      ui_ooc_chat_message->setText("");
   });
 
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
@@ -5107,7 +5113,7 @@ void Courtroom::default_autocompleter_load()
 
         connect(action, &QAction::triggered, [this, fileInfo, action]() {
             on_ooc_commands_load(false, fileInfo.absoluteFilePath());
-            Options::getInstance().setDefaultAutocompleterSet(action->text());
+            Options::getInstance().setDefaultAutocompleterSet(action->text() + ".ini");
         });
 
         actionGroup->addAction(action);
