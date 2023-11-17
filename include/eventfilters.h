@@ -13,6 +13,7 @@
 #include <QDebug>
 #include <QMainWindow>
 #include <QAbstractItemView>
+#include <QDesktopWidget>
 
 class AOLineEditFilter : public QObject
 {
