@@ -734,16 +734,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
           this, [this](const QString& suggestion) {
-            ui_ooc_chat_message->setText(suggestion);
-            ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
+          qDebug() << "Highlighted";
+          ui_ooc_chat_message->setText(suggestion);
+          ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
         });
-
-  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-        this, [this](const QString& suggestion) {
-      qDebug() << "QCompleter Activated";
-      completer->popup()->hide();
-      ui_ooc_chat_message->clear();
-  });
 
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
@@ -752,13 +746,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //        &Courtroom::on_ooc_return_pressed);
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
+      // suggestionSelected = true;
       //int row = completer->popup()->currentIndex().row(); // Is the completer activated?
       qDebug() << "ReturnPressed Activated";
-      ui_ooc_chat_message->blockSignals(true);
-      completer->popup()->hide();
-      ui_ooc_chat_message->clear();
+      // completer->popup()->hide();
       on_ooc_return_pressed();
-      ui_ooc_chat_message->blockSignals(false);
+      ui_ooc_chat_message->clear();
   });
 
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
