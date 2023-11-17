@@ -24,6 +24,7 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         QLineEdit *lineEdit = qobject_cast<QLineEdit *>(obj);
+        QAbstractItemView *view = qobject_cast<QAbstractItemView*>(obj);
        if (event->type() == QEvent::FocusOut && lineEdit != nullptr && preserve_selection) { // lost focus
             int start = lineEdit->selectionStart();
           #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
@@ -36,6 +37,17 @@ protected:
               return true;
             }
         }
+      if (event->type() == QEvent::KeyPress)
+      {
+         QKeyEvent* keyEvent = dynamic_cast<QKeyEvent*>(event);
+         if (keyEvent->key() == Qt::Key_Return || 
+             keyEvent->key() == Qt::Key_Enter)
+         {
+            lineEdit->clear();
+            view->hide();
+            return true;
+         }
+      }
         return false;
     }
 signals:
