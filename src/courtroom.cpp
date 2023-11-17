@@ -1787,8 +1787,10 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
 
   current_char = f_char;
-  current_side = ao_app->get_char_side(current_char);
-  // set_side(current_side);
+  if (current_side.isEmpty()) {
+    current_side = ao_app->get_char_side(current_char);
+  }
+  set_side(current_side);
 
   set_text_color_dropdown();
 
@@ -4940,6 +4942,7 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
 void Courtroom::on_pos_dropdown_changed(QString p_text)
 {
+  current_side = p_text;
   set_side(p_text);
 }
 
