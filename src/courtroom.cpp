@@ -455,6 +455,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   // model->sort(0, Qt::AscendingOrder); // This will become an option
   completer = new QCompleter(model, this);
   ui_ooc_chat_message->setCompleter(completer); // Associate the completer with the OOC chat
+
+  AOLineEditFilter* ooc_filter = new AOLineEditFilter();
+  completer->popup()->installEventFilter(ooc_filter); // Fuck QCompleter's default behaviour, honestly
   
   // We handle the menu bar
   menu_bar = new QMenuBar(this);
@@ -745,13 +748,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       qDebug() << "ReturnPressed Activated";
       // completer->popup()->hide();
       on_ooc_return_pressed();
-  });
-
-  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-          this, [this](const QString& suggestion) {
-      QKeyEvent* event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-      QCoreApplication::postEvent(ui_ooc_chat_message, event);
-      delete event;
   });
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
