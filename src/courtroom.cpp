@@ -744,7 +744,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       qDebug() << "ReturnPressed Activated";
       // completer->popup()->hide();
       on_ooc_return_pressed();
-      ui_ooc_chat_message->setText("");
+      ui_ooc_chat_message->setText("Test");
   });
 
 
