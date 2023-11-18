@@ -22,15 +22,15 @@
         <file>resource/ui/lobby_assets/Miles_BG.png</file>
         <file>resource/ui/lobby_assets/Phoenix_BG.png</file>
         <file>resource/ui/lobby_assets/Subtitle_v8.png</file>
-        <file>resource/ui/lobby_assets/background.png</file>
+        <file>resource/ui/lobby_assets/background.webp</file>
         <file>resource/ui/lobby_assets/connect_off.png</file>
         <file>resource/ui/lobby_assets/connect_on.png</file>
         <file>resource/ui/lobby_assets/connect_pressed.png</file>
         <file>resource/ui/lobby_assets/discord-mark.png</file>
         <file>resource/ui/lobby_assets/grain-overlay.png</file>
         <file>resource/ui/lobby_assets/icon_about2.png</file>
-        <file>resource/ui/lobby_assets/icon_badge_1.png</file>
-        <file>resource/ui/lobby_assets/icon_badge_2.png</file>
+        <file>resource/ui/lobby_assets/icon_badge_1.webp</file>
+        <file>resource/ui/lobby_assets/icon_badge_2.webp</file>
         <file>resource/ui/lobby_assets/icon_demos.png</file>
         <file>resource/ui/lobby_assets/icon_edit_2.png</file>
         <file>resource/ui/lobby_assets/icon_favorites.png</file>
