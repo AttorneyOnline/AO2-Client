@@ -5103,7 +5103,9 @@ void Courtroom::default_autocompleter_load()
     QStringList filters;
     filters << "*.ini";
     QFileInfoList files = directory.entryInfoList(filters, QDir::Files);
-
+  
+    QActionGroup* actionGroup = new QActionGroup(this);
+  
     foreach (const QFileInfo& fileInfo, files) {
         QAction* action = new QAction(fileInfo.baseName(), this);
         action->setCheckable(true);
@@ -6247,7 +6249,6 @@ void Courtroom::on_reload_theme_clicked()
   // to update status on the background
   set_background(current_background, true);
   set_character_sets("global_char_set.ini");
-  default_autocompleter_load();
 }
 
 void Courtroom::on_return_to_lobby_clicked()
