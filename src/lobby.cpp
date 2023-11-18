@@ -538,13 +538,13 @@ void Lobby::get_motd()
     if (document.isEmpty()) {
       document = tr("Couldn't get the message of the day.");
     }
-    // ui_motd_text->setHtml(document);
+    ui_motd_text->setHtml(document);
   });
 }
 
 void Lobby::check_for_updates()
 {
-  net_manager->request_document(
+/*   net_manager->request_document(
       MSDocumentType::ClientVersion, [this](QString version_json) {
         ui_motd_text->setText(version_json);
         const QVersionNumber current_version = QVersionNumber::fromString(ao_app->VERSION);
@@ -571,7 +571,7 @@ void Lobby::check_for_updates()
             }
           }
           // ui_motd_text->setText("New update: " + update_generation + " " + update_status + " " + update_hotfix + " " + update_description);
-          if (update_version > current_version || (update_status != ao_app->STATUS && new_RC > current_RC) || hotfixValue > ao_app->HOTFIX) {
+          if (update_version > current_version || (update_status != ao_app->STATUS || new_RC > current_RC) || hotfixValue > ao_app->HOTFIX) {
               // QString message = tr("%1 %2 %3\nDescription: %4\nDo you want to update?")
               //                      .arg(update_generation)
               //                      .arg(update_version.toString())
@@ -626,7 +626,7 @@ void Lobby::check_for_updates()
               }
           }
         }
-      });
+      }); */
 }
 
 void Lobby::set_player_count(int players_online, int max_players)
