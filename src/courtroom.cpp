@@ -5097,7 +5097,6 @@ void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
 void Courtroom::default_autocompleter_load()
 {
     // We clear the entries we may already have
-    actionGroup->clear();
     ShortcutsMenu->clear();
 
     QDir directory("base/custom sets/autocompleter");
