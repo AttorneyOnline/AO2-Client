@@ -741,13 +741,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
   //        &Courtroom::on_ooc_return_pressed);
+  connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
+          ui_ooc_chat_message, &QLineEdit::clear, Qt::QueuedConnection);
 
   connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
       // suggestionSelected = true;
       //int row = completer->popup()->currentIndex().row(); // Is the completer activated?
       qDebug() << "ReturnPressed Activated";
       // completer->popup()->hide();
-      ui_ooc_chat_message->clear();
+      //ui_ooc_chat_message->clear();
       on_ooc_return_pressed();
   });
 
