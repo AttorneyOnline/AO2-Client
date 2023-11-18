@@ -746,7 +746,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   //        ui_ooc_chat_message, &QLineEdit::clear, Qt::QueuedConnection);  // whyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
-        ui_ooc_chat_message, [ui_ooc_chat_message]() {
+        this, [this, ui_ooc_chat_message]() {
             QMetaObject::invokeMethod(ui_ooc_chat_message, &QLineEdit::clear, Qt::QueuedConnection);
         });
 
