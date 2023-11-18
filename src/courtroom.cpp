@@ -446,7 +446,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
 
-  // Auto-completer test
+  // Auto-completer's vanilla commands
   auto_commands = QStringList({
     "/help", "/bg", "/getarea", "/getareas", "/roll",
     "/area_lock", "/area_unlock", "/8ball", "/afk"
@@ -565,7 +565,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
-  ShortcutsMenu = CommandsMenu->addMenu("Default OOC shortcuts");
+  ShortcutsMenu = CommandsMenu->addMenu("Default autocompleter set");
   CommandsMenu->addAction(action_load_ooc_commands);
   CommandsMenu->addAction(action_clear_ooc_shortcuts);
   
@@ -622,15 +622,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(action_load_ooc_commands, &QAction::triggered, this, [this]() { on_ooc_commands_load(true, ""); });
   connect(action_clear_ooc_shortcuts, &QAction::triggered, this, [this]() { model->setStringList(QStringList ({})); });
 
-  default_autocompleter_load();
-
-  if (!Options::getInstance().defaultAutocompleterSet().isEmpty()) {
-      on_ooc_commands_load(false, ao_app->get_real_path(VPath("custom sets/autocompleter/" +
-                                                    Options::getInstance().defaultAutocompleterSet() + ".ini")
-    ));
-  }
-  
-
   QMenuBarFilter *menuBarFilter = new QMenuBarFilter;
   menuBarFilter->collapseMenuBar = true;
 
@@ -673,6 +664,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     }
   }
 
+  default_autocompleter_load();
+
+  if (!Options::getInstance().defaultAutocompleterSet().isEmpty()) {
+      on_ooc_commands_load(false, ao_app->get_real_path(VPath("custom sets/autocompleter/" +
+                                                    Options::getInstance().defaultAutocompleterSet() + ".ini")
+    ));
+    qDebug() << "Loaded default autocompleter set!";
+  }
+
   construct_char_select();
 
   connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
@@ -698,7 +698,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ic_chat_message, &QTextEdit::textChanged, this, &Courtroom::onTextChanged);
   connect(typingTimer, &QTimer::timeout, this, &Courtroom::onTypingTimeout);
-
 
   connect(ui_pos_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
           QOverload<int>::of(&Courtroom::on_pos_dropdown_changed));
@@ -736,28 +735,18 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_mute_list, &QListWidget::clicked, this,
           &Courtroom::on_mute_list_clicked);
 
+  // When the "emit" signal is sent in eventfilters.h, we call on_chat_return_pressed
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
-  //connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this,
-  //        &Courtroom::on_ooc_return_pressed);
-  
-  //connect(completer, QOverload<const QString&>::of(&QCompleter::activated), // aaaaaaaaaaaaaaaahhhhhhhhhhhhhhhhhhhhhh
-  //        ui_ooc_chat_message, &QLineEdit::clear, Qt::QueuedConnection);  // whyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-
   connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
         this, [this]() {
-            QMetaObject::invokeMethod(ui_ooc_chat_message, &QLineEdit::clear, Qt::QueuedConnection);
+            // This prevents the OOC input from *not* clearing itself after selecting a suggestion.
+            // It's literally the only way it worked. Don't touch it.
+            QMetaObject::invokeMethod(ui_ooc_chat_message, &QLineEdit::clear, Qt::QueuedConnection); // 
         });
 
-  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, [this]() {
-      // suggestionSelected = true;
-      //int row = completer->popup()->currentIndex().row(); // Is the completer activated?
-      qDebug() << "ReturnPressed Activated";
-      // completer->popup()->hide();
-      //ui_ooc_chat_message->clear();
-      on_ooc_return_pressed();
-  });
+  connect(ui_ooc_chat_message, &QLineEdit::returnPressed, this, &Courtroom::on_ooc_return_pressed);
 
   connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted),
           this, [this](const QString& suggestion) {
@@ -765,7 +754,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           ui_ooc_chat_message->setCursorPosition(ui_ooc_chat_message->text().length());
   });
 
-  
   connect(ui_music_list, &QTreeWidget::itemDoubleClicked,
           this, &Courtroom::on_music_list_double_clicked);
   connect(ui_music_list, &QTreeWidget::customContextMenuRequested, this,
@@ -4950,8 +4938,8 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
 void Courtroom::on_pos_dropdown_changed(QString p_text)
 {
-  current_side = p_text;
   set_side(p_text);
+  // current_side = p_text;
 }
 
 void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
