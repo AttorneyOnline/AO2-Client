@@ -5790,7 +5790,7 @@ void Courtroom::onTextChanged()
   QString text = ui_ic_chat_message->toPlainText();
   QString emotion_number = QString::number(current_button_selected + 1);
 
-  if (!Options::getInstance().stopTypingIcon()) {
+  if (!Options::getInstance().stopTypingIcon() && typing_timer_supported) {
     if (text.isEmpty() && typingTimer->isActive()) {
         typingTimer->stop();
         ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
@@ -5803,6 +5803,7 @@ void Courtroom::onTextChanged()
 
 void Courtroom::onTypingTimeout()
 {
+  ao_app->send_server_packet(new AOPacket("TT", {"0", current_char}));
   typingTimer->stop();
   ui_vp_char_icon->hide();
   ui_vp_pencil->hide();
