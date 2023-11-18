@@ -565,7 +565,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   QSwappingMenu->addAction(action_load_set);
   QSwappingMenu->addSeparator();                 //  SWAPPING TAB
 
-  ShortcutsMenu = CommandsMenu->addMenu("Default autocompleter set");
+  ShortcutsMenu = CommandsMenu->addMenu("Default OOC shortcuts");
   CommandsMenu->addAction(action_load_ooc_commands);
   CommandsMenu->addAction(action_clear_ooc_shortcuts);
   
@@ -1783,9 +1783,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
 
   current_char = f_char;
-  if (current_side.isEmpty()) {
-    current_side = ao_app->get_char_side(current_char);
-  }
+  current_side = ao_app->get_char_side(current_char);
   set_side(current_side);
 
   set_text_color_dropdown();
@@ -5084,7 +5082,7 @@ void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
       model->setStringList(auto_commands);
       // model->sort(0, Qt::AscendingOrder);
       ui_ooc_chat_message->setFocus();
-      if (ui_ooc_chat_message->text().isEmpty() && !filename.contains(Options::getInstance().defaultAutocompleterSet())) {
+      if (ui_ooc_chat_message->text().isEmpty() && file_load) {
           ui_ooc_chat_message->setText("/");
           completer->complete();
       }
