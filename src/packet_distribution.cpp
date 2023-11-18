@@ -551,15 +551,25 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed) {
       goto end;
     }
+    if (f_contents.size() < 2) {
+        qDebug() << "Not enough elements in TT packet.";
+        goto end;
+    }
+
     int tt_state = f_contents.at(0).toInt();
     QString tt_char = f_contents.at(1);
-    QString tt_button = f_contents.at(2);
+    QString tt_button;
 
-    // If there is no char_icon, we just grab the current button selected
-    if (!file_exists(w_courtroom->get_char_path(tt_char, "char_icon"))) {
-      w_courtroom->current_icon_path = w_courtroom->get_button_path(tt_char, tt_button);
+    if (f_contents.size() >= 3) {
+        tt_button = f_contents.at(2);
     } else {
-      w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
+        tt_button = "";
+    }
+
+    if (!file_exists(w_courtroom->get_char_path(tt_char, "char_icon")) && !tt_button.isEmpty()) {
+        w_courtroom->current_icon_path = w_courtroom->get_button_path(tt_char, tt_button);
+    } else {
+        w_courtroom->current_icon_path = w_courtroom->get_char_path(tt_char, "char_icon");
     }
     w_courtroom->typing_signal(tt_state);
   }
