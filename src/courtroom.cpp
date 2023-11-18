@@ -5084,7 +5084,7 @@ void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
       model->setStringList(auto_commands);
       // model->sort(0, Qt::AscendingOrder);
       ui_ooc_chat_message->setFocus();
-      if (ui_ooc_chat_message->text().isEmpty()) {
+      if (ui_ooc_chat_message->text().isEmpty() && !filename.contains(Options::getInstance().defaultAutocompleterSet())) {
           ui_ooc_chat_message->setText("/");
           completer->complete();
       }
@@ -5096,12 +5096,14 @@ void Courtroom::on_ooc_commands_load(bool file_load, QString filename)
 
 void Courtroom::default_autocompleter_load()
 {
+    // We clear the entries we may already have
+    actionGroup->clear();
+    ShortcutsMenu->clear();
+
     QDir directory("base/custom sets/autocompleter");
     QStringList filters;
     filters << "*.ini";
     QFileInfoList files = directory.entryInfoList(filters, QDir::Files);
-
-    QActionGroup* actionGroup = new QActionGroup(this);
 
     foreach (const QFileInfo& fileInfo, files) {
         QAction* action = new QAction(fileInfo.baseName(), this);
@@ -5115,8 +5117,12 @@ void Courtroom::default_autocompleter_load()
 
         actionGroup->addAction(action);
         ShortcutsMenu->addAction(action);
+        if (Options::getInstance().defaultAutocompleterSet().contains(action->text())) {
+            action->setChecked(true);
+        }
     }
 }
+
 
 void Courtroom::on_char_set_load()
 {
@@ -6242,6 +6248,7 @@ void Courtroom::on_reload_theme_clicked()
   // to update status on the background
   set_background(current_background, true);
   set_character_sets("global_char_set.ini");
+  default_autocompleter_load();
 }
 
 void Courtroom::on_return_to_lobby_clicked()
