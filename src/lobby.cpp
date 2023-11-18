@@ -604,11 +604,11 @@ void Lobby::check_for_updates()
 
               msgBox.setTextFormat(Qt::RichText);
               msgBox.setText(formattedHtmlText);
-              msgBox.setStyleSheet("QLabel { min-width: 400px; }
-                                    QMessageBox { border: 4px double #c5ac66; padding: 4px; background-color: rgb(8, 9, 13); color:white; } 
-                                    QPushButton { background-color: black; color: rgb(230, 230, 230); border: 1px solid white; margin: 2px; padding: 3px; text-align: center; }
-                                    QPushButton:hover { background-color: rgb(17, 17, 17); color: white; }
-                                    QPushButton:pressed { background-color: rgb(30, 30, 30); color: white; }"); 
+              msgBox.setStyleSheet("QLabel { min-width: 400px; }"
+                                   "QMessageBox { border: 4px double #c5ac66; padding: 4px; background-color: rgb(8, 9, 13); color:white; } "
+                                   "QPushButton { background-color: black; color: rgb(230, 230, 230); border: 1px solid white; margin: 2px; padding: 3px; text-align: center; } "
+                                   "QPushButton:hover { background-color: rgb(17, 17, 17); color: white; } "
+                                   "QPushButton:pressed { background-color: rgb(30, 30, 30); color: white; }");
 
               // msgBox.setIcon(QMessageBox::Information);
               QPushButton* btn1 = msgBox.addButton(tr("Windows"), QMessageBox::AcceptRole);
