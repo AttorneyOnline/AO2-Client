@@ -581,31 +581,44 @@ void Lobby::check_for_updates()
               QMessageBox msgBox;
               
               QString htmlText = R"(
-                  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-                  <html><head><meta name="qrichtext" content="1" /><style type="text/css">
-                  p, li { white-space: pre-wrap; }
-                  </style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;">
-                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt; font-weight:600; color:#000000;">Attorney Online Golden: %1 %2 %3</span></p>
-                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt;">A new update has released! </span></p>
-                  <p align="center" style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;"><br /></p>
-                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt; font-weight:600;">What's New?</span></p>
-                  <p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:12pt;">%4</span></p></body></html>
+              <p style="-qt-block-indent: 0; text-indent: 0px; margin: 12px 0px 12px 0px;" align="center"><strong><span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 18pt;"
+              >A</span><span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 14pt;">ttorney</span> <span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 18pt;"
+              >O</span><span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 14pt;">nline</span> <span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 18pt; color: #fac51c;"
+              >G</span><span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 14pt; color: #fac51c;">olden</span></strong><span style="font-family: 'Verdana,Geneva,sans-serif';
+              font-size: 16pt; font-weight: 600;"><br /></span><span style="font-size: 11pt;">
+              A new update has released!
+              </span></p>
+              <p style="-qt-block-indent: 0; text-indent: 0px; margin: 12px 0px 12px 0px;" align="center"><span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 14pt;">
+              %1 %2 %3
+              </span></p>
+              <hr />
+              <p style="-qt-block-indent: 0; text-indent: 0px; margin: 12px 0px 12px 0px;" align="center"><span style="font-family: 'Verdana,Geneva,sans-serif'; font-size: 14pt; font-weight: 600;">
+              What's New?
+              </span></p>
+              <p style="-qt-block-indent: 0; text-indent: 0px; margin: 12px 0px 12px 0px;" align="center"><span style="font-size: 11pt;">
+              %4
+              </span></p>
               )";
             
               QString formattedHtmlText = QString(htmlText).arg(update_generation).arg(update_version.toString()).arg(update_status).arg(update_description);
 
               msgBox.setTextFormat(Qt::RichText);
               msgBox.setText(formattedHtmlText);
-              msgBox.setStyleSheet("QLabel { min-width: 400px; }");  // Ajusta el ancho mínimo según sea necesario
+              msgBox.setStyleSheet("QLabel { min-width: 400px; }
+                                    QMessageBox { border: 4px double #c5ac66; padding: 4px; background-color: rgb(8, 9, 13); color:white; } 
+                                    QPushButton { background-color: black; color: rgb(230, 230, 230); border: 1px solid white; margin: 2px; padding: 3px; text-align: center; }
+                                    QPushButton:hover { background-color: rgb(17, 17, 17); color: white; }
+                                    QPushButton:pressed { background-color: rgb(30, 30, 30); color: white; }"); 
+
               // msgBox.setIcon(QMessageBox::Information);
               QPushButton* btn1 = msgBox.addButton(tr("Windows"), QMessageBox::AcceptRole);
               QPushButton* btn2 = msgBox.addButton(tr("Linux"), QMessageBox::AcceptRole);
               QPushButton* btn3 = msgBox.addButton(tr("MacOS"), QMessageBox::AcceptRole);
-              QPushButton* btn4 = msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
+              msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
   
               msgBox.exec();
               if (msgBox.clickedButton() == btn1) {
-                QDesktopServices::openUrl(QUrl(root["Windows_1"].toString()));
+                QDesktopServices::openUrl(QUrl(root["Windows"].toString()));
               } else if (msgBox.clickedButton() == btn2) {
                 QDesktopServices::openUrl(QUrl(root["Linux"].toString()));
               } else if (msgBox.clickedButton() == btn3) {
