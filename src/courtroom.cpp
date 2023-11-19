@@ -2120,6 +2120,11 @@ void Courtroom::on_chat_return_pressed()
   if (is_muted)
     return;
 
+  if (typingTimer->isActive()) {
+      typingTimer->stop();
+      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char}));
+  }
+
   ui_ic_chat_message->blockSignals(true);
   QTimer::singleShot(Options::getInstance().chatRateLimit(), this,
                      [this] { ui_ic_chat_message->blockSignals(false); });
@@ -5801,7 +5806,7 @@ void Courtroom::onTextChanged()
   QString emotion_number = QString::number(current_button_selected + 1);
 
   if (!Options::getInstance().stopTypingIcon() /*&& ao_app->typing_timer_supported*/) {
-    if (text.isEmpty() || typingTimer->isActive()) {
+    if (text.isEmpty() && typingTimer->isActive()) {
         typingTimer->stop();
         ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
     } else if (!text.isEmpty() && !typingTimer->isActive()) {
