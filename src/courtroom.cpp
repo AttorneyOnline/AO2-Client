@@ -5801,7 +5801,7 @@ void Courtroom::onTextChanged()
   QString emotion_number = QString::number(current_button_selected + 1);
 
   if (!Options::getInstance().stopTypingIcon() /*&& ao_app->typing_timer_supported*/) {
-    if (text.isEmpty() && typingTimer->isActive()) {
+    if (text.isEmpty() || typingTimer->isActive()) {
         typingTimer->stop();
         ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
     } else if (!text.isEmpty() && !typingTimer->isActive()) {
@@ -5813,7 +5813,6 @@ void Courtroom::onTextChanged()
 
 void Courtroom::onTypingTimeout()
 {
-  ao_app->send_server_packet(new AOPacket("TT", {"0", current_char}));
   typingTimer->stop();
   ui_vp_char_icon->hide();
   ui_vp_pencil->hide();
