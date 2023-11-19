@@ -5105,6 +5105,16 @@ void Courtroom::default_autocompleter_load()
     QFileInfoList files = directory.entryInfoList(filters, QDir::Files);
   
     QActionGroup* actionGroup = new QActionGroup(this);
+
+    // QAction* default_none = new QAction("None", this);
+    // default_none->setCheckable(true);
+    // default_none->setActionGroup(actionGroup);
+
+    // connect(default_none, &QAction::triggered, [this, fileInfo, action]() {
+    //     on_ooc_commands_load(false, fileInfo.absoluteFilePath());
+    //    Options::getInstance().setDefaultAutocompleterSet("None");
+    // });
+
   
     foreach (const QFileInfo& fileInfo, files) {
         QAction* action = new QAction(fileInfo.baseName(), this);
@@ -5790,7 +5800,7 @@ void Courtroom::onTextChanged()
   QString text = ui_ic_chat_message->toPlainText();
   QString emotion_number = QString::number(current_button_selected + 1);
 
-  if (!Options::getInstance().stopTypingIcon() && ao_app->typing_timer_supported) {
+  if (!Options::getInstance().stopTypingIcon() /*&& ao_app->typing_timer_supported*/) {
     if (text.isEmpty() && typingTimer->isActive()) {
         typingTimer->stop();
         ao_app->send_server_packet(new AOPacket("TT", {"0", current_char, emotion_number}));
