@@ -3357,29 +3357,6 @@ void Courtroom::handle_callwords()
             break;
         }
     }
-
-    QStringList filtered_words = Options::getInstance().filteredWords();
-    QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
-    bool whole_word_match = Options::getInstance().filteredWords_WholeWord();
-    bool is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive();
-  
-    Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
-                                           Qt::CaseSensitive :
-                                           Qt::CaseInsensitive;
-    auto options = case_sensitivity == Qt::CaseSensitive ?
-                                       QRegularExpression::NoPatternOption : 
-                                       QRegularExpression::CaseInsensitiveOption;
-
-    for (const QString &filtered_word : qAsConst(filtered_words)) {
-        QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(filtered_word) : filtered_word;
-    
-        QRegularExpression re(wordToCheck, options);
-
-        if (re.match(f_message).hasMatch()) {
-            // We replace the filtered word with the specified character
-            f_message.replace(re, replaced_character);
-        }
-    }
 }
 
 void Courtroom::display_evidence_image()
@@ -3721,6 +3698,29 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
       p_text_escaped.append("</div>");
   }
 
+
+  QStringList filtered_words = Options::getInstance().filteredWords();
+  QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
+  bool whole_word_match = Options::getInstance().filteredWords_WholeWord();
+  bool is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive();
+
+  Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
+                                         Qt::CaseSensitive :
+                                         Qt::CaseInsensitive;
+  auto options = case_sensitivity == Qt::CaseSensitive ?
+                                     QRegularExpression::NoPatternOption : 
+                                     QRegularExpression::CaseInsensitiveOption;
+
+  for (const QString &filtered_word : qAsConst(filtered_words)) {
+      QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(filtered_word) : filtered_word;
+  
+      QRegularExpression re(wordToCheck, options);
+
+      if (re.match(p_text_escaped).hasMatch()) {
+          // We replace the filtered word with the specified character
+          p_text_escaped.replace(re, replaced_character);
+      }
+  
   return p_text_escaped;
 }
 
