@@ -3382,14 +3382,30 @@ void Courtroom::handle_callwords()
         
             callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
             // We handle the callwords chat history
-            callwords_history << (QDateTime::currentDateTime().toString(log_timestamp_format) + " " + display_name + ": " + f_message);
+            callwords_history << ("[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] " + display_name + ": " + f_message);
 
-            // Only show the last 4 callwords
-            while (callwords_history.size() > 4) {
+            // Only show the last 3 callwords
+            while (callwords_history.size() > 3) {
                 callwords_history.removeFirst();
             }
             
-            callwords_notification->setToolTip(callwords_history.join("\n"));
+            int max_length = 120; // Approximated Tooltip length
+            QStringList truncated_messages;
+            
+            for (const QString &message : qAsConst(callwords_history)) {
+                int message_length = message.length();
+                if (max_length >= message_length) {
+                    truncated_messages << message;
+                    max_length -= message_length;
+                } else {
+                    // Truncate the old callwords msgs and add a "..."
+                    QString truncated_msg = message.left(max_length - 3) + "...";
+                    truncated_messages << truncated_msg;
+                    break;
+                }
+            }
+            
+            callwords_notification->setToolTip(displayedMessages.join("\n"));
           
         }
     }
