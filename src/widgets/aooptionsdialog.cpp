@@ -517,9 +517,38 @@ void AOOptionsDialog::setupUI()
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
   // people to put a billion entries in.
+  // -> Let people add whatever they want, honestly
   FROM_UI(QPlainTextEdit, callwords_textbox)
-  registerOption<QPlainTextEdit, QStringList>(
-      "callwords_textbox", &Options::callwords, &Options::setCallwords);
+  FROM_UI(QRadioButton, callwords_whole_word)
+  FROM_UI(QRadioButton, callwords_case_sensitive)
+
+  registerOption<QPlainTextEdit, QStringList>("callwords_textbox", 
+                                &Options::callwords, 
+                                &Options::setCallwords);
+  registerOption<QRadioButton, bool>("callwords_whole_word",
+                                &Options::callwords_WholeWord,
+                                &Options::setCallwords_WholeWord);
+  registerOption<QRadioButton, bool>("callwords_case_sensitive",
+                                &Options::callwords_CaseSensitive,
+                                &Options::setCallwords_CaseSensitive);
+
+  FROM_UI(QPlainTextEdit, blacklist_textbox)
+  FROM_UI(QRadioButton, blacklist_whole_word)
+  FROM_UI(QRadioButton, blacklist_case_sensitive)
+  FROM_UI(QLineEdit, replace_with_textbox)
+  
+  registerOption<QPlainTextEdit, QStringList>("blacklist_textbox",
+                                &Options::filteredWords, 
+                                &Options::setFilteredWords);
+  registerOption<QRadioButton, bool>("blacklist_whole_word", 
+                                &Options::filteredWords_WholeWord, 
+                                &Options::setFilteredWords_WholeWord);
+  registerOption<QRadioButton, bool>("blacklist_case_sensitive", 
+                                &Options::filteredWords_CaseSensitive, 
+                                &Options::setFilteredWords_CaseSensitive);
+  registerOption<QLineEdit, QString>("replace_with_textbox", 
+                                &Options::filteredWords_ReplacedCharacter, 
+                                &Options::setFilteredWords_ReplacedCharacter);
 
   // Audio tab.
   FROM_UI(QComboBox, audio_device_combobox)
