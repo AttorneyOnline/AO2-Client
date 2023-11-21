@@ -3381,7 +3381,7 @@ void Courtroom::handle_callwords()
             }
         
             callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
-            callwords_notification->setToolTip(f_message);
+            callwords_notification->setToolTip(display_name + ": " + f_message);
         }
     }
 }
