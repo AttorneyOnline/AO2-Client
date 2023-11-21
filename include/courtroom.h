@@ -707,6 +707,8 @@ private:
   QBrush locked_brush;
 
   QSystemTrayIcon* callwords_notification;
+  QStringList callwords_history;
+
   QMenuBar* menu_bar;
   QPropertyAnimation* menu_animation;
 
