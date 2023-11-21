@@ -1071,7 +1071,7 @@ Double click the items to download them!</string>
                <number>0</number>
               </property>
               <item>
-               <widget class="QRadioButton" name="blacklist_wholeword">
+               <widget class="QRadioButton" name="blacklist_whole_word">
                 <property name="text">
                  <string>Whole Word Only</string>
                 </property>
@@ -1081,7 +1081,7 @@ Double click the items to download them!</string>
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="blacklist_casesensitive">
+               <widget class="QRadioButton" name="blacklist_case_sensitive">
                 <property name="text">
                  <string>Case Sensitive</string>
                 </property>
