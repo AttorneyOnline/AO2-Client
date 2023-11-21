@@ -3381,7 +3381,16 @@ void Courtroom::handle_callwords()
             }
         
             callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
-            callwords_notification->setToolTip(display_name + ": " + f_message);
+            // We handle the callwords chat history
+            callwords_history << (QDateTime::currentDateTime().toString(log_timestamp_format) + " " + display_name + ": " + f_message);
+
+            // Only show the last 4 callwords
+            while (callwords_history.size() > 4) {
+                callwords_history.removeFirst();
+            }
+            
+            callwords_notification->setToolTip(callwords_history.join("\n"));
+          
         }
     }
 }
