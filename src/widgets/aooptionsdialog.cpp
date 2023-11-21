@@ -164,7 +164,7 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
 template <>
 void AOOptionsDialog::setWidgetData(QRadioButton *widget, const bool &value)
 {
-  widget->toggle(value);
+  widget->toggled(value);
 }
 
 template <> bool AOOptionsDialog::widgetData(QRadioButton *widget) const
