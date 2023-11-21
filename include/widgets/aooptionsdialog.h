@@ -17,6 +17,7 @@ class QTabWidget;
 class QLabel;
 class QTableWidget;
 class QAbstractButton;
+class QRadioButton;
 
 
 #include <QtWidgets/QDialog>
@@ -25,6 +26,7 @@ class QAbstractButton;
 #include <QTextBrowser>
 #include <QTextStream>
 #include <QTableWidget>
+#include <QRadioButton>
 
 class AOApplication;
 
