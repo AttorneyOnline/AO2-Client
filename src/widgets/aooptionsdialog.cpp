@@ -789,7 +789,7 @@ void AOOptionsDialog::setupUI()
     }
   });
   FROM_UI(QTabWidget, settings_tabs)
-  ui_settings_tab->setDocumentMode(true);
+  ui_settings_tabs->setDocumentMode(true);
   updateValues();
 }
 
