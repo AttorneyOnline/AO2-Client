@@ -446,6 +446,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
 
+  callwords_notification = new QSystemTray(this);
+  callwords_notification->setVisible(true);
+
   // Auto-completer's vanilla commands
   auto_commands = QStringList({
     "/help", "/bg", "/getarea", "/getareas", "/roll",
@@ -3354,6 +3357,12 @@ void Courtroom::handle_callwords()
         if (f_message.contains(callword.trimmed(), Qt::CaseInsensitive)) {
             modcall_player->play(ao_app->get_court_sfx("word_call"));
             ao_app->alert(this);
+
+            QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
+            QPixmap pixmap = QPixmap(icon_path);
+            QIcon icon = QIcon(pixmap);
+            callwords_notification->setIcon(icon);
+            callwords_notification->showMessage(m_chatmessage[CHAR_NAME], f_message);
             break;
         }
     }
