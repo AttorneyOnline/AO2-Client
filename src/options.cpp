@@ -671,8 +671,9 @@ QStringList Options::callwords() const
 
   // Please someone explain to me how tf I am supposed to create an empty
   // QStringList using QSetting defaults.
-  if (l_callwords.size() == 1 && l_callwords.at(0).isEmpty())
+  if (l_callwords.size() == 1 && l_callwords.at(0).isEmpty()) {
     l_callwords.clear();
+  }
   return l_callwords;
 }
 
