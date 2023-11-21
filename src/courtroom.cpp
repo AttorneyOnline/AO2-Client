@@ -446,7 +446,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_char_icon->raise();
   ui_vp_pencil->raise();
 
-  callwords_notification = new QSystemTray(this);
+  callwords_notification = new QSystemTrayIcon(this);
   callwords_notification->setVisible(true);
 
   // Auto-completer's vanilla commands
