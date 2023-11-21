@@ -555,23 +555,6 @@ QString Options::language() const
 
 void Options::setLanguage(QString value) { config.setValue("language", value); }
 
-QStringList Options::callwords() const
-{
-  QStringList l_callwords =
-      config.value("callwords", QStringList{}).toStringList();
-
-  // Please someone explain to me how tf I am supposed to create an empty
-  // QStringList using QSetting defaults.
-  if (l_callwords.size() == 1 && l_callwords.at(0).isEmpty())
-    l_callwords.clear();
-  return l_callwords;
-}
-
-void Options::setCallwords(QStringList value)
-{
-  config.setValue("callwords", value);
-}
-
 // ------ GOLDEN ADDITIONS ------ //
 
 TableData Options::downloadManager() const
@@ -677,6 +660,87 @@ QString Options::defaultAutocompleterSet() const
 void Options::setDefaultAutocompleterSet(QString value)
 {
   config.setValue("ooc_autocompleter", value);
+}
+
+// Reworked Callwords tab
+
+QStringList Options::callwords() const
+{
+  QStringList l_callwords =
+      config.value("callwords", QStringList{}).toStringList();
+
+  // Please someone explain to me how tf I am supposed to create an empty
+  // QStringList using QSetting defaults.
+  if (l_callwords.size() == 1 && l_callwords.at(0).isEmpty())
+    l_callwords.clear();
+  return l_callwords;
+}
+
+void Options::setCallwords(QStringList value)
+{
+  config.setValue("callwords", value);
+}
+
+bool Options::callwords_WholeWord() const
+{
+  return config.value("callwords_whole_word", false).toBool();
+}
+
+void Options::setCallwords_WholeWord(bool value)
+{
+  config.setValue("callwords_whole_word", value);
+}
+
+bool Options::callwords_CaseSensitive() const
+{
+  return config.value("callwords_case_sensitive", false).toBool();
+}
+
+void Options::setCallwords_CaseSensitive(bool value)
+{
+  config.setValue("callwords_case_sensitive", value);
+}
+
+QStringList Options::filteredWords() const
+{
+  QStringList l_filtered_words =
+      config.value("filtered_words", QStringList{}).toStringList();
+  return l_filtered_words;
+}
+
+void Options::setFilteredWords(QStringList value)
+{
+  config.setValue("filtered_words", value);
+}
+
+bool Options::filteredWords_WholeWord() const
+{
+  return config.value("filtered_words_whole_word", false).toBool();
+}
+
+void Options::setFilteredWords_WholeWord(bool value)
+{
+  config.setValue("filtered_words_whole_word", value);
+}
+
+bool Options::filteredWords_CaseSensitive() const
+{
+  return config.value("filtered_words_case_sensitive", false).toBool();
+}
+
+void Options::setFilteredWords_CaseSensitive(bool value)
+{
+  config.setValue("filtered_words_case_sensitive", value);
+}
+
+QString Options::filteredWords_ReplacedCharacter() const
+{
+  return config.value("filtered_words_replaced_with", "*").toString();
+}
+
+void Options::setFilteredWords_ReplacedCharacter(QString value)
+{
+  config.setValue("filtered_words_replaced_with", value);
 }
 
 // ------------------------------ //
