@@ -3366,7 +3366,10 @@ void Courtroom::handle_callwords()
 
     for (const QString &filtered_word : qAsConst(filtered_words)) {
         QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(filtered_word) : filtered_word;
-        QRegularExpression re(wordToCheck, case_sensitivity);
+        QRegularExpression::PatternOptions options = case_sensitivity == Qt::CaseSensitive ?
+                                                     QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption;
+    
+        QRegularExpression re(wordToCheck, options);
 
         if (re.match(f_message).hasMatch()) {
             // We replace the filtered word with the specified character
