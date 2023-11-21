@@ -854,6 +854,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
 
+  // We make sure the window is raised when clicked the system tray icon
+  connect(callwords_notification, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
+      if (reason == QSystemTrayIcon::Trigger) {
+          this->activateWindow();
+          this->raise();
+      }
+  });
+
   set_widgets();
 
   set_char_select();
@@ -3351,19 +3359,29 @@ void Courtroom::initialize_chatbox()
 void Courtroom::handle_callwords()
 {
     QString f_message = m_chatmessage[MESSAGE];
+    int f_charid = m_chatmessage[CHAR_ID].toInt();
+    QString display_name;
 
     QStringList call_words = Options::getInstance().callwords();
     for (const QString &callword : qAsConst(call_words)) {
         if (f_message.contains(callword.trimmed(), Qt::CaseInsensitive)) {
             modcall_player->play(ao_app->get_court_sfx("word_call"));
             ao_app->alert(this);
-
+        
             QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
-            QPixmap pixmap = QPixmap(icon_path);
-            QIcon icon = QIcon(pixmap);
-            callwords_notification->setIcon(icon);
-            callwords_notification->showMessage(m_chatmessage[CHAR_NAME], f_message);
-            break;
+            QPixmap pixmap(icon_path);
+            callwords_notification->setIcon(QIcon(pixmap));
+        
+            if (!m_chatmessage[SHOWNAME].isEmpty()) {
+                display_name = m_chatmessage[SHOWNAME];
+            } else if (f_charid >= 0 && f_charid < char_list.size() && !ui_showname_enable->isChecked()) {
+                display_name = ao_app->get_showname(char_list.at(f_charid).name);
+            } else {
+                display_name = m_chatmessage[CHAR_NAME];
+            }
+        
+            callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
+            callwords_notification->setToolTip(f_message);
         }
     }
 }
