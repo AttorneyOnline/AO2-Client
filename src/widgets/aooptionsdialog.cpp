@@ -535,14 +535,14 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QRadioButton, callwords_case_sensitive)
 
   registerOption<QPlainTextEdit, QStringList>("callwords_textbox", 
-                                &Options::callwords, 
-                                &Options::setCallwords);
+                                  &Options::callwords, 
+                                  &Options::setCallwords);
   registerOption<QRadioButton, bool>("callwords_whole_word",
-                                &Options::callwords_WholeWord,
-                                &Options::setCallwords_WholeWord);
+                                  &Options::callwords_WholeWord,
+                                  &Options::setCallwords_WholeWord);
   registerOption<QRadioButton, bool>("callwords_case_sensitive",
-                                &Options::callwords_CaseSensitive,
-                                &Options::setCallwords_CaseSensitive);
+                                  &Options::callwords_CaseSensitive,
+                                  &Options::setCallwords_CaseSensitive);
 
   FROM_UI(QPlainTextEdit, blacklist_textbox)
   FROM_UI(QRadioButton, blacklist_whole_word)
@@ -550,17 +550,17 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QLineEdit, replace_with_textbox)
   
   registerOption<QPlainTextEdit, QStringList>("blacklist_textbox",
-                                &Options::filteredWords, 
-                                &Options::setFilteredWords);
+                                  &Options::filteredWords, 
+                                  &Options::setFilteredWords);
   registerOption<QRadioButton, bool>("blacklist_whole_word", 
-                                &Options::filteredWords_WholeWord, 
-                                &Options::setFilteredWords_WholeWord);
+                                  &Options::filteredWords_WholeWord, 
+                                  &Options::setFilteredWords_WholeWord);
   registerOption<QRadioButton, bool>("blacklist_case_sensitive", 
-                                &Options::filteredWords_CaseSensitive, 
-                                &Options::setFilteredWords_CaseSensitive);
+                                  &Options::filteredWords_CaseSensitive, 
+                                  &Options::setFilteredWords_CaseSensitive);
   registerOption<QLineEdit, QString>("replace_with_textbox", 
-                                &Options::filteredWords_ReplacedCharacter, 
-                                &Options::setFilteredWords_ReplacedCharacter);
+                                  &Options::filteredWords_ReplacedCharacter, 
+                                  &Options::setFilteredWords_ReplacedCharacter);
 
   // Audio tab.
   FROM_UI(QComboBox, audio_device_combobox)
@@ -789,6 +789,7 @@ void AOOptionsDialog::setupUI()
     }
   });
   FROM_UI(QTabWidget, settings_tabs)
+  ui_settings_tab->setDocumentMode(true);
   updateValues();
 }
 
