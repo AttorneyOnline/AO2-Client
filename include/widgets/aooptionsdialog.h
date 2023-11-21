@@ -92,9 +92,16 @@ private:
   QCheckBox *ui_menu_bar_visible_btn_cb;
   QCheckBox *ui_crossfade_cb;
 
-  // The callwords tab
+  // The keywords tab
   QPlainTextEdit *ui_callwords_textbox;
   QCheckBox *ui_callwords_char_textbox;
+  QRadioButton *ui_callwords_whole_word;
+  QRadioButton *ui_callwords_case_sensitive;
+
+  QPlainTextEdit *ui_blacklist_textbox;
+  QRadioButton *ui_blacklist_whole_word;
+  QRadioButton *ui_blacklist_case_sensitive;
+  QLineEdit *ui_replace_with_textbox;
 
   // The audio tab
   QWidget *ui_audio_tab;
