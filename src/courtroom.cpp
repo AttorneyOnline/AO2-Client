@@ -3405,7 +3405,7 @@ void Courtroom::handle_callwords()
                 }
             }
             
-            callwords_notification->setToolTip(displayedMessages.join("\n"));
+            callwords_notification->setToolTip(truncated_messages.join("\n"));
           
         }
     }
