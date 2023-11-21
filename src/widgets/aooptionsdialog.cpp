@@ -544,6 +544,12 @@ void AOOptionsDialog::setupUI()
                                   &Options::callwords_CaseSensitive,
                                   &Options::setCallwords_CaseSensitive);
 
+  if (Options::getInstance().callwords_WholeWord()) {
+    ui_callwords_whole_word->setChecked(true);
+  } else if (Options::getInstance().callwords_CaseSensitive()) {
+    ui_callwords_case_sensitive->setChecked(true);
+  }
+
   FROM_UI(QPlainTextEdit, blacklist_textbox)
   FROM_UI(QRadioButton, blacklist_whole_word)
   FROM_UI(QRadioButton, blacklist_case_sensitive)
@@ -561,6 +567,12 @@ void AOOptionsDialog::setupUI()
   registerOption<QLineEdit, QString>("replace_with_textbox", 
                                   &Options::filteredWords_ReplacedCharacter, 
                                   &Options::setFilteredWords_ReplacedCharacter);
+
+  if (Options::getInstance().filteredWords_WholeWord()) {
+    ui_blacklist_whole_word->setChecked(true);
+  } else if (Options::getInstance().filteredWords_CaseSensitive()) {
+    ui_blacklist_case_sensitive->setChecked(true);
+  }
 
   // Audio tab.
   FROM_UI(QComboBox, audio_device_combobox)
@@ -789,7 +801,6 @@ void AOOptionsDialog::setupUI()
     }
   });
   FROM_UI(QTabWidget, settings_tabs)
-  ui_settings_tabs->setDocumentMode(true);
   updateValues();
 }
 
