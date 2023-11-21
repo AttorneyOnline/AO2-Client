@@ -3361,13 +3361,17 @@ void Courtroom::handle_callwords()
     QStringList filtered_words = Options::getInstance().filteredWords();
     QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
     bool whole_word_match = Options::getInstance().filteredWords_WholeWord();
-    Qt::CaseSensitivity case_sensitivity = Options::getInstance().filteredWords_CaseSensitive() ?
-                                           Qt::CaseSensitive : Qt::CaseInsensitive;
+    bool is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive()
+  
+    Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
+                                           Qt::CaseSensitive :
+                                           Qt::CaseInsensitive;
+    auto options = case_sensitivity == Qt::CaseSensitive ?
+                                       QRegularExpression::NoPatternOption : 
+                                       QRegularExpression::CaseInsensitiveOption;
 
     for (const QString &filtered_word : qAsConst(filtered_words)) {
         QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(filtered_word) : filtered_word;
-        QRegularExpression::PatternOptions options = case_sensitivity == Qt::CaseSensitive ?
-                                                     QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption;
     
         QRegularExpression re(wordToCheck, options);
 
