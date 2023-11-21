@@ -706,7 +706,7 @@ private:
   QBrush gaming_brush;
   QBrush locked_brush;
 
-  QSystemTrayIcon* callword_notification;
+  QSystemTrayIcon* callwords_notification;
   QMenuBar* menu_bar;
   QPropertyAnimation* menu_animation;
 
