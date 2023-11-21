@@ -3698,7 +3698,6 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
       p_text_escaped.append("</div>");
   }
 
-
   QStringList filtered_words = Options::getInstance().filteredWords();
   QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
   bool whole_word_match = Options::getInstance().filteredWords_WholeWord();
@@ -3718,7 +3717,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
 
       if (re.match(p_text_escaped).hasMatch()) {
           // We replace the filtered word with the specified character
-          p_text_escaped.replace(re, replaced_character);
+          p_text_escaped.replace(re, QString(filtered_word.length(), replaced_character));
       }
   }
   
