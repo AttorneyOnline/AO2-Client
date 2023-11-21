@@ -546,7 +546,9 @@ void AOOptionsDialog::setupUI()
 
   if (Options::getInstance().callwords_WholeWord()) {
     ui_callwords_whole_word->setChecked(true);
-  } else if (Options::getInstance().callwords_CaseSensitive()) {
+  }
+  
+  if (Options::getInstance().callwords_CaseSensitive()) {
     ui_callwords_case_sensitive->setChecked(true);
   }
 
@@ -570,7 +572,9 @@ void AOOptionsDialog::setupUI()
 
   if (Options::getInstance().filteredWords_WholeWord()) {
     ui_blacklist_whole_word->setChecked(true);
-  } else if (Options::getInstance().filteredWords_CaseSensitive()) {
+  }
+
+  if (Options::getInstance().filteredWords_CaseSensitive()) {
     ui_blacklist_case_sensitive->setChecked(true);
   }
 
