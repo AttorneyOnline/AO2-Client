@@ -65,6 +65,7 @@
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
 #include <QElapsedTimer>
+#include <QSystemTray>
 
 #include <QFuture>
 
@@ -705,6 +706,7 @@ private:
   QBrush gaming_brush;
   QBrush locked_brush;
 
+  QSystemTray* callword_notification;
   QMenuBar* menu_bar;
   QPropertyAnimation* menu_animation;
 
