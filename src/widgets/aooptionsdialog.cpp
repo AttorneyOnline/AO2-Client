@@ -20,6 +20,7 @@
 #include <QUiLoader>
 #include <QVBoxLayout>
 #include <QTableWidget>
+#include <QRadioButton>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \
