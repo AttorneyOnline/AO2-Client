@@ -3720,6 +3720,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
           // We replace the filtered word with the specified character
           p_text_escaped.replace(re, replaced_character);
       }
+  }
   
   return p_text_escaped;
 }
