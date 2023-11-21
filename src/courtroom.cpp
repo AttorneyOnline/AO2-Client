@@ -3361,7 +3361,7 @@ void Courtroom::handle_callwords()
     QStringList filtered_words = Options::getInstance().filteredWords();
     QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
     bool whole_word_match = Options::getInstance().filteredWords_WholeWord();
-    bool is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive()
+    bool is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive();
   
     Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
                                            Qt::CaseSensitive :
