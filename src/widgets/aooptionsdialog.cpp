@@ -81,6 +81,18 @@ template <> uint16_t AOOptionsDialog::widgetData(QLineEdit *widget) const
 }
 
 template <>
+void AOOptionsDialog::setWidgetData(QLineEdit *widget, const QString &value)
+{
+  widget->setText(value);
+}
+
+template <> QString AOOptionsDialog::widgetData(QLineEdit *widget) const
+{
+  return widget->text();
+}
+
+
+template <>
 void AOOptionsDialog::setWidgetData(QPlainTextEdit *widget,
                                     const QStringList &value)
 {
@@ -152,7 +164,7 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
 template <>
 void AOOptionsDialog::setWidgetData(QRadioButton *widget, const bool &value)
 {
-  widget->setChecked(value);
+  widget->toggle(value);
 }
 
 template <> bool AOOptionsDialog::widgetData(QRadioButton *widget) const
