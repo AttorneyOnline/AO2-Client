@@ -149,6 +149,17 @@ template <> QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
   return paths;
 }
 
+template <>
+void AOOptionsDialog::setWidgetData(QRadioButton *widget, const bool &value)
+{
+  widget->setChecked(value);
+}
+
+template <> bool AOOptionsDialog::widgetData(QRadioButton *widget) const
+{
+  return widget->isChecked();
+}
+
 // Modificar la función widgetData
 template <> TableData AOOptionsDialog::widgetData(QTableWidget *widget) const
 {
