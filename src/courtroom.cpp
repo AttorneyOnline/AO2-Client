@@ -861,6 +861,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
           this->raise();
       }
   });
+  // Same thing but for the notification window
+  connect(callwords_notification, &QSystemTrayIcon::messageClicked, this, [this]() {
+      this->activateWindow();
+      this->raise();
+  });
 
   set_widgets();
 
