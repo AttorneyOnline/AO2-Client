@@ -3347,22 +3347,32 @@ void Courtroom::initialize_chatbox()
 
 void Courtroom::handle_callwords()
 {
-  // Quickly check through the message for the word_call (callwords) sfx
-  QString f_message = m_chatmessage[MESSAGE];
-  //No more file IO on every message.
-  QStringList call_words = Options::getInstance().callwords();
-  // Loop through each word in the call words list
-  for (const QString &word : qAsConst(call_words)) {
-    // If our message contains that specific call word
-    if (f_message.contains(word.trimmed(), Qt::CaseInsensitive)) {
-      // Play the call word sfx on the modcall_player sound container
-      modcall_player->play(ao_app->get_court_sfx("word_call"));
-      // Make the window flash
-      ao_app->alert(this);
-      // Break the loop so we don't spam sound effects
-      break;
+    QString f_message = m_chatmessage[MESSAGE];
+
+    QStringList call_words = Options::getInstance().callwords();
+    for (const QString &callword : qAsConst(call_words)) {
+        if (f_message.contains(callword.trimmed(), Qt::CaseInsensitive)) {
+            modcall_player->play(ao_app->get_court_sfx("word_call"));
+            ao_app->alert(this);
+            break;
+        }
     }
-  }
+
+    QStringList filtered_words = Options::getInstance().filteredWords();
+    QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
+    bool whole_word_match = Options::getInstance().filteredWords_WholeWord();
+    Qt::CaseSensitivity case_sensitivity = Options::getInstance().filteredWords_CaseSensitive() == "true" ?
+                                           Qt::CaseSensitive : Qt::CaseInsensitive;
+
+    for (const QString &filtered_word : qAsConst(filtered_words)) {
+        QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(filtered_word) : filtered_word;
+        QRegularExpression re(wordToCheck, case_sensitivity);
+
+        if (re.match(f_message).hasMatch()) {
+            // We replace the filtered word with the specified character
+            f_message.replace(re, replaced_character);
+        }
+    }
 }
 
 void Courtroom::display_evidence_image()
