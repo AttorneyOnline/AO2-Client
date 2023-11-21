@@ -274,11 +274,6 @@ public:
   QString language() const;
   void setLanguage(QString value);
 
-  // Callwords notify the user when the word/words are used in a game message.
-  QStringList callwords() const;
-  void setCallwords(QStringList value);
-
-
 // ------ AO GOLDEN ADDITIONS ------ //
   // DL Manager tables
   TableData downloadManager() const;
@@ -316,6 +311,27 @@ public:
   // Default OOC autocompleter set
   QString defaultAutocompleterSet() const;
   void setDefaultAutocompleterSet(QString value);
+
+  // Callwords notify the user when the word/words are used in a game message.
+  QStringList callwords() const;
+  void setCallwords(QStringList value);
+
+  bool callwords_WholeWord() const;
+  void setCallwords_WholeWord(bool value);
+  bool callwords_CaseSensitive() const;
+  void setCallwords_CaseSensitive(bool value);
+
+  // Filtered words get censored by the replaced character
+  QStringList filteredWords() const;
+  void setFilteredWords(QStringList value);
+
+  bool filteredWords_WholeWord() const;
+  void setFilteredWords_WholeWord(bool value);
+  bool filteredWords_CaseSensitive() const;
+  void setFilteredWords_CaseSensitive(bool value);
+
+  QString filteredWords_ReplacedCharacter() const;
+  void setFilteredWords_ReplacedCharacter(QString value);
 
 // ------------------------------ //
 
