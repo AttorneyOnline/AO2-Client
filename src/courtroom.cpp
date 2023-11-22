@@ -3372,7 +3372,6 @@ void Courtroom::handle_callwords()
     QStringList call_words = Options::getInstance().callwords();
 
     // ToDo: Make this a function
-    QString replaced_character = Options::getInstance().callwords_ReplacedCharacter();
     bool whole_word_match = Options::getInstance().callwords_WholeWord();
     bool is_case_sensitive = Options::getInstance().callwords_CaseSensitive();
   
