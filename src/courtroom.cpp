@@ -2603,8 +2603,10 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
   log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), m_chatmessage[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
 
-  // Process the callwords for this message
-  handle_callwords();
+  if (!isActiveWindow()) {
+    // Process the callwords for this message only if window is unfocused
+    handle_callwords();
+  }
 
   // Reset the interface to make room for objection handling
   ui_vp_chat_arrow->hide();
@@ -3368,8 +3370,25 @@ void Courtroom::handle_callwords()
     QString display_name;
 
     QStringList call_words = Options::getInstance().callwords();
+
+    // ToDo: Make this a function
+    QString replaced_character = Options::getInstance().callwords_ReplacedCharacter();
+    bool whole_word_match = Options::getInstance().callwords_WholeWord();
+    bool is_case_sensitive = Options::getInstance().callwords_CaseSensitive();
+  
+    Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
+                                           Qt::CaseSensitive :
+                                           Qt::CaseInsensitive;
+    auto options = case_sensitivity == Qt::CaseSensitive ?
+                                       QRegularExpression::NoPatternOption : 
+                                       QRegularExpression::CaseInsensitiveOption;
+  
     for (const QString &callword : qAsConst(call_words)) {
-        if (f_message.contains(callword.trimmed(), Qt::CaseInsensitive)) {
+        QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(callword) : callword;
+    
+        QRegularExpression re(wordToCheck, options);
+  
+        if (re.match(f_message).hasMatch()) {
             modcall_player->play(ao_app->get_court_sfx("word_call"));
             ao_app->alert(this);
         
