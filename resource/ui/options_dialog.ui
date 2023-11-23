@@ -1122,169 +1122,25 @@ Keep in mind only you will not be able to see them!</string>
       </layout>
      </widget>
      <widget class="QWidget" name="audio_tab">
-<attribute name="title">
+      <attribute name="title">
        <string>Audio</string>
       </attribute>
-      <layout class="QFormLayout" name="formLayout_2">
-       <item row="0" column="0">
-        <widget class="QLabel" name="audio_device_lbl">
-         <property name="text">
-          <string>Audio device:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="audio_device_combobox"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="music_volume_lbl">
-         <property name="toolTip">
-          <string>Sets the music's default volume.</string>
-         </property>
-         <property name="text">
-          <string>Music:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QSpinBox" name="music_volume_spinbox">
-         <property name="suffix">
-          <string>%</string>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="sfx_volume_lbl">
-         <property name="toolTip">
-          <string>Sets the SFX's default volume. Interjections and actual sound effects count as 'SFX'.</string>
-         </property>
-         <property name="text">
-          <string>SFX:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QSpinBox" name="sfx_volume_spinbox">
-         <property name="suffix">
-          <string>%</string>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="blips_volume_lbl">
-         <property name="toolTip">
-          <string>Sets the volume of the blips, the talking sound effects.</string>
-         </property>
-         <property name="text">
-          <string>Blips:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QSpinBox" name="blips_volume_spinbox">
-         <property name="suffix">
-          <string>%</string>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="suppress_audio_lbl">
-         <property name="toolTip">
-          <string>How much of the volume to suppress when client is not in focus.</string>
-         </property>
-         <property name="text">
-          <string>Suppress Audio:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QSpinBox" name="suppress_audio_spinbox">
-         <property name="suffix">
-          <string>%</string>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="bliprate_lbl">
-         <property name="toolTip">
-          <string>Sets the delay between playing the blip sounds.</string>
-         </property>
-         <property name="text">
-          <string>Blip rate:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QSpinBox" name="bliprate_spinbox">
-         <property name="toolTip">
-          <string>Play a blip sound \&quot;once per every X symbols\&quot;, where X is the blip rate. 0 plays a blip sound only once.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="blank_blips_lbl">
-         <property name="toolTip">
-          <string>If true, the game will play a blip sound even when a space is 'being said'.</string>
-         </property>
-         <property name="text">
-          <string>Blank blips:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QCheckBox" name="blank_blips_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="loopsfx_lbl">
-         <property name="toolTip">
-          <string>If true, the game will allow looping sound effects to play on preanimations.</string>
-         </property>
-         <property name="text">
-          <string>Enable Looping SFX:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QCheckBox" name="loopsfx_cb">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <widget class="QLabel" name="objectmusic_lbl">
-         <property name="toolTip">
-          <string>If true, AO2 will ask the server to stop music when you use 'Objection!'</string>
-         </property>
-         <property name="text">
-          <string>Kill Music On Objection:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="1">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="16" column="1">
         <widget class="QCheckBox" name="objectmusic_cb">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="11" column="0">
+       <item row="15" column="1">
+        <widget class="QCheckBox" name="loopsfx_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="0">
         <widget class="QLabel" name="disablestreams_lbl">
          <property name="toolTip">
           <string>If true, AO2 will not play any streamed audio and show that streaming is disabled.</string>
@@ -1294,14 +1150,167 @@ Keep in mind only you will not be able to see them!</string>
          </property>
         </widget>
        </item>
-       <item row="11" column="1">
+       <item row="13" column="0">
+        <widget class="QLabel" name="bliprate_lbl">
+         <property name="toolTip">
+          <string>Sets the delay between playing the blip sounds.</string>
+         </property>
+         <property name="text">
+          <string>Blip rate:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="QLabel" name="blank_blips_lbl">
+         <property name="toolTip">
+          <string>If true, the game will play a blip sound even when a space is 'being said'.</string>
+         </property>
+         <property name="text">
+          <string>Blank blips:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QSpinBox" name="bliprate_spinbox">
+         <property name="toolTip">
+          <string>Play a blip sound \&quot;once per every X symbols\&quot;, where X is the blip rate. 0 plays a blip sound only once.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="1">
         <widget class="QCheckBox" name="disablestreams_cb">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" colspan="2">
+       <item row="16" column="0">
+        <widget class="QLabel" name="objectmusic_lbl">
+         <property name="toolTip">
+          <string>If true, AO2 will ask the server to stop music when you use 'Objection!'</string>
+         </property>
+         <property name="text">
+          <string>Kill Music On Objection:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="0">
+        <widget class="QLabel" name="loopsfx_lbl">
+         <property name="toolTip">
+          <string>If true, the game will allow looping sound effects to play on preanimations.</string>
+         </property>
+         <property name="text">
+          <string>Enable Looping SFX:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="1">
+        <widget class="QCheckBox" name="blank_blips_cb">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="audio_device_lbl">
+         <property name="text">
+          <string>Audio device</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QLabel" name="modcalls_audio_lbl">
+         <property name="toolTip">
+          <string>Sets the volume of the blips, the talking sound effects.</string>
+         </property>
+         <property name="text">
+          <string>Modcalls</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QSlider" name="suppress_audio_slider">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksAbove</enum>
+         </property>
+         <property name="tickInterval">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QSpinBox" name="suppress_audio_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QSpinBox" name="callwords_audio_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLabel" name="callwords_audio_lbl">
+         <property name="toolTip">
+          <string>How much of the volume to suppress when client is not in focus.</string>
+         </property>
+         <property name="text">
+          <string>Callwords</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QSlider" name="callwords_audio_slider">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksAbove</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QSlider" name="modcalls_audio_slider">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksAbove</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QSpinBox" name="modcalls_audio_spinbox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="3">
         <widget class="QFrame" name="audio_volume_divider">
          <property name="frameShape">
           <enum>QFrame::HLine</enum>
@@ -1311,7 +1320,7 @@ Keep in mind only you will not be able to see them!</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="0" colspan="2">
+       <item row="12" column="0" colspan="3">
         <widget class="QFrame" name="volume_blip_divider">
          <property name="frameShape">
           <enum>QFrame::HLine</enum>
@@ -1320,6 +1329,32 @@ Keep in mind only you will not be able to see them!</string>
           <enum>QFrame::Sunken</enum>
          </property>
         </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="suppress_audio_lbl">
+         <property name="toolTip">
+          <string>How much of the volume to suppress when client is not in focus.</string>
+         </property>
+         <property name="text">
+          <string>Suppress Audio</string>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QComboBox" name="audio_device_combobox"/>
        </item>
       </layout>
      </widget>
