@@ -259,6 +259,10 @@ public:
   // Log the message contents and information such as evidence presenting etc. into the IC logs
   void handle_callwords();
 
+  // Necessary for callwords and blocked words feature. Scans the message in look for keywords
+  // and returns the modified string (with censored words) or "true" value (indicating it found a callword).
+  void scan_message_for_keywords(QString mode, QString &message);
+
   // Handle the objection logic, if it's interrupting the currently parsing message.
   // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
   bool handle_objection();
