@@ -110,6 +110,8 @@ private:
   QWidget *ui_audio_widget;
   QComboBox *ui_audio_device_combobox;
   QSpinBox *ui_suppress_audio_spinbox;
+  QSpinBox *ui_callwords_audio_spinbox;
+  QSpinBox *ui_modcalls_audio_spinbox;
   QFrame *ui_volume_blip_divider;
   QSpinBox *ui_bliprate_spinbox;
   QCheckBox *ui_blank_blips_cb;
