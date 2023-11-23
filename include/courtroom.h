@@ -730,6 +730,7 @@ private:
   AOBlipPlayer *blip_player;
 
   AOSfxPlayer *modcall_player;
+  AOSfxPlayer *callwords_player;
 
   AOImage *ui_background;
 
