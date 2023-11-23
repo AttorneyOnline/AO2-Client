@@ -128,6 +128,26 @@ void Options::setDefaultSupressedAudio(int value)
   config.setValue("suppress_audio", value);
 }
 
+int Options::callwordsVolume() const
+{
+  return config.value("callwords_volume", 50).toInt();
+}
+
+void Options::setCallwordsVolume(int value)
+{
+  config.setValue("callwords_volume", value);
+}
+
+int Options::modcallsVolume() const
+{
+  return config.value("modcalls_volume", 50).toInt();
+}
+
+void Options::setModcallsVolume(int value)
+{
+  config.setValue("modcalls_volume", value);
+}
+
 int Options::maxLogSize() const
 {
   return config.value("log_maximum", 200).toInt();
