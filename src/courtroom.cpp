@@ -2110,7 +2110,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
 
-  if (scan_for_callwords() && !isActiveWindow()) {
+  if (scan_for_callwords(p_message) && !isActiveWindow()) {
     show_notification(1, p_name, p_message);
   }
 
