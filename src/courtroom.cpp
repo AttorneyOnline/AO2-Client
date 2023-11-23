@@ -44,9 +44,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   blip_player = new AOBlipPlayer(this, ao_app);
   blip_player->set_muted(true);
 
-  modcall_player = new AOSfxPlayer(this, ao_app);
-  modcall_player->set_volume(50);
+  callwords_player = new AOSfxPlayer(this, ao_app);
+  callwords_player->set_volume(Options::getInstance().callwordsVolume());
 
+  modcall_player = new AOSfxPlayer(this, ao_app);
+  modcall_player->set_volume(Options::getInstance().modcallsVolume());
+  
   ui_background = new AOImage(this, ao_app);
   ui_background->setObjectName("ui_background");
 
@@ -3375,7 +3378,8 @@ void Courtroom::handle_callwords()
     QString f_message = m_chatmessage[MESSAGE];
     QString display_name;
     if (scan_for_callwords(f_message)) {
-        modcall_player->play(ao_app->get_court_sfx("word_call"));
+        callwords_player->set_volume(Options::getInstance().callwordsVolume());
+        callwords_player->play(ao_app->get_court_sfx("word_call"));
         ao_app->alert(this);
         show_notification(0, "", f_message);
     }
@@ -4790,6 +4794,7 @@ void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
   if (!ui_guard->isChecked()) {
+    callwords_player->set_volume(Options::getInstance().modcallsVolume());
     modcall_player->play(ao_app->get_court_sfx("mod_call"));
     ao_app->alert(this);
   }
