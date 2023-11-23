@@ -2111,6 +2111,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
 
   if (scan_for_callwords(p_message) && !isActiveWindow()) {
+    ao_app->alert(this);
     show_notification(1, p_name, p_message);
   }
 
@@ -3395,6 +3396,8 @@ void Courtroom::show_notification(int mode, QString display_name, QString f_mess
         } else {
             display_name = m_chatmessage[CHAR_NAME];
         }      
+    } else {
+      display_name = "[OOC] " + display_name;
     }
 
     callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
