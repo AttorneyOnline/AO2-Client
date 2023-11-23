@@ -4752,6 +4752,7 @@ bool Courtroom::scan_for_callwords(QString message) {
             return true;
         }
     }
+    return false;
 }
 
 void Courtroom::mod_called(QString p_ip)
