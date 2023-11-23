@@ -3368,71 +3368,52 @@ void Courtroom::handle_callwords()
     QString f_message = m_chatmessage[MESSAGE];
     int f_charid = m_chatmessage[CHAR_ID].toInt();
     QString display_name;
-
-    QStringList call_words = Options::getInstance().callwords();
-
-    // ToDo: Make this a function
-    bool whole_word_match = Options::getInstance().callwords_WholeWord();
-    bool is_case_sensitive = Options::getInstance().callwords_CaseSensitive();
-  
-    Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
-                                           Qt::CaseSensitive :
-                                           Qt::CaseInsensitive;
-    auto options = case_sensitivity == Qt::CaseSensitive ?
-                                       QRegularExpression::NoPatternOption : 
-                                       QRegularExpression::CaseInsensitiveOption;
-  
-    for (const QString &callword : qAsConst(call_words)) {
-        QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(callword) : callword;
+    if (scan_message_for_keywords("callwords", f_message)) {
+        modcall_player->play(ao_app->get_court_sfx("word_call"));
+        ao_app->alert(this);
     
-        QRegularExpression re(wordToCheck, options);
-  
-        if (re.match(f_message).hasMatch()) {
-            modcall_player->play(ao_app->get_court_sfx("word_call"));
-            ao_app->alert(this);
-        
-            QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
-            QPixmap pixmap(icon_path);
-            callwords_notification->setIcon(QIcon(pixmap));
-        
-            if (!m_chatmessage[SHOWNAME].isEmpty()) {
-                display_name = m_chatmessage[SHOWNAME];
-            } else if (f_charid >= 0 && f_charid < char_list.size() && !ui_showname_enable->isChecked()) {
-                display_name = ao_app->get_showname(char_list.at(f_charid).name);
-            } else {
-                display_name = m_chatmessage[CHAR_NAME];
-            }
-        
-            callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
-            // We handle the callwords chat history
-            callwords_history << ("[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] " + display_name + ": " + f_message);
-
-            // Only show the last 3 callwords
-            while (callwords_history.size() > 3) {
-                callwords_history.removeFirst();
-            }
-            
-            int max_length = 120; // Approximated Tooltip length
-            QStringList truncated_messages;
-            
-            for (const QString &message : qAsConst(callwords_history)) {
-                int message_length = message.length();
-                if (max_length >= message_length) {
-                    truncated_messages << message;
-                    max_length -= message_length;
-                } else {
-                    // Truncate the old callwords msgs and add a "..."
-                    QString truncated_msg = message.left(max_length - 3) + "...";
-                    truncated_messages << truncated_msg;
-                    break;
-                }
-            }
-            
-            callwords_notification->setToolTip(truncated_messages.join("\n"));
-          
+        QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
+        QPixmap pixmap(icon_path);
+        callwords_notification->setIcon(QIcon(pixmap));
+    
+        if (!m_chatmessage[SHOWNAME].isEmpty()) {
+            display_name = m_chatmessage[SHOWNAME];
+        } else if (f_charid >= 0 && f_charid < char_list.size() && !ui_showname_enable->isChecked()) {
+            display_name = ao_app->get_showname(char_list.at(f_charid).name);
+        } else {
+            display_name = m_chatmessage[CHAR_NAME];
         }
+    
+        callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
+        // We handle the callwords chat history
+        // "[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] "
+        callwords_history << (display_name + ": " + f_message);
+  
+        // Only show the last 3 callwords
+        while (callwords_history.size() > 3) {
+            callwords_history.removeFirst();
+        }
+        
+        int max_length = 120; // Approximated Tooltip length
+        QStringList truncated_messages;
+        
+        for (const QString &message : qAsConst(callwords_history)) {
+            int message_length = message.length();
+            if (max_length >= message_length) {
+                truncated_messages << message;
+                max_length -= message_length;
+            } else {
+                // Truncate the old callwords msgs and add a "..."
+                QString truncated_msg = message.left(max_length - 3) + "...";
+                truncated_messages << truncated_msg;
+                break;
+            }
+        }
+        
+        callwords_notification->setToolTip(truncated_messages.join("\n"));
     }
 }
+
 
 void Courtroom::display_evidence_image()
 {
@@ -3773,28 +3754,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
       p_text_escaped.append("</div>");
   }
 
-  QStringList filtered_words = Options::getInstance().filteredWords();
-  QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
-  bool whole_word_match = Options::getInstance().filteredWords_WholeWord();
-  bool is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive();
-
-  Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
-                                         Qt::CaseSensitive :
-                                         Qt::CaseInsensitive;
-  auto options = case_sensitivity == Qt::CaseSensitive ?
-                                     QRegularExpression::NoPatternOption : 
-                                     QRegularExpression::CaseInsensitiveOption;
-
-  for (const QString &filtered_word : qAsConst(filtered_words)) {
-      QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(filtered_word) : filtered_word;
-  
-      QRegularExpression re(wordToCheck, options);
-
-      if (re.match(p_text_escaped).hasMatch()) {
-          // We replace the filtered word with the specified character
-          p_text_escaped.replace(re, QString(filtered_word.length(), QChar(replaced_character[0])));
-      }
-  }
+  p_text_escaped = scan_message_for_keywords("filtered", p_text_escaped);
   
   return p_text_escaped;
 }
@@ -4746,6 +4706,45 @@ void Courtroom::show_judge_controls(bool visible)
           control->hide();
   }
 }
+
+void Courtroom::scan_message_for_keywords(QString mode, QString &message)
+{
+  QStringList list_of_words;
+  bool whole_word_match, is_case_sensitive;
+  QString replaced_character;
+
+  if (mode.contains("filtered")) {
+      list_of_words = Options::getInstance().filteredWords();
+      whole_word_match = Options::getInstance().filteredWords_WholeWord();
+      is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive();
+      replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
+  } else if (mode.contains("callwords")) {
+      list_of_words = Options::getInstance().callwords();
+      whole_word_match = Options::getInstance().callwords_WholeWord();
+      is_case_sensitive = Options::getInstance().callwords_CaseSensitive();
+  }
+
+  Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
+                                         Qt::CaseSensitive :
+                                         Qt::CaseInsensitive;
+  auto options = case_sensitivity == Qt::CaseSensitive ?
+                   QRegularExpression::NoPatternOption : 
+                   QRegularExpression::CaseInsensitiveOption;
+
+  for (const QString &word : qAsConst(list_of_words)) {
+      QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(word) : word;
+      QRegularExpression re(wordToCheck, options);
+
+      if (re.match(message).hasMatch() && mode.contains("filtered")) {
+          message.replace(re, QString(word.length(), QChar(replaced_character[0])));
+      } else if (re.match(message).hasMatch() && mode.contains("callwords")) {
+          return true;
+      }
+  }
+
+  return message;
+}
+
 
 void Courtroom::mod_called(QString p_ip)
 {
@@ -5870,7 +5869,6 @@ void Courtroom::on_area_list_double_clicked(QTreeWidgetItem *p_item, int column)
   QStringList packet_contents;
   packet_contents.append(p_area);
   packet_contents.append(QString::number(m_cid));
-  // last_area_entered = packet_contents; // Dumb workaround
   ao_app->send_server_packet(new AOPacket("MC", packet_contents));
 }
 
