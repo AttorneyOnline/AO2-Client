@@ -3400,20 +3400,19 @@ void Courtroom::show_notification(int mode, QString display_name, QString f_mess
         icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
         if (icon_path.isEmpty()) {
             // If there's no char icon, just use the default app logo
-            callwords_notification->setIcon(QIcon(":/resource/logo_ao2.ico"));
-        } else {
-            // If there is, we set the icon for the notification
-            QPixmap pixmap(icon_path);
-            callwords_notification->setIcon(QIcon(pixmap));
+            icon_path = ":/resource/logo_ao2.ico";
         }
     } else {
         // Modify display_name for OOC messages
         display_name = "[OOC] " + display_name;
         
         // Set the default icon for OOC mode (so it's not a char_icon)
-        callwords_notification->setIcon(QIcon(":/resource/logo_ao2.ico"));
+        icon_path = ":/resource/logo_ao2.ico";
     }
 
+    // If there is, we set the icon for the notification
+    QPixmap pixmap(icon_path);
+    callwords_notification->setIcon(QIcon(pixmap));  
     callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
 
     // We handle the callwords chat history
