@@ -95,6 +95,14 @@ public:
   int defaultSuppressAudio() const;
   void setDefaultSupressedAudio(int value);
 
+  // Returns the value of callwordsvolume in config.ini
+  int callwordsVolume() const;
+  void setCallwordsVolume(int value);
+
+  // Returns the value of modcallsvolume in config.ini
+  int modcallsVolume() const;
+  void setModcallsVolume(int value);
+
   // Returns the value if objections interrupt and skip the message queue
   // from the config.ini.
   bool objectionSkipQueueEnabled() const;
