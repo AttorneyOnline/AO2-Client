@@ -264,6 +264,9 @@ public:
   QString scan_for_filtered_words(QString &message);
   bool scan_for_callwords(QString message);
 
+  // Shows a notification using the system tray with the provided arguments
+  void show_notification(int mode, QString display_name, QString f_message);
+
   // Handle the objection logic, if it's interrupting the currently parsing message.
   // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
   bool handle_objection();
