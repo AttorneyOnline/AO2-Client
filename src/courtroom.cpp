@@ -742,6 +742,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_ic_chat_message_filter, &QTextEditFilter::chat_return_pressed, this,
           &Courtroom::on_chat_return_pressed);
 
+  // ToDo: Clicking on the suggestion with the mouse no longer works
   connect(completer, QOverload<const QString&>::of(&QCompleter::activated),
         this, [this]() {
             // This prevents the OOC input from *not* clearing itself after selecting a suggestion.
@@ -862,6 +863,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       }
   });
   // Same thing but for the notification window
+  // ToDo: Window gets focused (somewhat?), but doesn't get raised at all, for some reason
   connect(callwords_notification, &QSystemTrayIcon::messageClicked, this, [this]() {
       this->show();
       this->setWindowState(Qt::WindowState::WindowActive);
@@ -3414,7 +3416,7 @@ void Courtroom::show_notification(int mode, QString display_name, QString f_mess
     // If there is, we set the icon for the notification
     QPixmap pixmap(icon_path);
     callwords_notification->setIcon(QIcon(pixmap));  
-    callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
+    callwords_notification->showMessage(display_name, f_message, QIcon(pixmap));
   
     // We handle the callwords chat history
     // "[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] "
