@@ -3413,7 +3413,7 @@ void Courtroom::show_notification(int mode, QString display_name, QString f_mess
     // If there is, we set the icon for the notification
     QPixmap pixmap(icon_path);
     callwords_notification->setIcon(QIcon(pixmap));  
-    callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
+    callwords_notification->showMessage(display_name, f_message, QIcon(pixmap));
 
     // We handle the callwords chat history
     // "[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] "
