@@ -863,8 +863,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   });
   // Same thing but for the notification window
   connect(callwords_notification, &QSystemTrayIcon::messageClicked, this, [this]() {
-      this->activateWindow();
-      this->raise();
+      this->show();
+      this->setWindowState(Qt::WindowState::WindowActive);
   });
 
   set_widgets();
@@ -3387,6 +3387,7 @@ void Courtroom::show_notification(int mode, QString display_name, QString f_mess
     // MODE 0 == IC
     // MODE 1 == OOC
     if (mode == 0) {
+        // display_mode = "[IC] ";
         // Determine display_name
         if (!m_chatmessage[SHOWNAME].isEmpty()) {
             display_name = m_chatmessage[SHOWNAME];
@@ -3413,8 +3414,8 @@ void Courtroom::show_notification(int mode, QString display_name, QString f_mess
     // If there is, we set the icon for the notification
     QPixmap pixmap(icon_path);
     callwords_notification->setIcon(QIcon(pixmap));  
-    callwords_notification->showMessage(display_name, f_message, QIcon(pixmap));
-
+    callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
+  
     // We handle the callwords chat history
     // "[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] "
     callwords_history << (display_name + ": " + f_message);
