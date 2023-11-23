@@ -3381,26 +3381,41 @@ void Courtroom::handle_callwords()
 
 void Courtroom::show_notification(int mode, QString display_name, QString f_message)
 {
-    QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
+    QString icon_path;
     int f_charid = m_chatmessage[CHAR_ID].toInt();
-    QPixmap pixmap(icon_path);
-    callwords_notification->setIcon(QIcon(pixmap));
 
     // MODE 0 == IC
     // MODE 1 == OOC
     if (mode == 0) {
+        // Determine display_name
         if (!m_chatmessage[SHOWNAME].isEmpty()) {
             display_name = m_chatmessage[SHOWNAME];
         } else if (f_charid >= 0 && f_charid < char_list.size() && !ui_showname_enable->isChecked()) {
             display_name = ao_app->get_showname(char_list.at(f_charid).name);
         } else {
             display_name = m_chatmessage[CHAR_NAME];
-        }      
+        }
+    
+        // Determine icon_path
+        icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
+        if (icon_path.isEmpty()) {
+            // If there's no char icon, just use the default app logo
+            callwords_notification->setIcon(QIcon(":/resource/logo_ao2.ico"));
+        } else {
+            // If there is, we set the icon for the notification
+            QPixmap pixmap(icon_path);
+            callwords_notification->setIcon(QIcon(pixmap));
+        }
     } else {
-      display_name = "[OOC] " + display_name;
+        // Modify display_name for OOC messages
+        display_name = "[OOC] " + display_name;
+        
+        // Set the default icon for OOC mode (so it's not a char_icon)
+        callwords_notification->setIcon(QIcon(":/resource/logo_ao2.ico"));
     }
 
     callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
+
     // We handle the callwords chat history
     // "[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] "
     callwords_history << (display_name + ": " + f_message);
