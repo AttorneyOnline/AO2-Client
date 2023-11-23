@@ -3368,7 +3368,7 @@ void Courtroom::handle_callwords()
     QString f_message = m_chatmessage[MESSAGE];
     int f_charid = m_chatmessage[CHAR_ID].toInt();
     QString display_name;
-    if (scan_message_for_keywords("callwords", f_message)) {
+    if (scan_for_callwords(f_message)) {
         modcall_player->play(ao_app->get_court_sfx("word_call"));
         ao_app->alert(this);
     
@@ -3754,7 +3754,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos,
       p_text_escaped.append("</div>");
   }
 
-  p_text_escaped = scan_message_for_keywords("filtered", p_text_escaped);
+  p_text_escaped = scan_for_filtered_words(p_text_escaped);
   
   return p_text_escaped;
 }
@@ -4707,44 +4707,52 @@ void Courtroom::show_judge_controls(bool visible)
   }
 }
 
-void Courtroom::scan_message_for_keywords(QString mode, QString &message)
-{
-  QStringList list_of_words;
-  bool whole_word_match, is_case_sensitive;
-  QString replaced_character;
+QString Courtroom::scan_for_filtered_words(QString &message) {
+    QStringList list_of_words;
+    bool whole_word_match, is_case_sensitive;
+    QString replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
 
-  if (mode.contains("filtered")) {
-      list_of_words = Options::getInstance().filteredWords();
-      whole_word_match = Options::getInstance().filteredWords_WholeWord();
-      is_case_sensitive = Options::getInstance().filteredWords_CaseSensitive();
-      replaced_character = Options::getInstance().filteredWords_ReplacedCharacter();
-  } else if (mode.contains("callwords")) {
-      list_of_words = Options::getInstance().callwords();
-      whole_word_match = Options::getInstance().callwords_WholeWord();
-      is_case_sensitive = Options::getInstance().callwords_CaseSensitive();
-  }
+    Qt::CaseSensitivity case_sensitivity = is_case_sensitive ? 
+                                           Qt::CaseSensitive : 
+                                           Qt::CaseInsensitive;
+    auto options = (case_sensitivity == Qt::CaseSensitive) ?
+                                        QRegularExpression::NoPatternOption : 
+                                        QRegularExpression::CaseInsensitiveOption;
 
-  Qt::CaseSensitivity case_sensitivity = is_case_sensitive ?
-                                         Qt::CaseSensitive :
-                                         Qt::CaseInsensitive;
-  auto options = case_sensitivity == Qt::CaseSensitive ?
-                   QRegularExpression::NoPatternOption : 
-                   QRegularExpression::CaseInsensitiveOption;
+    for (const QString &filtered_word : qAsConst(list_of_words)) {
+        QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(filtered_word) : filtered_word;
+        QRegularExpression re(wordToCheck, options);
 
-  for (const QString &word : qAsConst(list_of_words)) {
-      QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(word) : word;
-      QRegularExpression re(wordToCheck, options);
+        if (re.match(message).hasMatch()) {
+            message.replace(re, QString(filtered_word.length(), QChar(replaced_character[0])));
+        }
+    }
 
-      if (re.match(message).hasMatch() && mode.contains("filtered")) {
-          message.replace(re, QString(word.length(), QChar(replaced_character[0])));
-      } else if (re.match(message).hasMatch() && mode.contains("callwords")) {
-          return true;
-      }
-  }
-
-  return message;
+    return message;
 }
 
+bool Courtroom::scan_for_callwords(QString message) {
+    QStringList list_of_words;
+    bool whole_word_match, is_case_sensitive;
+
+    Qt::CaseSensitivity case_sensitivity = is_case_sensitive ? 
+                                           Qt::CaseSensitive : 
+                                           Qt::CaseInsensitive;
+    auto options = (case_sensitivity == Qt::CaseSensitive) ?
+                                        QRegularExpression::NoPatternOption : 
+                                        QRegularExpression::CaseInsensitiveOption;
+
+    for (const QString &word : qAsConst(list_of_words)) {
+        QString wordToCheck = whole_word_match ? QStringLiteral("\\b%1\\b").arg(word) : word;
+        QRegularExpression re(wordToCheck, options);
+
+        if (re.match(message).hasMatch()) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 void Courtroom::mod_called(QString p_ip)
 {
