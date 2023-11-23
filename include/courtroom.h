@@ -261,8 +261,8 @@ public:
 
   // Necessary for callwords and blocked words feature. Scans the message in look for keywords
   // and returns the modified string (with censored words) or "true" value (indicating it found a callword).
-  void scan_for_filtered_words(QString &message);
-  void scan_for_callwords(QString message);
+  QString scan_for_filtered_words(QString &message);
+  bool scan_for_callwords(QString message);
 
   // Handle the objection logic, if it's interrupting the currently parsing message.
   // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
