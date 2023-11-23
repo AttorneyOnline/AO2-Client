@@ -2110,6 +2110,10 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
 
   ui_server_chatlog->append_chatmessage(p_name, p_message, color);
 
+  if (scan_for_callwords() && !isActiveWindow()) {
+    show_notification(1, p_name, p_message);
+  }
+
   if (Options::getInstance().logToTextFileEnabled() && !ao_app->log_filename.isEmpty()) {
     QString full = "[OOC][" + QDateTime::currentDateTimeUtc().toString() + "] " + p_name + ": " + p_message;
     ao_app->append_to_file(full, ao_app->log_filename, true);
@@ -3366,54 +3370,61 @@ void Courtroom::initialize_chatbox()
 void Courtroom::handle_callwords()
 {
     QString f_message = m_chatmessage[MESSAGE];
-    int f_charid = m_chatmessage[CHAR_ID].toInt();
     QString display_name;
     if (scan_for_callwords(f_message)) {
         modcall_player->play(ao_app->get_court_sfx("word_call"));
         ao_app->alert(this);
-    
-        QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
-        QPixmap pixmap(icon_path);
-        callwords_notification->setIcon(QIcon(pixmap));
-    
+        show_notification(0, "", f_message);
+    }
+}
+
+void Courtroom::show_notification(int mode, QString display_name, QString f_message)
+{
+    QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_chatmessage[CHAR_NAME], "char_icon"));
+    int f_charid = m_chatmessage[CHAR_ID].toInt();
+    QPixmap pixmap(icon_path);
+    callwords_notification->setIcon(QIcon(pixmap));
+
+    // MODE 0 == IC
+    // MODE 1 == OOC
+    if (mode == 0) {
         if (!m_chatmessage[SHOWNAME].isEmpty()) {
             display_name = m_chatmessage[SHOWNAME];
         } else if (f_charid >= 0 && f_charid < char_list.size() && !ui_showname_enable->isChecked()) {
             display_name = ao_app->get_showname(char_list.at(f_charid).name);
         } else {
             display_name = m_chatmessage[CHAR_NAME];
-        }
-    
-        callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
-        // We handle the callwords chat history
-        // "[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] "
-        callwords_history << (display_name + ": " + f_message);
-  
-        // Only show the last 3 callwords
-        while (callwords_history.size() > 3) {
-            callwords_history.removeFirst();
-        }
-        
-        int max_length = 120; // Approximated Tooltip length
-        QStringList truncated_messages;
-        
-        for (const QString &message : qAsConst(callwords_history)) {
-            int message_length = message.length();
-            if (max_length >= message_length) {
-                truncated_messages << message;
-                max_length -= message_length;
-            } else {
-                // Truncate the old callwords msgs and add a "..."
-                QString truncated_msg = message.left(max_length - 3) + "...";
-                truncated_messages << truncated_msg;
-                break;
-            }
-        }
-        
-        callwords_notification->setToolTip(truncated_messages.join("\n"));
+        }      
     }
-}
 
+    callwords_notification->showMessage(display_name, f_message, QSystemTrayIcon::NoIcon);
+    // We handle the callwords chat history
+    // "[" + QDateTime::currentDateTime().toString(log_timestamp_format) + "] "
+    callwords_history << (display_name + ": " + f_message);
+  
+    // Only show the last 3 callwords
+    while (callwords_history.size() > 3) {
+        callwords_history.removeFirst();
+    }
+    
+    int max_length = 120; // Approximated Tooltip length
+    QStringList truncated_messages;
+    
+    for (const QString &message : qAsConst(callwords_history)) {
+        int message_length = message.length();
+        if (max_length >= message_length) {
+            truncated_messages << message;
+            max_length -= message_length;
+        } else {
+            // Truncate the old callwords msgs and add a "..."
+            QString truncated_msg = message.left(max_length - 3) + "...";
+            truncated_messages << truncated_msg;
+            break;
+        }
+    }
+    
+    callwords_notification->setToolTip(truncated_messages.join("\n"));
+}
 
 void Courtroom::display_evidence_image()
 {
