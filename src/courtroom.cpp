@@ -665,7 +665,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
                   "// +ArcueidBrunestud (MBTL) = Type Lumina";
         file.close();
         qDebug() << "Created global char set!";
-        set_character_sets(base_path);
+        set_character_sets(get_base_path() + "global_char_set.ini");
         qDebug() << "Loaded global char set!";
     }
   }
