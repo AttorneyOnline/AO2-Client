@@ -2275,7 +2275,9 @@ void Courtroom::on_chat_return_pressed()
     packet_contents.append(ao_app->get_emote(current_char, current_emote)); 
   }
 
-  packet_contents.append(ui_ic_chat_message->toPlainText());
+  QString f_message = ui_ic_chat_message->toPlainText().replace("\n", "\\n");
+  
+  packet_contents.append(f_message);
 
   packet_contents.append(f_side);
 
