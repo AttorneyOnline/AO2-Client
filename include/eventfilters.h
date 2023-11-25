@@ -120,10 +120,10 @@ protected:
                         (keyEvent->modifiers() & Qt::ShiftModifier)) {
                         // Add newline
                         QTextCursor cursor = textEdit->textCursor();
-                        cursor.insertText("\\n");
-                        // cursor.insertText("\n");
-                        cursor.insertBlock();
-                        cursor.movePosition(QTextCursor::StartOfBlock);
+                        // cursor.insertText("\\n");
+                        cursor.insertText("\n");
+                        // cursor.insertBlock();
+                        // cursor.movePosition(QTextCursor::StartOfBlock);
                         textEdit->setTextCursor(cursor);
                         return true;
                     } else if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
