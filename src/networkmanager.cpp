@@ -29,18 +29,17 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   heartbeat_timer->start(heartbeat_interval);
 }
 
-void NetworkManager::get_server_list(const std::function<void()> &cb)
+void NetworkManager::get_server_list()
 {
   QNetworkRequest req(QUrl(ms_baseurl + "/servers"));
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
 
   QNetworkReply *reply = http->get(req);
   connect(reply, &QNetworkReply::finished,
-          this, std::bind(&NetworkManager::ms_request_finished, this, reply, cb));
+          this, std::bind(&NetworkManager::ms_request_finished, this, reply));
 }
 
-void NetworkManager::ms_request_finished(QNetworkReply *reply,
-                                         const std::function<void()> &cb)
+void NetworkManager::ms_request_finished(QNetworkReply *reply)
 {
   QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
   if (json.isNull()) {
@@ -72,8 +71,9 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply,
   }
   ao_app->set_server_list(server_list);
 
-  cb();
-
+  if (ao_app->lobby_constructed) {
+        ao_app->w_lobby->list_servers();
+  }
   reply->deleteLater();
 }
 
