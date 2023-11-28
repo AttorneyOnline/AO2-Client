@@ -900,7 +900,7 @@ void Courtroom::set_widgets()
       tr("Choose an effect to play on your next spoken message.\n"
          "The effects are defined in your theme/effects/effects.ini. Your "
          "character can define custom effects by\n"
-         "char.ini [Options] category, effects = 'miscname' where it referes "
+         "char.ini [Options] category, effects = 'miscname' where it refers "
          "to misc/<miscname>/effects.ini to read the effects."));
   // Todo: recode this entire fucking system with these dumbass goddamn ini's
   // why is everything so specifically coded for all these purposes is ABSTRACT
@@ -1830,6 +1830,8 @@ void Courtroom::on_chat_return_pressed()
 
   QStringList packet_contents;
   QString f_side;
+  // have to fetch this early for a workaround. i hate this system, but i am stuck with it for now
+  int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
   if (current_side == "")
     f_side = ao_app->get_char_side(current_char);
@@ -1846,14 +1848,15 @@ void Courtroom::on_chat_return_pressed()
       else if (f_desk_mod == DESK_EMOTE_ONLY_EX || f_desk_mod == DESK_EMOTE_ONLY)
         f_desk_mod = DESK_SHOW;
     }
-    if (f_desk_mod == -1)
+    if (f_desk_mod == -1 && (f_emote_mod == 5 || f_emote_mod == 6)) // workaround for inis that broke after deprecating "chat"
+      f_desk_mod = DESK_HIDE;
+    else if (f_desk_mod == -1)
       f_desk_mod = DESK_SHOW;
   }
 
   packet_contents.append(QString::number(f_desk_mod));
 
   QString f_pre = ao_app->get_pre_emote(current_char, current_emote);
-  int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
   QString f_sfx = "1";
   int f_sfx_delay = get_char_sfx_delay();
 
