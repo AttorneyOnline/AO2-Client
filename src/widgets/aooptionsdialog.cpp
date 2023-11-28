@@ -40,7 +40,7 @@ void AOOptionsDialog::populateAudioDevices()
 
   BASS_DEVICEINFO info;
   for (int a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-    ui_audio_device_combobox->addItem(info.name);
+    ui_audio_device_combobox->addItem(info.name, info.name);
   }
 }
 
@@ -116,7 +116,7 @@ void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 
 template <> QString AOOptionsDialog::widgetData(QComboBox *widget) const
 {
-  return widget->currentText();
+  return widget->currentData().toString();
 }
 
 template <>
@@ -185,7 +185,7 @@ void AOOptionsDialog::updateValues()
 
     for (const QString &l_theme : qAsConst(l_themes)) {
       if (!themes.contains(l_theme)) {
-        ui_theme_combobox->addItem(l_theme);
+        ui_theme_combobox->addItem(l_theme, l_theme);
         themes.insert(l_theme);
       }
     }
@@ -197,7 +197,7 @@ void AOOptionsDialog::updateValues()
   for (const QString &l_subtheme : qAsConst(l_subthemes)) {
     if (l_subtheme.toLower() != "server" && l_subtheme.toLower() != "default" &&
         l_subtheme.toLower() != "effects" && l_subtheme.toLower() != "misc") {
-      ui_subtheme_combobox->addItem(l_subtheme);
+      ui_subtheme_combobox->addItem(l_subtheme, l_subtheme);
     }
   }
 
@@ -259,8 +259,8 @@ void AOOptionsDialog::themeChanged(int i)
 {
   ui_subtheme_combobox->clear();
   // Fill the combobox with the names of the themes.
-  ui_subtheme_combobox->addItem("server");
-  ui_subtheme_combobox->addItem("default");
+  ui_subtheme_combobox->addItem("server", "server");
+  ui_subtheme_combobox->addItem("default", "server");
 
   QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path(
                                      "", ui_theme_combobox->itemText(i))))
@@ -270,7 +270,7 @@ void AOOptionsDialog::themeChanged(int i)
     if (l_subthemes.toLower() != "server" &&
         l_subthemes.toLower() != "default" &&
         l_subthemes.toLower() != "effects" && l_subthemes.toLower() != "misc") {
-      ui_subtheme_combobox->addItem(l_subthemes);
+      ui_subtheme_combobox->addItem(l_subthemes, l_subthemes);
     }
   }
 
