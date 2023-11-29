@@ -56,13 +56,6 @@ jobs:
         with:
           python-version: '3.10'
           
-      - name: actions/cache qt
-        uses: actions/cache@master
-        id: cache
-        with:
-          path: qt/${{matrix.version}}/${{matrix.platform}}
-          key: qt-${{matrix.version}}-${{matrix.platform}}
-
       - name: Add msbuild to PATH
         if: matrix.platform == 'msvc2019'
         uses: microsoft/setup-msbuild@main
@@ -88,6 +81,8 @@ jobs:
           target: ${{matrix.target}}
           arch: ${{matrix.arch}}
           tools: ${{matrix.tools}}
+          cache: true
+          cache-key-prefix: qt
 
       - name: Add tools to PATH (MinGW)
         if: matrix.platform == 'mingw81_32'
