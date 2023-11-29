@@ -598,7 +598,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
       search_download_file("1"); // Bypasses "Disable URL sharing"!
   });
   connect(action_delete_download_ini, &QAction::triggered, this, [this]() {
-    QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
+    QString relative_char = current_char;
+    int index = relative_char.indexOf("/");
+    if (index != -1) {
+        relative_char = relative_char.left(index);
+    }
+    QString characterPath = ao_app->get_real_path(VPath("characters/" + relative_char + "/"));
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Question);
@@ -6522,9 +6527,15 @@ void Courtroom::regenerate_ic_chatlog()
 
 void Courtroom::on_set_dl_clicked()
 {
-  QString download_ini_path = ao_app->get_real_path(ao_app->get_character_path(current_char, "download.ini"));
-  QString characterPath = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
-
+  QString relative_char = current_char;
+  int index = relative_char.indexOf("/");
+  if (index != -1) {
+      relative_char = relative_char.left(index);
+  }
+  
+  QString download_ini_path = ao_app->get_real_path(ao_app->get_character_path(relative_char, "download.ini"));
+  QString characterPath = ao_app->get_real_path(VPath("characters/" + relative_char + "/"));
+  
   QInputDialog dialog;
   dialog.setInputMode(QInputDialog::TextInput);
   dialog.setWindowFlags(Qt::WindowCloseButtonHint);
