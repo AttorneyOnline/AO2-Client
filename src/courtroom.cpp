@@ -2151,10 +2151,7 @@ void Courtroom::on_chat_return_pressed()
   if (is_muted)
     return;
 
-  if (typingTimer->isActive()) {
-      typingTimer->stop();
-      ao_app->send_server_packet(new AOPacket("TT", {"0", current_char}));
-  }
+  ao_app->send_server_packet(new AOPacket("TT", {"0", current_char}));
 
   ui_ic_chat_message->blockSignals(true);
   QTimer::singleShot(Options::getInstance().chatRateLimit(), this,
