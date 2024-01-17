@@ -1308,6 +1308,8 @@ void Courtroom::done_received()
   set_mute_list();
   set_pair_list();
 
+  move(Options::getInstance().getWindowPosition());
+
   show();
 
   ui_spectator->show();
@@ -5825,4 +5827,10 @@ Courtroom::~Courtroom()
   delete sfx_player;
   delete objection_player;
   delete blip_player;
+}
+
+void Courtroom::closeEvent(QCloseEvent *event)
+{
+    Options::getInstance().setWindowPosition(pos());
+    QMainWindow::closeEvent(event);
 }

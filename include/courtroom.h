@@ -1017,6 +1017,9 @@ private slots:
 
   void preview_emote(QString emote);
   void update_emote_preview();
+
+  protected:
+  virtual void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // COURTROOM_H

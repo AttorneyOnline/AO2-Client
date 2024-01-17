@@ -285,6 +285,10 @@ public:
 
   // Theming Nonesense!
   QString getUIAsset(QString f_asset_name);
+
+  // Window Position
+  void setWindowPosition(QPoint value);
+  QPoint getWindowPosition();
 };
 
 #endif // OPTIONS_H

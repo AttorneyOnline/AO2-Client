@@ -1,5 +1,6 @@
 #include "options.h"
 #include "file_functions.h"
+#include "QPoint"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -570,6 +571,16 @@ QStringList Options::callwords() const
 void Options::setCallwords(QStringList value)
 {
   config.setValue("callwords", value);
+}
+
+void Options::setWindowPosition(QPoint value)
+{
+  config.setValue("Window/WindowPos", value);
+}
+
+QPoint Options::getWindowPosition()
+{
+  return config.value("Window/WindowPos").toPoint();
 }
 
 void Options::clearConfig() { config.clear(); }
