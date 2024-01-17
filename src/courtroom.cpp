@@ -292,6 +292,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_settings = new AOButton(this, ao_app);
   ui_settings->setObjectName("ui_settings");
 
+  new QShortcut(QKeySequence(Qt::Key_Escape), this, SLOT(on_settings_clicked()));
+
   ui_switch_area_music = new AOButton(this, ao_app);
   ui_switch_area_music->setObjectName("ui_switch_area_music");
 

@@ -60,6 +60,7 @@
 #include <QTextBoundaryFinder>
 #include <QTextCharFormat>
 #include <QElapsedTimer>
+#include <QShortcut>
 
 #include <QFuture>
 
