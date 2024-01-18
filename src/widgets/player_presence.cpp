@@ -79,6 +79,7 @@ void PlayerMenu::removePlayer(int f_id)
     return;
   }
   delete f_player;
+  players.remove(f_id);
 }
 
 void PlayerMenu::resetList()
