@@ -28,7 +28,7 @@ private:
   bool m_isSpecial;
 };
 
-class PlayerMenu : QListWidget {
+class PlayerMenu : public QListWidget {
   Q_OBJECT
 
 public:
