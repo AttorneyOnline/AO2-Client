@@ -2,28 +2,39 @@
 
 PlayerItem::PlayerItem(QListWidget *parent) : QListWidgetItem(parent) {}
 
-void PlayerItem::setID(int f_id) { id = f_id; }
+int PlayerItem::id() { return m_id; }
 
-void PlayerItem::setName(QString f_name) { name = f_name; }
+QString PlayerItem::name() { return m_name; }
 
-void PlayerItem::setCharacter(QString f_character) { character = f_character; }
+QString PlayerItem::character() { return m_character; }
+
+bool PlayerItem::isSpecial() { return m_isSpecial; }
+
+void PlayerItem::setID(int f_id) { m_id = f_id; }
+
+void PlayerItem::setName(QString f_name) { m_name = f_name; }
+
+void PlayerItem::setCharacter(QString f_character)
+{
+  m_character = f_character;
+}
 
 void PlayerItem::setIsSpecial(bool f_state)
 {
-  isSpecial = f_state;
+  m_isSpecial = f_state;
   styleEntry();
 }
 
 void PlayerItem::styleEntry()
 {
-  QIcon l_icon(character);
+  QIcon l_icon(m_character);
   setIcon(l_icon);
 
   QString label = "";
-  if (isSpecial) {
+  if (m_isSpecial) {
     label + "⭐";
   }
-  label + QString("[%1]%2").arg(QString::number(id), name);
+  label + QString("[%1]%2").arg(QString::number(m_id), m_name);
   setText(label);
 }
 
