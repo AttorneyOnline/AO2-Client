@@ -9,6 +9,11 @@ class PlayerItem : public QListWidgetItem {
 public:
   PlayerItem(QListWidget *parent);
 
+  int id();
+  QString name();
+  QString character();
+  bool isSpecial();
+
   void setID(int f_id);
   void setName(QString f_name);
   void setCharacter(QString f_character);
@@ -17,10 +22,10 @@ public:
 private:
   void styleEntry();
 
-  int id;
-  QString name;
-  QString character;
-  bool isSpecial;
+  int m_id;
+  QString m_name;
+  QString m_character;
+  bool m_isSpecial;
 };
 
 class PlayerMenu : QListWidget {
