@@ -1308,8 +1308,8 @@ void Courtroom::done_received()
   set_mute_list();
   set_pair_list();
 
-  if (Options::getInstance().saveWindowPositionEdit()) {
-      move(Options::getInstance().getWindowPosition());
+  if (Options::getInstance().restoreCourtroomWindowPositionEdit()) {
+      move(Options::getInstance().getCourtroomWindowPosition());
   }
 
 
@@ -5834,6 +5834,6 @@ Courtroom::~Courtroom()
 
 void Courtroom::closeEvent(QCloseEvent *event)
 {
-    Options::getInstance().setWindowPosition(pos());
+    Options::getInstance().setCourtroomWindowPosition(pos());
     QMainWindow::closeEvent(event);
 }

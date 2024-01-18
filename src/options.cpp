@@ -539,14 +539,14 @@ void Options::setEvidenceDoubleClickEdit(bool value)
   config.setValue("evidence_double_click", value);
 }
 
-bool Options::saveWindowPositionEdit() const
+bool Options::restoreCourtroomWindowPositionEdit() const
 {
-  return config.value("save_window_position", true).toBool();
+  return config.value("restore_courtroom_window_position", true).toBool();
 }
 
-void Options::setSaveWindowPositionEdit(bool value)
+void Options::setRestoreCourtroomWindowPositionEdit(bool value)
 {
-  config.setValue("save_window_position", value);
+  config.setValue("restore_courtroom_window_position", value);
 }
 
 QString Options::alternativeMasterserver() const
@@ -583,12 +583,12 @@ void Options::setCallwords(QStringList value)
   config.setValue("callwords", value);
 }
 
-void Options::setWindowPosition(QPoint value)
+void Options::setCourtroomWindowPosition(QPoint value)
 {
   config.setValue("Window/WindowPos", value);
 }
 
-QPoint Options::getWindowPosition()
+QPoint Options::getCourtroomWindowPosition()
 {
   return config.value("Window/WindowPos").toPoint();
 }

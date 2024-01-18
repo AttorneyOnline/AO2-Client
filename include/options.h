@@ -259,8 +259,8 @@ public:
   bool evidenceDoubleClickEdit() const;
   void setEvidenceDoubleClickEdit(bool value);
 
-  bool saveWindowPositionEdit() const;
-  void setSaveWindowPositionEdit(bool value);
+  bool restoreCourtroomWindowPositionEdit() const;
+  void setRestoreCourtroomWindowPositionEdit(bool value);
 
   // Supplies an alternative masterserver URL
   QString alternativeMasterserver() const;
@@ -290,8 +290,8 @@ public:
   QString getUIAsset(QString f_asset_name);
 
   // Window Position
-  void setWindowPosition(QPoint value);
-  QPoint getWindowPosition();
+  void setCourtroomWindowPosition(QPoint value);
+  QPoint getCourtroomWindowPosition();
 };
 
 #endif // OPTIONS_H

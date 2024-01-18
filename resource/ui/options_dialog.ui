@@ -39,9 +39,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-480</y>
+            <y>-502</y>
             <width>394</width>
-            <height>798</height>
+            <height>819</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -573,19 +573,19 @@
             </widget>
            </item>
            <item row="32" column="1">
-            <widget class="QCheckBox" name="save_window_position_cb">
+            <widget class="QCheckBox" name="restore_courtroom_window_position_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="32" column="0">
-            <widget class="QLabel" name="save_window_position_lbl">
+            <widget class="QLabel" name="restore_courtroom_window_position_lbl">
              <property name="toolTip">
               <string>If checked, window will go to the same position on the screen when you re-open the game.</string>
              </property>
              <property name="text">
-              <string>Save Window Position:</string>
+              <string>Restore Courtroom Window Position:</string>
              </property>
             </widget>
            </item>
