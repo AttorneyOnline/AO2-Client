@@ -2,9 +2,7 @@
 
 PlayerItem::PlayerItem(QListWidget *parent) : QListWidgetItem(parent)
 {
-  QFont l_font;
-  l_font.setPointSize(12);
-  setFont(l_font);
+  setFlags(flags() & ~Qt::ItemIsSelectable);
 }
 
 int PlayerItem::id() { return m_id; }
@@ -45,7 +43,6 @@ void PlayerItem::styleEntry()
 
 PlayerMenu::PlayerMenu(QWidget *parent) : QListWidget(parent)
 {
-  setIconSize(QSize(30, 30));
 }
 
 void PlayerMenu::addPlayer(int f_id, QString f_name, QString f_character,
