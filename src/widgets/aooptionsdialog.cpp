@@ -362,6 +362,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, category_stop_cb)
   FROM_UI(QCheckBox, sfx_on_idle_cb)
   FROM_UI(QCheckBox, evidence_double_click_cb)
+  FROM_UI(QCheckBox, set_save_window_position_cb)
 
   registerOption<QCheckBox, bool>("animated_theme_cb",
                                   &Options::animatedThemeEnabled,
@@ -436,6 +437,10 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("evidence_double_click_cb",
                                   &Options::evidenceDoubleClickEdit,
                                   &Options::setEvidenceDoubleClickEdit);
+  registerOption<QCheckBox, bool>("save_window_position_cb",
+                                  &Options::saveWindowPositionEdit,
+                                  &Options::setSaveWindowPositionEdit);
+
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
   // people to put a billion entries in.

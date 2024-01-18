@@ -1308,7 +1308,10 @@ void Courtroom::done_received()
   set_mute_list();
   set_pair_list();
 
-  move(Options::getInstance().getWindowPosition());
+  if (Options::getInstance().saveWindowPositionEdit()) {
+      move(Options::getInstance().getWindowPosition());
+  }
+
 
   show();
 

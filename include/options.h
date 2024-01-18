@@ -259,6 +259,9 @@ public:
   bool evidenceDoubleClickEdit() const;
   void setEvidenceDoubleClickEdit(bool value);
 
+  bool saveWindowPositionEdit() const;
+  void setSaveWindowPositionEdit(bool value);
+
   // Supplies an alternative masterserver URL
   QString alternativeMasterserver() const;
   void setAlternativeMasterserver(QString value);

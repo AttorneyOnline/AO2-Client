@@ -539,6 +539,16 @@ void Options::setEvidenceDoubleClickEdit(bool value)
   config.setValue("evidence_double_click", value);
 }
 
+bool Options::saveWindowPositionEdit() const
+{
+  return config.value("save_window_position", true).toBool();
+}
+
+void Options::setSaveWindowPositionEdit(bool value)
+{
+  config.setValue("save_window_position", value);
+}
+
 QString Options::alternativeMasterserver() const
 {
   return config.value("master", "").toString();
