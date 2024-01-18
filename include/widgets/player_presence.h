@@ -35,7 +35,7 @@ public:
   PlayerMenu(QWidget *parent = nullptr);
   ~PlayerMenu() = default;
 
-public slots:
+public:
   void addPlayer(int f_id, QString f_name, QString f_character,
                  bool f_isSpecial);
   void updatePlayer(PlayerItem *f_player, QString f_name, QString f_character,
