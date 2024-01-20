@@ -26,6 +26,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "widgets/aooptionsdialog.h"
+#include "widgets/player_presence.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -347,7 +348,13 @@ public:
   void set_judge_state(JudgeState new_state) { judge_state = new_state; }
   void set_judge_buttons() { show_judge_controls(ao_app->get_pos_is_judge(current_side)); }
 
+  void addPlayerPresence(int f_id, QString f_name, QString f_character,
+                         bool f_isSpecial);
+  void removePlayerPresence(const int &f_id);
+  void resetPlayerMenu();
+
   ~Courtroom();
+
 private:
   AOApplication *ao_app;
 
@@ -793,6 +800,7 @@ private:
   AOButton *ui_evidence_load;
   QPlainTextEdit *ui_evidence_description;
 
+  PlayerMenu *ui_player_menu;
 
   AOImage *ui_char_select_background;
 

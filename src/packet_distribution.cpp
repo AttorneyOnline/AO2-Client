@@ -606,6 +606,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_judge_buttons(); // client-side judge behavior
     }
   }
+  else if (header == "JP") {
+    if (!courtroom_constructed || f_contents.size() < 4) {
+      goto end;
+    }
+  }
+  else if (header == "LP") {
+    // This only has one arg, stop sending garbage!
+    if (!courtroom_constructed || f_contents.size() != 1) {
+      goto end;
+    }
+  }
+  else if (header == "RP") {
+    if (!courtroom_constructed || f_contents.size() < 4) {
+      goto end;
+    }
+  }
 
  //AssetURL Packet
   else if (header == "ASS") {
