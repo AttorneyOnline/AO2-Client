@@ -5,9 +5,11 @@
 #include <QListWidget>
 #include <QMap>
 
+class AOApplication;
+
 class PlayerItem : public QListWidgetItem {
 public:
-  PlayerItem(QListWidget *parent);
+  PlayerItem(QListWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);
 
   int id();
   QString name();
@@ -22,6 +24,7 @@ public:
 private:
   void styleEntry();
 
+  AOApplication *ao_app;
   int m_id;
   QString m_name;
   QString m_character;
@@ -29,10 +32,9 @@ private:
 };
 
 class PlayerMenu : public QListWidget {
-  Q_OBJECT
 
 public:
-  PlayerMenu(QWidget *parent = nullptr);
+  PlayerMenu(QWidget *parent = nullptr, AOApplication *p_ao_app = nullptr);
   ~PlayerMenu() = default;
 
 public:
@@ -45,6 +47,7 @@ public:
 
 private:
   QMap<int, PlayerItem *> players;
+  AOApplication *ao_app;
 };
 
 #endif // PLAYER_PRESENCE_H

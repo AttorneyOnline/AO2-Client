@@ -1,6 +1,8 @@
 #include "include/widgets/player_presence.h"
+#include "aoapplication.h"
 
-PlayerItem::PlayerItem(QListWidget *parent) : QListWidgetItem(parent)
+PlayerItem::PlayerItem(QListWidget *parent, AOApplication *p_ao_app)
+    : QListWidgetItem{parent}, ao_app{p_ao_app}
 {
   setFlags(flags() & ~Qt::ItemIsSelectable);
 }
@@ -30,7 +32,9 @@ void PlayerItem::setIsSpecial(bool f_state)
 
 void PlayerItem::styleEntry()
 {
-  QIcon l_icon(m_character);
+  QString l_icon_path = ao_app->get_image_suffix(
+      ao_app->get_character_path(m_character, "char_icon"));
+  QIcon l_icon(l_icon_path);
   setIcon(l_icon);
 
   QString label;
@@ -41,8 +45,10 @@ void PlayerItem::styleEntry()
   setText(label);
 }
 
-PlayerMenu::PlayerMenu(QWidget *parent) : QListWidget(parent)
+PlayerMenu::PlayerMenu(QWidget *parent, AOApplication *p_ao_app)
+    : QListWidget{parent}, ao_app{p_ao_app}
 {
+  setIconSize(QSize(25, 25));
 }
 
 void PlayerMenu::addPlayer(int f_id, QString f_name, QString f_character,
@@ -54,7 +60,7 @@ void PlayerMenu::addPlayer(int f_id, QString f_name, QString f_character,
     return;
   }
 
-  l_player = new PlayerItem(this);
+  l_player = new PlayerItem(this, ao_app);
   l_player->setID(f_id);
   l_player->setName(f_name);
   l_player->setCharacter(f_character);
@@ -73,18 +79,19 @@ void PlayerMenu::updatePlayer(PlayerItem *f_player, QString f_name,
 
 void PlayerMenu::removePlayer(int f_id)
 {
-  PlayerItem *f_player = players.value(f_id);
+  PlayerItem *f_player = players.take(f_id);
   if (f_player == nullptr) {
     qDebug() << "Attempted to remove non-existant player at" << f_id;
     return;
   }
   delete f_player;
-  players.remove(f_id);
 }
 
 void PlayerMenu::resetList()
 {
+  qDebug() << "Clearing player menu after server request.";
   for (PlayerItem *player : qAsConst(players)) {
     delete player;
   }
+  players.clear();
 }

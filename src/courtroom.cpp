@@ -399,6 +399,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_evidence_button->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_evidence_button->setObjectName("ui_evidence_button");
 
+  ui_player_menu = new PlayerMenu(this, ao_app);
+  ui_player_menu->setContextMenuPolicy(Qt::CustomContextMenu);
+  ui_player_menu->setObjectName("ui_player_menu");
+
   initialize_emotes();
   initialize_evidence();
 
@@ -1107,6 +1111,11 @@ void Courtroom::set_widgets()
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
                               "interact with the in-character screen."));
 
+  set_size_and_pos(ui_player_menu, "player_menu");
+  ui_player_menu->setToolTip(
+      "Shows the players current in the area. Interact with an entry using the "
+      "right-click context menu.");
+
   // QCheckBox
   truncate_label_text(ui_guard, "guard");
   truncate_label_text(ui_pre, "pre");
@@ -1795,6 +1804,19 @@ void Courtroom::on_authentication_state_received(int p_state)
     append_server_chatmessage(tr("CLIENT"), tr("You were logged out."), "1");
   }
 }
+
+void Courtroom::addPlayerPresence(int f_id, QString f_name, QString f_character,
+                                  bool f_isSpecial)
+{
+  ui_player_menu->addPlayer(f_id, f_name, f_character, f_isSpecial);
+}
+
+void Courtroom::removePlayerPresence(const int &f_id)
+{
+  ui_player_menu->removePlayer(f_id);
+}
+
+void Courtroom::resetPlayerMenu() { ui_player_menu->resetList(); }
 
 void Courtroom::on_chat_return_pressed()
 {
