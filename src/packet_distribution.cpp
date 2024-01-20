@@ -610,17 +610,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed || f_contents.size() < 4) {
       goto end;
     }
+    w_courtroom->addPlayerPresence(f_contents);
   }
   else if (header == "LP") {
     // This only has one arg, stop sending garbage!
     if (!courtroom_constructed || f_contents.size() != 1) {
       goto end;
     }
+    w_courtroom->removePlayerPresence(f_contents[0].toInt());
   }
   else if (header == "RP") {
-    if (!courtroom_constructed || f_contents.size() < 4) {
+    if (!courtroom_constructed) {
       goto end;
     }
+    w_courtroom->resetPlayerMenu();
   }
 
  //AssetURL Packet
