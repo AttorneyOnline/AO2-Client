@@ -402,6 +402,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_player_menu = new PlayerMenu(this, ao_app);
   ui_player_menu->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_player_menu->setObjectName("ui_player_menu");
+  connect(ui_player_menu, &PlayerMenu::actionTriggered, this,
+          &Courtroom::onPlayerActionTriggered);
 
   initialize_emotes();
   initialize_evidence();
@@ -1823,9 +1825,11 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message,
 
 void Courtroom::on_authentication_state_received(int p_state)
 {
+  bool is_authenticated = false;
   if (p_state >= 1) {
     ui_guard->show();
     append_server_chatmessage(tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
+    is_authenticated = true;
   }
   else if (p_state == 0) {
     append_server_chatmessage(tr("CLIENT"), tr("Login unsuccessful."), "1");
@@ -1834,6 +1838,7 @@ void Courtroom::on_authentication_state_received(int p_state)
     ui_guard->hide();
     append_server_chatmessage(tr("CLIENT"), tr("You were logged out."), "1");
   }
+  ui_player_menu->setAuthenticated(is_authenticated);
 }
 
 void Courtroom::addPlayerPresence(QStringList f_content)
@@ -5873,6 +5878,15 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
   qDebug().nospace() << "Truncated label text from " << label_text_tr << " ("
                      << label_px_width << "px) to " << truncated_label << " ("
                      << truncated_px_width << "px)";
+}
+
+void Courtroom::onPlayerActionTriggered(QStringList args)
+{
+  QStringList packet_args;
+  packet_args.append(ui_ooc_chat_name->text());
+  packet_args.append(args.join(" "));
+  AOPacket packet("CT", packet_args);
+  ao_app->net_manager->ship_server_packet(packet.to_string(false));
 }
 
 Courtroom::~Courtroom()
