@@ -348,8 +348,7 @@ public:
   void set_judge_state(JudgeState new_state) { judge_state = new_state; }
   void set_judge_buttons() { show_judge_controls(ao_app->get_pos_is_judge(current_side)); }
 
-  void addPlayerPresence(int f_id, QString f_name, QString f_character,
-                         bool f_isSpecial);
+  void addPlayerPresence(QStringList f_content);
   void removePlayerPresence(const int &f_id);
   void resetPlayerMenu();
 

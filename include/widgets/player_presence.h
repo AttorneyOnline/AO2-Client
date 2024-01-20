@@ -38,8 +38,7 @@ public:
   ~PlayerMenu() = default;
 
 public:
-  void addPlayer(int f_id, QString f_name, QString f_character,
-                 bool f_isSpecial);
+  void addPlayer(QStringList f_content);
   void updatePlayer(PlayerItem *f_player, QString f_name, QString f_character,
                     bool f_isSpecial);
   void removePlayer(int f_id);

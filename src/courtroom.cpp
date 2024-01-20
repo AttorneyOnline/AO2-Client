@@ -1836,10 +1836,9 @@ void Courtroom::on_authentication_state_received(int p_state)
   }
 }
 
-void Courtroom::addPlayerPresence(int f_id, QString f_name, QString f_character,
-                                  bool f_isSpecial)
+void Courtroom::addPlayerPresence(QStringList f_content)
 {
-  ui_player_menu->addPlayer(f_id, f_name, f_character, f_isSpecial);
+  ui_player_menu->addPlayer(f_content);
 }
 
 void Courtroom::removePlayerPresence(const int &f_id)

@@ -37,12 +37,11 @@ void PlayerItem::styleEntry()
   QIcon l_icon(l_icon_path);
   setIcon(l_icon);
 
-  QString label;
+  QString label = "[%1]%2";
   if (m_isSpecial) {
-    label = label + "⭐";
+    label = "⭐[%1]%2";
   }
-  label = label + QString("[%1]%2").arg(QString::number(m_id), m_name);
-  setText(label);
+  setText(label.arg(QString::number(m_id), m_name));
 }
 
 PlayerMenu::PlayerMenu(QWidget *parent, AOApplication *p_ao_app)
@@ -51,27 +50,32 @@ PlayerMenu::PlayerMenu(QWidget *parent, AOApplication *p_ao_app)
   setIconSize(QSize(25, 25));
 }
 
-void PlayerMenu::addPlayer(int f_id, QString f_name, QString f_character,
-                           bool f_isSpecial)
+void PlayerMenu::addPlayer(QStringList f_content)
 {
-  PlayerItem *l_player = players.value(f_id);
+  int id = f_content[0].toInt();
+  QString name = f_content[1];
+  QString character = f_content[2];
+  bool is_special = QVariant::fromValue(f_content[3]).toBool();
+
+  PlayerItem *l_player = players.value(id);
   if (l_player != nullptr) {
-    updatePlayer(l_player, f_name, f_character, f_isSpecial);
+    updatePlayer(l_player, name, character, is_special);
     return;
   }
-
+  qDebug() << "Creating player entry for" << id;
   l_player = new PlayerItem(this, ao_app);
-  l_player->setID(f_id);
-  l_player->setName(f_name);
-  l_player->setCharacter(f_character);
-  l_player->setIsSpecial(f_isSpecial);
+  l_player->setID(id);
+  l_player->setName(name);
+  l_player->setCharacter(character);
+  l_player->setIsSpecial(is_special);
 
-  players.insert(f_id, l_player);
+  players.insert(id, l_player);
 }
 
 void PlayerMenu::updatePlayer(PlayerItem *f_player, QString f_name,
                               QString f_character, bool f_isSpecial)
 {
+  qDebug() << "Updating player entry for" << f_player->id();
   f_player->setName(f_name);
   f_player->setCharacter(f_character);
   f_player->setIsSpecial(f_isSpecial);
