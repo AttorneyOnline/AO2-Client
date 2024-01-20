@@ -1024,6 +1024,8 @@ private slots:
 
   void preview_emote(QString emote);
   void update_emote_preview();
+
+  void onPlayerActionTriggered(QStringList args);
 };
 
 #endif // COURTROOM_H

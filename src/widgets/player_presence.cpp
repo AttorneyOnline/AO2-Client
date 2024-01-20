@@ -1,5 +1,6 @@
 #include "include/widgets/player_presence.h"
 #include "aoapplication.h"
+#include <QMenu>
 
 PlayerItem::PlayerItem(QListWidget *parent, AOApplication *p_ao_app)
     : QListWidgetItem{parent}, ao_app{p_ao_app}
@@ -47,8 +48,13 @@ void PlayerItem::styleEntry()
 PlayerMenu::PlayerMenu(QWidget *parent, AOApplication *p_ao_app)
     : QListWidget{parent}, ao_app{p_ao_app}
 {
+  setContextMenuPolicy(Qt::CustomContextMenu);
   setIconSize(QSize(25, 25));
+  connect(this, &PlayerMenu::customContextMenuRequested, this,
+          &PlayerMenu::onCustomContextMenuRequested);
 }
+
+void PlayerMenu::setAuthenticated(bool p_state) { is_authenticated = p_state; }
 
 void PlayerMenu::addPlayer(QStringList f_content)
 {
@@ -62,7 +68,6 @@ void PlayerMenu::addPlayer(QStringList f_content)
     updatePlayer(l_player, name, character, is_special);
     return;
   }
-  qDebug() << "Creating player entry for" << id;
   l_player = new PlayerItem(this, ao_app);
   l_player->setID(id);
   l_player->setName(name);
@@ -75,7 +80,6 @@ void PlayerMenu::addPlayer(QStringList f_content)
 void PlayerMenu::updatePlayer(PlayerItem *f_player, QString f_name,
                               QString f_character, bool f_isSpecial)
 {
-  qDebug() << "Updating player entry for" << f_player->id();
   f_player->setName(f_name);
   f_player->setCharacter(f_character);
   f_player->setIsSpecial(f_isSpecial);
@@ -85,7 +89,6 @@ void PlayerMenu::removePlayer(int f_id)
 {
   PlayerItem *f_player = players.take(f_id);
   if (f_player == nullptr) {
-    qDebug() << "Attempted to remove non-existant player at" << f_id;
     return;
   }
   delete f_player;
@@ -93,9 +96,52 @@ void PlayerMenu::removePlayer(int f_id)
 
 void PlayerMenu::resetList()
 {
-  qDebug() << "Clearing player menu after server request.";
   for (PlayerItem *player : qAsConst(players)) {
     delete player;
   }
   players.clear();
+}
+
+void PlayerMenu::onCustomContextMenuRequested(const QPoint &pos)
+{
+  QPoint l_pos = mapToGlobal(pos);
+  PlayerItem *l_item = static_cast<PlayerItem *>(itemAt(pos));
+  if (l_item == nullptr) {
+    qDebug() << "Unable to obtain PlayerItem object pointer.";
+    return;
+  }
+  PlayerContextMenu *l_context_menu =
+      new PlayerContextMenu(this, l_item, is_authenticated);
+  l_context_menu->setAttribute(Qt::WA_DeleteOnClose);
+  connect(l_context_menu, &PlayerContextMenu::actionTriggered, this,
+          &PlayerMenu::actionTriggered);
+  l_context_menu->popup(l_pos);
+}
+
+PlayerContextMenu::PlayerContextMenu(QWidget *parent, PlayerItem *f_player,
+                                     bool f_authentication_state)
+    : QMenu{parent}, player{f_player}
+{
+  addAction("Pair", this, &PlayerContextMenu::onPairClicked);
+
+  if (f_authentication_state) {
+    addSeparator();
+    addAction("Kick", this, &PlayerContextMenu::onKickClicked);
+    addAction("Ban", this, &PlayerContextMenu::onBanClicked);
+  }
+}
+
+void PlayerContextMenu::onPairClicked()
+{
+  emit actionTriggered({"/pair", QString::number(player->id())});
+}
+
+void PlayerContextMenu::onKickClicked()
+{
+  // TODO : Implement me!
+}
+
+void PlayerContextMenu::onBanClicked()
+{
+  // TODO : Implement me!
 }
