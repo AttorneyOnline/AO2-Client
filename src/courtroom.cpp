@@ -2409,6 +2409,10 @@ bool Courtroom::handle_objection()
 
   // if an objection is used
   if (objection_mod <= 4 && objection_mod >= 1) {
+    ui_vp_chatbox->setVisible(chatbox_always_show);
+    ui_vp_message->setVisible(chatbox_always_show);
+    ui_vp_chat_arrow->setVisible(chatbox_always_show);
+    ui_vp_showname->setVisible(chatbox_always_show);
     ui_vp_objection->set_static_duration(shout_static_time);
     ui_vp_objection->set_max_duration(shout_max_time);
     QString filename;
@@ -2844,6 +2848,7 @@ void Courtroom::initialize_chatbox()
   }
   else // Aw yeah dude do some showname magic
   {
+    ui_vp_showname->setVisible(true);
     if (!ui_vp_chatbox->set_image("chat", p_misc))
       ui_vp_chatbox->set_image("chatbox", p_misc);
 
