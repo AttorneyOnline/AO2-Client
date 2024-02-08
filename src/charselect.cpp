@@ -320,7 +320,8 @@ void Courtroom::character_loading_finished()
       ui_char_list->insertTopLevelItem(0, category);
       category->addChild(treeItem);
     }
-      
+
+    ui_char_list->sortItems(0, Qt::AscendingOrder);
     
     connect(char_button, &AOCharButton::clicked,
             [this, n]() { this->char_clicked(n); });
