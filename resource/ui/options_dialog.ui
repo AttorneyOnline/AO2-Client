@@ -41,18 +41,18 @@
             <x>0</x>
             <y>0</y>
             <width>394</width>
-            <height>826</height>
+            <height>828</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
-           <item row="23" column="1">
+           <item row="24" column="1">
             <widget class="QCheckBox" name="stickysounds_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="29" column="0">
+           <item row="30" column="0">
             <widget class="QLabel" name="category_stop_lbl">
              <property name="toolTip">
               <string>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</string>
@@ -62,7 +62,7 @@
              </property>
             </widget>
            </item>
-           <item row="30" column="1">
+           <item row="31" column="1">
             <widget class="QCheckBox" name="sfx_on_idle_cb">
              <property name="text">
               <string/>
@@ -72,7 +72,7 @@
            <item row="0" column="1">
             <widget class="QComboBox" name="theme_combobox"/>
            </item>
-           <item row="18" column="0">
+           <item row="19" column="0">
             <widget class="QLabel" name="scaling_label">
              <property name="toolTip">
               <string>Sets the default scaling method, if there is not one already defined specifically for the character.</string>
@@ -82,7 +82,7 @@
              </property>
             </widget>
            </item>
-           <item row="26" column="0">
+           <item row="27" column="0">
             <widget class="QLabel" name="customchat_lbl">
              <property name="toolTip">
               <string>Turn this on to allow characters to define their own custom chat box designs.</string>
@@ -92,7 +92,7 @@
              </property>
             </widget>
            </item>
-           <item row="20" column="0">
+           <item row="21" column="0">
             <widget class="QLabel" name="effects_lbl">
              <property name="toolTip">
               <string>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
@@ -102,7 +102,7 @@
              </property>
             </widget>
            </item>
-           <item row="16" column="1">
+           <item row="17" column="1">
             <widget class="QCheckBox" name="discord_cb">
              <property name="text">
               <string/>
@@ -119,7 +119,7 @@
              </property>
             </widget>
            </item>
-           <item row="15" column="0">
+           <item row="16" column="0">
             <widget class="QLabel" name="ms_lbl">
              <property name="toolTip">
               <string>Overrides the base URL to retrieve server information from.</string>
@@ -129,14 +129,14 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
+           <item row="8" column="0">
             <widget class="QLabel" name="instant_objection_lbl">
              <property name="text">
               <string>Instant Objection:</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="1">
+           <item row="9" column="1">
             <widget class="QSpinBox" name="text_crawl_spinbox">
              <property name="suffix">
               <string> ms</string>
@@ -156,7 +156,7 @@
              </property>
             </widget>
            </item>
-           <item row="17" column="1">
+           <item row="18" column="1">
             <widget class="QComboBox" name="language_combobox">
              <item>
               <property name="text">
@@ -195,10 +195,10 @@
              </item>
             </widget>
            </item>
-           <item row="15" column="1">
+           <item row="16" column="1">
             <widget class="QLineEdit" name="ms_textbox"/>
            </item>
-           <item row="21" column="0">
+           <item row="22" column="0">
             <widget class="QLabel" name="framenetwork_lbl">
              <property name="toolTip">
               <string>Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality.</string>
@@ -208,7 +208,7 @@
              </property>
             </widget>
            </item>
-           <item row="9" column="0">
+           <item row="10" column="0">
             <widget class="QLabel" name="chat_ratelimit_lbl">
              <property name="text">
               <string>Chat Rate Limit:</string>
@@ -218,7 +218,7 @@
              </property>
             </widget>
            </item>
-           <item row="9" column="1">
+           <item row="10" column="1">
             <widget class="QSpinBox" name="chat_ratelimit_spinbox">
              <property name="suffix">
               <string> ms</string>
@@ -228,7 +228,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="animated_theme_lbl">
              <property name="toolTip">
               <string>If ticked, themes will be allowed to have animated elements.</string>
@@ -238,7 +238,7 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
+           <item row="9" column="0">
             <widget class="QLabel" name="text_crawl_lbl">
              <property name="toolTip">
               <string>Amount of time (in miliseconds) spent on each letter when the in-character text is being displayed.</string>
@@ -258,17 +258,17 @@
              </property>
             </widget>
            </item>
-           <item row="18" column="1">
+           <item row="19" column="1">
             <widget class="QComboBox" name="scaling_combobox"/>
            </item>
-           <item row="22" column="1">
+           <item row="23" column="1">
             <widget class="QCheckBox" name="colorlog_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="13" column="0">
+           <item row="14" column="0">
             <widget class="QLabel" name="default_showname_lbl">
              <property name="toolTip">
               <string>Your showname will be automatically set to this value when you join a server.</string>
@@ -278,7 +278,7 @@
              </property>
             </widget>
            </item>
-           <item row="28" column="1">
+           <item row="29" column="1">
             <widget class="QCheckBox" name="continuous_cb">
              <property name="text">
               <string/>
@@ -288,7 +288,7 @@
            <item row="1" column="1">
             <widget class="QComboBox" name="subtheme_combobox"/>
            </item>
-           <item row="27" column="0">
+           <item row="28" column="0">
             <widget class="QLabel" name="sticker_lbl">
              <property name="toolTip">
               <string>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</string>
@@ -298,7 +298,7 @@
              </property>
             </widget>
            </item>
-           <item row="25" column="0">
+           <item row="26" column="0">
             <widget class="QLabel" name="stickypres_lbl">
              <property name="toolTip">
               <string>Turn this on to prevent preanimation checkbox from clearing after playing the emote.</string>
@@ -308,7 +308,7 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
+           <item row="7" column="1">
             <widget class="QSpinBox" name="stay_time_spinbox">
              <property name="suffix">
               <string> ms</string>
@@ -318,7 +318,7 @@
              </property>
             </widget>
            </item>
-           <item row="12" column="0">
+           <item row="13" column="0">
             <widget class="QLabel" name="showname_lbl">
              <property name="toolTip">
               <string>Gives the default value for the in-game 'Custom shownames' tickbox, which in turn determines whether the client should display custom in-character names.</string>
@@ -328,7 +328,7 @@
              </property>
             </widget>
            </item>
-           <item row="24" column="0">
+           <item row="25" column="0">
             <widget class="QLabel" name="stickyeffects_lbl">
              <property name="toolTip">
               <string>Turn this on to prevent the effects dropdown from clearing the effect after playing it.</string>
@@ -338,14 +338,14 @@
              </property>
             </widget>
            </item>
-           <item row="27" column="1">
+           <item row="28" column="1">
             <widget class="QCheckBox" name="sticker_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="7" column="0">
             <widget class="QLabel" name="stay_time_lbl">
              <property name="toolTip">
               <string>Minimum amount of time (in miliseconds) an IC message must stay on screen before the next IC message is shown, acting as a 'queue'. Set to 0 to disable this behavior.</string>
@@ -355,7 +355,7 @@
              </property>
             </widget>
            </item>
-           <item row="17" column="0">
+           <item row="18" column="0">
             <widget class="QLabel" name="language_label">
              <property name="toolTip">
               <string>Sets the language if you don't want to use your system language.</string>
@@ -365,35 +365,35 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
+           <item row="8" column="1">
             <widget class="QCheckBox" name="instant_objection_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="25" column="1">
+           <item row="26" column="1">
             <widget class="QCheckBox" name="stickypres_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="12" column="1">
+           <item row="13" column="1">
             <widget class="QCheckBox" name="showname_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="21" column="1">
+           <item row="22" column="1">
             <widget class="QCheckBox" name="framenetwork_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="30" column="0">
+           <item row="31" column="0">
             <widget class="QLabel" name="sfx_on_idle_lbl">
              <property name="toolTip">
               <string>If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF.</string>
@@ -403,7 +403,7 @@
              </property>
             </widget>
            </item>
-           <item row="23" column="0">
+           <item row="24" column="0">
             <widget class="QLabel" name="stickysounds_lbl">
              <property name="toolTip">
               <string>Turn this on to prevent the sound dropdown from clearing the sound after playing it.</string>
@@ -413,14 +413,14 @@
              </property>
             </widget>
            </item>
-           <item row="19" column="1">
+           <item row="20" column="1">
             <widget class="QCheckBox" name="shake_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="11" column="0">
+           <item row="12" column="0">
             <widget class="QLabel" name="username_lbl">
              <property name="toolTip">
               <string>Your OOC name will be automatically set to this value when you join a server.</string>
@@ -430,7 +430,7 @@
              </property>
             </widget>
            </item>
-           <item row="19" column="0">
+           <item row="20" column="0">
             <widget class="QLabel" name="shake_lbl">
              <property name="toolTip">
               <string>Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
@@ -440,14 +440,14 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QCheckBox" name="animated_theme_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="16" column="0">
+           <item row="17" column="0">
             <widget class="QLabel" name="discord_lbl">
              <property name="toolTip">
               <string>Allows others on Discord to see what server you are in, what character are you playing, and how long you have been playing for.</string>
@@ -457,7 +457,7 @@
              </property>
             </widget>
            </item>
-           <item row="22" column="0">
+           <item row="23" column="0">
             <widget class="QLabel" name="colorlog_lbl">
              <property name="toolTip">
               <string>Use the markup colors in the server IC chatlog.</string>
@@ -477,31 +477,31 @@
              </property>
             </widget>
            </item>
-           <item row="20" column="1">
+           <item row="21" column="1">
             <widget class="QCheckBox" name="effects_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="29" column="1">
+           <item row="30" column="1">
             <widget class="QCheckBox" name="category_stop_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="26" column="1">
+           <item row="27" column="1">
             <widget class="QCheckBox" name="customchat_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="13" column="1">
+           <item row="14" column="1">
             <widget class="QLineEdit" name="default_showname_textbox"/>
            </item>
-           <item row="14" column="1">
+           <item row="15" column="1">
             <widget class="QFrame" name="net_divider">
              <property name="frameShape">
               <enum>QFrame::HLine</enum>
@@ -511,7 +511,7 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="6" column="1">
             <widget class="QFrame" name="theme_log_divider">
              <property name="frameShape">
               <enum>QFrame::HLine</enum>
@@ -521,14 +521,14 @@
              </property>
             </widget>
            </item>
-           <item row="24" column="1">
+           <item row="25" column="1">
             <widget class="QCheckBox" name="stickyeffects_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="31" column="0">
+           <item row="32" column="0">
             <widget class="QLabel" name="evidence_double_click_lbl">
              <property name="toolTip">
               <string>If ticked, Evidence needs a double-click to view rather than a single click.</string>
@@ -538,7 +538,7 @@
              </property>
             </widget>
            </item>
-           <item row="10" column="1">
+           <item row="11" column="1">
             <widget class="QFrame" name="log_names_divider">
              <property name="frameShape">
               <enum>QFrame::HLine</enum>
@@ -548,14 +548,14 @@
              </property>
             </widget>
            </item>
-           <item row="31" column="1">
+           <item row="32" column="1">
             <widget class="QCheckBox" name="evidence_double_click_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="28" column="0">
+           <item row="29" column="0">
             <widget class="QLabel" name="continuous_lbl">
              <property name="toolTip">
               <string>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</string>
@@ -565,10 +565,30 @@
              </property>
             </widget>
            </item>
-           <item row="11" column="1">
+           <item row="12" column="1">
             <widget class="QLineEdit" name="username_textbox">
              <property name="maxLength">
               <number>30</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QSpinBox" name="theme_scaling_factor_sb">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>8</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="theme_scaling_factor_lbl">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The factor by which to scale the size of the UI&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>UI Scaling Factor</string>
              </property>
             </widget>
            </item>

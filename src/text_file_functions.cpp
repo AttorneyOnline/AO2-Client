@@ -173,9 +173,8 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 
   if (sub_line_elements.size() < 2)
     return return_value;
-
-  return_value.setX(sub_line_elements.at(0).toInt());
-  return_value.setY(sub_line_elements.at(1).toInt());
+  return_value.setX(sub_line_elements.at(0).toInt() * Options::getInstance().themeScalingFactor());
+  return_value.setY(sub_line_elements.at(1).toInt() * Options::getInstance().themeScalingFactor());
 
   return return_value;
 }
@@ -196,10 +195,12 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
   if (sub_line_elements.size() < 4)
     return return_value;
 
-  return_value.x = sub_line_elements.at(0).toInt();
-  return_value.y = sub_line_elements.at(1).toInt();
-  return_value.width = sub_line_elements.at(2).toInt();
-  return_value.height = sub_line_elements.at(3).toInt();
+  int scale = Options::getInstance().themeScalingFactor();
+
+  return_value.x = sub_line_elements.at(0).toInt() * scale;
+  return_value.y = sub_line_elements.at(1).toInt() * scale;
+  return_value.width = sub_line_elements.at(2).toInt() * scale;
+  return_value.height = sub_line_elements.at(3).toInt() * scale;
 
   return return_value;
 }

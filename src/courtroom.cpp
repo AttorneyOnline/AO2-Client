@@ -612,7 +612,7 @@ void Courtroom::set_courtroom_size()
     m_courtroom_width = f_courtroom.width;
     m_courtroom_height = f_courtroom.height;
 
-    this->setFixedSize(f_courtroom.width, f_courtroom.height);
+    this->setFixedSize(m_courtroom_width, m_courtroom_height);
   }
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
@@ -1159,7 +1159,7 @@ void Courtroom::set_font(QWidget *widget, QString class_name,
   QString design_file = "courtroom_fonts.ini";
   if (f_pointsize <= 0)
     f_pointsize =
-        ao_app->get_design_element(p_identifier, design_file, ao_app->get_chat(p_char)).toInt();
+        ao_app->get_design_element(p_identifier, design_file, ao_app->get_chat(p_char)).toInt() * Options::getInstance().themeScalingFactor();
   if (font_name == "")
     font_name =
         ao_app->get_design_element(p_identifier + "_font", design_file, ao_app->get_chat(p_char));

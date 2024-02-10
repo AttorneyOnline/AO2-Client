@@ -47,6 +47,7 @@ private:
   QWidget *ui_settings_widget;
   QComboBox *ui_theme_combobox;
   QComboBox *ui_subtheme_combobox;
+  QSpinBox *ui_theme_scaling_factor_sb;
   QPushButton *ui_theme_reload_button;
   QPushButton *ui_theme_folder_button;
   QCheckBox *ui_evidence_double_click_cb;

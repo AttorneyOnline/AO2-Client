@@ -87,6 +87,17 @@ QString Options::theme() const
 
 void Options::setTheme(QString value) { config.setValue("theme", value); }
 
+int Options::themeScalingFactor() const
+{
+  int value = config.value("theme_scaling_factor", "1").toInt();
+  if (value <= 0) {
+    value = 1;
+  }
+  return value;
+}
+
+void Options::setThemeScalingFactor(int value) { config.setValue("theme_scaling_factor", value); }
+
 int Options::blipRate() const { return config.value("blip_rate", 2).toInt(); }
 
 void Options::setBlipRate(int value) { config.setValue("blip_rate", value); }
@@ -480,7 +491,7 @@ void Options::setServerSubTheme(QString value) { m_server_subtheme = value; }
 
 bool Options::animatedThemeEnabled() const
 {
-  return config.value("animated_theme", true).toBool();
+  return config.value("animated_theme", false).toBool();
 }
 
 void Options::setAnimatedThemeEnabled(bool value)

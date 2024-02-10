@@ -337,6 +337,7 @@ void AOOptionsDialog::setupUI()
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   });
 
+  FROM_UI(QSpinBox, theme_scaling_factor_sb)
   FROM_UI(QCheckBox, animated_theme_cb)
   FROM_UI(QSpinBox, stay_time_spinbox)
   FROM_UI(QCheckBox, instant_objection_cb)
@@ -363,6 +364,9 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, sfx_on_idle_cb)
   FROM_UI(QCheckBox, evidence_double_click_cb)
 
+  registerOption<QSpinBox, int>("theme_scaling_factor_sb",
+                                &Options::themeScalingFactor,
+                                &Options::setThemeScalingFactor);
   registerOption<QCheckBox, bool>("animated_theme_cb",
                                   &Options::animatedThemeEnabled,
                                   &Options::setAnimatedThemeEnabled);
