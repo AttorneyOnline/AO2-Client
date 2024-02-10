@@ -215,7 +215,11 @@ void Options::setLogTimestampEnabled(bool value)
 
 QString Options::logTimestampFormat() const
 {
-  return config.value("log_timestamp_format", "h:mm:ss AP").toString();
+  QString value = config.value("log_timestamp_format", "h:mm:ss AP").toString();
+  if (value == "") {
+    value = "h:mm:ss AP";
+  }
+  return value;
 }
 
 void Options::setLogTimestampFormat(QString value)
