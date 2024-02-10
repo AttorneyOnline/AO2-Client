@@ -216,7 +216,10 @@ void AOOptionsDialog::updateValues()
 
 void AOOptionsDialog::savePressed()
 {
-  bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme()) || (ui_theme_scaling_factor_sb->value() != Options.getInstance().themeScalingFactor());
+  bool l_reload_theme_required =
+      (ui_theme_combobox->currentText() != Options::getInstance().theme()) ||
+      (ui_theme_scaling_factor_sb->value() !=
+       Options::getInstance().themeScalingFactor());
   for (const OptionEntry &entry : qAsConst(optionEntries)) {
     entry.save();
   }
