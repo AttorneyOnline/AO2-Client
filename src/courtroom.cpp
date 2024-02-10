@@ -1137,6 +1137,11 @@ void Courtroom::set_widgets()
 
 void Courtroom::set_fonts(QString p_char)
 {
+  QFont new_font = ao_app->default_font;
+  int new_font_size = new_font.pointSize() * Options::getInstance().themeScalingFactor();
+  new_font.setPointSize(new_font_size);
+  ao_app->setFont(new_font);
+
   set_font(ui_vp_showname, "", "showname", p_char);
   set_font(ui_vp_message, "", "message", p_char);
   set_font(ui_ic_chatlog, "", "ic_chatlog", p_char);

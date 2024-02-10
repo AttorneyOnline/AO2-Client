@@ -66,6 +66,8 @@ public:
   Courtroom *w_courtroom;
   AttorneyOnline::Discord *discord;
 
+  QFont default_font;
+
   bool lobby_constructed = false;
   bool courtroom_constructed = false;
 
