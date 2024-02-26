@@ -116,7 +116,7 @@ void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 
 template <> QString AOOptionsDialog::widgetData(QComboBox *widget) const
 {
-  return widget->currentData().toString();
+  return widget->currentText();
 }
 
 template <>
