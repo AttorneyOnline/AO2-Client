@@ -236,7 +236,6 @@ jobs:
           windeployqt --no-quick-import --no-translations --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-opengl-sw .
           cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
           rm ./imageformats/qtiff.dll
-          rm ./imageformats/qjpeg.dll
           rm ./imageformats/qicns.dll
           rm ./imageformats/qico.dll
           rm ./imageformats/qsvg.dll
