@@ -80,7 +80,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_sticker->setObjectName("ui_vp_sticker");
 
-  ui_vp_showname = new QLabel(ui_vp_chatbox);
+  ui_vp_showname = new AOChatboxLabel(ui_vp_chatbox);
   ui_vp_showname->setObjectName("ui_vp_showname");
   ui_vp_showname->setAlignment(Qt::AlignLeft);
   ui_vp_chat_arrow = new InterfaceLayer(this, ao_app);
@@ -88,7 +88,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_chat_arrow->set_cull_image(false);
   ui_vp_chat_arrow->setObjectName("ui_vp_chat_arrow");
 
-  ui_vp_message = new QTextEdit(this);
+  ui_vp_message = new AOChatboxTextEdit(this);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
