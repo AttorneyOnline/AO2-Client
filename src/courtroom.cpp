@@ -180,6 +180,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
   ui_ic_chat_name->setText(Options::getInstance().shownameOnJoin());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
+  
+  ui_custom_blips = new QLineEdit(this);
+  ui_custom_blips->setFrame(false);
+  ui_custom_blips->setPlaceholderText(tr("Blips"));
+  ui_custom_blips->setObjectName("ui_custom_blips");
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
@@ -679,6 +684,15 @@ void Courtroom::set_widgets()
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
   }
+  
+  if (ao_app->custom_blips_enabled) {
+    ui_custom_blips->show();
+    ui_custom_blips->setEnabled(true);
+  }
+  else {
+    ui_custom_blips->hide();
+    ui_custom_blips->setEnabled(false);
+  }
 
   // We also show the non-server-dependent client additions.
   // Once again, if the theme can't display it, set_move_and_pos will catch
@@ -823,6 +837,7 @@ void Courtroom::set_widgets()
   }
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
+  set_size_and_pos(ui_custom_blips, "ao2_custom_blips");
 
   initialize_chatbox();
 
@@ -1548,9 +1563,12 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
   if (m_cid != -1) {
     ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
+    QString f_blipname = ao_app->get_blipname(f_char);
+    ui_custom_blips->setPlaceholderText(f_blipname);
   }
   else {
     ui_ic_chat_name->setPlaceholderText("Spectator");
+    ui_custom_blips->setPlaceholderText("None");
   }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
@@ -2085,6 +2103,14 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
+  if (ao_app->custom_blips_enabled) {
+    if (ui_custom_blips->text().isEmpty()) {
+        packet_contents.append(ui_custom_blips->placeholderText());
+    }
+    else {
+        packet_contents.append(ui_custom_blips->text());
+    }
+  }
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -3628,7 +3654,11 @@ void Courtroom::start_chat_ticking()
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
     gen_char_rgb_list(current_misc);
 
-  QString f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
+  QString f_blips = ao_app->get_blipname(m_chatmessage[CHAR_NAME]);
+  f_blips = ao_app->get_blips(f_blips);
+  if (ao_app->custom_blips_enabled && !m_chatmessage[BLIPNAME].isEmpty()) {
+      f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
+  }
   blip_player->set_blips(f_blips);
 
   // means text is currently ticking

@@ -89,22 +89,23 @@ public:
 
   /////////////////server metadata//////////////////
 
-  bool yellow_text_supported = false;
-  bool prezoom_supported = false;
-  bool flipping_supported = false;
-  bool custom_objection_supported = false;
-  bool desk_mod_supported = false;
-  bool evidence_supported = false;
-  bool cccc_ic_supported = false;
-  bool arup_supported = false;
-  bool casing_alerts_supported = false;
-  bool modcall_reason_supported = false;
-  bool looping_sfx_supported = false;
-  bool additive_text_supported = false;
-  bool effects_supported = false;
-  bool y_offset_supported = false;
-  bool expanded_desk_mods_supported = false;
-  bool auth_packet_supported = false;
+  bool yellow_text_enabled = false;
+  bool prezoom_enabled = false;
+  bool flipping_enabled = false;
+  bool custom_objection_enabled = false;
+  bool desk_mod_enabled = false;
+  bool evidence_enabled = false;
+  bool cccc_ic_support_enabled = false;
+  bool arup_enabled = false;
+  bool casing_alerts_enabled = false;
+  bool modcall_reason_enabled = false;
+  bool looping_sfx_support_enabled = false;
+  bool additive_enabled = false;
+  bool effects_enabled = false;
+  bool y_offset_enabled = false;
+  bool expanded_desk_mods_enabled = false;
+  bool auth_packet_enabled = false;
+  bool custom_blips_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -336,8 +337,11 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's blips (previously called their "gender")
-  QString get_blips(QString p_char);
+  // Returns p_char's blipname by reading char.ini for blips (previously called "gender")
+  QString get_blipname(QString p_char);
+  
+  // Returns p_blipname's sound(path) to play in the client
+  QString get_blips(QString p_blipname);
 
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);

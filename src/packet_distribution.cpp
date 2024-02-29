@@ -42,20 +42,21 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     // default(legacy) values
-    yellow_text_supported = false;
-    prezoom_supported = false;
-    flipping_supported = false;
-    custom_objection_supported = false;
-    desk_mod_supported = false;
-    evidence_supported = false;
-    cccc_ic_supported = false;
-    arup_supported = false;
-    casing_alerts_supported = false;
-    modcall_reason_supported = false;
-    looping_sfx_supported = false;
-    additive_text_supported = false;
-    effects_supported = false;
-    y_offset_supported = false;
+    yellow_text_enabled = false;
+    prezoom_enabled = false;
+    flipping_enabled = false;
+    custom_objection_enabled = false;
+    desk_mod_enabled = false;
+    evidence_enabled = false;
+    cccc_ic_support_enabled = false;
+    arup_enabled = false;
+    casing_alerts_enabled = false;
+    modcall_reason_enabled = false;
+    looping_sfx_support_enabled = false;
+    additive_enabled = false;
+    effects_enabled = false;
+    y_offset_enabled = false;
+    custom_blips_enabled = false;
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -90,21 +91,24 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                              f_contents.at(1), "0");
   }
   else if (header == "FL") {
-    yellow_text_supported = false;
-    prezoom_supported = false;
-    flipping_supported = false;
-    custom_objection_supported = false;
-    desk_mod_supported = false;
-    evidence_supported = false;
-    cccc_ic_supported = false;
-    arup_supported = false;
-    casing_alerts_supported = false;
-    modcall_reason_supported = false;
-    looping_sfx_supported = false;
-    additive_text_supported = false;
-    effects_supported = false;
-    expanded_desk_mods_supported = false;
-    auth_packet_supported = false;
+    yellow_text_enabled = false;
+    prezoom_enabled = false;
+    flipping_enabled = false;
+    custom_objection_enabled = false;
+    desk_mod_enabled = false;
+    evidence_enabled = false;
+    cccc_ic_support_enabled = false;
+    arup_enabled = false;
+    casing_alerts_enabled = false;
+    modcall_reason_enabled = false;
+    looping_sfx_support_enabled = false;
+    additive_enabled = false;
+    effects_enabled = false;
+    expanded_desk_mods_enabled = false;
+    auth_packet_enabled = false;
+    custom_blips_enabled = false;
+    log_to_demo = false;
+    
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -136,8 +140,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
       expanded_desk_mods_supported = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
-      auth_packet_supported = true;
-    log_to_demo = false;
+      auth_packet_enabled = true;
+    if (f_packet.contains("custom_blips", Qt::CaseInsensitive))
+      custom_blips_enabled = true;
+      
   }
   else if (header == "PN") {
     if (!lobby_constructed || f_contents.size() < 2)
