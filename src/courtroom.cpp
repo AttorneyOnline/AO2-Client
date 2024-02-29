@@ -1188,7 +1188,6 @@ void Courtroom::set_font(QWidget *widget, QString class_name,
                    "1"; // is the font anti-aliased or not?
 
   bool outlined = ao_app->get_design_element(p_identifier + "_outlined", design_file, ao_app->get_chat(p_char)) == "1";
-  qDebug() << p_identifier << "outlined?" << outlined;
   QColor outline_color;
   int outline_width = 1;
   if (outlined) {

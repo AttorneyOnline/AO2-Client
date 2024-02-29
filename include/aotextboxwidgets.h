@@ -19,11 +19,7 @@ public:
   void setOutlineColor(QColor color) { outline_color = color; };
   void setOutlineWidth(int width) { outline_width = width; };
   void setTextColor(QColor color) { text_color = color; };
-  void setIsOutlined(bool outlined)
-  {
-    is_outlined = outlined;
-    qDebug() << "isOutlined set to" << outlined;
-  };
+  void setIsOutlined(bool outlined) { is_outlined = outlined; };
 
 protected:
 private:
