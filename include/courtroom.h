@@ -146,7 +146,9 @@ public:
 
   // actual operation of setting the font on a widget
   void set_qfont(QWidget *widget, QString class_name, QFont font,
-                 QColor f_color = Qt::black, bool bold = false);
+                 QColor f_color = Qt::black, bool bold = false,
+                 bool outlined = false, QColor outline_color = QColor(0, 0, 0),
+                 int outline_width = 1);
 
   // helper function that calls above function on the relevant widgets
   void set_fonts(QString p_char = "");
@@ -655,7 +657,7 @@ private:
   BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
-  QLabel *ui_vp_showname;
+  AOChatboxLabel *ui_vp_showname;
   InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
   SplashLayer *ui_vp_testimony;
