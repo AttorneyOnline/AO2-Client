@@ -3,10 +3,12 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "lobby.h"
+#include "options.h"
 
 #include <QAbstractSocket>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QNetworkReply>
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
@@ -17,7 +19,7 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   heartbeat_timer = new QTimer(this);
 
   QString master_config =
-      ao_app->configini->value("master", "").value<QString>();
+      Options::getInstance().alternativeMasterserver();
   if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http")) {
     qInfo() << "using alternate master server" << master_config;
     ms_baseurl = master_config;
@@ -27,18 +29,17 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
   heartbeat_timer->start(heartbeat_interval);
 }
 
-void NetworkManager::get_server_list(const std::function<void()> &cb)
+void NetworkManager::get_server_list()
 {
   QNetworkRequest req(QUrl(ms_baseurl + "/servers"));
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
 
   QNetworkReply *reply = http->get(req);
   connect(reply, &QNetworkReply::finished,
-          this, std::bind(&NetworkManager::ms_request_finished, this, reply, cb));
+          this, std::bind(&NetworkManager::ms_request_finished, this, reply));
 }
 
-void NetworkManager::ms_request_finished(QNetworkReply *reply,
-                                         const std::function<void()> &cb)
+void NetworkManager::ms_request_finished(QNetworkReply *reply)
 {
   QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
   if (json.isNull()) {
@@ -70,8 +71,9 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply,
   }
   ao_app->set_server_list(server_list);
 
-  cb();
-
+  if (ao_app->lobby_constructed) {
+        ao_app->w_lobby->list_servers();
+  }
   reply->deleteLater();
 }
 
@@ -81,7 +83,7 @@ void NetworkManager::send_heartbeat()
   // within a 5 minute window, so that the the number of people playing within
   // that time period can be counted and an accurate player count be displayed.
   // What do I care about your personal information, I really don't want it.
-  if (ao_app->get_player_count_optout())
+  if (Options::getInstance().playerCountOptout())
     return;
 
   QNetworkRequest req(QUrl(ms_baseurl + "/playing"));
@@ -105,7 +107,7 @@ void NetworkManager::request_document(MSDocumentType document_type,
   req.setRawHeader("User-Agent", get_user_agent().toUtf8());
 
   QString language =
-      ao_app->configini->value("language").toString();
+      Options::getInstance().language();
   if (language.trimmed().isEmpty())
     language = QLocale::system().name();
 
@@ -192,6 +194,11 @@ void NetworkManager::connect_to_server(server_type p_server)
   active_connection_type = p_server.socket_type;
 }
 
+void NetworkManager::join_to_server()
+{
+    ship_server_packet(AOPacket("askchaa").to_string());
+}
+
 void NetworkManager::disconnect_from_server()
 {
   if (!connected)
@@ -240,8 +247,11 @@ void NetworkManager::handle_server_packet(const QString& p_data)
       partial_packet = false;
     }
   }
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
+#else
   const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
+#endif
 
   for (const QString &packet : packet_list) {
     QStringList f_contents;

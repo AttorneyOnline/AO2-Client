@@ -6,6 +6,7 @@ aocaseannouncerdialog.h
 aocharbutton.h
 aoclocklabel.h
 aoemotebutton.h
+aoemotepreview.h
 aoevidencebutton.h
 aoevidencedisplay.h
 aoimage.h
@@ -15,6 +16,7 @@ aooptionsdialog.h
 aopacket.h
 aosfxplayer.h
 aotextarea.h
+aoutils.h
 bass.h
 bassmidi.h
 bassopus.h

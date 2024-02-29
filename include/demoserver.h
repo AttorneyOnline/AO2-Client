@@ -22,6 +22,8 @@ public:
     int port = 27088;
     int max_wait = -1;
 
+    void set_demo_file(QString filepath);
+
 private:
     void handle_packet(AOPacket *packet);
     void load_demo(QString filename);
@@ -39,6 +41,7 @@ private:
     QString p_path;
     QTimer *timer;
     int elapsed_time = 0;
+    QString filename;
 
 private slots:
     void accept_connection();

@@ -1,3 +1,5 @@
 BasedOnStyle: LLVM
 BreakBeforeBraces: Stroustrup
-AllowShortIfStatementsOnASingleLine: true 
+AllowShortIfStatementsOnASingleLine: true
+NamespaceIndentation: All
+  

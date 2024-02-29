@@ -1,20 +1,23 @@
-QT += core gui widgets network websockets
+QT += core gui widgets network websockets uitools
 
 TARGET = Attorney_Online
 TEMPLATE = app
 
-VERSION = 2.10.0.0
+VERSION = 2.10.1.0
 
 INCLUDEPATH += $$PWD/include
 DESTDIR = $$PWD/bin
 OBJECTS_DIR = $$PWD/build
 MOC_DIR = $$PWD/build
 
-SOURCES += $$files($$PWD/src/*.cpp)
-HEADERS += $$files($$PWD/include/*.h)
+SOURCES += $$files($$PWD/src/*.cpp, true)
+HEADERS += $$files($$PWD/include/*.h, true)
+
+FORMS += $$files($$PWD/resource/ui/*.ui)
 
 LIBS += -L$$PWD/lib
 QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
+QMAKE_CXXFLAGS += "-fno-sized-deallocation"
 
 # Uncomment for verbose network logging
 # DEFINES += DEBUG_NETWORK
@@ -57,7 +60,8 @@ TRANSLATIONS = resource/translations/ao_en.ts \
                resource/translations/ao_es.ts \
                resource/translations/ao_pt.ts \
                resource/translations/ao_pl.ts \
-               resource/translations/ao_it.ts
+               resource/translations/ao_it.ts \
+               ressource/ui/
 
 win32:RC_ICONS = resource/logo_ao2.ico
 macx:ICON = resource/logo_ao2.icns

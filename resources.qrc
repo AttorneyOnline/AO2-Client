@@ -9,5 +9,11 @@
         <file>resource/translations/ao_pl.qm</file>
         <file>resource/translations/ao_pt.qm</file>
         <file>resource/translations/ao_ru.qm</file>
+        <file>resource/ui/options_dialog.ui</file>
+        <file>resource/ui/favorite_server_dialog.ui</file>
+        <file>resource/ui/direct_connect_dialog.ui</file>
+        <file>resource/ui/lobby.ui</file>
+        <file>resource/ui/lobby_assets/down-arrow.png</file>
+        <file>resource/ui/lobby_assets/up-arrow.png</file>
     </qresource>
 </RCC>

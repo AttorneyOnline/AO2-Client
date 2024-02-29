@@ -14,8 +14,9 @@ cd "${ROOT_DIR}"
 sudo apt install libgl1-mesa-dev
 #install curl incase of fresh vm
 sudo apt install curl
-mkdir tmp
 
+rm -rf tmp
+mkdir tmp
 cd tmp
 
 #get the bass prebuilt
@@ -23,13 +24,16 @@ curl http://www.un4seen.com/files/bass24-linux.zip -o bass_linux.zip
 curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi_linux.zip
 curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus_linux.zip
 
-unzip bass_linux.zip
-unzip bassmidi_linux.zip
-unzip bassopus_linux.zip
+mkdir -p bass_linux
+unzip bass_linux.zip -d ./bass_linux
+mkdir -p bassmidi_linux
+unzip bassmidi_linux.zip -d ./bassmidi_linux
+mkdir -p bassopus_linux
+unzip bassopus_linux.zip -d ./bassopus_linux
 
-cp x64/libbass.so ../../lib
-cp x64/libbassmidi.so ../../lib
-cp x64/libbassopus.so ../../lib
+cp ./bass_linux/libs/x86_64/libbass.so ../../lib
+cp ./bassmidi_linux/libs/x86_64/libbassmidi.so ../../lib
+cp ./bassopus_linux/libs/x86_64/libbassopus.so ../../lib
 
 #get the discord-rpc prebuilt
 curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip

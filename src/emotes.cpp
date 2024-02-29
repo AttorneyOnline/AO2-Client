@@ -1,6 +1,7 @@
 #include "courtroom.h"
 
 #include "aoemotebutton.h"
+#include "options.h"
 
 void Courtroom::initialize_emotes()
 {
@@ -200,7 +201,7 @@ void Courtroom::select_emote(int p_id)
   if (old_emote == current_emote) {
     ui_pre->setChecked(!ui_pre->isChecked());
   }
-  else if (!ao_app->is_stickypres_enabled()) {
+  else if (!Options::getInstance().clearPreOnPlayEnabled()) {
     if (emote_mod == PREANIM || emote_mod == PREANIM_ZOOM) {
       ui_pre->setChecked(true);
     }
