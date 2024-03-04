@@ -80,7 +80,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_sticker->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_sticker->setObjectName("ui_vp_sticker");
 
-  ui_vp_showname = new QLabel(ui_vp_chatbox);
+  ui_vp_showname = new AOChatboxLabel(ui_vp_chatbox);
   ui_vp_showname->setObjectName("ui_vp_showname");
   ui_vp_showname->setAlignment(Qt::AlignLeft);
   ui_vp_chat_arrow = new InterfaceLayer(this, ao_app);
@@ -1187,8 +1187,27 @@ void Courtroom::set_font(QWidget *widget, QString class_name,
                                               design_file, ao_app->get_chat(p_char)) !=
                    "1"; // is the font anti-aliased or not?
 
+  bool outlined = ao_app->get_design_element(p_identifier + "_outlined", design_file, ao_app->get_chat(p_char)) == "1";
+  QColor outline_color;
+  int outline_width = 1;
+  if (outlined) {
+      QString outline_color_result =
+          ao_app->get_design_element(p_identifier + "_outline_color", design_file, ao_app->get_chat(p_char));
+      outline_color = QColor(0,0,0);
+      if (outline_color_result != "") {
+        QStringList o_color_list = outline_color_result.split(",");
+
+        if (o_color_list.size() >= 3) {
+          outline_color.setRed(o_color_list.at(0).toInt());
+          outline_color.setGreen(o_color_list.at(1).toInt());
+          outline_color.setBlue(o_color_list.at(2).toInt());
+        }
+      }
+      outline_width = ao_app->get_design_element(p_identifier + "_outline_width", design_file, ao_app->get_chat(p_char)).toInt() * Options::getInstance().themeScalingFactor();
+  }
+
   this->set_qfont(widget, class_name,
-                  get_qfont(font_name, f_pointsize, antialias), f_color, bold);
+                  get_qfont(font_name, f_pointsize, antialias), f_color, bold, outlined, outline_color, outline_width);
 }
 
 QFont Courtroom::get_qfont(QString font_name, int f_pointsize, bool antialias)
@@ -1207,10 +1226,17 @@ QFont Courtroom::get_qfont(QString font_name, int f_pointsize, bool antialias)
 }
 
 void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font,
-                          QColor f_color, bool bold)
+                          QColor f_color, bool bold, bool outlined, QColor outline_color, int outline_width)
 {
   if (class_name.isEmpty())
     class_name = widget->metaObject()->className();
+
+  if (class_name == "AOChatboxLabel") { // Only shownames can be outlined
+     ui_vp_showname->setIsOutlined(outlined);
+     ui_vp_showname->setOutlineColor(outline_color);
+     ui_vp_showname->setTextColor(f_color);
+     ui_vp_showname->setOutlineWidth(outline_width);
+  }
 
   font.setBold(bold);
   widget->setFont(font);
