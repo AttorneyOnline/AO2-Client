@@ -3011,6 +3011,10 @@ void Courtroom::handle_ic_speaking()
       filename = "prosecution_speedlines";
     else
       filename = "defense_speedlines";
+
+    // We're zooming, so hide the pair character and ignore pair offsets. This ain't about them.
+    ui_vp_sideplayer_char->hide();
+    ui_vp_player_char->move_and_center(0,0);
     ui_vp_speedlines->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
   }
 
