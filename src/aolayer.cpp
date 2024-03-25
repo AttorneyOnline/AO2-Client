@@ -669,13 +669,15 @@ void AOLayer::onImageLoaded(const QImage& image) {
 
 void AOLayer::fade(bool in, int duration)
 {
+    QEasingCurve easing = in ? QEasingCurve::OutQuart : QEasingCurve::InQuart;
+  
     QGraphicsOpacityEffect* fade = new QGraphicsOpacityEffect(this);
     this->setGraphicsEffect(fade);
     QPropertyAnimation* fade_anim = new QPropertyAnimation(fade, "opacity");
     fade_anim->setDuration(duration);
     fade_anim->setStartValue(in ? 0 : 1);
     fade_anim->setEndValue(in ? 1 : 0);
-    fade_anim->setEasingCurve(QEasingCurve::Linear);
+    fade_anim->setEasingCurve(easing);
     fade_anim->start(QPropertyAnimation::DeleteWhenStopped);
     connect(fade_anim, SIGNAL(finished()), this, SLOT(in?fadein_finished():fadeout_finished()));
 }

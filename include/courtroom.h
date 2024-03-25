@@ -628,6 +628,7 @@ private:
   // I'll delete these eventually.
   QString last_charname;
   QString last_sprite;
+  bool was_zoom = false;
 
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;

@@ -3512,21 +3512,33 @@ void Courtroom::handle_ic_speaking()
     ui_vp_player_char->stop();
     ui_vp_player_char->set_play_once(false);
 
+
     // I know it's really bad. I'll move this out from here later on
-    if (Options::getInstance().crossfade() && !last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") {
+    int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+    QString f_emote = m_chatmessage[EMOTE];
+    QString f_pre = m_chatmessage[PRE_EMOTE];
+    QString f_pos = m_chatmessage[SIDE];
+    bool is_zoom = emote_mod == ZOOM || emote_mod == PREANIM_ZOOM;
+
+    bool do_crossfade = Options::getInstance().crossfade() && !is_zoom && !was_zoom && current_side == f_pos && last_sprite != f_emote && (f_pre.isEmpty() || f_pre == "-");
+    // TODO: instead of a magic number make this a settings option
+    int crossfade_duration = 300;
+    
+    if (do_crossfade && !last_sprite.isEmpty()) {
       filename = "(a)" + last_sprite;
       ui_vp_crossfade_char->load_image(filename, last_charname, 0, false);
       ui_vp_crossfade_char->stackUnder(ui_vp_player_char);
       ui_vp_crossfade_char->move_and_center(last_x_offset, last_y_offset);
       ui_vp_crossfade_char->show();
-      ui_vp_crossfade_char->fade(false, 400);
+      ui_vp_crossfade_char->fade(false, crossfade_duration);
     }
 
-    filename = "(a)" + m_chatmessage[EMOTE];
+    filename = "(a)" + f_emote;
 
     ui_vp_player_char->load_image(filename, m_chatmessage[CHAR_NAME], 0, false);
-    if (Options::getInstance().crossfade() && !last_sprite.isEmpty() && last_sprite != m_chatmessage[EMOTE] && m_chatmessage[PRE_EMOTE] == "-") 
-      ui_vp_player_char->fade(true, 400);
+    if (do_crossfade) 
+      // TODO: instead of a magic number, make this a constant, then a settings option
+      ui_vp_player_char->fade(true, crossfade_duration);
     // Set the anim state accordingly
     anim_state = 3;
     // ui_vp_crossfade_char->hide();
@@ -3535,6 +3547,7 @@ void Courtroom::handle_ic_speaking()
       last_sprite = m_chatmessage[EMOTE];
     }
     last_charname = m_chatmessage[CHAR_NAME];
+    was_zoom = is_zoom;
     
     QStringList self_offsets = m_chatmessage[SELF_OFFSET].split("&");
     int self_offset = self_offsets[0].toInt();
