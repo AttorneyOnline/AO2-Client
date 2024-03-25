@@ -1191,10 +1191,7 @@ void Courtroom::set_widgets()
   ui_pos_remove->setText("X");
   ui_pos_remove->set_image("evidencex");
   ui_pos_remove->setToolTip(tr("Reset your character's supplementary background to its default."));
-  if (current_side == "")
-    ui_pos_remove->hide();
-  else
-    ui_pos_remove->show();
+  display_pos_remove();
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown");
   ui_iniswap_dropdown->setEditable(true);
@@ -1719,45 +1716,49 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_objection->stop();
     chat_tick_timer->stop();
     ui_vp_evidence_display->reset();
-    QString f_side = current_side;
-    if (current_side == "")
-      f_side = ao_app->get_char_side(current_char);
-    set_scene(true, f_side);
+
+    // Reset the info so crossfading isn't confused
+    last_sprite = "";
+    last_charname = "";
+    was_zoom = false;
+    set_scene(true, selected_side);
   }
 }
 
 void Courtroom::set_side(QString p_side)
 {
-  if (p_side.isEmpty() || p_side == ao_app->get_char_side(current_char)) {
-      ui_pos_remove->hide();
-      current_side = ao_app->get_char_side(current_char);
+  selected_side = p_side;
+  QString default_pos = ao_app->get_char_side(current_char);
+  if (p_side.isEmpty() || p_side == default_pos) {
+      selected_side = "";
   }
-  else {
-      ui_pos_remove->show();
-      current_side = p_side;
-  }
-
   set_judge_buttons();
+  display_pos_remove();
 
   // Block the signals to prevent setCurrentIndex from triggering a pos
   // change
   ui_pos_dropdown->blockSignals(true);
   for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
     QString pos = ui_pos_dropdown->itemText(i);
-    if (pos == current_side) {
+    if (pos == selected_side || (selected_side == "" && pos == default_pos)) {
 
       // Set the index on dropdown ui element to let you know what pos you're on
       // right now
       ui_pos_dropdown->setCurrentIndex(i);
       // Unblock the signals so the element can be used for setting pos again
       ui_pos_dropdown->blockSignals(false);
-
       // alright we dun, jobs done here boyos
       return;
     }
   }
+  if (selected_side == "")
+    // Reset index to 0
+    ui_pos_dropdown->setCurrentIndex(0);
+    // Unblock the signals so the element can be used for setting pos again
+    ui_pos_dropdown->blockSignals(false);
+    return;
   // We will only get there if we failed the last step
-  ui_pos_dropdown->setEditText(current_side);
+  ui_pos_dropdown->setEditText(selected_side);
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
 }
@@ -1778,11 +1779,9 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
     ui_pos_dropdown->setItemIcon(n, image);
   }
 
-  if (current_side != "" && !pos_dropdown_list.contains(current_side))
-    ui_pos_dropdown->setEditText(current_side);
-
   // Unblock the signals so the element can be used for setting pos again
   ui_pos_dropdown->blockSignals(false);
+  set_side(selected_side);
 }
 
 void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
@@ -1809,10 +1808,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
 
   current_char = f_char;
-  if (current_side.isEmpty()) {
-    current_side = ao_app->get_char_side(current_char);
-  }
-  set_side(current_side);
+  set_side(selected_side);
 
   set_text_color_dropdown();
 
@@ -2183,10 +2179,10 @@ void Courtroom::on_chat_return_pressed()
   QStringList packet_contents;
   QString f_side;
 
-  if (current_side == "")
+  if (selected_side == "")
     f_side = ao_app->get_char_side(current_char);
   else
-    f_side = current_side;
+    f_side = selected_side;
 
   int f_desk_mod = DESK_SHOW;
 
@@ -4476,6 +4472,7 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_scene(bool show_desk, const QString f_side)
 {
+  current_side = f_side;
   ui_vp_background->load_image(ao_app->get_pos_path(f_side));
   ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
 
@@ -5097,7 +5094,6 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 void Courtroom::on_pos_dropdown_changed(QString p_text)
 {
   set_side(p_text);
-  // current_side = p_text;
 }
 
 void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
@@ -5119,28 +5115,23 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
   menu->popup(ui_iniswap_dropdown->mapToGlobal(pos));
 }
 
+void Courtroom::display_pos_remove()
+{
+  if (selected_side == "")
+    ui_pos_remove->hide();
+  else {
+    QString default_pos = ao_app->get_char_side(current_char);
+    if ((selected_side != default_pos && pos_dropdown_list.contains(default_pos)) || !pos_dropdown_list.contains(selected_side)){
+      ui_pos_remove->show();
+      return;
+    }
+    ui_pos_remove->hide();
+  }
+}
+
 void Courtroom::on_pos_remove_clicked()
 {
-  ui_pos_dropdown->blockSignals(true);
-  QString default_side = ao_app->get_char_side(current_char);
-
-  show_judge_controls(ao_app->get_pos_is_judge(default_side));
-
-  for (int i = 0; i < ui_pos_dropdown->count(); ++i) {
-    QString pos = ui_pos_dropdown->itemText(i);
-    if (pos == default_side) {
-      ui_pos_dropdown->setCurrentIndex(i);
-      break;
-    }
-  }
-  int wit_index = ui_pos_dropdown->findText("wit");
-  if (ui_pos_dropdown->currentText() != default_side && wit_index != -1) //i.e. this bg doesn't have our pos
-    ui_pos_dropdown->setCurrentIndex(wit_index); // fall back to "wit"
-  else if (ui_pos_dropdown->currentText() != default_side) // we don't have "wit" either?
-    ui_pos_dropdown->setCurrentIndex(0); // as a last resort, choose the first item in the dropdown
-  ui_pos_dropdown->blockSignals(false);
-  current_side = "";
-  ui_pos_remove->hide();
+  set_side("");
   ui_ic_chat_message->setFocus();
 }
 

@@ -397,7 +397,7 @@ public:
 
   JudgeState get_judge_state() { return judge_state; }
   void set_judge_state(JudgeState new_state) { judge_state = new_state; }
-  void set_judge_buttons() { show_judge_controls(ao_app->get_pos_is_judge(current_side)); }
+  void set_judge_buttons() { show_judge_controls(ao_app->get_pos_is_judge(selected_side)); }
 
   ~Courtroom();
 private:
@@ -699,6 +699,8 @@ private:
 
   // whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
+
+  QString selected_side = "";
 
   QString current_background = "default";
   QString current_side = "";
@@ -1003,6 +1005,8 @@ private slots:
   void on_pos_dropdown_changed(QString p_text);
   void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();
+  
+  void display_pos_remove();
 
   void on_iniswap_dropdown_changed(int p_index);
   void set_iniswap_dropdown();
