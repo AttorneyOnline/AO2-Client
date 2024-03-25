@@ -228,7 +228,6 @@ void CharLayer::load_image(QString p_filename, QString p_charname,
       ao_app->get_theme_path(
           "placeholder", ao_app->default_theme)}; // Default theme placeholder path
   start_playback(ao_app->get_image_path(pathlist));
-  play();
 }
 
 void SplashLayer::load_image(QString p_filename, QString p_charname,
