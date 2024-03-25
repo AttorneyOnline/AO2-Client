@@ -17,6 +17,7 @@ FORMS += $$files($$PWD/resource/ui/*.ui)
 
 LIBS += -L$$PWD/lib
 QMAKE_LFLAGS += -Wl,-rpath,"'\$$ORIGIN/lib'"
+QMAKE_CXXFLAGS += "-fno-sized-deallocation"
 
 # Uncomment for verbose network logging
 # DEFINES += DEBUG_NETWORK
