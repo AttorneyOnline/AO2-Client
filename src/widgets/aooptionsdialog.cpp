@@ -52,7 +52,6 @@ void AOOptionsDialog::setWidgetData(QCheckBox *widget, const bool &value)
 
 template <> bool AOOptionsDialog::widgetData(QCheckBox *widget) const
 {
-
   return widget->isChecked();
 }
 
