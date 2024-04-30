@@ -105,7 +105,7 @@ template <>
 void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 {
   for (auto i = 0; i < widget->count(); i++) {
-    if (widget->itemData(i) == value) {
+    if (widget->itemData(i).toString() == value) {
       widget->setCurrentIndex(i);
       return;
     }
