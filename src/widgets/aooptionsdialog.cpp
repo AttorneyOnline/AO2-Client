@@ -35,7 +35,7 @@ void AOOptionsDialog::populateAudioDevices()
 {
   ui_audio_device_combobox->clear();
   if (needsDefaultAudioDevice()) {
-    ui_audio_device_combobox->addItem("default");
+    ui_audio_device_combobox->addItem("default", "default");
   }
 
   BASS_DEVICEINFO info;
@@ -116,7 +116,7 @@ void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 
 template <> QString AOOptionsDialog::widgetData(QComboBox *widget) const
 {
-  return widget->currentText();
+  return widget->currentData().toString();
 }
 
 template <>
@@ -398,6 +398,15 @@ void AOOptionsDialog::setupUI()
                                   &Options::setDiscordEnabled);
   registerOption<QComboBox, QString>("language_combobox", &Options::language,
                                      &Options::setLanguage);
+
+  ui_language_combobox->addItem("English", "en");
+  ui_language_combobox->addItem("Deutsch", "de");
+  ui_language_combobox->addItem("Español", "es");
+  ui_language_combobox->addItem("Português", "pt");
+  ui_language_combobox->addItem("Polski", "pl");
+  ui_language_combobox->addItem("日本語", "jp");
+  ui_language_combobox->addItem("Русский", "ru");
+
   registerOption<QComboBox, QString>("scaling_combobox",
                                      &Options::defaultScalingMode,
                                      &Options::setDefaultScalingMode);
@@ -605,6 +614,12 @@ void AOOptionsDialog::setupUI()
 
   ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
 
+  ui_log_timestamp_format_combobox->addItem(l_current_format);
+  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP");
+  ui_log_timestamp_format_combobox->addItem("hh:mm:ss");
+  ui_log_timestamp_format_combobox->addItem("h:mm AP");
+  ui_log_timestamp_format_combobox->addItem("hh:mm");
+
   if (!Options::getInstance().logTimestampEnabled()) {
     ui_log_timestamp_format_combobox->setDisabled(true);
   }
@@ -633,10 +648,14 @@ void AOOptionsDialog::setupUI()
 
 void AOOptionsDialog::onTimestampFormatEdited()
 {
+  const QString format = ui_log_timestamp_format_combobox->currentText();
+  const int index = ui_log_timestamp_format_combobox->currentIndex();
+
+  ui_log_timestamp_format_combobox->setItemText(index, format);
+  ui_log_timestamp_format_combobox->setItemData(index, format);
   ui_log_timestamp_format_lbl->setText(
       tr("Log timestamp format:\n") +
-      QDateTime::currentDateTime().toString(
-          ui_log_timestamp_format_combobox->currentText()));
+      QDateTime::currentDateTime().toString(format));
 }
 
 void AOOptionsDialog::timestampCbChanged(int state)

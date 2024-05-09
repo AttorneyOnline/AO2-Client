@@ -41,7 +41,7 @@
             <x>0</x>
             <y>0</y>
             <width>394</width>
-            <height>828</height>
+            <height>858</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -157,43 +157,7 @@
             </widget>
            </item>
            <item row="18" column="1">
-            <widget class="QComboBox" name="language_combobox">
-             <item>
-              <property name="text">
-               <string>en</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>de</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>es</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>pt</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>pl</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>jp</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>ru</string>
-              </property>
-             </item>
-            </widget>
+            <widget class="QComboBox" name="language_combobox"/>
            </item>
            <item row="16" column="1">
             <widget class="QLineEdit" name="ms_textbox"/>
@@ -1012,26 +976,6 @@ Default: 0.</string>
          <property name="editable">
           <bool>true</bool>
          </property>
-         <item>
-          <property name="text">
-           <string>h:mm:ss AP</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hh:mm:ss</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>h:mm AP</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hh:mm</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item row="6" column="0">

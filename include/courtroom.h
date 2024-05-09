@@ -7,24 +7,25 @@
 #include "aocharbutton.h"
 #include "aoclocklabel.h"
 #include "aoemotebutton.h"
+#include "aoemotepreview.h"
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
 #include "aolayer.h"
 #include "aomusicplayer.h"
-#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "aosfxplayer.h"
 #include "aotextarea.h"
+#include "aotextboxwidgets.h"
 #include "chatlogpiece.h"
 #include "datatypes.h"
 #include "debug_functions.h"
+#include "eventfilters.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "scrolltext.h"
-#include "eventfilters.h"
-#include "aoemotepreview.h"
+#include "widgets/aooptionsdialog.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -145,7 +146,9 @@ public:
 
   // actual operation of setting the font on a widget
   void set_qfont(QWidget *widget, QString class_name, QFont font,
-                 QColor f_color = Qt::black, bool bold = false);
+                 QColor f_color = Qt::black, bool bold = false,
+                 bool outlined = false, QColor outline_color = QColor(0, 0, 0),
+                 int outline_width = 1);
 
   // helper function that calls above function on the relevant widgets
   void set_fonts(QString p_char = "");
@@ -654,7 +657,7 @@ private:
   BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
-  QLabel *ui_vp_showname;
+  AOChatboxLabel *ui_vp_showname;
   InterfaceLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
   SplashLayer *ui_vp_testimony;
