@@ -105,7 +105,7 @@ template <>
 void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 {
   for (auto i = 0; i < widget->count(); i++) {
-    if (widget->itemText(i) == value) {
+    if (widget->itemData(i).toString() == value) {
       widget->setCurrentIndex(i);
       return;
     }
@@ -614,11 +614,11 @@ void AOOptionsDialog::setupUI()
 
   ui_log_timestamp_format_combobox->setCurrentText(l_current_format);
 
-  ui_log_timestamp_format_combobox->addItem(l_current_format);
-  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP");
-  ui_log_timestamp_format_combobox->addItem("hh:mm:ss");
-  ui_log_timestamp_format_combobox->addItem("h:mm AP");
-  ui_log_timestamp_format_combobox->addItem("hh:mm");
+  ui_log_timestamp_format_combobox->addItem(l_current_format, l_current_format);
+  ui_log_timestamp_format_combobox->addItem("h:mm:ss AP", "h:mm:ss AP");
+  ui_log_timestamp_format_combobox->addItem("hh:mm:ss", "hh:mm:ss");
+  ui_log_timestamp_format_combobox->addItem("h:mm AP", "h:mm AP");
+  ui_log_timestamp_format_combobox->addItem("hh:mm", "hh:mm");
 
   if (!Options::getInstance().logTimestampEnabled()) {
     ui_log_timestamp_format_combobox->setDisabled(true);
