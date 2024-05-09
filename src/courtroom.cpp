@@ -1464,6 +1464,8 @@ void Courtroom::set_widgets()
       QBrush(ao_app->get_color("area_gaming_color", "courtroom_design.ini"));
   locked_brush =
       QBrush(ao_app->get_color("area_locked_color", "courtroom_design.ini"));
+  hub_brush =
+      QBrush(ao_app->get_color("area_hub_color", "courtroom_design.ini"));
 
   refresh_evidence();
 }
@@ -2013,10 +2015,14 @@ void Courtroom::list_areas()
     if (ao_app->arup_supported) {
       i_area.append("\n  ");
 
-      i_area.append(arup_statuses.at(n_area));
+      if (arup_statuses.at(n_area) != "HUB") {
+        i_area.append(arup_statuses.at(n_area));
+      }
 
       if (arup_cms.at(n_area) != "FREE") {
-        i_area.append(" | CM: ");
+        if (arup_statuses.at(n_area) != "HUB") {
+          i_area.append(" | CM: ");
+        }
         i_area.append(arup_cms.at(n_area));
       }
 
@@ -2055,6 +2061,8 @@ void Courtroom::list_areas()
           treeItem->setBackground(1, rp_brush);
         else if (arup_statuses.at(n_area) == "GAMING")
           treeItem->setBackground(1, gaming_brush);
+        else if (arup_statuses.at(n_area) == "HUB")
+          treeItem->setBackground(1, hub_brush);
       }
     }
     else {

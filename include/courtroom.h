@@ -716,6 +716,7 @@ private:
   QBrush rp_brush;
   QBrush gaming_brush;
   QBrush locked_brush;
+  QBrush hub_brush;
 
   QSystemTrayIcon* callwords_notification;
   QStringList callwords_history;
