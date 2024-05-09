@@ -180,11 +180,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
   ui_ic_chat_name->setText(Options::getInstance().shownameOnJoin());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
-  
-  ui_custom_blips = new QLineEdit(this);
-  ui_custom_blips->setFrame(false);
-  ui_custom_blips->setPlaceholderText(tr("Blips"));
-  ui_custom_blips->setObjectName("ui_custom_blips");
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
@@ -684,15 +679,6 @@ void Courtroom::set_widgets()
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
   }
-  
-  if (ao_app->custom_blips_enabled) {
-    ui_custom_blips->show();
-    ui_custom_blips->setEnabled(true);
-  }
-  else {
-    ui_custom_blips->hide();
-    ui_custom_blips->setEnabled(false);
-  }
 
   // We also show the non-server-dependent client additions.
   // Once again, if the theme can't display it, set_move_and_pos will catch
@@ -837,7 +823,6 @@ void Courtroom::set_widgets()
   }
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
-  set_size_and_pos(ui_custom_blips, "ao2_custom_blips");
 
   initialize_chatbox();
 
@@ -1589,12 +1574,9 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
   if (m_cid != -1) {
     ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
-    QString f_blipname = ao_app->get_blipname(f_char);
-    ui_custom_blips->setPlaceholderText(f_blipname);
   }
   else {
     ui_ic_chat_name->setPlaceholderText("Spectator");
-    ui_custom_blips->setPlaceholderText("None");
   }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
@@ -1611,7 +1593,7 @@ void Courtroom::enter_courtroom()
   else
     ui_flip->hide();
 
-  if (ao_app->additive_text_supported)
+  if (ao_app->additive_supported)
     ui_additive->show();
   else
     ui_additive->hide();
@@ -2037,13 +2019,12 @@ void Courtroom::on_chat_return_pressed()
 
   // If the server we're on supports CCCC stuff, we should use it!
   if (ao_app->cccc_ic_supported) {
-    // If there is a showname entered, use that -- else, just send an empty
-    // packet-part.
+    // If there is a showname entered, use that -- else, just send whatever the ini calls for.
     if (!ui_ic_chat_name->text().isEmpty()) {
       packet_contents.append(ui_ic_chat_name->text());
     }
     else {
-      packet_contents.append("");
+      packet_contents.append(ao_app->get_showname(current_char, current_emote));
     }
 
     // Similarly, we send over whom we're paired with, unless we have chosen
@@ -2106,7 +2087,7 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->additive_text_supported) {
+  if (ao_app->additive_supported) {
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
   if (ao_app->effects_supported) {
@@ -2129,14 +2110,7 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->custom_blips_enabled) {
-    if (ui_custom_blips->text().isEmpty()) {
-        packet_contents.append(ui_custom_blips->placeholderText());
-    }
-    else {
-        packet_contents.append(ui_custom_blips->text());
-    }
-  }
+  packet_contents.append(ao_app->get_blipname(current_char, current_emote));
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -3686,7 +3660,7 @@ void Courtroom::start_chat_ticking()
 
   QString f_blips = ao_app->get_blipname(m_chatmessage[CHAR_NAME]);
   f_blips = ao_app->get_blips(f_blips);
-  if (ao_app->custom_blips_enabled && !m_chatmessage[BLIPNAME].isEmpty()) {
+  if (ao_app->custom_blips_supported && !m_chatmessage[BLIPNAME].isEmpty()) {
       f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
   }
   blip_player->set_blips(f_blips);
