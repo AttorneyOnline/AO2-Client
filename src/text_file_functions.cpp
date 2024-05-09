@@ -225,6 +225,20 @@ int AOApplication::get_font_size(QString p_identifier, QString p_file)
   return 10;
 }
 
+QString AOApplication::check_status_color(QString p_identifier, QString p_file)
+{
+  QString value = get_config_value(p_identifier, p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme);
+  if (value.isEmpty()) 
+      return "area_free_color";
+
+  QStringList color_list = value.split(",");
+
+  if (color_list.size() < 3) 
+      return "area_free_color";
+
+  return p_identifier;
+}
+
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
   QString value = get_config_value(p_identifier, p_file, Options::getInstance().theme(), Options::getInstance().subTheme(), default_theme);
