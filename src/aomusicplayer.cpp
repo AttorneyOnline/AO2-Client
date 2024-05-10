@@ -152,7 +152,7 @@ QString AOMusicPlayer::play(QString p_song, int channel, bool loop,
   QString p_song_clear = QUrl(p_song).fileName();
   p_song_clear = p_song_clear.left(p_song_clear.lastIndexOf('.'));
 
-  if (is_stop) {
+  if (is_stop && channel == 0) { // don't send text on channels besides 0
     return QObject::tr("None");
   }
 
