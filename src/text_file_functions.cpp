@@ -452,7 +452,6 @@ QString AOApplication::get_showname(QString p_char, int current_emote)
       QString override_key = "Options" + QString::number(i);
       QStringList override_list =
           read_char_ini(p_char, "emotes", override_key).split(",");
-      qDebug() << "override list" << override_key << override_list;
       if (override_list.isEmpty()) {
         continue; // not here
       }
@@ -494,7 +493,6 @@ QString AOApplication::get_blipname(QString p_char, int current_emote)
       QString override_key = "Options" + QString::number(i);
       QStringList override_list =
           read_char_ini(p_char, "emotes", override_key).split(",");
-      qDebug() << "override list" << override_key << override_list;
       if (override_list.isEmpty()) {
         continue; // not here
       }
@@ -517,7 +515,6 @@ QString AOApplication::get_blipname(QString p_char, int current_emote)
     if (f_result == "")
       f_result = "male";
   }
-  qDebug() << f_result;
   return f_result;
 }
 QString AOApplication::get_blips(QString p_blipname)
