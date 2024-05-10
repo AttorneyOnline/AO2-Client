@@ -442,7 +442,7 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
   return r_values;
 }
 
-QString AOApplication::get_showname(QString p_char, int current_emote)
+QString AOApplication::get_showname(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, "showname", "Options");
   QString f_needed = read_char_ini(p_char, "needs_showname", "Options");

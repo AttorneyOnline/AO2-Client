@@ -261,7 +261,7 @@ public:
   QString get_char_side(QString p_char);
 
   // Returns the showname from the ini of p_char
-  QString get_showname(QString p_char, int current_emote = 1);
+  QString get_showname(QString p_char, int p_emote = -1);
 
   // Returns the category of this character
   QString get_category(QString p_char);
