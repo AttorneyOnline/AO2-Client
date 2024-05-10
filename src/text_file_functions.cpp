@@ -447,24 +447,14 @@ QString AOApplication::get_showname(QString p_char, int p_emote)
   QString f_result = read_char_ini(p_char, "showname", "Options");
   QString f_needed = read_char_ini(p_char, "needs_showname", "Options");
 
-  if (current_emote != -1) { // activate epic look for override mode
-    for (int i = 2; i < 6; i++) {
-      QString override_key = "Options" + QString::number(i);
-      QStringList override_list =
-          read_char_ini(p_char, "emotes", override_key).split(",");
-      if (override_list.isEmpty()) {
-        continue; // not here
-      }
-      else if (override_list.contains(QString::number(current_emote + 1))) {
-        QString temp_f_result = read_char_ini(p_char, "showname", override_key);
-        if (temp_f_result != "") {
-          f_result = temp_f_result;
-          break; // we got it
-        }
-        break; // override found but no showname
-      }
-      else {
-        continue; // not here
+  if (p_emote != -1) {
+    int override_idx =
+        read_char_ini(p_char, QString::number(p_emote), "OptionsN").toInt();
+    if (override_idx > 0) {
+      QString temp_f_result = read_char_ini(
+          p_char, "blips", "Options" + QString::number(override_idx));
+      if (!temp_f_result.isEmpty()) {
+        f_result = temp_f_result;
       }
     }
   }
@@ -485,35 +475,26 @@ QString AOApplication::get_char_side(QString p_char)
   return f_result;
 }
 
-QString AOApplication::get_blipname(QString p_char, int current_emote)
+QString AOApplication::get_blipname(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, "blips", "Options");
-  if (current_emote != -1) { // activate epic look for override mode
-    for (int i = 2; i < 6; i++) {
-      QString override_key = "Options" + QString::number(i);
-      QStringList override_list =
-          read_char_ini(p_char, "emotes", override_key).split(",");
-      if (override_list.isEmpty()) {
-        continue; // not here
-      }
-      else if (override_list.contains(QString::number(current_emote + 1))) {
-        QString temp_f_result = read_char_ini(p_char, "blips", override_key);
-        if (temp_f_result != "") {
-          f_result = temp_f_result;
-          break; // we got it
-        }
-        break; // override found but no blips
-      }
-      else {
-        continue; // not here
+
+  if (p_emote != -1) {
+    int override_idx =
+        read_char_ini(p_char, QString::number(p_emote), "OptionsN").toInt();
+    if (override_idx > 0) {
+      QString temp_f_result = read_char_ini(
+          p_char, "blips", "Options" + QString::number(override_idx));
+      if (!temp_f_result.isEmpty()) {
+        f_result = temp_f_result;
       }
     }
   }
 
   if (f_result == "") {
-    f_result = read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
-    if (f_result == "")
-      f_result = "male";
+    f_result =
+        read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
+    if (f_result == "") f_result = "male";
   }
   return f_result;
 }
