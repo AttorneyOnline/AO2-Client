@@ -514,7 +514,7 @@ case 1: {
   // Auth packet
   else if (header == "AUTH") {
     if (!courtroom_constructed ||
-        m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) ||
+        !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) ||
         f_contents.isEmpty()) {
       goto end;
     }
