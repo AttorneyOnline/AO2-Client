@@ -1955,6 +1955,7 @@ void Courtroom::list_music()
 
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
+  QBrush streaming_brush(ao_app->get_color("streaming_song_color", f_file));
 
   int n_listed_songs = 0;
 
@@ -1987,7 +1988,10 @@ void Courtroom::list_music()
     if (file_exists(song_path))
       treeItem->setBackground(0, found_brush);
     else
-      treeItem->setBackground(0, missing_brush);
+      if (i_song.endsWith(".music"))
+        treeItem->setBackground(0, streaming_brush);
+      else
+        treeItem->setBackground(0, missing_brush);
 
     if (i_song_listname ==
         i_song) // Not supposed to be a song to begin with - a category?
