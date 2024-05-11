@@ -449,10 +449,10 @@ QString AOApplication::get_showname(QString p_char, int p_emote)
 
   if (p_emote != -1) {
     int override_idx =
-        read_char_ini(p_char, QString::number(p_emote), "OptionsN").toInt();
+        read_char_ini(p_char, QString::number(p_emote + 1), "OptionsN").toInt();
     if (override_idx > 0) {
-      QString temp_f_result = read_char_ini(
-          p_char, "blips", "Options" + QString::number(override_idx));
+      QString override_key = "Options" + QString::number(override_idx);
+      QString temp_f_result = read_char_ini(p_char, "showname", override_key);
       if (!temp_f_result.isEmpty()) {
         f_result = temp_f_result;
       }
@@ -481,10 +481,10 @@ QString AOApplication::get_blipname(QString p_char, int p_emote)
 
   if (p_emote != -1) {
     int override_idx =
-        read_char_ini(p_char, QString::number(p_emote), "OptionsN").toInt();
+        read_char_ini(p_char, QString::number(p_emote + 1), "OptionsN").toInt();
     if (override_idx > 0) {
-      QString temp_f_result = read_char_ini(
-          p_char, "blips", "Options" + QString::number(override_idx));
+      QString override_key = "Options" + QString::number(override_idx);
+      QString temp_f_result = read_char_ini(p_char, "blips", override_key);
       if (!temp_f_result.isEmpty()) {
         f_result = temp_f_result;
       }
