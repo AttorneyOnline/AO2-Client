@@ -68,9 +68,12 @@ namespace server {
   class ServerData {
   public:
     /**
-     * @brief Returns true if the feature exists on the server.
+     * @brief Returns true if one of the standard features exists on the server.
      *
-     * @param f_feature The feature to check for. Case insensitive.
+     * @details Internally, this calls get_feature(const QString &f_feature)
+     * with the enum's value converted to string.
+     *
+     * @param f_feature The feature to check for.
      *
      * @return True if the feature exists on the server.
      */
