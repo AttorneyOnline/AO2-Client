@@ -1988,7 +1988,7 @@ void Courtroom::list_music()
     if (file_exists(song_path))
       treeItem->setBackground(0, found_brush);
     else
-      if (i_song.endsWith(".music"))
+      if (i_song.endsWith(".music") || i_song.startsWith("http"))
         treeItem->setBackground(0, streaming_brush);
       else
         treeItem->setBackground(0, missing_brush);
