@@ -110,6 +110,10 @@ public:
    */
   static QString get_version_string();
 
+  static const int RELEASE = 2;
+  static const int MAJOR_VERSION = 10;
+  static const int MINOR_VERSION = 1;
+
   // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
   void remove_favorite_server(int p_server);
@@ -349,10 +353,6 @@ public:
   DemoServer* demo_server = nullptr;
 
 private:
-  static const int RELEASE = 2;
-  static const int MAJOR_VERSION = 10;
-  static const int MINOR_VERSION = 1;
-
   QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
